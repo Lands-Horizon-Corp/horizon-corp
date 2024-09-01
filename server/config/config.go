@@ -1,10 +1,7 @@
 package config
 
 import (
-	"log"
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 type Config struct {
@@ -33,24 +30,20 @@ type LogConfig struct {
 }
 
 func LoadConfig() (*Config, error) {
-	// Load .env file
-	if err := godotenv.Load(); err != nil {
-		log.Println("No .env file found")
-	}
 
 	config := &Config{
 		App: AppConfig{
 			Port: getEnv("SERVER_APP_PORT", "8080"),
 		},
 		DB: DBConfig{
-			Username:  getEnv("SERVER_DB_USERNAME", ""),
-			Password:  getEnv("SERVER_DB_PASSWORD", ""),
-			Host:      getEnv("SERVER_DB_HOST", "localhost"),
-			Port:      getEnv("SERVER_DB_PORT", "3306"),
-			Name:      getEnv("SERVER_DB_NAME", ""),
-			Charset:   getEnv("SERVER_DB_CHARSET", "utf8"),
-			ParseTime: getEnv("SERVER_DB_PARSE_TIME", "True"),
-			Loc:       getEnv("SERVER_DB_LOC", "Local"),
+			Username:  getEnv("DB_USERNAME", ""),
+			Password:  getEnv("DB_PASSWORD", ""),
+			Host:      getEnv("DB_HOST", "db"),
+			Port:      getEnv("DB_PORT", "3306"),
+			Name:      getEnv("DB_NAME", ""),
+			Charset:   getEnv("DB_CHARSET", "utf8"),
+			ParseTime: getEnv("DB_PARSE_TIME", "True"),
+			Loc:       getEnv("DB_LOC", "Local"),
 		},
 		Log: LogConfig{
 			Level: getEnv("LOG_LEVEL", "debug"),
@@ -61,7 +54,7 @@ func LoadConfig() (*Config, error) {
 }
 
 func getEnv(key, defaultValue string) string {
-	if value, exists := os.LookupEnv(key); exists {
+	if value, exists := os.LookupEnv(key); exists && value != "" {
 		return value
 	}
 	return defaultValue

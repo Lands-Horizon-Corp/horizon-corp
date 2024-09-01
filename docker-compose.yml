@@ -1,18 +1,21 @@
-version: "3.8"
-
 services:
   client:
+    restart: always
     build:
       context: ./client
       dockerfile: Dockerfile
     ports:
-      - "${CLIENT_FORWARD_PORT}:${CLIENT_PORT}" # Mapping external port to internal port
+      - "${CLIENT_FORWARD_PORT}:${CLIENT_PORT}"
     environment:
-      - NODE_ENV=development
+      - CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}
+      - CLIENT_PORT=${CLIENT_PORT}
     depends_on:
       - server
+    env_file:
+      - .env
 
   server:
+    restart: always
     build:
       context: ./server
       dockerfile: Dockerfile
@@ -31,17 +34,24 @@ services:
       - DB_LOC=${SERVER_DB_LOC}
     depends_on:
       - db
+    env_file:
+      - .env
 
   db:
     image: mysql:8
-    platform: linux/arm64
+    platform: linux/amd64
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${SERVER_DB_PASSWORD}
-      MYSQL_DATABASE: horizon
+      MYSQL_DATABASE: ${SERVER_DB_NAME}
+      MYSQL_USER: ${SERVER_DB_USERNAME}
+      MYSQL_PASSWORD: ${SERVER_DB_PASSWORD}
     ports:
-      - "3306:3306"
+      - "${SERVER_DB_PORT}:${SERVER_DB_PORT}"
     volumes:
       - db_data:/var/lib/mysql
+    env_file:
+      - .env
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -55,6 +65,8 @@ services:
       - PMA_PASSWORD=${SERVER_DB_PASSWORD}
     depends_on:
       - db
+    env_file:
+      - .env
 
 volumes:
   db_data:
