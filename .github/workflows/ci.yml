@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:20.10-dind
+        options: --privileged
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v3
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Build and test client
+        run: |
+          docker build -t myclient:latest -f client/Dockerfile ./client
+          docker run --rm myclient:latest npm run test
+
+      - name: Build and test server
+        run: |
+          docker build -t myserver:latest -f server/Dockerfile ./server
+          docker run --rm myserver:latest go test ./...
+
+      - name: Build and test Flyway
+        run: |
+          docker build -t myflyway:latest -f migration/Dockerfile ./migration
+          docker run --rm myflyway:latest flyway validate
+
+      - name: Check MySQL health
+        run: |
+          docker run --rm mysql:8 mysqladmin ping -h db -u${{ secrets.SERVER_DB_USERNAME }} -p${{ secrets.SERVER_DB_PASSWORD }}
+
+      - name: Cache MySQL data
+        uses: actions/cache@v3
+        with:
+          path: db_data
+          key: ${{ runner.os }}-mysql-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-mysql-
+
+      - name: Start MySQL service
+        run: |
+          docker run -d --name db -e MYSQL_ROOT_PASSWORD=${{ secrets.SERVER_DB_PASSWORD }} -e MYSQL_DATABASE=${{ secrets.SERVER_DB_NAME }} -e MYSQL_USER=${{ secrets.SERVER_DB_USERNAME }} -e MYSQL_PASSWORD=${{ secrets.SERVER_DB_PASSWORD }} -p 3306:3306 mysql:8
+
+      - name: Wait for MySQL
+        run: |
+          sleep 30
+
+      - name: Start phpMyAdmin
+        run: |
+          docker run -d --name phpmyadmin -e PMA_HOST=db -e PMA_PORT=3306 -e PMA_USER=${{ secrets.SERVER_DB_USERNAME }} -e PMA_PASSWORD=${{ secrets.SERVER_DB_PASSWORD }} -p 8081:80 phpmyadmin/phpmyadmin
+
+      - name: Run database migrations
+        run: |
+          docker run --rm myflyway:latest flyway migrate
+
+      - name: Clean up
+        run: |
+          docker stop db
+          docker stop phpmyadmin
+
+      - name: Push Docker images (optional)
+        run: |
+          echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
+          docker tag myclient:latest myclient:latest
+          docker push myclient:latest
+          docker tag myserver:latest myserver:latest
+          docker push myserver:latest
+          docker tag myflyway:latest myflyway:latest
+          docker push myflyway:latest

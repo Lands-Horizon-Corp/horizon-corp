@@ -96,12 +96,13 @@
   - Setup db connection : Done
   - Setup hot reload for frontend : Done
   - hot reload for backend : Done
-  - setup db migration
+  - setup db migration : Done 
 
 
 # setup github pipeline workflow
-# deploy database and server to EC2
-# deploy frontend to vercel nuxt
+  - deploy database and server to EC2 : Not Done
+  - deploy frontend to vercel nuxt : Not Done
 
 # setup toastify
+# setup error handling
 # setup authentication
