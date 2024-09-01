@@ -1,0 +1,57 @@
+services:
+  client:
+    build:
+      context: ./client
+    ports:
+      - "80:3000"
+    environment:
+      - CLIENT_PORT=3000
+      - CLIENT_HOST=localhost
+    depends_on:
+      - server
+
+  server:
+    build:
+      context: ./server
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SERVER_HOST=localhost
+      - SERVER_DB_USERNAME=your_db_username
+      - SERVER_DB_PASSWORD=your_db_password
+      - SERVER_DB_HOST=db
+      - SERVER_DB_PORT=3306
+      - SERVER_DB_NAME=your_db_name
+      - SERVER_DB_CHARSET=utf8
+      - SERVER_DB_PARSE_TIME=True
+      - SERVER_DB_LOC=Local
+    depends_on:
+      - db
+
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: your_root_password
+      MYSQL_DATABASE: your_db_name
+      MYSQL_USER: your_db_username
+      MYSQL_PASSWORD: your_db_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: your_root_password
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
+
+volumes:
+  db_data:

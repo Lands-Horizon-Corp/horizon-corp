@@ -1,0 +1,14 @@
+# .air.toml configuration
+[build]
+bin = "main"
+cmd = "go build -o main ./cmd/server/main.go"
+exclude = ["vendor"]
+include = ["cmd", "config", "internal", "pkg"]
+
+[server]
+cmd = "./main"
+port = "8080"
+
+[watch]
+exclude = ["vendor"]
+include = ["cmd", "config", "internal", "pkg"]
