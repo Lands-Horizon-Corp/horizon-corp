@@ -35,7 +35,8 @@ services:
       - DB_PARSE_TIME=${SERVER_DB_PARSE_TIME}
       - DB_LOC=${SERVER_DB_LOC}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     env_file:
       - .env
 
@@ -54,6 +55,22 @@ services:
       - db_data:/var/lib/mysql
     env_file:
       - .env
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "localhost",
+          "-u",
+          "${SERVER_DB_USERNAME}",
+          "-p${SERVER_DB_PASSWORD}",
+        ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

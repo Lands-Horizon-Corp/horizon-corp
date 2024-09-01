@@ -1,22 +1,27 @@
-# Nuxt 3 - 
-# Tailwind - 
-# Eslint - 
-# Prettier - 
-# Prettier Tailwind - 
-# ShadCN - 
-# Vee validate - 
-# Zod - 
-# Pinia store - 
+# Local Setup
+  - Nuxt 3 : Done
+  - Tailwind : Done
+  - Eslint : Done
+  - Prettier : Done
+  - Prettier Tailwind : Done
+  - ShadCN : Done
+  - Vee validate : Done
+  - Zod : Done
+  - Pinia store : Done
 
-# Setup docker - 
-# Setup db connection - 
+# Docker 
+  - Setup docker : Done
+  - Setup db connection : Done
+  - Setup hot reload for frontend : Done
+  - hot reload for backend : Done
+  - setup db migration
 
-# Setup hot reload for frontend - 
-# swaggher reload for backend
+
+# setup github pipeline workflow
+# deploy database and server to EC2
+# deploy frontend to vercel nuxt
 
 # setup toastify
-# setup github pipeline workflow
-# setup db migration
 # setup authentication
 
 
