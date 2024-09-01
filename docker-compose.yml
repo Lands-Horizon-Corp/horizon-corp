@@ -87,5 +87,22 @@ services:
     env_file:
       - .env
 
+  flyway:
+    build:
+      context: ./migration
+      dockerfile: Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SERVER_DB_HOST: db
+      SERVER_DB_PORT: ${SERVER_DB_PORT}
+      SERVER_DB_USERNAME: ${SERVER_DB_USERNAME}
+      SERVER_DB_PASSWORD: ${SERVER_DB_PASSWORD}
+      SERVER_DB_NAME: ${SERVER_DB_NAME}
+      SERVER_DB_CHARSET: ${SERVER_DB_CHARSET}
+      SERVER_DB_PARSE_TIME: ${SERVER_DB_PARSE_TIME}
+    entrypoint: ["flyway", "migrate"]
+
 volumes:
   db_data:
