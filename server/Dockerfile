@@ -1,29 +1,17 @@
-# Use the official Golang image
-FROM golang:1.23 AS builder
+FROM golang:1.23-alpine as development
 
 WORKDIR /app
 
 COPY go.mod go.sum ./
-
 RUN go mod download
-
-COPY . .
 
 RUN go install github.com/air-verse/air@latest
 
-RUN go build -o main ./cmd/server/main.go
+COPY . .
 
-FROM golang:1.23
-
-WORKDIR /app
-
-# Copy the binary and other required files from the builder stage
-COPY --from=builder /app/main .
-COPY --from=builder /app/config/config.yaml ./config/config.yaml
-COPY --from=builder /app/tmp ./tmp
-
-COPY --from=builder /go/bin/air /usr/local/bin/air
+# Build the binary into the tmp directory within the Docker image
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o tmp/main cmd/server/main.go
 
 EXPOSE 8080
 
-CMD ["air"]
+CMD ["air", "-c", ".air.toml"]

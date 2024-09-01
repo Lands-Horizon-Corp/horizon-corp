@@ -13,6 +13,8 @@ services:
       - server
     env_file:
       - .env
+    volumes:
+      - ./client:/app
 
   server:
     restart: always

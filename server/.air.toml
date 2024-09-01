@@ -1,21 +1,12 @@
-# .air.toml
-
-# Config file path
 root = "."
 tmp_dir = "tmp"
 
-# Watch for changes in these files
-[watch]
-excludes = ["tmp"]
-includes = ["cmd", "internal", "pkg"]
-
-# Build options
 [build]
-bin = "main"
-cmd = "go build -o main ./cmd/server/main.go"
-exclude = []
-include = ["*.go"]
+bin = "tmp/main"
+cmd = "go build -o tmp/main cmd/server/main.go"
+delay = 1000
+exclude_dir = ["assets", "tmp", "vendor"]
+include_ext = ["go", "tpl", "tmpl", "html"]
 
-# Run options
-[run]
-cmd = "./main"
+[log]
+time = true

@@ -8,10 +8,12 @@
 # Zod - 
 # Pinia store - 
 
-# Setup docker
-# Setup db connection
-# Setup hot reload
-# -- swaggher reload
+# Setup docker - 
+# Setup db connection - 
+
+# Setup hot reload for frontend - 
+# swaggher reload for backend
+
 # setup toastify
 # setup github pipeline workflow
 # setup db migration
