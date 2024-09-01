@@ -1,13 +1,14 @@
-FROM node:20.17-alpine as development
+# Use the Node.js 20 image (non-alpine) for better compatibility
+FROM node:20 as development
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install Bun
-RUN curl -fsSL https://bun.sh/install | bash
+# Install Bun globally using npm
+RUN npm install -g bun
 
-# Add Bun to the PATH
-ENV PATH="/root/.bun/bin:${PATH}"
+# Verify Bun installation
+RUN bun --version || echo "Bun not found"
 
 # Copy package.json and bun.lockb
 COPY package.json bun.lockb ./
@@ -21,5 +22,5 @@ COPY . .
 # Expose port 3000 (default for Nuxt.js development)
 EXPOSE 3000
 
-# Start the Nuxt.js application in development mode
+# Start the Nuxt.js application in development mode with hot reloading
 CMD ["bun", "run", "dev"]

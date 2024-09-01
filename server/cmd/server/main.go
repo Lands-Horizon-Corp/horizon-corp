@@ -13,6 +13,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 	"go.uber.org/fx/fxevent"
+
+	_ "horizon-server/cmd/server/docs"
 )
 
 func main() {

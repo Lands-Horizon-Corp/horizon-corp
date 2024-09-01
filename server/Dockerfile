@@ -1,26 +1,29 @@
-# Base image for development with Go and Air
-FROM golang:1.23-alpine as development
+# Use the official Golang image
+FROM golang:1.23 AS builder
 
-# Set the working directory
 WORKDIR /app
 
-# Copy go mod and sum files
 COPY go.mod go.sum ./
 
-# Download all dependencies
 RUN go mod download
 
-# Install Air for live reloading
-RUN go install github.com/air-verse/air@latest
-
-# Copy the source code
 COPY . .
 
-# Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o main ./cmd/server/main.go
+RUN go install github.com/air-verse/air@latest
 
-# Expose port 8080
+RUN go build -o main ./cmd/server/main.go
+
+FROM golang:1.23
+
+WORKDIR /app
+
+# Copy the binary and other required files from the builder stage
+COPY --from=builder /app/main .
+COPY --from=builder /app/config/config.yaml ./config/config.yaml
+COPY --from=builder /app/tmp ./tmp
+
+COPY --from=builder /go/bin/air /usr/local/bin/air
+
 EXPOSE 8080
 
-# Start Air for live reloading
-CMD ["air", "-c", ".air.toml"]
+CMD ["air"]

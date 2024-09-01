@@ -7,3 +7,16 @@
 # Vee validate - 
 # Zod - 
 # Pinia store - 
+
+# Setup docker
+# Setup db connection
+# Setup hot reload
+# -- swaggher reload
+# setup toastify
+# setup github pipeline workflow
+# setup db migration
+# setup authentication
+
+
+# Setup
+- docker-compose up --build -d

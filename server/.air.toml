@@ -1,14 +1,21 @@
-# .air.toml configuration
+# .air.toml
+
+# Config file path
+root = "."
+tmp_dir = "tmp"
+
+# Watch for changes in these files
+[watch]
+excludes = ["tmp"]
+includes = ["cmd", "internal", "pkg"]
+
+# Build options
 [build]
 bin = "main"
 cmd = "go build -o main ./cmd/server/main.go"
-exclude = ["vendor"]
-include = ["cmd", "config", "internal", "pkg"]
+exclude = []
+include = ["*.go"]
 
-[server]
+# Run options
+[run]
 cmd = "./main"
-port = "8080"
-
-[watch]
-exclude = ["vendor"]
-include = ["cmd", "config", "internal", "pkg"]
