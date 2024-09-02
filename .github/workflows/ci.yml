@@ -14,10 +14,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Print environment variables (for debugging)
+      - name: Print environment variables
         run: |
           echo "CLIENT_PORT=${{ secrets.CLIENT_PORT }}"
           echo "SERVER_PORT=${{ secrets.SERVER_PORT }}"
+          # Print other variables as needed
 
       - name: Build the stack
         run: docker compose up --build -d
