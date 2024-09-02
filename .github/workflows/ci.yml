@@ -1,5 +1,10 @@
 name: Deploy to Vercel
 
+env:
+  VERCEL_ORG_ID:
+  VERCEL_PROJECT_ID: prj_slcUWRC9WCZRValZ1zSaSMseOMsY
+  VERCEL_TOKEN: qGCAK1Zgja7qDGYFU3uJYLQG
+
 on:
   push:
     branches:
@@ -9,5 +14,23 @@ on:
       - main # Replace with your main branch name
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: "1.23"
+
+      - name: Build Go Server
+        working-directory: ./server
+        run: go build -o . cmd/server/main.go
+
+      - name: Deploy to Vercel
+        run: vercel --prod
