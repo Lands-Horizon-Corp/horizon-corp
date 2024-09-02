@@ -9,9 +9,23 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Start MySQL Server
+        run: |
+          sudo service mysql start
+          # Optionally check the status
+          sudo service mysql status
+
+      - name: Create Database and User
+        run: |
+          mysql -u root -proot -e "CREATE DATABASE IF NOT EXISTS horizon;"
+          mysql -u root -proot -e "CREATE USER IF NOT EXISTS 'root'@'localhost' IDENTIFIED BY 'root';"
+          mysql -u root -proot -e "GRANT ALL PRIVILEGES ON horizon.* TO 'root'@'localhost';"
+          mysql -u root -proot -e "FLUSH PRIVILEGES;"
 
       - name: Build the stack
         run: |
@@ -24,8 +38,8 @@ jobs:
           SERVER_HOST: localhost
           SERVER_FORWARD_PORT: 8080
           SERVER_DB_USERNAME: root
-          SERVER_DB_PASSWORD: password
-          SERVER_DB_HOST: 127.0.0.1
+          SERVER_DB_PASSWORD: root
+          SERVER_DB_HOST: localhost
           SERVER_DB_PORT: 3306
           SERVER_DB_NAME: horizon
           SERVER_DB_CHARSET: utf8
