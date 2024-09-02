@@ -14,7 +14,7 @@ on:
       - main # Replace with your main branch name
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
