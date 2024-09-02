@@ -60,13 +60,13 @@ services:
           "-h",
           "localhost",
           "-u",
-          "${SERVER_DB_USERNAME}",
+          "root",
           "-p${SERVER_DB_PASSWORD}",
         ]
-      interval: 10s
-      retries: 5
-      start_period: 30s
-      timeout: 10s
+      interval: 20s
+      retries: 10
+      start_period: 60s
+      timeout: 20s
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
