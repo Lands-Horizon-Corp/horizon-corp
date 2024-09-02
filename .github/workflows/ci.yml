@@ -12,20 +12,5 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
-      - name: Build and deploy stack
-        env:
-          SERVER_DB_PASSWORD: ${{ secrets.SERVER_DB_PASSWORD }}
-          SERVER_DB_NAME: ${{ secrets.SERVER_DB_NAME }}
-          SERVER_DB_USERNAME: ${{ secrets.SERVER_DB_USERNAME }}
-          SERVER_DB_PORT: ${{ secrets.SERVER_DB_PORT }}
-          SERVER_PORT: ${{ secrets.SERVER_PORT }}
-          SERVER_FORWARD_PORT: ${{ secrets.SERVER_FORWARD_PORT }}
-          CLIENT_FORWARD_PORT: ${{ secrets.CLIENT_FORWARD_PORT }}
-          CLIENT_PORT: ${{ secrets.CLIENT_PORT }}
-          SERVER_DB_HOST: ${{ secrets.SERVER_DB_HOST }}
-          SERVER_DB_CHARSET: ${{ secrets.SERVER_DB_CHARSET }}
-          SERVER_DB_PARSE_TIME: ${{ secrets.SERVER_DB_PARSE_TIME }}
-          SERVER_DB_LOC: ${{ secrets.SERVER_DB_LOC }}
-        run: |
-          docker compose up --build -d
+      - name: Build the stack
+        run: docker compose up --build -d
