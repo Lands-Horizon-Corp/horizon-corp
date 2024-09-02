@@ -13,7 +13,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Set up environment variables
-        run:
+        run: |
           echo "SERVER_DB_PASSWORD=${{ secrets.SERVER_DB_PASSWORD }}" >> $GITHUB_ENV
           echo "SERVER_DB_NAME=${{ secrets.SERVER_DB_NAME }}" >> $GITHUB_ENV
           echo "SERVER_DB_USERNAME=${{ secrets.SERVER_DB_USERNAME }}" >> $GITHUB_ENV
