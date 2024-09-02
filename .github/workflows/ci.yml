@@ -10,6 +10,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: horizon
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-retries=5 --health-start-period=30s --health-timeout=10s
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -25,10 +37,10 @@ jobs:
           SERVER_HOST: localhost
           SERVER_FORWARD_PORT: 8080
           SERVER_DB_USERNAME: root
-          SERVER_DB_PASSWORD: password
-          SERVER_DB_HOST: db
+          SERVER_DB_PASSWORD: root
+          SERVER_DB_HOST: 127.0.0.1
           SERVER_DB_PORT: 3306
           SERVER_DB_NAME: horizon
-          SERVER_DB_CHARSET: $utf8
+          SERVER_DB_CHARSET: utf8
           SERVER_DB_PARSE_TIME: True
           SERVER_DB_LOC: Local
