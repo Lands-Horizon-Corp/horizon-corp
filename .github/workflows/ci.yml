@@ -7,33 +7,11 @@ env:
 
 on:
   push:
-    branches:
-      - main # Replace with your main branch name
+    branches: [main, master]
   pull_request:
-    branches:
-      - main # Replace with your main branch name
+    branches: [main, master]
 jobs:
-  deploy:
+  Deploy-Preview:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set up Go environment
-        uses: actions/setup-go@v2
-        with:
-          go-version: "1.17" # Set to the Go version you are using
-
-      - name: Install dependencies
-        run: go mod download
-
-      - name: Build Go application
-        run: go build -o main cmd/server/main.go
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment Information
-        run: vercel pull --yes --environment=preview
-
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt
