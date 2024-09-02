@@ -9,19 +9,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: horizon
-          MYSQL_USER: root
-          MYSQL_PASSWORD: root
-        options: --health-cmd="mysqladmin ping --silent" --health-interval=10s --health-retries=5 --health-start-period=30s --health-timeout=10s
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
