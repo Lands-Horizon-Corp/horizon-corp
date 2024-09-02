@@ -13,8 +13,5 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up .env file
-        run: cp .env .env
-
       - name: Build the stack
         run: docker compose up --build -d
