@@ -18,17 +18,17 @@ jobs:
         run: |
           docker compose up --build -d
         env:
-          CLIENT_PORT: ${{ secrets.CLIENT_PORT }}
-          CLIENT_HOST: ${{ secrets.CLIENT_HOST }}
-          CLIENT_FORWARD_PORT: ${{ secrets.CLIENT_FORWARD_PORT }}
-          SERVER_PORT: ${{ secrets.SERVER_PORT }}
-          SERVER_HOST: ${{ secrets.SERVER_HOST }}
-          SERVER_FORWARD_PORT: ${{ secrets.SERVER_FORWARD_PORT }}
-          SERVER_DB_USERNAME: ${{ secrets.SERVER_DB_USERNAME }}
-          SERVER_DB_PASSWORD: ${{ secrets.SERVER_DB_PASSWORD }}
-          SERVER_DB_HOST: ${{ secrets.SERVER_DB_HOST }}
-          SERVER_DB_PORT: ${{ secrets.SERVER_DB_PORT }}
-          SERVER_DB_NAME: ${{ secrets.SERVER_DB_NAME }}
-          SERVER_DB_CHARSET: ${{ secrets.SERVER_DB_CHARSET }}
-          SERVER_DB_PARSE_TIME: ${{ secrets.SERVER_DB_PARSE_TIME }}
-          SERVER_DB_LOC: ${{ secrets.SERVER_DB_LOC }}
+          CLIENT_PORT: 80
+          CLIENT_HOST: localhost
+          CLIENT_FORWARD_PORT: 8090
+          SERVER_PORT: 8080
+          SERVER_HOST: localhost
+          SERVER_FORWARD_PORT: 8080
+          SERVER_DB_USERNAME: root
+          SERVER_DB_PASSWORD: password
+          SERVER_DB_HOST: db
+          SERVER_DB_PORT: 3306
+          SERVER_DB_NAME: horizon
+          SERVER_DB_CHARSET: $utf8
+          SERVER_DB_PARSE_TIME: True
+          SERVER_DB_LOC: Local
