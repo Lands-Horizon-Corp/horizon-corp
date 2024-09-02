@@ -13,7 +13,7 @@ on:
     branches:
       - main # Replace with your main branch name
 jobs:
-  Deploy-Preview:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
