@@ -11,8 +11,7 @@ services:
       - CLIENT_PORT=${CLIENT_PORT}
     depends_on:
       - server
-    env_file:
-      - .env
+
     volumes:
       - ./client:/app
 
@@ -37,8 +36,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    env_file:
-      - .env
 
   db:
     image: mysql:8
@@ -53,8 +50,7 @@ services:
       - "${SERVER_DB_PORT}:${SERVER_DB_PORT}"
     volumes:
       - db_data:/var/lib/mysql
-    env_file:
-      - .env
+
     healthcheck:
       test:
         [
@@ -84,8 +80,6 @@ services:
       - PMA_PASSWORD=${SERVER_DB_PASSWORD}
     depends_on:
       - db
-    env_file:
-      - .env
 
   flyway:
     build:

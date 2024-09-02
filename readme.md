@@ -100,6 +100,7 @@
 
 
 # setup github pipeline workflow
+  - github workflow : Not Done
   - deploy database and server to EC2 : Not Done
   - deploy frontend to vercel nuxt : Not Done
 
