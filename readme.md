@@ -6,7 +6,7 @@
 
 - **Initialize**: 
   ```sh
-  docker-compose up --build -d
+  docker-compose up --build -d 
   ```
   Builds and starts the containers in detached mode.
 
@@ -18,13 +18,13 @@
 
 - **Stop**: 
   ```sh
-  docker-compose down
+  docker-compose down -v
   ```
   Stops and removes the containers.
 
 - **Reset**: 
   ```sh
-  docker-compose down; docker-compose up --build -d
+  docker-compose down -v; docker-compose up --build -d
   ```
   Stops and removes the containers, then rebuilds and starts them.
 
@@ -79,6 +79,8 @@
    Generates new migration scripts.
 
 ---
+## AWS Deployment
+---
 
 # Local Setup
   - Nuxt 3 : Done
@@ -103,6 +105,10 @@
   - github workflow : Not Done
   - deploy database and server to EC2 : Not Done
   - deploy frontend to vercel nuxt : Not Done
+
+# Setup Storage
+  - Local Storage : Not Done
+  - Deployment Storage : Not Done
 
 # setup toastify
 # setup error handling

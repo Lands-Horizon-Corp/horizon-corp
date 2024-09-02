@@ -1,17 +1,49 @@
 name: Deploy to Vercel
 
 env:
-  VERCEL_ORG_ID:
-  VERCEL_PROJECT_ID: prj_slcUWRC9WCZRValZ1zSaSMseOMsY
-  VERCEL_TOKEN: qGCAK1Zgja7qDGYFU3uJYLQG
+  AWS_ACCESS_KEY_ID:
+  AWS_SECRET_ACCESS_KEY:
+  AWS_REGION:
+
+  DB_HOST:
+  DB_USER:
+  DB_PASSWORD:
 
 on:
   push:
     branches: [main, master]
   pull_request:
     branches: [main, master]
+
 jobs:
-  Deploy-Preview:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install Flyway
+        run: |
+          wget https://flywaydb.org/get/java -O flyway-commandline.zip
+          unzip flyway-commandline.zip
+          export PATH=$PATH:$PWD/flyway-*/bin
+
+      - name: Run Flyway migrations
+        run: |
+          flyway -url=jdbc:mysql://${{ env.DB_HOST }} -user=${{ env.DB_USER }} -password=${{ env.DB_PASSWORD }} migrate
+
+      - name: Verify Flyway migration
+        run: |
+          flyway -url=jdbc:mysql://${{ env.DB_HOST }} -user=${{ env.DB_USER }} -password=${{ env.DB_PASSWORD }} info
+
+      - name: Clean up
+        run: |
+          rm -rf flyway-commandline.zip flyway-*

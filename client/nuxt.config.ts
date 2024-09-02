@@ -5,6 +5,11 @@ export default defineNuxtConfig({
   devServer: {
     port: import.meta.env.CLIENT_PORT || '80'
   },
+  runtimeConfig: {
+    public: {
+      api: import.meta.env.CLIENT_SERVER_URL,
+    }
+  },
   modules: [
     "@nuxtjs/tailwindcss",
     "@nuxt/eslint",

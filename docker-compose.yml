@@ -9,9 +9,10 @@ services:
     environment:
       - CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}
       - CLIENT_PORT=${CLIENT_PORT}
+      - CLIENT_SERVER_URL=${CLIENT_SERVER_URL}
     depends_on:
       - server
-
+    env_file: ./.env
     volumes:
       - ./client:/app
 
@@ -20,6 +21,7 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    env_file: ./.env
     volumes:
       - ./server:/app
     ports:
@@ -41,6 +43,7 @@ services:
     image: mysql:8
     platform: linux/amd64
     restart: always
+    env_file: ./.env
     environment:
       MYSQL_ROOT_PASSWORD: ${SERVER_DB_PASSWORD}
       MYSQL_DATABASE: ${SERVER_DB_NAME}
@@ -50,7 +53,6 @@ services:
       - "${SERVER_DB_PORT}:${SERVER_DB_PORT}"
     volumes:
       - db_data:/var/lib/mysql
-
     healthcheck:
       test:
         [
@@ -71,6 +73,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     platform: linux/amd64
+    env_file: ./.env
     ports:
       - "8081:80"
     environment:
@@ -85,6 +88,7 @@ services:
     build:
       context: ./migration
       dockerfile: Dockerfile
+    env_file: ./.env
     depends_on:
       db:
         condition: service_healthy
