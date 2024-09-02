@@ -12,25 +12,28 @@ on:
   pull_request:
     branches:
       - main # Replace with your main branch name
-
 jobs:
-  build:
+  Deploy-Preview:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v2
+
+      - name: Set up Go environment
+        uses: actions/setup-go@v2
+        with:
+          go-version: "1.17" # Set to the Go version you are using
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Build Go application
+        run: go build -o main cmd/server/main.go
 
       - name: Install Vercel CLI
-        run: npm install -g vercel
+        run: npm install --global vercel@latest
 
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version: "1.23"
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview
 
-      - name: Build Go Server
-        working-directory: ./server
-        run: go build -o . cmd/server/main.go
-
-      - name: Deploy to Vercel
-        run: vercel --prod
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt
