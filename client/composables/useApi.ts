@@ -4,7 +4,7 @@ import { useRuntimeConfig } from '#app';
 import type { IApiRepository } from '~/types';
 
 
-export function useApi<T>(endpoint: string): IApiRepository<T> {
+export function useApi<T>(endpoint?: string): IApiRepository<T> {
   const config = useRuntimeConfig();
   const apiBaseUrl = config.public.api;
 
