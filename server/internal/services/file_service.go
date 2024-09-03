@@ -41,18 +41,18 @@ func (s *FileService) UploadFileProgress(
 	return s.MinioClient.UploadFile(bucketName, key, pr)
 }
 
-func (s *FileService) UploadFile(bucketName, key string, body io.Reader) error {
+func (s *FileService) UploadFile(bucketName string, key string, body io.Reader) error {
 	return s.MinioClient.UploadFile(bucketName, key, body)
 }
 
-func (s *FileService) DeleteFile(bucketName, key string) error {
+func (s *FileService) DeleteFile(bucketName string, key string) error {
 	return s.MinioClient.DeleteFile(bucketName, key)
 }
 
-func (s *FileService) GeneratePresignedURL(bucketName, key string, expiration time.Duration) (string, error) {
+func (s *FileService) GeneratePresignedURL(bucketName string, key string, expiration time.Duration) (string, error) {
 	return s.MinioClient.GeneratePresignedURL(bucketName, key, expiration)
 }
 
-func (s *FileService) GetPublicURL(bucketName, key string) string {
-	return fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucketName, url.PathEscape(key))
+func (s *FileService) GetPublicURL(bucketName string, endPoint string, key string) string {
+	return fmt.Sprintf("%s/%s/%s", bucketName, endPoint, url.PathEscape(key))
 }

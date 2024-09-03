@@ -45,7 +45,7 @@ func (h *FileHandler) UploadFile(c *gin.Context) {
 		return
 	}
 
-	fileURL := h.FileService.GetPublicURL(h.Config.Storage.BucketName, fileName)
+	fileURL := h.FileService.GetPublicURL(h.Config.Storage.BucketName, h.Config.DB.Host, fileName)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message":     "file uploaded successfully",
@@ -108,21 +108,17 @@ func (h *FileHandler) UploadFileProgress(c *gin.Context) {
 		return
 	}
 
-	// Generate presigned URL for the uploaded file
 	url, err := h.FileService.GeneratePresignedURL(h.Config.Storage.BucketName, fileName, 15*time.Minute)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to generate presigned URL"})
 		return
 	}
 
-	// Generate a public download URL
-	fileURL := h.FileService.GetPublicURL(h.Config.Storage.BucketName, fileName)
+	fileURL := h.FileService.GetPublicURL(h.Config.Storage.BucketName, h.Config.DB.Host, fileName)
 
-	// Final message after completion
 	fmt.Fprintf(c.Writer, "data: {\"status\":\"done\"}\n\n")
 	c.Writer.Flush()
 
-	// Return file details in the final response
 	c.JSON(http.StatusOK, gin.H{
 		"message":     "file uploaded successfully",
 		"file_name":   fileName,

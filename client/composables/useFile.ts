@@ -40,21 +40,19 @@ export function useFile(endpoint: string): IFileRepository {
 
           const progressData: UploadProgress = {
             file_name: file.name,
-            file_size: event.total, // Using event.total for file_size
+            file_size: event.total,
             progress_bytes: progressBytes,
             progress: progressPercentage,
           };
 
           onProgress(progressData);
         } else {
-          // Handle cases where event.total is undefined
           const progressData: UploadProgress = {
             file_name: file.name,
-            file_size: file.size, // Fallback to file.size
+            file_size: file.size,
             progress_bytes: event.loaded,
-            progress: 0, // Progress cannot be calculated
+            progress: 0,
           };
-
           onProgress(progressData);
         }
       },

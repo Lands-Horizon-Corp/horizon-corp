@@ -99,16 +99,14 @@
   - Setup hot reload for frontend : Done
   - hot reload for backend : Done
   - setup db migration : Done 
+  - local storage : Not Done
 
 
 # setup github pipeline workflow
   - github workflow : Not Done
   - deploy database and server to EC2 : Not Done
   - deploy frontend to vercel nuxt : Not Done
-
-# Setup Storage
-  - Local Storage : Not Done
-  - Deployment Storage : Not Done
+  - deployment storage : Not Done
 
 # setup toastify
 # setup error handling
