@@ -24,9 +24,10 @@ func SetupRouter(cfg *config.Config, userHandler *handlers.UserHandler, fileHand
 		v1.GET("/users/:id", userHandler.GetUser)
 
 		// File handler routes
-		v1.POST("/upload", fileHandler.UploadFile)
-		v1.DELETE("/delete/:key", fileHandler.DeleteFile)
-		v1.GET("/presigned-url/:key", fileHandler.GeneratePresignedURL)
+		v1.POST("/file/upload", fileHandler.UploadFile)
+		v1.POST("/file/upload-progress", fileHandler.UploadFileProgress)
+		v1.DELETE("/file/delete/:key", fileHandler.DeleteFile)
+		v1.GET("/file/presigned-url/:key", fileHandler.GeneratePresignedURL)
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

@@ -1,16 +1,10 @@
 import type { AxiosInstance } from 'axios';
 import axios from 'axios';
 import { useRuntimeConfig } from '#app';
+import type { IApiRepository } from '~/types';
 
-interface IRepository<T> {
-  getAll(): Promise<T[]>;
-  getById(id: string): Promise<T>;
-  create(item: T): Promise<T>;
-  update(id: string, item: T): Promise<T>;
-  delete(id: string): Promise<void>;
-}
 
-export function useRepository<T>(endpoint: string): IRepository<T> {
+export function useApi<T>(endpoint: string): IApiRepository<T> {
   const config = useRuntimeConfig();
   const apiBaseUrl = config.public.api;
 

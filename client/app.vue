@@ -7,10 +7,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { useRepository } from './composables/repository';
+import { useApi } from './composables/useApi';
 
 
-const index = useRepository('');
+const index = useApi('');
 
 onMounted(async () => {
   const users = await index.getAll();

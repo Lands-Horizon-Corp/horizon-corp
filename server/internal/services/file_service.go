@@ -16,10 +16,12 @@ func NewFileService(minioClient *storage.MinioClient) *FileService {
 	return &FileService{MinioClient: minioClient}
 }
 
-func (s *FileService) UploadFileProgress(bucketName, key string, body io.Reader, progressCallback func(progress int64)) error {
+func (s *FileService) UploadFileProgress(
+	bucketName, key string, body io.Reader, fileName string, fileSize int64,
+	progressCallback func(fileName string, fileSize int64, progressBytes int64, progressPercentage float64)) error {
+
 	pr, pw := io.Pipe()
 	tee := io.TeeReader(body, pw)
-
 	go func() {
 		defer pw.Close()
 		buffer := make([]byte, 4096)
@@ -28,14 +30,14 @@ func (s *FileService) UploadFileProgress(bucketName, key string, body io.Reader,
 			n, err := tee.Read(buffer)
 			if n > 0 {
 				totalRead += int64(n)
-				progressCallback(totalRead)
+				progressPercentage := float64(totalRead) / float64(fileSize) * 100
+				progressCallback(fileName, fileSize, totalRead, progressPercentage)
 			}
 			if err != nil {
 				break
 			}
 		}
 	}()
-
 	return s.MinioClient.UploadFile(bucketName, key, pr)
 }
 
