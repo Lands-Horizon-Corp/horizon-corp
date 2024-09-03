@@ -47,10 +47,10 @@ export function useFile(endpoint?: string): IFileRepository {
           };
 
           onProgress(progressData);
-        } else {
+        } else if (event.total) {
           const progressData: UploadProgress = {
             file_name: file.name,
-            file_size: file.size,
+            file_size: event.total,
             progress_bytes: event.loaded,
             progress: 0,
           };
