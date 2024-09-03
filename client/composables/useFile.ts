@@ -34,13 +34,13 @@ export function useFile(endpoint?: string): IFileRepository {
         'Content-Type': 'multipart/form-data',
       },
       onUploadProgress: (event) => {
-        console.log(event)
         if (event.lengthComputable && event.total) {
           const progressBytes = event.loaded;
           const progressPercentage = (progressBytes / event.total) * 100;
 
           const progressData: UploadProgress = {
             file_name: file.name,
+            file_format: file.type,
             file_size: event.total,
             progress_bytes: progressBytes,
             progress: progressPercentage,
@@ -50,6 +50,7 @@ export function useFile(endpoint?: string): IFileRepository {
         } else if (event.total) {
           const progressData: UploadProgress = {
             file_name: file.name,
+            file_format: file.type,
             file_size: event.total,
             progress_bytes: event.loaded,
             progress: 0,

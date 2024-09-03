@@ -9,6 +9,7 @@ export interface FileDetails {
 
 export interface UploadProgress {
   file_name: string;
+  file_format: string;
   file_size: number;
   progress_bytes: number;
   progress: number;

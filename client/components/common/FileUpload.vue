@@ -41,7 +41,6 @@ async function uploadFile() {
   if (!selectedFile.value) return;
   try {
     const result = await fileRepo.uploadFileWithProgress(selectedFile.value, (progress) => {
-      console.log(progress)
       uploadProgress.value = progress;
       emit('progress', progress);
     });
