@@ -1,8 +1,10 @@
 package services
 
 import (
+	"fmt"
 	"horizon-server/pkg/storage"
 	"io"
+	"net/url"
 	"time"
 )
 
@@ -12,6 +14,29 @@ type FileService struct {
 
 func NewFileService(minioClient *storage.MinioClient) *FileService {
 	return &FileService{MinioClient: minioClient}
+}
+
+func (s *FileService) UploadFileProgress(bucketName, key string, body io.Reader, progressCallback func(progress int64)) error {
+	pr, pw := io.Pipe()
+	tee := io.TeeReader(body, pw)
+
+	go func() {
+		defer pw.Close()
+		buffer := make([]byte, 4096)
+		var totalRead int64
+		for {
+			n, err := tee.Read(buffer)
+			if n > 0 {
+				totalRead += int64(n)
+				progressCallback(totalRead)
+			}
+			if err != nil {
+				break
+			}
+		}
+	}()
+
+	return s.MinioClient.UploadFile(bucketName, key, pr)
 }
 
 func (s *FileService) UploadFile(bucketName, key string, body io.Reader) error {
@@ -24,4 +49,8 @@ func (s *FileService) DeleteFile(bucketName, key string) error {
 
 func (s *FileService) GeneratePresignedURL(bucketName, key string, expiration time.Duration) (string, error) {
 	return s.MinioClient.GeneratePresignedURL(bucketName, key, expiration)
+}
+
+func (s *FileService) GetPublicURL(bucketName, key string) string {
+	return fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucketName, url.PathEscape(key))
 }
