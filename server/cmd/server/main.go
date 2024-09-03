@@ -8,6 +8,7 @@ import (
 	"horizon-server/internal/routes"
 	"horizon-server/internal/services"
 	"horizon-server/pkg/logger"
+	"horizon-server/pkg/storage"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -22,6 +23,7 @@ func main() {
 		fx.Provide(
 			config.LoadConfig,
 			logger.NewLogger,
+			storage.NewMinioClient,
 			db.NewDatabase,
 			repositories.NewUserRepository,
 			services.NewUserService,

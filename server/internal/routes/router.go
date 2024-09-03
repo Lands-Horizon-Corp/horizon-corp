@@ -15,7 +15,7 @@ func SetupRouter(cfg *config.Config, userHandler *handlers.UserHandler) *gin.Eng
 
 	docs.SwaggerInfo.BasePath = "/api"
 	router := gin.Default()
-	router.Use(cors.New(cfg.ApiConfig))
+	router.Use(cors.New(cfg.Api))
 
 	router.GET("/", handlers.Index)
 	v1 := router.Group("/api/v1")

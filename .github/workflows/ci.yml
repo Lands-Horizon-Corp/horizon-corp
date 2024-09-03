@@ -22,28 +22,3 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Set up AWS CLI
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Install Flyway
-        run: |
-          wget https://flywaydb.org/get/java -O flyway-commandline.zip
-          unzip flyway-commandline.zip
-          export PATH=$PATH:$PWD/flyway-*/bin
-
-      - name: Run Flyway migrations
-        run: |
-          flyway -url=jdbc:mysql://${{ env.DB_HOST }} -user=${{ env.DB_USER }} -password=${{ env.DB_PASSWORD }} migrate
-
-      - name: Verify Flyway migration
-        run: |
-          flyway -url=jdbc:mysql://${{ env.DB_HOST }} -user=${{ env.DB_USER }} -password=${{ env.DB_PASSWORD }} info
-
-      - name: Clean up
-        run: |
-          rm -rf flyway-commandline.zip flyway-*

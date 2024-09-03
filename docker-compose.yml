@@ -35,6 +35,10 @@ services:
       - SERVER_DB_CHARSET=${SERVER_DB_CHARSET}
       - SERVER_DB_PARSE_TIME=${SERVER_DB_PARSE_TIME}
       - SERVER_DB_LOC=${SERVER_DB_LOC}
+      - SERVER_MINIO_ENDPOINT=${SERVER_MINIO_ENDPOINT}
+      - SERVER_MINIO_REGION=${SERVER_MINIO_REGION}
+      - SERVER_MINIO_ACCESS_KEY=${SERVER_MINIO_ACCESS_KEY}
+      - SERVER_MINIO_SECRET_KEY=${SERVER_MINIO_SECRET_KEY}
     depends_on:
       db:
         condition: service_healthy
@@ -101,5 +105,20 @@ services:
       SERVER_DB_PARSE_TIME: ${SERVER_DB_PARSE_TIME}
     entrypoint: ["flyway", "migrate"]
 
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "38813:38813"
+    environment:
+      MINIO_ROOT_USER: ${SERVER_MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${SERVER_MINIO_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":38813"
+
 volumes:
   db_data:
+  minio_data:

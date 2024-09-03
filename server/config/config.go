@@ -8,11 +8,11 @@ import (
 )
 
 type Config struct {
-	DB           DBConfig  `yaml:"db"`
-	App          AppConfig `yaml:"app"`
-	Log          LogConfig `yaml:"log"`
-	AllowOrigins []string  `yaml:"allow_origins"`
-	ApiConfig    cors.Config
+	DB      DBConfig    `yaml:"db"`
+	App     AppConfig   `yaml:"app"`
+	Log     LogConfig   `yaml:"log"`
+	Api     cors.Config `yaml:"app"`
+	Storage Storage     `yaml:"storage"`
 }
 
 type DBConfig struct {
@@ -34,6 +34,13 @@ type LogConfig struct {
 	Level string `yaml:"level"`
 }
 
+type Storage struct {
+	Endpoint  string
+	Region    string
+	AccessKey string
+	SecretKey string
+}
+
 func LoadConfig() (*Config, error) {
 
 	config := &Config{
@@ -53,7 +60,7 @@ func LoadConfig() (*Config, error) {
 		Log: LogConfig{
 			Level: getEnv("LOG_LEVEL", "debug"),
 		},
-		ApiConfig: cors.Config{
+		Api: cors.Config{
 			AllowOrigins: []string{
 				"http://0.0.0.0",
 				"http://0.0.0.0:8080",
@@ -68,14 +75,19 @@ func LoadConfig() (*Config, error) {
 				"http://localhost:3001",
 				"http://localhost:3002",
 			},
-			AllowMethods:     []string{"POST", "GET"},
+			AllowMethods:     []string{"POST", "GET", "PUT", "PATCH", "DELETE"},
 			AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
 			ExposeHeaders:    []string{"Content-Length"},
 			AllowCredentials: true,
 			MaxAge:           12 * time.Hour,
 		},
+		Storage: Storage{
+			Endpoint:  getEnv("SERVER_MINIO_ENDPOINT", ""),
+			Region:    getEnv("SERVER_MINIO_REGION", ""),
+			AccessKey: getEnv("SERVER_MINIO_ACCESS_KEY", ""),
+			SecretKey: getEnv("SERVER_MINIO_SECRET_KEY", ""),
+		},
 	}
-
 	return config, nil
 }
 
