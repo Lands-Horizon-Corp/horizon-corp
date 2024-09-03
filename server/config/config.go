@@ -2,12 +2,17 @@ package config
 
 import (
 	"os"
+	"time"
+
+	"github.com/gin-contrib/cors"
 )
 
 type Config struct {
-	DB  DBConfig  `yaml:"db"`
-	App AppConfig `yaml:"app"`
-	Log LogConfig `yaml:"log"`
+	DB           DBConfig  `yaml:"db"`
+	App          AppConfig `yaml:"app"`
+	Log          LogConfig `yaml:"log"`
+	AllowOrigins []string  `yaml:"allow_origins"`
+	ApiConfig    cors.Config
 }
 
 type DBConfig struct {
@@ -47,6 +52,27 @@ func LoadConfig() (*Config, error) {
 		},
 		Log: LogConfig{
 			Level: getEnv("LOG_LEVEL", "debug"),
+		},
+		ApiConfig: cors.Config{
+			AllowOrigins: []string{
+				"http://0.0.0.0",
+				"http://0.0.0.0:8080",
+				"http://0.0.0.0:3000",
+				"http://0.0.0.0:3001",
+				"http://0.0.0.0:80",
+				"http://0.0.0.0:3000",
+				"http://rea.development",
+				"http://rea.pro",
+				"http://localhost:8080",
+				"http://localhost:3000",
+				"http://localhost:3001",
+				"http://localhost:3002",
+			},
+			AllowMethods:     []string{"POST", "GET"},
+			AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
 		},
 	}
 

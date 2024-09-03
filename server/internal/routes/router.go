@@ -2,8 +2,8 @@ package routes
 
 import (
 	"horizon-server/cmd/server/docs"
+	"horizon-server/config"
 	"horizon-server/internal/handlers"
-	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -11,28 +11,11 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func SetupRouter(userHandler *handlers.UserHandler) *gin.Engine {
+func SetupRouter(cfg *config.Config, userHandler *handlers.UserHandler) *gin.Engine {
 
 	docs.SwaggerInfo.BasePath = "/api"
 	router := gin.Default()
-	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			"http://0.0.0.0",
-			"http://0.0.0.0:8080",
-			"http://0.0.0.0:3000",
-			"http://0.0.0.0:3001",
-			"http://0.0.0.0:80",
-			"http://0.0.0.0:3000",
-			"http://rea.development",
-			"http://rea.pro",
-			"http://ec2-54-146-249-91.compute-1.amazonaws.com",
-		},
-		AllowMethods:     []string{"POST", "GET"},
-		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	router.Use(cors.New(cfg.ApiConfig))
 
 	router.GET("/", handlers.Index)
 	v1 := router.Group("/api/v1")

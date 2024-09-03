@@ -27,20 +27,21 @@ services:
     ports:
       - "${SERVER_PORT}:${SERVER_FORWARD_PORT}"
     environment:
-      - DB_USERNAME=${SERVER_DB_USERNAME}
-      - DB_PASSWORD=${SERVER_DB_PASSWORD}
-      - DB_HOST=${SERVER_DB_HOST}
-      - DB_PORT=${SERVER_DB_PORT}
-      - DB_NAME=${SERVER_DB_NAME}
-      - DB_CHARSET=${SERVER_DB_CHARSET}
-      - DB_PARSE_TIME=${SERVER_DB_PARSE_TIME}
-      - DB_LOC=${SERVER_DB_LOC}
+      - SERVER_DB_USERNAME=${SERVER_DB_USERNAME}
+      - SERVER_DB_PASSWORD=${SERVER_DB_PASSWORD}
+      - SERVER_DB_HOST=${SERVER_DB_HOST}
+      - SERVER_DB_PORT=${SERVER_DB_PORT}
+      - SERVER_DB_NAME=${SERVER_DB_NAME}
+      - SERVER_DB_CHARSET=${SERVER_DB_CHARSET}
+      - SERVER_DB_PARSE_TIME=${SERVER_DB_PARSE_TIME}
+      - SERVER_DB_LOC=${SERVER_DB_LOC}
     depends_on:
       db:
         condition: service_healthy
 
   db:
-    image: mysql:8
+    container_name: lands-horizon-db
+    image: mysql:8.4
     platform: linux/amd64
     restart: always
     env_file: ./.env
@@ -49,6 +50,7 @@ services:
       MYSQL_DATABASE: ${SERVER_DB_NAME}
       MYSQL_USER: ${SERVER_DB_USERNAME}
       MYSQL_PASSWORD: ${SERVER_DB_PASSWORD}
+      MYSQL_ALLOW_EMPTY_PASSWORD:
     ports:
       - "${SERVER_DB_PORT}:${SERVER_DB_PORT}"
     volumes:
@@ -57,13 +59,10 @@ services:
       test:
         [
           "CMD",
-          "mysqladmin",
-          "ping",
-          "-h",
-          "localhost",
-          "-u",
-          "root",
-          "-p${SERVER_DB_PASSWORD}",
+          "mysql",
+          "--user=${SERVER_DB_USERNAME}",
+          "--password=${SERVER_DB_PASSWORD}",
+          "--execute=SELECT 1",
         ]
       interval: 20s
       retries: 10

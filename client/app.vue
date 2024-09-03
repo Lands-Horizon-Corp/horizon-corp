@@ -10,7 +10,7 @@
 import { useRepository } from './composables/repository';
 
 
-const index = useRepository('users');
+const index = useRepository('');
 
 onMounted(async () => {
   const users = await index.getAll();
