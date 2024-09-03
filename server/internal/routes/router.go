@@ -11,7 +11,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func SetupRouter(cfg *config.Config, userHandler *handlers.UserHandler) *gin.Engine {
+func SetupRouter(cfg *config.Config, userHandler *handlers.UserHandler, fileHandler *handlers.FileHandler) *gin.Engine {
 
 	docs.SwaggerInfo.BasePath = "/api"
 	router := gin.Default()
@@ -22,6 +22,11 @@ func SetupRouter(cfg *config.Config, userHandler *handlers.UserHandler) *gin.Eng
 	{
 		v1.POST("/users", userHandler.Register)
 		v1.GET("/users/:id", userHandler.GetUser)
+
+		// File handler routes
+		v1.POST("/upload", fileHandler.UploadFile)
+		v1.DELETE("/delete/:key", fileHandler.DeleteFile)
+		v1.GET("/presigned-url/:key", fileHandler.GeneratePresignedURL)
 	}
 
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

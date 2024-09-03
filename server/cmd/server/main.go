@@ -23,8 +23,14 @@ func main() {
 		fx.Provide(
 			config.LoadConfig,
 			logger.NewLogger,
-			storage.NewMinioClient,
 			db.NewDatabase,
+
+			// File Service
+			storage.NewMinioClient,
+			services.NewFileService,
+			handlers.NewFileHandler,
+
+			// User Service
 			repositories.NewUserRepository,
 			services.NewUserService,
 			handlers.NewUserHandler,

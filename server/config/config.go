@@ -1,6 +1,7 @@
 package config
 
 import (
+	"horizon-server/pkg/helpers"
 	"os"
 	"time"
 
@@ -35,10 +36,12 @@ type LogConfig struct {
 }
 
 type Storage struct {
-	Endpoint  string
-	Region    string
-	AccessKey string
-	SecretKey string
+	Endpoint    string
+	Region      string
+	AccessKey   string
+	SecretKey   string
+	BucketName  string
+	MaxfileSize int64
 }
 
 func LoadConfig() (*Config, error) {
@@ -82,10 +85,12 @@ func LoadConfig() (*Config, error) {
 			MaxAge:           12 * time.Hour,
 		},
 		Storage: Storage{
-			Endpoint:  getEnv("SERVER_MINIO_ENDPOINT", ""),
-			Region:    getEnv("SERVER_MINIO_REGION", ""),
-			AccessKey: getEnv("SERVER_MINIO_ACCESS_KEY", ""),
-			SecretKey: getEnv("SERVER_MINIO_SECRET_KEY", ""),
+			Endpoint:    getEnv("SERVER_MINIO_ENDPOINT", ""),
+			Region:      getEnv("SERVER_MINIO_REGION", ""),
+			AccessKey:   getEnv("SERVER_MINIO_ACCESS_KEY", ""),
+			SecretKey:   getEnv("SERVER_MINIO_SECRET_KEY", ""),
+			BucketName:  getEnv("SERVER_MINIO_BUCKET_NAME", ""),
+			MaxfileSize: helpers.FileSizeStringToInt64(getEnv("SERVER_MAX_FILE_SIZE", "10MB")),
 		},
 	}
 	return config, nil
