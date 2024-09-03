@@ -8,10 +8,10 @@ export interface FileDetails {
 }
 
 export interface UploadProgress {
-  fileName: string;
-  fileSize: number;
-  progressBytes: number;
-  percentage: number;
+  file_name: string;
+  file_size: number;
+  progress_bytes: number;
+  progress: number;
 }
 
 export interface PresignedURL {

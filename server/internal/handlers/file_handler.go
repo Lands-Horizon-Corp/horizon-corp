@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"horizon-server/config"
 	"horizon-server/internal/services"
@@ -28,29 +29,24 @@ func (h *FileHandler) UploadFile(c *gin.Context) {
 	}
 	defer file.Close()
 
-	// Upload the file
 	err = h.FileService.UploadFile(h.Config.Storage.BucketName, header.Filename, file)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to upload file"})
 		return
 	}
 
-	// Get file details
 	fileSize := header.Size
 	fileFormat := filepath.Ext(header.Filename)
 	fileName := header.Filename
 
-	// Generate a presigned URL for download (optional)
 	url, err := h.FileService.GeneratePresignedURL(h.Config.Storage.BucketName, fileName, 15*time.Minute)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to generate presigned URL"})
 		return
 	}
 
-	// Generate a public download URL
 	fileURL := h.FileService.GetPublicURL(h.Config.Storage.BucketName, fileName)
 
-	// Return file details
 	c.JSON(http.StatusOK, gin.H{
 		"message":     "file uploaded successfully",
 		"file_name":   fileName,
@@ -81,31 +77,38 @@ func (h *FileHandler) UploadFileProgress(c *gin.Context) {
 	}()
 
 	var totalSize int64 = header.Size
-	var uploadedSize int64
+	fileName := header.Filename
 
-	progressCallback := func(progress int64) {
-		uploadedSize += progress
-		percentage := float64(uploadedSize) / float64(totalSize) * 100
+	progressCallback := func(fileName string, fileSize int64, progressBytes int64, progressPercentage float64) {
 		select {
 		case <-done:
 			return
 		default:
-			fmt.Fprintf(c.Writer, "data: %d\n\n", int(percentage))
+			progressData := gin.H{
+				"file_name":      fileName,
+				"file_size":      fileSize,
+				"progress_bytes": progressBytes,
+				"progress":       progressPercentage,
+			}
+
+			jsonData, err := json.Marshal(progressData)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to marshal progress data"})
+				return
+			}
+
+			fmt.Fprintf(c.Writer, "data: %s\n\n", jsonData)
 			c.Writer.Flush()
 		}
 	}
 
-	// Upload the file with progress tracking
-	err = h.FileService.UploadFileProgress(h.Config.Storage.BucketName, header.Filename, file, progressCallback)
+	err = h.FileService.UploadFileProgress(h.Config.Storage.BucketName, fileName, file, fileName, totalSize, progressCallback)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to upload file"})
 		return
 	}
 
-	fileSize := header.Size
-	fileFormat := filepath.Ext(header.Filename)
-	fileName := header.Filename
-
+	// Generate presigned URL for the uploaded file
 	url, err := h.FileService.GeneratePresignedURL(h.Config.Storage.BucketName, fileName, 15*time.Minute)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to generate presigned URL"})
@@ -116,15 +119,15 @@ func (h *FileHandler) UploadFileProgress(c *gin.Context) {
 	fileURL := h.FileService.GetPublicURL(h.Config.Storage.BucketName, fileName)
 
 	// Final message after completion
-	fmt.Fprintf(c.Writer, "data: done\n\n")
+	fmt.Fprintf(c.Writer, "data: {\"status\":\"done\"}\n\n")
 	c.Writer.Flush()
 
-	// Return file details
+	// Return file details in the final response
 	c.JSON(http.StatusOK, gin.H{
 		"message":     "file uploaded successfully",
 		"file_name":   fileName,
-		"file_size":   fileSize,
-		"file_format": fileFormat,
+		"file_size":   totalSize,
+		"file_format": filepath.Ext(fileName),
 		"file_url":    fileURL,
 		"temp_url":    url,
 	})

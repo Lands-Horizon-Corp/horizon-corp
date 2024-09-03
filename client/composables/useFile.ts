@@ -29,31 +29,39 @@ export function useFile(endpoint: string): IFileRepository {
     const formData = new FormData();
     formData.append('file', file);
 
-    const fileSize = file.size;
-    const fileName = file.name;
-
-    const source = new EventSource('/api/v1/file/upload-progress');
-
-    source.onmessage = (event) => {
-      if (event.data === 'done') {
-        source.close();
-      } else {
-        const progressBytes = parseInt(event.data, 10);
-        const percentage = (progressBytes / fileSize) * 100;
-        onProgress({ fileName, fileSize, progressBytes, percentage });
-      }
-    };
-
     const response = await axiosInstance.post<FileDetails>('/api/v1/file/upload-progress', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
+      onUploadProgress: (event) => {
+        if (event.lengthComputable && event.total) {
+          const progressBytes = event.loaded;
+          const progressPercentage = (progressBytes / event.total) * 100;
+
+          const progressData: UploadProgress = {
+            file_name: file.name,
+            file_size: event.total, // Using event.total for file_size
+            progress_bytes: progressBytes,
+            progress: progressPercentage,
+          };
+
+          onProgress(progressData);
+        } else {
+          // Handle cases where event.total is undefined
+          const progressData: UploadProgress = {
+            file_name: file.name,
+            file_size: file.size, // Fallback to file.size
+            progress_bytes: event.loaded,
+            progress: 0, // Progress cannot be calculated
+          };
+
+          onProgress(progressData);
+        }
+      },
     });
 
-    source.close();
     return response.data;
   }
-
 
   async function deleteFile(key: string): Promise<void> {
     await axiosInstance.delete(`/api/v1/file/delete/${key}`);
