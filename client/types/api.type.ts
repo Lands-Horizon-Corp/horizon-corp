@@ -1,7 +1,8 @@
-export interface IApiRepository<T> {
-  getAll(): Promise<T[]>;
-  getById(id: string): Promise<T>;
-  create(item: T): Promise<T>;
-  update(id: string, item: T): Promise<T>;
-  delete(id: string): Promise<void>;
+export interface IApiRepository<T = unknown> {
+  get<U = T>(route?: string): Promise<U>
+  getAll<U = T>(route?: string): Promise<U[]>;
+  getById<U = T>(id: string, route?: string): Promise<U>;
+  create<U = T, V = U>(item: U, route?: string): Promise<V>;
+  update<U = T>(id: string, item: U, route?: string): Promise<U>;
+  delete(id: string, route?: string): Promise<void>;
 }
