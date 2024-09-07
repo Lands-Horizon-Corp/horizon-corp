@@ -26,7 +26,7 @@ func main() {
 			db.NewDatabase,
 
 			// File Service
-			storage.NewMinioClient,
+			storage.NewFileClient,
 			services.NewFileService,
 			handlers.NewFileHandler,
 

@@ -2,57 +2,83 @@ package services
 
 import (
 	"fmt"
+	"horizon-server/config"
+	"horizon-server/internal/models"
+	"horizon-server/internal/repositories"
 	"horizon-server/pkg/storage"
 	"io"
 	"net/url"
 	"time"
 )
 
-type FileService struct {
-	MinioClient *storage.MinioClient
+type FileService interface {
+	UploadFile(file *models.File, body io.Reader) error
+	GetPublicURL(file *models.File) string
+	DeleteFile(id uint) error
+	GetFileByID(id uint) (*models.File, error)
+	DownloadFile(id uint) (string, error)
 }
 
-func NewFileService(minioClient *storage.MinioClient) *FileService {
-	return &FileService{MinioClient: minioClient}
+type fileService struct {
+	repo       repositories.FileRepository
+	fileClient *storage.FileClient
+	config     *config.Config
 }
 
-func (s *FileService) UploadFileProgress(
-	bucketName, key string, body io.Reader, fileName string, fileSize int64,
-	progressCallback func(fileName string, fileSize int64, progressBytes int64, progressPercentage float64)) error {
-
-	pr, pw := io.Pipe()
-	tee := io.TeeReader(body, pw)
-	go func() {
-		defer pw.Close()
-		buffer := make([]byte, 4096)
-		var totalRead int64
-		for {
-			n, err := tee.Read(buffer)
-			if n > 0 {
-				totalRead += int64(n)
-				progressPercentage := float64(totalRead) / float64(fileSize) * 100
-				progressCallback(fileName, fileSize, totalRead, progressPercentage)
-			}
-			if err != nil {
-				break
-			}
-		}
-	}()
-	return s.MinioClient.UploadFile(bucketName, key, pr)
+func NewFileService(repo repositories.FileRepository, fileClient *storage.FileClient, config *config.Config) FileService {
+	return &fileService{repo: repo, fileClient: fileClient, config: config}
 }
 
-func (s *FileService) UploadFile(bucketName string, key string, body io.Reader) error {
-	return s.MinioClient.UploadFile(bucketName, key, body)
+func (f *fileService) UploadFile(file *models.File, body io.Reader) error {
+	if err := f.fileClient.UploadFile(f.config.Storage.BucketName, file.FileName, body); err != nil {
+		return err
+	}
+	return f.repo.Create(file)
 }
 
-func (s *FileService) DeleteFile(bucketName string, key string) error {
-	return s.MinioClient.DeleteFile(bucketName, key)
+func (f *fileService) DeleteFile(id uint) error {
+	tx := f.repo.DB().Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	file, err := f.repo.GetByIDTx(tx, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = f.fileClient.DeleteFile(f.config.Storage.BucketName, file.FileName)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = f.repo.DeleteTx(tx, id)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+	return tx.Commit().Error
 }
 
-func (s *FileService) GeneratePresignedURL(bucketName string, key string, expiration time.Duration) (string, error) {
-	return s.MinioClient.GeneratePresignedURL(bucketName, key, expiration)
+func (f *fileService) GetPublicURL(file *models.File) string {
+	return fmt.Sprintf("%s/%s/%s", f.config.Storage.BucketName, f.config.Storage.Endpoint, url.PathEscape(file.FileName))
 }
 
-func (s *FileService) GetPublicURL(bucketName string, endPoint string, key string) string {
-	return fmt.Sprintf("%s/%s/%s", bucketName, endPoint, url.PathEscape(key))
+func (s *fileService) GetFileByID(id uint) (*models.File, error) {
+	return s.repo.GetByID(id)
+}
+
+func (f *fileService) DownloadFile(id uint) (string, error) {
+	file, err := f.repo.GetByID(id)
+	if err != nil {
+		return "", err
+	}
+	expiration := time.Minute * 15 // Set expiration time of the URL
+	url, err := f.fileClient.GeneratePresignedURL(file.BucketName, file.FileName, expiration)
+	if err != nil {
+		return "", err
+	}
+	return url, nil
 }
