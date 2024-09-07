@@ -29,38 +29,44 @@ export function useFile(endpoint?: string): IFileRepository {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await axiosInstance.post<FileDetails>('/file/upload-progress', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: (event) => {
-        if (event.lengthComputable && event.total) {
-          const progressBytes = event.loaded;
-          const progressPercentage = (progressBytes / event.total) * 100;
+    try {
+      const response = await axiosInstance.post<FileDetails>('/file/upload-progress', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+        onUploadProgress: (event) => {
+          if (event.lengthComputable && event.total) {
+            const progressBytes = event.loaded;
+            const progressPercentage = (progressBytes / event.total) * 100;
 
-          const progressData: UploadProgress = {
-            file_name: file.name,
-            file_format: file.type,
-            file_size: event.total,
-            progress_bytes: progressBytes,
-            progress: progressPercentage,
-          };
+            const progressData: UploadProgress = {
+              file_name: file.name,
+              file_format: file.type,
+              file_size: event.total,
+              progress_bytes: progressBytes,
+              progress: progressPercentage,
+            };
 
-          onProgress(progressData);
-        } else if (event.total) {
-          const progressData: UploadProgress = {
-            file_name: file.name,
-            file_format: file.type,
-            file_size: event.total,
-            progress_bytes: event.loaded,
-            progress: 0,
-          };
-          onProgress(progressData);
-        }
-      },
-    });
+            onProgress(progressData);
+          } else if (event.total) {
+            const progressData: UploadProgress = {
+              file_name: file.name,
+              file_format: file.type,
+              file_size: event.total,
+              progress_bytes: event.loaded,
+              progress: 0,
+            };
+            onProgress(progressData);
+          }
+        },
+        timeout: 0,
+      });
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      console.error("Failed to upload file:", error);
+      throw error; // Re-throw the error after logging or handling it
+    }
   }
 
   async function deleteFile(key: string): Promise<void> {
