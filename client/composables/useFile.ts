@@ -1,88 +1,76 @@
-// repositories/FileRepository.ts
-import axios, { type AxiosInstance } from 'axios';
-import type { FileDetails, IFileRepository, PresignedURL, UploadProgress } from '~/types';
 
-export function useFile(endpoint?: string): IFileRepository {
-  const config = useRuntimeConfig();
-  const apiBaseUrl = config.public.api;
+import axios from 'axios';
+import type { CancelTokenSource, AxiosInstance } from 'axios';
+import type { IFileRepository, FileType, UploadProgress } from '~/types';
 
-  const axiosInstance: AxiosInstance = axios.create({
-    baseURL: endpoint ? `${apiBaseUrl}/${endpoint}` : apiBaseUrl,
-  });
+export class FileRepository implements IFileRepository {
+  private axiosInstance: AxiosInstance;
 
-  async function uploadFile(file: File): Promise<FileDetails> {
-    const formData = new FormData();
-    formData.append('file', file);
-    const response = await axiosInstance.post<FileDetails>(`/file/upload`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+  constructor(apiBaseUrl: string) {
+    this.axiosInstance = axios.create({
+      baseURL: apiBaseUrl,
     });
-
-    return response.data;
   }
 
-  async function uploadFileWithProgress(
+  async uploadFileWithProgress(
     file: File,
-    onProgress: (progress: UploadProgress) => void
-  ): Promise<FileDetails> {
+    onProgress: (progress: UploadProgress) => void,
+    cancelToken: CancelTokenSource,
+    onCancel?: () => void
+  ): Promise<FileType> {
     const formData = new FormData();
     formData.append('file', file);
+    const startTime = Date.now();
 
     try {
-      const response = await axiosInstance.post<FileDetails>('/file/upload-progress', formData, {
+      const response = await this.axiosInstance.post<FileType>('/file/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
-        onUploadProgress: (event) => {
-          if (event.lengthComputable && event.total) {
-            const progressBytes = event.loaded;
-            const progressPercentage = (progressBytes / event.total) * 100;
+        onUploadProgress: event => {
+          const total = event?.total ?? 0
+          const elapsedTime = (Date.now() - startTime) / 1000;
+          const speed = event.loaded / elapsedTime;
+          const remainingTime = (total - event.loaded) / speed;
 
-            const progressData: UploadProgress = {
-              file_name: file.name,
-              file_format: file.type,
-              file_size: event.total,
-              progress_bytes: progressBytes,
-              progress: progressPercentage,
-            };
-
-            onProgress(progressData);
-          } else if (event.total) {
-            const progressData: UploadProgress = {
-              file_name: file.name,
-              file_format: file.type,
-              file_size: event.total,
-              progress_bytes: event.loaded,
-              progress: 0,
-            };
-            onProgress(progressData);
-          }
+          const progress: UploadProgress = {
+            loaded: event.loaded,
+            total: total,
+            percentage: Math.round((event.loaded * 100) / total),
+            elapsedTime,
+            remainingTime: Math.max(0, remainingTime)
+          };
+          onProgress(progress);
         },
-        timeout: 0,
+        cancelToken: cancelToken.token,
       });
-
       return response.data;
     } catch (error) {
-      console.error("Failed to upload file:", error);
-      throw error; // Re-throw the error after logging or handling it
+      if (axios.isCancel(error) && onCancel) {
+        onCancel();
+      }
+      throw error;
     }
   }
 
-  async function deleteFile(key: string): Promise<void> {
-    await axiosInstance.delete(`/file/delete/${key}`);
-  }
-
-  async function generatePresignedURL(key: string): Promise<PresignedURL> {
-    const response = await axiosInstance.get(`/file/presigned-url/${key}`);
+  async uploadFile(file: File): Promise<FileType> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await this.axiosInstance.post<FileType>('/files/upload', formData);
     return response.data;
   }
 
-  return {
-    uploadFile,
-    uploadFileWithProgress,
-    deleteFile,
-    generatePresignedURL,
+  async deleteFile(fileId: number): Promise<void> {
+    await this.axiosInstance.delete(`/files/${fileId}`);
   }
 
+  async downloadFile(fileId: number): Promise<string> {
+    const response = await this.axiosInstance.get<string>(`/files/${fileId}/download`);
+    return response.data;
+  }
+
+  async getFile(fileId: number): Promise<FileType> {
+    const response = await this.axiosInstance.get<FileType>(`/files/${fileId}`);
+    return response.data;
+  }
 }

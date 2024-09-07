@@ -1,28 +1,33 @@
-export interface FileDetails {
-  message: string;
-  file_name: string;
-  file_size: number;
-  file_format: string;
-  file_url: string;
-  temp_url?: string;
+import type { CancelTokenSource } from "axios";
+
+export interface FileType {
+  id: number;
+  fileName: string;
+  fileSize: number;
+  fileType: string;
+  storageKey: string;
+  url: string;
+  bucketName: string;
 }
 
 export interface UploadProgress {
-  file_name: string;
-  file_format: string;
-  file_size: number;
-  progress_bytes: number;
-  progress: number;
+  loaded: number;
+  total: number;
+  percentage: number;
+  elapsedTime: number;
+  remainingTime: number;
 }
 
-export interface PresignedURL {
-  url: string;
-  file_name: string;
-}
 
 export interface IFileRepository {
-  uploadFile(file: File): Promise<FileDetails>;
-  uploadFileWithProgress(file: File, onProgress: (progress: UploadProgress) => void): Promise<FileDetails>;
-  deleteFile(key: string): Promise<void>;
-  generatePresignedURL(key: string): Promise<PresignedURL>;
+  uploadFile(file: File): Promise<FileType>;
+  deleteFile(fileId: number): Promise<void>;
+  downloadFile(fileId: number): Promise<string>;
+  getFile(fileId: number): Promise<FileType>;
+  uploadFileWithProgress(
+    file: File,
+    onProgress: (progress: UploadProgress) => void,
+    cancelToken: CancelTokenSource,
+    onCancel?: () => void
+  ): Promise<FileType>;
 }

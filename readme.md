@@ -99,10 +99,18 @@
   - Setup hot reload for frontend : Done
   - hot reload for backend : Done
   - setup db migration : Done 
-  - local storage : Not Done
+  - local storage : Done
+  - emailing: Not Done
+  - SMS: Not Done
+
 
 
 # setup github pipeline workflow
+    > create mysql instance 
+    > create s3 storage instance
+    > migrate flyway to mysql aws 
+    > deploy backend
+    > deploy backend
   - github workflow : Not Done
   - deploy database and server to EC2 : Not Done
   - deploy frontend to vercel nuxt : Not Done
