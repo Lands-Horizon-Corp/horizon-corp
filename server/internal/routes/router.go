@@ -81,13 +81,14 @@ func configureRoutes(router *gin.Engine, cfg *config.Config, userHandler *handle
 		router.GET("/", handlers.Index)
 
 		// Public endpoints
-		v1.POST("/users", userHandler.RegisterUser)
-		v1.POST("/login", userHandler.LoginUser)
+		v1.POST("/user/register", userHandler.RegisterUser)
+		v1.POST("/user/login", userHandler.LoginUser)
 
 		// Protected endpoints
 		protected := router.Group("/user")
 		protected.Use(AuthMiddleware(cfg))
 		{
+			protected.POST("/logout", userHandler.LogoutUser)
 			protected.GET("/profile", userHandler.GetUserProfile)
 			protected.POST("/change-password", userHandler.ChangeUserPassword)
 			protected.POST("/update-profile", userHandler.UpdateUserProfile)

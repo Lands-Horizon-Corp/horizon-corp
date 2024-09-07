@@ -1,10 +1,12 @@
--- V1__create_user_table.sql
-
--- Create files table
 -- src/main/resources/db/migration/V1__Create_user_file_tables.sql
 
 CREATE TABLE IF NOT EXISTS `users` (
   `id` BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  `first_name` VARCHAR(255) NOT NULL,
+  `last_name` VARCHAR(255) NOT NULL,
+  `permanent_address` TEXT,
+  `description` TEXT,
+  `birthdate` DATE,
   `created_at` DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   `updated_at` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   `deleted_at` DATETIME(6) DEFAULT NULL,

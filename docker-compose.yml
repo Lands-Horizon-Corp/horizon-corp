@@ -39,6 +39,7 @@ services:
       - SERVER_MINIO_REGION=${SERVER_MINIO_REGION}
       - SERVER_MINIO_ACCESS_KEY=${SERVER_MINIO_ACCESS_KEY}
       - SERVER_MINIO_SECRET_KEY=${SERVER_MINIO_SECRET_KEY}
+      - SERVER_TOKEN=${SERVER_TOKEN}
     depends_on:
       db:
         condition: service_healthy

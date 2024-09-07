@@ -5,6 +5,7 @@ import (
 
 	"horizon-server/internal/models"
 	"horizon-server/internal/services"
+	"horizon-server/pkg/helpers"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,19 +20,36 @@ func NewUserHandler(userService services.UserService) *UserHandler {
 }
 
 // RegisterUser handles user registration.
+
 func (h *UserHandler) RegisterUser(c *gin.Context) {
-	var user models.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	var req struct {
+		Username        string `json:"username"`
+		Password        string `json:"password"`
+		ConfirmPassword string `json:"confirmPassword"`
+		Email           string `json:"email"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid data provided"})
 		return
 	}
+
+	if req.Password != req.ConfirmPassword {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Passwords do not match"})
+		return
+	}
+
+	user := models.User{
+		Username: req.Username,
+		Email:    req.Email,
+		Password: req.Password,
+	}
+
 	if err := h.userService.Register(&user); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to register user"})
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully"})
 }
-
 func (h *UserHandler) LoginUser(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
@@ -40,7 +58,21 @@ func (h *UserHandler) LoginUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
+
+	// Create a token or session ID here (implementation depends on your auth system)
+	sessionToken, err := helpers.CreateSessionToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create session token"})
+		return
+	}
+
+	c.SetCookie("session_token", sessionToken, 3600, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"user": user})
+}
+
+func (h *UserHandler) LogoutUser(c *gin.Context) {
+	c.SetCookie("session_token", "", -1, "/", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }
 
 // ChangeUserPassword handles changing the password for an authenticated user.
