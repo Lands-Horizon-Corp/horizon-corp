@@ -28,7 +28,8 @@ type DBConfig struct {
 }
 
 type AppConfig struct {
-	Port string
+	Port  string
+	Token []byte
 }
 
 type LogConfig struct {
@@ -48,7 +49,8 @@ func LoadConfig() (*Config, error) {
 
 	config := &Config{
 		App: AppConfig{
-			Port: getEnv("SERVER_APP_PORT", "8080"),
+			Port:  getEnv("SERVER_APP_PORT", "8080"),
+			Token: []byte(getEnv("SERVER_TOKEN", "")),
 		},
 		DB: DBConfig{
 			Username:  getEnv("SERVER_DB_USERNAME", ""),

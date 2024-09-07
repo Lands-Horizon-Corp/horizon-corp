@@ -11,6 +11,8 @@ type UserRepository interface {
 	Update(user *models.User) error
 	Delete(id uint) error
 	GetByID(id uint) (*models.User, error)
+	GetByUsername(username string) (*models.User, error)
+	GetByEmail(email string) (*models.User, error)
 	DB() *gorm.DB
 }
 
@@ -41,6 +43,23 @@ func (r *userRepository) Delete(id uint) error {
 func (r *userRepository) GetByID(id uint) (*models.User, error) {
 	var user models.User
 	if err := r.db.First(&user, id).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *userRepository) GetByUsername(username string) (*models.User, error) {
+	var user models.User
+	if err := r.db.Where("username = ?", username).First(&user).Error; err != nil {
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetByEmail finds a user by their email.
+func (r *userRepository) GetByEmail(email string) (*models.User, error) {
+	var user models.User
+	if err := r.db.Where("email = ?", email).First(&user).Error; err != nil {
 		return nil, err
 	}
 	return &user, nil
