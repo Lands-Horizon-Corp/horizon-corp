@@ -1,5 +1,5 @@
 export interface IApiRepository<T = unknown> {
-  get<U = T>(route?: string): Promise<U>
+  get<U = T>(route?: string): Promise<U>;
   getAll<U = T>(route?: string): Promise<U[]>;
   getById<U = T>(id: string, route?: string): Promise<U>;
   create<U = T, V = U>(item: U, route?: string): Promise<V>;

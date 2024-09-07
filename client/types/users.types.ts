@@ -2,14 +2,14 @@
 
 export interface User {
   id: number;
-  createdAt: string;  // ISO 8601 formatted date-time string
-  updatedAt: string;  // ISO 8601 formatted date-time string
+  createdAt: string; // ISO 8601 formatted date-time string
+  updatedAt: string; // ISO 8601 formatted date-time string
   deletedAt?: string; // Optional ISO 8601 formatted date-time string
   firstName: string;
   lastName: string;
   permanentAddress?: string;
   description?: string;
-  birthdate: string;  // ISO 8601 formatted date
+  birthdate: string; // ISO 8601 formatted date
   username: string;
   email: string;
 }

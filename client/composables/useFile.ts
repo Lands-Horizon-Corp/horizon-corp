@@ -1,7 +1,6 @@
-
-import axios from 'axios';
-import type { CancelTokenSource, AxiosInstance } from 'axios';
-import type { IFileRepository, FileType, UploadProgress } from '~/types';
+import axios from "axios";
+import type { CancelTokenSource, AxiosInstance } from "axios";
+import type { IFileRepository, FileType, UploadProgress } from "~/types";
 
 export class FileRepository implements IFileRepository {
   private axiosInstance: AxiosInstance;
@@ -16,34 +15,38 @@ export class FileRepository implements IFileRepository {
     file: File,
     onProgress: (progress: UploadProgress) => void,
     cancelToken: CancelTokenSource,
-    onCancel?: () => void
+    onCancel?: () => void,
   ): Promise<FileType> {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append("file", file);
     const startTime = Date.now();
 
     try {
-      const response = await this.axiosInstance.post<FileType>('/file/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: event => {
-          const total = event?.total ?? 0
-          const elapsedTime = (Date.now() - startTime) / 1000;
-          const speed = event.loaded / elapsedTime;
-          const remainingTime = (total - event.loaded) / speed;
+      const response = await this.axiosInstance.post<FileType>(
+        "/file/upload",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (event) => {
+            const total = event?.total ?? 0;
+            const elapsedTime = (Date.now() - startTime) / 1000;
+            const speed = event.loaded / elapsedTime;
+            const remainingTime = (total - event.loaded) / speed;
 
-          const progress: UploadProgress = {
-            loaded: event.loaded,
-            total: total,
-            percentage: Math.round((event.loaded * 100) / total),
-            elapsedTime,
-            remainingTime: Math.max(0, remainingTime)
-          };
-          onProgress(progress);
+            const progress: UploadProgress = {
+              loaded: event.loaded,
+              total: total,
+              percentage: Math.round((event.loaded * 100) / total),
+              elapsedTime,
+              remainingTime: Math.max(0, remainingTime),
+            };
+            onProgress(progress);
+          },
+          cancelToken: cancelToken.token,
         },
-        cancelToken: cancelToken.token,
-      });
+      );
       return response.data;
     } catch (error) {
       if (axios.isCancel(error) && onCancel) {
@@ -55,8 +58,11 @@ export class FileRepository implements IFileRepository {
 
   async uploadFile(file: File): Promise<FileType> {
     const formData = new FormData();
-    formData.append('file', file);
-    const response = await this.axiosInstance.post<FileType>('/files/upload', formData);
+    formData.append("file", file);
+    const response = await this.axiosInstance.post<FileType>(
+      "/files/upload",
+      formData,
+    );
     return response.data;
   }
 
@@ -65,7 +71,9 @@ export class FileRepository implements IFileRepository {
   }
 
   async downloadFile(fileId: number): Promise<string> {
-    const response = await this.axiosInstance.get<string>(`/files/${fileId}/download`);
+    const response = await this.axiosInstance.get<string>(
+      `/files/${fileId}/download`,
+    );
     return response.data;
   }
 

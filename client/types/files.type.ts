@@ -18,7 +18,6 @@ export interface UploadProgress {
   remainingTime: number;
 }
 
-
 export interface IFileRepository {
   uploadFile(file: File): Promise<FileType>;
   deleteFile(fileId: number): Promise<void>;
@@ -28,6 +27,6 @@ export interface IFileRepository {
     file: File,
     onProgress: (progress: UploadProgress) => void,
     cancelToken: CancelTokenSource,
-    onCancel?: () => void
+    onCancel?: () => void,
   ): Promise<FileType>;
 }

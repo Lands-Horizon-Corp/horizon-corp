@@ -1,4 +1,4 @@
-import { useState } from '#app';
+import { useState } from "#app";
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -6,8 +6,8 @@ interface AuthState {
 
 // Initialize or use existing auth state
 export const useAuth = () => {
-  const auth = useState<AuthState>('auth', () => ({
-    isAuthenticated: false
+  const auth = useState<AuthState>("auth", () => ({
+    isAuthenticated: false,
   }));
   return auth;
-}
+};

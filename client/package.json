@@ -23,6 +23,8 @@
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "consola": "^3.2.3",
+    "defu": "^6.1.4",
     "nuxt": "^3.13.0",
     "pinia": "^2.2.2",
     "radix-vue": "^1.9.5",
@@ -30,8 +32,7 @@
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "vee-validate": "^4.13.2",
-    "vue": "latest",
-    "vuex": "^4.1.0"
+    "vue": "latest"
   },
   "devDependencies": {
     "@nuxt/eslint": "^0.5.4",
@@ -44,5 +45,13 @@
     "prettier-plugin-tailwindcss": "^0.6.6",
     "tailwindcss": "^3.4.10",
     "typescript": "^5.5.4"
+  },
+  "bun": {
+    "overrides": {
+      "rollup": "npm:@rollup/wasm-node"
+    }
+  },
+  "resolutions": {
+    "rollup": "npm:@rollup/wasm-node"
   }
 }
