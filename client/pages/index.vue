@@ -1,5 +1,5 @@
 <template>
   <div>
-    helo
+    index ve
   </div>
 </template>
