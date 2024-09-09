@@ -1,6 +1,6 @@
 <template>
   <div>
-    Login
+    Phone Verfication
   </div>
 </template>
 <script>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    Login
+    Change Password
   </div>
 </template>
 <script>

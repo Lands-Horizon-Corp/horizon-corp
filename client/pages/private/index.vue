@@ -1,6 +1,6 @@
 <template>
   <div>
-    Login
+    Private page (only accessable to logged in users)
   </div>
 </template>
 <script>

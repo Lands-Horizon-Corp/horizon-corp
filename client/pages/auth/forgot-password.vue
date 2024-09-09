@@ -1,6 +1,6 @@
 <template>
   <div>
-    Login
+    Forgot Password
   </div>
 </template>
 <script>

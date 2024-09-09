@@ -1,6 +1,6 @@
 <template>
   <div>
-    Login
+    Email Verification
   </div>
 </template>
 <script>

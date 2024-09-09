@@ -1,6 +1,6 @@
 <template>
   <div>
-    Login
+    Public page (can be accessable anywhere)
   </div>
 </template>
 <script>
