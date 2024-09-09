@@ -4,8 +4,6 @@ WORKDIR /app
 
 RUN npm install -g bun
 
-RUN bun --version || echo "Bun not found"
-
 COPY package.json bun.lockb ./
 
 RUN bun install
