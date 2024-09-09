@@ -27,6 +27,7 @@ func main() {
 
 			// File Service
 			storage.NewFileClient,
+			repositories.NewFileRepository,
 			services.NewFileService,
 			handlers.NewFileHandler,
 
@@ -34,6 +35,8 @@ func main() {
 			repositories.NewUserRepository,
 			services.NewUserService,
 			handlers.NewUserHandler,
+
+			// Routes
 			routes.SetupRouter,
 		),
 		fx.Invoke(startServer),

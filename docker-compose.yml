@@ -14,7 +14,8 @@ services:
       - server
     env_file: ./.env
     volumes:
-      - ./client:/app
+      - ./:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
 
   server:
     restart: always
@@ -123,3 +124,4 @@ services:
 volumes:
   db_data:
   minio_data:
+  node_modules:
