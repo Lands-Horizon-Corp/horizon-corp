@@ -151,3 +151,47 @@ func (h *UserHandler) UpdateUserProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Profile updated successfully"})
 }
+
+func (h *UserHandler) ListUsers(c *gin.Context) {
+	var req helpers.ListRequest
+
+	// Parse JSON request body
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Set default pagination if not provided
+	if req.Pagination == nil {
+		req.Pagination = &helpers.Pagination{
+			Limit: 10,
+			Page:  1,
+		}
+	}
+
+	// Validate and set default values
+	if req.Pagination.Limit <= 0 {
+		req.Pagination.Limit = 10
+	}
+	if req.Pagination.Page <= 0 {
+		req.Pagination.Page = 1
+	}
+	if req.Pagination.SortBy == "" {
+		req.Pagination.SortBy = "created_at"
+	}
+	if req.Pagination.SortOrder == "" {
+		req.Pagination.SortOrder = "desc"
+	}
+
+	// Retrieve users
+	users, err := h.userService.ListUsers(req.Filters, req.Pagination)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":       users,
+		"pagination": req.Pagination,
+	})
+}

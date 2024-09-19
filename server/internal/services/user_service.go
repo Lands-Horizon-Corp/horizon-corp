@@ -3,6 +3,7 @@ package services
 import (
 	"horizon-server/internal/models"
 	"horizon-server/internal/repositories"
+	"horizon-server/pkg/helpers"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -15,6 +16,7 @@ type UserService interface {
 	UpdateUser(user *models.User) error
 	AddAttachment(userID, fileID uint) error
 	GetUserByID(id uint) (*models.User, error)
+	ListUsers(filters []helpers.Filter, pagination *helpers.Pagination) ([]models.User, error)
 }
 type userService struct {
 	repo repositories.UserRepository
@@ -76,4 +78,8 @@ func (s *userService) AddAttachment(userID, fileID uint) error {
 
 func (s *userService) GetUserByID(id uint) (*models.User, error) {
 	return s.repo.GetByID(id)
+}
+
+func (s *userService) ListUsers(filters []helpers.Filter, pagination *helpers.Pagination) ([]models.User, error) {
+	return s.repo.Query(filters, pagination)
 }

@@ -92,6 +92,7 @@ func configureRoutes(router *gin.Engine, cfg *config.Config, userHandler *handle
 			protected.GET("/profile", userHandler.GetUserProfile)
 			protected.POST("/change-password", userHandler.ChangeUserPassword)
 			protected.POST("/update-profile", userHandler.UpdateUserProfile)
+			protected.POST("/users", userHandler.ListUsers)
 		}
 
 		// File routes

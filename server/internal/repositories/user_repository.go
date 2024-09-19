@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"horizon-server/internal/models"
+	"horizon-server/pkg/helpers"
 
 	"github.com/jinzhu/gorm"
 )
@@ -13,6 +14,8 @@ type UserRepository interface {
 	GetByID(id uint) (*models.User, error)
 	GetByUsername(username string) (*models.User, error)
 	GetByEmail(email string) (*models.User, error)
+	Query(filters []helpers.Filter, pagination *helpers.Pagination) ([]models.User, error)
+
 	DB() *gorm.DB
 }
 
@@ -67,4 +70,14 @@ func (r *userRepository) GetByEmail(email string) (*models.User, error) {
 
 func (r *userRepository) DB() *gorm.DB {
 	return r.db
+}
+
+func (r *userRepository) Query(filters []helpers.Filter, pagination *helpers.Pagination) ([]models.User, error) {
+	var users []models.User
+	db := r.db.Model(&models.User{})
+	err := helpers.Paginate(db, &users, filters, pagination)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }

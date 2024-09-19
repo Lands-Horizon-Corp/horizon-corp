@@ -1,22 +1,4 @@
 services:
-  client:
-    restart: always
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    ports:
-      - "${CLIENT_FORWARD_PORT}:${CLIENT_PORT}"
-    environment:
-      - CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}
-      - CLIENT_PORT=${CLIENT_PORT}
-      - CLIENT_SERVER_URL=${CLIENT_SERVER_URL}
-    depends_on:
-      - server
-    env_file: ./.env
-    volumes:
-      - ./client:/app
-      - /app/node_modules
-
   server:
     restart: always
     build:
