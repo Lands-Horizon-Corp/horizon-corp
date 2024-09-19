@@ -1,4 +1,16 @@
 services:
+  client:
+    restart: always
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    env_file: ./.env 
+    volumes:
+      - ./client:/client
+      - /client/node_modules
+    ports:
+      - "3000:80"
+
   server:
     restart: always
     build:
