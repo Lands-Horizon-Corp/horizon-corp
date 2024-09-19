@@ -14,8 +14,8 @@ services:
       - server
     env_file: ./.env
     volumes:
-      - ./:/usr/src/app
-      - node_modules:/usr/src/app/node_modules
+      - ./client:/app
+      - /app/node_modules
 
   server:
     restart: always
