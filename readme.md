@@ -119,3 +119,63 @@
 # setup toastify
 # setup error handling
 # setup authentication
+
+
+```ts
+// interfaces.ts
+export interface Filter {
+  field: string;
+  operator: string;
+  value: any;
+}
+
+export interface Pagination {
+  limit: number;
+  page: number;
+  sortBy?: string;
+  sortOrder?: string;
+  total?: number;
+  totalPages?: number;
+  prevPage?: number;
+  nextPage?: number;
+}
+
+export interface ListRequest {
+  filters: Filter[];
+  pagination: Pagination;
+}
+
+export interface ListResponse<T> {
+  data: T[];
+  pagination: Pagination;
+}
+
+```
+```ts
+// api.ts
+import axios from 'axios';
+import { ListRequest, ListResponse } from './interfaces';
+
+export async function listEntities<T>(endpoint: string, request: ListRequest): Promise<ListResponse<T>> {
+  const response = await axios.post<ListResponse<T>>(endpoint, request);
+  return response.data;
+}
+```
+
+```ts
+// UserList.vue (similar to the previous example)
+import { listEntities } from './api';
+import { User, Pagination, Filter } from './interfaces';
+
+const fetchUsers = async () => {
+  // Build filters and request
+  const request = {
+    filters: filters.value,
+    pagination: pagination.value,
+  };
+
+  const response = await listEntities<User>('/users', request);
+  users.value = response.data;
+  pagination.value = response.pagination;
+};
+```
