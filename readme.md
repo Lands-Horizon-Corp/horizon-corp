@@ -83,7 +83,7 @@
 ---
 
 # Local Setup
-  - Nuxt 3 : Done
+  - Next 3 : Done
   - Tailwind : Done
   - Eslint : Done
   - Prettier : Done
@@ -91,7 +91,7 @@
   - ShadCN : Done
   - Vee validate : Done
   - Zod : Done
-  - Pinia store : Done
+  - Zustand : Done
 
 # Docker 
   - Setup docker : Done
