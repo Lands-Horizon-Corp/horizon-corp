@@ -1,6 +1,6 @@
 interface Props {}
 
-const SignUpPage = (props: Props) => {
+const SignUpPage = (_props: Props) => {
     return <div>Sign Up</div>
 }
 

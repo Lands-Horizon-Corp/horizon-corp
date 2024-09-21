@@ -1,10 +1,11 @@
 import { createRoute } from '@tanstack/react-router'
 
-import SignUpPage from './sign-up'
-import SignInPage from './sign-in'
-import { rootRoute } from '@/pages/root-route'
+import SignUpPage from '@/modules/auth/pages/sign-up'
+import SignInPage from '@/modules/auth/pages/sign-in'
 
-export const authRoute = createRoute({
+import { rootRoute } from '@/root-route'
+
+const authRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'auth',
 })
@@ -21,6 +22,6 @@ const signInRoute = createRoute({
     component: SignInPage,
 })
 
-const authRoutes = authRoute.addChildren([signUpRoute, signInRoute])
+const AuthRoute = authRoute.addChildren([signUpRoute, signInRoute])
 
-export default authRoutes
+export default AuthRoute

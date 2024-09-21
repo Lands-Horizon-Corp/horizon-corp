@@ -1,6 +1,6 @@
 interface Props {}
 
-const SignInPage = (props: Props) => {
+const SignInPage = (_props: Props) => {
     return <div>Sign In</div>
 }
 
