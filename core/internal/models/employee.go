@@ -26,7 +26,7 @@ type Employee struct {
 
 	// Foreign key to Media table (optional)
 	MediaID        *string `gorm:"type:uuid;null"`
-	ProfilePicture Media   `gorm:"foreignKey:MediaID;references:ID"`
+	ProfilePicture *Media  `gorm:"foreignKey:MediaID;references:ID"`
 
 	// Many-to-many relation with Role
 	Roles []Role `gorm:"many2many:employee_roles"`

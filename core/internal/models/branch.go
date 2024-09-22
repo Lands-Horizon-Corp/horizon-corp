@@ -16,7 +16,7 @@ type Branch struct {
 
 	// Foreign key to Media table (optional)
 	MediaID        *string `gorm:"type:uuid;null"`
-	ProfilePicture Media   `gorm:"foreignKey:MediaID"`
+	ProfilePicture *Media  `gorm:"foreignKey:MediaID"`
 
 	gorm.Model
 }

@@ -19,7 +19,6 @@ func (r *ModelRepository[T]) preload(db *gorm.DB, eagerLoads []string) *gorm.DB 
 	}
 	return db
 }
-
 func (r *ModelRepository[T]) FindAll(eagerLoads []string) ([]T, error) {
 	var entities []T
 	query := r.preload(r.db, eagerLoads)
