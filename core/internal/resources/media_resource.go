@@ -24,7 +24,10 @@ func NewMediaResource(media *models.Media) *MediaResource {
 	}
 	expiration := 15 * time.Minute
 	storage := config.GetMediaClient()
-	tempURL, _ := storage.GeneratePresignedURL(media.BucketName, media.FileName, expiration)
+	tempURL, err := storage.GeneratePresignedURL(media.BucketName, media.FileName, expiration)
+	if err != nil {
+		tempURL = ""
+	}
 	return &MediaResource{
 		ID:           media.ID,
 		URL:          media.URL,

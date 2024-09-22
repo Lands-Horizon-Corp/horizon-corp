@@ -118,12 +118,12 @@ func (h *MediaHandler) CreateMedia(c *gin.Context) {
 	defer media.Close()
 	mediaResource, err := h.Service.CreateMedia(media, mediaHeader)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Something Wrong uploading"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong uploading"})
+		return // Add this return statement
 	}
 	c.JSON(http.StatusCreated, mediaResource)
 }
 
-// UpdateMedia handles PUT /medias/:id
 func (h *MediaHandler) UpdateMedia(c *gin.Context) {
 	id := c.Param("id")
 
@@ -133,7 +133,6 @@ func (h *MediaHandler) UpdateMedia(c *gin.Context) {
 		return
 	}
 
-	// Ensure ID consistency
 	if mediaInput.ID != id {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID in URL and body do not match"})
 		return
@@ -166,15 +165,6 @@ func (h *MediaHandler) DeleteMedia(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
-func (h *MediaHandler) UploadFile(c *gin.Context) {
-
-}
-
-func (h *MediaHandler) DownloadFile(c *gin.Context) {
-
-}
-
-// RegisterMediaRoutes registers the media routes with the provided router
 func RegisterMediaRoutes(router *gin.RouterGroup, db *gorm.DB) {
 
 	mediaService := service.NewMediaService(db)
@@ -183,9 +173,9 @@ func RegisterMediaRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	mediaGroup := router.Group("/media")
 	{
 		mediaGroup.GET("", mediaHandler.ListMedias)
-		mediaGroup.GET("/:id", mediaHandler.GetMedia) // Get stats
-		mediaGroup.GET("/download/id")                // Download file
-		mediaGroup.POST("", mediaHandler.CreateMedia) // Upload file
+		mediaGroup.GET("/:id", mediaHandler.GetMedia)               // Get stats
+		mediaGroup.GET("/download/:id", mediaHandler.DownloadMedia) // Download file
+		mediaGroup.POST("", mediaHandler.CreateMedia)               // Upload file
 		mediaGroup.PUT("/:id", mediaHandler.UpdateMedia)
 		mediaGroup.DELETE("/:id", mediaHandler.DeleteMedia) // Delete file
 	}

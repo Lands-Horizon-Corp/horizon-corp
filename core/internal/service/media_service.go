@@ -86,7 +86,10 @@ func (r *MediaService) CreateMedia(body io.Reader, header *multipart.FileHeader)
 	}
 
 	expiration := 15 * time.Minute
-	tempURL, _ := r.storage.GeneratePresignedURL(r.config.Storage.BucketName, name, expiration)
+	tempURL, err := r.storage.GeneratePresignedURL(r.config.Storage.BucketName, name, expiration)
+	if err != nil {
+		tempURL = ""
+	}
 	mediaInput := &models.Media{
 		URL:          r.GetPublicURL(name),
 		FileName:     name,
@@ -134,7 +137,7 @@ func (r *MediaService) DeleteMedia(id string) error {
 
 	dispatcher := events.GetDispatcher()
 	dispatcher.Dispatch(events.Event{
-		Type:    events.EmployeeDeleted,
+		Type:    events.MediaDeleted,
 		Payload: media,
 	})
 
