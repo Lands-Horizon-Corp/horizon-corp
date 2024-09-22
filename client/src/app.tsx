@@ -1,10 +1,21 @@
-import { createRouter, RouterProvider } from '@tanstack/react-router';
+import React from 'react';
+import { RouterProvider } from '@tanstack/react-router';
 
-import { routeTree } from '@/root-route';
+import router from '@/root-route';
 
-const router = createRouter({ routeTree });
+const TanStackRouterDevtoolsPanel =
+    process.env.NODE_ENV === 'production'
+        ? () => null // Render nothing in production
+        : React.lazy(() =>
+              // Lazy load in development
+              import('@tanstack/router-devtools').then((res) => ({
+                  default: res.TanStackRouterDevtools,
+                  // For Embedded Mode
+                  // default: res.TanStackRouterDevtoolsPanel
+              }))
+          );
 
-// Register the router instance for type safety
+// for type safety hahaha
 declare module '@tanstack/react-router' {
     interface Register {
         router: typeof router;
@@ -12,7 +23,12 @@ declare module '@tanstack/react-router' {
 }
 
 const App = () => {
-    return <RouterProvider router={router} />;
+    return (
+        <>
+            <RouterProvider router={router} />
+            <TanStackRouterDevtoolsPanel router={router} />
+        </>
+    );
 };
 
 export default App;

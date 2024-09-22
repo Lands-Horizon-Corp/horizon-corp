@@ -10,7 +10,7 @@ import { rootRoute } from '@/root-route'
 
 const landingRoute = createRoute({
     getParentRoute: () => rootRoute,
-    id: 'public-layout',
+    id: 'public',
     component: PublicLayout,
 })
 
