@@ -3,12 +3,14 @@ package router
 import (
 	"horizon-core/config"
 	"horizon-core/internal/handler"
+	"horizon-core/internal/websocket"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
 
-func ProvideAPI(cfg *config.Config, db *gorm.DB) *gin.Engine {
+func ProvideAPI(lc fx.Lifecycle, cfg *config.Config, db *gorm.DB, hub *websocket.Hub) {
 	router := gin.Default()
 	v1 := router.Group("/api/v1")
 	{
@@ -23,5 +25,5 @@ func ProvideAPI(cfg *config.Config, db *gorm.DB) *gin.Engine {
 		handler.RegisterPermissionRoutes(v1, db)
 		handler.RegisterRoleRoutes(v1, db)
 	}
-	return router
+	router.GET("/ws", websocket.ServeWs(hub))
 }

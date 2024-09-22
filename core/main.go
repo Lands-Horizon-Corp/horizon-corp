@@ -6,6 +6,7 @@ import (
 	"horizon-core/internal/handler"
 	"horizon-core/internal/router"
 	"horizon-core/internal/service"
+	"horizon-core/internal/websocket"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
@@ -43,6 +44,7 @@ func main() {
 			handler.NewRoleHandler,
 
 			// API
+			websocket.NewHub,
 			router.ProvideAPI,
 		),
 		fx.Invoke(
