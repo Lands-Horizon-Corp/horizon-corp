@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
 	"horizon-core/internal/resources"
@@ -66,6 +67,12 @@ func (r *AdminService) CreateAdmin(adminInput models.Admin) (resources.AdminReso
 		return resources.AdminResource{}, err
 	}
 
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.AdminCreated,
+		Payload: adminInput,
+	})
+
 	return r.GetAdminByID(adminInput.ID)
 }
 
@@ -73,7 +80,11 @@ func (r *AdminService) UpdateAdmin(adminInput models.Admin) (resources.AdminReso
 	if err := r.Update(&adminInput); err != nil {
 		return resources.AdminResource{}, err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.AdminUpdated,
+		Payload: adminInput,
+	})
 	return r.GetAdminByID(adminInput.ID)
 }
 
@@ -82,6 +93,11 @@ func (r *AdminService) DeleteAdmin(id string) error {
 	if err != nil {
 		return err
 	}
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.AdminDeleted,
+		Payload: admin,
+	})
 
 	return r.Delete(&admin)
 }
