@@ -9,4 +9,4 @@ COPY . .
 
 EXPOSE 80
 
-CMD ["pnpm", "dev"]
+CMD ["pnpm", "dev-docker"]
