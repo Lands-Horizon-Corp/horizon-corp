@@ -4,8 +4,11 @@ go 1.22.0
 
 require github.com/gin-contrib/cors v1.7.2
 
+require github.com/jmespath/go-jmespath v0.4.0 // indirect
+
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/aws/aws-sdk-go v1.55.5
 	github.com/bytedance/sonic v1.11.6 // indirect
 	github.com/bytedance/sonic/loader v0.1.1 // indirect
 	github.com/cloudwego/base64x v0.1.4 // indirect
