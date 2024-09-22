@@ -82,7 +82,7 @@ const SignUpForm = ({ className }: Props) => {
     const form = useForm<TSignUpForm>({
         resolver: zodResolver(signUpFormSchema),
         reValidateMode: 'onChange',
-        mode : "onChange",
+        mode: 'onChange',
         defaultValues: {
             accept_terms: false,
             confirm_password: '',

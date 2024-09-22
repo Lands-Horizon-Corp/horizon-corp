@@ -1,7 +1,7 @@
-import { Operator } from './operator';
+import { Operator } from './operator'
 
 export interface Filter {
-  field: string;
-  operator: Operator;
-  value: any;
+    field: string
+    operator: Operator
+    value: any
 }
