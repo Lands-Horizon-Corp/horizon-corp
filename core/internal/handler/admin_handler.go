@@ -159,7 +159,7 @@ func RegisterAdminRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	adminService := service.NewAdminService(db)
 	adminHandler := NewAdminHandler(adminService)
 
-	adminGroup := router.Group("/admins")
+	adminGroup := router.Group("/admin")
 	{
 		adminGroup.GET("", adminHandler.ListAdmins)
 		adminGroup.GET("/:id", adminHandler.GetAdmin)

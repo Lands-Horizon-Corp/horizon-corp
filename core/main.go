@@ -16,7 +16,6 @@ func main() {
 	fx.New(
 		fx.Provide(
 			// Dependencies
-			config.ProvideConfig,
 			config.ProvideLogger,
 			config.ProvideMedia,
 			database.ProvideDatabase,

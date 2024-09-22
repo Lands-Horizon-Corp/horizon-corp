@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/config"
 	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
@@ -13,11 +14,13 @@ import (
 
 type OwnerService struct {
 	*repository.ModelRepository[models.Owner]
+	config *config.Config
 }
 
 func NewOwnerService(db *gorm.DB) *OwnerService {
 	return &OwnerService{
 		ModelRepository: repository.NewModelRepository[models.Owner](db),
+		config:          config.GetConfig(),
 	}
 }
 

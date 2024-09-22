@@ -159,7 +159,7 @@ func RegisterRoleRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	roleService := service.NewRoleService(db)
 	roleHandler := NewRoleHandler(roleService)
 
-	roleGroup := router.Group("/roles")
+	roleGroup := router.Group("/role")
 	{
 		roleGroup.GET("", roleHandler.ListRoles)
 		roleGroup.GET("/:id", roleHandler.GetRole)

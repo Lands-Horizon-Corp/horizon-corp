@@ -159,7 +159,7 @@ func RegisterBranchRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	branchService := service.NewBranchService(db)
 	branchHandler := NewBranchHandler(branchService)
 
-	branchGroup := router.Group("/branchs")
+	branchGroup := router.Group("/branch")
 	{
 		branchGroup.GET("", branchHandler.ListBranchs)
 		branchGroup.GET("/:id", branchHandler.GetBranch)

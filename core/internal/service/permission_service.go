@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/config"
 	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
@@ -13,11 +14,13 @@ import (
 
 type PermissionService struct {
 	*repository.ModelRepository[models.Permission]
+	config *config.Config
 }
 
 func NewPermissionService(db *gorm.DB) *PermissionService {
 	return &PermissionService{
 		ModelRepository: repository.NewModelRepository[models.Permission](db),
+		config:          config.GetConfig(),
 	}
 }
 

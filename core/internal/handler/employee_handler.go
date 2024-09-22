@@ -161,7 +161,7 @@ func RegisterEmployeeRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	employeeService := service.NewEmployeeService(db)
 	employeeHandler := NewEmployeeHandler(employeeService)
 
-	employeeGroup := router.Group("/employees")
+	employeeGroup := router.Group("/employee")
 	{
 		employeeGroup.GET("", employeeHandler.ListEmployees)
 		employeeGroup.GET("/:id", employeeHandler.GetEmployee)

@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/config"
 	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
@@ -13,11 +14,13 @@ import (
 
 type MemberService struct {
 	*repository.ModelRepository[models.Member]
+	config *config.Config
 }
 
 func NewMemberService(db *gorm.DB) *MemberService {
 	return &MemberService{
 		ModelRepository: repository.NewModelRepository[models.Member](db),
+		config:          config.GetConfig(),
 	}
 }
 

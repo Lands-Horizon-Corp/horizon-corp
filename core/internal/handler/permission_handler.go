@@ -159,7 +159,7 @@ func RegisterPermissionRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	permissionService := service.NewPermissionService(db)
 	permissionHandler := NewPermissionHandler(permissionService)
 
-	permissionGroup := router.Group("/permissions")
+	permissionGroup := router.Group("/permission")
 	{
 		permissionGroup.GET("", permissionHandler.ListPermissions)
 		permissionGroup.GET("/:id", permissionHandler.GetPermission)

@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/config"
 	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
@@ -13,11 +14,13 @@ import (
 
 type AdminService struct {
 	*repository.ModelRepository[models.Admin]
+	config *config.Config
 }
 
 func NewAdminService(db *gorm.DB) *AdminService {
 	return &AdminService{
 		ModelRepository: repository.NewModelRepository[models.Admin](db),
+		config:          config.GetConfig(),
 	}
 }
 

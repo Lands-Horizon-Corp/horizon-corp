@@ -1,6 +1,7 @@
 package resources
 
 import (
+	"horizon-core/config"
 	"horizon-core/internal/models"
 	"time"
 )
@@ -10,7 +11,7 @@ type MediaResource struct {
 	URL          string    `json:"url"`
 	FileName     string    `json:"file_name"`
 	FileType     string    `json:"file_type"`
-	FileSize     int       `json:"file_size"`
+	FileSize     int64     `json:"file_size"`
 	UploadTime   time.Time `json:"upload_time"`
 	Description  string    `json:"description"`
 	BucketName   string    `json:"bucket_name"`
@@ -21,7 +22,9 @@ func NewMediaResource(media *models.Media) *MediaResource {
 	if media == nil {
 		return nil
 	}
-
+	expiration := 15 * time.Minute
+	storage := config.GetMediaClient()
+	tempURL, _ := storage.GeneratePresignedURL(media.BucketName, media.FileName, expiration)
 	return &MediaResource{
 		ID:           media.ID,
 		URL:          media.URL,
@@ -31,6 +34,6 @@ func NewMediaResource(media *models.Media) *MediaResource {
 		UploadTime:   media.UploadTime,
 		Description:  media.Description,
 		BucketName:   media.BucketName,
-		TemporaryURL: media.TemporaryURL,
+		TemporaryURL: tempURL,
 	}
 }

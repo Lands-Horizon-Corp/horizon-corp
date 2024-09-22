@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/config"
 	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
@@ -13,11 +14,13 @@ import (
 
 type BranchService struct {
 	*repository.ModelRepository[models.Branch]
+	config *config.Config
 }
 
 func NewBranchService(db *gorm.DB) *BranchService {
 	return &BranchService{
 		ModelRepository: repository.NewModelRepository[models.Branch](db),
+		config:          config.GetConfig(),
 	}
 }
 

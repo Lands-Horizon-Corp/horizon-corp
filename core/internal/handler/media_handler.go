@@ -22,7 +22,7 @@ func NewMediaHandler(service *service.MediaService) *MediaHandler {
 	}
 }
 
-// ListMedias handles GET /medias
+// ListMedias handles GET /media
 func (h *MediaHandler) ListMedias(c *gin.Context) {
 	// Parse query parameters
 	limitStr := c.DefaultQuery("limit", "10")
@@ -93,21 +93,33 @@ func (h *MediaHandler) GetMedia(c *gin.Context) {
 	c.JSON(http.StatusOK, mediaResource)
 }
 
+func (r *MediaHandler) DownloadMedia(c *gin.Context) {
+	id := c.Param("id")
+	downloadURL, err := r.Service.DownloadFile(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate download URL"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"url": downloadURL})
+}
+
 // CreateMedia handles POST /medias
 func (h *MediaHandler) CreateMedia(c *gin.Context) {
-	var mediaInput models.Media
-	if err := c.ShouldBindJSON(&mediaInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	mediaResource, err := h.Service.CreateMedia(mediaInput)
+	mediaHeader, err := c.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "no file is received"})
 		return
 	}
-
-	// Write response
+	media, err := mediaHeader.Open()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to open the file"})
+		return
+	}
+	defer media.Close()
+	mediaResource, err := h.Service.CreateMedia(media, mediaHeader)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Something Wrong uploading"})
+	}
 	c.JSON(http.StatusCreated, mediaResource)
 }
 
@@ -154,17 +166,27 @@ func (h *MediaHandler) DeleteMedia(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+func (h *MediaHandler) UploadFile(c *gin.Context) {
+
+}
+
+func (h *MediaHandler) DownloadFile(c *gin.Context) {
+
+}
+
 // RegisterMediaRoutes registers the media routes with the provided router
 func RegisterMediaRoutes(router *gin.RouterGroup, db *gorm.DB) {
+
 	mediaService := service.NewMediaService(db)
 	mediaHandler := NewMediaHandler(mediaService)
 
-	mediaGroup := router.Group("/medias")
+	mediaGroup := router.Group("/media")
 	{
 		mediaGroup.GET("", mediaHandler.ListMedias)
-		mediaGroup.GET("/:id", mediaHandler.GetMedia)
-		mediaGroup.POST("", mediaHandler.CreateMedia)
+		mediaGroup.GET("/:id", mediaHandler.GetMedia) // Get stats
+		mediaGroup.GET("/download/id")                // Download file
+		mediaGroup.POST("", mediaHandler.CreateMedia) // Upload file
 		mediaGroup.PUT("/:id", mediaHandler.UpdateMedia)
-		mediaGroup.DELETE("/:id", mediaHandler.DeleteMedia)
+		mediaGroup.DELETE("/:id", mediaHandler.DeleteMedia) // Delete file
 	}
 }

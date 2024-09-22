@@ -159,7 +159,7 @@ func RegisterMemberRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	memberService := service.NewMemberService(db)
 	memberHandler := NewMemberHandler(memberService)
 
-	memberGroup := router.Group("/members")
+	memberGroup := router.Group("/member")
 	{
 		memberGroup.GET("", memberHandler.ListMembers)
 		memberGroup.GET("/:id", memberHandler.GetMember)

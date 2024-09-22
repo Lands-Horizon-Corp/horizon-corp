@@ -159,7 +159,7 @@ func RegisterOwnerRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	ownerService := service.NewOwnerService(db)
 	ownerHandler := NewOwnerHandler(ownerService)
 
-	ownerGroup := router.Group("/owners")
+	ownerGroup := router.Group("/owner")
 	{
 		ownerGroup.GET("", ownerHandler.ListOwners)
 		ownerGroup.GET("/:id", ownerHandler.GetOwner)

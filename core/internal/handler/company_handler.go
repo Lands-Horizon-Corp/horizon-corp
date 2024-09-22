@@ -159,7 +159,7 @@ func RegisterCompanyRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	companyService := service.NewCompanyService(db)
 	companyHandler := NewCompanyHandler(companyService)
 
-	companyGroup := router.Group("/companys")
+	companyGroup := router.Group("/company")
 	{
 		companyGroup.GET("", companyHandler.ListCompanys)
 		companyGroup.GET("/:id", companyHandler.GetCompany)
