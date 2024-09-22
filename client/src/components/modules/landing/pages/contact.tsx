@@ -1,6 +1,6 @@
 interface Props {}
 
-const ContactPage = (props: Props) => {
+const ContactPage = (_props: Props) => {
     return <div>Contact</div>
 }
 
