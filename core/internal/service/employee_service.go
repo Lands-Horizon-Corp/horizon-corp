@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
 	"horizon-core/internal/resources"
@@ -66,6 +67,11 @@ func (r *EmployeeService) CreateEmployee(employeeInput models.Employee) (resourc
 		return resources.EmployeeResource{}, err
 	}
 
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.EmployeeCreated,
+		Payload: employeeInput,
+	})
 	return r.GetEmployeeByID(employeeInput.ID)
 }
 
@@ -73,6 +79,12 @@ func (r *EmployeeService) UpdateEmployee(employeeInput models.Employee) (resourc
 	if err := r.Update(&employeeInput); err != nil {
 		return resources.EmployeeResource{}, err
 	}
+
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.EmployeeUpdated,
+		Payload: employeeInput,
+	})
 
 	return r.GetEmployeeByID(employeeInput.ID)
 }
@@ -83,5 +95,10 @@ func (r *EmployeeService) DeleteEmployee(id string) error {
 		return err
 	}
 
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.EmployeeDeleted,
+		Payload: employee,
+	})
 	return r.Delete(&employee)
 }

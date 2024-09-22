@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
 	"horizon-core/internal/resources"
@@ -63,7 +64,11 @@ func (r *OwnerService) CreateOwner(ownerInput models.Owner) (resources.OwnerReso
 	if err := r.Create(&ownerInput); err != nil {
 		return resources.OwnerResource{}, err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.OwnerCreated,
+		Payload: ownerInput,
+	})
 	return r.GetOwnerByID(ownerInput.ID)
 }
 
@@ -71,7 +76,11 @@ func (r *OwnerService) UpdateOwner(ownerInput models.Owner) (resources.OwnerReso
 	if err := r.Update(&ownerInput); err != nil {
 		return resources.OwnerResource{}, err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.OwnerUpdated,
+		Payload: ownerInput,
+	})
 	return r.GetOwnerByID(ownerInput.ID)
 }
 
@@ -80,6 +89,10 @@ func (r *OwnerService) DeleteOwner(id string) error {
 	if err != nil {
 		return err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.OwnerDeleted,
+		Payload: owner,
+	})
 	return r.Delete(&owner)
 }

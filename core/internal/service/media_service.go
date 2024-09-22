@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
 	"horizon-core/internal/resources"
@@ -54,7 +55,11 @@ func (r *MediaService) CreateMedia(mediaInput models.Media) (resources.MediaReso
 	if err := r.Create(&mediaInput); err != nil {
 		return resources.MediaResource{}, err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.MediaCreated,
+		Payload: mediaInput,
+	})
 	return r.GetMediaByID(mediaInput.ID)
 }
 
@@ -62,7 +67,11 @@ func (r *MediaService) UpdateMedia(mediaInput models.Media) (resources.MediaReso
 	if err := r.Update(&mediaInput); err != nil {
 		return resources.MediaResource{}, err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.MediaUpdated,
+		Payload: mediaInput,
+	})
 	return r.GetMediaByID(mediaInput.ID)
 }
 
@@ -71,6 +80,12 @@ func (r *MediaService) DeleteMedia(id string) error {
 	if err != nil {
 		return err
 	}
+
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.EmployeeDeleted,
+		Payload: media,
+	})
 
 	return r.Delete(&media)
 }

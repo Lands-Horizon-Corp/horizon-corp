@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
 	"horizon-core/internal/resources"
@@ -61,7 +62,11 @@ func (r *RoleService) CreateRole(roleInput models.Role) (resources.RoleResource,
 	if err := r.Create(&roleInput); err != nil {
 		return resources.RoleResource{}, err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.RoleCreated,
+		Payload: roleInput,
+	})
 	return r.GetRoleByID(roleInput.ID)
 }
 
@@ -69,7 +74,11 @@ func (r *RoleService) UpdateRole(roleInput models.Role) (resources.RoleResource,
 	if err := r.Update(&roleInput); err != nil {
 		return resources.RoleResource{}, err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.RoleUpdated,
+		Payload: roleInput,
+	})
 	return r.GetRoleByID(roleInput.ID)
 }
 
@@ -78,6 +87,10 @@ func (r *RoleService) DeleteRole(id string) error {
 	if err != nil {
 		return err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.RoleDeleted,
+		Payload: role,
+	})
 	return r.Delete(&role)
 }

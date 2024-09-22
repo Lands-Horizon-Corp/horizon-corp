@@ -1,6 +1,7 @@
 package service
 
 import (
+	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
 	"horizon-core/internal/resources"
@@ -62,6 +63,12 @@ func (r *CompanyService) CreateCompany(companyInput models.Company) (resources.C
 		return resources.CompanyResource{}, err
 	}
 
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.CompanyCreated,
+		Payload: companyInput,
+	})
+
 	return r.GetCompanyByID(companyInput.ID)
 }
 
@@ -70,6 +77,11 @@ func (r *CompanyService) UpdateCompany(companyInput models.Company) (resources.C
 		return resources.CompanyResource{}, err
 	}
 
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.CompanyUpdated,
+		Payload: companyInput,
+	})
 	return r.GetCompanyByID(companyInput.ID)
 }
 
@@ -78,6 +90,12 @@ func (r *CompanyService) DeleteCompany(id string) error {
 	if err != nil {
 		return err
 	}
+
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.CompanyDeleted,
+		Payload: company,
+	})
 
 	return r.Delete(&company)
 }

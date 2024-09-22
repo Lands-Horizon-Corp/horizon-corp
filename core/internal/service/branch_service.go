@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
 	"horizon-core/internal/resources"
@@ -72,6 +73,12 @@ func (r *BranchService) UpdateBranch(branchInput models.Branch) (resources.Branc
 		return resources.BranchResource{}, err
 	}
 
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.BranchUpdated,
+		Payload: branchInput,
+	})
+
 	return r.GetBranchByID(branchInput.ID)
 }
 
@@ -81,5 +88,10 @@ func (r *BranchService) DeleteBranch(id string) error {
 		return err
 	}
 
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.BranchDeleted,
+		Payload: branch,
+	})
 	return r.Delete(&branch)
 }

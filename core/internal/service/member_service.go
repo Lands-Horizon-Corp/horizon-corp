@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
 	"horizon-core/internal/resources"
@@ -65,7 +66,11 @@ func (r *MemberService) CreateMember(memberInput models.Member) (resources.Membe
 	if err := r.Create(&memberInput); err != nil {
 		return resources.MemberResource{}, err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.MemberCreated,
+		Payload: memberInput,
+	})
 	return r.GetMemberByID(memberInput.ID)
 }
 
@@ -73,7 +78,11 @@ func (r *MemberService) UpdateMember(memberInput models.Member) (resources.Membe
 	if err := r.Update(&memberInput); err != nil {
 		return resources.MemberResource{}, err
 	}
-
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.MemberUpdated,
+		Payload: memberInput,
+	})
 	return r.GetMemberByID(memberInput.ID)
 }
 
@@ -83,5 +92,10 @@ func (r *MemberService) DeleteMember(id string) error {
 		return err
 	}
 
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.MemberDeleted,
+		Payload: member,
+	})
 	return r.Delete(&member)
 }

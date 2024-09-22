@@ -3,6 +3,7 @@
 package service
 
 import (
+	"horizon-core/internal/events"
 	"horizon-core/internal/models"
 	"horizon-core/internal/repository"
 	"horizon-core/internal/resources"
@@ -62,6 +63,12 @@ func (r *PermissionService) CreatePermission(permissionInput models.Permission) 
 		return resources.PermissionResource{}, err
 	}
 
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.PermissionCreated,
+		Payload: permissionInput,
+	})
+
 	return r.GetPermissionByID(permissionInput.ID)
 }
 
@@ -69,6 +76,12 @@ func (r *PermissionService) UpdatePermission(permissionInput models.Permission) 
 	if err := r.Update(&permissionInput); err != nil {
 		return resources.PermissionResource{}, err
 	}
+
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.PermissionUpdated,
+		Payload: permissionInput,
+	})
 
 	return r.GetPermissionByID(permissionInput.ID)
 }
@@ -78,6 +91,12 @@ func (r *PermissionService) DeletePermission(id string) error {
 	if err != nil {
 		return err
 	}
+
+	dispatcher := events.GetDispatcher()
+	dispatcher.Dispatch(events.Event{
+		Type:    events.PermissionDeleted,
+		Payload: permission,
+	})
 
 	return r.Delete(&permission)
 }
