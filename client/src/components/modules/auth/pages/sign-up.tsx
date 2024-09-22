@@ -4,7 +4,7 @@ interface Props {}
 
 const SignUpPage = (_props: Props) => {
     return (
-        <div className="flex flex-1 items-center justify-center">
+        <div className="flex flex-1 px-4 py-4  justify-center">
             <SignUpForm />
         </div>
     )

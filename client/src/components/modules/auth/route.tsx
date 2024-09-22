@@ -5,10 +5,12 @@ import SignUpPage from '@/modules/auth/pages/sign-up'
 import SignInPage from '@/modules/auth/pages/sign-in'
 
 import { rootRoute } from '@/root-route'
+import AuthLayout from './layout'
 
 const authRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'auth',
+    component: AuthLayout,
     beforeLoad: ({ location }) => {
         if (location.pathname === '/auth')
             throw redirect({
