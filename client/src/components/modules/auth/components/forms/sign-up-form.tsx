@@ -51,10 +51,7 @@ const signUpFormSchema = z
             ),
         confirm_password: z
             .string({ required_error: 'Confirm password' })
-            .min(
-                PASSWORD_MIN_LENGTH,
-                `Password must atleast ${PASSWORD_MIN_LENGTH} characters`
-            ),
+            .min(PASSWORD_MIN_LENGTH, `Password doesn't match`),
         accept_terms: z
             .boolean()
             .default(false)
@@ -68,7 +65,7 @@ const signUpFormSchema = z
             ),
     })
     .refine(({ password, confirm_password }) => password === confirm_password, {
-        message: "Passwords don't match",
+        message: "Password doesn't match",
         path: ['confirm_password'],
     })
 
@@ -280,11 +277,12 @@ const SignUpForm = ({ className }: Props) => {
                         name="accept_terms"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
-                                <div className="flex items-center gap-x-2">
+                                <div className="mt-8 flex items-center gap-x-2">
                                     <FormControl>
                                         <Checkbox
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
+                                            className="border-[#34c759] hover:text-[#38b558] data-[state=checked]:bg-[#34C759]"
                                         />
                                     </FormControl>
                                     <FormLabel className="m-0 p-0 font-medium">
