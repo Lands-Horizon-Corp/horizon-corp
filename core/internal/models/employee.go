@@ -7,21 +7,26 @@ import (
 )
 
 type Employee struct {
-	ID             string `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
-	Email          string `gorm:"type:varchar(255);not null;unique"`
-	Password       string `gorm:"type:varchar(255);not null"`
-	ProfilePicture string `gorm:"type:uuid;null"`
-	Username       string `gorm:"type:varchar(255);not null"`
-	FirstName      string `gorm:"type:varchar(255);not null"`
-	LastName       string `gorm:"type:varchar(255);not null"`
+	ID                 string    `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
+	Email              string    `gorm:"type:varchar(255);not null;unique"`
+	Password           string    `gorm:"type:varchar(255);not null"`
+	Username           string    `gorm:"type:varchar(255);not null"`
+	FirstName          string    `gorm:"type:varchar(255);not null"`
+	LastName           string    `gorm:"type:varchar(255);not null"`
+	ContactNumber      string    `gorm:"type:varchar(50)"`
+	PermanentAddress   string    `gorm:"type:varchar(255)"`
+	Description        string    `gorm:"type:text"`
+	Birthdate          time.Time `gorm:"type:date"`
+	ValidEmail         bool      `gorm:"default:false"`
+	ValidContactNumber bool      `gorm:"default:false"`
 
-	ContactNumber    string `gorm:"type:varchar(50)"`
-	PermanentAddress string `gorm:"type:varchar(255)"`
+	// Foreign key to Branch (Employee belongs to a Branch)
+	BranchID string `gorm:"type:uuid"`
+	Branch   Branch `gorm:"foreignKey:BranchID"`
 
-	Description string    `gorm:"type:text"`
-	Birthdate   time.Time `gorm:"type:date"`
+	// Foreign key to Media table (optional)
+	MediaID        *string `gorm:"type:uuid;null"`
+	ProfilePicture Media   `gorm:"foreignKey:MediaID"`
 
-	ValidEmail         bool `gorm:"default:false"`
-	ValidContactNumber bool `gorm:"default:false"`
 	gorm.Model
 }

@@ -10,7 +10,6 @@ type Admin struct {
 	ID                 string    `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	Email              string    `gorm:"type:varchar(255);not null;unique"`
 	Password           string    `gorm:"type:varchar(255);not null"`
-	ProfilePicture     string    `gorm:"type:uuid;null"`
 	Username           string    `gorm:"type:varchar(255);not null"`
 	FirstName          string    `gorm:"type:varchar(255);not null"`
 	LastName           string    `gorm:"type:varchar(255);not null"`
@@ -20,5 +19,10 @@ type Admin struct {
 	Birthdate          time.Time `gorm:"type:date"`
 	ValidEmail         bool      `gorm:"default:false"`
 	ValidContactNumber bool      `gorm:"default:false"`
+
+	// Foreign key to Media table (optional)
+	MediaID        *string `gorm:"type:uuid;null"`
+	ProfilePicture Media   `gorm:"foreignKey:MediaID"`
+
 	gorm.Model
 }
