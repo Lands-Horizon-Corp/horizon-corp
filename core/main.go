@@ -17,8 +17,10 @@ func main() {
 		fx.Provide(
 			// Dependencies
 			config.ProvideLogger,
-			config.ProvideMedia,
 			database.ProvideDatabase,
+
+			// File Storage
+			config.GetMediaClient,
 
 			// Services and Handlers
 			service.NewAdminService,
