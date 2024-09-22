@@ -4,37 +4,39 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
-    env_file: ./.env 
+    env_file: ./.env
     volumes:
       - ./client:/client
       - /client/node_modules
     ports:
       - "3000:80"
 
-  server:
+  core:
     restart: always
     build:
-      context: ./server
+      context: ./core
       dockerfile: Dockerfile
     env_file: ./.env
     volumes:
-      - ./server:/app
+      - ./core:/app
     ports:
-      - "${SERVER_PORT}:${SERVER_FORWARD_PORT}"
+      - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:
-      - SERVER_DB_USERNAME=${SERVER_DB_USERNAME}
-      - SERVER_DB_PASSWORD=${SERVER_DB_PASSWORD}
-      - SERVER_DB_HOST=${SERVER_DB_HOST}
-      - SERVER_DB_PORT=${SERVER_DB_PORT}
-      - SERVER_DB_NAME=${SERVER_DB_NAME}
-      - SERVER_DB_CHARSET=${SERVER_DB_CHARSET}
-      - SERVER_DB_PARSE_TIME=${SERVER_DB_PARSE_TIME}
-      - SERVER_DB_LOC=${SERVER_DB_LOC}
-      - SERVER_MINIO_ENDPOINT=${SERVER_MINIO_ENDPOINT}
-      - SERVER_MINIO_REGION=${SERVER_MINIO_REGION}
-      - SERVER_MINIO_ACCESS_KEY=${SERVER_MINIO_ACCESS_KEY}
-      - SERVER_MINIO_SECRET_KEY=${SERVER_MINIO_SECRET_KEY}
-      - SERVER_TOKEN=${SERVER_TOKEN}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_CHARSET=${DB_CHARSET}
+      - DB_PARSE_TIME=${DB_PARSE_TIME}
+      - DB_LOC=${DB_LOC}
+      - STORAGE_ENDPOINT=${STORAGE_ENDPOINT}
+      - STORAGE_REGION=${STORAGE_REGION}
+      - STORAGE_ACCESS_KEY=${STORAGE_ACCESS_KEY}
+      - STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY}
+      - STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}
+      - STORAGE_MAX_FILE_SIZE=${STORAGE_MAX_FILE_SIZE}
+      - TOKEN=${TOKEN}
     depends_on:
       db:
         condition: service_healthy
@@ -46,13 +48,13 @@ services:
     restart: always
     env_file: ./.env
     environment:
-      MYSQL_ROOT_PASSWORD: ${SERVER_DB_PASSWORD}
-      MYSQL_DATABASE: ${SERVER_DB_NAME}
-      MYSQL_USER: ${SERVER_DB_USERNAME}
-      MYSQL_PASSWORD: ${SERVER_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ALLOW_EMPTY_PASSWORD:
     ports:
-      - "${SERVER_DB_PORT}:${SERVER_DB_PORT}"
+      - "${DB_PORT}:${DB_PORT}"
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -60,8 +62,8 @@ services:
         [
           "CMD",
           "mysql",
-          "--user=${SERVER_DB_USERNAME}",
-          "--password=${SERVER_DB_PASSWORD}",
+          "--user=${DB_USERNAME}",
+          "--password=${DB_PASSWORD}",
           "--execute=SELECT 1",
         ]
       interval: 20s
@@ -78,8 +80,8 @@ services:
     environment:
       - PMA_HOST=db
       - PMA_PORT=3306
-      - PMA_USER=${SERVER_DB_USERNAME}
-      - PMA_PASSWORD=${SERVER_DB_PASSWORD}
+      - PMA_USER=${DB_USERNAME}
+      - PMA_PASSWORD=${DB_PASSWORD}
     depends_on:
       - db
 
@@ -92,13 +94,13 @@ services:
       db:
         condition: service_healthy
     environment:
-      SERVER_DB_HOST: db
-      SERVER_DB_PORT: ${SERVER_DB_PORT}
-      SERVER_DB_USERNAME: ${SERVER_DB_USERNAME}
-      SERVER_DB_PASSWORD: ${SERVER_DB_PASSWORD}
-      SERVER_DB_NAME: ${SERVER_DB_NAME}
-      SERVER_DB_CHARSET: ${SERVER_DB_CHARSET}
-      SERVER_DB_PARSE_TIME: ${SERVER_DB_PARSE_TIME}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_CHARSET: ${DB_CHARSET}
+      DB_PARSE_TIME: ${DB_PARSE_TIME}
     entrypoint: ["flyway", "migrate"]
 
   minio:
@@ -109,8 +111,8 @@ services:
       - "9000:9000"
       - "38813:38813"
     environment:
-      MINIO_ROOT_USER: ${SERVER_MINIO_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${SERVER_MINIO_SECRET_KEY}
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY}
     volumes:
       - minio_data:/data
     command: server /data --console-address ":38813"
