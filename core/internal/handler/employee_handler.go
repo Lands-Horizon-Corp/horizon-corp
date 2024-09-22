@@ -157,7 +157,7 @@ func (h *EmployeeHandler) DeleteEmployee(c *gin.Context) {
 }
 
 // RegisterEmployeeRoutes registers the employee routes with the provided router
-func RegisterEmployeeRoutes(router *gin.Engine, db *gorm.DB) {
+func RegisterEmployeeRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	employeeService := service.NewEmployeeService(db)
 	employeeHandler := NewEmployeeHandler(employeeService)
 

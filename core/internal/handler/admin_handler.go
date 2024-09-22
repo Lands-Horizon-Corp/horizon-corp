@@ -1,5 +1,3 @@
-// handler/admin_handler.go
-
 package handler
 
 import (
@@ -157,7 +155,7 @@ func (h *AdminHandler) DeleteAdmin(c *gin.Context) {
 }
 
 // RegisterAdminRoutes registers the admin routes with the provided router
-func RegisterAdminRoutes(router *gin.Engine, db *gorm.DB) {
+func RegisterAdminRoutes(router *gin.RouterGroup, db *gorm.DB) {
 	adminService := service.NewAdminService(db)
 	adminHandler := NewAdminHandler(adminService)
 
