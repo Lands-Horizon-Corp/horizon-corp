@@ -2,7 +2,7 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-bin = "tmp/main"
+bin = "main"
 cmd = "go build main.go"
 delay = 1000
 exclude_dir = ["assets", "tmp", "vendor", "cmd/server/docs", "json", "yaml"]
