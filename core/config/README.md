@@ -1,1 +1,1 @@
-For environment variables
+For config variables
