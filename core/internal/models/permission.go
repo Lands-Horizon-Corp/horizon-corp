@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 type Permission struct {
 	ID                string `gorm:"type:uuid;default:uuid_generate_v4();primaryKey"`
 	RoleID            string `gorm:"type:uuid;not null"`
@@ -11,4 +13,5 @@ type Permission struct {
 	UpdateDescription string `gorm:"type:text"`
 	Create            bool   `gorm:"default:false"`
 	CreateDescription string `gorm:"type:text"`
+	gorm.Model
 }

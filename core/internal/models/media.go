@@ -2,6 +2,8 @@ package models
 
 import (
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Media struct {
@@ -14,4 +16,5 @@ type Media struct {
 	Description  string    `gorm:"type:text"`
 	BucketName   string    `gorm:"type:varchar(255);not null"`
 	TemporaryURL string    `gorm:"type:varchar(255)"`
+	gorm.Model
 }
