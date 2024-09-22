@@ -22,7 +22,20 @@ type Admin struct {
 
 	// Foreign key to Media table (optional)
 	MediaID        *string `gorm:"type:uuid;null"`
-	ProfilePicture Media   `gorm:"foreignKey:MediaID"`
+	ProfilePicture Media   `gorm:"foreignKey:MediaID;references:ID"`
+
+	// Many-to-many relation with Role
+	Roles []Role `gorm:"many2many:company_roles"`
 
 	gorm.Model
+}
+
+type AdminRole struct {
+	AdminID string `gorm:"type:uuid;primaryKey"`
+	Admin   Admin  `gorm:"foreignKey:AdminID;references:ID"`
+
+	RoleID string `gorm:"type:uuid;primaryKey"`
+	Role   Role   `gorm:"foreignKey:RoleID;references:ID"`
+
+	AssignedAt time.Time `gorm:"type:timestamp;default:CURRENT_TIMESTAMP"`
 }

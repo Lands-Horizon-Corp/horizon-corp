@@ -13,8 +13,9 @@ type Permission struct {
 	Create            bool   `gorm:"default:false"`
 	CreateDescription string `gorm:"type:text"`
 
-	// Foreign key
+	// Foreign key to Role
 	RoleID string `gorm:"type:uuid;not null"`
-	Role   Role   `gorm:"foreignKey:RoleID"`
+	Role   Role   `gorm:"foreignKey:RoleID;references:ID"`
+
 	gorm.Model
 }

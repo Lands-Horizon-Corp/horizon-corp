@@ -22,7 +22,20 @@ type Owner struct {
 
 	// Foreign key to Media table (optional)
 	MediaID        *string `gorm:"type:uuid;null"`
-	ProfilePicture Media   `gorm:"foreignKey:MediaID"`
+	ProfilePicture Media   `gorm:"foreignKey:MediaID;references:ID"`
+
+	// Many-to-many relation with Role
+	Roles []Role `gorm:"many2many:company_roles"`
 
 	gorm.Model
+}
+
+type OwnerRole struct {
+	OwnerID string `gorm:"type:uuid;primaryKey"`
+	Owner   Owner  `gorm:"foreignKey:OwnerID;references:ID"`
+
+	RoleID string `gorm:"type:uuid;primaryKey"`
+	Role   Role   `gorm:"foreignKey:RoleID;references:ID"`
+
+	AssignedAt time.Time `gorm:"type:timestamp;default:CURRENT_TIMESTAMP"`
 }
