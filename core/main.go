@@ -13,15 +13,15 @@ import (
 )
 
 func main() {
-
 	fx.New(
 		fx.Provide(
 			// Dependencies
-			config.PorvideConfig,
+			config.ProvideConfig,
 			config.ProvideLogger,
+			config.ProvideMedia,
 			database.ProvideDatabase,
 
-			// Modules
+			// Services and Handlers
 			service.NewAdminService,
 			handler.NewAdminHandler,
 			service.NewBranchService,
@@ -42,13 +42,15 @@ func main() {
 			handler.NewRoleHandler,
 
 			// API
-			router.ProviedAPI,
+			router.ProvideAPI,
 		),
-		fx.Invoke(func(router *gin.Engine, cfg *config.Config) {
-			router.Run(":" + cfg.App.Port)
-		}),
-		fx.Invoke(func(logger *zap.Logger) {
-			logger.Info("Application starting up")
-		}),
+		fx.Invoke(
+			func(router *gin.Engine, cfg *config.Config) {
+				router.Run(":" + cfg.App.Port)
+			},
+			func(logger *zap.Logger) {
+				logger.Info("Application starting up")
+			},
+		),
 	).Run()
 }

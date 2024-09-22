@@ -1,8 +1,8 @@
-package storage
+package config
 
 import (
 	"fmt"
-	"horizon-core/config"
+
 	"io"
 	"time"
 
@@ -14,11 +14,11 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-type FileClient struct {
+type MediaClient struct {
 	Client s3iface.S3API
 }
 
-func NewFileClient(cfg *config.Config) *FileClient {
+func ProvideMedia(cfg *Config) *MediaClient {
 	sess, err := session.NewSession(&aws.Config{
 		Endpoint:         aws.String(cfg.Storage.Endpoint),
 		Region:           aws.String(cfg.Storage.Region),
@@ -29,13 +29,13 @@ func NewFileClient(cfg *config.Config) *FileClient {
 		panic(fmt.Sprintf("failed to create session: %v", err))
 	}
 
-	return &FileClient{
+	return &MediaClient{
 		Client: s3.New(sess),
 	}
 }
 
 // CreateBucketIfNotExists checks if the bucket exists and creates it if not.
-func (mc *FileClient) CreateBucketIfNotExists(bucketName string) error {
+func (mc *MediaClient) CreateBucketIfNotExists(bucketName string) error {
 
 	_, err := mc.Client.HeadBucket(&s3.HeadBucketInput{
 		Bucket: aws.String(bucketName),
@@ -57,7 +57,7 @@ func (mc *FileClient) CreateBucketIfNotExists(bucketName string) error {
 	return nil
 }
 
-func (mc *FileClient) UploadFile(bucketName, key string, body io.Reader) error {
+func (mc *MediaClient) UploadFile(bucketName, key string, body io.Reader) error {
 	if err := mc.CreateBucketIfNotExists(bucketName); err != nil {
 		return err
 	}
@@ -70,7 +70,7 @@ func (mc *FileClient) UploadFile(bucketName, key string, body io.Reader) error {
 	return err
 }
 
-func (mc *FileClient) DeleteFile(bucketName, key string) error {
+func (mc *MediaClient) DeleteFile(bucketName, key string) error {
 	_, err := mc.Client.DeleteObject(&s3.DeleteObjectInput{
 		Bucket: aws.String(bucketName),
 		Key:    aws.String(key),
@@ -85,7 +85,7 @@ func (mc *FileClient) DeleteFile(bucketName, key string) error {
 	})
 }
 
-func (mc *FileClient) GeneratePresignedURL(bucketName, key string, expiration time.Duration) (string, error) {
+func (mc *MediaClient) GeneratePresignedURL(bucketName, key string, expiration time.Duration) (string, error) {
 	req, _ := mc.Client.GetObjectRequest(&s3.GetObjectInput{
 		Bucket: aws.String(bucketName),
 		Key:    aws.String(key),

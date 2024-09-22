@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func ProviedAPI(cfg *config.Config, db *gorm.DB) *gin.Engine {
+func ProvideAPI(cfg *config.Config, db *gorm.DB) *gin.Engine {
 	router := gin.Default()
 	v1 := router.Group("/api/v1")
 	{

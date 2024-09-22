@@ -44,7 +44,7 @@ type Storage struct {
 	MaxfileSize int64  `mapstructure:"max_file_size"`
 }
 
-func PorvideConfig() (*Config, error) {
+func ProvideConfig() (*Config, error) {
 	// Set default values
 	viper.SetDefault("app.port", "8080")
 	viper.SetDefault("log.level", "debug")
