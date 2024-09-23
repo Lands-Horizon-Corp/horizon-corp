@@ -1,4 +1,5 @@
 import z from 'zod'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -24,8 +25,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import LoadingCircle from '@/components/loader/loading-circle'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/interfaces'
-import { signUpFormSchema } from '../../validations/sign-up-form'
+import { IAuthForm } from '@/interfaces/components/form-interface'
+import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
 
 type TSignUpForm = z.infer<typeof signUpFormSchema>
 
@@ -42,20 +43,19 @@ const defaultValue: TSignUpForm = {
     mode: 'Member',
 }
 
-interface Props extends IBaseCompNoChild {
-    isLoading?: boolean
-    errorMessage? : string,
-    defaultValues?: TSignUpForm
-    onSubmit? : (val: TSignUpForm) => void
-}
+interface Props extends IAuthForm<TSignUpForm> {}
 
 const SignUpForm = ({
     className,
-    isLoading,
-    onSubmit,
-    errorMessage,
+    readOnly,
+    onError,
+    onLoading,
+    onSuccess,
     defaultValues = defaultValue,
 }: Props) => {
+    const [loading, setLoading] = useState(false)
+    const [success, setSuccess] = useState(false)
+
     const form = useForm<TSignUpForm>({
         resolver: zodResolver(signUpFormSchema),
         reValidateMode: 'onChange',
@@ -63,11 +63,13 @@ const SignUpForm = ({
         defaultValues,
     })
 
-    function onFormSubmit(values: TSignUpForm) {
-        onSubmit?.(signUpFormSchema.parse(values))
+    function onFormSubmit(data: TSignUpForm) {
+        const parsedData = signUpFormSchema.parse(data)
+        console.log(parsedData)
+        // TODO: Logic
     }
 
-    const firstError = errorMessage || Object.values(form.formState.errors)[0]?.message
+    const firstError = Object.values(form.formState.errors)[0]?.message
 
     return (
         <Form {...form}>
@@ -80,7 +82,7 @@ const SignUpForm = ({
                     <p className="text-xl">Create your profile</p>
                 </div>
 
-                <fieldset disabled={isLoading} className="space-y-4">
+                <fieldset disabled={loading} className="space-y-4">
                     <FormField
                         name="email"
                         control={form.control}
@@ -307,10 +309,10 @@ const SignUpForm = ({
                 )}
                 <Button
                     type="submit"
-                    disabled={firstError !== undefined || isLoading}
+                    disabled={firstError !== undefined || readOnly}
                     className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
                 >
-                    {isLoading ? <LoadingCircle /> : 'Submit'}
+                    {loading ? <LoadingCircle /> : 'Submit'}
                 </Button>
             </form>
         </Form>
