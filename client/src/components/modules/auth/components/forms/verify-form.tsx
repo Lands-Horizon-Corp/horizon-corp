@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button'
 import LoadingCircle from '@/components/loader/loading-circle'
 
 import { cn } from '@/lib/utils'
+import useCountDown from '../../hooks/use-count-down'
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
 import { verifyFormSchema } from '../../validations/verify-form'
 import { IAuthForm } from '@/interfaces/components/form-interface'
@@ -31,6 +32,24 @@ interface Props extends IAuthForm<TVerifyForm> {
     verifyMode: 'mobile' | 'email'
 }
 
+const ResendCountDown = ({
+    trigger,
+    duration,
+    onComplete,
+}: {
+    trigger: boolean
+    duration: number
+    onComplete: () => void
+}) => {
+    const countDown = useCountDown({
+        trigger,
+        duration,
+        onComplete,
+    })
+
+    return <p>Please wait for {countDown}s to resend again</p>
+}
+
 const VerifyForm = ({
     id,
     className,
@@ -38,7 +57,8 @@ const VerifyForm = ({
     verifyMode = 'mobile',
     defaultValues = { code: '' },
 }: Props) => {
-    const [loading, _setLoading] = useState(false)
+    const [loading, setLoading] = useState(false)
+    const [resent, setResent] = useState(false)
 
     const form = useForm({
         resolver: zodResolver(verifyFormSchema),
@@ -49,6 +69,7 @@ const VerifyForm = ({
     const handleSubmit = (data: TVerifyForm) => {
         const parsedData = verifyFormSchema.parse(data)
         console.log(parsedData)
+        setLoading(true)
         // TODO: Add functionality
     }
 
@@ -104,12 +125,24 @@ const VerifyForm = ({
                             </FormItem>
                         )}
                     />
-                    <p>
-                        Didn&apos;t receive the code?{' '}
-                        <span className="cursor-pointer text-[#34C759] hover:text-[#38b558] hover:underline">
-                            Resend Code
-                        </span>
-                    </p>
+                    {!resent && !loading && (
+                        <p>
+                            Didn&apos;t receive the code?{' '}
+                            <span
+                                onClick={() => setResent(true)}
+                                className="cursor-pointer text-[#34C759] hover:text-[#38b558] hover:underline"
+                            >
+                                Resend Code
+                            </span>
+                        </p>
+                    )}
+                    {resent && !loading && (
+                        <ResendCountDown
+                            duration={5}
+                            trigger={resent}
+                            onComplete={() => setResent(false)}
+                        />
+                    )}
                     <Button
                         type="submit"
                         disabled={readOnly}

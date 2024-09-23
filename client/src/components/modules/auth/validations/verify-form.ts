@@ -1,4 +1,5 @@
 import z from 'zod'
+
 import { NUMBER_LETTER_REGEX } from '../constants'
 
 export const verifyFormSchema = z.object({
