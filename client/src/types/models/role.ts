@@ -1,5 +1,5 @@
 import { BaseModel } from './base'
-import { Permission } from './Permission'
+import { Permission } from './permission'
 
 export interface Role extends BaseModel {
     id: string
