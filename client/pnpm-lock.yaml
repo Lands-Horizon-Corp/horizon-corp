@@ -38,6 +38,9 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
+      input-otp:
+        specifier: ^1.2.4
+        version: 1.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       lucide-react:
         specifier: ^0.441.0
         version: 0.441.0(react@18.3.1)
@@ -1603,6 +1606,12 @@ packages:
   imurmurhash@0.1.4:
     resolution: {integrity: sha512-JmXMZ6wuvDmLiHEml9ykzqO6lwFbof0GG4IkcGaENdCRDDmMVnny7s5HsIgHCbaq0w2MyPhDqkhTUgS2LU2PHA==}
     engines: {node: '>=0.8.19'}
+
+  input-otp@1.2.4:
+    resolution: {integrity: sha512-md6rhmD+zmMnUh5crQNSQxq3keBRYvE3odbr4Qb9g2NWzQv9azi+t1a3X4TBTbh98fsGHgEEJlzbe1q860uGCA==}
+    peerDependencies:
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
 
   invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
@@ -3911,6 +3920,11 @@ snapshots:
       resolve-from: 4.0.0
 
   imurmurhash@0.1.4: {}
+
+  input-otp@1.2.4(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   invariant@2.2.4:
     dependencies:
