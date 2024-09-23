@@ -12,7 +12,7 @@ export interface UserBase extends BaseModel {
     email: string
     username: string
     firstName: string
-    middleName? : string
+    middleName?: string
     lastName: string
     contactNumber: string
     permanentAddress: string

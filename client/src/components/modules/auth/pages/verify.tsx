@@ -14,13 +14,12 @@ const Verify = ({}: Props) => {
         if (!userData) return
 
         //  TODO: Check what user lacks in verification
-        //  then set appropriate step 
+        //  then set appropriate step
         //  1 - Verify Contact Number
         //  2 - Verify Email
         //  3 - Show users account status
         //      - Show if not yet validated
         //      - Show if account cancelled
-        
     }, [userData])
 
     // TODO fetch/get user info
