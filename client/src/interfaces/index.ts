@@ -1,1 +1,1 @@
-export * from "./components/base-interface"
+export * from './components/base-interface'

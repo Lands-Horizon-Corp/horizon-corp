@@ -7,5 +7,5 @@ export const verifyFormSchema = z.object({
         .string()
         .min(6, 'Code must be 6 digit long')
         .max(6, 'Code must be 6 digit long')
-        .regex(NUMBER_LETTER_REGEX, "Code must be a number"),
+        .regex(NUMBER_LETTER_REGEX, 'Code must be a number'),
 })
