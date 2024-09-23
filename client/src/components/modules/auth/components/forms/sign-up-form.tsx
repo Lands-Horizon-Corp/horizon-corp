@@ -5,6 +5,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { BsPatchCheck } from 'react-icons/bs'
 
 import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import {
     Form,
     FormControl,
     FormField,
@@ -14,96 +21,58 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import LoadingCircle from '@/components/loader/loading-circle'
 
 import { cn } from '@/lib/utils'
-import { PASSWORD_MIN_LENGTH, LETTERS_REGEX } from '@/modules/auth/constants'
-
-const signUpFormSchema = z
-    .object({
-        email: z
-            .string({ required_error: 'Email is required' })
-            .email('Email must be valid'),
-        username: z
-            .string({ required_error: 'Username is required' })
-            .min(1, 'User Name is required'),
-        first_name: z
-            .string({ required_error: 'First Name is required' })
-            .min(1, 'First Name too short')
-            .regex(LETTERS_REGEX, 'First Name must contain only letters'),
-        middle_name: z
-            .string({ required_error: 'Middle Name is required' })
-            .min(1, 'Middle Name is required')
-            .regex(LETTERS_REGEX, 'First Name must contain only letters'),
-        last_name: z
-            .string({ required_error: 'Last Name is required' })
-            .min(1, 'Last Name is required')
-            .regex(LETTERS_REGEX, 'Last Name must contain only letters'),
-        contact_number: z
-            .string()
-            .min(1)
-            .max(11)
-            .regex(/^\d+$/, 'Contact number must contain only numbers'),
-        password: z
-            .string({ required_error: 'Password is required' })
-            .min(
-                PASSWORD_MIN_LENGTH,
-                `Password must atleast ${PASSWORD_MIN_LENGTH}`
-            ),
-        confirm_password: z
-            .string({ required_error: 'Confirm password' })
-            .min(PASSWORD_MIN_LENGTH, `Password doesn't match`),
-        accept_terms: z
-            .boolean()
-            .default(false)
-            .refine(
-                (val) => {
-                    return val === true
-                },
-                {
-                    message: 'You must accept the terms and conditions',
-                }
-            ),
-    })
-    .refine(({ password, confirm_password }) => password === confirm_password, {
-        message: "Password doesn't match",
-        path: ['confirm_password'],
-    })
+import { IBaseCompNoChild } from '@/interfaces'
+import { signUpFormSchema } from '../../validations/sign-up-form'
 
 type TSignUpForm = z.infer<typeof signUpFormSchema>
 
-interface Props {
-    className?: string
+const defaultValue: TSignUpForm = {
+    acceptTerms: false,
+    confirmPassword: '',
+    password: '',
+    contactNumber: '',
+    email: '',
+    firstName: '',
+    lastName: '',
+    middleName: '',
+    username: '',
+    mode: 'Member',
 }
 
-const SignUpForm = ({ className }: Props) => {
+interface Props extends IBaseCompNoChild {
+    isLoading?: boolean
+    errorMessage? : string,
+    defaultValues?: TSignUpForm
+    onSubmit? : (val: TSignUpForm) => void
+}
+
+const SignUpForm = ({
+    className,
+    isLoading,
+    onSubmit,
+    errorMessage,
+    defaultValues = defaultValue,
+}: Props) => {
     const form = useForm<TSignUpForm>({
         resolver: zodResolver(signUpFormSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
-        defaultValues: {
-            accept_terms: false,
-            confirm_password: '',
-            password: '',
-            contact_number: '',
-            email: '',
-            first_name: '',
-            last_name: '',
-            middle_name: '',
-            username: '',
-        },
+        defaultValues,
     })
 
-    function onSubmit(values: TSignUpForm) {
-        console.log(values)
-        // TODO: add functionality sign up
+    function onFormSubmit(values: TSignUpForm) {
+        onSubmit?.(signUpFormSchema.parse(values))
     }
 
-    const firstError = Object.values(form.formState.errors)[0]?.message
+    const firstError = errorMessage || Object.values(form.formState.errors)[0]?.message
 
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(onFormSubmit)}
                 className={cn('flex w-[390px] flex-col gap-y-4', className)}
             >
                 <div className="flex items-center justify-center gap-x-2 py-4 font-medium">
@@ -111,7 +80,7 @@ const SignUpForm = ({ className }: Props) => {
                     <p className="text-xl">Create your profile</p>
                 </div>
 
-                <div className="space-y-4">
+                <fieldset disabled={isLoading} className="space-y-4">
                     <FormField
                         name="email"
                         control={form.control}
@@ -154,7 +123,7 @@ const SignUpForm = ({ className }: Props) => {
                     />
                     <FormField
                         control={form.control}
-                        name="first_name"
+                        name="firstName"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
@@ -173,7 +142,7 @@ const SignUpForm = ({ className }: Props) => {
                     />
                     <FormField
                         control={form.control}
-                        name="middle_name"
+                        name="middleName"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
@@ -193,7 +162,7 @@ const SignUpForm = ({ className }: Props) => {
                     />
                     <FormField
                         control={form.control}
-                        name="last_name"
+                        name="lastName"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
@@ -212,7 +181,7 @@ const SignUpForm = ({ className }: Props) => {
                     />
                     <FormField
                         control={form.control}
-                        name="contact_number"
+                        name="contactNumber"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
@@ -254,7 +223,7 @@ const SignUpForm = ({ className }: Props) => {
                     />
                     <FormField
                         control={form.control}
-                        name="confirm_password"
+                        name="confirmPassword"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex w-full items-center justify-end gap-x-4">
@@ -274,7 +243,44 @@ const SignUpForm = ({ className }: Props) => {
                     />
                     <FormField
                         control={form.control}
-                        name="accept_terms"
+                        name="mode"
+                        render={({ field }) => (
+                            <FormItem>
+                                <div className="flex w-full items-center justify-end gap-x-4">
+                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                        Account Type
+                                    </FormLabel>
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
+                                    >
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Choose type" />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="Member">
+                                                Member
+                                            </SelectItem>
+                                            <SelectItem value="Owner">
+                                                Owner
+                                            </SelectItem>
+                                            <SelectItem value="Admin">
+                                                Admin
+                                            </SelectItem>
+                                            <SelectItem value="Employee">
+                                                Employee
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="acceptTerms"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="mt-8 flex items-center gap-x-2">
@@ -285,14 +291,14 @@ const SignUpForm = ({ className }: Props) => {
                                             className="border-[#34c759] hover:text-[#38b558] data-[state=checked]:bg-[#34C759]"
                                         />
                                     </FormControl>
-                                    <FormLabel className="m-0 p-0 font-medium">
+                                    <FormLabel className="m-0 cursor-pointer p-0 font-medium">
                                         Accept terms and condition
                                     </FormLabel>
                                 </div>
                             </FormItem>
                         )}
                     />
-                </div>
+                </fieldset>
 
                 {firstError && (
                     <span className="mt-2 rounded-md bg-destructive/10 py-2 text-center text-sm text-destructive">
@@ -301,14 +307,10 @@ const SignUpForm = ({ className }: Props) => {
                 )}
                 <Button
                     type="submit"
-                    disabled={
-                        firstError !== undefined ||
-                        !form.formState.isDirty ||
-                        !form.formState.isValid
-                    }
+                    disabled={firstError !== undefined || isLoading}
                     className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
                 >
-                    Submit
+                    {isLoading ? <LoadingCircle /> : 'Submit'}
                 </Button>
             </form>
         </Form>
