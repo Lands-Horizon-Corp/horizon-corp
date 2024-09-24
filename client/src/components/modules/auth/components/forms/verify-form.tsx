@@ -23,6 +23,8 @@ import { cn } from '@/lib/utils'
 import useCountDown from '../../hooks/use-count-down'
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
 import { verifyFormSchema } from '../../validations/verify-form'
+
+import { UserBase, UserStatus } from '@/types'
 import { IAuthForm } from '@/interfaces/components/form-interface'
 
 type TVerifyForm = z.infer<typeof verifyFormSchema>
@@ -51,11 +53,11 @@ const ResendCountDown = ({
 }
 
 const VerifyForm = ({
-    id,
     className,
     readOnly = false,
     verifyMode = 'mobile',
     defaultValues = { code: '' },
+    onSuccess,
 }: Props) => {
     const [loading, setLoading] = useState(false)
     const [resent, setResent] = useState(false)
@@ -70,7 +72,34 @@ const VerifyForm = ({
         const parsedData = verifyFormSchema.parse(data)
         console.log(parsedData)
         setLoading(true)
-        // TODO: Add functionality
+        // TODO: Add functionality, delete the code below,
+        // it is just for mocking ui flow
+        setTimeout(() => {
+            onSuccess?.(
+                (verifyMode === 'mobile'
+                    ? {
+                          id: '215',
+                          username: 'Jervx',
+                          validEmail: false,
+                          validContactNumber: true,
+                          status: UserStatus['Pending'],
+                          profilePicture: {
+                              url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
+                          },
+                      }
+                    : {
+                          id: '215',
+                          username: 'Jervx',
+                          validEmail: true,
+                          validContactNumber: true,
+                          status: UserStatus['Pending'],
+                          profilePicture: {
+                              url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
+                          },
+                      }) as any as UserBase
+            )
+            setLoading(false)
+        }, 1000)
     }
 
     return (
@@ -103,9 +132,13 @@ const VerifyForm = ({
                             <FormItem className="flex flex-col items-center">
                                 <FormControl>
                                     <InputOTP
-                                        containerClassName="mx-auto capitalize w-fit"
+                                        autoFocus
                                         maxLength={6}
+                                        onComplete={() =>
+                                            form.handleSubmit(handleSubmit)()
+                                        }
                                         pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
+                                        containerClassName="mx-auto capitalize w-fit"
                                         {...field}
                                     >
                                         <InputOTPGroup>

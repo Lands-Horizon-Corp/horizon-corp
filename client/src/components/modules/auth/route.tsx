@@ -36,7 +36,7 @@ const signInRoute = createRoute({
 
 const verifyRoute = createRoute({
     getParentRoute: () => authRoute,
-    path: 'verify/$verify_id',
+    path: 'verify',
     component: Verify,
 })
 

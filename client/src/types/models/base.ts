@@ -23,4 +23,11 @@ export interface UserBase extends BaseModel {
     mediaId?: string
     profilePicture?: Media
     roles: Role[]
+    status: UserStatus
+}
+
+export enum UserStatus {
+    'Pending' = 'Pending',
+    'Verified' = 'Verified',
+    'Not allowed' = 'Not allowed',
 }
