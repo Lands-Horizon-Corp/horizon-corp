@@ -8,9 +8,10 @@ import { HELP_CONTACT } from '../constants'
 
 interface Props extends IBaseComp {
     userData: UserBase
+    onBack?: () => void
 }
 
-const AccountCancelled = ({ userData }: Props) => {
+const AccountCancelled = ({ userData, onBack }: Props) => {
     const router = useRouter()
 
     return (
@@ -31,7 +32,9 @@ const AccountCancelled = ({ userData }: Props) => {
                 </span>
             </p>
             <Button
-                onClick={() => router.history.back()}
+                onClick={() => {
+                    onBack ? onBack() : router.history.back()
+                }}
                 className="mt-6 w-full bg-[#34C759] hover:bg-[#38b558]"
             >
                 Back to Login

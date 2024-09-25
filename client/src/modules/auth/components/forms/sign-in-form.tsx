@@ -27,12 +27,25 @@ import { signInFormSchema } from '../../validations/sign-in-form'
 import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { IBaseCompNoChild } from '@/types/component/base'
+import { UserStatus } from '@/types'
 
 type TSignIn = z.infer<typeof signInFormSchema>
 
 interface Props extends IBaseCompNoChild, IAuthForm<TSignIn> {}
 
-const SignInForm = ({ defaultValues, className, readOnly }: Props) => {
+const DefaultValues: TSignIn = {
+    email: '',
+    mode: 'Member',
+    password: '',
+    username: '',
+}
+
+const SignInForm = ({
+    defaultValues = DefaultValues,
+    className,
+    readOnly,
+    onSuccess
+}: Props) => {
     const [loading, setLoading] = useState(false)
     const [success, setSuccess] = useState(false)
 
@@ -48,7 +61,17 @@ const SignInForm = ({ defaultValues, className, readOnly }: Props) => {
     function onFormSubmit(data: TSignIn) {
         const parsedData = signInFormSchema.parse(data)
         console.log(parsedData)
-        // TODO: Logic
+        // TODO: Logic        
+        onSuccess?.({
+            id: '215',
+            username: 'Jervx',
+            validEmail: false,
+            validContactNumber: true,
+            status: UserStatus['Pending'],
+            profilePicture: {
+                url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
+            },
+        } as any)
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message

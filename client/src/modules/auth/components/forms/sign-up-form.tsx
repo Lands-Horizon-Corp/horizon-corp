@@ -67,6 +67,7 @@ const SignUpForm = ({
         const parsedData = signUpFormSchema.parse(data)
         console.log(parsedData)
         // TODO: Logic
+        // remove code bellow
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
