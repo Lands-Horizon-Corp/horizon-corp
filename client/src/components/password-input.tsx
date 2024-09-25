@@ -1,0 +1,35 @@
+import { useState } from 'react'
+
+import { FiEye, FiEyeOff } from 'react-icons/fi'
+
+import { Input, InputProps } from './ui/input'
+
+import { cn } from '@/lib/utils'
+
+interface Props extends Omit<InputProps, 'type'> {}
+
+const PasswordInput = ({ className, disabled, ...props }: Props) => {
+    const [visible, setVisible] = useState(false)
+
+    const VisibilityIcon = visible ? FiEye : FiEyeOff
+
+    return (
+        <div className={cn('relative w-full', className)}>
+            <Input
+                {...props}
+                disabled={disabled}
+                className={className}
+                type={visible ? 'text' : 'password'}
+            />
+            <VisibilityIcon
+                onClick={() => setVisible((prev) => !prev)}
+                className={cn(
+                    'absolute right-4 top-1/2 size-4 -translate-y-1/2 cursor-pointer',
+                    disabled && 'opacity-80'
+                )}
+            />
+        </div>
+    )
+}
+
+export default PasswordInput

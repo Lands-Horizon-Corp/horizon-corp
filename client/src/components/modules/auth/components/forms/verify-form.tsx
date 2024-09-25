@@ -176,13 +176,25 @@ const VerifyForm = ({
                             onComplete={() => setResent(false)}
                         />
                     )}
-                    <Button
-                        type="submit"
-                        disabled={readOnly}
-                        className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
-                    >
-                        {loading ? <LoadingCircle /> : 'Submit'}
-                    </Button>
+                    <div className="flex flex-col gap-y-2">
+                        <Button
+                            variant={'outline'}
+                            disabled={readOnly}
+                            onClick={(e) => {
+                                e.preventDefault()
+                            }}
+                            className="border-[#34C759]"
+                        >
+                            Change {verifyMode === 'email' ? 'Email' : 'Mobile'}
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={readOnly}
+                            className="bg-[#34C759] hover:bg-[#38b558]"
+                        >
+                            {loading ? <LoadingCircle /> : 'Submit'}
+                        </Button>
+                    </div>
                 </fieldset>
             </form>
         </Form>

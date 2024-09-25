@@ -40,6 +40,16 @@ const verifyRoute = createRoute({
     component: Verify,
 })
 
-const AuthRoute = authRoute.addChildren([signUpRoute, signInRoute, verifyRoute])
+const forgotPasswordRoute = createRoute({
+    getParentRoute: () => authRoute,
+    path: 'forgot-password',
+})
+
+const AuthRoute = authRoute.addChildren([
+    signUpRoute,
+    signInRoute,
+    verifyRoute,
+    forgotPasswordRoute,
+])
 
 export default AuthRoute
