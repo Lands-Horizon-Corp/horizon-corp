@@ -25,7 +25,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import LoadingCircle from '@/components/loader/loading-circle'
 
 import { cn } from '@/lib/utils'
-import { IAuthForm } from '@/interfaces/components/form-interface'
+import { IAuthForm } from '@/types/auth/form-interface'
 import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
 
 type TSignUpForm = z.infer<typeof signUpFormSchema>

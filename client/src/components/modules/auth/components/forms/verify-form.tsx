@@ -25,7 +25,7 @@ import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
 import { verifyFormSchema } from '../../validations/verify-form'
 
 import { UserBase, UserStatus } from '@/types'
-import { IAuthForm } from '@/interfaces/components/form-interface'
+import { IAuthForm } from '@/types/auth/form-interface'
 
 type TVerifyForm = z.infer<typeof verifyFormSchema>
 

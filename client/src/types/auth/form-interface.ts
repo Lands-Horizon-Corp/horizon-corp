@@ -1,5 +1,5 @@
 import { UserBase } from '@/types'
-import { IBaseCompNoChild } from './base-interface'
+import { IBaseCompNoChild } from '../component/base'
 
 export interface IAuthForm<T> extends IBaseCompNoChild {
     readOnly?: boolean

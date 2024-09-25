@@ -1,52 +1,44 @@
 import { useEffect, useState } from 'react'
+import { useRouter } from '@tanstack/react-router'
 
-import VerifyForm from '@/modules/auth/components/forms/verify-form'
+import LoadingCircle from '@/components/loader/loading-circle'
+
+import { Button } from '@/components/ui/button'
+import UserAvatar from '@/components/user-avatar'
+import VerifyRoot from '../components/verify-root'
+import { Separator } from '@/components/ui/separator'
+import AccountCancelled from '../components/account-cancelled'
 
 import { UserBase, UserStatus } from '@/types'
-import UserAvatar from '@/components/user-avatar'
-import { useRouter } from '@tanstack/react-router'
-import { HELP_CONTACT } from '../constants'
-import { Separator } from '@/components/ui/separator'
-import LoadingCircle from '@/components/loader/loading-circle'
-import { Button } from '@/components/ui/button'
 
 interface Props {}
 
-type TSteps = 1 | 2 | 3 | 4
-
 const Verify = ({}: Props) => {
     const [loading, setLoading] = useState(true)
-    const [step, setStep] = useState<0 | TSteps>(0)
+    const [display, setDisplay] = useState<
+        null | 'verify' | 'verify-complete' | 'account-cancelled'
+    >()
     const [userData, setUserData] = useState<UserBase | null>(null)
 
     const router = useRouter()
 
     useEffect(() => {
         if (!userData) return
-        //  TODO: Check what user lacks in verification
-        //  then set appropriate step
-        //  1 - Verify Contact Number
-        if (!userData.validContactNumber) return setStep(1)
 
-        //  2 - Verify Email
-        if (!userData.validEmail) return setStep(2)
+        if (userData.status === UserStatus['Not allowed'])
+            return setDisplay('account-cancelled')
 
-        if (userData.status === UserStatus.Verified) {
-            // TODO: Redirect depending on the account type
-            // member - /member
-            // owner - /company/$companyId
-            // admin - /admin
-        }
+        if (userData.status === UserStatus.Verified)
+            return setDisplay('verify-complete')
 
-        //  3 - Indicates he/she is a member, show a join company form input
-
-        setStep(4)
-        //  4 - Show users account status
+        if (!userData.validContactNumber || !userData.validEmail)
+            setDisplay('verify')
     }, [userData])
 
     useEffect(() => {
         // TODO: Fetch User Data
-        // Remove code below
+        // Remove code below it just for simulating user data fetching
+        // and use our Horizon service.auth-service.ts
         setLoading(true)
         setTimeout(() => {
             setUserData({
@@ -63,45 +55,51 @@ const Verify = ({}: Props) => {
         }, 1000)
     }, [])
 
-    const handleOnSuccess = (userData: UserBase, nextStep: TSteps) => {
-        setUserData(userData)
-        setStep(nextStep)
+    const autoRedirectAccount = (userData: UserBase) => {
+        // TODO Redirect once verified
+        // if (userData.status === UserStatus.Verified) {
+        //     // TODO: Auto redirect to page the account belongs
+        //     // admin/
+        //     // owner/
+        //     // member/
+        //     // employee
+        // }
+        // router.navigate({ to : "..."})
     }
 
-    const handleComplete = () => {}
-
     return (
-        <div className="flex flex-1 justify-center px-4 py-4">
-            <div className="py-14">
-                {loading && <LoadingCircle />}
+        <div className="flex flex-1 flex-col items-center px-4 py-4">
+            <div className="min-h-[50vh] max-w-lg py-4">
+                {loading && (
+                    <div className="flex flex-col items-center gap-y-2">
+                        <LoadingCircle />
+                        <p className="text-center text-sm text-foreground/50">
+                            please wait.. loading your info
+                        </p>
+                    </div>
+                )}
                 {userData && !loading && (
                     <>
-                        {step === 1 && (
-                            <VerifyForm
-                                key="1"
-                                id={userData.id}
-                                verifyMode="mobile"
-                                onSuccess={(data) => handleOnSuccess(data, 2)}
-                            />
-                        )}
-                        {step === 2 && (
-                            <VerifyForm
-                                key="2"
-                                id={userData.id}
-                                verifyMode="email"
-                                onSuccess={(data) => {
-                                    const nextStep = 3
-                                    // TODO : if user is member, show step 3
-                                    // step 3 allows user to select or join a company
-                                    handleOnSuccess(data, nextStep)
+                        {display === 'verify' && (
+                            <VerifyRoot
+                                userData={userData}
+                                onVerifyChange={(newUserData) =>
+                                    setUserData(newUserData)
+                                }
+                                onVerifyComplete={() => {
+                                    setDisplay('verify-complete')
                                 }}
                             />
                         )}
-                        {
-                            // TODO: Step 3
-                        }
-                        {step === 4 && (
+                        {display === 'verify-complete' && (
                             <div className="flex max-w-sm flex-col items-center gap-y-4">
+                                <p className="text-xl font-medium text-green-500">
+                                    Account Verify Complete
+                                </p>
+                                <p className="text-center text-foreground/60">
+                                    Your account email & phone number is
+                                    verified. Thank you for joining with us!
+                                </p>
                                 <UserAvatar
                                     className="size-28"
                                     src={userData?.profilePicture?.url ?? ''}
@@ -123,14 +121,17 @@ const Verify = ({}: Props) => {
                                 </p>
                                 <Button
                                     onClick={() =>
-                                        router.navigate({ to: '/auth/sign-in' })
+                                        autoRedirectAccount(userData)
                                     }
                                     disabled={loading}
-                                    className="mt-6 bg-[#34C759] w-full hover:bg-[#38b558]"
+                                    className="mt-6 w-full bg-[#34C759] hover:bg-[#38b558]"
                                 >
-                                    Go to Login
+                                    Proceed
                                 </Button>
                             </div>
+                        )}
+                        {display === 'account-cancelled' && (
+                            <AccountCancelled userData={userData} />
                         )}
                     </>
                 )}
