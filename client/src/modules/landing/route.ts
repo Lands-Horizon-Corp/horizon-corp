@@ -1,10 +1,10 @@
 import { createRoute } from '@tanstack/react-router'
 
-import LandingPage from '@/components/modules/landing/pages'
-import AboutPage from '@/components/modules/landing/pages/about'
-import ContactPage from '@/components/modules/landing/pages/contact'
+import LandingPage from '@/modules/landing/pages'
+import AboutPage from '@/modules/landing/pages/about'
+import ContactPage from '@/modules/landing/pages/contact'
 
-import PublicLayout from '@/components/modules/landing/layout'
+import PublicLayout from '@/modules/landing/layout'
 
 import { rootRoute } from '@/root-route'
 

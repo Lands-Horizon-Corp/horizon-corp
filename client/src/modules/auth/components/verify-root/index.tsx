@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import StepIndicator from '../../../../steps-indicator'
+import StepIndicator from '../../../../components/steps-indicator'
 import VerifyForm from '../forms/verify-form'
 
 import { UserBase, UserStatus } from '@/types'
