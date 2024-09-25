@@ -1,14 +1,18 @@
 import { createRoute, redirect } from '@tanstack/react-router'
 
+import Verify from '@/modules/auth/pages/verify'
 import NotFoundPage from '@/modules/auth/not-found'
 import SignUpPage from '@/modules/auth/pages/sign-up'
 import SignInPage from '@/modules/auth/pages/sign-in'
+
+import AuthLayout from './layout'
 
 import { rootRoute } from '@/root-route'
 
 const authRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'auth',
+    component: AuthLayout,
     beforeLoad: ({ location }) => {
         if (location.pathname === '/auth')
             throw redirect({
@@ -30,6 +34,22 @@ const signInRoute = createRoute({
     component: SignInPage,
 })
 
-const AuthRoute = authRoute.addChildren([signUpRoute, signInRoute])
+const verifyRoute = createRoute({
+    getParentRoute: () => authRoute,
+    path: 'verify',
+    component: Verify,
+})
+
+const forgotPasswordRoute = createRoute({
+    getParentRoute: () => authRoute,
+    path: 'forgot-password',
+})
+
+const AuthRoute = authRoute.addChildren([
+    signUpRoute,
+    signInRoute,
+    verifyRoute,
+    forgotPasswordRoute,
+])
 
 export default AuthRoute
