@@ -168,7 +168,7 @@ const SignInForm = ({ defaultValues, className, readOnly }: Props) => {
                         {firstError}
                     </span>
                 )}
-                <div className="flex flex-col space-y-2">
+                <div className="bg- flex flex-col space-y-2">
                     <Button
                         type="submit"
                         disabled={firstError !== undefined || readOnly}
