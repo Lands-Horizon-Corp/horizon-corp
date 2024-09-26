@@ -22,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import PasswordInput from '@/components/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
 
 import { cn } from '@/lib/utils'
@@ -48,13 +49,9 @@ interface Props extends IAuthForm<TSignUpForm> {}
 const SignUpForm = ({
     className,
     readOnly,
-    onError,
-    onLoading,
-    onSuccess,
     defaultValues = defaultValue,
 }: Props) => {
     const [loading, setLoading] = useState(false)
-    const [success, setSuccess] = useState(false)
 
     const form = useForm<TSignUpForm>({
         resolver: zodResolver(signUpFormSchema),
@@ -82,7 +79,7 @@ const SignUpForm = ({
                     <p className="text-xl">Create your profile</p>
                 </div>
 
-                <fieldset disabled={loading} className="space-y-4">
+                <fieldset disabled={loading || readOnly} className="space-y-4">
                     <FormField
                         name="email"
                         control={form.control}
@@ -213,10 +210,9 @@ const SignUpForm = ({
                                         Password
                                     </FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="password"
-                                            placeholder="Password"
+                                        <PasswordInput
                                             {...field}
+                                            placeholder="Password"
                                         />
                                     </FormControl>
                                 </div>
@@ -233,10 +229,9 @@ const SignUpForm = ({
                                         Confirm Password
                                     </FormLabel>
                                     <FormControl>
-                                        <Input
-                                            placeholder="Confirm Password"
+                                        <PasswordInput
                                             {...field}
-                                            type="password"
+                                            placeholder="Confirm Password"
                                         />
                                     </FormControl>
                                 </div>
@@ -309,7 +304,7 @@ const SignUpForm = ({
                 )}
                 <Button
                     type="submit"
-                    disabled={firstError !== undefined || readOnly}
+                    disabled={loading || readOnly}
                     className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
                 >
                     {loading ? <LoadingCircle /> : 'Submit'}

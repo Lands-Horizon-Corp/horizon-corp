@@ -2,6 +2,7 @@ import z from 'zod'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
 
 import {
     Form,
@@ -20,14 +21,13 @@ import { Button } from '@/components/ui/button'
 import LoadingCircle from '@/components/loader/loading-circle'
 
 import { cn } from '@/lib/utils'
-import useCountDown from '../../hooks/use-count-down'
-import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
-import { verifyFormSchema } from '../../validations/verify-form'
+import useCountDown from '@/modules/auth/hooks/use-count-down'
+import { otpFormSchema } from '@/modules/auth/validations/otp-form'
 
 import { UserBase, UserStatus } from '@/types'
 import { IAuthForm } from '@/types/auth/form-interface'
 
-type TVerifyForm = z.infer<typeof verifyFormSchema>
+type TVerifyForm = z.infer<typeof otpFormSchema>
 
 interface Props extends IAuthForm<TVerifyForm> {
     id: string
@@ -63,13 +63,13 @@ const VerifyForm = ({
     const [resent, setResent] = useState(false)
 
     const form = useForm({
-        resolver: zodResolver(verifyFormSchema),
+        resolver: zodResolver(otpFormSchema),
         reValidateMode: 'onChange',
         defaultValues,
     })
 
     const handleSubmit = (data: TVerifyForm) => {
-        const parsedData = verifyFormSchema.parse(data)
+        const parsedData = otpFormSchema.parse(data)
         setLoading(true)
         // TODO: Add functionality, delete the code below,
         // it is just for mocking ui flow
@@ -188,7 +188,6 @@ const VerifyForm = ({
                         </Button>
                         <Button
                             type="submit"
-                            disabled={readOnly}
                             className="bg-[#34C759] hover:bg-[#38b558]"
                         >
                             {loading ? <LoadingCircle /> : 'Submit'}

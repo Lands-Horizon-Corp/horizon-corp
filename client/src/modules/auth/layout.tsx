@@ -5,7 +5,7 @@ interface Props {}
 
 const AuthLayout = (_props: Props) => {
     return (
-        <div className="min-h-[100dvh] grid grid-rows-[1fr_auto]">
+        <div className="grid min-h-[100dvh] grid-rows-[1fr_auto]">
             <Outlet />
             <AuthFooter />
         </div>

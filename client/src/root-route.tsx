@@ -13,7 +13,7 @@ const routeTree = rootRoute.addChildren([AuthRoute, LandingRoute, MemberRoute]);
 
 const router = createRouter({
     routeTree,
-    defaultComponent : RootLayout,
+    defaultComponent: RootLayout,
     defaultNotFoundComponent: NotFoundPage,
 });
 

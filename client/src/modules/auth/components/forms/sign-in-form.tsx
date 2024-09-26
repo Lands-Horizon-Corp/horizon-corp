@@ -22,32 +22,24 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import PasswordInput from '@/components/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
-import { signInFormSchema } from '../../validations/sign-in-form'
 
 import { cn } from '@/lib/utils'
+import { UserStatus } from '@/types'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { IBaseCompNoChild } from '@/types/component/base'
-import { UserStatus } from '@/types'
+import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
 
 type TSignIn = z.infer<typeof signInFormSchema>
 
-interface Props extends IBaseCompNoChild, IAuthForm<TSignIn> {}
-
-const DefaultValues: TSignIn = {
-    email: '',
-    mode: 'Member',
-    password: '',
-    username: '',
-}
+interface Props extends IBaseCompNoChild, IAuthForm<Partial<TSignIn>> {}
 
 const SignInForm = ({
-    defaultValues = DefaultValues,
+    defaultValues,
     className,
     readOnly,
-    onSuccess
+    onSuccess,
 }: Props) => {
     const [loading, setLoading] = useState(false)
-    const [success, setSuccess] = useState(false)
 
     const router = useRouter()
 
@@ -55,13 +47,17 @@ const SignInForm = ({
         resolver: zodResolver(signInFormSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
-        defaultValues,
+        defaultValues: {
+            email: defaultValues?.email ?? '',
+            username: defaultValues?.username ?? '',
+            mode: defaultValues?.mode ?? 'Member',
+            password: '',
+        },
     })
 
     function onFormSubmit(data: TSignIn) {
         const parsedData = signInFormSchema.parse(data)
-        console.log(parsedData)
-        // TODO: Logic        
+        // TODO: Logic
         onSuccess?.({
             id: '215',
             username: 'Jervx',
@@ -87,7 +83,7 @@ const SignInForm = ({
                     <p className="text-xl">Login to your account</p>
                 </div>
 
-                <fieldset disabled={loading} className="space-y-4">
+                <fieldset disabled={loading || readOnly} className="space-y-4">
                     <FormField
                         name="email"
                         control={form.control}
@@ -194,7 +190,7 @@ const SignInForm = ({
                 <div className="bg- flex flex-col space-y-2">
                     <Button
                         type="submit"
-                        disabled={firstError !== undefined || readOnly}
+                        disabled={loading || readOnly}
                         className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
                     >
                         {loading ? <LoadingCircle /> : 'Login'}
@@ -202,6 +198,10 @@ const SignInForm = ({
                     <Link
                         className="text-sm text-green-500"
                         to="/auth/forgot-password"
+                        search={{
+                            email: form.getValues('email'),
+                            mode: form.getValues('mode'),
+                        }}
                     >
                         Forgor Password
                     </Link>
