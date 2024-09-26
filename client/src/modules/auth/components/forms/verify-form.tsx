@@ -70,7 +70,6 @@ const VerifyForm = ({
 
     const handleSubmit = (data: TVerifyForm) => {
         const parsedData = verifyFormSchema.parse(data)
-        console.log(parsedData)
         setLoading(true)
         // TODO: Add functionality, delete the code below,
         // it is just for mocking ui flow

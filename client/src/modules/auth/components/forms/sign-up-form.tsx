@@ -65,7 +65,6 @@ const SignUpForm = ({
 
     function onFormSubmit(data: TSignUpForm) {
         const parsedData = signUpFormSchema.parse(data)
-        console.log(parsedData)
         // TODO: Logic
         // remove code bellow
     }

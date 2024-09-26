@@ -23,7 +23,6 @@ const useCountDown = ({
         if (!trigger) return
 
         const counter = setInterval(() => {
-            console.log('Woriing', countDown)
             if (countDown > 0) setCountDown((val) => val - step)
         }, interval)
 
@@ -32,7 +31,6 @@ const useCountDown = ({
         }
 
         return () => {
-            console.log(countDown, 'cleared')
             clearInterval(counter)
         }
     }, [countDown])
