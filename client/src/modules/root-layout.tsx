@@ -5,7 +5,7 @@ const RootLayout = () => {
     return (
         <div>
             <Outlet />
-            <Toaster richColors theme='light' />
+            <Toaster richColors theme="light" />
         </div>
     )
 }

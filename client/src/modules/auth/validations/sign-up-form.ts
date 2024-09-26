@@ -1,7 +1,7 @@
 import z from 'zod'
 
+import { memberTypeSchema } from '.'
 import { PASSWORD_MIN_LENGTH, LETTERS_REGEX } from '../constants'
-import { AuthModeSchema } from '.'
 
 export const signUpFormSchema = z
     .object({
@@ -57,7 +57,7 @@ export const signUpFormSchema = z
                     message: 'You must accept the terms and conditions',
                 }
             ),
-        mode: AuthModeSchema,
+        mode: memberTypeSchema,
     })
     .refine(({ password, confirmPassword }) => password === confirmPassword, {
         message: "Password doesn't match",

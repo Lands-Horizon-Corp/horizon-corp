@@ -1,8 +1,8 @@
 import { AiOutlineLoading } from 'react-icons/ai'
 
 import { cn } from '@/lib/utils'
+import { IBaseCompNoChild } from '@/types/component/base'
 
-import { IBaseCompNoChild } from '@/interfaces'
 
 interface Props extends IBaseCompNoChild {}
 
