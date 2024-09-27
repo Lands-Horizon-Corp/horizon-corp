@@ -1,19 +1,39 @@
-import { Link, Outlet } from '@tanstack/react-router'
+import { Outlet } from '@tanstack/react-router'
+import { ReactNode } from '@tanstack/react-router'
+import NavBar from './pages/_components/navbar'
+import bg_element_1 from '@/assets/images/bg_element_1.png'
+import bg_element_2 from '@/assets/images/bg_element_2.png'
+import bg_element_3 from '@/assets/images/bg_element_3.png'
 
-interface Props {}
+interface Props {
+    children?: ReactNode
+}
 
 const PublicLayout = (_props: Props) => {
     return (
-        <div>
-            <nav className="flex gap-x-2">
-                <Link to="/">Home</Link>
-                <Link to="/about">About</Link>
-                <Link to="/contact">Contact</Link>
-                <Link to="/auth/sign-in">Sign-In</Link>
-                <Link to="/auth/sign-up">Sign-Up</Link>
-            </nav>
-            <Outlet />
-        </div>
+        <>
+            <div className="relative h-full">
+                <img
+                    src={bg_element_1}
+                    className="absolute left-[50%] -translate-x-[50%] -z-30 h-auto w-[1681px]"
+                    alt="background"
+                />
+                <img
+                    src={bg_element_2}
+                    className="absolute 2xl:left-[60%] left-[90%] -translate-x-[50%] -z-30 h-auto w-[1681px]"
+                    alt="background"
+                />
+                <img
+                    src={bg_element_3}
+                    className="absolute 2xl:left-[50%] left-[50%] -translate-x-[50%] -z-40 h-auto w-[1440px]"
+                    alt="background"
+                />
+                <main className="h-full w-full">
+                    <NavBar></NavBar>
+                    <Outlet />
+                </main>
+            </div>
+        </>
     )
 }
 

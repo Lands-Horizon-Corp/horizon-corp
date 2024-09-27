@@ -1,0 +1,8 @@
+
+.scale-effects {
+    @apply transform transition-transform duration-150 ease-in-out hover:scale-105
+}
+
+.nav-links {
+    @apply text-[min(15px,2.5vw)]
+}
