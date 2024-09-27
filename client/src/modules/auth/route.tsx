@@ -1,20 +1,19 @@
 import { createRoute, redirect } from '@tanstack/react-router'
 import { zodSearchValidator } from '@tanstack/router-zod-adapter'
 
+import AuthLayout from './layout'
 import Verify from '@/modules/auth/pages/verify'
 import NotFoundPage from '@/modules/auth/not-found'
 import SignUpPage from '@/modules/auth/pages/sign-up'
+import PasswordResetPage from './pages/password-reset'
 import SignInPage, {
     SignInPageSearchSchema,
 } from '@/modules/auth/pages/sign-in'
-
-import AuthLayout from './layout'
-
-import { rootRoute } from '@/root-route'
 import ForgotPasswordPage, {
     ForgotPasswordPageSearchSchema,
 } from './pages/forgot-password'
-import PasswordResetPage from './pages/password-reset'
+
+import { rootRoute } from '@/root-route'
 
 const authRoute = createRoute({
     getParentRoute: () => rootRoute,

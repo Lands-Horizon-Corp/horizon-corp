@@ -22,6 +22,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import PasswordInput from '@/components/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
+import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn } from '@/lib/utils'
 import { UserStatus } from '@/types'
@@ -181,17 +182,12 @@ const SignInForm = ({
                         )}
                     />
                 </fieldset>
-
-                {firstError && (
-                    <span className="mt-2 rounded-md bg-destructive/10 py-2 text-center text-sm text-destructive">
-                        {firstError}
-                    </span>
-                )}
-                <div className="bg- flex flex-col space-y-2">
+                <div className="mt-6 flex flex-col space-y-2">
+                    <FormErrorMessage errorMessage={firstError} />
                     <Button
                         type="submit"
                         disabled={loading || readOnly}
-                        className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
+                        className="bg-[#34C759] hover:bg-[#38b558]"
                     >
                         {loading ? <LoadingCircle /> : 'Login'}
                     </Button>

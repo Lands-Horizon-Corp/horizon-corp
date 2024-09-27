@@ -20,6 +20,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import LoadingCircle from '@/components/loader/loading-circle'
+import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
@@ -132,18 +133,16 @@ const ForgotPasswordEmail = ({
                     />
                 </fieldset>
 
-                {firstError && (
-                    <span className="mt-2 rounded-md bg-destructive/10 py-2 text-center text-sm text-destructive">
-                        {firstError}
-                    </span>
-                )}
-                <Button
-                    type="submit"
-                    disabled={loading || readOnly}
-                    className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
-                >
-                    {loading ? <LoadingCircle /> : 'Confirm Email'}
-                </Button>
+                <div className="mt-4 flex flex-col space-y-2">
+                    <FormErrorMessage errorMessage={firstError} />
+                    <Button
+                        type="submit"
+                        disabled={loading || readOnly}
+                        className="bg-[#34C759] hover:bg-[#38b558]"
+                    >
+                        {loading ? <LoadingCircle /> : 'Confirm Email'}
+                    </Button>
+                </div>
             </form>
         </Form>
     )
