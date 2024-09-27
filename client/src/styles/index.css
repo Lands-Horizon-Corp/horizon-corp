@@ -1,6 +1,11 @@
+
+@import '/src/modules/landing/pages/_components/navbar/navbar.css';
+
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 
 @font-face {
     font-family: 'Inter';
@@ -8,6 +13,7 @@
     font-weight: 100 900;
     font-display: swap;
 }
+
 
 @layer base {
     :root {
