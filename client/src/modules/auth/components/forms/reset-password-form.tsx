@@ -17,6 +17,7 @@ import LoadingCircle from '@/components/loader/loading-circle'
 import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { PASSWORD_MIN_LENGTH } from '@/modules/auth/constants'
+import FormErrorMessage from '../form-error-message'
 
 const ResetPasswordFormSchema = z
     .object({
@@ -24,7 +25,7 @@ const ResetPasswordFormSchema = z
             .string({ required_error: 'Password is required' })
             .min(
                 PASSWORD_MIN_LENGTH,
-                `Password must atleast ${PASSWORD_MIN_LENGTH}`
+                `Password must atleast ${PASSWORD_MIN_LENGTH} characters`
             ),
         confirmPassword: z
             .string({ required_error: 'Confirm password' })
@@ -123,18 +124,16 @@ const ResetPasswordForm = ({
                     />
                 </fieldset>
 
-                {firstError && (
-                    <span className="mt-2 rounded-md bg-destructive/10 py-2 text-center text-sm text-destructive">
-                        {firstError}
-                    </span>
-                )}
-                <Button
-                    type="submit"
-                    disabled={loading || readOnly}
-                    className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
-                >
-                    {loading ? <LoadingCircle /> : 'Confirm Email'}
-                </Button>
+                <div className="mt-4 flex flex-col space-y-2">
+                    <FormErrorMessage errorMessage={firstError} />
+                    <Button
+                        type="submit"
+                        disabled={loading || readOnly}
+                        className="bg-[#34C759] hover:bg-[#38b558]"
+                    >
+                        {loading ? <LoadingCircle /> : 'Save Password'}
+                    </Button>
+                </div>
             </form>
         </Form>
     )

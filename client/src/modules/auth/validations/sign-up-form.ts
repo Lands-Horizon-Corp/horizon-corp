@@ -41,7 +41,7 @@ export const signUpFormSchema = z
             .string({ required_error: 'Password is required' })
             .min(
                 PASSWORD_MIN_LENGTH,
-                `Password must atleast ${PASSWORD_MIN_LENGTH}`
+                `Password must atleast ${PASSWORD_MIN_LENGTH} characters`
             ),
         confirmPassword: z
             .string({ required_error: 'Confirm password' })
