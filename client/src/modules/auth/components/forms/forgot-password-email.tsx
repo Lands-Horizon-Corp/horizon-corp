@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { AiOutlineKey } from 'react-icons/ai'
+
 import {
     Form,
     FormControl,
@@ -31,10 +33,10 @@ const emailFormSchema = z.object({
     mode: memberTypeSchema,
 })
 
-type TForgotPasswordEmail = z.infer<typeof emailFormSchema>
+export type TForgotPasswordEmail = z.infer<typeof emailFormSchema>
 
 interface Props extends IAuthForm<TForgotPasswordEmail> {
-    onSuccess: (responseData: string) => void
+    onSuccess: (responseData: TForgotPasswordEmail) => void
 }
 
 const ForgotPasswordEmail = ({
@@ -57,7 +59,7 @@ const ForgotPasswordEmail = ({
         // TODO: Logic to create a reset entry and will return
         // authService.resetViaEmail(email, accountType) // return uuid string
         // modify code bellow
-        onSuccess?.('15de37fa-cb0f-4295-8fe9-63daeb944492')
+        onSuccess?.(parsedData)
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -66,10 +68,17 @@ const ForgotPasswordEmail = ({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onFormSubmit)}
-                className={cn('flex w-[390px] flex-col gap-y-4', className)}
+                className={cn(
+                    'flex w-full flex-col gap-y-4 sm:w-[390px]',
+                    className
+                )}
             >
                 <div className="flex flex-col items-center gap-y-4 py-4 text-center">
-                    <img src="/e-coop-logo-1.png" className="size-24" />
+                    <div className="relative p-8">
+                        <AiOutlineKey className="size-[53px] text-[#FF7E47]" />
+                        <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20"></div>
+                        <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20"></div>
+                    </div>
                     <p className="text-xl font-medium">Forgot Password?</p>
                     <p className="text-sm text-foreground/70">
                         Enter your registered email address to receive a link to

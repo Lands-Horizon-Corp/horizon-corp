@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { AiOutlineKey } from 'react-icons/ai'
+
 import {
     Form,
     FormControl,
@@ -73,14 +75,21 @@ const ResetPasswordForm = ({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onFormSubmit)}
-                className={cn('flex w-[390px] flex-col gap-y-4', className)}
+                className={cn(
+                    'flex w-full flex-col gap-y-4 sm:w-[390px]',
+                    className
+                )}
             >
                 <div className="flex flex-col items-center gap-y-4 py-4 text-center">
-                    <img src="/e-coop-logo-1.png" className="size-24" />
-                    <p className="text-xl font-medium">Forgot Password?</p>
-                    <p className="text-sm text-foreground/70">
-                        Enter your registered email address to receive a link to
-                        reset your password.
+                    <div className="relative p-8">
+                        <AiOutlineKey className="size-[53px] text-green-500" />
+                        <div className="absolute inset-0 rounded-full bg-green-500/20"></div>
+                        <div className="absolute inset-5 rounded-full bg-green-500/20"></div>
+                    </div>
+                    <p className="text-xl font-medium">Set new password</p>
+                    <p className="px-10 text-sm text-foreground/70">
+                        Set a new password for your account, make sure to use a
+                        strong password.
                     </p>
                 </div>
                 <fieldset disabled={loading || readOnly} className="space-y-4">
@@ -89,17 +98,15 @@ const ResetPasswordForm = ({
                         name="password"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
-                                <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
-                                        Password
-                                    </FormLabel>
-                                    <FormControl>
-                                        <PasswordInput
-                                            {...field}
-                                            placeholder="Password"
-                                        />
-                                    </FormControl>
-                                </div>
+                                <FormLabel className="font-medium">
+                                    Password
+                                </FormLabel>
+                                <FormControl>
+                                    <PasswordInput
+                                        {...field}
+                                        placeholder="Password"
+                                    />
+                                </FormControl>
                             </FormItem>
                         )}
                     />
@@ -108,17 +115,15 @@ const ResetPasswordForm = ({
                         name="confirmPassword"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
-                                <div className="flex w-full items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
-                                        Confirm Password
-                                    </FormLabel>
-                                    <FormControl>
-                                        <PasswordInput
-                                            {...field}
-                                            placeholder="Confirm Password"
-                                        />
-                                    </FormControl>
-                                </div>
+                                <FormLabel className="font-medium">
+                                    Confirm Password
+                                </FormLabel>
+                                <FormControl>
+                                    <PasswordInput
+                                        {...field}
+                                        placeholder="Confirm Password"
+                                    />
+                                </FormControl>
                             </FormItem>
                         )}
                     />

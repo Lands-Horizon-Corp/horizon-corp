@@ -6,9 +6,9 @@ interface Props {}
 
 const AuthLayout = (_props: Props) => {
     return (
-        <div className="grid min-h-[100dvh] grid-rows-[1fr_auto]">
+        <div className="grid min-h-[100dvh] grid-rows-[1fr_auto] bg-fixed bg-cover sm:bg-[url('/auth-bg.webp')]">
             <AuthNavBar />
-            <main className="mt-16">
+            <main className="mt-24">
                 <Outlet />
             </main>
             <AuthFooter />
