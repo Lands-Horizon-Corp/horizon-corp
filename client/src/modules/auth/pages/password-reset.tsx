@@ -4,10 +4,12 @@ import { useParams } from '@tanstack/react-router'
 import { useRouter } from '@tanstack/react-router'
 
 import { GoArrowLeft } from 'react-icons/go'
+import { AiOutlineKey } from 'react-icons/ai'
 
 import { Button } from '@/components/ui/button'
-import ResetPasswordForm from '@/modules/auth/components/forms/reset-password-form'
 import LoadingCircle from '@/components/loader/loading-circle'
+import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
+import ResetPasswordForm from '@/modules/auth/components/forms/reset-password-form'
 
 export const PasswordResetPagePathSchema = z.object({
     resetId: z
@@ -42,64 +44,74 @@ const PasswordResetPage = (_props: Props) => {
     }, [])
 
     return (
-        <div className="flex min-h-[50dvh] flex-1 justify-center px-4 py-4">
-            {!done && resetEntry && (
-                <ResetPasswordForm onSuccess={() => setDone(true)} />
-            )}
-            {!done && !loading && !resetEntry && (
-                <div className="flex w-[390px] flex-col gap-y-4">
-                    <div className="flex flex-col items-center gap-y-4 py-4 text-center">
-                        <img src="/e-coop-logo-1.png" className="size-24" />
-                        <p className="text-xl font-medium">
-                            Password Reset Link Invalid
-                        </p>
-                        <p className="text-sm text-foreground/70">
-                            Sorry, but the link is invalid
+        <div className="flex min-h-full flex-col items-center justify-center">
+            <AuthPageWrapper>
+                {!done && resetEntry && (
+                    <ResetPasswordForm onSuccess={() => setDone(true)} />
+                )}
+                {!done && !loading && !resetEntry && (
+                    <div className="flex w-full flex-col gap-y-4 sm:w-[390px]">
+                        <div className="flex flex-col items-center gap-y-4 py-4 text-center">
+                            <div className="relative p-8">
+                                <AiOutlineKey className="size-[53px] text-[#FF7E47]" />
+                                <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20"></div>
+                                <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20"></div>
+                            </div>
+                            <p className="text-xl font-medium">
+                                Invalid reset link
+                            </p>
+                            <p className="text-sm text-foreground/70">
+                                Sorry, but the reset link you have is invalid
+                            </p>
+                        </div>
+                        <Button
+                            variant={'ghost'}
+                            className="text-foreground/60"
+                            onClick={() => {
+                                router.navigate({
+                                    to: '/auth/sign-in',
+                                })
+                            }}
+                        >
+                            <GoArrowLeft className="mr-2" /> Back to Login
+                        </Button>
+                    </div>
+                )}
+                {loading && (
+                    <div className="flex flex-col items-center gap-y-2 py-16">
+                        <LoadingCircle />
+                        <p className="text-center text-sm text-foreground/50">
+                            verifying reset password link
                         </p>
                     </div>
-                    <Button
-                        variant={'ghost'}
-                        className="text-foreground/60"
-                        onClick={() => {
-                            router.navigate({
-                                to: '/auth/sign-in',
-                            })
-                        }}
-                    >
-                        <GoArrowLeft className="mr-2" /> Back to Login
-                    </Button>
-                </div>
-            )}
-            {loading && (
-                <div className="flex flex-col items-center gap-y-2 py-16">
-                    <LoadingCircle />
-                    <p className="text-center text-sm text-foreground/50">
-                        verifying reset password link
-                    </p>
-                </div>
-            )}
-            {done && (
-                <div className="flex w-[390px] flex-col gap-y-4">
-                    <div className="flex flex-col items-center gap-y-4 py-4 text-center">
-                        <img src="/e-coop-logo-1.png" className="size-24" />
-                        <p className="text-xl font-medium">Password Saved</p>
-                        <p className="text-sm text-foreground/70">
-                            Your new password has been set.
-                        </p>
+                )}
+                {done && (
+                    <div className="flex w-full flex-col gap-y-4 sm:w-[390px]">
+                        <div className="flex flex-col items-center gap-y-4 py-4 text-center">
+                            <div className="relative p-8">
+                                <AiOutlineKey className="size-[53px] text-green-500" />
+                                <div className="absolute inset-0 rounded-full bg-green-500/20"></div>
+                                <div className="absolute inset-5 rounded-full bg-green-500/20"></div>
+                            </div>
+                            <p className="text-xl font-medium">Password Set</p>
+                            <p className="text-sm text-foreground/70">
+                                Your new password has been saved.
+                            </p>
+                        </div>
+                        <Button
+                            variant={'ghost'}
+                            className="bg-[#34C759] hover:bg-[#38b558] text-white"
+                            onClick={() => {
+                                router.navigate({
+                                    to: '/auth/sign-in',
+                                })
+                            }}
+                        >
+                           Sign In Now
+                        </Button>
                     </div>
-                    <Button
-                        variant={'ghost'}
-                        className="text-foreground/60"
-                        onClick={() => {
-                            router.navigate({
-                                to: '/auth/sign-in',
-                            })
-                        }}
-                    >
-                        <GoArrowLeft className="mr-2" /> Go to login
-                    </Button>
-                </div>
-            )}
+                )}
+            </AuthPageWrapper>
         </div>
     )
 }

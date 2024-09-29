@@ -105,10 +105,9 @@ const VerifyForm = ({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(handleSubmit)}
-                className={cn('flex min-w-[390px] flex-col gap-y-4', className)}
+                className={cn('flex min-w-[380px] flex-col gap-y-4', className)}
             >
                 <div className="flex flex-col items-center justify-center gap-y-4 pt-4">
-                    <img src="/e-coop-logo-1.png" className="size-40" />
                     <p className="text-xl font-medium">
                         Verify your{' '}
                         {verifyMode === 'mobile'
@@ -116,7 +115,7 @@ const VerifyForm = ({
                             : 'Email Address'}
                     </p>
                     <p className="max-w-[320px] text-center text-foreground/80">
-                        Enter the one time password sent to your mobile number{' '}
+                        Enter the one time password sent to your {' '}
                         {verifyMode === 'mobile' ? 'Mobile Number' : 'Email'}
                     </p>
                 </div>
