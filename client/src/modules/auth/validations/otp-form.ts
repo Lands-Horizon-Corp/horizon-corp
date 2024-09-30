@@ -2,7 +2,7 @@ import z from 'zod'
 
 import { NUMBER_LETTER_REGEX } from '../constants'
 
-export const verifyFormSchema = z.object({
+export const otpFormSchema = z.object({
     code: z
         .string()
         .min(6, 'Code must be 6 digit long')

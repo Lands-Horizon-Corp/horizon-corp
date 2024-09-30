@@ -22,7 +22,9 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import PasswordInput from '@/components/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
+import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
@@ -48,13 +50,9 @@ interface Props extends IAuthForm<TSignUpForm> {}
 const SignUpForm = ({
     className,
     readOnly,
-    onError,
-    onLoading,
-    onSuccess,
     defaultValues = defaultValue,
 }: Props) => {
     const [loading, setLoading] = useState(false)
-    const [success, setSuccess] = useState(false)
 
     const form = useForm<TSignUpForm>({
         resolver: zodResolver(signUpFormSchema),
@@ -65,8 +63,8 @@ const SignUpForm = ({
 
     function onFormSubmit(data: TSignUpForm) {
         const parsedData = signUpFormSchema.parse(data)
-        console.log(parsedData)
         // TODO: Logic
+        // remove code bellow
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -75,14 +73,14 @@ const SignUpForm = ({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onFormSubmit)}
-                className={cn('flex w-[390px] flex-col gap-y-4', className)}
+                className={cn('flex w-full sm:w-[390px] flex-col gap-y-4', className)}
             >
                 <div className="flex items-center justify-center gap-x-2 py-4 font-medium">
                     <img src="/e-coop-logo-1.png" className="size-24" />
                     <p className="text-xl">Create your profile</p>
                 </div>
 
-                <fieldset disabled={loading} className="space-y-4">
+                <fieldset disabled={loading || readOnly} className="space-y-4">
                     <FormField
                         name="email"
                         control={form.control}
@@ -213,10 +211,9 @@ const SignUpForm = ({
                                         Password
                                     </FormLabel>
                                     <FormControl>
-                                        <Input
-                                            type="password"
-                                            placeholder="Password"
+                                        <PasswordInput
                                             {...field}
+                                            placeholder="Password"
                                         />
                                     </FormControl>
                                 </div>
@@ -233,10 +230,9 @@ const SignUpForm = ({
                                         Confirm Password
                                     </FormLabel>
                                     <FormControl>
-                                        <Input
-                                            placeholder="Confirm Password"
+                                        <PasswordInput
                                             {...field}
-                                            type="password"
+                                            placeholder="Confirm Password"
                                         />
                                     </FormControl>
                                 </div>
@@ -301,19 +297,16 @@ const SignUpForm = ({
                         )}
                     />
                 </fieldset>
-
-                {firstError && (
-                    <span className="mt-2 rounded-md bg-destructive/10 py-2 text-center text-sm text-destructive">
-                        {firstError}
-                    </span>
-                )}
-                <Button
-                    type="submit"
-                    disabled={firstError !== undefined || readOnly}
-                    className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
-                >
-                    {loading ? <LoadingCircle /> : 'Submit'}
-                </Button>
+                <div className="mt-4 flex flex-col space-y-2">
+                    <FormErrorMessage errorMessage={firstError} />
+                    <Button
+                        type="submit"
+                        disabled={loading || readOnly}
+                        className="bg-[#34C759] hover:bg-[#38b558]"
+                    >
+                        {loading ? <LoadingCircle /> : 'Submit'}
+                    </Button>
+                </div>
             </form>
         </Form>
     )
