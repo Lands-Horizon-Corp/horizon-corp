@@ -22,19 +22,25 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import PasswordInput from '@/components/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
-import { signInFormSchema } from '../../validations/sign-in-form'
+import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn } from '@/lib/utils'
+import { UserStatus } from '@/types'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { IBaseCompNoChild } from '@/types/component/base'
+import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
 
 type TSignIn = z.infer<typeof signInFormSchema>
 
-interface Props extends IBaseCompNoChild, IAuthForm<TSignIn> {}
+interface Props extends IBaseCompNoChild, IAuthForm<Partial<TSignIn>> {}
 
-const SignInForm = ({ defaultValues, className, readOnly }: Props) => {
+const SignInForm = ({
+    defaultValues,
+    className,
+    readOnly,
+    onSuccess,
+}: Props) => {
     const [loading, setLoading] = useState(false)
-    const [success, setSuccess] = useState(false)
 
     const router = useRouter()
 
@@ -42,13 +48,27 @@ const SignInForm = ({ defaultValues, className, readOnly }: Props) => {
         resolver: zodResolver(signInFormSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
-        defaultValues,
+        defaultValues: {
+            email: defaultValues?.email ?? '',
+            username: defaultValues?.username ?? '',
+            mode: defaultValues?.mode ?? 'Member',
+            password: '',
+        },
     })
 
     function onFormSubmit(data: TSignIn) {
         const parsedData = signInFormSchema.parse(data)
-        console.log(parsedData)
         // TODO: Logic
+        onSuccess?.({
+            id: '215',
+            username: 'Jervx',
+            validEmail: false,
+            validContactNumber: true,
+            status: UserStatus['Pending'],
+            profilePicture: {
+                url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
+            },
+        } as any)
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -57,14 +77,14 @@ const SignInForm = ({ defaultValues, className, readOnly }: Props) => {
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onFormSubmit)}
-                className={cn('flex w-[390px] flex-col gap-y-4', className)}
+                className={cn('flex w-full sm:w-[390px] flex-col gap-y-4', className)}
             >
                 <div className="flex items-center justify-center gap-x-2 py-4 font-medium">
                     <img src="/e-coop-logo-1.png" className="size-24" />
                     <p className="text-xl">Login to your account</p>
                 </div>
 
-                <fieldset disabled={loading} className="space-y-4">
+                <fieldset disabled={loading || readOnly} className="space-y-4">
                     <FormField
                         name="email"
                         control={form.control}
@@ -162,23 +182,22 @@ const SignInForm = ({ defaultValues, className, readOnly }: Props) => {
                         )}
                     />
                 </fieldset>
-
-                {firstError && (
-                    <span className="mt-2 rounded-md bg-destructive/10 py-2 text-center text-sm text-destructive">
-                        {firstError}
-                    </span>
-                )}
-                <div className="bg- flex flex-col space-y-2">
+                <div className="mt-6 flex flex-col space-y-2">
+                    <FormErrorMessage errorMessage={firstError} />
                     <Button
                         type="submit"
-                        disabled={firstError !== undefined || readOnly}
-                        className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
+                        disabled={loading || readOnly}
+                        className="bg-[#34C759] hover:bg-[#38b558]"
                     >
                         {loading ? <LoadingCircle /> : 'Login'}
                     </Button>
                     <Link
                         className="text-sm text-green-500"
                         to="/auth/forgot-password"
+                        search={{
+                            email: form.getValues('email'),
+                            mode: form.getValues('mode'),
+                        }}
                     >
                         Forgor Password
                     </Link>
