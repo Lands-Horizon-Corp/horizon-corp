@@ -73,7 +73,10 @@ const SignUpForm = ({
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit(onFormSubmit)}
-                className={cn('flex w-full sm:w-[390px] flex-col gap-y-4', className)}
+                className={cn(
+                    'flex w-full flex-col gap-y-4 sm:w-[390px]',
+                    className
+                )}
             >
                 <div className="flex items-center justify-center gap-x-2 py-4 font-medium">
                     <img src="/e-coop-logo-1.png" className="size-24" />
