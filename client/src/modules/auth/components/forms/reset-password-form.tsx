@@ -131,11 +131,7 @@ const ResetPasswordForm = ({
 
                 <div className="mt-4 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError} />
-                    <Button
-                        type="submit"
-                        disabled={loading || readOnly}
-                        className="bg-[#34C759] hover:bg-[#38b558]"
-                    >
+                    <Button type="submit" disabled={loading || readOnly}>
                         {loading ? <LoadingCircle /> : 'Save Password'}
                     </Button>
                 </div>

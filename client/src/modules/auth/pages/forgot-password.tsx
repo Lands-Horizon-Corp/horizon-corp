@@ -48,10 +48,10 @@ const ForgotPasswordPage = (_props: Props) => {
                         <div className="flex flex-col items-center gap-y-4 py-4 text-center">
                             <div className="relative p-8">
                                 <AiOutlineKey className="size-[53px] text-[#FF7E47]" />
-                                <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20"></div>
-                                <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20"></div>
+                                <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20" />
+                                <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20" />
                             </div>
-                            <MdMarkEmailRead className="size-[44px] text-[#34C759]" />
+                            <MdMarkEmailRead className="size-[44px] text-primary" />
                             <p className="text-xl font-medium">
                                 Password Reset Link Sent
                             </p>
@@ -62,12 +62,7 @@ const ForgotPasswordPage = (_props: Props) => {
                         <p className="text-center text-sm">
                             Didn&apos;t receive the email?
                         </p>
-                        <Button
-                            className="bg-[#34C759] hover:bg-[#38b558]"
-                            onClick={() => {}}
-                        >
-                            Resend
-                        </Button>
+                        <Button onClick={() => {}}>Resend</Button>
                         <Button
                             variant={'ghost'}
                             className="text-foreground/60"

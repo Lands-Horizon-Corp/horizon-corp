@@ -161,7 +161,7 @@ const VerifyForm = ({
                             Didn&apos;t receive the code?{' '}
                             <span
                                 onClick={() => setResent(true)}
-                                className="cursor-pointer text-[#34C759] hover:text-[#38b558] hover:underline"
+                                className="cursor-pointer text-primary hover:underline"
                             >
                                 Resend Code
                             </span>
@@ -181,14 +181,10 @@ const VerifyForm = ({
                             onClick={(e) => {
                                 e.preventDefault()
                             }}
-                            className="border-[#34C759]"
                         >
                             Change {verifyMode === 'email' ? 'Email' : 'Mobile'}
                         </Button>
-                        <Button
-                            type="submit"
-                            className="bg-[#34C759] hover:bg-[#38b558]"
-                        >
+                        <Button type="submit">
                             {loading ? <LoadingCircle /> : 'Submit'}
                         </Button>
                     </div>

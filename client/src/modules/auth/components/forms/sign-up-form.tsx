@@ -197,7 +197,7 @@ const SignUpForm = ({
                                                 placeholder="Contact Number"
                                                 {...field}
                                             />
-                                            <BsPatchCheck className="size-8 text-green-500" />
+                                            <BsPatchCheck className="size-8 text-primary" />
                                         </div>
                                     </FormControl>
                                 </div>
@@ -289,7 +289,7 @@ const SignUpForm = ({
                                         <Checkbox
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
-                                            className="border-[#34c759] hover:text-[#38b558] data-[state=checked]:bg-[#34C759]"
+                                            className=""
                                         />
                                     </FormControl>
                                     <FormLabel className="m-0 cursor-pointer p-0 font-medium">
@@ -302,11 +302,7 @@ const SignUpForm = ({
                 </fieldset>
                 <div className="mt-4 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError} />
-                    <Button
-                        type="submit"
-                        disabled={loading || readOnly}
-                        className="bg-[#34C759] hover:bg-[#38b558]"
-                    >
+                    <Button type="submit" disabled={loading || readOnly}>
                         {loading ? <LoadingCircle /> : 'Submit'}
                     </Button>
                 </div>
