@@ -7,7 +7,7 @@ const AuthPageWrapper = ({ className, children }: Props) => {
     return (
         <div
             className={cn(
-                'flex w-full justify-center p-6 sm:w-fit sm:rounded-xl sm:bg-background/80 sm:backdrop-blur-sm sm:shadow-2xl',
+                'flex w-full justify-center p-6 sm:w-fit sm:rounded-xl sm:bg-background/80 sm:shadow-2xl sm:backdrop-blur-sm',
                 className
             )}
         >

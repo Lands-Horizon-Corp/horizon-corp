@@ -59,7 +59,7 @@ const ForgotPasswordPage = (_props: Props) => {
                                 We've sent the reset link to your email address
                             </p>
                         </div>
-                        <p className="text-sm text-center">
+                        <p className="text-center text-sm">
                             Didn&apos;t receive the email?
                         </p>
                         <Button
