@@ -33,12 +33,7 @@ const AuthNavBar = (className: Props) => {
                             </Button>
                         </Link>
                         <Link to="/auth/sign-in">
-                            <Button
-                                variant="default"
-                                className="rounded-full bg-[#34C759] hover:bg-[#38b558]"
-                            >
-                                Sign In
-                            </Button>
+                            <Button className="rounded-full">Sign In</Button>
                         </Link>
                     </>
                 )}

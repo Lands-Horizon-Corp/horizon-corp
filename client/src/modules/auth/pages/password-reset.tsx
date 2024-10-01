@@ -65,7 +65,7 @@ const PasswordResetPage = (_props: Props) => {
                             </p>
                         </div>
                         <Button
-                            variant={'ghost'}
+                            variant="ghost"
                             className="text-foreground/60"
                             onClick={() => {
                                 router.navigate({
@@ -99,8 +99,6 @@ const PasswordResetPage = (_props: Props) => {
                             </p>
                         </div>
                         <Button
-                            variant={'ghost'}
-                            className="bg-[#34C759] text-white hover:bg-[#38b558]"
                             onClick={() => {
                                 router.navigate({
                                     to: '/auth/sign-in',
