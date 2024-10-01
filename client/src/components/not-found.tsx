@@ -9,7 +9,7 @@ const NotFoundPage = () => {
     const router = useRouter()
 
     return (
-        <div className="flex min-h-screen bg-secondary/60 p-4">
+        <div className="flex min-h-screen w-full p-4">
             <div className="flex flex-1 flex-col items-center justify-center gap-8 gap-y-4 rounded-xl bg-background sm:flex-row">
                 <HiXMark className="size-24" />
                 <div className="space-y-4">
