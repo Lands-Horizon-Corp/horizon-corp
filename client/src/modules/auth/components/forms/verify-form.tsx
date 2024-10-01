@@ -115,7 +115,7 @@ const VerifyForm = ({
                             : 'Email Address'}
                     </p>
                     <p className="max-w-[320px] text-center text-foreground/80">
-                        Enter the one time password sent to your {' '}
+                        Enter the one time password sent to your{' '}
                         {verifyMode === 'mobile' ? 'Mobile Number' : 'Email'}
                     </p>
                 </div>

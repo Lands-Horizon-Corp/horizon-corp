@@ -2,20 +2,17 @@ import React from 'react';
 import { RouterProvider } from '@tanstack/react-router';
 
 import router from '@/root-route';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 
 const TanStackRouterDevtoolsPanel =
     process.env.NODE_ENV === 'production'
-        ? () => null // Render nothing in production
+        ? () => null
         : React.lazy(() =>
-              // Lazy load in development
               import('@tanstack/router-devtools').then((res) => ({
                   default: res.TanStackRouterDevtools,
-                  // For Embedded Mode
-                  // default: res.TanStackRouterDevtoolsPanel
               }))
           );
 
-// for type safety hahaha
 declare module '@tanstack/react-router' {
     interface Register {
         router: typeof router;
@@ -24,10 +21,10 @@ declare module '@tanstack/react-router' {
 
 const App = () => {
     return (
-        <>
+        <ThemeProvider>
             <RouterProvider router={router} />
             <TanStackRouterDevtoolsPanel router={router} />
-        </>
+        </ThemeProvider>
     );
 };
 
