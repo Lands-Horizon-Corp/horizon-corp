@@ -187,15 +187,11 @@ const SignInForm = ({
                 </fieldset>
                 <div className="mt-6 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError} />
-                    <Button
-                        type="submit"
-                        disabled={loading || readOnly}
-                        className="bg-[#34C759] hover:bg-[#38b558]"
-                    >
+                    <Button type="submit" disabled={loading || readOnly}>
                         {loading ? <LoadingCircle /> : 'Login'}
                     </Button>
                     <Link
-                        className="text-sm text-green-500"
+                        className="text-sm text-primary"
                         to="/auth/forgot-password"
                         search={{
                             email: form.getValues('email'),
