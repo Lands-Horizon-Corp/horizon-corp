@@ -32,7 +32,7 @@ const navLinks: NavLink[] = [
     },
     {
         name: 'Developers',
-        path: '/dev',
+        path: '/developers',
         icon: <TbExternalLink />,
     },
 ]

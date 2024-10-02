@@ -31,7 +31,7 @@ const LandingPage = () => {
                             <Link to="/auth/sign-up">
                                 <Button
                                     className={cn(
-                                        'h-10 rounded-full bg-green-500 text-[min(18px,2.5vw)] hover:bg-green-500 xl:h-14 xl:px-5'
+                                        'h-10 rounded-full bg-green-500 text-[min(18px,2.5vw)] hover:bg-green-500 dark:text-white xl:h-14 xl:px-5'
                                     )}
                                 >
                                     Let's get Started
@@ -45,7 +45,7 @@ const LandingPage = () => {
                     className="h-auto w-[350px] pt-5 md:w-[500px] xl:w-[651px] xl:-translate-y-20"
                     alt="iamge-1"
                 ></img>
-                <div className="relative space-y-5">
+                <div className="relative space-y-2 lg:space-y-10">
                     <img
                         src={bg_element_4}
                         className="absolute -top-12 -z-40 h-auto w-[985px] 2xl:left-0"
@@ -78,7 +78,7 @@ const LandingPage = () => {
                         className="absolute -top-20 right-0 -z-40 h-auto w-[178px]"
                         alt="background"
                     />
-                    <h3 className="text-[min(25px,3.5vw)] font-bold">
+                    <h3 className="text-[min(25px,3.5vw)] font-bold lg:h-16">
                         A Glimpse of Visions and Successes Realized
                     </h3>
                     <div className="h-fit w-full space-y-5 self-center">
