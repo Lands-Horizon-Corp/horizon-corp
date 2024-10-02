@@ -6,18 +6,28 @@ import {
 } from '@/components/ui/tooltip'
 import { ReactNode } from '@tanstack/react-router'
 
-interface Props {
-    label: string
-    trigger: ReactNode
+export interface IActionTooltipProps {
+    tooltipContent: string
+    children?: ReactNode
+    delayDuration?: number
+    side?: 'top' | 'right' | 'bottom' | 'left' | undefined
+    align?: 'center' | 'end' | 'start' | undefined
 }
 
-const ActionTooltip = ({ label, trigger }: Props) => {
+const ActionTooltip = ({
+    tooltipContent,
+    children,
+    side,
+    align,
+    delayDuration,
+}: IActionTooltipProps) => {
+    console.log(children)
     return (
         <TooltipProvider>
-            <Tooltip>
-                <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-                <TooltipContent>
-                    <p>Add to library</p>
+            <Tooltip delayDuration={delayDuration}>
+                <TooltipTrigger asChild>{children}</TooltipTrigger>
+                <TooltipContent side={side} align={align}>
+                    <p>{tooltipContent}</p>
                 </TooltipContent>
             </Tooltip>
         </TooltipProvider>

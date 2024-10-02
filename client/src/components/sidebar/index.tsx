@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router'
 import { createContext, useContext, useState } from 'react'
 
 import { GoChevronLeft } from 'react-icons/go'
@@ -7,11 +8,14 @@ import SidebarItem from '@/components/sidebar/sidebar-item'
 
 import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
-import { ISidebarItem } from '@/types/component/sidebar'
+import type { TSidebarItem } from '@/types/component/sidebar'
+import { useTheme } from '../providers/theme-provider'
 
 interface Props extends IBaseComp {
-    items: ISidebarItem[]
+    items: TSidebarItem[]
+    expanded?: boolean
     enableCollapse?: boolean
+    enableFocusBlur?: boolean
 }
 
 const ExpandContext = createContext<boolean | null>(true)
@@ -25,22 +29,15 @@ export const useSidebarContext = () => {
     return sidebarContext
 }
 
-/*
-
-TODO:
-  Tooltip on !expand
-  space-y- on !expand
-  mobile view implement sheet form shadcn
-
-  Other routes & Pages
-
-  on Bottom current user + sign out, help, dev mode
-
-  add Batch Floating fixed bottom right Ecoop Beta 0.0.1
-*/
-
-const Sidebar = ({ className, items, enableCollapse = false }: Props) => {
-    const [expand, setExpand] = useState(true)
+const Sidebar = ({
+    className,
+    items,
+    expanded = true,
+    enableCollapse = false,
+    enableFocusBlur = false,
+}: Props) => {
+    const { resolvedTheme } = useTheme()
+    const [expand, setExpand] = useState(expanded)
 
     return (
         <div
@@ -57,15 +54,21 @@ const Sidebar = ({ className, items, enableCollapse = false }: Props) => {
                 )}
             >
                 <div className="relative z-0 flex w-fit items-center justify-center">
-                    <img
-                        src="/e-coop-logo-1.png"
-                        className={cn('z-10 size-24', !expand && 'size-6')}
-                    />
+                    <Link to="/member">
+                        <img
+                            src={
+                                resolvedTheme === 'light'
+                                    ? '/e-coop-logo-1.png'
+                                    : '/e-coop-logo-white.png'
+                            }
+                            className={cn('z-10 size-24', !expand && 'size-7')}
+                        />
+                    </Link>
                     <img
                         src="/e-coop-logo-1.png"
                         className={cn(
-                            'absolute inset-0 left-1/2 top-1/2 z-0 size-28 -translate-x-1/2 -translate-y-1/2 blur-lg selection:bg-none',
-                            !expand && 'size-6'
+                            'pointer-events-none absolute inset-0 left-1/2 top-1/2 z-0 size-28 -translate-x-1/2 -translate-y-[40%] -rotate-90 blur-lg selection:bg-none',
+                            !expand && 'size-8 blur-sm'
                         )}
                     />
                 </div>
@@ -75,7 +78,7 @@ const Sidebar = ({ className, items, enableCollapse = false }: Props) => {
                         variant="secondary"
                         onClick={() => setExpand((val) => !val)}
                         className={cn(
-                            'absolute -right-2 z-10 size-fit p-1',
+                            'absolute -right-2 z-50 size-fit p-1',
                             expand && '-right-3'
                         )}
                     >
@@ -91,7 +94,13 @@ const Sidebar = ({ className, items, enableCollapse = false }: Props) => {
             <ExpandContext.Provider value={expand}>
                 <div className="relative h-full max-h-full flex-1 overflow-y-hidden">
                     <div className="pointer-events-none absolute left-0 top-0 z-10 h-5 w-full bg-gradient-to-b from-background to-transparent" />
-                    <div className="ecoop-scroll z-0 flex max-h-full flex-col gap-y-1 overflow-y-scroll px-4 py-4">
+                    <div
+                        className={cn(
+                            'ecoop-scroll z-0 flex max-h-full flex-col gap-y-1 overflow-y-scroll px-4 py-4',
+                            !expand && 'gap-y-2',
+                            enableFocusBlur && 'group'
+                        )}
+                    >
                         {items.map((prop, key) => (
                             <SidebarItem key={key} {...prop} />
                         ))}

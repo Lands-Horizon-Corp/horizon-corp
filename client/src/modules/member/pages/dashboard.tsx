@@ -1,6 +1,4 @@
-interface Props {}
-
-const MemberDashboardPage = ({}: Props) => {
+const MemberDashboardPage = () => {
     return <div></div>
 }
 
