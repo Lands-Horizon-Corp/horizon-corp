@@ -1,10 +1,8 @@
 import { Link } from '@tanstack/react-router'
 
-type Props = {}
-
-const Footer = ({}: Props) => {
+const Footer = () => {
     return (
-        <div className="flex justify-center bg-[#F7F7F7]">
+        <div className="flex justify-center bg-[#F7F7F7] dark:bg-black">
             <div className="w-full max-w-[1200px]">
                 <div className="flex w-full flex-col justify-between gap-5 px-4 py-4 md:flex-row md:py-[72px] lg:px-[10px]">
                     <div className="font-medium">

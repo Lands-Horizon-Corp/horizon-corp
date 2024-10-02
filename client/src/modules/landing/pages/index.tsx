@@ -1,13 +1,17 @@
-import home_image_1 from '@/assets/images/home_image_1.png'
-import bg_element_4 from '@/assets/images/bg_element_4.png'
-import bg_element_5 from '@/assets/images/bg_element_5.png'
-import home_image_2 from '@/assets/images/home_image_2.png'
+// assets
+import home_image_1 from '@/assets/images/home_image_1.webp'
+import bg_element_4 from '@/assets/images/bg_element_4.webp'
+import bg_element_5 from '@/assets/images/bg_element_5.webp'
+import home_image_2 from '@/assets/images/home_image_2.webp'
+
+// Assets
 import { Button } from '@/components/ui/button'
+
+// Dependencies
 import { cn } from '@/lib/utils'
+import { Link } from '@tanstack/react-router'
 
-interface Props {}
-
-const LandingPage = (_props: Props) => {
+const LandingPage = () => {
     return (
         <div className="flex h-fit justify-center px-6 font-inter sm:px-8 lg:px-[60px] xl:px-[124px]">
             <div className="h-fit w-full max-w-[1240px]">
@@ -15,12 +19,26 @@ const LandingPage = (_props: Props) => {
                     Empowering Communities Through Cooperative Ownership
                 </h1>
                 <div className="flex w-full">
-                    <div className="grow"></div>
-                    <p className="w-full flex-none text-justify text-[min(25px,3.0vw)] font-semibold text-[#5A5A5A] md:w-[468px]">
-                        Cooperatives embody the power of community, where shared
-                        ownership and mutual aid transform economic challenges
-                        into opportunities for progress and empowerment.
-                    </p>
+                    <div className="grow" />
+                    <div>
+                        <p className="w-full flex-none text-justify text-[min(25px,3.0vw)] font-semibold text-[#5A5A5A] dark:text-[#cccccc] md:w-[468px]">
+                            Cooperatives embody the power of community, where
+                            shared ownership and mutual aid transform economic
+                            challenges into opportunities for progress and
+                            empowerment.
+                        </p>
+                        <div className="flex w-full items-center justify-center py-5">
+                            <Link to="/auth/sign-up">
+                                <Button
+                                    className={cn(
+                                        'h-10 rounded-full bg-green-500 text-[min(18px,2.5vw)] hover:bg-green-500 xl:h-14 xl:px-5'
+                                    )}
+                                >
+                                    Let's get Started
+                                </Button>
+                            </Link>
+                        </div>
+                    </div>
                 </div>
                 <img
                     src={home_image_1}
@@ -37,7 +55,7 @@ const LandingPage = (_props: Props) => {
                         <p className="text-[min(25px,3.5vw)] font-bold">
                             Mission
                         </p>
-                        <p className="mt-3 text-[min(25px,3.0vw)] font-normal lg:w-[80%] lg:leading-10">
+                        <p className="mt-3 text-[min(25px,3.0vw)] font-normal dark:text-[#cccccc] lg:w-[80%] lg:leading-10">
                             We offer top-tier financial products and related
                             services to all sectors of society, supporting their
                             sustainable growth.
@@ -47,7 +65,7 @@ const LandingPage = (_props: Props) => {
                         <p className="text-[min(25px,3.5vw)] font-bold">
                             Vision
                         </p>
-                        <p className="mt-3 text-[min(25px,3.0vw)] font-normal lg:w-[80%] lg:leading-10">
+                        <p className="mt-3 text-[min(25px,3.0vw)] font-normal dark:text-[#cccccc] lg:w-[80%] lg:leading-10">
                             A premier multi-purpose cooperative in Luzon
                             dedicated to serving both its members and the
                             community.
@@ -70,7 +88,7 @@ const LandingPage = (_props: Props) => {
                             alt="background"
                         />
                         <div>
-                            <p className="mt-10 text-justify indent-8 text-[min(23px,2.5vw)] xl:leading-[41px]">
+                            <p className="mt-10 text-justify indent-8 text-[min(23px,2.5vw)] dark:text-[#cccccc] xl:leading-[41px]">
                                 Cooperatives originated in the early 19th
                                 century, with the first established by the
                                 Rochdale Pioneers in 1844 to help working-class
@@ -84,13 +102,15 @@ const LandingPage = (_props: Props) => {
                             </p>
                         </div>
                         <div className="flex h-[130px] w-full items-center justify-center">
-                            <Button
-                                className={cn(
-                                    'h-10 rounded-full bg-green-500 text-[min(18px,2.5vw)] hover:bg-green-500 xl:h-14 xl:px-5'
-                                )}
-                            >
-                                Read more about us
-                            </Button>
+                            <Link to="/about">
+                                <Button
+                                    className={cn(
+                                        'h-10 rounded-full bg-green-500 text-[min(18px,2.5vw)] hover:bg-green-500 xl:h-14 xl:px-5'
+                                    )}
+                                >
+                                    Read more about us
+                                </Button>
+                            </Link>
                         </div>
                     </div>
                 </div>

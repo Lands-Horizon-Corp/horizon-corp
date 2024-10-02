@@ -1,9 +1,9 @@
-import bg_element_5 from '@/assets/images/bg_element_5.png'
-import about_image_1 from '@/assets/images/about_image_1.png'
-import about_bg_element_1 from '@/assets/images/about_bg_element_1.png'
-import about_picture_1 from '@/assets/images/about_picture_1.png'
-import about_picture_2 from '@/assets/images/about_picture_2.png'
-import about_picture_3 from '@/assets/images/about_picture_3.png'
+import bg_element_5 from '@/assets/images/bg_element_5.webp'
+import about_image_1 from '@/assets/images/about_image_1.webp'
+import about_bg_element_1 from '@/assets/images/about_bg_element_1.webp'
+import about_picture_1 from '@/assets/images/about_picture_1.webp'
+import about_picture_2 from '@/assets/images/about_picture_2.webp'
+import about_picture_3 from '@/assets/images/about_picture_3.webp'
 
 interface Props {}
 
