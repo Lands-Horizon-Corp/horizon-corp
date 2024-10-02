@@ -5,9 +5,8 @@ import LoadingCircle from '@/components/loader/loading-circle'
 
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
-import VerifyRoot from '../components/verify-root'
-import { Separator } from '@/components/ui/separator'
-import AccountCancelled from '../components/account-cancelled'
+import VerifyRoot from '@/modules/auth/components/verify-root'
+import AccountCancelled from '@/modules/auth/components/account-cancelled'
 
 import { UserBase, UserStatus } from '@/types'
 
@@ -68,8 +67,8 @@ const Verify = ({}: Props) => {
     }
 
     return (
-        <div className="flex flex-1 flex-col items-center px-4 py-4">
-            <div className="min-h-[50vh] max-w-lg py-4">
+        <div className="flex min-h-full flex-col items-center justify-center">
+            <div className="flex justify-center p-6 sm:rounded-xl sm:bg-background sm:shadow-2xl">
                 {loading && (
                     <div className="flex flex-col items-center gap-y-2">
                         <LoadingCircle />
@@ -96,9 +95,12 @@ const Verify = ({}: Props) => {
                                 <p className="text-xl font-medium text-green-500">
                                     Account Verify Complete
                                 </p>
-                                <p className="text-center text-foreground/60">
+                                <p className="text-center text-foreground/70">
                                     Your account email & phone number is
-                                    verified. Thank you for joining with us!
+                                    verified.{' '}
+                                    <span className="font-medium text-foreground/90">
+                                        Thank you for joining with us!
+                                    </span>
                                 </p>
                                 <UserAvatar
                                     className="size-28"
@@ -107,17 +109,22 @@ const Verify = ({}: Props) => {
                                         userData?.username.charAt(0) ?? '-'
                                     }
                                 />
-                                <Separator className="w-full" />
                                 <p className="text-center">
                                     {userData.status === UserStatus.Pending && (
                                         <span>
                                             Please wait for 7 working days for
-                                            validation. Your ID is{' '}
-                                            <span className="font-medium text-green-500">
-                                                {userData.id}
-                                            </span>
+                                            validation before you can use your
+                                            account, we will send an email once
+                                            your account is activated.
+                                            <br />
                                         </span>
                                     )}
+                                </p>
+                                <p className="px-4 text-center">
+                                    Your ID is{' '}
+                                    <span className="font-medium text-green-500">
+                                        {userData.id}
+                                    </span>
                                 </p>
                                 <Button
                                     onClick={() =>

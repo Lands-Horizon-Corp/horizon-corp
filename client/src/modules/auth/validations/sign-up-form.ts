@@ -1,7 +1,7 @@
 import z from 'zod'
 
+import { memberTypeSchema } from '.'
 import { PASSWORD_MIN_LENGTH, LETTERS_REGEX } from '../constants'
-import { AuthModeSchema } from '.'
 
 export const signUpFormSchema = z
     .object({
@@ -41,7 +41,7 @@ export const signUpFormSchema = z
             .string({ required_error: 'Password is required' })
             .min(
                 PASSWORD_MIN_LENGTH,
-                `Password must atleast ${PASSWORD_MIN_LENGTH}`
+                `Password must atleast ${PASSWORD_MIN_LENGTH} characters`
             ),
         confirmPassword: z
             .string({ required_error: 'Confirm password' })
@@ -57,7 +57,7 @@ export const signUpFormSchema = z
                     message: 'You must accept the terms and conditions',
                 }
             ),
-        mode: AuthModeSchema,
+        mode: memberTypeSchema,
     })
     .refine(({ password, confirmPassword }) => password === confirmPassword, {
         message: "Password doesn't match",
