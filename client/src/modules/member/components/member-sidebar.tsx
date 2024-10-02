@@ -10,9 +10,9 @@ import {
 
 import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
-import { ISidebarItem } from '@/types/component/sidebar'
+import { TSidebarItem } from '@/types/component/sidebar'
 
-const memberSidebarItems: ISidebarItem[] = [
+const memberSidebarItems: TSidebarItem[] = [
     {
         text: 'Dashboard',
         url: '/member/dashboard',
@@ -46,6 +46,7 @@ const MemberSidebar = ({ className }: Props) => {
     return (
         <Sidebar
             enableCollapse
+            enableFocusBlur
             items={memberSidebarItems}
             className={cn('', className)}
         />
