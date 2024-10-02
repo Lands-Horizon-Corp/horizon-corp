@@ -9,7 +9,7 @@ interface Props {}
 
 const LandingPage = (_props: Props) => {
     return (
-        <div className="flex h-[100vh] justify-center px-6 font-inter sm:px-8 lg:px-[60px] xl:px-[124px]">
+        <div className="flex h-fit justify-center px-6 font-inter sm:px-8 lg:px-[60px] xl:px-[124px]">
             <div className="h-fit w-full max-w-[1240px]">
                 <h1 className="w-[80%] pt-2 text-[min(64px,5.5vw)] font-black capitalize md:pt-20 lg:leading-[4.8rem]">
                     Empowering Communities Through Cooperative Ownership
@@ -83,10 +83,10 @@ const LandingPage = (_props: Props) => {
                                 and mutual support.
                             </p>
                         </div>
-                        <div className=" h-[130px] w-full flex justify-center items-center">
+                        <div className="flex h-[130px] w-full items-center justify-center">
                             <Button
                                 className={cn(
-                                    'text-[min(18px,2.5vw)] h-10 xl:h-14 xl:px-5 rounded-full bg-green-500 hover:bg-green-500'
+                                    'h-10 rounded-full bg-green-500 text-[min(18px,2.5vw)] hover:bg-green-500 xl:h-14 xl:px-5'
                                 )}
                             >
                                 Read more about us
