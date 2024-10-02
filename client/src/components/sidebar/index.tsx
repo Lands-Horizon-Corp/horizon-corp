@@ -8,8 +8,8 @@ import SidebarItem from '@/components/sidebar/sidebar-item'
 
 import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
-import type { TSidebarItem } from '@/types/component/sidebar'
 import { useTheme } from '../providers/theme-provider'
+import type { TSidebarItem } from '@/types/component/sidebar'
 
 interface Props extends IBaseComp {
     items: TSidebarItem[]
@@ -42,9 +42,10 @@ const Sidebar = ({
     return (
         <div
             className={cn(
-                'flex h-screen min-w-[260px] flex-col gap-y-4 border-r bg-background py-4 duration-300 ease-in-out',
+                'flex h-screen min-w-[260px] flex-col gap-y-4 bg-background py-4 duration-300 ease-in-out',
                 className,
-                !expand && 'min-w-fit'
+                !expand && 'min-w-fit',
+                enableCollapse && "border-r"
             )}
         >
             <div

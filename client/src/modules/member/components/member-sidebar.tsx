@@ -1,5 +1,3 @@
-import Sidebar from '@/components/sidebar'
-
 import {
     HiOutlineCog,
     HiOutlineUser,
@@ -8,9 +6,9 @@ import {
     HiOutlineChatBubbleOvalLeft,
 } from 'react-icons/hi2'
 
-import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
 import { TSidebarItem } from '@/types/component/sidebar'
+import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 
 const memberSidebarItems: TSidebarItem[] = [
     {
@@ -44,11 +42,9 @@ interface Props extends IBaseComp {}
 
 const MemberSidebar = ({ className }: Props) => {
     return (
-        <Sidebar
-            enableCollapse
-            enableFocusBlur
-            items={memberSidebarItems}
-            className={cn('', className)}
+        <DynamicSidebar
+            sidebarItems={memberSidebarItems}
+            className={className}
         />
     )
 }
