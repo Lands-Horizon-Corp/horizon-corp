@@ -1,16 +1,16 @@
+// Dependencies
 import { Outlet } from '@tanstack/react-router'
-import { ReactNode } from '@tanstack/react-router'
+
+//assets
+import bg_element_1 from '@/assets/images/bg_element_1.webp'
+import bg_element_2 from '@/assets/images/bg_element_2.webp'
+import bg_element_3 from '@/assets/images/bg_element_3.webp'
+
+// components
 import NavBar from './pages/_components/navbar'
-import bg_element_1 from '@/assets/images/bg_element_1.png'
-import bg_element_2 from '@/assets/images/bg_element_2.png'
-import bg_element_3 from '@/assets/images/bg_element_3.png'
 import Footer from './pages/_components/footer'
 
-interface Props {
-    children?: ReactNode
-}
-
-const PublicLayout = (_props: Props) => {
+const PublicLayout = () => {
     return (
         <>
             <div className="relative overflow-hidden">

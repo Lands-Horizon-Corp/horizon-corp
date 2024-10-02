@@ -1,7 +1,18 @@
-import { contactFormSchema } from '@/modules/auth/validations/contact-form'
+// Dependencies
 import z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { AiOutlineMessage } from 'react-icons/ai'
+import { MdOutlineEmail } from 'react-icons/md'
+import { IoCallOutline } from 'react-icons/io5'
+import { CgFacebook } from 'react-icons/cg'
+import { Link } from '@tanstack/react-router'
+
+// Libraries
+import { contactFormSchema } from '@/modules/auth/validations/contact-form'
+import { cn } from '@/lib/utils'
+
+// Components
 import {
     Form,
     FormControl,
@@ -11,19 +22,11 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { AiOutlineMessage } from 'react-icons/ai'
-import { MdOutlineEmail } from 'react-icons/md'
-import { IoCallOutline } from 'react-icons/io5'
-import { CgFacebook } from 'react-icons/cg'
-import { Link } from '@tanstack/react-router'
-
-interface Props {}
 
 type TContact = z.infer<typeof contactFormSchema>
 
-const ContactPage = (_props: Props) => {
+const ContactPage = () => {
     const defaultValues = {
         firstName: '',
         lastName: '',

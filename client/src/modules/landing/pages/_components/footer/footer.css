@@ -1,7 +1,0 @@
-.scale-effects {
-    @apply transform transition-transform duration-150 ease-in-out hover:scale-105;
-}
-
-.footer-link {
-    @apply text-[min(14px,2.5vw)] text-[#727272];
-}
