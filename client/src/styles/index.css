@@ -86,3 +86,15 @@
 .ecoop-scroll::-webkit-scrollbar-thumb {
     @apply rounded-full bg-stone-800/40 dark:bg-stone-400/40;
 }
+
+.scale-effects {
+    @apply transform transition-transform duration-150 ease-in-out hover:scale-105;
+}
+
+.footer-link {
+    @apply text-[min(14px,2.5vw)] text-[#727272];
+}
+
+.nav-links {
+    @apply text-[min(15px,2.5vw)];
+}
