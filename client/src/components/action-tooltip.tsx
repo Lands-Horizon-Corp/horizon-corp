@@ -21,7 +21,6 @@ const ActionTooltip = ({
     align,
     delayDuration,
 }: IActionTooltipProps) => {
-    console.log(children)
     return (
         <TooltipProvider>
             <Tooltip delayDuration={delayDuration}>
