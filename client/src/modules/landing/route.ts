@@ -3,7 +3,7 @@ import { createRoute } from '@tanstack/react-router'
 import LandingPage from '@/modules/landing/pages'
 import AboutPage from '@/modules/landing/pages/about'
 import ContactPage from '@/modules/landing/pages/contact'
-
+import DevelopersPage from '@/modules/landing/pages/developers'
 import PublicLayout from '@/modules/landing/layout'
 
 import { rootRoute } from '@/root-route'
@@ -32,9 +32,16 @@ const contactRoute = createRoute({
     component: ContactPage,
 })
 
+const developersRoute = createRoute({
+    getParentRoute: () => landingRoute,
+    path: 'developers',
+    component: DevelopersPage,
+})
+
 const LandingRoute = landingRoute.addChildren([
     aboutRoute,
     contactRoute,
+    developersRoute,
     landingIndexRoute,
 ])
 

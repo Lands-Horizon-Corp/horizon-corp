@@ -1,19 +1,41 @@
-import { Link, Outlet } from '@tanstack/react-router'
+// Dependencies
+import { Outlet } from '@tanstack/react-router'
 
-interface Props {}
+//assets
+import bg_element_1 from '@/assets/images/bg_element_1.webp'
+import bg_element_2 from '@/assets/images/bg_element_2.webp'
+import bg_element_3 from '@/assets/images/bg_element_3.webp'
 
-const PublicLayout = (_props: Props) => {
+// components
+import NavBar from './pages/_components/navbar'
+import Footer from './pages/_components/footer'
+
+const PublicLayout = () => {
     return (
-        <div>
-            <nav className="flex gap-x-2">
-                <Link to="/">Home</Link>
-                <Link to="/about">About</Link>
-                <Link to="/contact">Contact</Link>
-                <Link to="/auth/sign-in">Sign-In</Link>
-                <Link to="/auth/sign-up">Sign-Up</Link>
-            </nav>
-            <Outlet />
-        </div>
+        <>
+            <div className="relative overflow-hidden">
+                <img
+                    src={bg_element_1}
+                    className="absolute left-[50%] -z-30 h-auto w-[1781px] -translate-x-[50%]"
+                    alt="background"
+                />
+                <img
+                    src={bg_element_2}
+                    className="absolute left-[90%] -z-30 h-auto w-[1681px] -translate-x-[50%] 2xl:left-[85%]"
+                    alt="background"
+                />
+                <img
+                    src={bg_element_3}
+                    className="absolute left-[50%] -z-40 h-auto w-[1440px] -translate-x-[50%] opacity-30 2xl:left-[50%]"
+                    alt="background"
+                />
+                <main className="w-full">
+                    <NavBar />
+                    <Outlet />
+                    <Footer />
+                </main>
+            </div>
+        </>
     )
 }
 
