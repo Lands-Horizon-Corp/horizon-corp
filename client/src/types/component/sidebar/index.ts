@@ -18,7 +18,7 @@ export interface IClickableSidebarItem extends ISidebarItemBase {
 }
 
 export interface IExpandableSidebarItem extends ISidebarItemBase {
-    baseUrl: string
+    baseUrl? : string
     subItems: TSidebarItem[]
 
     url?: never
