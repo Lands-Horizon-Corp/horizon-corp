@@ -1,8 +1,13 @@
 {
     "name": "client",
     "private": true,
-    "version": "0.0.0",
+    "version": "0.0.1",
     "type": "module",
+    "engines": {
+        "node": ">=20.17.0 <21.0.0",
+        "npm": ">=10.8.2 <11.0.0",
+        "pnpm": ">=9.10.0 <10.0.0"
+    },
     "scripts": {
         "dev": "vite --port 3000 --host",
         "dev-docker": "vite --port 80 --host",
@@ -11,12 +16,15 @@
         "preview": "vite preview",
         "fc": "prettier . -c",
         "fw": "prettier . -w",
-        "build": "tsc -b && vite build"
+        "build": "tsc -b && vite build",
+        "preinstall": "node -e \"const { engines } = require('./package.json'); const semver = require('semver'); const currentNodeVersion = process.version; const currentNpmVersion = process.env.npm_config_user_agent ? process.env.npm_config_user_agent.split(' ')[0] : ''; const currentPnpmVersion = require('pnpm').version; if (!semver.satisfies(currentNodeVersion, engines.node)) { console.error(`Required node version ${engines.node}, but found ${currentNodeVersion}`); process.exit(1); } if (!semver.satisfies(currentNpmVersion, engines.npm)) { console.error(`Required npm version ${engines.npm}, but found ${currentNpmVersion}`); process.exit(1); } if (!semver.satisfies(currentPnpmVersion, engines.pnpm)) { console.error(`Required pnpm version ${engines.pnpm}, but found ${currentPnpmVersion}`); process.exit(1); }\""
     },
     "dependencies": {
         "@hookform/resolvers": "^3.9.0",
         "@radix-ui/react-avatar": "^1.1.0",
         "@radix-ui/react-checkbox": "^1.1.1",
+        "@radix-ui/react-collapsible": "^1.1.0",
+        "@radix-ui/react-dialog": "^1.1.2",
         "@radix-ui/react-dropdown-menu": "^2.1.1",
         "@radix-ui/react-label": "^2.1.0",
         "@radix-ui/react-progress": "^1.1.0",
@@ -24,6 +32,7 @@
         "@radix-ui/react-select": "^2.1.1",
         "@radix-ui/react-separator": "^1.1.0",
         "@radix-ui/react-slot": "^1.1.0",
+        "@radix-ui/react-tooltip": "^1.1.2",
         "@tanstack/react-router": "^1.58.3",
         "@tanstack/router-zod-adapter": "^1.58.9",
         "@types/node": "^22.5.5",
@@ -31,7 +40,6 @@
         "clsx": "^2.1.1",
         "input-otp": "^1.2.4",
         "lucide-react": "^0.441.0",
-        "next-themes": "^0.3.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-hook-form": "^7.53.0",
