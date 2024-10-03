@@ -65,7 +65,7 @@ const ownerSidebarItem: TSidebarItem[] = [
                     },
                     {
                         text: 'Employee Footsteps',
-                        url: '/employee-footstep',
+                        url: '/employee-footsteps',
                         Icon: IoFootstepsOutline,
                     },
                 ],
@@ -75,7 +75,7 @@ const ownerSidebarItem: TSidebarItem[] = [
     {
         text: 'Roles Management',
         Icon: LiaShieldAltSolid,
-        url: '/owner/role-management',
+        url: '/owner/roles-management',
     },
     {
         text: 'Company',

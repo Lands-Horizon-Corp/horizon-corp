@@ -1,6 +1,7 @@
 const OwnerLandingPage = () => {
     return (
         <div>
+            Owner Page
         </div>
     )
 }
