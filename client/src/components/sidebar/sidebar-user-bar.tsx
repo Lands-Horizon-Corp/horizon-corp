@@ -17,10 +17,10 @@ import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component/base'
 
 interface Props extends IBaseCompNoChild {
-    expand: boolean
+    isExpanded: boolean
 }
 
-const SidebarUserBar = ({ className, expand }: Props) => {
+const SidebarUserBar = ({ className, isExpanded }: Props) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -28,7 +28,7 @@ const SidebarUserBar = ({ className, expand }: Props) => {
                     className={cn(
                         'group flex cursor-pointer items-center justify-between gap-x-2 rounded-lg bg-none duration-100 ease-out hover:bg-none',
                         className,
-                        expand &&
+                        isExpanded &&
                             'bg-secondary/20 px-3 py-2 hover:bg-secondary/70'
                     )}
                 >
@@ -38,12 +38,12 @@ const SidebarUserBar = ({ className, expand }: Props) => {
                             fallback="A"
                             className={cn(
                                 'size-9 rounded-[4rem] duration-150 ease-in-out',
-                                !expand && 'hover:rounded-[6px]'
+                                !isExpanded && 'hover:rounded-[6px]'
                             )}
                         />
-                        {expand && <p>Amada</p>}
+                        {isExpanded && <p>Amada</p>}
                     </span>
-                    {expand && (
+                    {isExpanded && (
                         <ChevronRightIcon className="opacity-30 delay-200 duration-150 ease-in group-hover:opacity-100" />
                     )}
                 </div>
