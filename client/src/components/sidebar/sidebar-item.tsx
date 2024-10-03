@@ -1,16 +1,15 @@
 import { FC, useState } from 'react'
 import { useLocation, useRouter } from '@tanstack/react-router'
 
-import { useSidebarContext } from '@/components/sidebar'
 import type { TSidebarItem } from '@/types/component/sidebar'
+import { useSidebarExpandContext } from '@/components/sidebar'
 import SidebarItemContent from '@/components/sidebar/sidebar-item-content'
 import SidebarItemWithTooltip from '@/components/sidebar/sidebar-with-tooltip-wrapper'
 
 import { cn } from '@/lib/utils'
 import {
     concatParentUrl,
-    sidebarCollapsableRouteMatcher,
-    sidebarItemRouteMatcher,
+    sidebarRouteMatcher,
 } from '@/components/sidebar/sidebar-utils'
 
 const SidebarItem: FC<TSidebarItem> = (props) => {
@@ -19,38 +18,38 @@ const SidebarItem: FC<TSidebarItem> = (props) => {
         select: (location) => location.pathname,
     })
 
-    const expand = useSidebarContext()
+    const isExpanded = useSidebarExpandContext()
 
-    const [collapse, setcollapse] = useState(props.collapsed)
+    const [isCollapsed, setIsCollapsed] = useState(props.isCollapseEnabled)
 
     if (props.component) {
         return props.component
     } else if (props.subItems) {
         const { text, Icon, subItems, baseUrl, isSub } = props
 
-        const routeMatched = sidebarCollapsableRouteMatcher(baseUrl, pathname)
+        const isRouteMatched = sidebarRouteMatcher(baseUrl, pathname)
 
         return (
             <>
                 <SidebarItemWithTooltip
-                    enableTooltip={!expand}
+                    enableTooltip={!isExpanded}
                     tooltipContent={text}
                 >
                     <SidebarItemContent
                         Icon={Icon}
                         text={text}
                         isSub={isSub}
-                        expand={expand}
-                        collapse={collapse}
-                        active={routeMatched}
-                        onCollapse={() => setcollapse((val) => !val)}
+                        isExpanded={isExpanded}
+                        isCollapsed={isCollapsed}
+                        isActive={isRouteMatched}
+                        onCollapse={() => setIsCollapsed((val) => !val)}
                     />
                 </SidebarItemWithTooltip>
-                {collapse && (
+                {isCollapsed && (
                     <div
                         className={cn(
-                            'ml-3.5 flex flex-col gap-y-1 border-l pl-2',
-                            !expand && 'gap-y-2 pl-1'
+                            'ml-3.5 flex flex-col gap-y-2 border-l pl-1',
+                            isExpanded && 'gap-y-1 pl-2'
                         )}
                     >
                         {subItems.map((subItem) => {
@@ -90,19 +89,19 @@ const SidebarItem: FC<TSidebarItem> = (props) => {
     } else {
         const { text, Icon, url, isSub } = props
 
-        const routeMatched = sidebarItemRouteMatcher(url, pathname)
+        const isRouteMatched = sidebarRouteMatcher(url, pathname)
 
         return (
             <SidebarItemWithTooltip
-                enableTooltip={!expand}
                 tooltipContent={text}
+                enableTooltip={!isExpanded}
             >
                 <SidebarItemContent
                     Icon={Icon}
                     text={text}
                     isSub={isSub}
-                    expand={expand}
-                    active={routeMatched}
+                    isExpanded={isExpanded}
+                    isActive={isRouteMatched}
                     onClick={() => router.navigate({ to: url })}
                 />
             </SidebarItemWithTooltip>

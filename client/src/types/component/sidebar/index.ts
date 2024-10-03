@@ -13,26 +13,25 @@ export interface IClickableSidebarItem extends ISidebarItemBase {
     url: string
     baseUrl?: never
     subItems?: never
-    collapsed?: never
     component?: never
+    isCollapseEnabled?: never
 }
 
 export interface IExpandableSidebarItem extends ISidebarItemBase {
-    baseUrl? : string
-    subItems: TSidebarItem[]
-
     url?: never
-    collapsed?: boolean
+    baseUrl?: string
     component?: never
+    subItems: TSidebarItem[]
+    isCollapseEnabled?: boolean
 }
 
 export interface IComponentSidebarItem extends ISidebarItemBase {
-    component?: ReactNode
     url?: never
-    isSub?: never
     Icon?: never
+    isSub?: never
     subItems?: never
-    collapsed?: never
+    component?: ReactNode
+    isCollapseEnabled?: never
 }
 
 export type TSidebarItem =
