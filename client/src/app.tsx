@@ -23,7 +23,10 @@ const App = () => {
     return (
         <ThemeProvider>
             <RouterProvider router={router} />
-            <TanStackRouterDevtoolsPanel position="bottom-right" router={router} />
+            <TanStackRouterDevtoolsPanel
+                position="bottom-right"
+                router={router}
+            />
         </ThemeProvider>
     );
 };

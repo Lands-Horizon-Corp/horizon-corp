@@ -1,9 +1,9 @@
 import {
-    DashboardIcon,
-    MessagesIcon,
-    NotificationIcon,
-    SettingsIcon,
     UserIcon,
+    SettingsIcon,
+    MessagesIcon,
+    DashboardIcon,
+    NotificationIcon,
 } from '@/components/icons'
 import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 

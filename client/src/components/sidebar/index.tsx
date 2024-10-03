@@ -5,12 +5,12 @@ import { GoChevronLeft } from 'react-icons/go'
 
 import { Button } from '@/components/ui/button'
 import SidebarItem from '@/components/sidebar/sidebar-item'
+import SidebarUserBar from '@/components/sidebar/sidebar-user-bar'
 
 import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
-import { useTheme } from '../providers/theme-provider'
 import type { TSidebarItem } from '@/types/component/sidebar'
-import SidebarUserBar from './sidebar-user-bar'
+import { useTheme } from '@/components/providers/theme-provider'
 
 interface Props extends IBaseComp {
     items: TSidebarItem[]

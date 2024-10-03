@@ -1,15 +1,15 @@
 import { createRoute } from '@tanstack/react-router'
 
 import AdminLandingPage from './pages'
+import AdminProfilePage from './pages/profile'
+import AdminSettingsPage from './pages/settings'
 import AdminDashboardPage from './pages/dashboard'
+import AdminNotificationsPage from './pages/notifications'
+import AdminFootstepsTrackingsPage from './pages/footsteps'
 import AdminViewMembersPage from './pages/members/view-members'
 import AdminMembersFeedbacksPage from './pages/members/feedbacks'
 import AdminViewCompaniesPage from './pages/companies-management/view-companies'
 import AdminCompaniesFeedbacksPage from './pages/companies-management/feedbacks'
-import AdminFootstepsTrackingsPage from './pages/footsteps'
-import AdminProfilePage from './pages/profile'
-import AdminNotificationsPage from './pages/notifications'
-import AdminSettingsPage from './pages/settings'
 
 import AdminLayout from '@/modules/admin/layout'
 
