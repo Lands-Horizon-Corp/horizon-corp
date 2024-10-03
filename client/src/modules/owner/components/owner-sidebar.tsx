@@ -111,12 +111,12 @@ const ownerSidebarItem: TSidebarItem[] = [
     },
     {
         text: 'Profile',
-        Icon : HiOutlineUser,
+        Icon: HiOutlineUser,
         url: '/owner/profile',
     },
     {
         text: 'Settings',
-        Icon : HiOutlineCog,
+        Icon: HiOutlineCog,
         url: '/owner/settings',
     },
 ]

@@ -1,10 +1,10 @@
 import { Outlet } from '@tanstack/react-router'
-import AdminSidebar from './components/admin-sidebar'
+import EmployeeSidebar from './components/employee-sidebar'
 
-const AdminLayout = () => {
+const OwnerLayout = () => {
     return (
         <div className="grid min-h-[100dvh] grid-cols-[auto_1fr]">
-            <AdminSidebar />
+            <EmployeeSidebar />
             <main className="">
                 <Outlet />
             </main>
@@ -12,4 +12,4 @@ const AdminLayout = () => {
     )
 }
 
-export default AdminLayout
+export default OwnerLayout

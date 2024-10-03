@@ -10,6 +10,7 @@ export const concatParentUrl = ({
     return `${baseUrl}${url}`
 }
 
+// TOFIX
 export const sidebarCollapsableRouteMatcher = (
     selfUrl: string = '',
     toCompareUrl: string
@@ -17,6 +18,7 @@ export const sidebarCollapsableRouteMatcher = (
     return toCompareUrl.startsWith(selfUrl) && toCompareUrl !== selfUrl
 }
 
+// TOFIX
 export const sidebarItemRouteMatcher = (
     selfUrl: string = '',
     toCompareUrl: string

@@ -1,9 +1,5 @@
 const OwnerViewEmployeesPage = () => {
-    return (
-        <div>
-            View Employees Page 
-        </div>
-    )
+    return <div>View Employees Page</div>
 }
 
 export default OwnerViewEmployeesPage
