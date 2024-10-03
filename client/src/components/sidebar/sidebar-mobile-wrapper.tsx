@@ -1,11 +1,9 @@
 import { ReactNode } from '@tanstack/react-router'
-import {
-    Sheet,
-    SheetTrigger,
-    SheetContent,
-} from '../ui/sheet'
+import { Sheet, SheetTrigger, SheetContent } from '../ui/sheet'
 
-interface Props { children? : ReactNode}
+interface Props {
+    children?: ReactNode
+}
 
 const SidebarMobileWrapper = ({ children }: Props) => {
     return (

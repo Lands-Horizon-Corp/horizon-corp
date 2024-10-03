@@ -15,7 +15,7 @@ const DynamicSidebar = ({ className, sidebarItems }: Props) => {
             <div className="hidden sm:block">
                 <Sidebar
                     enableCollapse
-                    // enableFocusBlur
+                    enableFocusBlur
                     items={sidebarItems}
                     className={cn('', className)}
                 />

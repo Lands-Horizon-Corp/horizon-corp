@@ -9,15 +9,13 @@ import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component/base'
 
 interface Props extends IBaseCompNoChild {
-    Icon?: IconType
     text: string
-    className?: string
-
     isSub?: boolean
-    expand: boolean
-    active?: boolean
-    collapse?: boolean
-
+    Icon?: IconType
+    className?: string
+    isActive?: boolean
+    isCollapsed?: boolean
+    isExpanded: boolean
     onClick?: () => void
     onCollapse?: () => void
 }
@@ -27,11 +25,11 @@ const SidebarItemContent = forwardRef<HTMLDivElement, Props>(
         {
             Icon,
             text,
-            expand,
-            collapse,
             className,
-            active = false,
+            isExpanded,
+            isCollapsed,
             isSub = false,
+            isActive = false,
             onCollapse,
             onClick,
             ...other
@@ -44,23 +42,22 @@ const SidebarItemContent = forwardRef<HTMLDivElement, Props>(
                 {...other}
                 onClick={onCollapse ?? onClick}
                 className={cn(
-                    'group relative flex cursor-pointer items-center justify-between gap-x-3 rounded-lg border border-transparent px-2 py-2 font-light duration-300 ease-in-out hover:bg-secondary/80 hover:text-foreground group-hover:blur-[.5px] group-hover:hover:blur-none',
-                    active && 'font-medium',
+                    'group/navself relative flex cursor-pointer items-center justify-between gap-x-3 rounded-lg border border-transparent px-2 py-2 font-light duration-300 ease-in-out hover:bg-secondary/85 hover:text-foreground group-hover:blur-[0.7px] group-hover:hover:blur-none',
+                    isActive && 'font-medium',
                     !onCollapse &&
-                        active &&
+                        isActive &&
                         'bg-secondary/70 dark:bg-secondary/40',
-                    !expand && 'w-fit p-1',
+                    !isExpanded && 'w-fit p-1',
                     className
                 )}
             >
-                {(isSub || active) && (
+                {(isSub || isActive) && (
                     <div
                         className={cn(
-                            'absolute left-[-11px] size-1.5 rounded-full bg-secondary duration-300 ease-in-out',
-                            active && 'bg-primary',
+                            'absolute left-[-11px] size-1.5 rounded-full bg-secondary delay-100 duration-300 ease-out group-hover/navself:bg-primary',
+                            isActive && 'bg-primary',
                             isSub && 'left-[-12px]',
-                            // isSub && !expand && "left-[-6.8]",
-                            !expand && 'left-[-7.8px]'
+                            !isExpanded && 'left-[-7.8px]'
                         )}
                     />
                 )}
@@ -68,12 +65,12 @@ const SidebarItemContent = forwardRef<HTMLDivElement, Props>(
                     {Icon && (
                         <Icon
                             className={cn(
-                                'size-6 text-foreground/40 duration-500 group-hover:text-foreground',
-                                active && 'text-foreground'
+                                'size-6 text-foreground/40 duration-500 group-hover/navself:text-foreground',
+                                isActive && 'text-foreground'
                             )}
                         />
                     )}
-                    {expand && text}
+                    {isExpanded && text}
                 </span>
                 {onCollapse && (
                     <Button
@@ -81,15 +78,15 @@ const SidebarItemContent = forwardRef<HTMLDivElement, Props>(
                         variant="ghost"
                         className={cn(
                             'size-fit p-[3px] hover:bg-transparent',
-                            !expand &&
+                            !isExpanded &&
                                 'absolute -right-2.5 delay-200 group-hover:bg-secondary'
                         )}
                     >
                         <GoChevronDown
                             className={cn(
                                 'size-3 duration-300 ease-in-out',
-                                collapse && '-rotate-180 text-primary',
-                                !expand && 'size-2'
+                                isCollapsed && '-rotate-180 text-primary',
+                                !isExpanded && 'size-2'
                             )}
                         />
                     </Button>
