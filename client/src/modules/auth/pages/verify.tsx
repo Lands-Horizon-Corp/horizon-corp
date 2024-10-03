@@ -5,6 +5,7 @@ import LoadingCircle from '@/components/loader/loading-circle'
 
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
+import AuthPageWrapper from '../components/auth-page-wrapper'
 import VerifyRoot from '@/modules/auth/components/verify-root'
 import AccountCancelled from '@/modules/auth/components/account-cancelled'
 
@@ -68,7 +69,7 @@ const Verify = ({}: Props) => {
 
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
-            <div className="flex justify-center p-6 sm:rounded-xl sm:bg-background sm:shadow-2xl">
+            <AuthPageWrapper>
                 {loading && (
                     <div className="flex flex-col items-center gap-y-2">
                         <LoadingCircle />
@@ -103,7 +104,7 @@ const Verify = ({}: Props) => {
                                     </span>
                                 </p>
                                 <UserAvatar
-                                    className="size-28"
+                                    className="my-8 size-28"
                                     src={userData?.profilePicture?.url ?? ''}
                                     fallback={
                                         userData?.username.charAt(0) ?? '-'
@@ -142,7 +143,7 @@ const Verify = ({}: Props) => {
                         )}
                     </>
                 )}
-            </div>
+            </AuthPageWrapper>
         </div>
     )
 }

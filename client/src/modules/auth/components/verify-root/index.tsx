@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+import EcoopLogo from '@/components/ecoop-logo'
 import StepIndicator from '@/components/steps-indicator'
 import VerifyForm from '@/modules/auth/components/forms/verify-form'
 
@@ -37,7 +38,7 @@ const VerifyRoot = ({
     return (
         <div>
             <div className="my-5 flex w-full items-center gap-x-4">
-                <img src="/e-coop-logo-1.png" className="size-10" />
+                <EcoopLogo className="size-10" />
                 <StepIndicator
                     totalSteps={2}
                     currentStep={step}
