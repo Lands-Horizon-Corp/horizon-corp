@@ -3,10 +3,11 @@
     "private": true,
     "version": "0.0.1",
     "type": "module",
+    "packageManager": "pnpm@9.10.0",
     "engines": {
-        "node": ">=20.17.0 <21.0.0",
-        "npm": ">=10.8.2 <11.0.0",
-        "pnpm": ">=9.10.0 <10.0.0"
+        "node": "20.17.0",
+        "npm": "please-use-pnpm",
+        "pnpm": "9.10.0"
     },
     "scripts": {
         "dev": "vite --port 3000 --host",
@@ -16,8 +17,7 @@
         "preview": "vite preview",
         "fc": "prettier . -c",
         "fw": "prettier . -w",
-        "build": "tsc -b && vite build",
-        "preinstall": "node -e \"const { engines } = require('./package.json'); const semver = require('semver'); const currentNodeVersion = process.version; const currentNpmVersion = process.env.npm_config_user_agent ? process.env.npm_config_user_agent.split(' ')[0] : ''; const currentPnpmVersion = require('pnpm').version; if (!semver.satisfies(currentNodeVersion, engines.node)) { console.error(`Required node version ${engines.node}, but found ${currentNodeVersion}`); process.exit(1); } if (!semver.satisfies(currentNpmVersion, engines.npm)) { console.error(`Required npm version ${engines.npm}, but found ${currentNpmVersion}`); process.exit(1); } if (!semver.satisfies(currentPnpmVersion, engines.pnpm)) { console.error(`Required pnpm version ${engines.pnpm}, but found ${currentPnpmVersion}`); process.exit(1); }\""
+        "build": "tsc -b && vite build"
     },
     "dependencies": {
         "@hookform/resolvers": "^3.9.0",

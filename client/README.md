@@ -1,3 +1,22 @@
+# Setup your environment
+
+## Node Version
+
+> We require you to use NVM version to manage node version. Our team uses `.nvmrc` which will tell `nvm` the exact node version to install and use.
+
+1. Install the project specific node version 
+```
+nvm install
+```
+
+2 Use the installed node version 
+```
+nvm use
+``` 
+
+
+## Install 
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
