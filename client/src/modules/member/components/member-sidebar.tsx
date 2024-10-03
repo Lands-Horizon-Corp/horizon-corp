@@ -1,40 +1,40 @@
 import {
-    HiOutlineCog,
-    HiOutlineUser,
-    HiOutlineSquaresPlus,
-    HiOutlineBell,
-    HiOutlineChatBubbleOvalLeft,
-} from 'react-icons/hi2'
+    DashboardIcon,
+    MessagesIcon,
+    NotificationIcon,
+    SettingsIcon,
+    UserIcon,
+} from '@/components/icons'
+import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 
 import { IBaseComp } from '@/types/component/base'
 import { TSidebarItem } from '@/types/component/sidebar'
-import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 
 const memberSidebarItems: TSidebarItem[] = [
     {
         text: 'Dashboard',
         url: '/member/dashboard',
-        Icon: HiOutlineSquaresPlus,
+        Icon: DashboardIcon,
     },
     {
         text: 'Profile',
         url: '/member/profile',
-        Icon: HiOutlineUser,
+        Icon: UserIcon,
     },
     {
         text: 'Notifications',
         url: '/member/notifications',
-        Icon: HiOutlineBell,
+        Icon: NotificationIcon,
     },
     {
         text: 'Messages',
         url: '/member/messages',
-        Icon: HiOutlineChatBubbleOvalLeft,
+        Icon: MessagesIcon,
     },
     {
         text: 'Settings',
         url: '/member/settings',
-        Icon: HiOutlineCog,
+        Icon: SettingsIcon,
     },
 ]
 

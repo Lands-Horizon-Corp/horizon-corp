@@ -1,72 +1,66 @@
 import {
-    HiOutlineCog,
-    HiOutlineUser,
-    HiOutlineBell,
-    HiOutlineSquaresPlus,
-} from 'react-icons/hi2'
-import {
-    PiUserList,
-    PiBuilding,
-    PiNewspaper,
-    PiBriefcase,
-    PiUsersThree,
-    PiBuildingOffice,
-} from 'react-icons/pi'
-import {
-    LiaUser,
-    LiaUserClockSolid,
-    LiaShieldAltSolid,
-    LiaUserShieldSolid,
-} from 'react-icons/lia'
-import { CgDetailsMore } from 'react-icons/cg'
-import { IoFootstepsOutline } from 'react-icons/io5'
+    UserIcon,
+    ShieldIcon,
+    Users3Icon,
+    ReportsIcon,
+    BuildingIcon,
+    SettingsIcon,
+    UserListIcon,
+    DashboardIcon,
+    FootstepsIcon,
+    UserClockIcon,
+    UserShieldIcon,
+    BuildingCogIcon,
+    NotificationIcon,
+    BuildingBranchIcon,
+} from '@/components/icons'
+import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 
 import { IBaseComp } from '@/types/component/base'
 import { TSidebarItem } from '@/types/component/sidebar'
-import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 
 const ownerSidebarItem: TSidebarItem[] = [
     {
         text: 'Dashboard',
         url: '/owner/dashboard',
-        Icon: HiOutlineSquaresPlus,
+        Icon: DashboardIcon,
     },
     {
         text: 'Users',
-        Icon: PiUsersThree,
+        Icon: Users3Icon,
         baseUrl: '/owner/users',
         subItems: [
             {
                 text: 'Members',
                 baseUrl: '/owner/users/members',
-                Icon: PiUserList,
+                Icon: UserIcon,
                 subItems: [
                     {
                         text: 'View Members',
                         url: '/view-members',
-                        Icon: LiaUser,
+                        Icon: UserListIcon,
                     },
                     {
                         text: 'Members Activity',
                         url: '/members-activity',
-                        Icon: LiaUserClockSolid,
+                        Icon: UserClockIcon,
                     },
                 ],
             },
             {
                 text: 'Employees',
                 baseUrl: '/owner/users/employees',
-                Icon: PiBriefcase,
+                Icon: UserShieldIcon,
                 subItems: [
                     {
                         text: 'View employees',
                         url: '/view-employees',
-                        Icon: LiaUserShieldSolid,
+                        Icon: UserListIcon,
                     },
                     {
                         text: 'Employee Footsteps',
                         url: '/employee-footsteps',
-                        Icon: IoFootstepsOutline,
+                        Icon: FootstepsIcon,
                     },
                 ],
             },
@@ -74,49 +68,49 @@ const ownerSidebarItem: TSidebarItem[] = [
     },
     {
         text: 'Roles Management',
-        Icon: LiaShieldAltSolid,
+        Icon: ShieldIcon,
         url: '/owner/roles-management',
     },
     {
         text: 'Company',
         baseUrl: '/owner/company',
-        Icon: PiBuilding,
+        Icon: BuildingIcon,
         subItems: [
             {
                 text: 'Profile',
-                Icon: CgDetailsMore,
+                Icon: BuildingCogIcon,
                 url: '/profile',
             },
             {
                 text: 'Branches',
-                Icon: PiBuildingOffice,
+                Icon: BuildingBranchIcon,
                 url: '/branches',
             },
         ],
     },
     {
         text: 'Footstep Tracking',
-        Icon: IoFootstepsOutline,
+        Icon: FootstepsIcon,
         url: '/owner/footstep-tracking',
     },
     {
         text: 'Reports',
-        Icon: PiNewspaper,
+        Icon: ReportsIcon,
         url: '/owner/reports',
     },
     {
-        Icon: HiOutlineBell,
+        Icon: NotificationIcon,
         text: 'Notifications',
         url: '/owner/notifications',
     },
     {
         text: 'Profile',
-        Icon: HiOutlineUser,
+        Icon: UserIcon,
         url: '/owner/profile',
     },
     {
         text: 'Settings',
-        Icon: HiOutlineCog,
+        Icon: SettingsIcon,
         url: '/owner/settings',
     },
 ]

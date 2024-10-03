@@ -1,16 +1,13 @@
 import {
-    HiOutlineCog,
-    HiOutlineUser,
-    HiOutlineBell,
-    HiOutlineSquaresPlus,
-} from 'react-icons/hi2'
-import {
-    PiUserList,
-    PiBuilding,
-    PiNewspaper,
-    PiUsersThree,
-} from 'react-icons/pi'
-import { IoFootstepsOutline } from 'react-icons/io5'
+    UserIcon,
+    Users3Icon,
+    ReportsIcon,
+    SettingsIcon,
+    DashboardIcon,
+    FootstepsIcon,
+    NotificationIcon,
+    BuildingBranchIcon,
+} from '@/components/icons'
 
 import { IBaseComp } from '@/types/component/base'
 import { TSidebarItem } from '@/types/component/sidebar'
@@ -20,49 +17,49 @@ const employeeSidebarItems: TSidebarItem[] = [
     {
         text: 'Dashboard',
         url: '/employee/dashboard',
-        Icon: HiOutlineSquaresPlus,
+        Icon: DashboardIcon,
     },
     {
         text: 'Users',
-        Icon: PiUsersThree,
+        Icon: Users3Icon,
         baseUrl: '/employee/users',
         subItems: [
             {
                 text: 'Members',
                 url: '/members',
-                Icon: PiUserList,
+                Icon: UserIcon,
             },
         ],
     },
     {
         text: 'Branch',
         url: '/employee/branch',
-        Icon: PiBuilding,
+        Icon: BuildingBranchIcon,
     },
     {
         text: 'Reports',
         url: '/employee/reports',
-        Icon: PiNewspaper,
+        Icon: ReportsIcon,
     },
     {
         text: 'Notifications',
         url: '/employee/notifications',
-        Icon: HiOutlineBell,
+        Icon: NotificationIcon,
     },
     {
         text: 'Footsteps',
         url: '/employee/footsteps',
-        Icon: IoFootstepsOutline,
+        Icon: FootstepsIcon,
     },
     {
         text: 'Profile',
         url: '/employee/profile',
-        Icon: HiOutlineUser,
+        Icon: UserIcon,
     },
     {
         text: 'Settings',
         url: '/employee/settings',
-        Icon: HiOutlineCog,
+        Icon: SettingsIcon,
     },
 ]
 
