@@ -1,5 +1,8 @@
 import { describe, expect, it } from 'vitest'
-import { concatParentUrl } from './sidebar-utils'
+import {
+    concatParentUrl,
+    sidebarCollapsableRouteMatcher,
+} from './sidebar-utils'
 
 describe('testing concatParentUrl', () => {
     it('should concatenate baseUrl:/member and url:/task', () => {
@@ -30,5 +33,21 @@ describe('testing concatParentUrl', () => {
     it('should concatenate baseUrl:/member and url:/settings', () => {
         const res = concatParentUrl({ baseUrl: '/member', url: '/settings' })
         expect(res).toBe('/member/settings')
+    })
+})
+
+describe('Collapsable Route matcher function for sidebar', () => {
+    it('should match baseUrl:/abc/d and url:/abc/a', () => {
+        expect(sidebarCollapsableRouteMatcher('/abc/d', '/abc/a')).toBe(false)
+    })
+
+    it('should not match baseUrl:/abc/d and url:/bca/d', () => {
+        expect(sidebarCollapsableRouteMatcher('/abc/d', '/abc/a')).toBe(false)
+    })
+
+    it('should not match baseUrl:/mem and url:/membored/desu', () => {
+        expect(sidebarCollapsableRouteMatcher('/mem', '/membor/desu')).toBe(
+            false
+        )
     })
 })

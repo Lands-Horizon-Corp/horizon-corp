@@ -45,7 +45,7 @@ const Sidebar = ({
                 'flex h-screen min-w-[260px] flex-col gap-y-4 bg-background py-4 duration-300 ease-in-out',
                 className,
                 !expand && 'min-w-fit',
-                enableCollapse && "border-r"
+                enableCollapse && 'border-r'
             )}
         >
             <div
