@@ -21,7 +21,7 @@ const AuthNavBar = (className: Props) => {
             )}
         >
             <Link to="/">
-                <img src="/e-coop-logo-1.png" className="size-12" />
+                <img src="/e-coop-logo-1.webp" className="size-12" />
             </Link>
 
             <div className="flex gap-x-2">

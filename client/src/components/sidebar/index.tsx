@@ -60,8 +60,8 @@ const Sidebar = ({
                         <img
                             src={
                                 resolvedTheme === 'light'
-                                    ? '/e-coop-logo-1.png'
-                                    : '/e-coop-logo-white.png'
+                                    ? '/e-coop-logo-1.webp'
+                                    : '/e-coop-logo-white.webp'
                             }
                             className={cn(
                                 'z-10 size-7',
@@ -70,7 +70,7 @@ const Sidebar = ({
                         />
                     </Link>
                     <img
-                        src="/e-coop-logo-1.png"
+                        src="/e-coop-logo-1.webp"
                         className={cn(
                             'pointer-events-none absolute inset-0 left-1/2 top-1/2 z-0 size-8 -translate-x-1/2 -translate-y-[40%] -rotate-90 blur-sm selection:bg-none',
                             isExpanded && 'size-28 blur-lg'
