@@ -1,5 +1,5 @@
 const AdminFootstepsTrackingsPage = () => {
-    return <div>Emp Footsteaps Page</div>
+    return <div>Admin Footsteps Tracking Page</div>
 }
 
 export default AdminFootstepsTrackingsPage

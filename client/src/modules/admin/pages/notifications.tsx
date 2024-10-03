@@ -1,5 +1,5 @@
-const EmployeeNotificationsPage = () => {
-    return <div>Emp Notifications Page</div>
+const  AdminNofiticationsPage = () => {
+    return <div>Admin Notifications Page</div>
 }
 
-export default EmployeeNotificationsPage
+export default AdminNofiticationsPage  

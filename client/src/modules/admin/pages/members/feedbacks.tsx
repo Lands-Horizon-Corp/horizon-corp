@@ -1,5 +1,5 @@
 const AdminMembersFeedbacksPage = () => {
-    return <div>Feedback Page</div>
+    return <div>Admin Feedback Page</div>
 }
 
 export default AdminMembersFeedbacksPage
