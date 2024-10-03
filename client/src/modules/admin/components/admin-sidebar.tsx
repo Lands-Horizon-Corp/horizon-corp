@@ -1,75 +1,77 @@
 import {
-    HiOutlineCog,
-    HiOutlineUser,
-    HiOutlineBell,
-    HiOutlineSquaresPlus,
-} from 'react-icons/hi2'
-import { PiUserList, PiBuilding, PiUsersThree } from 'react-icons/pi'
-import { IoFootstepsOutline } from 'react-icons/io5'
+    BuildingBranchIcon,
+    DashboardIcon,
+    FeedbackIcon,
+    FootstepsIcon,
+    NotificationIcon,
+    SettingsIcon,
+    UserIcon,
+    Users3Icon,
+} from '@/components/icons'
+import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 
 import { IBaseComp } from '@/types/component/base'
 import { TSidebarItem } from '@/types/component/sidebar'
-import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 
 const adminSidebarItems: TSidebarItem[] = [
     {
         text: 'Dashboard',
         url: '/admin/dashboard',
-        Icon: HiOutlineSquaresPlus,
+        Icon: DashboardIcon,
     },
     {
         text: 'Members Management',
-        Icon: PiUsersThree,
+        Icon: Users3Icon,
         baseUrl: '/admin/members-management',
         subItems: [
             {
                 text: 'View Members',
                 url: '/view-members',
-                Icon: PiUserList,
+                Icon: UserIcon,
             },
             {
                 text: 'Feedbacks',
                 url: '/feedbacks',
-                Icon: HiOutlineBell,
+                Icon: FeedbackIcon,
             },
         ],
     },
     {
         text: 'Companies Management',
-        Icon: PiBuilding,
+        Icon: BuildingBranchIcon,
         baseUrl: '/admin/companies-management',
         subItems: [
             {
                 text: 'View Companies',
                 url: '/view-companies',
-                Icon: PiBuilding,
+                Icon: BuildingBranchIcon,
             },
             {
                 text: 'Feedbacks',
                 url: '/feedbacks',
-                Icon: HiOutlineBell,
+                Icon: FeedbackIcon,
             },
         ],
     },
     {
         text: 'Footstep Tracking',
         url: '/admin/footstep-tracking',
-        Icon: IoFootstepsOutline,
+        Icon: FootstepsIcon,
     },
     {
         text: 'Profile',
         url: '/admin/profile',
-        Icon: HiOutlineUser,
+        Icon: UserIcon,
     },
     {
         text: 'Notifications',
         url: '/admin/notifications',
-        Icon: HiOutlineBell,
+        Icon: NotificationIcon,
     },
     {
         text: 'Settings',
         url: '/admin/settings',
-        Icon: HiOutlineCog,
+        Icon: SettingsIcon,
     },
 ]
 
