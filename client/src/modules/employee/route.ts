@@ -1,14 +1,14 @@
 import { createRoute } from '@tanstack/react-router'
 
 import EmployeeLandingPage from './pages'
-import EmployeeDashboardPage from './pages/dashboard'
-import EmployeeMembersPage from './pages/users/members'
 import EmployeeBranchPage from './pages/branch'
 import EmployeeReportsPage from './pages/reports'
-import EmployeeNotificationsPage from './pages/notifications'
-import EmployeeFootstepsPage from './pages/footsteps'
 import EmployeeProfilePage from './pages/profile'
 import EmployeeSettingsPage from './pages/settings'
+import EmployeeFootstepsPage from './pages/footsteps'
+import EmployeeDashboardPage from './pages/dashboard'
+import EmployeeMembersPage from './pages/users/members'
+import EmployeeNotificationsPage from './pages/notifications'
 
 import EmployeeLayout from '@/modules/employee/layout'
 import { rootRoute } from '@/root-route'
@@ -74,15 +74,15 @@ const employeeSettingsRoute = createRoute({
 })
 
 const EmployeeRoute = employeeRoute.addChildren([
-    employeeLandingRoute,
-    employeeDashboardRoute,
-    employeeMembersRoute,
     employeeBranchRoute,
+    employeeMembersRoute,
     employeeReportsRoute,
-    employeeNotificationsRoute,
-    employeeFootstepsRoute,
+    employeeLandingRoute,
     employeeProfileRoute,
     employeeSettingsRoute,
+    employeeDashboardRoute,
+    employeeFootstepsRoute,
+    employeeNotificationsRoute,
 ])
 
 export default EmployeeRoute

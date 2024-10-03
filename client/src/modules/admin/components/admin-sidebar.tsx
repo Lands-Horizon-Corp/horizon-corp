@@ -1,12 +1,12 @@
 import {
-    BuildingBranchIcon,
-    DashboardIcon,
-    FeedbackIcon,
-    FootstepsIcon,
-    NotificationIcon,
-    SettingsIcon,
     UserIcon,
     Users3Icon,
+    SettingsIcon,
+    FeedbackIcon,
+    DashboardIcon,
+    FootstepsIcon,
+    NotificationIcon,
+    BuildingBranchIcon,
 } from '@/components/icons'
 import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 

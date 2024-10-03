@@ -22,8 +22,8 @@ import {
 
 import {
     LiaUser as UserIcon,
-    LiaUserClockSolid as UserClockIcon,
     LiaShieldAltSolid as ShieldIcon,
+    LiaUserClockSolid as UserClockIcon,
     LiaUserShieldSolid as UserShieldIcon,
 } from 'react-icons/lia'
 

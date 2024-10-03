@@ -1,5 +1,5 @@
-const  AdminNofiticationsPage = () => {
+const AdminNofiticationsPage = () => {
     return <div>Admin Notifications Page</div>
 }
 
-export default AdminNofiticationsPage  
+export default AdminNofiticationsPage

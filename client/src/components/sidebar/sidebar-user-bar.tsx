@@ -6,10 +6,10 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import {
-    ChevronRightIcon,
     DevIcon,
     LogoutIcon,
     QuestionIcon,
+    ChevronRightIcon,
 } from '@/components/icons'
 import UserAvatar from '@/components/user-avatar'
 
@@ -54,15 +54,15 @@ const SidebarUserBar = ({ className, expand }: Props) => {
                 className="rounded-xl border-secondary/30 !bg-secondary"
             >
                 <DropdownMenuGroup>
-                    <DropdownMenuItem className="group rounded-lg cursor-pointer text-foreground/70 hover:text-foreground">
+                    <DropdownMenuItem className="group cursor-pointer rounded-lg text-foreground/70 hover:text-foreground">
                         <QuestionIcon className="mr-2 size-4 text-foreground/60 duration-150 ease-in-out group-hover:text-foreground" />
                         <span>Help</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="group rounded-lg cursor-pointer text-foreground/70 hover:text-foreground">
+                    <DropdownMenuItem className="group cursor-pointer rounded-lg text-foreground/70 hover:text-foreground">
                         <DevIcon className="mr-2 size-4 text-foreground/60 duration-150 ease-in-out group-hover:text-foreground" />
                         <span>Dev Mode</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="group rounded-lg cursor-pointer text-foreground/70 hover:text-foreground">
+                    <DropdownMenuItem className="group cursor-pointer rounded-lg text-foreground/70 hover:text-foreground">
                         <LogoutIcon className="mr-2 size-4 text-foreground/60 duration-150 ease-in-out group-hover:text-foreground" />
                         <span>Sign Out</span>
                     </DropdownMenuItem>

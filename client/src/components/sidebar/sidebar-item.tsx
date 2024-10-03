@@ -9,8 +9,7 @@ import SidebarItemWithTooltip from '@/components/sidebar/sidebar-with-tooltip-wr
 import { cn } from '@/lib/utils'
 import {
     concatParentUrl,
-    sidebarCollapsableRouteMatcher,
-    sidebarItemRouteMatcher,
+    sidebarRouteMatcher,
 } from '@/components/sidebar/sidebar-utils'
 
 const SidebarItem: FC<TSidebarItem> = (props) => {
@@ -28,7 +27,7 @@ const SidebarItem: FC<TSidebarItem> = (props) => {
     } else if (props.subItems) {
         const { text, Icon, subItems, baseUrl, isSub } = props
 
-        const routeMatched = sidebarCollapsableRouteMatcher(baseUrl, pathname)
+        const routeMatched = sidebarRouteMatcher(baseUrl, pathname)
 
         return (
             <>
@@ -90,7 +89,7 @@ const SidebarItem: FC<TSidebarItem> = (props) => {
     } else {
         const { text, Icon, url, isSub } = props
 
-        const routeMatched = sidebarItemRouteMatcher(url, pathname)
+        const routeMatched = sidebarRouteMatcher(url, pathname)
 
         return (
             <SidebarItemWithTooltip
