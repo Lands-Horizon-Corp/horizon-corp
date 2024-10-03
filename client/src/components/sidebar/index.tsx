@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
 import { useTheme } from '../providers/theme-provider'
 import type { TSidebarItem } from '@/types/component/sidebar'
+import SidebarUserBar from './sidebar-user-bar'
 
 interface Props extends IBaseComp {
     items: TSidebarItem[]
@@ -42,7 +43,7 @@ const Sidebar = ({
     return (
         <div
             className={cn(
-                'flex h-screen min-w-[260px] flex-col gap-y-4 bg-background py-4 duration-300 ease-in-out',
+                'flex h-screen min-w-[260px] flex-col gap-y-2 bg-background pt-4 duration-300 ease-in-out',
                 className,
                 !expand && 'min-w-fit',
                 enableCollapse && 'border-r'
@@ -93,7 +94,7 @@ const Sidebar = ({
                 )}
             </div>
             <ExpandContext.Provider value={expand}>
-                <div className="relative h-full max-h-full flex-1 overflow-y-hidden">
+                <div className="relative max-h-full flex-1 overflow-y-hidden">
                     <div className="pointer-events-none absolute left-0 top-0 z-10 h-5 w-full bg-gradient-to-b from-background to-transparent" />
                     <div
                         className={cn(
@@ -109,6 +110,9 @@ const Sidebar = ({
                     <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-5 w-full bg-gradient-to-t from-background to-transparent" />
                 </div>
             </ExpandContext.Provider>
+            <div className="px-4 pb-4">
+                <SidebarUserBar expand={expand} />
+            </div>
         </div>
     )
 }

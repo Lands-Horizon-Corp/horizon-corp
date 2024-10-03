@@ -1,9 +1,13 @@
 import {
     HiOutlineCog as SettingsIcon,
+    HiOutlineCodeBracket as DevIcon,
     HiOutlineBell as NotificationIcon,
     HiOutlineSquaresPlus as DashboardIcon,
+    HiOutlineChevronRight as ChevronRightIcon,
+    HiOutlineQuestionMarkCircle as QuestionIcon,
     HiOutlineChatBubbleOvalLeft as MessagesIcon,
-    HiOutlineChatBubbleBottomCenterText as FeedbackIcon
+    HiOutlineArrowRightEndOnRectangle as LogoutIcon,
+    HiOutlineChatBubbleBottomCenterText as FeedbackIcon,
 } from 'react-icons/hi2'
 
 import { BsBuildingGear as BuildingCogIcon } from 'react-icons/bs'
@@ -26,20 +30,24 @@ import {
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
 
 export {
-    SettingsIcon,
+    DevIcon,
     UserIcon,
-    UserListIcon,
-    UserClockIcon,
-    UserShieldIcon,
     ShieldIcon,
-    NotificationIcon,
-    DashboardIcon,
+    Users3Icon,
+    LogoutIcon,
+    ReportsIcon,
+    QuestionIcon,
+    SettingsIcon,
+    UserListIcon,
     MessagesIcon,
     FeedbackIcon,
     BuildingIcon,
-    BuildingCogIcon,
-    ReportsIcon,
-    Users3Icon,
-    BuildingBranchIcon,
     FootstepsIcon,
+    UserClockIcon,
+    DashboardIcon,
+    UserShieldIcon,
+    BuildingCogIcon,
+    ChevronRightIcon,
+    NotificationIcon,
+    BuildingBranchIcon,
 }
