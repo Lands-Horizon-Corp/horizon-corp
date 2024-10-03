@@ -1,5 +1,5 @@
-const EmployeeSettingsPage = () => {
-    return <div>Emp Settings Page</div>
+const  AdminSettingsPage= () => {
+    return <div>Admin Settings Page</div>
 }
 
-export default EmployeeSettingsPage
+export default AdminSettingsPage 

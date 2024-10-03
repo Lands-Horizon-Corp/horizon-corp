@@ -1,5 +1,5 @@
-const EmployeeProfilePage = () => {
-    return <div>Emp Profile Page</div>
+const  AdminProfilePage = () => {
+    return <div>Admin Profile Page</div>
 }
 
-export default EmployeeProfilePage
+export default AdminProfilePage  

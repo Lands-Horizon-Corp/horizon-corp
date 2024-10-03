@@ -85,7 +85,7 @@ const Sidebar = ({
                     >
                         <GoChevronLeft
                             className={cn(
-                                'size-2 rotate-180 cursor-pointer duration-300 ease-in-out',
+                                'size-3 rotate-180 cursor-pointer duration-300 ease-in-out',
                                 expand && 'size-4 rotate-0'
                             )}
                         />

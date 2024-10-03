@@ -1,5 +1,5 @@
 const AdminCompaniesFeedbacksPage = () => {
-    return <div>Feedback Page</div>
+    return <div>Admin Feedback Page</div>
 }
 
 export default AdminCompaniesFeedbacksPage
