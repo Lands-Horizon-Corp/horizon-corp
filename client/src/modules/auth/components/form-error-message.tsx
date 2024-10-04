@@ -13,7 +13,7 @@ const FormErrorMessage = ({ className, errorMessage }: Props) => {
     return (
         <span
             className={cn(
-                'mt-2 flex items-center gap-x-2 rounded-md bg-destructive/10 p-2 py-2 text-sm text-orange-600 dark:bg-destructive/40',
+                'flex items-center gap-x-2 rounded-md bg-destructive/10 p-2 py-2 text-sm text-orange-600 dark:bg-destructive/40',
                 className
             )}
         >
