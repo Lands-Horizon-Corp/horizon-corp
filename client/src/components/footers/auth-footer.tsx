@@ -1,10 +1,10 @@
 import { Link } from '@tanstack/react-router'
+import EcoopLogo from '@/components/ecoop-logo'
 
-interface Props {}
-
-const AuthFooter = (_props: Props) => {
+const AuthFooter = () => {
     return (
-        <footer className="flex flex-col items-center gap-y-2 py-8 text-sm">
+        <footer className="mt-8 flex flex-col items-center gap-y-3 bg-background/90 py-8 text-sm backdrop-blur-sm">
+            <EcoopLogo className="size-16" />
             <p className="text-foreground/40">
                 e-Coop @ All Rights Reserved 2024
             </p>
