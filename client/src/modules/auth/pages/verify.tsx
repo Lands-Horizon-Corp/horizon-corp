@@ -5,8 +5,8 @@ import LoadingCircle from '@/components/loader/loading-circle'
 
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
-import AuthPageWrapper from '../components/auth-page-wrapper'
 import VerifyRoot from '@/modules/auth/components/verify-root'
+import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import AccountCancelled from '@/modules/auth/components/account-cancelled'
 
 import { UserBase, UserStatus } from '@/types'
