@@ -7,8 +7,8 @@ import bg_element_2 from '@/assets/images/bg_element_2.webp'
 import bg_element_3 from '@/assets/images/bg_element_3.webp'
 
 // components
-import NavBar from './pages/_components/navbar'
-import Footer from './pages/_components/footer'
+import Footer from '@/components/footers/landing-footer'
+import LandingNav from '@/components/navbars/landing-nav'
 
 const PublicLayout = () => {
     return (
@@ -30,7 +30,7 @@ const PublicLayout = () => {
                     alt="background"
                 />
                 <main className="w-full">
-                    <NavBar />
+                    <LandingNav />
                     <Outlet />
                     <Footer />
                 </main>
