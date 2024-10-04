@@ -20,6 +20,7 @@ import {
     FormLabel,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import PasswordInput from '@/components/password-input'
@@ -79,7 +80,7 @@ const SignUpForm = ({
                 )}
             >
                 <div className="flex items-center justify-center gap-x-2 py-4 font-medium">
-                    <img src="/e-coop-logo-1.png" className="size-24" />
+                    <EcoopLogo className="size-24" />
                     <p className="text-xl">Create your profile</p>
                 </div>
 

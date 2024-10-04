@@ -22,7 +22,7 @@ const AccountCancelled = ({ userData, onBack }: Props) => {
             <p className="text-xl font-medium text-[#ED6E6E]">
                 Account Canceled
             </p>
-            <div className="relative rounded-full border-4 border-[#ED6E6E]">
+            <div className="relative my-8 rounded-full border-4 border-[#ED6E6E]">
                 <UserAvatar
                     className="size-28"
                     src={userData?.profilePicture?.url ?? ''}
