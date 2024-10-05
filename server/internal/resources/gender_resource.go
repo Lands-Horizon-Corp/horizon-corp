@@ -10,7 +10,7 @@ type GenderResource struct {
 }
 
 // ToResource converts a gender model to a gender resource.
-func ToResource(gender models.Gender) GenderResource {
+func ToResourceGender(gender models.Gender) GenderResource {
 	return GenderResource{
 		ID:          gender.ID,
 		Name:        gender.Name,
@@ -18,10 +18,10 @@ func ToResource(gender models.Gender) GenderResource {
 	}
 }
 
-func ToResourceList(genders []models.Gender) []GenderResource {
+func ToResourceListGender(genders []models.Gender) []GenderResource {
 	var resources []GenderResource
 	for _, gender := range genders {
-		resources = append(resources, ToResource(gender))
+		resources = append(resources, ToResourceGender(gender))
 	}
 	return resources
 }

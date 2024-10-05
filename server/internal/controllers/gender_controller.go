@@ -41,7 +41,7 @@ func (c *GenderController) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, resources.ToResource(gender))
+	ctx.JSON(http.StatusCreated, resources.ToResourceGender(gender))
 }
 
 func (c *GenderController) GetAll(ctx *gin.Context) {
@@ -50,7 +50,7 @@ func (c *GenderController) GetAll(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, resources.ToResourceList(genders))
+	ctx.JSON(http.StatusOK, resources.ToResourceListGender(genders))
 }
 
 func (c *GenderController) GetByID(ctx *gin.Context) {
@@ -64,7 +64,7 @@ func (c *GenderController) GetByID(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Gender not found"})
 		return
 	}
-	ctx.JSON(http.StatusOK, resources.ToResource(gender))
+	ctx.JSON(http.StatusOK, resources.ToResourceGender(gender))
 }
 
 func (c *GenderController) Update(ctx *gin.Context) {
@@ -89,7 +89,7 @@ func (c *GenderController) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resources.ToResource(gender))
+	ctx.JSON(http.StatusOK, resources.ToResourceGender(gender))
 }
 
 func (c *GenderController) Delete(ctx *gin.Context) {
