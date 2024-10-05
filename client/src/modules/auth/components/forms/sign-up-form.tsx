@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input'
 import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import PasswordInput from '@/components/password-input'
+import PasswordInput from '@/components/ui/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
@@ -100,8 +100,10 @@ const SignUpForm = ({
                                     <FormControl>
                                         <div className="flex-1 space-y-2">
                                             <Input
-                                                placeholder="Email"
                                                 {...field}
+                                                id={field.name}
+                                                autoComplete="email"
+                                                placeholder="Email"
                                             />
                                         </div>
                                     </FormControl>
@@ -115,11 +117,16 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Username
                                     </FormLabel>
                                     <FormControl>
                                         <Input
+                                            id={field.name}
+                                            autoComplete="username"
                                             placeholder="Username"
                                             {...field}
                                         />
@@ -134,13 +141,18 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         First Name
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="First Name"
                                             {...field}
+                                            id={field.name}
+                                            autoComplete="given-name"
+                                            placeholder="First Name"
                                         />
                                     </FormControl>
                                 </div>
@@ -153,14 +165,19 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Middle Name
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            className="w-auto flex-1"
-                                            placeholder="First Name"
                                             {...field}
+                                            id={field.name}
+                                            className="w-auto flex-1"
+                                            placeholder="Middle Name"
+                                            autoComplete="additional-name"
                                         />
                                     </FormControl>
                                 </div>
@@ -173,13 +190,18 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Last Name
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="First Name"
                                             {...field}
+                                            id={field.name}
+                                            placeholder="Last Name"
+                                            autoComplete="family-name"
                                         />
                                     </FormControl>
                                 </div>
@@ -192,14 +214,19 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Contact Number
                                     </FormLabel>
                                     <FormControl>
                                         <div className="flex flex-1 items-center gap-x-2">
                                             <Input
-                                                placeholder="Contact Number"
                                                 {...field}
+                                                id={field.name}
+                                                autoComplete="tel-country-code"
+                                                placeholder="Contact Number"
                                             />
                                             <BsPatchCheck className="size-8 text-primary" />
                                         </div>
@@ -214,13 +241,18 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Password
                                     </FormLabel>
                                     <FormControl>
                                         <PasswordInput
                                             {...field}
+                                            id={field.name}
                                             placeholder="Password"
+                                            autoComplete="new-password"
                                         />
                                     </FormControl>
                                 </div>
@@ -233,12 +265,17 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex w-full items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Confirm Password
                                     </FormLabel>
                                     <FormControl>
                                         <PasswordInput
                                             {...field}
+                                            id={field.name}
+                                            autoComplete="no"
                                             placeholder="Confirm Password"
                                         />
                                     </FormControl>
@@ -252,14 +289,18 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex w-full items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor="account-type"
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Account Type
                                     </FormLabel>
                                     <Select
-                                        onValueChange={field.onChange}
+                                        name={field.name}
                                         defaultValue={field.value}
+                                        onValueChange={field.onChange}
                                     >
-                                        <FormControl>
+                                        <FormControl id="account-type">
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Choose type" />
                                             </SelectTrigger>
@@ -291,12 +332,16 @@ const SignUpForm = ({
                                 <div className="mt-8 flex items-center gap-x-2">
                                     <FormControl>
                                         <Checkbox
+                                            id={field.name}
+                                            name={field.name}
                                             checked={field.value}
                                             onCheckedChange={field.onChange}
-                                            className=""
                                         />
                                     </FormControl>
-                                    <FormLabel className="m-0 cursor-pointer p-0 font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="m-0 cursor-pointer p-0 font-medium"
+                                    >
                                         Accept terms and condition
                                     </FormLabel>
                                 </div>
