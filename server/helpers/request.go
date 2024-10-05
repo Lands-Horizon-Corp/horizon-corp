@@ -1,6 +1,7 @@
 package helpers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -21,4 +22,12 @@ func ParseIDParam(ctx *gin.Context, paramName string) (uint, error) {
 	}
 
 	return uint(id), nil
+}
+
+func JSONStringify(value interface{}) string {
+	bytes, err := json.Marshal(value)
+	if err != nil {
+		return ""
+	}
+	return string(bytes)
 }

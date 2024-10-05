@@ -13,7 +13,7 @@ func StartServer(lc fx.Lifecycle, router *gin.Engine, logger *zap.Logger, cfg *c
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			go func() {
-				if err := router.Run(cfg.AppPort); err != nil {
+				if err := router.Run(":" + cfg.AppPort); err != nil {
 					logger.Error("Failed to start server", zap.Error(err))
 				}
 			}()
