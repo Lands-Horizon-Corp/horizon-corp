@@ -7,7 +7,7 @@ type ErrorLogger = (errorDetails: ErrorDetails) => Promise<void>;
 type RetryCondition = (error: AxiosError, retryCount: number) => boolean;
 type ErrorEnhancer = (error: AxiosError) => Error;
 
-export class UseServer {
+export default class UseServer {
   private httpClient: AxiosInstance;
   private maxRetryCount: number;
   private errorUrl: string;
