@@ -1,8 +1,13 @@
 FROM node:20.17.0
+
 WORKDIR /client
-COPY package.json ./
-COPY pnpm-lock.yaml ./
-RUN npm i -g pnpm 
+
+COPY package.json pnpm-lock.yaml ./
+
+RUN npm install -g npm@10.8.2
+
+RUN npm install -g pnpm@9.10.0
+
 RUN pnpm install
 
 COPY . .
