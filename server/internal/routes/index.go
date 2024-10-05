@@ -49,6 +49,12 @@ func ProvideAPI(
 
 	v1 := router.Group("/api/v1")
 	{
+		v1.GET("/", func(c *gin.Context) {
+			c.JSON(http.StatusOK, gin.H{
+				"message": "Hello e-cooperatives API-V1.",
+			})
+		})
+
 		controllers.GenderRoutes(v1, genderController)
 		controllers.ErrorDetailsRoutes(v1, errorDetailsController)
 	}

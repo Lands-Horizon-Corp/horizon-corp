@@ -8,10 +8,4 @@ export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   retryCount?: number;
 }
 
-export interface ErrorDetails {
-  message: string;
-  name: string;
-  stack?: string;
-  response?: unknown;
-  status?: number;
-}
+
