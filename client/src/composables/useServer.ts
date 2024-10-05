@@ -6,7 +6,7 @@ type ErrorLogger = (errorDetails: ErrorDetails) => Promise<void>;
 type RetryCondition = (error: AxiosError, retryCount: number) => boolean;
 type ErrorEnhancer = (error: AxiosError) => Error;
 
-export class HttpRepository {
+export class UseServer {
   private httpClient: AxiosInstance;
   private maxRetryCount: number;
   private errorUrl: string;
@@ -15,7 +15,7 @@ export class HttpRepository {
   private errorEnhancer: ErrorEnhancer;
 
   constructor(
-    baseURL: string = import.meta.env.VITE_CLIENT_SERVER_URL,
+    baseURL: string = import.meta.env.VITE_CLIENT_SERVER_URL ?? 'http://localhost:8080/api/v1',
     defaultConfig?: AxiosRequestConfig,
     maxRetryCount: number = 3,
     errorUrl: string = '/error-handler',
@@ -23,7 +23,14 @@ export class HttpRepository {
     retryCondition?: RetryCondition,
     errorEnhancer?: ErrorEnhancer
   ) {
-    this.httpClient = axios.create({ baseURL, ...defaultConfig });
+    this.httpClient = axios.create({
+      baseURL,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(defaultConfig?.headers || {}),
+      },
+      ...defaultConfig,
+    });
     this.maxRetryCount = maxRetryCount;
     this.errorUrl = errorUrl;
     this.errorLogger = errorLogger || this.defaultErrorLogger.bind(this);
