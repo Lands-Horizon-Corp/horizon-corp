@@ -3,7 +3,7 @@ import { RouterProvider } from '@tanstack/react-router';
 
 import router from '@/root-route';
 import { ThemeProvider } from '@/components/providers/theme-provider';
-import useErrorDetailsState from './states/error-details-state';
+import useErrorDetailsState from './horizon-corp/states/error-details-state';
 
 const TanStackRouterDevtoolsPanel =
     process.env.NODE_ENV === 'production'

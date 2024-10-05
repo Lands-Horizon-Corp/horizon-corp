@@ -1,5 +1,6 @@
-import useCrud from '@/composables/useCrud';
-import { ErrorDetails } from '@/types';
+import useCrud from '@/horizon-corp/composables/useCrud';
+import { ErrorDetails } from '../types/error-details';
+
 
 const useErrorDetailsState = () => {
   const crud = useCrud<ErrorDetails>({
