@@ -1,202 +1,193 @@
-### Step-by-Step Usage Guide
+# UseServer Documentation
 
-#### 1. **Import the `UseServer` class**
+## Overview
 
-To start using the class, import it into your file where you'll make your HTTP requests.
+The `UseServer` class provides a customizable interface for handling HTTP requests and errors using Axios. It supports configurable options for base URL, error logging, request retries, and error enhancement.
 
-```typescript
-import UseServer from '@/services/useServer'
+## Installation
+
+Ensure you have Axios installed in your project. You can add it via npm:
+
+```bash
+npm install axios
 ```
 
-#### 2. **Initialize the `UseServer` instance**
+## TypeScript Definitions
 
-You can initialize the `UseServer` class by passing a `baseUrl` and optional configurations like retry count, error URL, and custom error handling functions.
+The class makes use of several TypeScript types for improved type safety. Here are the main types you'll interact with:
+
+-   `CustomAxiosRequestConfig`: Custom configuration for Axios requests.
+-   `RequestParams`: Type for request query parameters.
+-   `ErrorDetails`: Type for structured error information.
+
+## Usage
+
+### Importing UseServer
+
+To use the `UseServer` class in your TypeScript file, import it as follows:
+
+```typescript
+import UseServer from '@/path/to/UseServer'
+```
+
+### Creating an Instance
+
+You can create an instance of the `UseServer` class with optional configurations:
 
 ```typescript
 const server = new UseServer(
-    'https://api.example.com', // The base URL for your API
-    { timeout: 5000 }, // Optional default Axios config, e.g., timeout
-    3, // Max retry count (optional)
-    '/log-error' // Error logging URL (optional)
+    'http://localhost:8080/api/v1', // Base URL (optional)
+    { timeout: 10000 }, // Default Axios configuration (optional)
+    3, // Maximum retry count (optional)
+    '/error-handler', // Error logging URL (optional)
+    myCustomErrorLogger, // Custom error logger function (optional)
+    myCustomRetryCondition, // Custom retry condition (optional)
+    myCustomErrorEnhancer // Custom error enhancer function (optional)
 )
 ```
 
-#### 3. **Making HTTP Requests**
+### Making Requests
 
-You can use the provided methods (`get`, `post`, `put`, `delete`) to interact with your API.
+You can make GET, POST, PUT, and DELETE requests using the methods provided by the `UseServer` instance.
 
-##### Example: **GET Request**
-
-You can fetch data using the `get` method by passing the API endpoint and optional query parameters.
+#### GET Request
 
 ```typescript
-async function fetchData() {
-    try {
-        const response = await server.get('/users', { role: 'admin' })
-        console.log('Fetched data:', response.data)
-    } catch (error) {
-        console.error('Error fetching data:', error.message)
-    }
+const response = await server.get('/endpoint', { param1: 'value1' })
+console.log(response.data)
+```
+
+#### POST Request
+
+```typescript
+const data = { key: 'value' }
+const response = await server.post('/endpoint', data, { param1: 'value1' })
+console.log(response.data)
+```
+
+#### PUT Request
+
+```typescript
+const updateData = { key: 'newValue' }
+const response = await server.put('/endpoint', updateData, { param1: 'value1' })
+console.log(response.data)
+```
+
+#### DELETE Request
+
+```typescript
+const response = await server.delete('/endpoint', { param1: 'value1' })
+console.log(response.data)
+```
+
+### Customizing Error Handling
+
+#### Error Logger
+
+You can provide a custom error logger function that logs errors in your preferred manner:
+
+```typescript
+const myCustomErrorLogger = async (errorDetails: ErrorDetails) => {
+    console.error('Logging error:', errorDetails)
+    // Additional logging logic here
 }
+
+const server = new UseServer(
+    'http://localhost:8080/api/v1',
+    undefined,
+    undefined,
+    undefined,
+    myCustomErrorLogger
+)
 ```
 
-##### Example: **POST Request**
+#### Retry Condition
 
-To send data to the server, use the `post` method by passing the endpoint, data, and optional query parameters.
+You can define a custom retry condition to control when requests should be retried:
 
 ```typescript
-async function createUser(userData: { name: string; email: string }) {
-    try {
-        const response = await server.post('/users', userData)
-        console.log('User created:', response.data)
-    } catch (error) {
-        console.error('Error creating user:', error.message)
-    }
+const myCustomRetryCondition = (error: AxiosError, retryCount: number) => {
+    return retryCount < 3 && error.response?.status === 503 // Retry on service unavailable
 }
+
+const server = new UseServer(
+    'http://localhost:8080/api/v1',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    myCustomRetryCondition
+)
 ```
 
-##### Example: **PUT Request**
+#### Error Enhancer
 
-To update data, use the `put` method by passing the endpoint, data, and optional query parameters.
+You can also provide a custom error enhancer to modify error messages before they are rejected:
 
 ```typescript
-async function updateUser(
-    userId: string,
-    userData: { name?: string; email?: string }
-) {
-    try {
-        const response = await server.put(`/users/${userId}`, userData)
-        console.log('User updated:', response.data)
-    } catch (error) {
-        console.error('Error updating user:', error.message)
-    }
+const myCustomErrorEnhancer = (error: AxiosError) => {
+    error.message = 'Custom error message: ' + error.message
+    return error
 }
+
+const server = new UseServer(
+    'http://localhost:8080/api/v1',
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    myCustomErrorEnhancer
+)
 ```
 
-##### Example: **DELETE Request**
+### Adding Interceptors
 
-To delete data, use the `delete` method by passing the endpoint and optional query parameters.
+You can add request and response interceptors for more control over the HTTP request/response cycle.
 
-```typescript
-async function deleteUser(userId: string) {
-    try {
-        const response = await server.delete(`/users/${userId}`)
-        console.log('User deleted:', response.data)
-    } catch (error) {
-        console.error('Error deleting user:', error.message)
-    }
-}
-```
-
-#### 4. **Customizing Axios Interceptors**
-
-You can add custom request or response interceptors using the provided `addRequestInterceptor` and `addResponseInterceptor` methods.
-
-##### Example: **Request Interceptor**
-
-You can add a request interceptor to modify requests before they are sent.
+#### Adding a Request Interceptor
 
 ```typescript
-server.addRequestInterceptor((config) => {
-    // Add an Authorization header to all requests
-    config.headers['Authorization'] = `Bearer ${localStorage.getItem('token')}`
-    return config
-})
-```
-
-##### Example: **Response Interceptor**
-
-You can add a response interceptor to handle specific behaviors based on responses.
-
-```typescript
-server.addResponseInterceptor(
-    (response) => {
-        // Log response status code
-        console.log('Response status:', response.status)
-        return response
+server.addRequestInterceptor(
+    (config) => {
+        // Modify request config here
+        console.log('Request Interceptor:', config)
+        return config
     },
     (error) => {
-        // Handle errors globally
-        console.error('Error during response:', error.message)
+        console.error('Request Interceptor Error:', error)
         return Promise.reject(error)
     }
 )
 ```
 
-#### 5. **Handling Errors and Retries**
-
-The `UseServer` class has built-in error logging, retries, and custom error handling. The default behavior retries requests on server errors (`5xx` status codes) up to the configured `maxRetryCount`.
-
-You can customize error logging and retry logic by passing your own `errorLogger`, `retryCondition`, and `errorEnhancer` during instantiation.
-
-##### Example: **Custom Error Logger**
-
-You can log errors in a custom way by defining your own error logger.
+#### Adding a Response Interceptor
 
 ```typescript
-const customErrorLogger: ErrorLogger = async (errorDetails) => {
-    // Send error details to a logging service
-    console.error('Logging custom error:', errorDetails)
-}
-
-const customServer = new UseServer(
-    'https://api.example.com',
-    undefined,
-    3,
-    '/log-error',
-    customErrorLogger // Use custom error logger
+server.addResponseInterceptor(
+    (response) => {
+        console.log('Response Interceptor:', response)
+        return response
+    },
+    (error) => {
+        console.error('Response Interceptor Error:', error)
+        return Promise.reject(error)
+    }
 )
 ```
 
-##### Example: **Custom Retry Condition**
+### Retrieving the Internal Axios Instance
 
-You can customize when to retry requests by providing a `retryCondition` function.
-
-```typescript
-const customRetryCondition: RetryCondition = (error, retryCount) => {
-    // Retry on network errors only, and stop after 5 retries
-    return retryCount < 5 && !error.response
-}
-
-const customServerWithRetry = new UseServer(
-    'https://api.example.com',
-    undefined,
-    5, // Max retries
-    '/log-error',
-    undefined,
-    customRetryCondition // Custom retry condition
-)
-```
-
-### Example Usage in a Vue Component
-
-Here’s how you could use this in a Vue component (assuming Vue 3 with Composition API):
+If you need direct access to the Axios instance, you can retrieve it using:
 
 ```typescript
-<script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import UseServer from '@/services/useServer';
-
-const server = new UseServer('https://api.example.com');
-const users = ref([]);
-
-async function loadUsers() {
-  try {
-    const response = await server.get('/users');
-    users.value = response.data;
-  } catch (error) {
-    console.error('Error loading users:', error.message);
-  }
-}
-
-onMounted(() => {
-  loadUsers();
-});
-</script>
-
-<template>
-  <ul>
-    <li v-for="user in users" :key="user.id">{{ user.name }}</li>
-  </ul>
-</template>
+const axiosInstance = server.getHttpClient()
 ```
+
+## Error Handling
+
+The `UseServer` class handles errors gracefully by retrying failed requests based on the defined retry condition, logging errors using the specified logger, and enhancing errors as needed. The default implementations can be overridden by providing custom functions.
+
+## Conclusion
+
+The `UseServer` class is a powerful tool for managing HTTP requests and errors in a TypeScript Node.js application. By utilizing its customizable features, you can create a robust and resilient HTTP client tailored to your specific needs.
