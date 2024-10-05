@@ -20,9 +20,8 @@ export const SignInPageSearchSchema = z.object({
         .catch('Member'),
 })
 
-interface Props {}
 
-const SignInPage = (_props: Props) => {
+const SignInPage = () => {
     const router = useRouter()
     const prefilledValues = useSearch({ from: '/auth/sign-in' })
     const [userData, setUserData] = useState<null | UserBase>(null)
