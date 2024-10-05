@@ -91,7 +91,7 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel htmlFor={field.name} className="w-full max-w-[90px] text-right font-medium">
                                         Email
                                     </FormLabel>
                                     <FormControl>
@@ -211,7 +211,7 @@ const SignUpForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                              <FormLabel className="w-full max-w-[90px] text-right font-medium">
                                         Password
                                     </FormLabel>
                                     <FormControl>
