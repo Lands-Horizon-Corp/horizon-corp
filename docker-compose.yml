@@ -9,11 +9,12 @@ services:
       - ./client:/client
       - /client/node_modules
     ports:
-      - "${CLIENT_PORT}:${CLIENT_FORWARD_PORT}"
+      - "${CLIENT_FORWARD_PORT}:${CLIENT_PORT}"
     environment:
-      - "CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}"
-      - "CLIENT_PORT=${CLIENT_PORT}"
-      - "CLIENT_SERVER_URL=${CLIENT_SERVER_URL}"
+      - "VITE_CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}"
+      - "VITE_CLIENT_PORT=${CLIENT_PORT}"
+      - "VITE_CLIENT_SERVER_URL=${CLIENT_SERVER_URL}"
+      - "VITE_CLIENT_DOCUMENT_URL=${CLIENT_DOCUMENT_URL}"
 
   vitepress:
     build:
