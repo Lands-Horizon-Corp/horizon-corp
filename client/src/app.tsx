@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { RouterProvider } from '@tanstack/react-router';
 
 import router from '@/root-route';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import useErrorDetailsState from './horizon-corp/states/error-details-state';
 
 const TanStackRouterDevtoolsPanel =
     process.env.NODE_ENV === 'production'
@@ -20,6 +21,15 @@ declare module '@tanstack/react-router' {
 }
 
 const App = () => {
+    const { connection } = useErrorDetailsState();
+    const checkConnection = async () => {
+        const isConnected = await connection();
+        console.log('Connection status:', isConnected);
+    };
+
+    useEffect(() => {
+        checkConnection();
+    }, [connection]);
     return (
         <ThemeProvider>
             <RouterProvider router={router} />
