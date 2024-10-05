@@ -7,6 +7,10 @@ type ErrorLogger = (errorDetails: ErrorDetails) => Promise<void>;
 type RetryCondition = (error: AxiosError, retryCount: number) => boolean;
 type ErrorEnhancer = (error: AxiosError) => Error;
 
+
+/**
+ * Class to handle HTTP requests and errors using Axios with customizable options.
+ */
 export default class UseServer {
   private httpClient: AxiosInstance;
   private maxRetryCount: number;
@@ -15,8 +19,20 @@ export default class UseServer {
   private retryCondition: RetryCondition;
   private errorEnhancer: ErrorEnhancer;
 
+
+  /**
+   * Initializes a new instance of UseServer class.
+   * 
+   * @param {string} [baseUrl=import.meta.env.VITE_CLIENT_SERVER_URL ?? 'http://localhost:8080/api/v1'] - The base URL for the Axios instance.
+   * @param {AxiosRequestConfig} [defaultConfig] - The default Axios configuration.
+   * @param {number} [maxRetryCount=3] - Maximum retry count for failed requests.
+   * @param {string} [errorUrl='/error-handler'] - URL for logging errors.
+   * @param {ErrorLogger} [errorLogger] - Custom error logger function.
+   * @param {RetryCondition} [retryCondition] - Custom retry condition function.
+   * @param {ErrorEnhancer} [errorEnhancer] - Custom error enhancer function.
+   */
   constructor(
-    baseURL: string = import.meta.env.VITE_CLIENT_SERVER_URL ?? 'http://localhost:8080/api/v1',
+    baseUrl: string = import.meta.env.VITE_CLIENT_SERVER_URL ?? 'http://localhost:8080/api/v1',
     defaultConfig?: AxiosRequestConfig,
     maxRetryCount: number = 3,
     errorUrl: string = '/error-handler',
@@ -25,7 +41,7 @@ export default class UseServer {
     errorEnhancer?: ErrorEnhancer
   ) {
     this.httpClient = axios.create({
-      baseURL,
+      baseURL: baseUrl,
       headers: {
         'Content-Type': 'application/json',
         ...(defaultConfig?.headers || {}),
@@ -44,7 +60,13 @@ export default class UseServer {
     );
   }
 
-  // Generalized method to handle errors
+  /**
+   * Handles Axios errors, retrying requests if necessary and logging them.
+   * 
+   * @private
+   * @param {AxiosError} error - The Axios error object.
+   * @returns {Promise<AxiosResponse<unknown>>} - The Axios response after handling the error.
+   */
   private async handleError(
     error: AxiosError
   ): Promise<AxiosResponse<unknown>> {
@@ -63,7 +85,13 @@ export default class UseServer {
     return Promise.reject(this.errorEnhancer(error));
   }
 
-  // Format error details for backend logging
+  /**
+  * Formats error details for logging purposes.
+  * 
+  * @private
+  * @param {AxiosError} error - The Axios error object.
+  * @returns {ErrorDetails} - The formatted error details.
+  */
   private formatErrorDetails(error: AxiosError): ErrorDetails {
     return {
       message: error.message,
@@ -74,7 +102,13 @@ export default class UseServer {
     };
   }
 
-  // Default error logger that logs error to backend
+  /**
+   * Default error logger that logs error details to the backend.
+   * 
+   * @private
+   * @param {ErrorDetails} errorDetails - The details of the error to log.
+   * @returns {Promise<void>} - A promise that resolves once the error is logged.
+  */
   private async defaultErrorLogger(errorDetails: ErrorDetails): Promise<void> {
     try {
       // Use a separate Axios instance to avoid interceptors and baseURL
@@ -85,7 +119,14 @@ export default class UseServer {
     }
   }
 
-  // Default retry condition
+  /**
+   * Default retry condition to determine if a request should be retried.
+   * 
+   * @private
+   * @param {AxiosError} error - The Axios error object.
+   * @param {number} retryCount - The current retry count.
+   * @returns {boolean} - True if the request should be retried, false otherwise.
+   */
   private defaultRetryCondition(error: AxiosError, retryCount: number): boolean {
     return (
       retryCount < this.maxRetryCount &&
@@ -93,7 +134,13 @@ export default class UseServer {
     );
   }
 
-  // Default error enhancer
+  /**
+   * Default error enhancer to customize error messages.
+   * 
+   * @private
+   * @param {AxiosError} error - The Axios error object.
+   * @returns {Error} - The enhanced error object.
+   */
   private defaultErrorEnhancer(error: AxiosError): Error {
     if (error.response?.status) {
       const statusMessage = errorMessages[error.response.status];
@@ -104,12 +151,22 @@ export default class UseServer {
     return error;
   }
 
-  // Expose the Axios instance for customizations
+  /**
+   * Returns the internal Axios instance for customizations.
+   * 
+   * @returns {AxiosInstance} - The Axios instance.
+   */
   getHttpClient(): AxiosInstance {
     return this.httpClient;
   }
 
-  // Methods to add interceptors
+  /**
+   * Adds a request interceptor to the Axios instance.
+   * 
+   * @param {Function} [onFulfilled] - The function to handle fulfilled requests.
+   * @param {Function} [onRejected] - The function to handle rejected requests.
+   * @returns {number} - The interceptor ID.
+  */
   addRequestInterceptor(
     onFulfilled?: (
       value: InternalAxiosRequestConfig
@@ -119,6 +176,13 @@ export default class UseServer {
     return this.httpClient.interceptors.request.use(onFulfilled, onRejected);
   }
 
+  /**
+   * Adds a response interceptor to the Axios instance.
+   * 
+   * @param {Function} [onFulfilled] - The function to handle fulfilled responses.
+   * @param {Function} [onRejected] - The function to handle rejected responses.
+   * @returns {number} - The interceptor ID.
+   */
   addResponseInterceptor(
     onFulfilled?: (
       value: AxiosResponse
@@ -128,7 +192,14 @@ export default class UseServer {
     return this.httpClient.interceptors.response.use(onFulfilled, onRejected);
   }
 
-  // GET request method
+  /**
+   * Makes a GET request.
+   * 
+   * @param {string} url - The request URL.
+   * @param {RequestParams} [params] - The query parameters for the request.
+   * @param {AxiosRequestConfig} [config] - Optional Axios configuration.
+   * @returns {Promise<AxiosResponse<R>>} - The Axios response.
+   */
   async get<R = unknown>(
     url: string,
     params?: RequestParams,
@@ -137,7 +208,15 @@ export default class UseServer {
     return this.httpClient.get<R>(url, { params, ...config });
   }
 
-  // POST request method
+  /**
+   * Makes a POST request.
+   * 
+   * @param {string} url - The request URL.
+   * @param {D} [data] - The data to send with the request.
+   * @param {RequestParams} [params] - The query parameters for the request.
+   * @param {AxiosRequestConfig} [config] - Optional Axios configuration.
+   * @returns {Promise<AxiosResponse<R>>} - The Axios response.
+   */
   async post<D = unknown, R = unknown>(
     url: string,
     data?: D,
@@ -147,7 +226,15 @@ export default class UseServer {
     return this.httpClient.post<R>(url, data, { params, ...config });
   }
 
-  // PUT request method
+  /**
+   * Makes a PUT request.
+   * 
+   * @param {string} url - The request URL.
+   * @param {D} [data] - The data to send with the request.
+   * @param {RequestParams} [params] - The query parameters for the request.
+   * @param {AxiosRequestConfig} [config] - Optional Axios configuration.
+   * @returns {Promise<AxiosResponse<R>>} - The Axios response.
+   */
   async put<D = unknown, R = unknown>(
     url: string,
     data?: D,
@@ -157,7 +244,14 @@ export default class UseServer {
     return this.httpClient.put<R>(url, data, { params, ...config });
   }
 
-  // DELETE request method
+  /**
+   * Makes a DELETE request.
+   * 
+   * @param {string} url - The request URL.
+   * @param {RequestParams} [params] - The query parameters for the request.
+   * @param {AxiosRequestConfig} [config] - Optional Axios configuration.
+   * @returns {Promise<AxiosResponse<R>>} - The Axios response.
+   */
   async delete<R = unknown>(
     url: string,
     params?: RequestParams,
