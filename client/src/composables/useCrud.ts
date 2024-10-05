@@ -1,4 +1,5 @@
 import getSimpleProperties from '@/lib/utils';
+import UseServer from './useServer'
 import { create } from 'zustand';
 
 /**
@@ -6,13 +7,27 @@ import { create } from 'zustand';
  * 
  * @template T - The type of the data entries.
  */
-interface CrudState<T> {
+export interface CrudState<T> {
+  // Data
   entries: T[];
+
+  // Mutations
   insert: (data: T) => void;
   merge: (data: T[]) => void;
   remove: (data: T) => void;
   removeMany: (data: T[]) => void;
   clear: () => void;
+
+  // Test
+  connection: () => Promise<boolean>;
+
+
+  // Http methods
+  // index
+  // store
+  // edit
+  // update
+  // 
 }
 
 /**
@@ -20,15 +35,15 @@ interface CrudState<T> {
  * 
  * @template T - The type of the data entries.
  * @param {object} resource - The resource metadata for identifying entries.
- * @param {string} resource.identifier - The key used to identify unique entries.
+ * @param {keyof T} resource.identifier - The key used to identify unique entries.
  * @param {string} resource.path - The path for the resource.
  * @param {boolean | object | Array<string>} [allowComplexProps] - Determines whether complex properties should be allowed or which properties to allow.
- * @returns {object} A Zustand store containing the state and actions for CRUD operations.
+ * @returns {CrudState<T>} A Zustand store containing the state and actions for CRUD operations.
  */
-const useCrudStore = <T extends { [key: string]: unknown }>(
-  resource: { identifier: string; path: string },
+const useCrud = <T extends object>(
+  resource: { identifier: keyof T; path: string },
   allowComplexProps?: boolean | object | Array<string>
-): object => {
+): (() => CrudState<T>) => {
   return create<CrudState<T>>((set, get) => ({
 
     /**
@@ -58,7 +73,7 @@ const useCrudStore = <T extends { [key: string]: unknown }>(
                 ...entry,
                 ...(allowComplexProps === true
                   ? updatedData
-                  : getSimpleProperties(updatedData, allowComplexProps)),
+                  : getSimpleProperties<T>(updatedData, allowComplexProps)),
               }
               : entry
           ),
@@ -143,7 +158,21 @@ const useCrudStore = <T extends { [key: string]: unknown }>(
         entries: [],
       }));
     },
-  }));
+
+    /**
+      * Test backend connection
+    */
+    connection: async (): Promise<boolean> => {
+      const server = new UseServer()
+      try {
+        await server.get('/');
+        return true
+      } catch {
+        return false
+      }
+    }
+  }))
+
 };
 
-export default useCrudStore;
+export default useCrud;
