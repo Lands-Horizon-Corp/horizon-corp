@@ -9,7 +9,25 @@ services:
       - ./client:/client
       - /client/node_modules
     ports:
-      - "3000:80"
+      - "${CLIENT_PORT}:${CLIENT_FORWARD_PORT}"
+    environment:
+      - "CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}"
+      - "CLIENT_PORT=${CLIENT_PORT}"
+      - "CLIENT_SERVER_URL=${CLIENT_SERVER_URL}"
+
+  vitepress:
+    build:
+      context: ./document
+      dockerfile: Dockerfile
+    ports:
+      - "${DOCUMENT_FORWARD_PORT}:${DOCUMENT_PORT}"
+    volumes:
+      - ./document:/document
+      - /document/node_modules
+    environment:
+      - "DOCUMENT_FORWARD_PORT=${DOCUMENT_FORWARD_PORT}"
+      - "DOCUMENT_PORT=${DOCUMENT_PORT}"
+      - "DOCUMENT_SERVER_URL=${DOCUMENT_SERVER_URL}"
 
   server:
     restart: always
