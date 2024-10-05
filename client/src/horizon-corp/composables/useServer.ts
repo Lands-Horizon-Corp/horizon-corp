@@ -1,7 +1,8 @@
 import { CustomAxiosRequestConfig, RequestParams } from '@/types/composables/server';
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { errorMessages } from './constants';
-import { ErrorDetails } from '@/types';
+import { ErrorDetails } from '../types/error-details';
+
 
 type ErrorLogger = (errorDetails: ErrorDetails) => Promise<void>;
 type RetryCondition = (error: AxiosError, retryCount: number) => boolean;
