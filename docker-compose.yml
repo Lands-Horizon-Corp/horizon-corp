@@ -22,6 +22,9 @@ services:
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:
+      - APP_PORT=${APP_PORT}
+      - APP_TOKEN=${APP_TOKEN}
+      - LOG_LEVEL=${LOG_LEVEL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
