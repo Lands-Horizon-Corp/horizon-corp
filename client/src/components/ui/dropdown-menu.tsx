@@ -27,6 +27,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
         className={cn(
             'flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent data-[state=open]:bg-accent',
             inset && 'pl-8',
+            'group cursor-pointer rounded-lg text-foreground/70 hover:text-foreground',
             className
         )}
         {...props}
@@ -46,6 +47,7 @@ const DropdownMenuSubContent = React.forwardRef<
         ref={ref}
         className={cn(
             'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-lg data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+            'rounded-xl bg-popover/85 backdrop-blur-sm',
             className
         )}
         {...props}
@@ -63,7 +65,8 @@ const DropdownMenuContent = React.forwardRef<
             ref={ref}
             sideOffset={sideOffset}
             className={cn(
-                'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+                'z-50 min-w-[8rem] overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2',
+                'rounded-xl bg-popover/85 shadow-center-md backdrop-blur-sm',
                 className
             )}
             {...props}
@@ -82,6 +85,7 @@ const DropdownMenuItem = React.forwardRef<
         ref={ref}
         className={cn(
             'relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50',
+            'group cursor-pointer rounded-lg text-foreground/70 focus:bg-primary focus:text-primary-foreground',
             inset && 'pl-8',
             className
         )}

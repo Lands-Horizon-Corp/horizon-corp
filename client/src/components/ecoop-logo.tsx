@@ -1,28 +1,60 @@
 import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component/base'
-import { ResolvedTheme } from './providers/theme-provider'
+import { ResolvedTheme, useTheme } from './providers/theme-provider'
 
 type TEcoopThemeMode = 'dynamic' | ResolvedTheme
 
+type TLogoUrls =
+    | '/e-coop-logo-1.webp'
+    | '/e-coop-logo-white.webp'
+    | '/e-coop-logo-black.webp'
+
 interface Props extends IBaseCompNoChild {
-    url?: string
     blurDisabled?: boolean
+    blurClassName?: string
     themeMode?: TEcoopThemeMode
+    lightUrl?: TLogoUrls | string
+    darkUrl?: TLogoUrls | string
+}
+
+const getResolvedLogoUrl = (
+    lightUrl: string,
+    darkUrl: string,
+    theme: ResolvedTheme
+) => {
+    if (theme === 'light') return lightUrl
+
+    return darkUrl
 }
 
 const EcoopLogo = ({
     className,
+    blurClassName,
     blurDisabled = false,
-    url = '/e-coop-logo-1.webp',
+    themeMode = 'dynamic',
+    darkUrl = '/e-coop-logo-1.webp',
+    lightUrl = '/e-coop-logo-1.webp',
 }: Props) => {
+    const { resolvedTheme } = useTheme()
+
+    const finalUrl =
+        themeMode === 'dynamic'
+            ? getResolvedLogoUrl(lightUrl, darkUrl, resolvedTheme)
+            : themeMode === 'light'
+              ? getResolvedLogoUrl(lightUrl, darkUrl, 'light')
+              : getResolvedLogoUrl(lightUrl, darkUrl, 'dark')
+
     return (
         <div className={cn('relative size-8', className)}>
-            <img src={url} alt="logo" className="h-full w-full" />
+            <img src={finalUrl} alt="logo" className="h-full w-full" />
             {!blurDisabled && (
                 <img
-                    src={url}
+                    src={finalUrl}
                     alt="logo-blur"
-                    className="pointer-events-none absolute inset-0 left-1/2 top-1/2 z-0 hidden size-full -translate-x-1/2 -translate-y-[45%] blur-xl selection:bg-none dark:block"
+                    className={cn(
+                        'pointer-events-none absolute inset-0 left-1/2 top-1/2 z-0 size-full -translate-x-1/2 -translate-y-[45%] blur-xl selection:bg-none',
+                        blurClassName
+                    )}
                 />
             )}
         </div>

@@ -3,6 +3,7 @@ import { createContext, useContext, useState } from 'react'
 
 import { GoChevronLeft } from 'react-icons/go'
 
+import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
 import SidebarItem from '@/components/sidebar/sidebar-item'
 import SidebarUserBar from '@/components/sidebar/sidebar-user-bar'
@@ -10,7 +11,6 @@ import SidebarUserBar from '@/components/sidebar/sidebar-user-bar'
 import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
 import type { TSidebarItem } from '@/types/component/sidebar'
-import { useTheme } from '@/components/providers/theme-provider'
 
 interface Props extends IBaseComp {
     items: TSidebarItem[]
@@ -37,13 +37,12 @@ const Sidebar = ({
     enableCollapse = false,
     enableFocusBlur = false,
 }: Props) => {
-    const { resolvedTheme } = useTheme()
     const [isExpanded, setIsExpanded] = useState(defaultExpanded)
 
     return (
         <div
             className={cn(
-                'flex h-screen min-w-[260px] flex-col gap-y-2 bg-background pt-4 duration-300 ease-in-out',
+                'flex h-screen min-w-[260px] flex-col gap-y-2 bg-background pt-4 transition-none duration-300 ease-in-out',
                 className,
                 !isExpanded && 'min-w-fit',
                 enableCollapse && 'border-r'
@@ -57,25 +56,10 @@ const Sidebar = ({
             >
                 <div className="relative z-0 flex w-fit items-center justify-center">
                     <Link to="/member">
-                        <img
-                            src={
-                                resolvedTheme === 'light'
-                                    ? '/e-coop-logo-1.webp'
-                                    : '/e-coop-logo-white.webp'
-                            }
-                            className={cn(
-                                'z-10 size-7',
-                                isExpanded && 'size-24'
-                            )}
+                        <EcoopLogo
+                            className={cn('size-10', isExpanded && 'size-24')}
                         />
                     </Link>
-                    <img
-                        src="/e-coop-logo-1.webp"
-                        className={cn(
-                            'pointer-events-none absolute inset-0 left-1/2 top-1/2 z-0 size-8 -translate-x-1/2 -translate-y-[40%] -rotate-90 blur-sm selection:bg-none',
-                            isExpanded && 'size-28 blur-lg'
-                        )}
-                    />
                 </div>
                 {enableCollapse && (
                     <Button
