@@ -25,6 +25,10 @@ func main() {
 			logger.NewLogger,
 			database.NewDB,
 
+			// Roles
+			repositories.NewRolesRepository,
+			controllers.NewRolesController,
+
 			// Error Details
 			repositories.NewErrorDetailsRepository,
 			controllers.NewErrorDetailsController,
