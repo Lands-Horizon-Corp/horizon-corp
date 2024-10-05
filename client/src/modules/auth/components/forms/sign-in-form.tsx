@@ -180,7 +180,7 @@ const SignInForm = ({
                                         defaultValue={field.value}
                                         onValueChange={field.onChange}
                                     >
-                                        <FormControl id='account-type'>
+                                        <FormControl id="account-type">
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Choose type" />
                                             </SelectTrigger>
