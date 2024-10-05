@@ -4,7 +4,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// AppConfig holds the configuration settings for the application.
 type AppConfig struct {
 	AppPort            string `mapstructure:"APP_PORT"`
 	AppForwardPort     string `mapstructure:"APP_FORWARD_PORT"`
@@ -26,7 +25,6 @@ type AppConfig struct {
 	StorageMaxFileSize string `mapstructure:"STORAGE_MAX_FILE_SIZE"`
 }
 
-// LoadConfig loads the configuration from environment variables.
 func LoadConfig() (*AppConfig, error) {
 	viper.SetConfigType("env")
 	viper.AddConfigPath(".")
