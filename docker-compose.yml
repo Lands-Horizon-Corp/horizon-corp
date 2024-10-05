@@ -11,14 +11,14 @@ services:
     ports:
       - "3000:80"
 
-  core:
+  server:
     restart: always
     build:
-      context: ./core
+      context: ./server
       dockerfile: Dockerfile
     env_file: ./.env
     volumes:
-      - ./core:/app
+      - ./server:/app
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:

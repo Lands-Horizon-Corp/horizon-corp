@@ -8,13 +8,13 @@ type Logger struct {
 	*zap.Logger
 }
 
-func NewLogger() (*Logger, error) {
+func NewLogger() (*zap.Logger, error) {
 	logger, err := zap.NewProduction()
 	if err != nil {
 		return nil, err
 	}
 
-	return &Logger{logger}, nil
+	return logger, nil
 }
 
 func (l *Logger) Close() {

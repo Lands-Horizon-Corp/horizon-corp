@@ -10,7 +10,10 @@ import (
 	"go.uber.org/fx"
 )
 
-func ProvideAPI(lc fx.Lifecycle, cfg *config.AppConfig, gender_controller *controllers.GenderController) {
+func ProvideAPI(
+	lc fx.Lifecycle,
+	cfg *config.AppConfig,
+	gender_controller *controllers.GenderController) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
@@ -38,4 +41,5 @@ func ProvideAPI(lc fx.Lifecycle, cfg *config.AppConfig, gender_controller *contr
 	{
 		controllers.GenderRoutes(v1, gender_controller)
 	}
+	return router
 }
