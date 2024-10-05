@@ -1,6 +1,7 @@
+
 FROM node:20.17.0
 
-WORKDIR /client
+WORKDIR /document
 
 COPY package.json pnpm-lock.yaml ./
 
@@ -12,6 +13,6 @@ RUN pnpm install
 
 COPY . .
 
-EXPOSE 80
+EXPOSE 5321
 
-CMD ["pnpm", "dev-docker"]
+CMD ["pnpm", "docs:dev"]
