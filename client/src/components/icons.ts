@@ -11,10 +11,6 @@ import {
     HiOutlineArrowRightEndOnRectangle as LogoutIcon,
     HiOutlineChatBubbleBottomCenterText as FeedbackIcon,
 } from 'react-icons/hi2'
-
-import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
-import { BsBuildingGear as BuildingCogIcon } from 'react-icons/bs'
-
 import {
     PiUserList as UserListIcon,
     PiBuilding as BuildingIcon,
@@ -22,13 +18,15 @@ import {
     PiUsersThree as Users3Icon,
     PiBuildingOffice as BuildingBranchIcon,
 } from 'react-icons/pi'
-
 import {
     LiaUser as UserIcon,
     LiaShieldAltSolid as ShieldIcon,
     LiaUserClockSolid as UserClockIcon,
     LiaUserShieldSolid as UserShieldIcon,
 } from 'react-icons/lia'
+import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
+import { BsBuildingGear as BuildingCogIcon } from 'react-icons/bs'
+import { AiOutlineLoading3Quarters as LoadingSpinnerIcon } from 'react-icons/ai'
 
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
 
@@ -56,4 +54,5 @@ export {
     ChevronRightIcon,
     NotificationIcon,
     BuildingBranchIcon,
+    LoadingSpinnerIcon,
 }

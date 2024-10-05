@@ -1,7 +1,7 @@
 // Dependencies
 import { ReactNode } from 'react'
 import { TbExternalLink } from 'react-icons/tb'
-import { useLocation, Link  } from '@tanstack/react-router'
+import { useLocation, Link } from '@tanstack/react-router'
 
 // Components
 import RootNav from '@/components/navbars/root-nav'
@@ -43,8 +43,8 @@ const NavBar = () => {
     return (
         <RootNav
             midContents={navLinks.map((link, index) => {
-                const isCurrentTab = pathName === link.path;
-                const isExternalLink = link.path.charAt(0) !== "/";
+                const isCurrentTab = pathName === link.path
+                const isExternalLink = link.path.charAt(0) !== '/'
 
                 return (
                     <div key={index} className="relative flex space-x-1">
@@ -54,7 +54,7 @@ const NavBar = () => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={cn(
-                                    'scale-effects nav-links sm:flex hidden items-center gap-x-2 font-normal',
+                                    'scale-effects nav-links hidden items-center gap-x-2 font-normal sm:flex',
                                     isCurrentTab && 'font-bold'
                                 )}
                             >
@@ -64,7 +64,7 @@ const NavBar = () => {
                         ) : (
                             <Link
                                 className={cn(
-                                    'scale-effects nav-links sm:flex hidden items-center gap-x-2 font-normal',
+                                    'scale-effects nav-links hidden items-center gap-x-2 font-normal sm:flex',
                                     isCurrentTab && 'font-bold'
                                 )}
                                 to={link.path}
@@ -74,7 +74,7 @@ const NavBar = () => {
                             </Link>
                         )}
                         {isCurrentTab && (
-                            <div className="hidden sm:absolute -bottom-2 h-[5px] w-[20px] rounded-full bg-green-500"></div>
+                            <div className="absolute -bottom-2 hidden h-[5px] w-[20px] rounded-full bg-green-500 sm:block"></div>
                         )}
                     </div>
                 )
