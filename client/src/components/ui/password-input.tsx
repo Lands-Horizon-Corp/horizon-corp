@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 import { FiEye, FiEyeOff } from 'react-icons/fi'
 
-import { Input, InputProps } from './ui/input'
+import { Input, InputProps } from '@/components/ui/input'
 
 import { cn } from '@/lib/utils'
 
@@ -34,5 +34,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, Props>(
         )
     }
 )
+
+PasswordInput.displayName = "PasswordInput"
 
 export default PasswordInput
