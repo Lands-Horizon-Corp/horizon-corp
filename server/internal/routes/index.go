@@ -3,6 +3,7 @@ package routes
 import (
 	"horizon/server/config"
 	"horizon/server/internal/controllers"
+	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -13,7 +14,10 @@ import (
 func ProvideAPI(
 	lc fx.Lifecycle,
 	cfg *config.AppConfig,
-	gender_controller *controllers.GenderController) *gin.Engine {
+	genderController *controllers.GenderController,
+	errorDetailsController *controllers.ErrorDetailsController,
+
+) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
 		AllowOrigins: []string{
@@ -37,9 +41,16 @@ func ProvideAPI(
 		MaxAge:           12 * time.Hour,
 	}))
 
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Hello e-cooperatives.",
+		})
+	})
+
 	v1 := router.Group("/api/v1")
 	{
-		controllers.GenderRoutes(v1, gender_controller)
+		controllers.GenderRoutes(v1, genderController)
+		controllers.ErrorDetailsRoutes(v1, errorDetailsController)
 	}
 	return router
 }
