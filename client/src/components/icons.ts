@@ -1,4 +1,6 @@
 import {
+    HiOutlineSun as SunIcon,
+    HiOutlineMoon as MoonIcon,
     HiOutlineCog as SettingsIcon,
     HiOutlineCodeBracket as DevIcon,
     HiOutlineBell as NotificationIcon,
@@ -10,6 +12,7 @@ import {
     HiOutlineChatBubbleBottomCenterText as FeedbackIcon,
 } from 'react-icons/hi2'
 
+import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
 import { BsBuildingGear as BuildingCogIcon } from 'react-icons/bs'
 
 import {
@@ -30,12 +33,15 @@ import {
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
 
 export {
+    SunIcon,
     DevIcon,
     UserIcon,
+    MoonIcon,
     ShieldIcon,
     Users3Icon,
     LogoutIcon,
     ReportsIcon,
+    SunMoonIcon,
     QuestionIcon,
     SettingsIcon,
     UserListIcon,

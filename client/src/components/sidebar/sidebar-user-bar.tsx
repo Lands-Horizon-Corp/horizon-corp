@@ -1,13 +1,20 @@
 import {
     DropdownMenu,
+    DropdownMenuSub,
     DropdownMenuItem,
     DropdownMenuGroup,
+    DropdownMenuPortal,
     DropdownMenuContent,
     DropdownMenuTrigger,
+    DropdownMenuSubTrigger,
+    DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu'
 import {
     DevIcon,
+    SunIcon,
+    MoonIcon,
     LogoutIcon,
+    SunMoonIcon,
     QuestionIcon,
     ChevronRightIcon,
 } from '@/components/icons'
@@ -15,12 +22,15 @@ import UserAvatar from '@/components/user-avatar'
 
 import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component/base'
+import { useTheme } from '@/components/providers/theme-provider'
 
 interface Props extends IBaseCompNoChild {
     isExpanded: boolean
 }
 
 const SidebarUserBar = ({ className, isExpanded }: Props) => {
+    const { setTheme, resolvedTheme } = useTheme()
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -48,22 +58,51 @@ const SidebarUserBar = ({ className, isExpanded }: Props) => {
                     )}
                 </div>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-                side="right"
-                align="end"
-                className="rounded-xl border-secondary/30 !bg-secondary"
-            >
+            <DropdownMenuContent side="right" align="end">
                 <DropdownMenuGroup>
-                    <DropdownMenuItem className="group cursor-pointer rounded-lg text-foreground/70 hover:text-foreground">
-                        <QuestionIcon className="mr-2 size-4 text-foreground/60 duration-150 ease-in-out group-hover:text-foreground" />
+                    <DropdownMenuItem>
+                        <QuestionIcon className="mr-2 size-4 duration-150 ease-in-out" />
                         <span>Help</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="group cursor-pointer rounded-lg text-foreground/70 hover:text-foreground">
-                        <DevIcon className="mr-2 size-4 text-foreground/60 duration-150 ease-in-out group-hover:text-foreground" />
+                    <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                            {resolvedTheme === 'light' && (
+                                <SunIcon className="mr-2 size-4" />
+                            )}
+                            {resolvedTheme === 'dark' && (
+                                <MoonIcon className="mr-2 size-4" />
+                            )}
+                            <span>Theme</span>
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                            <DropdownMenuSubContent>
+                                <DropdownMenuItem
+                                    onClick={() => setTheme('light')}
+                                >
+                                    <SunIcon className="mr-2 size-4" />
+                                    <span>Light</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setTheme('dark')}
+                                >
+                                    <MoonIcon className="mr-2 size-4" />
+                                    <span>Dark</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setTheme('system')}
+                                >
+                                    <SunMoonIcon className="mr-2 size-4" />
+                                    <span>System</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                    <DropdownMenuItem>
+                        <DevIcon className="mr-2 size-4 duration-150 ease-in-out" />
                         <span>Dev Mode</span>
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="group cursor-pointer rounded-lg text-foreground/70 hover:text-foreground">
-                        <LogoutIcon className="mr-2 size-4 text-foreground/60 duration-150 ease-in-out group-hover:text-foreground" />
+                    <DropdownMenuItem>
+                        <LogoutIcon className="mr-2 size-4 duration-150 ease-in-out" />
                         <span>Sign Out</span>
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
