@@ -14,7 +14,8 @@ import (
 func ProvideAPI(
 	lc fx.Lifecycle,
 	cfg *config.AppConfig,
-	genderController *controllers.GenderController,
+	rolesController *controllers.RolesController,
+	gendersController *controllers.GenderController,
 	errorDetailsController *controllers.ErrorDetailsController,
 
 ) *gin.Engine {
@@ -55,7 +56,7 @@ func ProvideAPI(
 			})
 		})
 
-		controllers.GenderRoutes(v1, genderController)
+		controllers.GenderRoutes(v1, gendersController)
 		controllers.ErrorDetailsRoutes(v1, errorDetailsController)
 	}
 	return router
