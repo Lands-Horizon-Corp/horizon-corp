@@ -1,42 +1,58 @@
 package config
 
 import (
-	"github.com/spf13/viper"
+	"os"
 )
 
 type AppConfig struct {
-	AppPort            string `mapstructure:"APP_PORT"`
-	AppForwardPort     string `mapstructure:"APP_FORWARD_PORT"`
-	AppToken           string `mapstructure:"APP_TOKEN"`
-	LogLevel           string `mapstructure:"LOG_LEVEL"`
-	DBUsername         string `mapstructure:"DB_USERNAME"`
-	DBPassword         string `mapstructure:"DB_PASSWORD"`
-	DBHost             string `mapstructure:"DB_HOST"`
-	DBPort             string `mapstructure:"DB_PORT"`
-	DBName             string `mapstructure:"DB_NAME"`
-	DBCharset          string `mapstructure:"DB_CHARSET"`
-	DBParseTime        bool   `mapstructure:"DB_PARSE_TIME"`
-	DBLoc              string `mapstructure:"DB_LOC"`
-	StorageEndpoint    string `mapstructure:"STORAGE_ENDPOINT"`
-	StorageRegion      string `mapstructure:"STORAGE_REGION"`
-	StorageAccessKey   string `mapstructure:"STORAGE_ACCESS_KEY"`
-	StorageSecretKey   string `mapstructure:"STORAGE_SECRET_KEY"`
-	StorageBucketName  string `mapstructure:"STORAGE_BUCKET_NAME"`
-	StorageMaxFileSize string `mapstructure:"STORAGE_MAX_FILE_SIZE"`
+	AppPort            string
+	AppForwardPort     string
+	AppToken           string
+	LogLevel           string
+	DBUsername         string
+	DBPassword         string
+	DBHost             string
+	DBPort             string
+	DBName             string
+	DBCharset          string
+	DBParseTime        string
+	DBLoc              string
+	StorageEndpoint    string
+	StorageRegion      string
+	StorageAccessKey   string
+	StorageSecretKey   string
+	StorageBucketName  string
+	StorageMaxFileSize string
 }
 
 func LoadConfig() (*AppConfig, error) {
-	viper.SetConfigType("env")
-	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err != nil {
-		return nil, err
-	}
-
-	var config AppConfig
-	if err := viper.Unmarshal(&config); err != nil {
-		return nil, err
+	config := AppConfig{
+		AppPort:            getEnv("APP_PORT", "8080"),         // default to 8080 if not set
+		AppForwardPort:     getEnv("APP_FORWARD_PORT", "8081"), // default to 8081 if not set
+		AppToken:           os.Getenv("APP_TOKEN"),
+		LogLevel:           os.Getenv("LOG_LEVEL"),
+		DBUsername:         os.Getenv("DB_USERNAME"),
+		DBPassword:         os.Getenv("DB_PASSWORD"),
+		DBHost:             os.Getenv("DB_HOST"),
+		DBPort:             os.Getenv("DB_PORT"),
+		DBName:             os.Getenv("DB_NAME"),
+		DBCharset:          os.Getenv("DB_CHARSET"),
+		DBParseTime:        os.Getenv("DB_PARSE_TIME"),
+		DBLoc:              os.Getenv("DB_LOC"),
+		StorageEndpoint:    os.Getenv("STORAGE_ENDPOINT"),
+		StorageRegion:      os.Getenv("STORAGE_REGION"),
+		StorageAccessKey:   os.Getenv("STORAGE_ACCESS_KEY"),
+		StorageSecretKey:   os.Getenv("STORAGE_SECRET_KEY"),
+		StorageBucketName:  os.Getenv("STORAGE_BUCKET_NAME"),
+		StorageMaxFileSize: os.Getenv("STORAGE_MAX_FILE_SIZE"),
 	}
 
 	return &config, nil
+}
+
+func getEnv(key, defaultValue string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultValue
 }
