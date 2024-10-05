@@ -21,16 +21,15 @@ declare module '@tanstack/react-router' {
 }
 
 const App = () => {
-  const { connection } = useErrorDetailsState(); 
-  useEffect(() => {
+    const { connection } = useErrorDetailsState();
     const checkConnection = async () => {
-      const isConnected = await connection();
-      // TODO: Add network error page if the frontend is not connected to backend
-      console.log('Connection status:', isConnected);
+        const isConnected = await connection();
+        console.log('Connection status:', isConnected);
     };
 
-    checkConnection();
-  }, [connection]);
+    useEffect(() => {
+        checkConnection();
+    }, [connection]);
     return (
         <ThemeProvider>
             <RouterProvider router={router} />

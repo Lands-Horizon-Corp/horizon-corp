@@ -20,7 +20,6 @@ export const SignInPageSearchSchema = z.object({
         .catch('Member'),
 })
 
-
 const SignInPage = () => {
     const router = useRouter()
     const prefilledValues = useSearch({ from: '/auth/sign-in' })

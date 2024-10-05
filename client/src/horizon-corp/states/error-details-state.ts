@@ -1,14 +1,13 @@
-import useCrud from '@/horizon-corp/composables/useCrud';
-import { ErrorDetails } from '../types/error-details';
-
+import useCrud from '@/horizon-corp/composables/useCrud'
+import { ErrorDetails } from '../types/error-details'
 
 const useErrorDetailsState = () => {
-  const crud = useCrud<ErrorDetails>({
-    identifier: 'id',
-    path: '/errors',
-  });
+    const crud = useCrud<ErrorDetails>({
+        identifier: 'id',
+        path: '/errors',
+    })
 
-  return crud();
-};
+    return crud()
+}
 
-export default useErrorDetailsState;
+export default useErrorDetailsState
