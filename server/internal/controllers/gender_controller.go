@@ -4,6 +4,7 @@ import (
 	"horizon/server/helpers"
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
+	"horizon/server/internal/requests"
 	"horizon/server/internal/resources"
 	"net/http"
 
@@ -19,11 +20,22 @@ func NewGenderController(repo *repositories.GenderRepository) *GenderController 
 }
 
 func (c *GenderController) Create(ctx *gin.Context) {
-	var gender models.Gender
-	if err := ctx.ShouldBindJSON(&gender); err != nil {
+	var req requests.GenderRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	gender := models.Gender{
+		Name:        req.Name,
+		Description: req.Description,
+	}
+
 	if err := c.repo.Create(&gender); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -42,7 +54,6 @@ func (c *GenderController) GetAll(ctx *gin.Context) {
 }
 
 func (c *GenderController) GetByID(ctx *gin.Context) {
-
 	uid, err := helpers.ParseIDParam(ctx, "id")
 	if err != nil {
 		return
@@ -57,11 +68,22 @@ func (c *GenderController) GetByID(ctx *gin.Context) {
 }
 
 func (c *GenderController) Update(ctx *gin.Context) {
-	var gender models.Gender
-	if err := ctx.ShouldBindJSON(&gender); err != nil {
+	var req requests.GenderRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	gender := models.Gender{
+		Name:        req.Name,
+		Description: req.Description,
+	}
+
 	if err := c.repo.Update(&gender); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
