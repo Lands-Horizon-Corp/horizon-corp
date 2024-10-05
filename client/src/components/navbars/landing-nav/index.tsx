@@ -8,6 +8,7 @@ import { Link } from '@tanstack/react-router'
 import RootNav from '@/components/navbars/root-nav'
 import { ThemeToggleMenu } from '@/components/theme-toggle'
 import NavAuthContents from '@/components/navbars/nav-auth-contents'
+import { cn } from '@/lib/utils'
 
 type NavLink = {
     name: string
@@ -49,7 +50,9 @@ const NavBar = () => {
         <RootNav
             midContents={navLinks.map((link, index) => {
                 const isCurrentTab = currentTab === link.path
-                const isExternalLink = link.path.startsWith('http://') || link.path.startsWith('https://');
+                const isExternalLink =
+                    link.path.startsWith('http://') ||
+                    link.path.startsWith('https://')
 
                 return (
                     <div key={index} className="relative flex space-x-1">
@@ -58,21 +61,28 @@ const NavBar = () => {
                                 href={link.path}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className={`${isCurrentTab ? 'font-bold' : 'font-normal'} scale-effects nav-links`}
-                                onClick={() => setCurrentTab(link.path)} // This may not be necessary for external links
+                                className={cn(
+                                    'scale-effects nav-links flex items-center gap-x-2 font-normal',
+                                    isCurrentTab && 'font-bold'
+                                )}
                             >
                                 {link.name}
+                                <div className="self-center">{link.icon}</div>
                             </a>
                         ) : (
                             <Link
-                                className={`${isCurrentTab ? 'font-bold' : 'font-normal'} scale-effects nav-links`}
+                                className={cn(
+                                    'scale-effects nav-links flex items-center gap-x-2 font-normal',
+                                    isCurrentTab && 'font-bold'
+                                )}
                                 onClick={() => setCurrentTab(link.path)}
                                 to={link.path}
                             >
                                 {link.name}
+                                <div className="self-center">{link.icon}</div>
                             </Link>
                         )}
-                        <div className="self-center">{link.icon}</div>
+
                         {isCurrentTab && (
                             <div className="absolute -bottom-2 h-[5px] w-[20px] rounded-full bg-green-500"></div>
                         )}
