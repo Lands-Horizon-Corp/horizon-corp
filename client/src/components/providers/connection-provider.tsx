@@ -6,7 +6,7 @@ import {
     DialogContent,
     DialogDescription,
 } from '@/components/ui/dialog'
-import { LoadingSpinnerIcon } from '@/components/icons'
+
 import { cn } from '@/lib/utils'
 
 const ConnectionProvider = ({ interval = 2_000 }: { interval?: number }) => {
@@ -29,7 +29,8 @@ const ConnectionProvider = ({ interval = 2_000 }: { interval?: number }) => {
                     'backdrop-blur ease-in-out ![animation-duration:1s]',
                     isConnected && 'backdrop-blur-none'
                 )}
-                className="flex max-w-[90vw] flex-col items-center !rounded-2xl border bg-popover/80 shadow-center-md backdrop-blur focus:outline-none sm:w-fit sm:max-w-[32rem]"
+                onContextMenu={() => false}
+                className="pointer-events-none flex max-w-[90vw] flex-col items-center !rounded-2xl border bg-popover/80 shadow-center-md backdrop-blur focus:outline-none sm:w-fit sm:max-w-[32rem]"
             >
                 <DialogTitle className="text-xl">Connection Lost</DialogTitle>
                 <svg
@@ -132,8 +133,9 @@ const ConnectionProvider = ({ interval = 2_000 }: { interval?: number }) => {
                     </defs>
                 </svg>
                 <DialogDescription className="text-center font-normal">
-                    Sorry, connection to backend was lost. Do not reload the
-                    page. Reconnecting please wait.
+                    <strong>Attention:</strong> Connection to the backend has
+                    been lost. Please do not refresh the page. We are working to
+                    reconnect. Thank you for your patience.
                 </DialogDescription>
             </DialogContent>
         </Dialog>
