@@ -1,13 +1,12 @@
 // Dependencies
+import { ReactNode } from 'react'
 import { TbExternalLink } from 'react-icons/tb'
-import { ReactNode, useEffect, useState } from 'react'
-import { useRouter } from '@tanstack/react-router'
-import { Link } from '@tanstack/react-router'
+import { useLocation, Link } from '@tanstack/react-router'
 
 // Components
 import RootNav from '@/components/navbars/root-nav'
 import { ThemeToggleMenu } from '@/components/theme-toggle'
-import NavAuthContents from '@/components/navbars/nav-auth-contents'
+import NavAuthContents from '@/components/navbars/auth-nav/nav-auth-contents'
 import { cn } from '@/lib/utils'
 
 type NavLink = {
@@ -37,22 +36,15 @@ const navLinks: NavLink[] = [
 ]
 
 const NavBar = () => {
-    const router = useRouter()
-    const currentPath = router.state.location.pathname
-
-    const [currentTab, setCurrentTab] = useState(currentPath)
-
-    useEffect(() => {
-        setCurrentTab(currentPath)
-    }, [currentPath])
+    const pathName = useLocation({
+        select: (location) => location.pathname,
+    })
 
     return (
         <RootNav
             midContents={navLinks.map((link, index) => {
-                const isCurrentTab = currentTab === link.path
-                const isExternalLink =
-                    link.path.startsWith('http://') ||
-                    link.path.startsWith('https://')
+                const isCurrentTab = pathName === link.path
+                const isExternalLink = link.path.charAt(0) !== '/'
 
                 return (
                     <div key={index} className="relative flex space-x-1">
@@ -62,7 +54,7 @@ const NavBar = () => {
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className={cn(
-                                    'scale-effects nav-links flex items-center gap-x-2 font-normal',
+                                    'scale-effects nav-links hidden items-center gap-x-2 font-normal sm:flex',
                                     isCurrentTab && 'font-bold'
                                 )}
                             >
@@ -72,19 +64,17 @@ const NavBar = () => {
                         ) : (
                             <Link
                                 className={cn(
-                                    'scale-effects nav-links flex items-center gap-x-2 font-normal',
+                                    'scale-effects nav-links hidden items-center gap-x-2 font-normal sm:flex',
                                     isCurrentTab && 'font-bold'
                                 )}
-                                onClick={() => setCurrentTab(link.path)}
                                 to={link.path}
                             >
                                 {link.name}
                                 <div className="self-center">{link.icon}</div>
                             </Link>
                         )}
-
                         {isCurrentTab && (
-                            <div className="absolute -bottom-2 h-[5px] w-[20px] rounded-full bg-green-500"></div>
+                            <div className="absolute -bottom-2 hidden h-[5px] w-[20px] rounded-full bg-green-500 sm:block"></div>
                         )}
                     </div>
                 )

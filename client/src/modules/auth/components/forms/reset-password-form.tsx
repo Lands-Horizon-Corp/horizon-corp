@@ -13,7 +13,7 @@ import {
     FormLabel,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
-import PasswordInput from '@/components/password-input'
+import PasswordInput from '@/components/ui/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
 
 import { cn } from '@/lib/utils'
@@ -98,13 +98,18 @@ const ResetPasswordForm = ({
                         name="password"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
-                                <FormLabel className="font-medium">
+                                <FormLabel
+                                    htmlFor={field.name}
+                                    className="font-medium"
+                                >
                                     Password
                                 </FormLabel>
                                 <FormControl>
                                     <PasswordInput
                                         {...field}
+                                        id={field.name}
                                         placeholder="Password"
+                                        autoComplete="new-password"
                                     />
                                 </FormControl>
                             </FormItem>
@@ -115,12 +120,17 @@ const ResetPasswordForm = ({
                         name="confirmPassword"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
-                                <FormLabel className="font-medium">
+                                <FormLabel
+                                    htmlFor={field.name}
+                                    className="font-medium"
+                                >
                                     Confirm Password
                                 </FormLabel>
                                 <FormControl>
                                     <PasswordInput
                                         {...field}
+                                        id={field.name}
+                                        autoComplete="no"
                                         placeholder="Confirm Password"
                                     />
                                 </FormControl>

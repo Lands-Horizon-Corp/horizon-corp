@@ -58,7 +58,6 @@ services:
       - STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY}
       - STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}
       - STORAGE_MAX_FILE_SIZE=${STORAGE_MAX_FILE_SIZE}
-      - TOKEN=${TOKEN}
     depends_on:
       db:
         condition: service_healthy
