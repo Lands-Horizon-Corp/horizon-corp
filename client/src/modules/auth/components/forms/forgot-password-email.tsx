@@ -91,14 +91,19 @@ const ForgotPasswordEmail = ({
                         control={form.control}
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
-                                <FormLabel className="w-full text-right font-medium">
+                                <FormLabel
+                                    htmlFor={field.name}
+                                    className="w-full text-right font-medium"
+                                >
                                     Email Address
                                 </FormLabel>
                                 <FormControl>
                                     <div className="flex-1 space-y-2">
                                         <Input
-                                            placeholder="Enter your email address"
                                             {...field}
+                                            id={field.name}
+                                            autoComplete="email"
+                                            placeholder="Enter your email address"
                                         />
                                     </div>
                                 </FormControl>
@@ -110,15 +115,19 @@ const ForgotPasswordEmail = ({
                         name="mode"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                <FormLabel
+                                    htmlFor="account-type"
+                                    className="w-full max-w-[90px] text-right font-medium"
+                                >
                                     Account Type
                                 </FormLabel>
                                 <Select
-                                    onValueChange={field.onChange}
+                                    name={field.name}
                                     defaultValue={field.value}
+                                    onValueChange={field.onChange}
                                 >
                                     <FormControl>
-                                        <SelectTrigger>
+                                        <SelectTrigger id="account-type">
                                             <SelectValue placeholder="Choose type" />
                                         </SelectTrigger>
                                     </FormControl>

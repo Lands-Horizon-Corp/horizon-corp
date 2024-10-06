@@ -13,8 +13,8 @@ interface Props extends IBaseCompNoChild {
     blurDisabled?: boolean
     blurClassName?: string
     themeMode?: TEcoopThemeMode
-    lightUrl?: TLogoUrls | string
-    darkUrl?: TLogoUrls | string
+    lightUrl?: string | TLogoUrls
+    darkUrl?: string | TLogoUrls
 }
 
 const getResolvedLogoUrl = (
@@ -32,7 +32,7 @@ const EcoopLogo = ({
     blurClassName,
     blurDisabled = false,
     themeMode = 'dynamic',
-    darkUrl = '/e-coop-logo-1.webp',
+    darkUrl = '/e-coop-logo-white.webp',
     lightUrl = '/e-coop-logo-1.webp',
 }: Props) => {
     const { resolvedTheme } = useTheme()
