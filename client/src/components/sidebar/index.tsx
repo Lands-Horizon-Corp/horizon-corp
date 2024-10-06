@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
 import type { TSidebarItem } from '@/types/component/sidebar'
 
-interface Props extends IBaseComp {
+export interface ISidebarProps extends IBaseComp {
     items: TSidebarItem[]
     defaultExpanded?: boolean
     enableCollapse?: boolean
@@ -36,7 +36,7 @@ const Sidebar = ({
     defaultExpanded = true,
     enableCollapse = false,
     enableFocusBlur = false,
-}: Props) => {
+}: ISidebarProps) => {
     const [isExpanded, setIsExpanded] = useState(defaultExpanded)
 
     return (
