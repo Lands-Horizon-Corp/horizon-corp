@@ -9,7 +9,6 @@ function App() {
     }
 
     useEffect(() => {
-        // Check if consent has already been given
         const consent = localStorage.getItem('cookieConsent')
         if (consent) {
             document.cookie =
