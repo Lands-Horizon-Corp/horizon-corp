@@ -17,7 +17,7 @@ export default class MediaService {
     onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<MediaResource> {
     const response = await UseServer.uploadFile<MediaResource>(
-      `${MediaService.BASE_ENDPOINT}/upload`,
+      `${MediaService.BASE_ENDPOINT}`,
       formData,
       {},
       {
@@ -30,10 +30,10 @@ export default class MediaService {
   /**
    * Deletes a media file by ID.
    *
-   * @param {string} key - The ID of the media file to delete.
+   * @param {string} id - The ID of the media file to delete.
    * @returns {Promise<void>} - A promise that resolves when the media file is deleted.
    */
-  public static async remove(key: string): Promise<void> {
-    await UseServer.delete(`${MediaService.BASE_ENDPOINT}/remove/${key}`)
+  public static async delete(id: number): Promise<void> {
+    await UseServer.delete(`${MediaService.BASE_ENDPOINT}/${id}`)
   }
 }
