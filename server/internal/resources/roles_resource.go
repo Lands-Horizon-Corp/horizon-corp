@@ -6,22 +6,25 @@ import (
 
 // RolesResource represents the structure of the roles resource for API responses.
 type RolesResource struct {
-	ID                 uint   `json:"id"`
-	Name               string `json:"name"`
-	Description        string `json:"description,omitempty"`
-	ApiKey             string `json:"api_key,omitempty"`
-	ReadRole           bool   `json:"read_role,omitempty"`
-	WriteRole          bool   `json:"write_role,omitempty"`
-	UpdateRole         bool   `json:"update_role,omitempty"`
-	DeleteRole         bool   `json:"delete_role,omitempty"`
-	ReadErrorDetails   bool   `json:"read_error_details,omitempty"`
-	WriteErrorDetails  bool   `json:"write_error_details,omitempty"`
-	UpdateErrorDetails bool   `json:"update_error_details,omitempty"`
-	DeleteErrorDetails bool   `json:"delete_error_details,omitempty"`
-	ReadGender         bool   `json:"read_gender,omitempty"`
-	WriteGender        bool   `json:"write_gender,omitempty"`
-	UpdateGender       bool   `json:"update_gender,omitempty"`
-	DeleteGender       bool   `json:"delete_gender,omitempty"`
+	ID          uint   `json:"id"`
+	Name        string `json:"name"`
+	Description string `json:"description,omitempty"`
+	ApiKey      string `json:"api_key,omitempty"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+
+	ReadRole           bool `json:"read_role,omitempty"`
+	WriteRole          bool `json:"write_role,omitempty"`
+	UpdateRole         bool `json:"update_role,omitempty"`
+	DeleteRole         bool `json:"delete_role,omitempty"`
+	ReadErrorDetails   bool `json:"read_error_details,omitempty"`
+	WriteErrorDetails  bool `json:"write_error_details,omitempty"`
+	UpdateErrorDetails bool `json:"update_error_details,omitempty"`
+	DeleteErrorDetails bool `json:"delete_error_details,omitempty"`
+	ReadGender         bool `json:"read_gender,omitempty"`
+	WriteGender        bool `json:"write_gender,omitempty"`
+	UpdateGender       bool `json:"update_gender,omitempty"`
+	DeleteGender       bool `json:"delete_gender,omitempty"`
 }
 
 // ToResource converts a Roles model to a RolesResource.
@@ -43,6 +46,8 @@ func ToResourceRoles(roles models.Roles) RolesResource {
 		WriteGender:        roles.WriteGender,
 		UpdateGender:       roles.UpdateGender,
 		DeleteGender:       roles.DeleteGender,
+		CreatedAt:          roles.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt:          roles.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
 

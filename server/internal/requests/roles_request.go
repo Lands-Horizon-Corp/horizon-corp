@@ -4,7 +4,7 @@ import "github.com/go-playground/validator/v10"
 
 type RolesRequest struct {
 	Name               string `json:"name" validate:"required,max=255"`
-	Description        string `json:"description,omitempty" validate:"omitempty,max=1000"`
+	Description        string `json:"description,omitempty" validate:"omitempty,max=3000"`
 	ApiKey             string `json:"api_key" validate:"required,max=255"`
 	ReadRole           bool   `json:"read_role,omitempty"`
 	WriteRole          bool   `json:"write_role,omitempty"`
