@@ -32,7 +32,7 @@ func (h *MediaController) UploadMedia(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusCreated, resources.ToResourceMedia(*media))
 }
-func (h *MediaController) DeleteMedia(ctx *gin.Context) {
+func (h *MediaController) RemoveMedia(ctx *gin.Context) {
 	storageKey := ctx.Param("id")
 	err := storage.DeleteFile(storageKey)
 	if err != nil {
@@ -140,7 +140,7 @@ func MediaRoutes(router *gin.RouterGroup, controller *MediaController) {
 	group := router.Group("/medias")
 	{
 		group.POST("/upload", controller.UploadMedia)
-		group.POST("/delete/:id", controller.UploadMedia)
+		group.POST("/delete/:id", controller.RemoveMedia)
 
 		group.POST("/", controller.Create)
 		group.GET("/", controller.GetAll)

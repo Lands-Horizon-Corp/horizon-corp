@@ -1,7 +1,5 @@
-// services/FeedbackService.ts
-
-import UseServer from '../../request/server' // Adjust the path as necessary
-import { FeedbacksResource, FeedbacksRequest } from '../../types' // Adjust the path as necessary
+import UseServer from '../../request/server'
+import { FeedbacksResource, FeedbacksRequest } from '../../types'
 
 /**
  * Service class to handle CRUD operations for feedbacks.
