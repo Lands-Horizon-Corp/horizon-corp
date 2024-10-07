@@ -39,8 +39,7 @@ export default class UseServer {
    * @param {ErrorEnhancer} [errorEnhancer] - Custom error enhancer function.
    */
   constructor(
-    baseUrl: string = import.meta.env.VITE_CLIENT_SERVER_URL ??
-      'http://localhost:8080/api/v1',
+    baseUrl: string = this.getUrl(),
     defaultConfig?: AxiosRequestConfig,
     maxRetryCount: number = 3,
     errorUrl: string = '/error-handler',
@@ -80,6 +79,30 @@ export default class UseServer {
     return import.meta.env.VITE_HORIZON_CORP_API_KEY ||
       process.env.HORIZON_CORP_API_KEY; // Support for various environments
   }
+
+
+  /**
+   * Retrieves the environment key from environment variables.
+   *
+   * @returns {string} - The Horizon corp API key.  local  / development / staging / production
+   */
+  private getUrl(): string {
+    const environment = import.meta.env.VITE_HORIZON_CORP_API_KEY || process.env.HORIZON_CORP_API_KEY
+    if (environment === 'local') {
+      return 'http://localhost:8080/api/v1'
+    }
+    if (environment === 'development') {
+      return 'http://localhost:8080/api/v1'
+    }
+    if (environment === 'staging') {
+      return 'http://localhost:8080/api/v1'
+    }
+    if (environment === 'production') {
+      return 'http://localhost:8080/api/v1'
+    }
+    return 'http://localhost:8080/api/v1'
+  }
+
 
   /**
    * Handles Axios errors, retrying requests if necessary and logging them.

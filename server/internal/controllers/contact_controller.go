@@ -110,7 +110,7 @@ func (c *ContactsController) Delete(ctx *gin.Context) {
 }
 
 func ContactsRoutes(router *gin.RouterGroup, controller *ContactsController) {
-	group := router.Group("/contact")
+	group := router.Group("/contacts")
 	{
 		group.POST("/", controller.Create)
 		group.GET("/", controller.GetAll)
