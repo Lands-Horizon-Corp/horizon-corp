@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `media` (
     `file_size` BIGINT NOT NULL,
     `file_type` VARCHAR(50) NOT NULL,
     `storage_key` VARCHAR(255) NOT NULL UNIQUE,
+    `url` VARCHAR(255) NOT NULL,
     `key` VARCHAR(255),
     `bucket_name` VARCHAR(255),
     PRIMARY KEY (`id`),
@@ -16,8 +17,9 @@ CREATE TABLE IF NOT EXISTS `media` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert seed data into media table
-INSERT INTO `media` (`file_name`, `file_size`, `file_type`, `storage_key`, `key`, `bucket_name`)
+INSERT INTO `media` (`file_name`, `file_size`, `file_type`, `storage_key`, `url`, `key`, `bucket_name`)
 VALUES 
-    ('example_image.jpg', 1048576, 'image/jpeg', 'unique_key_123', 'img_key_123', 'images_bucket'),
-    ('example_video.mp4', 20971520, 'video/mp4', 'unique_key_456', 'vid_key_456', 'videos_bucket'),
-    ('example_document.pdf', 5242880, 'application/pdf', 'unique_key_789', 'doc_key_789', 'docs_bucket');
+    ('example_image.jpg', 1048576, 'image/jpeg', 'unique_key_123', 'http://example.com/images/example_image.jpg', 'img_key_123', 'images_bucket'),
+    ('example_video.mp4', 20971520, 'video/mp4', 'unique_key_456', 'http://example.com/videos/example_video.mp4', 'vid_key_456', 'videos_bucket'),
+    ('example_document.pdf', 5242880, 'application/pdf', 'unique_key_789', 'http://example.com/docs/example_document.pdf', 'doc_key_789', 'docs_bucket');
+

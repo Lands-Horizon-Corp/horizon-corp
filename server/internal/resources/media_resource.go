@@ -8,15 +8,15 @@ import (
 
 type MediaResource struct {
 	ID          uint   `json:"id"`
-	FileName    string `json:"file_name"`
-	FileSize    int64  `json:"file_size"`
-	FileType    string `json:"file_type"`
-	StorageKey  string `json:"storage_key"`
+	FileName    string `json:"fileName"`
+	FileSize    int64  `json:"fileSize"`
+	FileType    string `json:"fileType"`
+	StorageKey  string `json:"storageKey"`
 	URL         string `json:"url"`
-	BucketName  string `json:"bucket_name"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
-	DownloadURL string `json:"download_url"`
+	BucketName  string `json:"bucketName"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
+	DownloadURL string `json:"downloadURL"`
 }
 
 func ToResourceMedia(media models.Media) MediaResource {

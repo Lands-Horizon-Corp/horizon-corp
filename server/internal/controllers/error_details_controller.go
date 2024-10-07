@@ -139,8 +139,8 @@ func (c *ErrorDetailsController) Delete(ctx *gin.Context) {
 func ErrorDetailsRoutes(router *gin.RouterGroup, controller *ErrorDetailsController) {
 	group := router.Group("/error-details")
 	{
-		group.POST("/", controller.Create)
-		group.GET("/", controller.GetAll)
+		group.POST("", controller.Create)
+		group.GET("", controller.GetAll)
 		group.GET("/:id", controller.GetByID)
 		group.PUT("/:id", controller.Update)
 		group.DELETE("/:id", controller.Delete)

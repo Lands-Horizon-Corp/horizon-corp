@@ -20,6 +20,7 @@ func ProvideAPI(
 	errorDetailsController *controllers.ErrorDetailsController,
 	contactsController *controllers.ContactsController,
 	feedbacksController *controllers.FeedbackController,
+	mediasController *controllers.MediaController,
 
 ) *gin.Engine {
 	router := gin.Default()
@@ -60,6 +61,7 @@ func ProvideAPI(
 		controllers.ErrorDetailsRoutes(v1, errorDetailsController)
 		controllers.ContactsRoutes(v1, contactsController)
 		controllers.FeedbackRoutes(v1, feedbacksController)
+		controllers.MediaRoutes(v1, mediasController)
 	}
 	return router
 }

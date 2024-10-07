@@ -45,6 +45,10 @@ func main() {
 			repositories.NewFeedbackRepository,
 			controllers.NewFeedbackController,
 
+			// Media
+			repositories.NewMediaRepository,
+			controllers.NewMediaController,
+
 			// Router
 			routes.ProvideAPI,
 		),
