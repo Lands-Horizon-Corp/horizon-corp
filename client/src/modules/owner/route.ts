@@ -21,9 +21,7 @@ import OwnerLayout from '@/modules/owner/layout'
 const ownerRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'owner',
-    beforeLoad: () => {
-        // TODO: Once middleware is implemented
-    },
+    beforeLoad: () => {},
     component: OwnerLayout,
 })
 
@@ -111,7 +109,6 @@ const ownerSettingsRoute = createRoute({
     component: OwnerSettingsPage,
 })
 
-// Add all child routes under the main owner route
 const OwnerRoute = ownerRoute.addChildren([
     ownerLandingRoute,
     ownerDashboardRoute,

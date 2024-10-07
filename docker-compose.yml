@@ -9,19 +9,41 @@ services:
       - ./client:/client
       - /client/node_modules
     ports:
-      - "3000:80"
+      - "${CLIENT_FORWARD_PORT}:${CLIENT_PORT}"
+    environment:
+      - "VITE_CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}"
+      - "VITE_CLIENT_PORT=${CLIENT_PORT}"
+      - "VITE_CLIENT_SERVER_URL=${CLIENT_SERVER_URL}"
+      - "VITE_CLIENT_DOCUMENT_URL=${CLIENT_DOCUMENT_URL}"
 
-  core:
+  vitepress:
+    build:
+      context: ./document
+      dockerfile: Dockerfile
+    ports:
+      - "${DOCUMENT_FORWARD_PORT}:${DOCUMENT_PORT}"
+    volumes:
+      - ./document:/document
+      - /document/node_modules
+    environment:
+      - "DOCUMENT_FORWARD_PORT=${DOCUMENT_FORWARD_PORT}"
+      - "DOCUMENT_PORT=${DOCUMENT_PORT}"
+      - "DOCUMENT_SERVER_URL=${DOCUMENT_SERVER_URL}"
+
+  server:
     restart: always
     build:
-      context: ./core
+      context: ./server
       dockerfile: Dockerfile
     env_file: ./.env
     volumes:
-      - ./core:/app
+      - ./server:/app
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:
+      - APP_PORT=${APP_PORT}
+      - APP_TOKEN=${APP_TOKEN}
+      - LOG_LEVEL=${LOG_LEVEL}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST}
@@ -36,7 +58,6 @@ services:
       - STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY}
       - STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}
       - STORAGE_MAX_FILE_SIZE=${STORAGE_MAX_FILE_SIZE}
-      - TOKEN=${TOKEN}
     depends_on:
       db:
         condition: service_healthy

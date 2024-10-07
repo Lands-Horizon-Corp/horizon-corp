@@ -1,5 +1,7 @@
-import Sidebar from '.'
-import SidebarMobileWrapper from './sidebar-mobile-wrapper'
+import Sidebar from '@/components/sidebar'
+import { Button } from '@/components/ui/button'
+import { SidebarIcon } from '@/components/icons'
+import MobileSidebar from '@/components/sidebar/mobile-sidebar'
 
 import { cn } from '@/lib/utils'
 import { TSidebarItem } from '@/types/component/sidebar'
@@ -15,19 +17,25 @@ const DynamicSidebar = ({ className, sidebarItems }: Props) => {
             <div className="hidden sm:block">
                 <Sidebar
                     enableCollapse
-                    // enableFocusBlur
+                    enableFocusBlur
                     items={sidebarItems}
                     className={cn('', className)}
                 />
             </div>
             <div className="block sm:hidden">
-                <SidebarMobileWrapper>
-                    <Sidebar
-                        // enableFocusBlur
-                        items={sidebarItems}
-                        className={cn('', className)}
-                    />
-                </SidebarMobileWrapper>
+                <MobileSidebar
+                    items={sidebarItems}
+                    triggerComponent={
+                        <Button
+                            size="icon"
+                            variant="secondary"
+                            className="fixed left-2 top-2 size-fit rounded-lg p-2"
+                        >
+                            <SidebarIcon className="size-4" />
+                        </Button>
+                    }
+                    className={cn('', className)}
+                />
             </div>
         </>
     )

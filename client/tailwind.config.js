@@ -7,6 +7,9 @@ export default {
             fontFamily : {
                 inter : ["Inter", "sans-serif"]
             },
+            boxShadow : {
+                "center-md" : "0 0px 8px -1px rgb(0 0 0 / 0.2)"
+            },
     		borderRadius: {
     			lg: 'var(--radius)',
     			md: 'calc(var(--radius) - 2px)',

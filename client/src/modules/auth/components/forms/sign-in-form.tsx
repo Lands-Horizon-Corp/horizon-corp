@@ -19,8 +19,9 @@ import {
     FormLabel,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
-import PasswordInput from '@/components/password-input'
+import PasswordInput from '@/components/ui/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
@@ -83,7 +84,7 @@ const SignInForm = ({
                 )}
             >
                 <div className="flex items-center justify-center gap-x-2 py-4 font-medium">
-                    <img src="/e-coop-logo-1.png" className="size-24" />
+                    <EcoopLogo className="size-24" />
                     <p className="text-xl">Login to your account</p>
                 </div>
 
@@ -94,14 +95,19 @@ const SignInForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Email
                                     </FormLabel>
                                     <FormControl>
                                         <div className="flex-1 space-y-2">
                                             <Input
-                                                placeholder="Email"
                                                 {...field}
+                                                id={field.name}
+                                                autoComplete="on"
+                                                placeholder="Email"
                                             />
                                         </div>
                                     </FormControl>
@@ -115,13 +121,18 @@ const SignInForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Username
                                     </FormLabel>
                                     <FormControl>
                                         <Input
-                                            placeholder="Username"
                                             {...field}
+                                            id={field.name}
+                                            placeholder="Username"
+                                            autoComplete="username"
                                         />
                                     </FormControl>
                                 </div>
@@ -134,12 +145,17 @@ const SignInForm = ({
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor="password-field"
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Password
                                     </FormLabel>
                                     <FormControl>
                                         <PasswordInput
                                             {...field}
+                                            id="password-field"
+                                            autoComplete="current-password"
                                             placeholder="Password"
                                         />
                                     </FormControl>
@@ -153,14 +169,18 @@ const SignInForm = ({
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex w-full items-center justify-end gap-x-4">
-                                    <FormLabel className="w-full max-w-[90px] text-right font-medium">
+                                    <FormLabel
+                                        htmlFor="account-type"
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
                                         Account Type
                                     </FormLabel>
                                     <Select
-                                        onValueChange={field.onChange}
+                                        name={field.name}
                                         defaultValue={field.value}
+                                        onValueChange={field.onChange}
                                     >
-                                        <FormControl>
+                                        <FormControl id="account-type">
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Choose type" />
                                             </SelectTrigger>
