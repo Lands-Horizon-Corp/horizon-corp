@@ -1,8 +1,10 @@
 package resources
 
-import "horizon/server/internal/models"
+import (
+	"horizon/server/internal/models"
+	"time"
+)
 
-// GenderResource represents the structure of the gender resource for API responses.
 type GenderResource struct {
 	ID          uint   `json:"id"`
 	Name        string `json:"name"`
@@ -11,14 +13,13 @@ type GenderResource struct {
 	UpdatedAt   string `json:"updated_at"`
 }
 
-// ToResource converts a gender model to a gender resource.
 func ToResourceGender(gender models.Gender) GenderResource {
 	return GenderResource{
 		ID:          gender.ID,
 		Name:        gender.Name,
 		Description: gender.Description,
-		CreatedAt:   gender.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:   gender.UpdatedAt.Format("2006-01-02 15:04:05"),
+		CreatedAt:   gender.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   gender.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

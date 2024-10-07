@@ -1,6 +1,9 @@
 package resources
 
-import "horizon/server/internal/models"
+import (
+	"horizon/server/internal/models"
+	"time"
+)
 
 // ContactResource represents the structure of the contact resource for API responses.
 type ContactResource struct {
@@ -21,8 +24,8 @@ func ToResourceContacts(contact models.Contacts) ContactResource {
 		LastName:    contact.LastName,
 		Email:       contact.Email,
 		Description: contact.Description,
-		CreatedAt:   contact.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:   contact.UpdatedAt.Format("2006-01-02 15:04:05"),
+		CreatedAt:   contact.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   contact.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

@@ -6,6 +6,7 @@ type Roles struct {
 	ID          uint   `json:"id" gorm:"primaryKey"`
 	Name        string `json:"name" gorm:"unique;not null"`
 	Description string `json:"description,omitempty"`
+	Color       string `json:"colors"`
 	gorm.Model
 
 	ApiKey string `json:"api_key,omitempty" gorm:"unique;not null"`

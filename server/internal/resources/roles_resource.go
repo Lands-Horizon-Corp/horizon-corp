@@ -9,9 +9,11 @@ type RolesResource struct {
 	ID          uint   `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
-	ApiKey      string `json:"api_key,omitempty"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
+	Color       string `json:"color"`
+
+	ApiKey    string `json:"api_key,omitempty"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 
 	ReadRole           bool `json:"read_role,omitempty"`
 	WriteRole          bool `json:"write_role,omitempty"`
@@ -30,9 +32,11 @@ type RolesResource struct {
 // ToResource converts a Roles model to a RolesResource.
 func ToResourceRoles(roles models.Roles) RolesResource {
 	return RolesResource{
-		ID:                 roles.ID,
-		Name:               roles.Name,
-		Description:        roles.Description,
+		ID:          roles.ID,
+		Name:        roles.Name,
+		Description: roles.Description,
+		Color:       roles.Color,
+
 		ApiKey:             roles.ApiKey,
 		ReadRole:           roles.ReadRole,
 		WriteRole:          roles.WriteRole,
