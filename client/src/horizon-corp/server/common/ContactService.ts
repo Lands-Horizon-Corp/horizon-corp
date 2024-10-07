@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 import type { ContactsRequest, ContactResource } from '../../types'
 
 
-export class ContactService {
+export default class ContactService {
   private server: UseServer;
 
   constructor() {

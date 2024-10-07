@@ -1,6 +1,6 @@
 import UseServer from "../../request/server";
 
-export class Connection {
+export default class Connection {
   private server: UseServer;
 
   constructor() {
