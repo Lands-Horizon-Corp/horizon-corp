@@ -16,8 +16,9 @@ export default class UseServer {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${UseServer.getApiKey()}`, // Set the API key in headers
     },
-    withCredentials: true
+    withCredentials: true // Set to true if credentials are needed
   })
+
 
   /**
    * Retrieves the API key from environment variables.
@@ -41,9 +42,9 @@ export default class UseServer {
       case 'development':
       case 'staging':
       case 'production':
-        return 'http://localhost:8080/api/v1'
+        return 'http://localhost:8080/api/v1/'
       default:
-        return 'http://localhost:8080/api/v1'
+        return 'http://localhost:8080/api/v1/'
     }
   }
 
