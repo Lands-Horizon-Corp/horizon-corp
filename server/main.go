@@ -25,6 +25,10 @@ func main() {
 			logger.NewLogger,
 			database.NewDB,
 
+			// Roles
+			repositories.NewRolesRepository,
+			controllers.NewRolesController,
+
 			// Error Details
 			repositories.NewErrorDetailsRepository,
 			controllers.NewErrorDetailsController,
@@ -32,6 +36,14 @@ func main() {
 			// Gender
 			repositories.NewGenderRepository,
 			controllers.NewGenderController,
+
+			// Contact
+			repositories.NewContactsRepository,
+			controllers.NewContactsController,
+
+			// Feedback
+			repositories.NewFeedbackRepository,
+			controllers.NewFeedbackController,
 
 			// Router
 			routes.ProvideAPI,

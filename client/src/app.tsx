@@ -3,6 +3,7 @@ import { RouterProvider } from '@tanstack/react-router';
 
 import router from '@/root-route';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+
 const TanStackRouterDevtoolsPanel =
     process.env.NODE_ENV === 'production'
         ? () => null
@@ -23,7 +24,7 @@ const App = () => {
         <ThemeProvider>
             <RouterProvider router={router} />
             <TanStackRouterDevtoolsPanel
-                position="bottom-right"
+                position="bottom-left"
                 router={router}
             />
         </ThemeProvider>
