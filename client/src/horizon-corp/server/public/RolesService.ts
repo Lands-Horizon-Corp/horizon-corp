@@ -9,6 +9,15 @@ class RolesService {
   constructor() {
     this.server = new UseServer();
   }
+  /**
+  * Gets all feedbacks.
+  *
+  * @returns {Promise<RolesResource[]>}
+  */
+  async getAll(): Promise<RolesResource[]> {
+    const response: AxiosResponse<RolesResource[]> = await this.server.get('/roles');
+    return response.data;
+  }
 
   /**
    * Creates a new role.
