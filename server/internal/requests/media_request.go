@@ -9,6 +9,7 @@ type MediaRequest struct {
 	FileType   string `json:"file_type" validate:"required,max=50"`
 	StorageKey string `json:"storage_key" validate:"required,max=255"`
 	Key        string `json:"key" validate:"omitempty,max=255"`
+	URL        string `json:"url" validate:"omitempty,max=255"`
 	BucketName string `json:"bucket_name" validate:"omitempty,max=255"`
 }
 
