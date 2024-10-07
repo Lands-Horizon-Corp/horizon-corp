@@ -156,4 +156,28 @@ export default class UseServer {
   ): Promise<AxiosResponse<R>> {
     return UseServer.httpClient.delete<R>(url, { params, ...config })
   }
+
+  /**
+   * Makes a POST request for file uploads.
+   *
+   * @param {string} url - The request URL.
+   * @param {FormData} formData - The FormData object containing the file.
+   * @param {RequestParams} [params] - The query parameters for the request.
+   * @param {AxiosRequestConfig} [config] - Optional Axios configuration.
+   * @returns {Promise<AxiosResponse<R>>} - The Axios response.
+   */
+  public static async uploadFile<R = unknown>(
+    url: string,
+    formData: FormData,
+    params?: RequestParams,
+    config?: AxiosRequestConfig
+  ): Promise<AxiosResponse<R>> {
+    return UseServer.httpClient.post<R>(url, formData, {
+      params,
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      },
+      ...config
+    });
+  }
 }

@@ -1,7 +1,5 @@
-// services/RoleService.ts
-
-import UseServer from '../../request/server' // Adjust the path as necessary
-import { RolesResource, RolesRequest } from '../../types' // Adjust the path as necessary
+import UseServer from '../../request/server'
+import { RolesResource, RolesRequest } from '../../types'
 
 /**
  * Service class to handle CRUD operations for roles.
