@@ -25,7 +25,10 @@ import {
     LiaUserShieldSolid as UserShieldIcon,
 } from 'react-icons/lia'
 import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
-import { BsBuildingGear as BuildingCogIcon } from 'react-icons/bs'
+import {
+    BsBuildingGear as BuildingCogIcon,
+    BsLayoutSidebarInset as SidebarIcon,
+} from 'react-icons/bs'
 import { AiOutlineLoading3Quarters as LoadingSpinnerIcon } from 'react-icons/ai'
 
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
@@ -38,6 +41,7 @@ export {
     ShieldIcon,
     Users3Icon,
     LogoutIcon,
+    SidebarIcon,
     ReportsIcon,
     SunMoonIcon,
     QuestionIcon,
