@@ -13,9 +13,11 @@ export default class MediaService {
    * @returns {Promise<MediaResource>} - A promise that resolves to the uploaded media resource.
    */
   public static async upload(
-    formData: FormData,
+    file: File,
     onProgress?: (progressEvent: AxiosProgressEvent) => void
   ): Promise<MediaResource> {
+    const formData = new FormData()
+    formData.append('file', file)
     const response = await UseServer.uploadFile<MediaResource>(
       `${MediaService.BASE_ENDPOINT}`,
       formData,
