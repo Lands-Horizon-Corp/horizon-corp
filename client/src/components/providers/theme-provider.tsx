@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 
 type Theme = 'dark' | 'light' | 'system'
-type ResolvedTheme = 'dark' | 'light'
+export type ResolvedTheme = 'dark' | 'light'
 
 type ThemeProviderProps = {
     children: React.ReactNode
@@ -29,10 +29,10 @@ export function ThemeProvider({
     storageKey = 'vite-ui-theme',
     ...props
 }: ThemeProviderProps) {
-    const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('light')
     const [theme, setTheme] = useState<Theme>(
         () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
     )
+    const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>('light')
 
     const removeClassTheme = (root: HTMLElement) => {
         if (!root) return
@@ -73,7 +73,7 @@ export function ThemeProvider({
             return
         }
 
-        root.classList.add(theme)
+        handleSetTheme(root, theme)
 
         return () => {
             mediaQuery.removeEventListener('change', handleThemeChange)

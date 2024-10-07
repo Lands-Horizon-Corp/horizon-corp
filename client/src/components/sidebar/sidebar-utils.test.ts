@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { concatParentUrl } from './sidebar-utils'
+import { concatParentUrl, sidebarRouteMatcher } from './sidebar-utils'
 
 describe('testing concatParentUrl', () => {
     it('should concatenate baseUrl:/member and url:/task', () => {
@@ -30,5 +30,27 @@ describe('testing concatParentUrl', () => {
     it('should concatenate baseUrl:/member and url:/settings', () => {
         const res = concatParentUrl({ baseUrl: '/member', url: '/settings' })
         expect(res).toBe('/member/settings')
+    })
+})
+
+describe('Collapsable Route matcher function for sidebar', () => {
+    it('should match baseUrl:/abc/d and url:/abc/a', () => {
+        expect(sidebarRouteMatcher('/abc/d', '/abc/a')).toBe(false)
+    })
+
+    it('should not match baseUrl:/abc/d and url:/bca/d', () => {
+        expect(sidebarRouteMatcher('/abc/d', '/abc/a')).toBe(false)
+    })
+
+    it('should not match baseUrl:/mem and url:/membored/desu', () => {
+        expect(sidebarRouteMatcher('/mem', '/membor/desu')).toBe(false)
+    })
+
+    it('should exact match baseUrl:/mem/desune url:/mem/desune', () => {
+        expect(sidebarRouteMatcher('/mem/desune', '/mem/desune')).toBe(true)
+    })
+
+    it('should fail if both undefined', () => {
+        expect(sidebarRouteMatcher(undefined, '')).toBe(false)
     })
 })
