@@ -74,12 +74,16 @@ const ContactPage = () => {
                                     render={({ field }) => (
                                         <FormItem className="">
                                             <div className="flex flex-col justify-start">
-                                                <FormLabel className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold">
+                                                <FormLabel
+                                                    htmlFor={field.name}
+                                                    className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold"
+                                                >
                                                     First Name
                                                 </FormLabel>
                                                 <FormControl>
                                                     <div className="flex-1 space-y-2">
                                                         <Input
+                                                            id={field.name}
                                                             className={cn(
                                                                 'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
                                                             )}
@@ -98,12 +102,16 @@ const ContactPage = () => {
                                     render={({ field }) => (
                                         <FormItem className="">
                                             <div className="flex flex-col justify-start">
-                                                <FormLabel className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold">
+                                                <FormLabel
+                                                    htmlFor={field.name}
+                                                    className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold"
+                                                >
                                                     Last Name
                                                 </FormLabel>
                                                 <FormControl>
                                                     <div className="flex-1 space-y-2">
                                                         <Input
+                                                            id={field.name}
                                                             className={cn(
                                                                 'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
                                                             )}
@@ -123,17 +131,22 @@ const ContactPage = () => {
                                 render={({ field }) => (
                                     <FormItem className="">
                                         <div className="flex flex-col justify-start">
-                                            <FormLabel className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold">
+                                            <FormLabel
+                                                htmlFor={field.name}
+                                                className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold"
+                                            >
                                                 Email
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="flex-1 space-y-2">
                                                     <Input
+                                                        id={field.name}
                                                         className={cn(
                                                             'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
                                                         )}
                                                         placeholder="you@company.com"
                                                         {...field}
+                                                        autoComplete="email"
                                                     />
                                                 </div>
                                             </FormControl>
@@ -147,12 +160,16 @@ const ContactPage = () => {
                                 render={({ field }) => (
                                     <FormItem className="">
                                         <div className="flex flex-col justify-start">
-                                            <FormLabel className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold">
+                                            <FormLabel
+                                                htmlFor={field.name}
+                                                className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold"
+                                            >
                                                 Phone
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="flex-1 space-y-2">
                                                     <Input
+                                                        id={field.name}
                                                         className={cn(
                                                             'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
                                                         )}
@@ -171,12 +188,16 @@ const ContactPage = () => {
                                 render={({ field }) => (
                                     <FormItem className="">
                                         <div className="flex flex-col justify-start">
-                                            <FormLabel className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold">
+                                            <FormLabel
+                                                htmlFor={field.name}
+                                                className="h-[38px] w-full max-w-[90px] text-[15px] font-semibold"
+                                            >
                                                 Message
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="flex-1 space-y-2">
                                                     <Textarea
+                                                        id={field.name}
                                                         className={cn(
                                                             'max-h-[122px] min-h-[122px] rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
                                                         )}

@@ -24,7 +24,7 @@ const App = () => {
         <ThemeProvider>
             <RouterProvider router={router} />
             <TanStackRouterDevtoolsPanel
-                position="bottom-right"
+                position="bottom-left"
                 router={router}
             />
         </ThemeProvider>
