@@ -1,7 +1,5 @@
-// services/ContactService.ts
-
-import UseServer from '../../request/server' // Adjust the path as necessary
-import { ContactsResource, ContactsRequest } from '../../types' // Adjust the path as necessary
+import UseServer from '../../request/server'
+import { ContactsResource, ContactsRequest } from '../../types'
 
 /**
  * Service class to handle CRUD operations for contacts.

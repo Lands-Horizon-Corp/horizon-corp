@@ -1,7 +1,5 @@
-// services/GenderService.ts
-
-import UseServer from '../../request/server' // Adjust the path as necessary
-import { GendersResource, GendersRequest } from '../../types' // Adjust the path as necessary
+import UseServer from '../../request/server'
+import { GendersResource, GendersRequest } from '../../types'
 
 /**
  * Service class to handle CRUD operations for genders.
