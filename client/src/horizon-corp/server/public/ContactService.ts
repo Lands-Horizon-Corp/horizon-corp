@@ -11,6 +11,16 @@ class ContactService {
   }
 
   /**
+   * Gets all contacts.
+   *
+   * @returns {Promise<ContactResource[]>} - An array of contact resources.
+   */
+  async getAll(): Promise<ContactResource[]> {
+    const response: AxiosResponse<ContactResource[]> = await this.server.get('/contacts');
+    return response.data;
+  }
+
+  /**
    * Creates a new contact.
    *
    * @param {ContactsRequest} contactData - The contact data to create.

@@ -11,6 +11,17 @@ class GenderService {
   }
 
   /**
+   * Gets all genders.
+   *
+   * @returns {Promise<GendersResource[]>} - An array of feedback resources.
+   */
+  async getAll(): Promise<GendersResource[]> {
+    const response: AxiosResponse<GendersResource[]> = await this.server.get('/genders');
+    return response.data;
+  }
+
+
+  /**
    * Creates a new gender.
    *
    * @param {GendersRequest} genderData - The gender data to create.
