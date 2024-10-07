@@ -8,15 +8,15 @@ import {
 } from '@/components/ui/dialog'
 
 import { cn } from '@/lib/utils'
-import { Connection } from '@/horizon-corp/server'
-const contact = new Connection()
-const ConnectionProvider = ({ interval = 2_000 }: { interval?: number }) => {
+import service from '@/horizon-corp/server'
+
+const ConnectionProvider = ({ interval = 10_000 }: { interval?: number }) => {
     const [isConnected, setIsConnected] = useState(true)
 
     useEffect(() => {
         const checkerFunction = setInterval(async () => {
-            const response = (await contact.test()) ?? true // remove true if deployed
-            setIsConnected(response)
+            const response = await service.common.connection.test()
+            setIsConnected(response ?? true)
         }, interval)
 
         return () => clearInterval(checkerFunction)

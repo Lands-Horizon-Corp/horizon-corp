@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 import type { RolesRequest, RolesResource } from '../../types'
 
 
-export class RolesService {
+export default class RolesService {
   private server: UseServer;
 
   constructor() {

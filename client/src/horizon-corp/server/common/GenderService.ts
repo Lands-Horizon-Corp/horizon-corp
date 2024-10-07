@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 import type { GendersRequest, GendersResource } from '../../types'
 
 
-export class GenderService {
+export default class GenderService {
   private server: UseServer;
 
   constructor() {
