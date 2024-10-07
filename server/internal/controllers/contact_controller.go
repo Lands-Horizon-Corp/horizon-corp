@@ -112,8 +112,8 @@ func (c *ContactsController) Delete(ctx *gin.Context) {
 func ContactsRoutes(router *gin.RouterGroup, controller *ContactsController) {
 	group := router.Group("/contacts")
 	{
-		group.POST("/", controller.Create)
-		group.GET("/", controller.GetAll)
+		group.POST("", controller.Create)
+		group.GET("", controller.GetAll)
 		group.GET("/:id", controller.GetByID)
 		group.PUT("/:id", controller.Update)
 		group.DELETE("/:id", controller.Delete)
