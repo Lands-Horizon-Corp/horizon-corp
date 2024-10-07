@@ -24,20 +24,7 @@ func ProvideAPI(
 ) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			"http://0.0.0.0",
-			"http://0.0.0.0:8080",
-			"http://0.0.0.0:3000",
-			"http://0.0.0.0:3001",
-			"http://0.0.0.0:80",
-			"http://0.0.0.0:3000",
-			"http://rea.development",
-			"http://rea.pro",
-			"http://localhost:8080",
-			"http://localhost:3000",
-			"http://localhost:3001",
-			"http://localhost:3002",
-		},
+		AllowAllOrigins:  true,
 		AllowMethods:     []string{"POST", "GET", "PUT", "PATCH", "DELETE"},
 		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},

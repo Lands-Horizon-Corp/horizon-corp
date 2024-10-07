@@ -1,67 +1,74 @@
-import UseServer from "../../request/server";
-import { AxiosResponse } from 'axios';
-import type { ContactsRequest, ContactResource } from '../../types'
+// services/ContactService.ts
 
+import UseServer from '../../request/server' // Adjust the path as necessary
+import { ContactsResource, ContactsRequest } from '../../types' // Adjust the path as necessary
 
+/**
+ * Service class to handle CRUD operations for contacts.
+ */
 export default class ContactService {
-  private server: UseServer;
-
-  constructor() {
-    this.server = new UseServer();
-  }
+  private static readonly BASE_ENDPOINT = '/contacts'
 
   /**
-   * Gets all contacts.
+   * Retrieves all contacts.
    *
-   * @returns {Promise<ContactResource[]>} - An array of contact resources.
+   * @returns {Promise<ContactsResource[]>} - A promise that resolves to an array of contact resources.
    */
-  async getAll(): Promise<ContactResource[]> {
-    const response: AxiosResponse<ContactResource[]> = await this.server.get('/contacts');
-    return response.data;
+  public static async getAll(): Promise<ContactsResource[]> {
+    const response = await UseServer.get<ContactsResource[]>(ContactService.BASE_ENDPOINT)
+    return response.data
   }
 
   /**
    * Creates a new contact.
    *
-   * @param {ContactsRequest} contactData - The contact data to create.
-   * @returns {Promise<ContactResource>} - The created contact resource.
+   * @param {ContactsRequest} contactData - The data for the new contact.
+   * @returns {Promise<ContactsResource>} - A promise that resolves to the created contact resource.
    */
-  async create(contactData: ContactsRequest): Promise<ContactResource> {
-    const response: AxiosResponse<ContactResource> = await this.server.post('/contacts', contactData);
-    return response.data;
+  public static async create(contactData: ContactsRequest): Promise<ContactsResource> {
+    const response = await UseServer.post<ContactsRequest, ContactsResource>(
+      ContactService.BASE_ENDPOINT,
+      contactData
+    )
+    return response.data
   }
 
-
   /**
-   * Deletes a contact by ID.
+   * Deletes a contact by its ID.
    *
    * @param {number} id - The ID of the contact to delete.
-   * @returns {Promise<void>} - A promise that resolves when the contact is deleted.
+   * @returns {Promise<void>} - A promise that resolves when the deletion is complete.
    */
-  async delete(id: number): Promise<void> {
-    await this.server.delete(`/contacts/${id}`);
+  public static async delete(id: number): Promise<void> {
+    const endpoint = `${ContactService.BASE_ENDPOINT}/${id}`
+    await UseServer.delete<void>(endpoint)
   }
 
   /**
-   * Updates an existing contact by ID.
+   * Updates an existing contact by its ID.
    *
    * @param {number} id - The ID of the contact to update.
-   * @param {ContactsRequest} contactData - The updated contact data.
-   * @returns {Promise<ContactResource>} - The updated contact resource.
+   * @param {ContactsRequest} contactData - The updated data for the contact.
+   * @returns {Promise<ContactsResource>} - A promise that resolves to the updated contact resource.
    */
-  async update(id: number, contactData: ContactsRequest): Promise<ContactResource> {
-    const response: AxiosResponse<ContactResource> = await this.server.put(`/contacts/${id}`, contactData);
-    return response.data;
+  public static async update(id: number, contactData: ContactsRequest): Promise<ContactsResource> {
+    const endpoint = `${ContactService.BASE_ENDPOINT}/${id}`
+    const response = await UseServer.put<ContactsRequest, ContactsResource>(
+      endpoint,
+      contactData
+    )
+    return response.data
   }
 
   /**
-  * Gets a contact by ID.
-  *
-  * @param {number} id - The ID of the contact to retrieve.
-  * @returns {Promise<ContactResource>} - The retrieved contact resource.
-  */
-  async getById(id: number): Promise<ContactResource> {
-    const response: AxiosResponse<ContactResource> = await this.server.get(`/contacts/${id}`);
-    return response.data;
+   * Retrieves a contact by its ID.
+   *
+   * @param {number} id - The ID of the contact to retrieve.
+   * @returns {Promise<ContactsResource>} - A promise that resolves to the contact resource.
+   */
+  public static async getById(id: number): Promise<ContactsResource> {
+    const endpoint = `${ContactService.BASE_ENDPOINT}/${id}`
+    const response = await UseServer.get<ContactsResource>(endpoint)
+    return response.data
   }
 }

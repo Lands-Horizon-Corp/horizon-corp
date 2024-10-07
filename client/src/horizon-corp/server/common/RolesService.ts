@@ -1,67 +1,74 @@
-import UseServer from "../../request/server";
-import { AxiosResponse } from 'axios';
-import type { RolesRequest, RolesResource } from '../../types'
+// services/RoleService.ts
 
+import UseServer from '../../request/server' // Adjust the path as necessary
+import { RolesResource, RolesRequest } from '../../types' // Adjust the path as necessary
 
-export default class RolesService {
-  private server: UseServer;
+/**
+ * Service class to handle CRUD operations for roles.
+ */
+export default class RoleService {
+  private static readonly BASE_ENDPOINT = '/roles'
 
-  constructor() {
-    this.server = new UseServer();
-  }
   /**
-  * Gets all feedbacks.
-  *
-  * @returns {Promise<RolesResource[]>}
-  */
-  async getAll(): Promise<RolesResource[]> {
-    const response: AxiosResponse<RolesResource[]> = await this.server.get('/roles');
-    return response.data;
+   * Retrieves all roles.
+   *
+   * @returns {Promise<RolesResource[]>} - A promise that resolves to an array of role resources.
+   */
+  public static async getAll(): Promise<RolesResource[]> {
+    const response = await UseServer.get<RolesResource[]>(RoleService.BASE_ENDPOINT)
+    return response.data
   }
 
   /**
    * Creates a new role.
    *
-   * @param {RolesRequest} roleData - The role data to create.
-   * @returns {Promise<RolesResource>} - The created role resource.
+   * @param {RolesRequest} roleData - The data for the new role.
+   * @returns {Promise<RolesResource>} - A promise that resolves to the created role resource.
    */
-  async create(roleData: RolesRequest): Promise<RolesResource> {
-    const response: AxiosResponse<RolesResource> = await this.server.post('/roles', roleData);
-    return response.data;
+  public static async create(roleData: RolesRequest): Promise<RolesResource> {
+    const response = await UseServer.post<RolesRequest, RolesResource>(
+      RoleService.BASE_ENDPOINT,
+      roleData
+    )
+    return response.data
   }
 
-
   /**
-   * Deletes a role by ID.
+   * Deletes a role by its ID.
    *
    * @param {number} id - The ID of the role to delete.
-   * @returns {Promise<void>} - A promise that resolves when the role is deleted.
+   * @returns {Promise<void>} - A promise that resolves when the deletion is complete.
    */
-  async delete(id: number): Promise<void> {
-    await this.server.delete(`/roles/${id}`);
+  public static async delete(id: number): Promise<void> {
+    const endpoint = `${RoleService.BASE_ENDPOINT}/${id}`
+    await UseServer.delete<void>(endpoint)
   }
 
   /**
-   * Updates an existing role by ID.
+   * Updates an existing role by its ID.
    *
    * @param {number} id - The ID of the role to update.
-   * @param {RolesRequest} roleData - The updated role data.
-   * @returns {Promise<RolesResource>} - The updated role resource.
+   * @param {RolesRequest} roleData - The updated data for the role.
+   * @returns {Promise<RolesResource>} - A promise that resolves to the updated role resource.
    */
-  async update(id: number, roleData: RolesRequest): Promise<RolesResource> {
-    const response: AxiosResponse<RolesResource> = await this.server.put(`/roles/${id}`, roleData);
-    return response.data;
+  public static async update(id: number, roleData: RolesRequest): Promise<RolesResource> {
+    const endpoint = `${RoleService.BASE_ENDPOINT}/${id}`
+    const response = await UseServer.put<RolesRequest, RolesResource>(
+      endpoint,
+      roleData
+    )
+    return response.data
   }
 
   /**
-  * Gets a role by ID.
-  *
-  * @param {number} id - The ID of the role to retrieve.
-  * @returns {Promise<RolesResource>} - The retrieved role resource.
-  */
-  async getById(id: number): Promise<RolesResource> {
-    const response: AxiosResponse<RolesResource> = await this.server.get(`/roles/${id}`);
-    return response.data;
+   * Retrieves a role by its ID.
+   *
+   * @param {number} id - The ID of the role to retrieve.
+   * @returns {Promise<RolesResource>} - A promise that resolves to the role resource.
+   */
+  public static async getById(id: number): Promise<RolesResource> {
+    const endpoint = `${RoleService.BASE_ENDPOINT}/${id}`
+    const response = await UseServer.get<RolesResource>(endpoint)
+    return response.data
   }
 }
-
