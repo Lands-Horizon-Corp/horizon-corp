@@ -41,6 +41,10 @@ func main() {
 			repositories.NewContactsRepository,
 			controllers.NewContactsController,
 
+			// Feedback
+			repositories.NewFeedbackRepository,
+			controllers.NewFeedbackController,
+
 			// Router
 			routes.ProvideAPI,
 		),

@@ -1,6 +1,7 @@
 export interface RolesRequest {
   name: string;
   description?: string;
+  color?: string;
   apiKey: string;
   readRole?: boolean;
   writeRole?: boolean;

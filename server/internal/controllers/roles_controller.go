@@ -37,6 +37,7 @@ func (c *RolesController) Create(ctx *gin.Context) {
 		Name:               req.Name,
 		Description:        req.Description,
 		ApiKey:             req.ApiKey,
+		Color:              req.Color,
 		ReadRole:           req.ReadRole,
 		WriteRole:          req.WriteRole,
 		UpdateRole:         req.UpdateRole,
@@ -99,6 +100,7 @@ func (c *RolesController) Update(ctx *gin.Context) {
 	roles := models.Roles{
 		Name:               req.Name,
 		Description:        req.Description,
+		Color:              req.Color,
 		ApiKey:             req.ApiKey,
 		ReadRole:           req.ReadRole,
 		WriteRole:          req.WriteRole,

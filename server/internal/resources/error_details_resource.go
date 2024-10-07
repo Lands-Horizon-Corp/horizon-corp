@@ -3,6 +3,7 @@ package resources
 import (
 	"horizon/server/helpers"
 	"horizon/server/internal/models"
+	"time"
 )
 
 // ErrorDetailsResource represents the structure of the error details resource for API responses.
@@ -26,8 +27,8 @@ func ToResourceErrorDetails(errorDetails models.ErrorDetails) ErrorDetailsResour
 		Stack:     helpers.SafeString(errorDetails.Stack),
 		Response:  helpers.SafeString(errorDetails.Response),
 		Status:    helpers.SafeInt(errorDetails.Status),
-		CreatedAt: errorDetails.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt: errorDetails.UpdatedAt.Format("2006-01-02 15:04:05"),
+		CreatedAt: errorDetails.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: errorDetails.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

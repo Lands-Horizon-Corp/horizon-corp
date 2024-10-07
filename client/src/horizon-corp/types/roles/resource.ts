@@ -2,6 +2,8 @@ export interface RolesResource {
   id: number;
   name: string;
   description?: string;
+
+  color?: string;
   apiKey?: string;
   createdAt: Date;
   updatedAt: Date;
