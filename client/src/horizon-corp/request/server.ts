@@ -87,7 +87,7 @@ export default class UseServer {
    * @returns {string} - The Horizon corp API key.  local  / development / staging / production
    */
   private getUrl(): string {
-    const environment = import.meta.env.VITE_HORIZON_CORP_API_KEY || process.env.HORIZON_CORP_API_KEY
+    const environment = import.meta.env.VITE_HORIZON_CORP_ENVIRONMENT || process.env.HORIZON_CORP_ENVIRONMENT
     if (environment === 'local') {
       return 'http://localhost:8080/api/v1'
     }
