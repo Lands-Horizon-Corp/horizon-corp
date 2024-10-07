@@ -45,10 +45,10 @@ export const VersionAndFeedBack = () => {
                             'cursor-pointer border-primary/50 dark:bg-background/80 dark:text-white'
                         )}
                     >
-                        <span className="font-bold">
+                        <span className="mr-1 font-bold">
                             {softwareUpdates.name}
                         </span>
-                        {softwareUpdates.version}
+                        {'  ' + softwareUpdates.version}
                         {isOpen ? (
                             <MdOutlineExpandLess className="size-5" />
                         ) : (

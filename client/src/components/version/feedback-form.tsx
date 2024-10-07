@@ -60,24 +60,29 @@ const FeedbackForm = () => {
                         name="feedbackType"
                         control={feedbackForm.control}
                         render={({ field }) => (
-                            <FormItem className="">
+                            <FormItem>
                                 <div className="flex flex-col justify-start">
-                                    <FormLabel className="h-[24px] w-full text-[14px]">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="h-[24px] w-full text-[14px]"
+                                    >
                                         Feedback type
                                     </FormLabel>
                                     <FormControl>
                                         <Select
                                             onValueChange={field.onChange}
                                             defaultValue={field.value}
+                                            name={field.name}
                                         >
                                             <SelectTrigger
                                                 className={cn(
                                                     'rounded-[10px] bg-transparent placeholder:text-[#838383]'
                                                 )}
+                                                id={field.name}
                                             >
                                                 <SelectValue placeholder="Choose feedback type" />
                                             </SelectTrigger>
-                                            <SelectContent>
+                                            <SelectContent id="helo">
                                                 <SelectItem
                                                     value={UpdateStatus.FEATURE}
                                                 >
@@ -107,13 +112,16 @@ const FeedbackForm = () => {
                         control={feedbackForm.control}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel className="h-[24px] w-full text-[14px]">
+                                <FormLabel
+                                    htmlFor={field.name}
+                                    className="h-[24px] w-full text-[14px]"
+                                >
                                     Description
                                 </FormLabel>
                                 <FormControl>
                                     <Textarea
                                         {...field}
-                                        id="width"
+                                        id={field.name}
                                         placeholder="Leave us some feedback..."
                                         className={cn(
                                             'max-h-40 rounded-[10px] bg-transparent placeholder:text-[#838383]'
@@ -129,17 +137,22 @@ const FeedbackForm = () => {
                         render={({ field }) => (
                             <FormItem className="">
                                 <div className="flex flex-col justify-start">
-                                    <FormLabel className="h-[24px] w-full text-[14px]">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="h-[24px] w-full text-[14px]"
+                                    >
                                         Email
                                     </FormLabel>
                                     <FormControl>
                                         <div className="flex-1 space-y-2">
                                             <Input
+                                                id={field.name}
                                                 className={cn(
                                                     'rounded-[10px] bg-transparent placeholder:text-[#838383]'
                                                 )}
                                                 placeholder="ecoop@email.com"
                                                 {...field}
+                                                autoComplete="email"
                                             />
                                         </div>
                                     </FormControl>
