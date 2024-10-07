@@ -26,3 +26,7 @@ go.work.sum
 
 server/tmp/main
 server/main
+
+.env.development
+.env.staging
+.env.production
