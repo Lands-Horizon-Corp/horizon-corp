@@ -28,11 +28,8 @@ const UploadPage = () => {
 
         // Upload each file individually with its own progress tracking
         const uploadPromises = files.map((file, index) => {
-            const formData = new FormData()
-            formData.append('file', file)
-
             return MediaService.upload(
-                formData,
+                file,
                 (progressEvent: AxiosProgressEvent) => {
                     if (progressEvent.total) {
                         const percentage = Math.round(
