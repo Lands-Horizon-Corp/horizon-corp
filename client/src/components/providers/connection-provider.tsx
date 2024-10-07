@@ -8,27 +8,17 @@ import {
 } from '@/components/ui/dialog'
 
 import { cn } from '@/lib/utils'
-import FeedbackService from '@/horizon-corp/server/common/FeedbackService'
+import Connection from '@/horizon-corp/server/common/Connection'
 
 const ConnectionProvider = ({ interval = 10_000 }: { interval?: number }) => {
     const [isConnected, setIsConnected] = useState(true)
-    async function sample() {
-        const response = await FeedbackService.getAll()
-        console.log(response)
-    }
-    // useEffect(() => {
-    //     sample()
-    //     const checkerFunction = setInterval(async () => {
-    //         setIsConnected(true)
-    //     }, interval)
 
-    //     return () => clearInterval(checkerFunction)
-    // }, [])
     useEffect(() => {
-        return () => {
-            sample()
-        }
-    }, [])
+        const checkerFunction = setInterval(async () => {
+            setIsConnected(await Connection.test())
+        }, interval)
+        return () => clearInterval(checkerFunction)
+    }, [interval])
 
     return (
         <Dialog open={!isConnected}>
