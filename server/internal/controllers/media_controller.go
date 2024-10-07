@@ -140,7 +140,7 @@ func MediaRoutes(router *gin.RouterGroup, controller *MediaController) {
 	group := router.Group("/medias")
 	{
 		group.POST("/upload", controller.UploadMedia)
-		group.POST("/delete/:id", controller.RemoveMedia)
+		group.POST("/remove/:id", controller.RemoveMedia)
 
 		group.POST("/", controller.Create)
 		group.GET("/", controller.GetAll)

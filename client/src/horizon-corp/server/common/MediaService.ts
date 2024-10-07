@@ -30,10 +30,10 @@ export default class MediaService {
   /**
    * Deletes a media file by ID.
    *
-   * @param {string} id - The ID of the media file to delete.
+   * @param {string} key - The ID of the media file to delete.
    * @returns {Promise<void>} - A promise that resolves when the media file is deleted.
    */
-  public static async remove(id: string): Promise<void> {
-    await UseServer.delete(`${MediaService.BASE_ENDPOINT}/delete/${id}`)
+  public static async remove(key: string): Promise<void> {
+    await UseServer.delete(`${MediaService.BASE_ENDPOINT}/remove/${key}`)
   }
 }
