@@ -1,3 +1,5 @@
 export * from './ContactService'
 export * from './GenderService'
 export * from './RolesService'
+export * from './FeedbackService'
+export * from './Connection'

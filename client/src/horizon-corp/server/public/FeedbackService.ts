@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 import type { FeedbacksRequest, FeedbacksResource } from '../../types'
 
 
-class FeedbackService {
+export class FeedbackService {
   private server: UseServer;
 
   constructor() {
@@ -66,5 +66,3 @@ class FeedbackService {
   }
 
 }
-
-export default FeedbackService
