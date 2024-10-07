@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 
 import {
     Dialog,
@@ -6,19 +6,21 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog'
 import TimeInCounter from './time-in-counter'
+import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
-import LoadingCircle from '../loader/loading-circle'
+import ActionTooltip from '@/components/action-tooltip'
+import LoadingCircle from '@/components/loader/loading-circle'
+import TimeInTimeOut from '@/components/time-in-bar/time-in-time-out'
 
+import {
+    randomEndOfDayQuoute,
+    randomStartOfDayQuoute,
+} from '@/constants/quoutes'
 import { cn } from '@/lib/utils'
 import { UserBase } from '@/types'
-import ActionTooltip from '../action-tooltip'
-
 import { IBaseCompNoChild } from '@/types/component/base'
-import TimeInTimeOut from './time-in-time-out'
-import { Button } from '../ui/button'
 
 interface Props extends IBaseCompNoChild {
     currentUser: UserBase | null
@@ -35,6 +37,10 @@ const TimeInBar = ({ className, currentUser }: Props) => {
     const [timeInEntry, setTimeInEntry] = useState<TTImeInEntry | undefined>(
         undefined
     )
+
+    const quote = useMemo(() => {
+        return !timeInEntry ? randomStartOfDayQuoute() : randomEndOfDayQuoute()
+    }, [timeInEntry])
 
     useEffect(() => {
         setTimeout(() => setLoading(false), 1000)
@@ -92,7 +98,7 @@ const TimeInBar = ({ className, currentUser }: Props) => {
                 <DialogContent
                     hideCloseButton
                     overlayClassName="backdrop-blur-sm"
-                    className="w-full max-w-sm rounded-xl bg-gradient-to-b from-popover to-background p-0 sm:rounded-xl"
+                    className="w-full max-w-sm overflow-hidden !rounded-3xl border bg-popover p-0 shadow-center-md"
                 >
                     <DialogHeader className="hidden">
                         <DialogTitle>Time In Out Form</DialogTitle>
@@ -101,6 +107,7 @@ const TimeInBar = ({ className, currentUser }: Props) => {
                     <TimeInTimeOut
                         timeEntry={timeInEntry}
                         currentUser={currentUser}
+                        message={quote}
                         onTimeOut={() => {
                             setTimeInEntry(undefined)
                             setShowTimeInOut(false)

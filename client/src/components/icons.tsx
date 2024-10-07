@@ -24,11 +24,12 @@ import {
     LiaUserClockSolid as UserClockIcon,
     LiaUserShieldSolid as UserShieldIcon,
 } from 'react-icons/lia'
-import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
 import {
     BsBuildingGear as BuildingCogIcon,
     BsLayoutSidebarInset as SidebarIcon,
 } from 'react-icons/bs'
+import { LuClock8 as ClockIcon } from "react-icons/lu";
+import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
 
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
 import { AiOutlineLoading3Quarters as LoadingSpinnerIcon } from 'react-icons/ai'
@@ -102,6 +103,7 @@ export {
     DevIcon,
     UserIcon,
     MoonIcon,
+    ClockIcon,
     CookieIcon,
     ShieldIcon,
     Users3Icon,
