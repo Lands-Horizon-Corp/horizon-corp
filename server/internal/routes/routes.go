@@ -14,8 +14,12 @@ import (
 func ProvideAPI(
 	lc fx.Lifecycle,
 	cfg *config.AppConfig,
-	genderController *controllers.GenderController,
+
+	rolesController *controllers.RolesController,
+	gendersController *controllers.GenderController,
 	errorDetailsController *controllers.ErrorDetailsController,
+	contactsController *controllers.ContactsController,
+	feedbacksController *controllers.FeedbackController,
 
 ) *gin.Engine {
 	router := gin.Default()
@@ -29,14 +33,16 @@ func ProvideAPI(
 			"http://0.0.0.0:3000",
 			"http://rea.development",
 			"http://rea.pro",
+			"http://localhost:80",
 			"http://localhost:8080",
 			"http://localhost:3000",
 			"http://localhost:3001",
 			"http://localhost:3002",
 		},
-		AllowMethods:     []string{"POST", "GET", "PUT", "PATCH", "DELETE"},
-		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowMethods:  []string{"POST", "GET", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:  []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
+		ExposeHeaders: []string{"Content-Length"},
+
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
@@ -50,9 +56,10 @@ func ProvideAPI(
 		v1.GET("/", func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
-
-		controllers.GenderRoutes(v1, genderController)
+		controllers.GenderRoutes(v1, gendersController)
 		controllers.ErrorDetailsRoutes(v1, errorDetailsController)
+		controllers.ContactsRoutes(v1, contactsController)
+		controllers.FeedbackRoutes(v1, feedbacksController)
 	}
 	return router
 }
