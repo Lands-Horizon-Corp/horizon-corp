@@ -6,6 +6,7 @@ import OwnerRoute from '@/modules/owner/route';
 import MemberRoute from '@/modules/member/route';
 import LandingRoute from '@/modules/landing/route';
 import EmployeeRoute from '@/modules/employee/route';
+import TestRoute from '@/modules/test/route';
 
 import RootLayout from '@/modules/root-layout';
 import NotFoundPage from '@/components/not-found';
@@ -19,6 +20,7 @@ const routeTree = rootRoute.addChildren([
     MemberRoute,
     LandingRoute,
     EmployeeRoute,
+    TestRoute,
 ]);
 
 const router = createRouter({
