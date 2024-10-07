@@ -53,6 +53,7 @@ export default class UseServer {
       headers: {
         'Content-Type': 'application/json',
         ...(defaultConfig?.headers || {}),
+        'Authorization': `Bearer ${this.getApiKey()}`, // Set the API key in headers
       },
       ...defaultConfig,
     })
@@ -68,6 +69,16 @@ export default class UseServer {
       (response: AxiosResponse) => response,
       (error: AxiosError) => this.handleError(error)
     )
+  }
+
+  /**
+   * Retrieves the API key from environment variables.
+   *
+   * @returns {string | undefined} - The Horizon corp API key.
+   */
+  private getApiKey(): string | undefined {
+    return import.meta.env.VITE_HORIZON_CORP_API_KEY ||
+      process.env.HORIZON_CORP_API_KEY; // Support for various environments
   }
 
   /**
