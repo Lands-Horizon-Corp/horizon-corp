@@ -3,7 +3,8 @@ package storage
 import (
 	"fmt"
 	"horizon/server/config"
-	"io"
+	"horizon/server/internal/models"
+	"mime/multipart"
 	"sync"
 	"time"
 
@@ -23,6 +24,7 @@ var (
 // FileClient wraps the AWS S3 client.
 type FileClient struct {
 	Client s3iface.S3API
+	cfg    *config.AppConfig
 }
 
 // initializeFileClient sets up the singleton instance of FileClient.
@@ -40,6 +42,7 @@ func initializeFileClient() *FileClient {
 
 	return &FileClient{
 		Client: s3.New(sess),
+		cfg:    cfg,
 	}
 }
 
@@ -52,47 +55,69 @@ func GetFileClient() *FileClient {
 }
 
 // CreateBucketIfNotExists checks if the bucket exists and creates it if not.
-func CreateBucketIfNotExists(bucketName string) error {
+func CreateBucketIfNotExists() error {
 	mc := GetFileClient()
 
 	_, err := mc.Client.HeadBucket(&s3.HeadBucketInput{
-		Bucket: aws.String(bucketName),
+		Bucket: aws.String(mc.cfg.StorageBucketName),
 	})
 	if err != nil {
 		_, err = mc.Client.CreateBucket(&s3.CreateBucketInput{
-			Bucket: aws.String(bucketName),
+			Bucket: aws.String(mc.cfg.StorageBucketName),
 		})
 		if err != nil {
-			return fmt.Errorf("failed to create bucket %s: %v", bucketName, err)
+			return fmt.Errorf("failed to create bucket %s: %v", mc.cfg.StorageBucketName, err)
 		}
 		err = mc.Client.WaitUntilBucketExists(&s3.HeadBucketInput{
-			Bucket: aws.String(bucketName),
+			Bucket: aws.String(mc.cfg.StorageBucketName),
 		})
 		if err != nil {
-			return fmt.Errorf("failed to wait for bucket %s to be created: %v", bucketName, err)
+			return fmt.Errorf("failed to wait for bucket %s to be created: %v", mc.cfg.StorageBucketName, err)
 		}
 	}
 	return nil
 }
 
-// UploadFile uploads a file to the specified bucket and key.
-func UploadFile(bucketName, key string, body io.Reader) error {
-	if err := CreateBucketIfNotExists(bucketName); err != nil {
-		return err
+func UploadFile(fileHeader *multipart.FileHeader) (*models.Media, error) {
+	file, err := fileHeader.Open()
+	if err != nil {
+		return nil, fmt.Errorf("unable to open file: %v", err)
 	}
-	uploader := s3manager.NewUploaderWithClient(GetFileClient().Client)
-	_, err := uploader.Upload(&s3manager.UploadInput{
-		Bucket: aws.String(bucketName),
+	defer file.Close()
+
+	key := UniqueFileName(fileHeader.Filename)
+
+	mc := GetFileClient()
+	if err := CreateBucketIfNotExists(); err != nil {
+		return nil, err
+	}
+
+	uploader := s3manager.NewUploaderWithClient(mc.Client)
+	result, err := uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(mc.cfg.StorageBucketName),
 		Key:    aws.String(key),
-		Body:   body,
+		Body:   file,
 	})
-	return err
+	if err != nil {
+		return nil, fmt.Errorf("unable to upload file: %v", err)
+	}
+
+	media := &models.Media{
+		FileName:   fileHeader.Filename,
+		FileSize:   fileHeader.Size,
+		FileType:   fileHeader.Header.Get("Content-Type"),
+		StorageKey: key,
+		URL:        result.Location,
+		BucketName: mc.cfg.StorageBucketName,
+	}
+
+	return media, nil
 }
 
-// DeleteFile deletes a file from the specified bucket and key.
-func DeleteFile(bucketName, key string) error {
-	_, err := GetFileClient().Client.DeleteObject(&s3.DeleteObjectInput{
-		Bucket: aws.String(bucketName),
+func DeleteFile(key string) error {
+	mc := GetFileClient()
+	_, err := mc.Client.DeleteObject(&s3.DeleteObjectInput{
+		Bucket: aws.String(mc.cfg.StorageBucketName),
 		Key:    aws.String(key),
 	})
 	if err != nil {
@@ -100,15 +125,16 @@ func DeleteFile(bucketName, key string) error {
 	}
 
 	return GetFileClient().Client.WaitUntilObjectNotExists(&s3.HeadObjectInput{
-		Bucket: aws.String(bucketName),
+		Bucket: aws.String(mc.cfg.StorageBucketName),
 		Key:    aws.String(key),
 	})
 }
 
-// GeneratePresignedURL generates a presigned URL for the specified bucket, key, and expiration.
-func GeneratePresignedURL(bucketName, key string, expiration time.Duration) (string, error) {
+func GeneratePresignedURL(key string) (string, error) {
+	expiration := 20 * time.Minute
+	mc := GetFileClient()
 	req, _ := GetFileClient().Client.GetObjectRequest(&s3.GetObjectInput{
-		Bucket: aws.String(bucketName),
+		Bucket: aws.String(mc.cfg.StorageBucketName),
 		Key:    aws.String(key),
 	})
 	urlStr, err := req.Presign(expiration)
