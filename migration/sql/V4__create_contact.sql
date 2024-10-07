@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS contacts (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-INSERT INTO contacts (first_name, last_name, email, contact_number, message)
+INSERT INTO contacts (first_name, last_name, email, contact_number, description)
 VALUES
 ('John', 'Doe', 'john.doe@example.com', '1234567890', 'Hello! This is a test message.'),
 ('Jane', 'Smith', 'jane.smith@example.com', '0987654321', 'This is another test message.');

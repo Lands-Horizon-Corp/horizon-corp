@@ -8,18 +8,26 @@ import {
 } from '@/components/ui/dialog'
 
 import { cn } from '@/lib/utils'
-import service from '@/horizon-corp/server'
+import FeedbackService from '@/horizon-corp/server/common/FeedbackService'
 
 const ConnectionProvider = ({ interval = 10_000 }: { interval?: number }) => {
     const [isConnected, setIsConnected] = useState(true)
+    async function sample() {
+        const response = await FeedbackService.getAll()
+        console.log(response)
+    }
+    // useEffect(() => {
+    //     sample()
+    //     const checkerFunction = setInterval(async () => {
+    //         setIsConnected(true)
+    //     }, interval)
 
+    //     return () => clearInterval(checkerFunction)
+    // }, [])
     useEffect(() => {
-        const checkerFunction = setInterval(async () => {
-            const response = await service.common.connection.test()
-            setIsConnected(response ?? true)
-        }, interval)
-
-        return () => clearInterval(checkerFunction)
+        return () => {
+            sample()
+        }
     }, [])
 
     return (

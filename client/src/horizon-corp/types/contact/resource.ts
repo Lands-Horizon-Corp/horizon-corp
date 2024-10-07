@@ -1,4 +1,4 @@
-export interface ContactResource {
+export interface ContactsResource {
   id: number;
   first_name: string;
   last_name: string;

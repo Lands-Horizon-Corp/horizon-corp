@@ -3,9 +3,8 @@ package models
 import "gorm.io/gorm"
 
 type Feedback struct {
-	ID           uint   `json:"id" gorm:"primaryKey"`
-	Email        string `json:"email" gorm:"not null"`
-	Description  string `json:"description" gorm:"not null"`
-	FeedbackType string `json:"feedback_type" gorm:"not null"`
+	Email        string `gorm:"type:varchar(255);not null;column:email"`
+	Description  string `gorm:"type:text;not null;column:description"`
+	FeedbackType string `gorm:"type:text;not null;column:feedback_type"`
 	gorm.Model
 }

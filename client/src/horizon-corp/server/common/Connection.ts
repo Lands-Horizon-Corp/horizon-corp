@@ -1,19 +1,15 @@
 import UseServer from "../../request/server";
 
 export default class Connection {
-  private server: UseServer;
+  private static readonly BASE_ENDPOINT = '/'
 
-  constructor() {
-    this.server = new UseServer();
-  }
   /**
-  * Test backend connection
-  *
-  * @returns {Promise<boolean>} 
-  */
-  async test(): Promise<boolean> {
-    const result = await this.server.get('/');
-    return result.status === 200
+   * Test backend connection
+   *
+   * @returns {Promise<boolean>}
+   */
+  public static async test(): Promise<boolean> {
+    const response = await UseServer.get(Connection.BASE_ENDPOINT)
+    return response.status === 200
   }
-
 }

@@ -1,13 +1,20 @@
-CREATE TABLE IF NOT EXISTS feedback (
-    id SERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    description TEXT NOT NULL,
-    feedback_type VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-);
+-- V5__create_feedback_table.sql
 
-INSERT INTO feedback (email, description, feedback_type)
-VALUES
-('john.doe@example.com', 'This is a test feedback message.', 'Positive'),
-('jane.smith@example.com', 'This is a suggestion for improvement.', 'Suggestion');
+CREATE TABLE IF NOT EXISTS `feedbacks` (
+    `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `created_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
+    `updated_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+    `deleted_at` DATETIME(3) DEFAULT NULL,
+    `email` VARCHAR(255) NOT NULL,
+    `description` TEXT NOT NULL,
+    `feedback_type` ENUM('bug', 'feature', 'general') NOT NULL,
+    PRIMARY KEY (`id`),
+    INDEX `idx_feedback_deleted_at` (`deleted_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Insert seed data into feedback table
+INSERT INTO `feedbacks` (`email`, `description`, `feedback_type`)
+VALUES 
+    ('user1@example.com', 'I encountered a bug when trying to submit the form.', 'bug'),
+    ('user2@example.com', 'It would be great to have a dark mode feature.', 'feature'),
+    ('user3@example.com', 'Loving the new update! Keep up the good work.', 'general');
