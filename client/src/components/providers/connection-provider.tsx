@@ -15,7 +15,7 @@ const ConnectionProvider = ({ interval = 10_000 }: { interval?: number }) => {
 
     useEffect(() => {
         const checkerFunction = setInterval(async () => {
-            setIsConnected(await Connection.test())
+            // setIsConnected(await Connection.test())
         }, interval)
         return () => clearInterval(checkerFunction)
     }, [interval])
