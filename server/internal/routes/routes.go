@@ -14,9 +14,11 @@ import (
 func ProvideAPI(
 	lc fx.Lifecycle,
 	cfg *config.AppConfig,
+
 	rolesController *controllers.RolesController,
 	gendersController *controllers.GenderController,
 	errorDetailsController *controllers.ErrorDetailsController,
+	contactsController *controllers.ContactsController,
 
 ) *gin.Engine {
 	router := gin.Default()
@@ -54,6 +56,7 @@ func ProvideAPI(
 
 		controllers.GenderRoutes(v1, gendersController)
 		controllers.ErrorDetailsRoutes(v1, errorDetailsController)
+		controllers.ContactsRoutes(v1, contactsController)
 	}
 	return router
 }

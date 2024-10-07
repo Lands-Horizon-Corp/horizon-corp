@@ -37,6 +37,10 @@ func main() {
 			repositories.NewGenderRepository,
 			controllers.NewGenderController,
 
+			// Contact
+			repositories.NewContactsRepository,
+			controllers.NewContactsController,
+
 			// Router
 			routes.ProvideAPI,
 		),

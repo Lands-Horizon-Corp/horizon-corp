@@ -7,23 +7,27 @@ import (
 
 // ErrorDetailsResource represents the structure of the error details resource for API responses.
 type ErrorDetailsResource struct {
-	ID       uint   `json:"id"`
-	Message  string `json:"message"`
-	Name     string `json:"name"`
-	Stack    string `json:"stack,omitempty"`
-	Response string `json:"response,omitempty"`
-	Status   int    `json:"status,omitempty"`
+	ID        uint   `json:"id"`
+	Message   string `json:"message"`
+	Name      string `json:"name"`
+	Stack     string `json:"stack,omitempty"`
+	Response  string `json:"response,omitempty"`
+	Status    int    `json:"status,omitempty"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 // ToResource converts an ErrorDetails model to an ErrorDetailsResource.
 func ToResourceErrorDetails(errorDetails models.ErrorDetails) ErrorDetailsResource {
 	return ErrorDetailsResource{
-		ID:       errorDetails.ID,
-		Message:  errorDetails.Message,
-		Name:     errorDetails.Name,
-		Stack:    helpers.SafeString(errorDetails.Stack),
-		Response: helpers.SafeString(errorDetails.Response),
-		Status:   helpers.SafeInt(errorDetails.Status),
+		ID:        errorDetails.ID,
+		Message:   errorDetails.Message,
+		Name:      errorDetails.Name,
+		Stack:     helpers.SafeString(errorDetails.Stack),
+		Response:  helpers.SafeString(errorDetails.Response),
+		Status:    helpers.SafeInt(errorDetails.Status),
+		CreatedAt: errorDetails.CreatedAt.Format("2006-01-02 15:04:05"),
+		UpdatedAt: errorDetails.UpdatedAt.Format("2006-01-02 15:04:05"),
 	}
 }
 
