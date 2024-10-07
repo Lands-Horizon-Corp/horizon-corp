@@ -8,12 +8,13 @@ import {
     NotificationIcon,
     BuildingBranchIcon,
 } from '@/components/icons'
+import Sidebar from '@/components/sidebar'
 
+import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
 import { TSidebarItem } from '@/types/component/sidebar'
-import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 
-const employeeSidebarItems: TSidebarItem[] = [
+export const employeeSidebarItems: TSidebarItem[] = [
     {
         text: 'Dashboard',
         url: '/employee/dashboard',
@@ -67,10 +68,15 @@ interface Props extends IBaseComp {}
 
 const EmployeeSidebar = ({ className }: Props) => {
     return (
-        <DynamicSidebar
-            sidebarItems={employeeSidebarItems}
-            className={className}
-        />
+        <div className="hidden sm:block">
+            <Sidebar
+                enableCollapse
+                enableFocusBlur
+                logoRedirectUrl='/employee'
+                items={employeeSidebarItems}
+                className={cn('', className)}
+            />
+        </div>
     )
 }
 
