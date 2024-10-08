@@ -3,11 +3,11 @@ import { SidebarIcon } from '@/components/icons'
 import RootNav from '@/components/navbars/root-nav'
 import TimeInBar from '@/components/time-in-out/time-in-bar'
 import MobileSidebar from '@/components/sidebar/mobile-sidebar'
-import { employeeSidebarItems } from '@/modules/employee/components/employee-sidebar'
 
 import { UserBase } from '@/types'
+import { adminSidebarItems } from './admin-sidebar'
 
-const EmployeeNavbar = () => {
+const AdminNavbar = () => {
     return (
         <RootNav
             hideIcon
@@ -16,7 +16,7 @@ const EmployeeNavbar = () => {
             leftContents={
                 <>
                     <MobileSidebar
-                        items={employeeSidebarItems}
+                        items={adminSidebarItems}
                         triggerComponent={
                             <Button
                                 size="icon"
@@ -38,4 +38,4 @@ const EmployeeNavbar = () => {
     )
 }
 
-export default EmployeeNavbar
+export default AdminNavbar
