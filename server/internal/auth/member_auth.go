@@ -9,7 +9,8 @@ import (
 )
 
 type MemberClaims struct {
-	ID uint `json:"id"`
+	ID   uint   `json:"id"`
+	Mode string `json:"mode"`
 	jwt.StandardClaims
 }
 
@@ -24,7 +25,8 @@ func GenerateMemberJWT(member models.Member) (string, error) {
 	}
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &MemberClaims{
-		ID: member.ID,
+		Mode: "member",
+		ID:   member.ID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
