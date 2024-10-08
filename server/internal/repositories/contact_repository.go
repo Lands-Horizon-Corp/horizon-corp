@@ -30,7 +30,8 @@ func (r *ContactsRepository) GetByID(id uint) (models.Contact, error) {
 	return contact, err
 }
 
-func (r *ContactsRepository) Update(contact *models.Contact) error {
+func (r *ContactsRepository) Update(id uint, contact *models.Contact) error {
+	contact.ID = id
 	return r.DB.Save(contact).Error
 }
 

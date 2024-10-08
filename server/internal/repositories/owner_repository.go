@@ -30,7 +30,8 @@ func (r *OwnerRepository) GetByID(id uint) (models.Owner, error) {
 	return owner, err
 }
 
-func (r *OwnerRepository) Update(owner *models.Owner) error {
+func (r *OwnerRepository) Update(id uint, owner *models.Owner) error {
+	owner.ID = id
 	return r.DB.Save(owner).Error
 }
 

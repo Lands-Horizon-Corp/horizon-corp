@@ -30,7 +30,8 @@ func (r *ErrorDetailRepository) GetByID(id uint) (models.ErrorDetail, error) {
 	return errorDetails, err
 }
 
-func (r *ErrorDetailRepository) Update(errorDetails *models.ErrorDetail) error {
+func (r *ErrorDetailRepository) Update(id uint, errorDetails *models.ErrorDetail) error {
+	errorDetails.ID = id
 	return r.DB.Save(errorDetails).Error
 }
 

@@ -3,6 +3,7 @@ package requests
 import "github.com/go-playground/validator/v10"
 
 type ErrorDetailRequest struct {
+	ID       uint   `json:"id,omitempty"`
 	Message  string `json:"message" validate:"required,max=255"`
 	Name     string `json:"name" validate:"required,max=255"`
 	Stack    string `json:"stack,omitempty" validate:"omitempty,max=1000"`

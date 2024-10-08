@@ -3,6 +3,7 @@ package requests
 import "github.com/go-playground/validator"
 
 type GenderRequest struct {
+	ID          uint   `json:"id,omitempty"`
 	Name        string `json:"name" validate:"required,max=255"`
 	Description string `json:"description" validate:"omitempty,max=3000"`
 }

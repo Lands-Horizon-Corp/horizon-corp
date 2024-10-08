@@ -30,7 +30,8 @@ func (r *EmployeeRepository) GetByID(id uint) (models.Employee, error) {
 	return employee, err
 }
 
-func (r *EmployeeRepository) Update(employee *models.Employee) error {
+func (r *EmployeeRepository) Update(id uint, employee *models.Employee) error {
+	employee.ID = id
 	return r.DB.Save(employee).Error
 }
 

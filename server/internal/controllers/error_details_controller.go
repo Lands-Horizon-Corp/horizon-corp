@@ -85,6 +85,11 @@ func (c *ErrorDetailController) GetByID(ctx *gin.Context) {
 }
 
 func (c *ErrorDetailController) Update(ctx *gin.Context) {
+	id, err := helpers.ParseIDParam(ctx, "id")
+	if err != nil {
+		return
+	}
+
 	var req requests.ErrorDetailRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -107,7 +112,7 @@ func (c *ErrorDetailController) Update(ctx *gin.Context) {
 	}
 
 	// Create ErrorDetail instance
-	errorDetails := models.ErrorDetail{
+	errorDetail := models.ErrorDetail{
 		Message:  req.Message,
 		Name:     req.Name,
 		Stack:    stackJSON,
@@ -115,12 +120,12 @@ func (c *ErrorDetailController) Update(ctx *gin.Context) {
 		Status:   &req.Status,
 	}
 
-	if err := c.repo.Update(&errorDetails); err != nil {
+	if err := c.repo.Update(id, &errorDetail); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resources.ToResourceErrorDetail(errorDetails))
+	ctx.JSON(http.StatusOK, resources.ToResourceErrorDetail(errorDetail))
 }
 
 func (c *ErrorDetailController) Delete(ctx *gin.Context) {
