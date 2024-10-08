@@ -10,9 +10,9 @@ import {
 import TimeInCounter from './time-in-counter'
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
+import TimeInTimeOut from '@/components/time-in-out'
 import ActionTooltip from '@/components/action-tooltip'
 import LoadingCircle from '@/components/loader/loading-circle'
-import TimeInTimeOut from '@/components/time-in-out'
 
 import {
     randomEndOfDayQuoute,
@@ -91,7 +91,10 @@ const TimeInBar = ({ className, currentUser }: Props) => {
                     )}
                 </Button>
             </ActionTooltip>
-            <Dialog open={showTimeInOut} onOpenChange={(state) => setShowTimeInOut(state)}>
+            <Dialog
+                open={showTimeInOut}
+                onOpenChange={(state) => setShowTimeInOut(state)}
+            >
                 <DialogContent
                     hideCloseButton
                     overlayClassName="backdrop-blur-sm"
@@ -101,19 +104,21 @@ const TimeInBar = ({ className, currentUser }: Props) => {
                         <DialogTitle>Time In Out Form</DialogTitle>
                         <DialogDescription>Shows time in out</DialogDescription>
                     </DialogHeader>
-                    <TimeInTimeOut
-                        timeEntry={timeInEntry}
-                        currentUser={currentUser}
-                        message={quote}
-                        onTimeOut={() => {
-                            setTimeInEntry(undefined)
-                            setShowTimeInOut(false)
-                        }}
-                        onTimeInEntry={(data) => {
-                            setTimeInEntry(data)
-                            setShowTimeInOut(false)
-                        }}
-                    />
+                    <div className="ecoop-scroll [&::-webkit-scrollbar]:size-0 max-h-screen overflow-y-scroll">
+                        <TimeInTimeOut
+                            timeEntry={timeInEntry}
+                            currentUser={currentUser}
+                            message={quote}
+                            onTimeOut={() => {
+                                setTimeInEntry(undefined)
+                                setShowTimeInOut(false)
+                            }}
+                            onTimeInEntry={(data) => {
+                                setTimeInEntry(data)
+                                setShowTimeInOut(false)
+                            }}
+                        />
+                    </div>
                 </DialogContent>
             </Dialog>
         </>

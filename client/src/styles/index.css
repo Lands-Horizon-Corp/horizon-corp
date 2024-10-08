@@ -99,3 +99,17 @@
 .nav-links {
     @apply text-[min(15px,2.5vw)];
 }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 0.7;
+    }
+}
+
+.fade-in-anims {
+    opacity: 0;
+    animation: fadeIn 0.7s ease-out 1s forwards;
+}

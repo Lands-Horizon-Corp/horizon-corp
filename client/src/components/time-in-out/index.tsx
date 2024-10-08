@@ -71,8 +71,10 @@ const TimeInTimeOut = ({
     }
 
     return (
-        <div className={cn('space-y-4 pt-8', className)}>
-            <WebCam ref={camRef} className="mx-auto rounded-2xl" />
+        <div className={cn('space-y-4', className)}>
+            <div className="relative m-4 mx-auto">
+                <WebCam ref={camRef} enableBleed className="rounded-2xl" />
+            </div>
             <div className="flex flex-col items-center gap-y-6 px-4">
                 <p
                     style={{ fontFamily: 'cursive' }}
@@ -81,7 +83,7 @@ const TimeInTimeOut = ({
                     "{message}"
                 </p>
                 {timeEntry && (
-                    <div className="flex w-full items-center justify-between gap-x-2 rounded-xl bg-background p-2">
+                    <div className="flex w-full items-center justify-between gap-x-2 rounded-xl bg-secondary p-2 dark:bg-background">
                         <span className="text-foreground/70">Work hours</span>{' '}
                         <TimeInCounter
                             className="text-base"
@@ -98,7 +100,11 @@ const TimeInTimeOut = ({
                 <Button
                     size="sm"
                     disabled={loading}
-                    className="w-full gap-x-2 rounded-full"
+                    className={cn(
+                        'w-full gap-x-2 rounded-full',
+                        timeEntry &&
+                            'bg-orange-500 text-orange-50 hover:bg-orange-600 hover:text-orange-100'
+                    )}
                     onClick={handleClick}
                     variant={!timeEntry ? 'default' : 'outline'}
                 >
