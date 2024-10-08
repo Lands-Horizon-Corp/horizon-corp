@@ -9,9 +9,9 @@ type FeedbackResource struct {
 	ID           uint   `json:"id"`
 	Email        string `json:"email"`
 	Description  string `json:"description"`
-	FeedbackType string `json:"feedback_type"`
-	CreatedAt    string `json:"created_at"`
-	UpdatedAt    string `json:"updated_at"`
+	FeedbackType string `json:"feedbackType"`
+	CreatedAt    string `json:"createdAt"`
+	UpdatedAt    string `json:"updatedAt"`
 }
 
 func ToResourceFeedback(feedback models.Feedback) FeedbackResource {
