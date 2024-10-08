@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// ContactResource represents the structure of the contact resource for API responses.
 type ContactResource struct {
 	ID          uint   `json:"id"`
 	FirstName   string `json:"firstName"`
@@ -16,7 +15,6 @@ type ContactResource struct {
 	UpdatedAt   string `json:"updatedAt"`
 }
 
-// ToResource converts a contact model to a contact resource.
 func ToResourceContact(contact models.Contact) ContactResource {
 	return ContactResource{
 		ID:          contact.ID,
@@ -29,7 +27,6 @@ func ToResourceContact(contact models.Contact) ContactResource {
 	}
 }
 
-// ToResourceList converts a slice of contact models to a slice of contact resources.
 func ToResourceListContacts(contacts []models.Contact) []ContactResource {
 	var resources []ContactResource
 	for _, contact := range contacts {
