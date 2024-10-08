@@ -1,6 +1,7 @@
 import {
     LuClock8 as ClockIcon,
     LuCameraOff as CameraOffIcon,
+    LuSwitchCamera as SwitchCameraIcon,
 } from 'react-icons/lu'
 import {
     BsBuildingGear as BuildingCogIcon,
@@ -31,6 +32,7 @@ import {
     HiOutlineChatBubbleOvalLeft as MessagesIcon,
     HiOutlineArrowRightEndOnRectangle as LogoutIcon,
     HiOutlineChatBubbleBottomCenterText as FeedbackIcon,
+    HiOutlineCamera as CameraIcon,
 } from 'react-icons/hi2'
 import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
@@ -107,6 +109,7 @@ export {
     MoonIcon,
     ClockIcon,
     CookieIcon,
+    CameraIcon,
     ShieldIcon,
     Users3Icon,
     LogoutIcon,
@@ -125,6 +128,7 @@ export {
     DashboardIcon,
     UserShieldIcon,
     BuildingCogIcon,
+    SwitchCameraIcon,
     ChevronRightIcon,
     NotificationIcon,
     BuildingBranchIcon,
