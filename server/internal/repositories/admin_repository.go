@@ -6,34 +6,34 @@ import (
 	"gorm.io/gorm"
 )
 
-type AdminsRepository struct {
+type AdminRepository struct {
 	DB *gorm.DB
 }
 
-func NewAdminsRepository(db *gorm.DB) *AdminsRepository {
-	return &AdminsRepository{DB: db}
+func NewAdminRepository(db *gorm.DB) *AdminRepository {
+	return &AdminRepository{DB: db}
 }
 
-func (r *AdminsRepository) Create(admin *models.Admin) error {
+func (r *AdminRepository) Create(admin *models.Admin) error {
 	return r.DB.Create(admin).Error
 }
 
-func (r *AdminsRepository) GetAll() ([]models.Admin, error) {
+func (r *AdminRepository) GetAll() ([]models.Admin, error) {
 	var admin []models.Admin
 	err := r.DB.Find(&admin).Error
 	return admin, err
 }
 
-func (r *AdminsRepository) GetByID(id uint) (models.Admin, error) {
+func (r *AdminRepository) GetByID(id uint) (models.Admin, error) {
 	var admin models.Admin
 	err := r.DB.First(&admin, id).Error
 	return admin, err
 }
 
-func (r *AdminsRepository) Update(admin *models.Admin) error {
+func (r *AdminRepository) Update(admin *models.Admin) error {
 	return r.DB.Save(admin).Error
 }
 
-func (r *AdminsRepository) Delete(id uint) error {
+func (r *AdminRepository) Delete(id uint) error {
 	return r.DB.Delete(&models.Admin{}, id).Error
 }
