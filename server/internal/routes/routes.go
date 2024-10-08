@@ -15,12 +15,12 @@ func ProvideAPI(
 	lc fx.Lifecycle,
 	cfg *config.AppConfig,
 
-	rolesController *controllers.RolesController,
-	gendersController *controllers.GenderController,
-	errorDetailsController *controllers.ErrorDetailsController,
-	contactsController *controllers.ContactsController,
-	feedbacksController *controllers.FeedbackController,
-	mediasController *controllers.MediaController,
+	roleController *controllers.RolesController,
+	genderController *controllers.GenderController,
+	errorDetailController *controllers.ErrorDetailController,
+	contactController *controllers.ContactsController,
+	feedbackController *controllers.FeedbackController,
+	mediaController *controllers.MediaController,
 
 ) *gin.Engine {
 	router := gin.Default()
@@ -57,11 +57,11 @@ func ProvideAPI(
 		v1.GET("/", func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
-		controllers.GenderRoutes(v1, gendersController)
-		controllers.ErrorDetailsRoutes(v1, errorDetailsController)
-		controllers.ContactsRoutes(v1, contactsController)
-		controllers.FeedbackRoutes(v1, feedbacksController)
-		controllers.MediaRoutes(v1, mediasController)
+		controllers.GenderRoutes(v1, genderController)
+		controllers.ErrorDetailRoutes(v1, errorDetailController)
+		controllers.ContactsRoutes(v1, contactController)
+		controllers.FeedbackRoutes(v1, feedbackController)
+		controllers.MediaRoutes(v1, mediaController)
 	}
 	return router
 }

@@ -6,34 +6,34 @@ import (
 	"gorm.io/gorm"
 )
 
-type ErrorDetailsRepository struct {
+type ErrorDetailRepository struct {
 	DB *gorm.DB
 }
 
-func NewErrorDetailsRepository(db *gorm.DB) *ErrorDetailsRepository {
-	return &ErrorDetailsRepository{DB: db}
+func NewErrorDetailRepository(db *gorm.DB) *ErrorDetailRepository {
+	return &ErrorDetailRepository{DB: db}
 }
 
-func (r *ErrorDetailsRepository) Create(errorDetails *models.ErrorDetails) error {
+func (r *ErrorDetailRepository) Create(errorDetails *models.ErrorDetail) error {
 	return r.DB.Create(errorDetails).Error
 }
 
-func (r *ErrorDetailsRepository) GetAll() ([]models.ErrorDetails, error) {
-	var errorDetailss []models.ErrorDetails
+func (r *ErrorDetailRepository) GetAll() ([]models.ErrorDetail, error) {
+	var errorDetailss []models.ErrorDetail
 	err := r.DB.Find(&errorDetailss).Error
 	return errorDetailss, err
 }
 
-func (r *ErrorDetailsRepository) GetByID(id uint) (models.ErrorDetails, error) {
-	var errorDetails models.ErrorDetails
+func (r *ErrorDetailRepository) GetByID(id uint) (models.ErrorDetail, error) {
+	var errorDetails models.ErrorDetail
 	err := r.DB.First(&errorDetails, id).Error
 	return errorDetails, err
 }
 
-func (r *ErrorDetailsRepository) Update(errorDetails *models.ErrorDetails) error {
+func (r *ErrorDetailRepository) Update(errorDetails *models.ErrorDetail) error {
 	return r.DB.Save(errorDetails).Error
 }
 
-func (r *ErrorDetailsRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.ErrorDetails{}, id).Error
+func (r *ErrorDetailRepository) Delete(id uint) error {
+	return r.DB.Delete(&models.ErrorDetail{}, id).Error
 }

@@ -3,7 +3,7 @@ import UseServer from '../../request/server'
 import { MediaResource } from '../../types'
 
 export default class MediaService {
-  private static readonly BASE_ENDPOINT = '/medias'
+  private static readonly BASE_ENDPOINT = '/media'
 
   /**
    * Uploads a new media file with progress tracking.

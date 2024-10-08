@@ -7,7 +7,7 @@ import (
 )
 
 // ErrorDetailsResource represents the structure of the error details resource for API responses.
-type ErrorDetailsResource struct {
+type ErrorDetailResource struct {
 	ID        uint   `json:"id"`
 	Message   string `json:"message"`
 	Name      string `json:"name"`
@@ -19,8 +19,8 @@ type ErrorDetailsResource struct {
 }
 
 // ToResource converts an ErrorDetails model to an ErrorDetailsResource.
-func ToResourceErrorDetails(errorDetails models.ErrorDetails) ErrorDetailsResource {
-	return ErrorDetailsResource{
+func ToResourceErrorDetail(errorDetails models.ErrorDetail) ErrorDetailResource {
+	return ErrorDetailResource{
 		ID:        errorDetails.ID,
 		Message:   errorDetails.Message,
 		Name:      errorDetails.Name,
@@ -33,10 +33,10 @@ func ToResourceErrorDetails(errorDetails models.ErrorDetails) ErrorDetailsResour
 }
 
 // ToResourceList converts a slice of ErrorDetails models to a slice of ErrorDetailsResource.
-func ToResourceListErrorDetails(errorDetailsList []models.ErrorDetails) []ErrorDetailsResource {
-	var resources []ErrorDetailsResource
+func ToResourceListErrorDetail(errorDetailsList []models.ErrorDetail) []ErrorDetailResource {
+	var resources []ErrorDetailResource
 	for _, errorDetails := range errorDetailsList {
-		resources = append(resources, ToResourceErrorDetails(errorDetails))
+		resources = append(resources, ToResourceErrorDetail(errorDetails))
 	}
 	return resources
 }

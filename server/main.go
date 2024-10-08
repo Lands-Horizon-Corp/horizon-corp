@@ -30,8 +30,8 @@ func main() {
 			controllers.NewRolesController,
 
 			// Error Details
-			repositories.NewErrorDetailsRepository,
-			controllers.NewErrorDetailsController,
+			repositories.NewErrorDetailRepository,
+			controllers.NewErrorDetailController,
 
 			// Gender
 			repositories.NewGenderRepository,

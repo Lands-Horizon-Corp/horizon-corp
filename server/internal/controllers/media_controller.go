@@ -112,7 +112,7 @@ func (c *MediaController) Delete(ctx *gin.Context) {
 }
 
 func MediaRoutes(router *gin.RouterGroup, controller *MediaController) {
-	group := router.Group("/medias")
+	group := router.Group("/media")
 	{
 
 		group.POST("", controller.Create)

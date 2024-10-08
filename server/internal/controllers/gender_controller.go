@@ -106,7 +106,7 @@ func (c *GenderController) Delete(ctx *gin.Context) {
 }
 
 func GenderRoutes(router *gin.RouterGroup, controller *GenderController) {
-	group := router.Group("/genders")
+	group := router.Group("/gender")
 	{
 		group.POST("", controller.Create)
 		group.GET("", controller.GetAll)

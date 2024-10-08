@@ -5,7 +5,7 @@ import { FeedbacksResource, FeedbacksRequest } from '../../types'
  * Service class to handle CRUD operations for feedbacks.
  */
 export default class FeedbackService {
-  private static readonly BASE_ENDPOINT = '/feedbacks'
+  private static readonly BASE_ENDPOINT = '/feedback'
 
   /**
    * Retrieves all feedbacks.

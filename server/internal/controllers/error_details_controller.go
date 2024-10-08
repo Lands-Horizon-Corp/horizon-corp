@@ -11,16 +11,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ErrorDetailsController struct {
-	repo *repositories.ErrorDetailsRepository
+type ErrorDetailController struct {
+	repo *repositories.ErrorDetailRepository
 }
 
-func NewErrorDetailsController(repo *repositories.ErrorDetailsRepository) *ErrorDetailsController {
-	return &ErrorDetailsController{repo: repo}
+func NewErrorDetailController(repo *repositories.ErrorDetailRepository) *ErrorDetailController {
+	return &ErrorDetailController{repo: repo}
 }
 
-func (c *ErrorDetailsController) Create(ctx *gin.Context) {
-	var req requests.ErrorDetailsRequest
+func (c *ErrorDetailController) Create(ctx *gin.Context) {
+	var req requests.ErrorDetailRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -43,8 +43,8 @@ func (c *ErrorDetailsController) Create(ctx *gin.Context) {
 		responseJSON = &response
 	}
 
-	// Create ErrorDetails instance
-	errorDetails := models.ErrorDetails{
+	// Create ErrorDetail instance
+	errorDetails := models.ErrorDetail{
 		Message:  req.Message,
 		Name:     req.Name,
 		Stack:    stackJSON,
@@ -59,18 +59,18 @@ func (c *ErrorDetailsController) Create(ctx *gin.Context) {
 	}
 
 	// Return the created error details as a resource
-	ctx.JSON(http.StatusCreated, resources.ToResourceErrorDetails(errorDetails))
+	ctx.JSON(http.StatusCreated, resources.ToResourceErrorDetail(errorDetails))
 }
-func (c *ErrorDetailsController) GetAll(ctx *gin.Context) {
+func (c *ErrorDetailController) GetAll(ctx *gin.Context) {
 	errorDetail, err := c.repo.GetAll()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, resources.ToResourceListErrorDetails(errorDetail))
+	ctx.JSON(http.StatusOK, resources.ToResourceListErrorDetail(errorDetail))
 }
 
-func (c *ErrorDetailsController) GetByID(ctx *gin.Context) {
+func (c *ErrorDetailController) GetByID(ctx *gin.Context) {
 	uid, err := helpers.ParseIDParam(ctx, "id")
 	if err != nil {
 		return
@@ -78,14 +78,14 @@ func (c *ErrorDetailsController) GetByID(ctx *gin.Context) {
 
 	errorDetails, err := c.repo.GetByID(uid)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "ErrorDetails not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "ErrorDetail not found"})
 		return
 	}
-	ctx.JSON(http.StatusOK, resources.ToResourceErrorDetails(errorDetails))
+	ctx.JSON(http.StatusOK, resources.ToResourceErrorDetail(errorDetails))
 }
 
-func (c *ErrorDetailsController) Update(ctx *gin.Context) {
-	var req requests.ErrorDetailsRequest
+func (c *ErrorDetailController) Update(ctx *gin.Context) {
+	var req requests.ErrorDetailRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -106,8 +106,8 @@ func (c *ErrorDetailsController) Update(ctx *gin.Context) {
 		responseJSON = &response
 	}
 
-	// Create ErrorDetails instance
-	errorDetails := models.ErrorDetails{
+	// Create ErrorDetail instance
+	errorDetails := models.ErrorDetail{
 		Message:  req.Message,
 		Name:     req.Name,
 		Stack:    stackJSON,
@@ -120,23 +120,23 @@ func (c *ErrorDetailsController) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resources.ToResourceErrorDetails(errorDetails))
+	ctx.JSON(http.StatusOK, resources.ToResourceErrorDetail(errorDetails))
 }
 
-func (c *ErrorDetailsController) Delete(ctx *gin.Context) {
+func (c *ErrorDetailController) Delete(ctx *gin.Context) {
 	id, err := helpers.ParseIDParam(ctx, "id")
 	if err != nil {
 		return
 	}
 	if err := c.repo.Delete(id); err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "ErrorDetails not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "ErrorDetail not found"})
 		return
 	}
 
 	ctx.JSON(http.StatusNoContent, nil)
 }
 
-func ErrorDetailsRoutes(router *gin.RouterGroup, controller *ErrorDetailsController) {
+func ErrorDetailRoutes(router *gin.RouterGroup, controller *ErrorDetailController) {
 	group := router.Group("/error-details")
 	{
 		group.POST("", controller.Create)
