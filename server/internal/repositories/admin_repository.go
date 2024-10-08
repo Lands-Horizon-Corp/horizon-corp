@@ -38,3 +38,9 @@ func (r *AdminRepository) Update(id uint, admin *models.Admin) error {
 func (r *AdminRepository) Delete(id uint) error {
 	return r.DB.Delete(&models.Admin{}, id).Error
 }
+
+func (r *AdminRepository) GetByEmail(email string) (models.Admin, error) {
+	var admin models.Admin
+	err := r.DB.Where("email = ?", email).First(&admin).Error
+	return admin, err
+}
