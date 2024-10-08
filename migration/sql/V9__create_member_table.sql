@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS `member` (
     `media_id` BIGINT UNSIGNED,
     PRIMARY KEY (`id`),
     INDEX `idx_member_deleted_at` (`deleted_at`),
-    FOREIGN KEY (`media_id`) REFERENCES `media`(`id`) ON DELETE SET NULL
+     FOREIGN KEY (`media_id`) REFERENCES `media`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `member` 

@@ -4,7 +4,6 @@ import (
 	"horizon/server/internal/models"
 )
 
-// RolesResource represents the structure of the roles resource for API responses.
 type RolesResource struct {
 	ID          uint   `json:"id"`
 	Name        string `json:"name"`
@@ -29,7 +28,6 @@ type RolesResource struct {
 	DeleteGender       bool `json:"deleteGender,omitempty"`
 }
 
-// ToResource converts a Roles model to a RolesResource.
 func ToResourceRoles(roles models.Roles) RolesResource {
 	return RolesResource{
 		ID:          roles.ID,
@@ -55,7 +53,6 @@ func ToResourceRoles(roles models.Roles) RolesResource {
 	}
 }
 
-// ToResourceList converts a slice of Roles models to a slice of RolesResource.
 func ToResourceListRoles(rolesList []models.Roles) []RolesResource {
 	var resources []RolesResource
 	for _, roles := range rolesList {

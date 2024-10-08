@@ -1,5 +1,3 @@
--- V5__create_feedback_table.sql
-
 CREATE TABLE IF NOT EXISTS `feedbacks` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `created_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
@@ -12,7 +10,6 @@ CREATE TABLE IF NOT EXISTS `feedbacks` (
     INDEX `idx_feedback_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Insert seed data into feedback table
 INSERT INTO `feedbacks` (`email`, `description`, `feedback_type`)
 VALUES 
     ('user1@example.com', 'I encountered a bug when trying to submit the form.', 'bug'),
