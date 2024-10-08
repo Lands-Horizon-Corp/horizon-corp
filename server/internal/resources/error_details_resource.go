@@ -14,8 +14,8 @@ type ErrorDetailsResource struct {
 	Stack     string `json:"stack,omitempty"`
 	Response  string `json:"response,omitempty"`
 	Status    int    `json:"status,omitempty"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 // ToResource converts an ErrorDetails model to an ErrorDetailsResource.
