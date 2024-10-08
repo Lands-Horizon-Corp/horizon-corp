@@ -61,6 +61,11 @@ func (c *MediaController) GetByID(ctx *gin.Context) {
 }
 
 func (c *MediaController) Update(ctx *gin.Context) {
+	id, err := helpers.ParseIDParam(ctx, "id")
+	if err != nil {
+		return
+	}
+
 	var req requests.MediaRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -81,7 +86,7 @@ func (c *MediaController) Update(ctx *gin.Context) {
 		BucketName: req.BucketName,
 	}
 
-	if err := c.repo.Update(&media); err != nil {
+	if err := c.repo.Update(id, &media); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

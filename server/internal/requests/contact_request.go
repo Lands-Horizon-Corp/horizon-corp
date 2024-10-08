@@ -5,6 +5,7 @@ import (
 )
 
 type ContactRequest struct {
+	ID          uint   `json:"id,omitempty"`
 	FirstName   string `json:"firstName" validate:"required,max=255"`
 	LastName    string `json:"lastName" validate:"required,max=255"`
 	Email       string `json:"email" validate:"required,email,max=255"`

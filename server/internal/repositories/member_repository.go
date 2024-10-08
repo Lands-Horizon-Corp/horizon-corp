@@ -30,7 +30,8 @@ func (r *MemberRepository) GetByID(id uint) (models.Member, error) {
 	return member, err
 }
 
-func (r *MemberRepository) Update(member *models.Member) error {
+func (r *MemberRepository) Update(id uint, member *models.Member) error {
+	member.ID = id
 	return r.DB.Save(member).Error
 }
 

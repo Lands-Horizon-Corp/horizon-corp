@@ -30,7 +30,8 @@ func (r *AdminRepository) GetByID(id uint) (models.Admin, error) {
 	return admin, err
 }
 
-func (r *AdminRepository) Update(admin *models.Admin) error {
+func (r *AdminRepository) Update(id uint, admin *models.Admin) error {
+	admin.ID = id
 	return r.DB.Save(admin).Error
 }
 

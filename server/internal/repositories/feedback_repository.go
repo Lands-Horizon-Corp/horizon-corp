@@ -30,7 +30,8 @@ func (r *FeedbackRepository) GetByID(id uint) (models.Feedback, error) {
 	return feedback, err
 }
 
-func (r *FeedbackRepository) Update(feedback *models.Feedback) error {
+func (r *FeedbackRepository) Update(id uint, feedback *models.Feedback) error {
+	feedback.ID = id
 	return r.DB.Save(feedback).Error
 }
 
