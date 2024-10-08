@@ -9,7 +9,8 @@ import (
 )
 
 type OwnerClaims struct {
-	ID uint `json:"id"`
+	ID   uint   `json:"id"`
+	Mode string `json:"mode"`
 	jwt.StandardClaims
 }
 
@@ -24,7 +25,8 @@ func GenerateOwnerJWT(member models.Owner) (string, error) {
 	}
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &OwnerClaims{
-		ID: member.ID,
+		Mode: "owner",
+		ID:   member.ID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
