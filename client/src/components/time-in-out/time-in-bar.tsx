@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import ActionTooltip from '@/components/action-tooltip'
 import LoadingCircle from '@/components/loader/loading-circle'
-import TimeInTimeOut from '@/components/time-in-bar/time-in-time-out'
+import TimeInTimeOut from '@/components/time-in-out'
 
 import {
     randomEndOfDayQuoute,
@@ -91,10 +91,7 @@ const TimeInBar = ({ className, currentUser }: Props) => {
                     )}
                 </Button>
             </ActionTooltip>
-            <Dialog
-                open={showTimeInOut}
-                onOpenChange={(state) => setShowTimeInOut(state)}
-            >
+            <Dialog open={showTimeInOut} onOpenChange={(state) => setShowTimeInOut(state)}>
                 <DialogContent
                     hideCloseButton
                     overlayClassName="backdrop-blur-sm"
