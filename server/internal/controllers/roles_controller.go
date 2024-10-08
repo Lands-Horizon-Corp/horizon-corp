@@ -138,7 +138,7 @@ func (c *RolesController) Delete(ctx *gin.Context) {
 }
 
 func RolesRoutes(router *gin.RouterGroup, controller *RolesController) {
-	group := router.Group("/roles")
+	group := router.Group("/role")
 	{
 		group.POST("", controller.Create)
 		group.GET("", controller.GetAll)

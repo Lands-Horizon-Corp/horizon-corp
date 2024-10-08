@@ -5,7 +5,7 @@ import { ContactsResource, ContactsRequest } from '../../types'
  * Service class to handle CRUD operations for contacts.
  */
 export default class ContactService {
-  private static readonly BASE_ENDPOINT = '/contacts'
+  private static readonly BASE_ENDPOINT = '/contact'
 
   /**
    * Retrieves all contacts.

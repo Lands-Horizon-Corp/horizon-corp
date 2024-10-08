@@ -17,7 +17,7 @@ type ContactResource struct {
 }
 
 // ToResource converts a contact model to a contact resource.
-func ToResourceContacts(contact models.Contacts) ContactResource {
+func ToResourceContact(contact models.Contact) ContactResource {
 	return ContactResource{
 		ID:          contact.ID,
 		FirstName:   contact.FirstName,
@@ -30,10 +30,10 @@ func ToResourceContacts(contact models.Contacts) ContactResource {
 }
 
 // ToResourceList converts a slice of contact models to a slice of contact resources.
-func ToResourceListContacts(contacts []models.Contacts) []ContactResource {
+func ToResourceListContacts(contacts []models.Contact) []ContactResource {
 	var resources []ContactResource
 	for _, contact := range contacts {
-		resources = append(resources, ToResourceContacts(contact))
+		resources = append(resources, ToResourceContact(contact))
 	}
 	return resources
 }

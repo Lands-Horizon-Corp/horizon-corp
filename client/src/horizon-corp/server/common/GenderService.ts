@@ -5,7 +5,7 @@ import { GendersResource, GendersRequest } from '../../types'
  * Service class to handle CRUD operations for genders.
  */
 export default class GenderService {
-  private static readonly BASE_ENDPOINT = '/genders'
+  private static readonly BASE_ENDPOINT = '/gender'
 
   /**
    * Retrieves all genders.

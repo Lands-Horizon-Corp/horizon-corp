@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type ErrorDetails struct {
+type ErrorDetail struct {
 	gorm.Model
 	Message  string  `gorm:"type:varchar(255);not null"`
 	Name     string  `gorm:"type:varchar(255);not null"`

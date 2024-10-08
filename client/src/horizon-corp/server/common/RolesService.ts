@@ -5,7 +5,7 @@ import { RolesResource, RolesRequest } from '../../types'
  * Service class to handle CRUD operations for roles.
  */
 export default class RoleService {
-  private static readonly BASE_ENDPOINT = '/roles'
+  private static readonly BASE_ENDPOINT = '/role'
 
   /**
    * Retrieves all roles.

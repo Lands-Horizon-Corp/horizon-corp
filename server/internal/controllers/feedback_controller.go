@@ -108,7 +108,7 @@ func (c *FeedbackController) Delete(ctx *gin.Context) {
 }
 
 func FeedbackRoutes(router *gin.RouterGroup, controller *FeedbackController) {
-	group := router.Group("/feedbacks")
+	group := router.Group("/feedback")
 	{
 		group.POST("", controller.Create)
 		group.GET("", controller.GetAll)
