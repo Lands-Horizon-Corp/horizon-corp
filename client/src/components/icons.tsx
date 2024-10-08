@@ -1,4 +1,25 @@
 import {
+    LuClock8 as ClockIcon,
+    LuCameraOff as CameraOffIcon,
+} from 'react-icons/lu'
+import {
+    BsBuildingGear as BuildingCogIcon,
+    BsLayoutSidebarInset as SidebarIcon,
+} from 'react-icons/bs'
+import {
+    LiaUser as UserIcon,
+    LiaShieldAltSolid as ShieldIcon,
+    LiaUserClockSolid as UserClockIcon,
+    LiaUserShieldSolid as UserShieldIcon,
+} from 'react-icons/lia'
+import {
+    PiUserList as UserListIcon,
+    PiBuilding as BuildingIcon,
+    PiNewspaper as ReportsIcon,
+    PiUsersThree as Users3Icon,
+    PiBuildingOffice as BuildingBranchIcon,
+} from 'react-icons/pi'
+import {
     HiOutlineSun as SunIcon,
     HiOutlineMoon as MoonIcon,
     HiOutlineCog as SettingsIcon,
@@ -11,26 +32,7 @@ import {
     HiOutlineArrowRightEndOnRectangle as LogoutIcon,
     HiOutlineChatBubbleBottomCenterText as FeedbackIcon,
 } from 'react-icons/hi2'
-import {
-    PiUserList as UserListIcon,
-    PiBuilding as BuildingIcon,
-    PiNewspaper as ReportsIcon,
-    PiUsersThree as Users3Icon,
-    PiBuildingOffice as BuildingBranchIcon,
-} from 'react-icons/pi'
-import {
-    LiaUser as UserIcon,
-    LiaShieldAltSolid as ShieldIcon,
-    LiaUserClockSolid as UserClockIcon,
-    LiaUserShieldSolid as UserShieldIcon,
-} from 'react-icons/lia'
-import {
-    BsBuildingGear as BuildingCogIcon,
-    BsLayoutSidebarInset as SidebarIcon,
-} from 'react-icons/bs'
-import { LuClock8 as ClockIcon } from "react-icons/lu";
 import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
-
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
 import { AiOutlineLoading3Quarters as LoadingSpinnerIcon } from 'react-icons/ai'
 
@@ -117,6 +119,7 @@ export {
     MessagesIcon,
     FeedbackIcon,
     BuildingIcon,
+    CameraOffIcon,
     FootstepsIcon,
     UserClockIcon,
     DashboardIcon,

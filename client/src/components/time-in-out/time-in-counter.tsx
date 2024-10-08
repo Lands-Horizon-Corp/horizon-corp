@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useState } from 'react'
 
-import { TTImeInEntry } from '.'
 import { getTimeDifference } from './utils'
+import { TTImeInEntry } from './time-in-bar'
 import { IBaseCompNoChild } from '@/types/component/base'
 
 interface Props extends IBaseCompNoChild {

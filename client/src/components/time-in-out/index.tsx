@@ -1,14 +1,17 @@
-import { useState } from 'react'
+import { toast } from 'sonner'
+import Webcam from 'react-webcam'
+import { useCallback, useRef, useState } from 'react'
 
+import WebCam from '@/components/webcam'
 import { ClockIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import LoadingCircle from '@/components/loader/loading-circle'
-import TimeInCounter from '@/components/time-in-bar/time-in-counter'
-import RealtimeTimeText from '@/components/time-in-bar/realtime-time-text'
+import TimeInCounter from '@/components/time-in-out/time-in-counter'
+import RealtimeTimeText from '@/components/time-in-out/realtime-time-text'
 
 import { cn } from '@/lib/utils'
-import { TTImeInEntry } from '.'
 import { UserBase } from '@/types'
+import { TTImeInEntry } from './time-in-bar'
 import { IBaseComp } from '@/types/component/base'
 
 interface Props extends IBaseComp {
@@ -26,13 +29,28 @@ const TimeInTimeOut = ({
     onTimeOut,
     onTimeInEntry,
 }: Props) => {
+    const camRef = useRef<Webcam>(null)
     const [loading, setLoading] = useState(false)
+
+    const captureImage = useCallback(() => {
+        if (!camRef.current) return null
+        const imageSrc = camRef.current.getScreenshot()
+        return imageSrc
+    }, [camRef])
 
     const handleClick = () => {
         setLoading(true)
+        const capturedImage = captureImage()
+
+        if (!capturedImage) {
+            setLoading(false)
+            return toast.error('Sorry, Image was not captured')
+        }
 
         if (!timeEntry) {
             // todo create time in request
+            // backend checks if user already did some action 5 mins ago
+            // toast.warning(reqeust error message here)
             return setTimeout(() => {
                 onTimeInEntry({
                     timeStart: new Date('Mon, 07 Oct 2024 06:50:39 GMT'),
@@ -41,6 +59,9 @@ const TimeInTimeOut = ({
         }
 
         // todo time out request
+        // backend checks if user already did some action 5 mins ago
+        // then show error here via toast
+        // toast.warning(reqeust error message here)
         return setTimeout(() => {
             onTimeOut({
                 timeStart: new Date('Mon, 07 Oct 2024 06:50:39 GMT'),
@@ -51,9 +72,12 @@ const TimeInTimeOut = ({
 
     return (
         <div className={cn('space-y-4 pt-8', className)}>
-            <div className="mx-auto size-52 rounded-2xl bg-background bg-[url('https://img.freepik.com/premium-photo/beautiful-graceful-young-woman-s-face-ai-generated_675380-2040.jpg')] bg-cover bg-no-repeat"></div>
+            <WebCam ref={camRef} className="mx-auto rounded-2xl" />
             <div className="flex flex-col items-center gap-y-6 px-4">
-                <p className="text-center text-sm italic text-foreground/60">
+                <p
+                    style={{ fontFamily: 'cursive' }}
+                    className="text-center text-base italic text-foreground/60"
+                >
                     "{message}"
                 </p>
                 {timeEntry && (

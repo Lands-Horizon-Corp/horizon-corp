@@ -1,7 +1,4 @@
-import {
-    differenceInHours,
-    differenceInMinutes,
-} from 'date-fns'
+import { differenceInHours, differenceInMinutes } from 'date-fns'
 
 export const getTimeDifference = (fromDate: Date, currentDate: Date) => {
     const minutes = differenceInMinutes(currentDate, fromDate)

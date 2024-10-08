@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
-import TimeInBar from '@/components/time-in-bar'
 import { SidebarIcon } from '@/components/icons'
+import TimeInBar from '@/components/time-in-out/time-in-bar'
 import RootNav from '@/components/navbars/root-nav'
 import { ThemeToggleMenu } from '@/components/theme-toggle'
 import MobileSidebar from '@/components/sidebar/mobile-sidebar'
