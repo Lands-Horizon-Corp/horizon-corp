@@ -14,7 +14,7 @@ type OwnerClaims struct {
 	jwt.StandardClaims
 }
 
-func GenerateOwnerJWT(member models.Owner) (string, error) {
+func GenerateOwnerJWT(owner models.Owner) (string, error) {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		return "", err
@@ -26,9 +26,11 @@ func GenerateOwnerJWT(member models.Owner) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 	claims := &OwnerClaims{
 		Mode: "owner",
-		ID:   member.ID,
+		ID:   owner.ID,
 		StandardClaims: jwt.StandardClaims{
+			Subject:   owner.FirstName + " " + owner.LastName,
 			ExpiresAt: expirationTime.Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

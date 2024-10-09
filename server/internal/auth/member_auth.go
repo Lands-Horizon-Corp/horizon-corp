@@ -28,7 +28,9 @@ func GenerateMemberJWT(member models.Member) (string, error) {
 		Mode: "member",
 		ID:   member.ID,
 		StandardClaims: jwt.StandardClaims{
+			Subject:   member.FirstName + " " + member.LastName,
 			ExpiresAt: expirationTime.Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
