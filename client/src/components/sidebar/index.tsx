@@ -15,7 +15,7 @@ import type { TSidebarItem } from '@/types/component/sidebar'
 export interface ISidebarProps extends IBaseComp {
     items: TSidebarItem[]
     enableCollapse?: boolean
-    logoRedirectUrl? : string
+    logoRedirectUrl?: string
     enableFocusBlur?: boolean
     defaultExpanded?: boolean
 }

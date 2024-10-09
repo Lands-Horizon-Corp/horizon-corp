@@ -7,10 +7,10 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { useTheme } from '@/components/providers/theme-provider'
 
 import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component/base'
+import { useTheme } from '@/providers/theme-provider'
 
 interface IThemeToggle extends IBaseComp {}
 

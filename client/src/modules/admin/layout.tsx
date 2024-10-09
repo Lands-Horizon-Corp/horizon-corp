@@ -4,10 +4,10 @@ import AdminSidebar from './components/admin-sidebar'
 
 const AdminLayout = () => {
     return (
-        <div className="grid min-h-[100dvh] sm:grid-cols-[auto_1fr] grid-cols-[1fr]">
+        <div className="grid min-h-[100dvh] grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
             <AdminSidebar />
             <main className="">
-                <AdminNavbar/>
+                <AdminNavbar />
                 <Outlet />
             </main>
         </div>

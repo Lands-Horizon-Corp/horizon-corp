@@ -65,7 +65,14 @@ const SignUpForm = ({
     function onFormSubmit(data: TSignUpForm) {
         const parsedData = signUpFormSchema.parse(data)
         // TODO: Logic
-        // remove code bellow
+        /*
+            after account creation need ko lang sa backend is:
+
+            1- after sign up automatically log in narin (may authorization something cookie?)
+            2- after sign up, need ko din nung data ng user
+
+            then: redirect ko na sa auth/verify page
+        */
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message

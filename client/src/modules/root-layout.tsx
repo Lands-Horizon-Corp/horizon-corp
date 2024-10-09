@@ -1,9 +1,9 @@
 import { Outlet } from '@tanstack/react-router'
 
 import { Toaster } from '@/components/ui/sonner'
-import { VersionAndFeedBack } from '@/components/version'
 import CookieConsent from '@/components/cookie-consent'
-import ConnectionProvider from '@/components/providers/connection-provider'
+import { VersionAndFeedBack } from '@/components/version'
+import ConnectionProvider from '@/providers/connection-provider'
 
 const RootLayout = () => {
     return (

@@ -4,7 +4,7 @@ import EmployeeNavbar from './components/employee-navbar'
 
 const OwnerLayout = () => {
     return (
-        <div className="grid min-h-[100dvh] sm:grid-cols-[auto_1fr] grid-cols-[1fr]">
+        <div className="grid min-h-[100dvh] grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
             <EmployeeSidebar />
             <main>
                 <EmployeeNavbar />
