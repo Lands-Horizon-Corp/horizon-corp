@@ -14,9 +14,10 @@ import type { TSidebarItem } from '@/types/component/sidebar'
 
 export interface ISidebarProps extends IBaseComp {
     items: TSidebarItem[]
-    defaultExpanded?: boolean
     enableCollapse?: boolean
+    logoRedirectUrl? : string
     enableFocusBlur?: boolean
+    defaultExpanded?: boolean
 }
 
 const ExpandContext = createContext<boolean | null>(true)
@@ -33,6 +34,7 @@ export const useSidebarExpandContext = () => {
 const Sidebar = ({
     items,
     className,
+    logoRedirectUrl = '/',
     defaultExpanded = true,
     enableCollapse = false,
     enableFocusBlur = false,
@@ -55,7 +57,7 @@ const Sidebar = ({
                 )}
             >
                 <div className="relative z-0 flex w-fit items-center justify-center">
-                    <Link to="/member">
+                    <Link to={logoRedirectUrl}>
                         <EcoopLogo
                             className={cn('size-10', isExpanded && 'size-24')}
                         />
