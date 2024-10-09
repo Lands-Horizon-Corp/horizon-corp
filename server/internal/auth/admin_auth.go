@@ -28,7 +28,9 @@ func GenerateAdminJWT(admin models.Admin) (string, error) {
 		Mode: "admin",
 		ID:   admin.ID,
 		StandardClaims: jwt.StandardClaims{
+			Subject:   admin.FirstName + " " + admin.LastName,
 			ExpiresAt: expirationTime.Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)

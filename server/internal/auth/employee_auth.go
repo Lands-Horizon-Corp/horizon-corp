@@ -28,7 +28,9 @@ func GenerateEmployeeJWT(employee models.Employee) (string, error) {
 		Mode: "employee",
 		ID:   employee.ID,
 		StandardClaims: jwt.StandardClaims{
+			Subject:   employee.FirstName + " " + employee.LastName,
 			ExpiresAt: expirationTime.Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
