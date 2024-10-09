@@ -2,7 +2,7 @@ import React from 'react';
 import { RouterProvider } from '@tanstack/react-router';
 
 import router from '@/root-route';
-import { ThemeProvider } from '@/components/providers/theme-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
 
 const TanStackRouterDevtoolsPanel =
     process.env.NODE_ENV === 'production'

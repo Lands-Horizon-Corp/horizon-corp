@@ -72,7 +72,7 @@ const EmployeeSidebar = ({ className }: Props) => {
             <Sidebar
                 enableCollapse
                 enableFocusBlur
-                logoRedirectUrl='/employee'
+                logoRedirectUrl="/employee"
                 items={employeeSidebarItems}
                 className={cn('', className)}
             />

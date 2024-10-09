@@ -21,8 +21,8 @@ import {
 import UserAvatar from '@/components/user-avatar'
 
 import { cn } from '@/lib/utils'
+import { useTheme } from '@/providers/theme-provider'
 import { IBaseCompNoChild } from '@/types/component/base'
-import { useTheme } from '@/components/providers/theme-provider'
 
 interface Props extends IBaseCompNoChild {
     isExpanded: boolean

@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component/base'
-import { ResolvedTheme, useTheme } from './providers/theme-provider'
+import { ResolvedTheme, useTheme } from '@/providers/theme-provider'
 
 type TEcoopThemeMode = 'dynamic' | ResolvedTheme
 
