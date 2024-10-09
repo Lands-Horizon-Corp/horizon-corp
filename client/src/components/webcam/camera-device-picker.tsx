@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -14,11 +16,23 @@ import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component/base'
 
 interface Props extends IBaseCompNoChild {
+    autoPick?: boolean
+    currentDevice?: MediaDeviceInfo | null
     onPick: (device: MediaDeviceInfo) => void
 }
 
-const CameraDevicePicker = ({ onPick, className }: Props) => {
+const CameraDevicePicker = ({
+    onPick,
+    className,
+    currentDevice,
+    autoPick = false,
+}: Props) => {
     const { devices } = useCameraDevices()
+
+    useEffect(() => {
+        if (!autoPick || devices.length < 1) return
+        onPick(devices[0])
+    }, [devices])
 
     return (
         <DropdownMenu>
@@ -37,9 +51,18 @@ const CameraDevicePicker = ({ onPick, className }: Props) => {
                     <DropdownMenuItem
                         key={id}
                         onClick={() => onPick(camDevice)}
+                        className={cn(
+                            '',
+                            currentDevice !== null &&
+                                currentDevice?.deviceId ===
+                                    camDevice.deviceId &&
+                                'bg-primary'
+                        )}
                     >
                         <CameraIcon className="mr-2 size-4" />
-                        {camDevice.label}
+                        {camDevice.label
+                            ? camDevice.label.split(' (')[0]
+                            : `Camera ${id + 1}`}
                     </DropdownMenuItem>
                 ))}
                 {devices.length === 0 && (
