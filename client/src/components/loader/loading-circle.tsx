@@ -9,7 +9,7 @@ const LoadingCircle = ({ className }: Props) => {
     return (
         <AiOutlineLoading
             className={cn(
-                'size-4 animate-spin [animation-duration:.5s]',
+                'size-4 animate-spin [animation-duration:1s]',
                 className
             )}
         />
