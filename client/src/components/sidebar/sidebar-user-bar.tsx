@@ -44,7 +44,7 @@ const SidebarUserBar = ({ className, isExpanded }: Props) => {
                 >
                     <span className="inline-flex items-center gap-x-2">
                         <UserAvatar
-                            src="https://github.com/shadcn.png"
+                            src="https://avatars.githubusercontent.com/u/48374007?s=80&v=4"
                             fallback="A"
                             className={cn(
                                 'size-9 rounded-[4rem] duration-150 ease-in-out',

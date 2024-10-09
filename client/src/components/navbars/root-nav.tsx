@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component/base'
 
 interface Props extends IBaseCompNoChild {
+    iconHref?: string
+    hideIcon?: boolean
     midContents?: ReactNode
     leftContents?: ReactNode
     rightContents?: ReactNode
@@ -19,6 +21,8 @@ const RootNav = ({
     midContents,
     leftContents,
     rightContents,
+    iconHref = '/',
+    hideIcon = false,
     midGroupClassName,
     leftGroupClassName,
     rightGroupClassName,
@@ -36,8 +40,10 @@ const RootNav = ({
                     leftGroupClassName
                 )}
             >
-                <Link to="/">
-                    <EcoopLogo className="size-[46px]" />
+                <Link to={iconHref}>
+                    <EcoopLogo
+                        className={cn('size-[46px]', hideIcon && 'hidden')}
+                    />
                 </Link>
                 {leftContents}
             </div>

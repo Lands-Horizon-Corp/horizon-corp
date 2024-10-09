@@ -8,12 +8,12 @@ import {
     NotificationIcon,
     BuildingBranchIcon,
 } from '@/components/icons'
-import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
+import Sidebar from '@/components/sidebar'
 
 import { IBaseComp } from '@/types/component/base'
 import { TSidebarItem } from '@/types/component/sidebar'
 
-const adminSidebarItems: TSidebarItem[] = [
+export const adminSidebarItems: TSidebarItem[] = [
     {
         text: 'Dashboard',
         url: '/admin/dashboard',
@@ -79,10 +79,15 @@ interface Props extends IBaseComp {}
 
 const AdminSidebar = ({ className }: Props) => {
     return (
-        <DynamicSidebar
-            sidebarItems={adminSidebarItems}
-            className={className}
-        />
+        <div className="hidden sm:block">
+            <Sidebar
+                enableCollapse
+                enableFocusBlur
+                logoRedirectUrl="/admin"
+                items={adminSidebarItems}
+                className={className}
+            />
+        </div>
     )
 }
 
