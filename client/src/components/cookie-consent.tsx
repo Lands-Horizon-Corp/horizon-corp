@@ -1,27 +1,45 @@
+import Cookies from 'js-cookie'
 import { addYears } from 'date-fns'
-import { useCookies } from 'react-cookie'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { CookieIcon } from '@/components/icons'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
+import { cn } from '@/lib/utils'
+
 const CookieConsent = () => {
-    const [cookies, setCookie] = useCookies(['ecoop-cookie-consent'])
+    const [accepted, setAccepted] = useState(true)
 
     const onAccept = () => {
         const expirationDate = addYears(new Date(), 1)
-        setCookie('ecoop-cookie-consent', true, {
+        Cookies.set('ecoop-cookie-consent', 'true', {
+            expires: expirationDate,
             path: '/',
             secure: true,
-            sameSite: 'lax',
-            expires: expirationDate,
+            sameSite: 'Lax',
         })
+
+        setAccepted(true)
     }
 
-    if (cookies['ecoop-cookie-consent']) return null
+    const loadCookie = () => {
+        const val = Cookies.get('ecoop-cookie-consent')
+        if (val) return setAccepted(true)
+        return setAccepted(false)
+    }
+
+    useEffect(() => {
+        loadCookie()
+    }, [])
 
     return (
-        <Alert className="fixed bottom-0 left-1/2 mb-3 flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-x-4 gap-y-4 rounded-xl bg-popover/95 text-center shadow-center-md backdrop-blur md:mb-6 lg:w-fit lg:max-w-none lg:flex-row lg:text-left">
+        <Alert
+            className={cn(
+                'fixed bottom-0 left-1/2 mb-3 flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-x-4 gap-y-4 rounded-xl bg-popover/95 text-center shadow-center-md backdrop-blur delay-150 duration-500 ease-in-out md:mb-6 lg:w-fit lg:max-w-none lg:flex-row lg:text-left',
+                accepted && 'pointer-events-none opacity-0'
+            )}
+        >
             <span className="absolute -top-6 block size-fit rounded-full bg-secondary p-1 lg:static">
                 <CookieIcon className="size-9 text-[#f3cc83] lg:size-6" />
             </span>
