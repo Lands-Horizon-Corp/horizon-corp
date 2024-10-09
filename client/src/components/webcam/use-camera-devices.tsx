@@ -4,20 +4,13 @@ export const useCameraDevices = () => {
     const [devices, setDevices] = useState<MediaDeviceInfo[]>([])
 
     const handleDevices = useCallback(
-        (mediaDevices: MediaDeviceInfo[]) =>
-            setDevices(
-                mediaDevices
-                    .filter(
-                        ({ kind, deviceId }) =>
-                            kind === 'videoinput' && deviceId.length !== 0
-                    )
-                    .map((cam, i) => ({
-                        ...cam,
-                        label: cam.label
-                            ? cam.label.split(' (')[0]
-                            : `Camera ${i + 1}`,
-                    }))
-            ),
+        (mediaDevices: MediaDeviceInfo[]) => {
+            const cameraDevices = mediaDevices.filter(
+                ({ kind, deviceId }) =>
+                    kind === 'videoinput' && deviceId.length !== 0
+            )
+            setDevices(cameraDevices)
+        },
         [setDevices]
     )
 

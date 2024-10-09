@@ -76,6 +76,8 @@ const WebCam = forwardRef<Webcam, Props>(
                 {granted && (
                     <CameraDevicePicker
                         className="absolute bottom-2 right-2"
+                        autoPick
+                        currentDevice={selectedCamera}
                         onPick={(devicePicked) =>
                             setSelectedCamera(devicePicked)
                         }
