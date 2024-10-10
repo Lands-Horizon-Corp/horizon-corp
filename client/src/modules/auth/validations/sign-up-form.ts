@@ -34,7 +34,7 @@ export const signUpFormSchema = z
             .regex(LETTERS_REGEX, 'Last Name must contain only letters'),
         contactNumber: z
             .string()
-            .min(1)
+            .min(1, "Invalid contact")
             .max(11)
             .regex(/^\d+$/, 'Contact number must contain only numbers'),
         password: z
