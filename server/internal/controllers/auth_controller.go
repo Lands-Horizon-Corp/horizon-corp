@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"horizon/server/internal/repositories"
 
 	"github.com/gin-gonic/gin"
@@ -26,21 +25,25 @@ func NewAuthController(adminRepo *repositories.AdminRepository,
 	}
 }
 
-func (c *AuthController) SignUp(ctx *gin.Context) {
-	fmt.Println("hello world")
-}
+// Basic Authentication
+func (c *AuthController) SignUp(ctx *gin.Context)  {}
+func (c *AuthController) SignIn(ctx *gin.Context)  {}
+func (c *AuthController) SignOut(ctx *gin.Context) {}
 
-func (c *AuthController) SignIn(ctx *gin.Context)                {}
-func (c *AuthController) SignOut(ctx *gin.Context)               {}
-func (c *AuthController) ForgotPassword(ctx *gin.Context)        {}
-func (c *AuthController) ChangePassword(ctx *gin.Context)        {}
+// Password
+func (c *AuthController) ForgotPassword(ctx *gin.Context) {}
+func (c *AuthController) ChangePassword(ctx *gin.Context) {}
+
+// Sending to user
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {}
 func (c *AuthController) SendOTPVerification(ctx *gin.Context)   {}
-func (c *AuthController) VerifyEmail(ctx *gin.Context)           {}
-func (c *AuthController) VerifyOTP(ctx *gin.Context)             {}
+
+// Sending Verification
+func (c *AuthController) VerifyEmail(ctx *gin.Context) {}
+func (c *AuthController) VerifyOTP(ctx *gin.Context)   {}
 
 func AuthRoutes(router *gin.RouterGroup, controller *AuthController) {
-	group := router.Group("/auth") // Changed the group path to /auth for better clarity
+	group := router.Group("/auth")
 	{
 		group.POST("/signup", controller.SignUp)
 		group.POST("/signin", controller.SignIn)
