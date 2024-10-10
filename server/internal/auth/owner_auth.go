@@ -29,6 +29,8 @@ func GenerateOwnerJWT(owner models.Owner) (string, error) {
 		Email:             owner.Email,
 		IsEmailVerified:   owner.IsEmailVerified,
 		IsContactVerified: owner.IsContactVerified,
+		ContactNumber:     owner.ContactNumber,
+		MediaID:           owner.MediaID,
 		StandardClaims: jwt.StandardClaims{
 			Subject:   owner.FirstName + " " + owner.LastName,
 			ExpiresAt: expirationTime.Unix(),

@@ -1,3 +1,4 @@
+export * from './auth'
 export * from './server'
 export * from './feedback'
 export * from './gender'
