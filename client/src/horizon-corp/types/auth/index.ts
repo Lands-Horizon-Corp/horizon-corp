@@ -1,4 +1,4 @@
-export * from './requests'
+export * from './request'
 export * from './resource'
 
 

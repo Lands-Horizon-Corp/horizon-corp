@@ -4,12 +4,12 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type VerifyEmailRequest struct {
-	Token string `json:"token" validate:"required,max=500"`
-	Email string `json:"email" validate:"required,email,max=255"`
+type SignInRequest struct {
+	Email    string `json:"email" validate:"required,email,max=255"`
+	Password string `json:"password" validate:"required,min=8,max=255"` // Adjust the min length as needed
 }
 
-func (r *VerifyEmailRequest) Validate() error {
+func (r *SignInRequest) Validate() error {
 	validate := validator.New()
 	return validate.Struct(r)
 }
