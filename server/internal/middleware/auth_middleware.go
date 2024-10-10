@@ -20,8 +20,7 @@ const (
 	ClaimsKey           middleware = "claims"
 )
 
-// JWTMiddleware is a middleware function that checks for a valid JWT.
-func JWTMiddleware(role string, next http.Handler) http.HandlerFunc {
+func JWTMiddleware(mode string, next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get(string(AuthorizationHeader))
 		if authHeader == "" {
@@ -29,7 +28,6 @@ func JWTMiddleware(role string, next http.Handler) http.HandlerFunc {
 			return
 		}
 
-		// Validate the token format
 		if !strings.HasPrefix(authHeader, string(BearerPrefix)) {
 			http.Error(w, "Invalid authorization format", http.StatusUnauthorized)
 			return
@@ -43,13 +41,13 @@ func JWTMiddleware(role string, next http.Handler) http.HandlerFunc {
 			return
 		}
 
-		roleToken, err := getTokenKey(role)
+		modeToken, err := getTokenMode(mode)
 		if err != nil {
-			http.Error(w, "Could not load role token", http.StatusInternalServerError)
+			http.Error(w, "Could not load mode token", http.StatusInternalServerError)
 			return
 		}
 
-		signed, err := config.Decrypt(roleToken, cfg.AppToken)
+		signed, err := config.Decrypt(modeToken, cfg.AppToken)
 		if err != nil {
 			http.Error(w, "Could not decrypt token", http.StatusInternalServerError)
 			return
@@ -76,12 +74,12 @@ func JWTMiddleware(role string, next http.Handler) http.HandlerFunc {
 	}
 }
 
-func getTokenKey(role string) ([]byte, error) {
+func getTokenMode(mode string) ([]byte, error) {
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		return nil, err
 	}
-	switch role {
+	switch mode {
 	case "admin":
 		return cfg.AppAdminToken, nil
 	case "owner":
@@ -91,6 +89,6 @@ func getTokenKey(role string) ([]byte, error) {
 	case "employee":
 		return cfg.AppEmployeeToken, nil
 	default:
-		return nil, fmt.Errorf("unrecognized role: %s", role)
+		return nil, fmt.Errorf("unrecognized mode: %s", mode)
 	}
 }
