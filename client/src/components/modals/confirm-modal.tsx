@@ -6,7 +6,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 
-import useConfirmModalStore from '@/store/confirm-store'
+import useConfirmModalStore from '@/store/confirm-modal-store'
 import { Separator } from '../ui/separator'
 import { Button } from '../ui/button'
 
@@ -18,17 +18,17 @@ const ConfirmModal = ({}: Props) => {
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="shadow-2 border-none font-inter sm:rounded-2xl">
+            <DialogContent  overlayClassName="backdrop-blur" className="shadow-2 font-inter border !rounded-2xl">
                 <DialogHeader>
                     <DialogTitle className="font-medium">
                         {modalData?.title}
                     </DialogTitle>
                 </DialogHeader>
-                <DialogDescription className="my-4">
+                <DialogDescription className="mb-4">
                     {modalData?.description}
                 </DialogDescription>
-                <Separator className="bg-muted/70" />
                 {modalData?.content}
+                <Separator className="bg-muted/70" />
                 <div className="flex justify-end gap-x-2">
                     <Button
                         onClick={onCancel}
