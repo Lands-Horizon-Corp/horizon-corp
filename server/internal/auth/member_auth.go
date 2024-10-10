@@ -8,12 +8,6 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type MemberClaims struct {
-	ID   uint   `json:"id"`
-	Mode string `json:"mode"`
-	jwt.StandardClaims
-}
-
 func GenerateMemberJWT(member models.Member) (string, error) {
 	cfg, err := config.LoadConfig()
 	if err != nil {
@@ -24,9 +18,17 @@ func GenerateMemberJWT(member models.Member) (string, error) {
 		return "", err
 	}
 	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &MemberClaims{
-		Mode: "member",
-		ID:   member.ID,
+	claims := &UserClaims{
+		Mode:              "member",
+		ID:                member.ID,
+		FirstName:         member.FirstName,
+		LastName:          member.LastName,
+		PermanentAddress:  member.PermanentAddress,
+		Description:       member.Description,
+		Birthdate:         member.Birthdate,
+		Email:             member.Email,
+		IsEmailVerified:   member.IsEmailVerified,
+		IsContactVerified: member.IsContactVerified,
 		StandardClaims: jwt.StandardClaims{
 			Subject:   member.FirstName + " " + member.LastName,
 			ExpiresAt: expirationTime.Unix(),
