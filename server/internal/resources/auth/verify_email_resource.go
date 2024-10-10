@@ -5,7 +5,6 @@ import (
 )
 
 type VerifyEmailResource struct {
-	Token      string `json:"token"`
 	Email      string `json:"email"`
 	VerifiedAt string `json:"verifiedAt"`
 	Message    string `json:"message"`
@@ -13,7 +12,6 @@ type VerifyEmailResource struct {
 
 func ToResourceVerifyEmail(token, email, message string) VerifyEmailResource {
 	return VerifyEmailResource{
-		Token:      token,
 		Email:      email,
 		VerifiedAt: time.Now().Format(time.RFC3339),
 	}

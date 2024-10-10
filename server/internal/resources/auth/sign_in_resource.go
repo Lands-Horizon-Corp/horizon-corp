@@ -5,14 +5,17 @@ import (
 )
 
 type SignInResource struct {
+	ID         uint   `json:"id"`
+	Mode       string `json:"mode"`
 	Email      string `json:"email"`
 	Token      string `json:"token"`
 	LoggedInAt string `json:"loggedInAt"`
 }
 
-func ToResourceSignIn(email, token string) SignInResource {
+func ToResourceSignIn(id uint, mode, token string) SignInResource {
 	return SignInResource{
-		Email:      email,
+		ID:         id,
+		Email:      mode,
 		Token:      token,
 		LoggedInAt: time.Now().Format(time.RFC3339),
 	}
