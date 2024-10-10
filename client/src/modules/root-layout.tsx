@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner'
 import CookieConsent from '@/components/cookie-consent'
 import { VersionAndFeedBack } from '@/components/version'
 import ConnectionProvider from '@/providers/connection-provider'
+import ConfirmModal from '@/components/modals/confirm-modal'
 
 const RootLayout = () => {
     return (
@@ -13,6 +14,7 @@ const RootLayout = () => {
             <Toaster richColors />
             <ConnectionProvider />
             <CookieConsent />
+            <ConfirmModal />
         </div>
     )
 }
