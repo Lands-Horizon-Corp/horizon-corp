@@ -5,6 +5,9 @@ import (
 )
 
 type ChangePasswordRequest struct {
+	CurrentPassword string `json:"currentPassword" validate:"required,min=8,max=255"`
+	NewPassword     string `json:"newPassword" validate:"required,min=8,max=255"`
+	ConfirmPassword string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
 }
 
 func (r *ChangePasswordRequest) Validate() error {
