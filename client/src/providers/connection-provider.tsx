@@ -29,7 +29,7 @@ const ConnectionProvider = ({ interval = 10_000 }: { interval?: number }) => {
                     isConnected && 'backdrop-blur-none'
                 )}
                 onContextMenu={() => false}
-                className="pointer-events-none flex max-w-[90vw] flex-col items-center !rounded-2xl border bg-popover/80 shadow-center-md backdrop-blur focus:outline-none sm:w-fit sm:max-w-[32rem]"
+                className="pointer-events-none flex max-w-[90vw] flex-col items-center !rounded-2xl shadow-center-md backdrop-blur focus:outline-none sm:w-fit sm:max-w-[32rem]"
             >
                 <DialogTitle className="text-xl">Connection Lost</DialogTitle>
                 <svg

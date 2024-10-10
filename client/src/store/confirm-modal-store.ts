@@ -13,7 +13,7 @@ interface ISharedConfirmModalProperty {
 interface IConfirmModalOnOpenData extends Partial<ISharedConfirmModalProperty> {
     title: string
     description?: string
-    content? : ReactNode
+    content?: ReactNode
 
     confirmString?: string
     cancelString?: string
@@ -53,21 +53,27 @@ const useConfirmModalStore = create<IConfirmModalStore>((set) => ({
             },
         }),
 
-    onConfirm: () =>
+    onConfirm: () => {
         set((state) => {
             state.modalData?.onConfirm?.()
-            return { isOpen: false, modalData: undefined }
-        }),
-    onClose: () =>
+            return { isOpen: false }
+        })
+        setTimeout(() => set(() => ({ modalData: undefined })), 100)
+    },
+    onClose: () => {
         set((state) => {
             state.modalData?.onClose?.()
-            return { isOpen: false, modalData: undefined }
-        }),
-    onCancel: () =>
+            return { isOpen: false }
+        })
+        setTimeout(() => set(() => ({ modalData: undefined })), 100)
+    },
+    onCancel: () => {
         set((state) => {
             state.modalData?.onCancel?.()
-            return { isOpen: false, modalData: undefined }
-        }),
+            return { isOpen: false }
+        })
+        setTimeout(() => set(() => ({ modalData: undefined })), 100)
+    },
 }))
 
 export default useConfirmModalStore
