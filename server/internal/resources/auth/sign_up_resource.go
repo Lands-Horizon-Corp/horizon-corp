@@ -9,7 +9,7 @@ type SignUpResource struct {
 	Mode       string `json:"mode"`
 	Email      string `json:"email"`
 	Token      string `json:"token"`
-	LoggedInAt string `json:"isContactVerified"`
+	LoggedInAt string `json:"loggedInAt"`
 }
 
 func ToResourceSignUp(id uint, mode, token string) SignUpResource {
