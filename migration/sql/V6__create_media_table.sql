@@ -1,5 +1,3 @@
--- V6__create_media_table.sql
-
 CREATE TABLE IF NOT EXISTS `media` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `created_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
@@ -16,7 +14,6 @@ CREATE TABLE IF NOT EXISTS `media` (
     INDEX `idx_media_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Insert seed data into media table
 INSERT INTO `media` (`file_name`, `file_size`, `file_type`, `storage_key`, `url`, `key`, `bucket_name`)
 VALUES 
     ('example_image.jpg', 1048576, 'image/jpeg', 'unique_key_123', 'http://example.com/images/example_image.jpg', 'img_key_123', 'images_bucket'),

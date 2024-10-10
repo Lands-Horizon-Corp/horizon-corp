@@ -30,7 +30,8 @@ func (r *MediaRepository) GetByID(id uint) (models.Media, error) {
 	return media, err
 }
 
-func (r *MediaRepository) Update(media *models.Media) error {
+func (r *MediaRepository) Update(id uint, media *models.Media) error {
+	media.ID = id
 	return r.DB.Save(media).Error
 }
 

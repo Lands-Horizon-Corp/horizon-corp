@@ -2,7 +2,8 @@ package requests
 
 import "github.com/go-playground/validator/v10"
 
-type ErrorDetailsRequest struct {
+type ErrorDetailRequest struct {
+	ID       uint   `json:"id,omitempty"`
 	Message  string `json:"message" validate:"required,max=255"`
 	Name     string `json:"name" validate:"required,max=255"`
 	Stack    string `json:"stack,omitempty" validate:"omitempty,max=1000"`
@@ -10,7 +11,7 @@ type ErrorDetailsRequest struct {
 	Status   int    `json:"status,omitempty" validate:"omitempty,gte=100,lte=599"`
 }
 
-func (r *ErrorDetailsRequest) Validate() error {
+func (r *ErrorDetailRequest) Validate() error {
 	validate := validator.New()
 	return validate.Struct(r)
 }

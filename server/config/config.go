@@ -6,8 +6,12 @@ import (
 
 type AppConfig struct {
 	AppPort            string
-	AppForwardPort     string
-	AppToken           string
+	AppToken           []byte
+	AppForwardPort     []byte
+	AppAdminToken      []byte
+	AppOwnerToken      []byte
+	AppEmployeeToken   []byte
+	AppMemberToken     []byte
 	LogLevel           string
 	DBUsername         string
 	DBPassword         string
@@ -26,10 +30,33 @@ type AppConfig struct {
 }
 
 func LoadConfig() (*AppConfig, error) {
+	appToken, err := Encrypt([]byte(os.Getenv("APP_TOKEN")), []byte(os.Getenv("APP_NAME")))
+	if err != nil {
+		return nil, err
+	}
+	appAdminToken, err := Encrypt([]byte(os.Getenv("APP_ADMIN_TOKEN")), appToken)
+	if err != nil {
+		return nil, err
+	}
+	appOwnerToken, err := Encrypt([]byte(os.Getenv("APP_OWNER_TOKEN")), appToken)
+	if err != nil {
+		return nil, err
+	}
+	appEmployeeToken, err := Encrypt([]byte(os.Getenv("APP_EMPLOYEE_TOKEN")), appToken)
+	if err != nil {
+		return nil, err
+	}
+	appMemberToken, err := Encrypt([]byte(os.Getenv("APP_MEMBER_TOKEN")), appToken)
+	if err != nil {
+		return nil, err
+	}
 	config := AppConfig{
-		AppPort:            getEnv("APP_PORT", "8080"),         // default to 8080 if not set
-		AppForwardPort:     getEnv("APP_FORWARD_PORT", "8081"), // default to 8081 if not set
-		AppToken:           os.Getenv("APP_TOKEN"),
+		AppPort:            getEnv("APP_PORT", "8080"),
+		AppToken:           appToken,
+		AppAdminToken:      appAdminToken,
+		AppOwnerToken:      appOwnerToken,
+		AppEmployeeToken:   appEmployeeToken,
+		AppMemberToken:     appMemberToken,
 		LogLevel:           os.Getenv("LOG_LEVEL"),
 		DBUsername:         os.Getenv("DB_USERNAME"),
 		DBPassword:         os.Getenv("DB_PASSWORD"),
