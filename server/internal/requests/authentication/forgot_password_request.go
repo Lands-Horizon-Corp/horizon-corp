@@ -5,7 +5,8 @@ import (
 )
 
 type ForgotPasswordRequest struct {
-	Email string `json:"email" validate:"required,email,max=255"`
+	Email         string `json:"email" validate:"required,email,max=255"`
+	ContactNumber string `json:"contactNumber" validate:"required,email,max=255"`
 }
 
 func (r *ForgotPasswordRequest) Validate() error {

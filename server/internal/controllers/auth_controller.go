@@ -25,6 +25,9 @@ func NewAuthController(adminRepo *repositories.AdminRepository,
 	}
 }
 
+// User
+func (c *AuthController) CurrentUser(ctx *gin.Context) {}
+
 // Basic Authentication
 func (c *AuthController) SignUp(ctx *gin.Context)  {}
 func (c *AuthController) SignIn(ctx *gin.Context)  {}
@@ -34,25 +37,39 @@ func (c *AuthController) SignOut(ctx *gin.Context) {}
 func (c *AuthController) ForgotPassword(ctx *gin.Context) {}
 func (c *AuthController) ChangePassword(ctx *gin.Context) {}
 
-// Sending to user
+// Email
+func (c *AuthController) ChangeEmail(ctx *gin.Context)           {}
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {}
-func (c *AuthController) SendOTPVerification(ctx *gin.Context)   {}
+func (c *AuthController) VerifyEmail(ctx *gin.Context)           {}
 
-// Sending Verification
-func (c *AuthController) VerifyEmail(ctx *gin.Context) {}
-func (c *AuthController) VerifyOTP(ctx *gin.Context)   {}
+// Contact Number
+func (c *AuthController) ChangeContactNumber(ctx *gin.Context)           {}
+func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {}
+func (c *AuthController) VerifyContactNumber(ctx *gin.Context)           {}
 
 func AuthRoutes(router *gin.RouterGroup, controller *AuthController) {
 	group := router.Group("/auth")
 	{
+		// Basic Authentication
+		group.POST("/current-user", controller.CurrentUser)
+
+		// Basic Authentication
 		group.POST("/signup", controller.SignUp)
 		group.POST("/signin", controller.SignIn)
 		group.POST("/signout", controller.SignOut)
+
+		// Password
 		group.POST("/forgot-password", controller.ForgotPassword)
 		group.POST("/change-password", controller.ChangePassword)
+
+		// Email
+		group.POST("/change-email", controller.ChangeEmail)
 		group.POST("/send-email-verification", controller.SendEmailVerification)
-		group.POST("/send-otp-verification", controller.SendOTPVerification)
 		group.POST("/verify-email", controller.VerifyEmail)
-		group.POST("/verify-otp", controller.VerifyOTP)
+
+		// Contact Number
+		group.POST("/change-contact-number", controller.ChangeContactNumber)
+		group.POST("/send-otp-verification", controller.SendContactNumberVerification)
+		group.POST("/verify-otp", controller.VerifyContactNumber)
 	}
 }
