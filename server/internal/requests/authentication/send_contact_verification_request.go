@@ -2,11 +2,11 @@ package requests
 
 import "github.com/go-playground/validator/v10"
 
-type SendOTPVerificationRequest struct {
+type SendContactNumberVerificationRequest struct {
 	ContactNumber string `json:"contactNumber" validate:"required,max=15"`
 }
 
-func (r *SendOTPVerificationRequest) Validate() error {
+func (r *SendContactNumberVerificationRequest) Validate() error {
 	validate := validator.New()
 	return validate.Struct(r)
 }
