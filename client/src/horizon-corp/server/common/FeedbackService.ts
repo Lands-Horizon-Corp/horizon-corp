@@ -13,7 +13,9 @@ export default class FeedbackService {
    * @returns {Promise<FeedbacksResource[]>} - A promise that resolves to an array of feedback resources.
    */
   public static async getAll(): Promise<FeedbacksResource[]> {
-    const response = await UseServer.get<FeedbacksResource[]>(FeedbackService.BASE_ENDPOINT)
+    const response = await UseServer.get<FeedbacksResource[]>(
+      FeedbackService.BASE_ENDPOINT
+    )
     return response.data
   }
 
@@ -23,11 +25,13 @@ export default class FeedbackService {
    * @param {FeedbacksRequest} feedbackData - The data for the new feedback.
    * @returns {Promise<FeedbacksResource>} - A promise that resolves to the created feedback resource.
    */
-  public static async create(feedbackData: FeedbacksRequest): Promise<FeedbacksResource> {
-    const response = await UseServer.post<FeedbacksRequest, FeedbacksResource>(
-      FeedbackService.BASE_ENDPOINT,
-      feedbackData
-    )
+  public static async create(
+    feedbackData: FeedbacksRequest
+  ): Promise<FeedbacksResource> {
+    const response = await UseServer.post<
+      FeedbacksRequest,
+      FeedbacksResource
+    >(FeedbackService.BASE_ENDPOINT, feedbackData)
     return response.data
   }
 
@@ -49,12 +53,15 @@ export default class FeedbackService {
    * @param {FeedbacksRequest} feedbackData - The updated data for the feedback.
    * @returns {Promise<FeedbacksResource>} - A promise that resolves to the updated feedback resource.
    */
-  public static async update(id: number, feedbackData: FeedbacksRequest): Promise<FeedbacksResource> {
+  public static async update(
+    id: number,
+    feedbackData: FeedbacksRequest
+  ): Promise<FeedbacksResource> {
     const endpoint = `${FeedbackService.BASE_ENDPOINT}/${id}`
-    const response = await UseServer.put<FeedbacksRequest, FeedbacksResource>(
-      endpoint,
-      feedbackData
-    )
+    const response = await UseServer.put<
+      FeedbacksRequest,
+      FeedbacksResource
+    >(endpoint, feedbackData)
     return response.data
   }
 
