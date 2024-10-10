@@ -29,6 +29,8 @@ func GenerateMemberJWT(member models.Member) (string, error) {
 		Email:             member.Email,
 		IsEmailVerified:   member.IsEmailVerified,
 		IsContactVerified: member.IsContactVerified,
+		ContactNumber:     member.ContactNumber,
+		MediaID:           member.MediaID,
 		StandardClaims: jwt.StandardClaims{
 			Subject:   member.FirstName + " " + member.LastName,
 			ExpiresAt: expirationTime.Unix(),

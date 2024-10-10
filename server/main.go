@@ -25,6 +25,12 @@ func main() {
 			logger.NewLogger,
 			database.NewDB,
 
+			// Admin
+			repositories.NewAdminRepository,
+			repositories.NewEmployeeRepository,
+			repositories.NewOwnerRepository,
+			repositories.NewMemberRepository,
+
 			// Roles
 			repositories.NewRolesRepository,
 			controllers.NewRolesController,

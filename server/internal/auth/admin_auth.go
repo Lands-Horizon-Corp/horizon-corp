@@ -29,6 +29,8 @@ func GenerateAdminJWT(admin models.Admin) (string, error) {
 		Email:             admin.Email,
 		IsEmailVerified:   admin.IsEmailVerified,
 		IsContactVerified: admin.IsContactVerified,
+		ContactNumber:     admin.ContactNumber,
+		MediaID:           admin.MediaID,
 		StandardClaims: jwt.StandardClaims{
 			Subject:   admin.FirstName + " " + admin.LastName,
 			ExpiresAt: expirationTime.Unix(),

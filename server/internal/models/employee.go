@@ -19,6 +19,6 @@ type Employee struct {
 	MediaID           uint      `gorm:"not null" json:"media_id"`
 	IsEmailVerified   bool      `gorm:"default:false" json:"is_email_verified"`
 	IsContactVerified bool      `gorm:"default:false" json:"is_contact_verified"`
-
-	Media Media `gorm:"foreignKey:MediaID" json:"media"`
+	ContactNumber     string    `json:"contac_number,omitempty"`
+	Media             Media     `gorm:"foreignKey:MediaID" json:"media"`
 }

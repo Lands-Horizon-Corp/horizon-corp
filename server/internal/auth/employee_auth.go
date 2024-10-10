@@ -29,6 +29,8 @@ func GenerateEmployeeJWT(employee models.Employee) (string, error) {
 		Email:             employee.Email,
 		IsEmailVerified:   employee.IsEmailVerified,
 		IsContactVerified: employee.IsContactVerified,
+		ContactNumber:     employee.ContactNumber,
+		MediaID:           employee.MediaID,
 		StandardClaims: jwt.StandardClaims{
 			Subject:   employee.FirstName + " " + employee.LastName,
 			ExpiresAt: expirationTime.Unix(),
