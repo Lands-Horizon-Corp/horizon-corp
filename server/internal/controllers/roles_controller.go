@@ -85,6 +85,11 @@ func (c *RolesController) GetByID(ctx *gin.Context) {
 }
 
 func (c *RolesController) Update(ctx *gin.Context) {
+	id, err := helpers.ParseIDParam(ctx, "id")
+	if err != nil {
+		return
+	}
+
 	var req requests.RolesRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -116,7 +121,7 @@ func (c *RolesController) Update(ctx *gin.Context) {
 		DeleteGender:       req.DeleteGender,
 	}
 
-	if err := c.repo.Update(&roles); err != nil {
+	if err := c.repo.Update(id, &roles); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -138,7 +143,7 @@ func (c *RolesController) Delete(ctx *gin.Context) {
 }
 
 func RolesRoutes(router *gin.RouterGroup, controller *RolesController) {
-	group := router.Group("/roles")
+	group := router.Group("/role")
 	{
 		group.POST("", controller.Create)
 		group.GET("", controller.GetAll)

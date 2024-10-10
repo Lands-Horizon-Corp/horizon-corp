@@ -68,6 +68,11 @@ func (c *GenderController) GetByID(ctx *gin.Context) {
 }
 
 func (c *GenderController) Update(ctx *gin.Context) {
+	id, err := helpers.ParseIDParam(ctx, "id")
+	if err != nil {
+		return
+	}
+
 	var req requests.GenderRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -84,7 +89,7 @@ func (c *GenderController) Update(ctx *gin.Context) {
 		Description: req.Description,
 	}
 
-	if err := c.repo.Update(&gender); err != nil {
+	if err := c.repo.Update(id, &gender); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -106,7 +111,7 @@ func (c *GenderController) Delete(ctx *gin.Context) {
 }
 
 func GenderRoutes(router *gin.RouterGroup, controller *GenderController) {
-	group := router.Group("/genders")
+	group := router.Group("/gender")
 	{
 		group.POST("", controller.Create)
 		group.GET("", controller.GetAll)

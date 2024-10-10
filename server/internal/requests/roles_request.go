@@ -3,6 +3,7 @@ package requests
 import "github.com/go-playground/validator/v10"
 
 type RolesRequest struct {
+	ID          uint   `json:"id,omitempty"`
 	Name        string `json:"name" validate:"required,max=255"`
 	Description string `json:"description,omitempty" validate:"omitempty,max=3000"`
 	ApiKey      string `json:"apiKey" validate:"required,max=255"`

@@ -30,7 +30,8 @@ func (r *GenderRepository) GetByID(id uint) (models.Gender, error) {
 	return gender, err
 }
 
-func (r *GenderRepository) Update(gender *models.Gender) error {
+func (r *GenderRepository) Update(id uint, gender *models.Gender) error {
+	gender.ID = id
 	return r.DB.Save(gender).Error
 }
 
