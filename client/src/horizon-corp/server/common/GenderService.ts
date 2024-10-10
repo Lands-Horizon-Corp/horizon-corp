@@ -13,7 +13,9 @@ export default class GenderService {
    * @returns {Promise<GendersResource[]>} - A promise that resolves to an array of gender resources.
    */
   public static async getAll(): Promise<GendersResource[]> {
-    const response = await UseServer.get<GendersResource[]>(GenderService.BASE_ENDPOINT)
+    const response = await UseServer.get<GendersResource[]>(
+      GenderService.BASE_ENDPOINT
+    )
     return response.data
   }
 
@@ -23,7 +25,9 @@ export default class GenderService {
    * @param {GendersRequest} genderData - The data for the new gender.
    * @returns {Promise<GendersResource>} - A promise that resolves to the created gender resource.
    */
-  public static async create(genderData: GendersRequest): Promise<GendersResource> {
+  public static async create(
+    genderData: GendersRequest
+  ): Promise<GendersResource> {
     const response = await UseServer.post<GendersRequest, GendersResource>(
       GenderService.BASE_ENDPOINT,
       genderData
@@ -49,7 +53,10 @@ export default class GenderService {
    * @param {GendersRequest} genderData - The updated data for the gender.
    * @returns {Promise<GendersResource>} - A promise that resolves to the updated gender resource.
    */
-  public static async update(id: number, genderData: GendersRequest): Promise<GendersResource> {
+  public static async update(
+    id: number,
+    genderData: GendersRequest
+  ): Promise<GendersResource> {
     const endpoint = `${GenderService.BASE_ENDPOINT}/${id}`
     const response = await UseServer.put<GendersRequest, GendersResource>(
       endpoint,

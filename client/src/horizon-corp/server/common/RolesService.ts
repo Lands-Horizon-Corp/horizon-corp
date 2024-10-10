@@ -13,7 +13,9 @@ export default class RoleService {
    * @returns {Promise<RolesResource[]>} - A promise that resolves to an array of role resources.
    */
   public static async getAll(): Promise<RolesResource[]> {
-    const response = await UseServer.get<RolesResource[]>(RoleService.BASE_ENDPOINT)
+    const response = await UseServer.get<RolesResource[]>(
+      RoleService.BASE_ENDPOINT
+    )
     return response.data
   }
 
@@ -49,7 +51,10 @@ export default class RoleService {
    * @param {RolesRequest} roleData - The updated data for the role.
    * @returns {Promise<RolesResource>} - A promise that resolves to the updated role resource.
    */
-  public static async update(id: number, roleData: RolesRequest): Promise<RolesResource> {
+  public static async update(
+    id: number,
+    roleData: RolesRequest
+  ): Promise<RolesResource> {
     const endpoint = `${RoleService.BASE_ENDPOINT}/${id}`
     const response = await UseServer.put<RolesRequest, RolesResource>(
       endpoint,
