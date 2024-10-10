@@ -69,6 +69,11 @@ func (c *FeedbackController) GetByID(ctx *gin.Context) {
 }
 
 func (c *FeedbackController) Update(ctx *gin.Context) {
+	id, err := helpers.ParseIDParam(ctx, "id")
+	if err != nil {
+		return
+	}
+
 	var req requests.FeedbackRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -86,7 +91,7 @@ func (c *FeedbackController) Update(ctx *gin.Context) {
 		FeedbackType: req.FeedbackType,
 	}
 
-	if err := c.repo.Update(&feedback); err != nil {
+	if err := c.repo.Update(id, &feedback); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -108,7 +113,7 @@ func (c *FeedbackController) Delete(ctx *gin.Context) {
 }
 
 func FeedbackRoutes(router *gin.RouterGroup, controller *FeedbackController) {
-	group := router.Group("/feedbacks")
+	group := router.Group("/feedback")
 	{
 		group.POST("", controller.Create)
 		group.GET("", controller.GetAll)

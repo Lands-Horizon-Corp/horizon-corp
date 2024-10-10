@@ -1,6 +1,3 @@
--- V1__create_genders_table.sql
-
--- Check if the table already exists
 CREATE TABLE IF NOT EXISTS `genders` (
     `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     `created_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
@@ -10,7 +7,6 @@ CREATE TABLE IF NOT EXISTS `genders` (
     `description` TEXT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Insert seed data only if the name does not already exist
 INSERT INTO `genders` (`name`, `description`)
 SELECT 'Male', 'A person who identifies as male, typically associated with masculinity.' WHERE NOT EXISTS (SELECT 1 FROM `genders` WHERE `name` = 'Male');
 INSERT INTO `genders` (`name`, `description`)
