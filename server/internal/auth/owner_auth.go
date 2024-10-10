@@ -8,12 +8,6 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type OwnerClaims struct {
-	ID   uint   `json:"id"`
-	Mode string `json:"mode"`
-	jwt.StandardClaims
-}
-
 func GenerateOwnerJWT(owner models.Owner) (string, error) {
 	cfg, err := config.LoadConfig()
 	if err != nil {
@@ -24,9 +18,17 @@ func GenerateOwnerJWT(owner models.Owner) (string, error) {
 		return "", err
 	}
 	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &OwnerClaims{
-		Mode: "owner",
-		ID:   owner.ID,
+	claims := &UserClaims{
+		Mode:              "owner",
+		ID:                owner.ID,
+		FirstName:         owner.FirstName,
+		LastName:          owner.LastName,
+		PermanentAddress:  owner.PermanentAddress,
+		Description:       owner.Description,
+		Birthdate:         owner.Birthdate,
+		Email:             owner.Email,
+		IsEmailVerified:   owner.IsEmailVerified,
+		IsContactVerified: owner.IsContactVerified,
 		StandardClaims: jwt.StandardClaims{
 			Subject:   owner.FirstName + " " + owner.LastName,
 			ExpiresAt: expirationTime.Unix(),

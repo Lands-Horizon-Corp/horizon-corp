@@ -55,22 +55,7 @@ func JWTMiddleware(role string, next http.Handler) http.HandlerFunc {
 			return
 		}
 
-		var claims jwt.Claims
-
-		switch role {
-		case "admin":
-			claims = &auth.AdminClaims{}
-		case "owner":
-			claims = &auth.OwnerClaims{}
-		case "member":
-			claims = &auth.MemberClaims{}
-		case "employee":
-			claims = &auth.EmployeeClaims{}
-		default:
-			http.Error(w, "Invalid role", http.StatusUnauthorized)
-			return
-		}
-
+		claims := &auth.UserClaims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return signed, nil
 		})
@@ -80,7 +65,7 @@ func JWTMiddleware(role string, next http.Handler) http.HandlerFunc {
 			return
 		}
 
-		if claims.(*jwt.StandardClaims).ExpiresAt < time.Now().Unix() {
+		if claims.ExpiresAt < time.Now().Unix() {
 			http.Error(w, "Token has expired", http.StatusUnauthorized)
 			return
 		}
