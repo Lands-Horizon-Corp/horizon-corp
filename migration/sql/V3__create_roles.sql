@@ -1,6 +1,3 @@
--- V2__create_roles_table.sql
-
--- Create roles table if it does not exist
 CREATE TABLE IF NOT EXISTS `roles` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `created_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
@@ -25,7 +22,6 @@ CREATE TABLE IF NOT EXISTS `roles` (
     INDEX `idx_roles_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Insert seed data into roles table
 INSERT INTO `roles` (
     `name`, `description`, `api_key`, 
     `read_role`, `write_role`, `update_role`, `delete_role`,
