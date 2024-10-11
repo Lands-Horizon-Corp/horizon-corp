@@ -15,7 +15,6 @@ import type {
 export default class UserService {
   private static readonly BASE_ENDPOINT = '/auth'
 
-
   // GET - /auth/current-user
   public static async CurrentUser(): Promise<void> {
     const endpoint = `${UserService.BASE_ENDPOINT}/current-user`
