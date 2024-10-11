@@ -58,9 +58,10 @@ services:
       - STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY}
       - STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}
       - STORAGE_MAX_FILE_SIZE=${STORAGE_MAX_FILE_SIZE}
-      - REDIS_URL=${REDIS_URL}
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - REDIS_DB=${REDIS_DB}
+      - CACHE_PASSWORD=${CACHE_PASSWORD}
+      - CACHE_PORT=${CACHE_PORT}
+      - CACHE_DB=${CACHE_DB}
+      - CACHE_URL=${CACHE_URL}
     depends_on:
       db:
         condition: service_healthy
