@@ -2,9 +2,9 @@
 import { Outlet } from '@tanstack/react-router'
 
 //assets
-import bg_element_1 from '@/assets/images/bg_element_1.webp'
-import bg_element_2 from '@/assets/images/bg_element_2.webp'
-import bg_element_3 from '@/assets/images/bg_element_3.webp'
+import bg_element_1 from '@/assets/images/landing-page/bg_element_1.webp'
+import bg_element_2 from '@/assets/images/landing-page/bg_element_2.webp'
+import bg_element_3 from '@/assets/images/landing-page/bg_element_3.webp'
 
 // components
 import Footer from '@/components/footers/landing-footer'
