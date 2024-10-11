@@ -32,11 +32,13 @@ export const signUpFormSchema = z
             .string({ required_error: 'Last Name is required' })
             .min(1, 'Last Name is required')
             .regex(LETTERS_REGEX, 'Last Name must contain only letters'),
+        birthdate: z.string().date(),
         contactNumber: z
             .string()
-            .min(1, "Invalid contact")
+            .min(1, 'Invalid contact')
             .max(11)
             .regex(/^\d+$/, 'Contact number must contain only numbers'),
+        permanentAddress: z.string().min(1, 'Permanent address is required'),
         password: z
             .string({ required_error: 'Password is required' })
             .min(

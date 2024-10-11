@@ -1,9 +1,8 @@
 import z from 'zod'
-import { useState } from 'react'
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { useRouter } from '@tanstack/react-router'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-import { BsPatchCheck } from 'react-icons/bs'
 
 import {
     Select,
@@ -23,12 +22,16 @@ import { Input } from '@/components/ui/input'
 import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { VerifiedPatchIcon } from '@/components/icons'
 import PasswordInput from '@/components/ui/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
-import { cn } from '@/lib/utils'
+import { cn, handleAxiosError } from '@/lib/utils'
+import useCurrentUser from '@/hooks/use-current-user'
 import { IAuthForm } from '@/types/auth/form-interface'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
 
 type TSignUpForm = z.infer<typeof signUpFormSchema>
@@ -39,6 +42,8 @@ const defaultValue: TSignUpForm = {
     password: '',
     contactNumber: '',
     email: '',
+    permanentAddress: '',
+    birthdate: new Date(),
     firstName: '',
     lastName: '',
     middleName: '',
@@ -52,8 +57,12 @@ const SignUpForm = ({
     className,
     readOnly,
     defaultValues = defaultValue,
+    onError,
+    onSuccess,
 }: Props) => {
-    const [loading, setLoading] = useState(false)
+    const router = useRouter()
+    const { setCurrentUser } = useCurrentUser({})
+    const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TSignUpForm>({
         resolver: zodResolver(signUpFormSchema),
@@ -62,17 +71,24 @@ const SignUpForm = ({
         defaultValues,
     })
 
-    function onFormSubmit(data: TSignUpForm) {
-        const parsedData = signUpFormSchema.parse(data)
-        // TODO: Logic
-        /*
-            after account creation need ko lang sa backend is:
-
-            1- after sign up automatically log in narin (may authorization something cookie?)
-            2- after sign up, need ko din nung data ng user
-
-            then: redirect ko na sa auth/verify page
-        */
+    const onFormSubmit = async (data: TSignUpForm) => {
+        setError(null)
+        setLoading(true)
+        try {
+            // parse form data
+            const parsedData = signUpFormSchema.parse(data)
+            const response = UserService.SignUp(parsedData) // once success, the server returns the created user with authorization cookie
+            // setCurrentUser(response.data) // then set it to the authStore
+            // onSuccess?.(response.data)
+            // router.navigate({ to : "/auth/verify" }) // redirect to verify page
+        } catch (e) {
+            const errorMessage = handleAxiosError(e)
+            onError?.(e)
+            setError(errorMessage)
+            toast.error(errorMessage)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -235,8 +251,32 @@ const SignUpForm = ({
                                                 autoComplete="tel-country-code"
                                                 placeholder="Contact Number"
                                             />
-                                            <BsPatchCheck className="size-8 text-primary" />
+                                            <VerifiedPatchIcon className="size-8 text-primary" />
                                         </div>
+                                    </FormControl>
+                                </div>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="permanentAddress"
+                        render={({ field }) => (
+                            <FormItem className="min-w-[277px]">
+                                <div className="flex items-center justify-end gap-x-4">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
+                                        Permanent Address
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            autoComplete="street-address"
+                                            placeholder="Permanent Address"
+                                        />
                                     </FormControl>
                                 </div>
                             </FormItem>
@@ -358,7 +398,10 @@ const SignUpForm = ({
                 </fieldset>
                 <div className="mt-4 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError} />
-                    <Button type="submit" disabled={loading || readOnly}>
+                    <Button
+                        type="submit"
+                        disabled={loading || error !== null || readOnly}
+                    >
                         {loading ? <LoadingCircle /> : 'Submit'}
                     </Button>
                 </div>
