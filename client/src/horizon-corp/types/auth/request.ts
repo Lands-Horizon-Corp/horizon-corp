@@ -11,8 +11,7 @@ export interface ChangePasswordRequest {
 
 export interface ForgotPasswordRequest {
     email: string
-    // Need din dito man mode refer to /src/modules/auth/components/forgot-password-email.tsx
-    // @ line 37, yan ipapasa ko before ka mag create ng password-reset entry link sa db
+    accountType: AccountType
 }
 
 export interface SendEmailVerificationRequest {
@@ -29,7 +28,7 @@ export interface SignInRequest {
 }
 
 export interface SignUpRequest {
-    mode: AccountType
+    accountType: AccountType
     firstName: string
     lastName: string
     middleName?: string
@@ -44,12 +43,12 @@ export interface SignUpRequest {
 
 export interface VerifyEmailRequest {
     email: string
-    token: string // change to otp : string desyo
+    code: string // 6 digit string
 }
 
 export interface VerifyOTPRequest {
     contactNumber: string
-    otp: string
+    code: string
 }
 
 export interface ChangeEmailRequest {
@@ -62,5 +61,5 @@ export interface ChangeContactNumberRequest {
 
 export interface VerifyContactNumberRequest {
     contactNumber: string
-    otp: string
+    code: string
 }
