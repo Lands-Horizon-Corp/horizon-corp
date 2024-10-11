@@ -16,8 +16,9 @@ import FormErrorMessage from '../form-error-message'
 import PasswordInput from '@/components/ui/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
 
-import { cn, handleAxiosError } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
+import { handleAxiosError } from '@/horizon-corp/helpers'
 import { PASSWORD_MIN_LENGTH } from '@/modules/auth/constants'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
@@ -42,7 +43,7 @@ const ResetPasswordFormSchema = z
 type TResetPasswordForm = z.infer<typeof ResetPasswordFormSchema>
 
 interface Props extends IAuthForm<TResetPasswordForm> {
-    resetId : string,
+    resetId: string
 }
 
 const ResetPasswordForm = ({
