@@ -1,23 +1,24 @@
 package auth
 
 import (
-	"horizon/server/config"
 	"horizon/server/internal/models"
-	"time"
 
-	"github.com/golang-jwt/jwt"
+	"go.uber.org/zap"
 )
 
-func GenerateAdminJWT(admin models.Admin) (string, error) {
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		return "", err
+type AdminService struct {
+	tokenService TokenService
+	logger       *zap.Logger
+}
+
+func NewAdminAuthService(tokenService TokenService, logger *zap.Logger) *AdminService {
+	return &AdminService{
+		tokenService: tokenService,
+		logger:       logger,
 	}
-	signed, err := config.Decrypt(cfg.AppAdminToken, cfg.AppToken)
-	if err != nil {
-		return "", err
-	}
-	expirationTime := time.Now().Add(24 * time.Hour)
+}
+
+func (s *AdminService) GenerateAdminToken(admin models.Admin) (string, error) {
 	claims := &UserClaims{
 		ID:                admin.ID,
 		Mode:              "admin",
@@ -31,12 +32,12 @@ func GenerateAdminJWT(admin models.Admin) (string, error) {
 		IsContactVerified: admin.IsContactVerified,
 		ContactNumber:     admin.ContactNumber,
 		MediaID:           admin.MediaID,
-		StandardClaims: jwt.StandardClaims{
-			Subject:   admin.FirstName + " " + admin.LastName,
-			ExpiresAt: expirationTime.Unix(),
-			IssuedAt:  time.Now().Unix(),
-		},
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(signed)
+
+	token, err := s.tokenService.GenerateToken(claims)
+	if err != nil {
+		s.logger.Error("Failed to generate admin token", zap.Error(err))
+		return "", err
+	}
+	return token, nil
 }
