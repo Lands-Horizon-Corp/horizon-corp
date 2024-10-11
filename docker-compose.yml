@@ -147,22 +147,22 @@ services:
     container_name: redis
     restart: always
     ports:
-      - "${CACHE_PORT:-6379}:${CACHE_PORT:-6379}" # Use CACHE_PORT or default to 6379
+      - "${CACHE_PORT:-6379}:${CACHE_PORT:-6379}"
     environment:
-      - REDIS_PASSWORD=${CACHE_PASSWORD} # Use environment variable for Redis password
+      - REDIS_PASSWORD=${CACHE_PASSWORD}
     volumes:
-      - redis_data:/data # Data volume for Redis persistence
+      - redis_data:/data
 
   redisinsight:
     image: redislabs/research:latest
     container_name: redisinsight
     restart: always
     ports:
-      - "8001:8001" # Port for RedisInsight
+      - "8001:8001"
     environment:
-      - REDISINSIGHT_REDIS_HOST=redis # Connect to the Redis service name
-      - REDISINSIGHT_REDIS_PORT=${CACHE_PORT:-6379} # Use CACHE_PORT or default to 6379
-      - REDISINSIGHT_REDIS_PASSWORD=${CACHE_PASSWORD} # Password for Redis
+      - REDISINSIGHT_REDIS_HOST=redis
+      - REDISINSIGHT_REDIS_PORT=${CACHE_PORT:-6379}
+      - REDISINSIGHT_REDIS_PASSWORD=${CACHE_PASSWORD}
 volumes:
   db_data:
   minio_data:
