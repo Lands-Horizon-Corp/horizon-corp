@@ -163,6 +163,13 @@ services:
       - REDISINSIGHT_REDIS_HOST=redis
       - REDISINSIGHT_REDIS_PORT=${CACHE_PORT:-6379}
       - REDISINSIGHT_REDIS_PASSWORD=${CACHE_PASSWORD}
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "${EMAIL_PORT:-1025}:${EMAIL_PORT:-1025}"
+      - "8025:8025"
+
 volumes:
   db_data:
   minio_data:
