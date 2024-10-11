@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import useAuthStore from '@/store/auth-store'
+import { SignUpRequest } from '@/horizon-corp/types'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import { handleAxiosError } from '@/lib/utils'
 
 type TAccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
 
 const useAuth = () => {
-    const [loading, setLoading] = useState()
+    const [loading, setLoading] = useState(false)
     const { currentUser, setCurrentUser } = useAuthStore()
     const [error, setError] = useState<string | null>(null)
 
@@ -19,9 +22,20 @@ const useAuth = () => {
         loadCurrentUser()
     }, [])
 
-    const signUp = () => {
+    const signUp = (signUpData: SignUpRequest) => {
         // TODO: Sign up and set currentUser
         // setCurrentUer(something)
+        setError(null)
+        setLoading(true)
+        try {
+            const createdUser = UserService.signUp()
+            return createdUser
+        } catch (e) {
+            setError(handleAxiosError(e))
+            return null
+        } finally {
+            setLoading(false)
+        }
     }
 
     const signIn = () => {
