@@ -1,9 +1,7 @@
 import z from 'zod'
-import { useState } from 'react'
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-import { AiOutlineKey } from 'react-icons/ai'
 
 import {
     Form,
@@ -19,6 +17,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import { KeyIcon } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import LoadingCircle from '@/components/loader/loading-circle'
@@ -26,10 +25,9 @@ import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn, handleAxiosError } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
-import { memberTypeSchema, emailSchema } from '@/modules/auth/validations'
-import useLoadingErrorState from '@/hooks/use-loading-error-state'
-import { toast } from 'sonner'
 import UserService from '@/horizon-corp/server/auth/UserService'
+import useLoadingErrorState from '@/hooks/use-loading-error-state'
+import { memberTypeSchema, emailSchema } from '@/modules/auth/validations'
 
 const emailFormSchema = z.object({
     email: emailSchema,
@@ -92,9 +90,9 @@ const ForgotPasswordEmail = ({
             >
                 <div className="flex flex-col items-center gap-y-4 py-4 text-center">
                     <div className="relative p-8">
-                        <AiOutlineKey className="size-[53px] text-[#FF7E47]" />
-                        <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20"></div>
-                        <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20"></div>
+                        <KeyIcon className="size-[53px] text-[#FF7E47]" />
+                        <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20" />
+                        <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20" />
                     </div>
                     <p className="text-xl font-medium">Forgot Password?</p>
                     <p className="text-sm text-foreground/70">

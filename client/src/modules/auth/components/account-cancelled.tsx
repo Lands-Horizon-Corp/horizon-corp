@@ -10,7 +10,7 @@ import { HELP_CONTACT } from '../constants'
 import { IBaseComp } from '@/types/component/base'
 
 interface Props extends IBaseComp {
-    userData: UserBase
+    userData: UserBase // TODO: Change based on auth response resource fromn @/horizon-corp/types/auth/...
     onBack?: () => void
 }
 

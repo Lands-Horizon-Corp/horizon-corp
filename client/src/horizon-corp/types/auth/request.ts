@@ -1,5 +1,7 @@
 import { MediaRequest } from "..";
+
 export type AccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
+
 export interface ChangePasswordRequest {
   currentPassword?: string;
   newPassword: string;
@@ -9,6 +11,8 @@ export interface ChangePasswordRequest {
 
 export interface ForgotPasswordRequest {
   email: string;
+  // Need din dito man mode refer to /src/modules/auth/components/forgot-password-email.tsx 
+  // @ line 37, yan ipapasa ko before ka mag create ng password-reset entry link sa db
 }
 
 export interface SendEmailVerificationRequest {
