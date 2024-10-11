@@ -64,12 +64,6 @@ func LoadConfig() (*AppConfig, error) {
 		cachePort = 6379
 	}
 
-	cacheDB, err := strconv.Atoi(getEnv("CACHE_DB", "0"))
-	if err != nil {
-		errList = append(errList, fmt.Sprintf("Invalid CACHE_DB: %v", err))
-		cacheDB = 0
-	}
-
 	cacheURL := getEnv("CACHE_URL", "localhost:"+strconv.Itoa(cachePort))
 
 	requiredVars := []string{"DB_USERNAME", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME", "DB_CHARSET", "STORAGE_ENDPOINT", "STORAGE_REGION", "STORAGE_ACCESS_KEY", "STORAGE_SECRET_KEY", "STORAGE_BUCKET_NAME"}
@@ -110,7 +104,7 @@ func LoadConfig() (*AppConfig, error) {
 
 		// Cache
 		CachePort:     cachePort,
-		CacheDB:       cacheDB,
+		CacheDB:       0,
 		CacheURL:      cacheURL,
 		CachePassword: os.Getenv("CACHE_PASSWORD"),
 
