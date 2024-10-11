@@ -24,9 +24,6 @@ export interface SignInRequest {
   password: string;
 }
 
-export interface SignOutRequest {
-  token: string;
-}
 
 export interface SignUpRequest {
   mode: AccountType,
