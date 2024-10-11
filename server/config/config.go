@@ -51,6 +51,8 @@ type AppConfig struct {
 	EmailPort     string
 	EmailUser     string
 	EmailPassword string
+
+	ContactNumber string
 }
 
 func LoadConfig() (*AppConfig, error) {
@@ -125,6 +127,9 @@ func LoadConfig() (*AppConfig, error) {
 		EmailPort:     os.Getenv("EMAIL_PORT"),
 		EmailUser:     os.Getenv("EMAIL_USER"),
 		EmailPassword: os.Getenv("EMAIL_PASSWORD"),
+
+		// SMS Test
+		ContactNumber: os.Getenv("CONTACT_NUMBER"),
 	}
 
 	return &config, nil

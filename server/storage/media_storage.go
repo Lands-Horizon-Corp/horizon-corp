@@ -79,27 +79,20 @@ func CreateBucketIfNotExists() error {
 }
 
 func UploadFile(fileHeader *multipart.FileHeader) (*models.Media, error) {
-	fmt.Println("1 Helloooo-----")
 	file, err := fileHeader.Open()
 	if err != nil {
-		fmt.Println("2 Helloooo-----")
 		return nil, fmt.Errorf("unable to open file: %v", err)
 	}
-	fmt.Println("3 Helloooo-----")
 	defer file.Close()
 
-	fmt.Println("4 Helloooo-----")
 	key := UniqueFileName(fileHeader.Filename)
 
-	fmt.Println("5 Helloooo-----")
 	mc := GetFileClient()
-	fmt.Println("6 Helloooo-----")
 	if err := CreateBucketIfNotExists(); err != nil {
 		fmt.Println(err)
 
 		return nil, err
 	}
-	fmt.Println("7 Helloooo-----")
 	uploader := s3manager.NewUploaderWithClient(mc.Client)
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(mc.cfg.StorageBucketName),
