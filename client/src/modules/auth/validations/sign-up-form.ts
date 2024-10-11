@@ -32,7 +32,17 @@ export const signUpFormSchema = z
             .string({ required_error: 'Last Name is required' })
             .min(1, 'Last Name is required')
             .regex(LETTERS_REGEX, 'Last Name must contain only letters'),
-        birthdate: z.string().date(),
+        birthdate: z
+            .string()
+            .date('Invalid birthdate')
+            .refine(
+                (date) => {
+                    const today = new Date()
+                    today.setHours(0, 0, 0, 0)
+                    return new Date(date) < today
+                },
+                { message: 'Birthdate cannot be today or in the future' }
+            ),
         contactNumber: z
             .string()
             .min(1, 'Invalid contact')

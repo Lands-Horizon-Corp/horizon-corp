@@ -33,6 +33,7 @@ import { IAuthForm } from '@/types/auth/form-interface'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
+import { format } from 'date-fns'
 
 type TSignUpForm = z.infer<typeof signUpFormSchema>
 
@@ -43,7 +44,7 @@ const defaultValue: TSignUpForm = {
     contactNumber: '',
     email: '',
     permanentAddress: '',
-    birthdate: new Date(),
+    birthdate: format(new Date(), "yyyy-MM-dd"),
     firstName: '',
     lastName: '',
     middleName: '',
@@ -233,8 +234,32 @@ const SignUpForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="contactNumber"
+                        name="birthdate"
                         render={({ field }) => (
+                            <FormItem className="min-w-[277px]">
+                                <div className="flex items-center justify-end gap-x-4">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
+                                        Birth Date
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            autoComplete="bday"
+                                            placeholder="YYYY-MM-DD"
+                                        />
+                                    </FormControl>
+                                </div>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="contactNumber"
+                        render={({ field, fieldState : { invalid, error } }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
                                     <FormLabel
@@ -251,7 +276,7 @@ const SignUpForm = ({
                                                 autoComplete="tel-country-code"
                                                 placeholder="Contact Number"
                                             />
-                                            <VerifiedPatchIcon className="size-8 text-primary" />
+                                            <VerifiedPatchIcon className={cn("size-8 text-primary", (invalid || error) && "text-destructive" )} />
                                         </div>
                                     </FormControl>
                                 </div>
