@@ -10,6 +10,7 @@ import (
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/routes"
 	"horizon/server/logger"
+	"horizon/server/services"
 	"log"
 	"os"
 	"os/signal"
@@ -28,6 +29,9 @@ func main() {
 			logger.NewLogger,
 			database.NewDatabaseService,
 			database.NewCacheService,
+
+			// Services
+			services.NewEmailService,
 
 			// Authentication
 			auth.NewAdminAuthService,
