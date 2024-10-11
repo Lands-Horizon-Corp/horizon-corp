@@ -1,12 +1,12 @@
-package requests
+package auth_requests
 
 import (
 	"github.com/go-playground/validator/v10"
 )
 
 type ForgotPasswordRequest struct {
-	Email         string `json:"email" validate:"required,email,max=255"`
-	ContactNumber string `json:"contactNumber" validate:"required,email,max=255"`
+	Email         string `json:"email,omitempty" validate:"required,email,max=255"`
+	ContactNumber string `json:"contactNumber,omitempty" validate:"required,contactNumber,max=255"`
 }
 
 func (r *ForgotPasswordRequest) Validate() error {

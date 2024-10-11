@@ -51,25 +51,25 @@ func AuthRoutes(router *gin.RouterGroup, controller *AuthController) {
 	group := router.Group("/auth")
 	{
 		// Basic Authentication
-		group.POST("/current-user", controller.CurrentUser)
+		group.POST("/current-user", controller.CurrentUser) // for signed in
 
 		// Basic Authentication
-		group.POST("/signup", controller.SignUp)
-		group.POST("/signin", controller.SignIn)
-		group.POST("/signout", controller.SignOut)
+		group.POST("/signup", controller.SignUp)   // for signed out
+		group.POST("/signin", controller.SignIn)   // for signed out
+		group.POST("/signout", controller.SignOut) // for signed in
 
 		// Password
-		group.POST("/forgot-password", controller.ForgotPassword)
-		group.POST("/change-password", controller.ChangePassword)
+		group.POST("/forgot-password", controller.ForgotPassword) // for signed out
+		group.POST("/change-password", controller.ChangePassword) // for signed out
 
 		// Email
-		group.POST("/change-email", controller.ChangeEmail)
-		group.POST("/send-email-verification", controller.SendEmailVerification)
-		group.POST("/verify-email", controller.VerifyEmail)
+		group.POST("/change-email", controller.ChangeEmail)                      // for signed in
+		group.POST("/send-email-verification", controller.SendEmailVerification) // for signed in
+		group.POST("/verify-email", controller.VerifyEmail)                      // for signed in
 
 		// Contact Number
-		group.POST("/change-contact-number", controller.ChangeContactNumber)
-		group.POST("/send-otp-verification", controller.SendContactNumberVerification)
-		group.POST("/verify-otp", controller.VerifyContactNumber)
+		group.POST("/change-contact-number", controller.ChangeContactNumber)           // for signed in
+		group.POST("/send-otp-verification", controller.SendContactNumberVerification) // for signed in
+		group.POST("/verify-otp", controller.VerifyContactNumber)                      // for signed in
 	}
 }

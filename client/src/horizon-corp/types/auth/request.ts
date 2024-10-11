@@ -1,8 +1,8 @@
 export interface ChangePasswordRequest {
-  currentPassword?: string; // Optional if token exists
+  currentPassword?: string;
   newPassword: string;
   confirmPassword: string;
-  token?: string; // Optional
+  token?: string;
 }
 
 export interface ForgotPasswordRequest {
@@ -29,6 +29,7 @@ export interface SignOutRequest {
 export interface SignUpRequest {
   firstName: string;
   lastName: string;
+  middleName?: string;
   email: string;
   password: string;
   confirmPassword: string;

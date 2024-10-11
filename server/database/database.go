@@ -9,7 +9,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewDB(cfg *config.AppConfig) (*gorm.DB, error) {
+func NewDatabaseService(cfg *config.AppConfig) (*gorm.DB, error) {
 	dsn := buildDSN(cfg)
 
 	maxRetries := 5

@@ -7,11 +7,11 @@ import (
 )
 
 type UserClaims struct {
-	ID   uint   `json:"id"`
-	Mode string `json:"mode"`
-
+	ID                uint      `json:"id"`
+	Mode              string    `json:"mode"`
 	FirstName         string    `json:"firstName"`
 	LastName          string    `json:"lastName"`
+	MiddleName        string    `json:"middleName"`
 	PermanentAddress  string    `json:"permanentAddress"`
 	Description       string    `json:"description"`
 	Birthdate         time.Time `json:"birthdate"`

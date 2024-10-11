@@ -58,6 +58,9 @@ services:
       - STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY}
       - STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}
       - STORAGE_MAX_FILE_SIZE=${STORAGE_MAX_FILE_SIZE}
+      - REDIS_URL=${REDIS_URL}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - REDIS_DB=${REDIS_DB}
     depends_on:
       db:
         condition: service_healthy
@@ -138,7 +141,29 @@ services:
       - minio_data:/data
     command: server /data --console-address ":38813"
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - "${CACHE_PORT:-6379}:${CACHE_PORT:-6379}" # Use CACHE_PORT or default to 6379
+    environment:
+      - REDIS_PASSWORD=${CACHE_PASSWORD} # Use environment variable for Redis password
+    volumes:
+      - redis_data:/data # Data volume for Redis persistence
+
+  redisinsight:
+    image: redislabs/research:latest
+    container_name: redisinsight
+    restart: always
+    ports:
+      - "8001:8001" # Port for RedisInsight
+    environment:
+      - REDISINSIGHT_REDIS_HOST=redis # Connect to the Redis service name
+      - REDISINSIGHT_REDIS_PORT=${CACHE_PORT:-6379} # Use CACHE_PORT or default to 6379
+      - REDISINSIGHT_REDIS_PASSWORD=${CACHE_PASSWORD} # Password for Redis
 volumes:
   db_data:
   minio_data:
   node_modules:
+  redis_data:

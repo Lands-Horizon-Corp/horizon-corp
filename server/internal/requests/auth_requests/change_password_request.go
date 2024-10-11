@@ -1,4 +1,4 @@
-package requests
+package auth_requests
 
 import (
 	"github.com/go-playground/validator/v10"

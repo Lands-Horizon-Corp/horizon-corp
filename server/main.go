@@ -23,7 +23,8 @@ func main() {
 		fx.Provide(
 			config.LoadConfig,
 			logger.NewLogger,
-			database.NewDB,
+			database.NewDatabaseService,
+			database.NewCacheService,
 
 			// Authentication
 			repositories.NewAdminRepository,
