@@ -116,6 +116,7 @@ func LoadConfig() (*AppConfig, error) {
 		StorageEndpoint:    os.Getenv("STORAGE_ENDPOINT"),
 		StorageRegion:      os.Getenv("STORAGE_REGION"),
 		StorageAccessKey:   os.Getenv("STORAGE_ACCESS_KEY"),
+		StorageSecretKey:   os.Getenv("STORAGE_SECRET_KEY"),
 		StorageBucketName:  os.Getenv("STORAGE_BUCKET_NAME"),
 		StorageMaxFileSize: os.Getenv("STORAGE_MAX_FILE_SIZE"),
 

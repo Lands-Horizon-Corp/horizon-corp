@@ -60,7 +60,7 @@ services:
       - STORAGE_MAX_FILE_SIZE=${STORAGE_MAX_FILE_SIZE}
       - CACHE_PASSWORD=${CACHE_PASSWORD}
       - CACHE_PORT=${CACHE_PORT}
-      - CACHE_DB=${CACHE_DB}
+      - CACHE_DB=${CACHE_DB}STORAGE_ENDPOINT
       - CACHE_URL=${CACHE_URL}
     depends_on:
       db:
