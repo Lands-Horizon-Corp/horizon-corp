@@ -28,11 +28,11 @@ import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
-import { memberTypeSchema, emailSchema } from '@/modules/auth/validations'
+import { userAccountTypeSchema, emailSchema } from '@/modules/auth/validations'
 
 const emailFormSchema = z.object({
     email: emailSchema,
-    mode: memberTypeSchema,
+    accountType: userAccountTypeSchema,
 })
 
 export type TForgotPasswordEmail = z.infer<typeof emailFormSchema>
@@ -46,7 +46,7 @@ const ForgotPasswordEmail = ({
     className,
     onSuccess,
     onError,
-    defaultValues = { email: '', mode: 'Member' },
+    defaultValues = { email: '', accountType: 'Member' },
 }: Props) => {
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
@@ -128,7 +128,7 @@ const ForgotPasswordEmail = ({
                     />
                     <FormField
                         control={form.control}
-                        name="mode"
+                        name="accountType"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel

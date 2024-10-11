@@ -5,14 +5,13 @@ export const emailSchema = z
     .string({ required_error: 'Email is required' })
     .email('Email must be valid')
 
-export const memberTypeSchema = z.enum(
-    ['Member', 'Owner', 'Admin', 'Employee'],
-    {
-        required_error: 'mode is required',
-        message: 'Valid options are Member, Owner, Admin, Employee',
-        invalid_type_error: 'Valid options are Member, Owner, Admin, Employee',
-    }
-)
+const AccountTypes = ['Member', 'Owner', 'Admin', 'Employee'] as const
+
+export const userAccountTypeSchema = z.enum(AccountTypes, {
+    required_error: 'Account type is required',
+    message: `Valid options are ${AccountTypes.join(',')}`,
+    invalid_type_error: `Valid options are ${AccountTypes.join(',')}`,
+})
 
 export const passwordSetupSchema = z.object({
     password: z

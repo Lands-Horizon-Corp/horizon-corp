@@ -1,24 +1,29 @@
-/*
-/auth/current-user
-/auth/signup
-/auth/signin
-/auth/verify-otp 
-/auth/verify-email
+import { AccountType } from '..'
 
-need ko mga to mag return ng user data
-
-type USERDATADESU = {
+export interface UserData {
     id: number
     firstName: string
-    lastName: string
     middleName?: string
+    lastName: string
     permanentAddress: string
     description: string
     birthDate: Date
     createdAt: Date
     email: string
-    is_email_verified: boolean
-    is_contact_verified: boolean
+    accountType: AccountType
+    isEmailVerified: boolean
+    isContactVerified: boolean
 }
 
-*/
+export interface SignUpResource extends UserData {}
+
+export interface VerifyEmailResource extends UserData {}
+
+export interface VerifyContactResource extends UserData {}
+
+export interface CurrentUserResource extends UserData {}
+
+export interface SignInResource extends UserData {}
+
+// auth/forgot-password -> just http status code 200
+// auth/password-reset/${resetId} -> just http status code

@@ -1,5 +1,5 @@
 import z from 'zod'
-import { memberTypeSchema, emailSchema } from '.'
+import { userAccountTypeSchema, emailSchema } from '.'
 
 export const signInFormSchema = z.object({
     email: emailSchema,
@@ -9,5 +9,5 @@ export const signInFormSchema = z.object({
     password: z
         .string({ required_error: 'Password is required' })
         .min(1, 'Password is empty'),
-    mode: memberTypeSchema,
+    accountType: userAccountTypeSchema,
 })

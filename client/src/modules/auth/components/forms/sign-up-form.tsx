@@ -50,7 +50,7 @@ const defaultValue: TSignUpForm = {
     lastName: '',
     middleName: '',
     username: '',
-    mode: 'Member',
+    accountType: 'Member',
 }
 
 interface Props extends IAuthForm<TSignUpForm> {}
@@ -364,7 +364,7 @@ const SignUpForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="mode"
+                        name="accountType"
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex w-full items-center justify-end gap-x-4">

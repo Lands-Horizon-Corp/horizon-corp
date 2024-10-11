@@ -1,22 +1,21 @@
 import z from 'zod'
 import { useState } from 'react'
-import { useRouter } from '@tanstack/react-router'
+import { useRouter, useSearch } from '@tanstack/react-router'
 
 import SignInForm from '../components/forms/sign-in-form'
 import AccountCancelled from '../components/account-cancelled'
 
 import { UserBase, UserStatus } from '@/types'
-import { emailSchema, memberTypeSchema } from '../validations'
-import { useSearch } from '@tanstack/react-router'
+import { emailSchema, userAccountTypeSchema } from '../validations'
 import AuthPageWrapper from '../components/auth-page-wrapper'
 
 export const SignInPageSearchSchema = z.object({
     email: z.string().optional().default('').or(emailSchema),
-    mode: z
+    accountType: z
         .string()
         .optional()
         .default('Member')
-        .pipe(memberTypeSchema)
+        .pipe(userAccountTypeSchema)
         .catch('Member'),
 })
 

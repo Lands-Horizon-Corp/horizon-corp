@@ -53,7 +53,7 @@ const SignInForm = ({
         defaultValues: {
             email: defaultValues?.email ?? '',
             username: defaultValues?.username ?? '',
-            mode: defaultValues?.mode ?? 'Member',
+            accountType: defaultValues?.accountType ?? 'Member',
             password: '',
         },
     })
@@ -168,7 +168,7 @@ const SignInForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="mode"
+                        name="accountType"
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex w-full items-center justify-end gap-x-4">
@@ -221,7 +221,7 @@ const SignInForm = ({
                         to="/auth/forgot-password"
                         search={{
                             email: form.getValues('email'),
-                            mode: form.getValues('mode'),
+                            accountType: form.getValues('accountType'),
                         }}
                     >
                         Forgor Password

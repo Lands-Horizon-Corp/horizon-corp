@@ -1,10 +1,11 @@
 import { create } from 'zustand'
 import { UserBase } from '@/types'
+import { UserData } from '@/horizon-corp/types'
 
 interface IAuthStore {
     loadingUser: boolean
-    currentUser: UserBase | null
-    setCurrentUser: (user: UserBase | null) => void
+    currentUser: UserData | null
+    setCurrentUser: (user: UserData | null) => void
     setLoadingUser: (loading: boolean) => void
 }
 

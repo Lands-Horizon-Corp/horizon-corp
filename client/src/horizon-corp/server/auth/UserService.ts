@@ -1,12 +1,16 @@
+import { AxiosResponse } from 'axios'
 import UseServer from '@/horizon-corp/request/server'
 import type {
     ChangeContactNumberRequest,
     ChangeEmailRequest,
     ChangePasswordRequest,
+    CurrentUserResource,
     ForgotPasswordRequest,
     SendEmailVerificationRequest,
     SignInRequest,
+    SignInResource,
     SignUpRequest,
+    SignUpResource,
     VerifyContactNumberRequest,
     VerifyEmailRequest,
     VerifyOTPRequest,
@@ -16,34 +20,12 @@ export default class UserService {
     private static readonly BASE_ENDPOINT = '/auth'
 
     // GET - /auth/current-user
-    public static async CurrentUser(): Promise<void> {
+    public static async CurrentUser(): Promise<
+        AxiosResponse<CurrentUserResource>
+    > {
         const endpoint = `${UserService.BASE_ENDPOINT}/current-user`
-        await UseServer.post<void, void>(endpoint)
+        return await UseServer.post<void, CurrentUserResource>(endpoint)
     }
-
-    /*
-    Need : 🔥🔥
-    Sa pag create pala man ng password reset entry/url sa db need ko lang 
-    UUID as link tapos mode/accountType mastore sa db
-    {
-        id : myqlIndexId or pede din UUID
-        userId : id ng user
-        accountType : Yung type na ginawa mo na type sa horizon-corp/types/auth/request.ts @Line 3
-    }
-
-    Need : 🔥🔥
-    Need ko din ng endpoint para macheck if yung UUID sa link below is valid
-                                       👇
-    /auth/password-reset/15de37fa-cb0f-4295-8fe9-63daeb944492
-
-    need ko lamang mag return ka ng true or false or hahit response status 200 pag exist/valid or 404 if invalid
-
-    Need: 🔥🔥
-    Need ko din ng another endpoint for password-reset, ipapasa ko lang { resetId : UUID string, newPassword : string }
-    - verify mo nlng sa db nandon din naman id, userId, accountType ng specific user na papalitan password
-
-    response : wala kahit http status code
-    */
 
     // POST - /auth/signup
     /*
@@ -59,15 +41,25 @@ export default class UserService {
             same lang din yung structure nya sa db/redis { id, userId, accountType, otp, contact }
             - send generated otp code to contact number via sms
     */
-    public static async SignUp(data: SignUpRequest): Promise<void> {
+    public static async SignUp(
+        data: SignUpRequest
+    ): Promise<AxiosResponse<SignUpResource>> {
         const endpoint = `${UserService.BASE_ENDPOINT}/signup`
-        await UseServer.post<SignUpRequest, void>(endpoint, data)
+        return await UseServer.post<SignUpRequest, SignUpResource>(
+            endpoint,
+            data
+        )
     }
 
     // POST - /auth/signin
-    public static async SignIn(data: SignInRequest): Promise<void> {
+    public static async SignIn(
+        data: SignInRequest
+    ): Promise<AxiosResponse<SignInResource>> {
         const endpoint = `${UserService.BASE_ENDPOINT}/signin`
-        await UseServer.post<SignInRequest, void>(endpoint, data)
+        return await UseServer.post<SignInRequest, SignInResource>(
+            endpoint,
+            data
+        )
     }
 
     // POST - /auth/signout
@@ -77,6 +69,26 @@ export default class UserService {
     }
 
     // POST - /auth/forgot-password
+    /* 
+    Need : 🔥
+    Sa pag create pala man ng password reset entry/url sa db need ko lang 
+    UUID as link tapos mode/accountType mastore sa db
+    example reset entry : 
+    {
+        id : myqlIndexId
+        resetId : UUID
+        userId : id ng user
+        code : string 6 Digit code, pag sa mobile(for future) eto gagamitin
+        accountType : Yung type na ginawa mo na type sa horizon-corp/types/auth/request.ts @Line 3
+    }
+
+    Need : 🔥
+    Need ko din pala ng endpoint para macheck if yung UUID sa link below is valid
+                                       👇
+    /auth/password-reset/15de37fa-cb0f-4295-8fe9-63daeb944492
+
+    need ko lamang mag return ka ng true or false or hahit response status 200 pag exist/valid or 404 if invalid
+    */
     public static async ForgotPassword(
         data: ForgotPasswordRequest
     ): Promise<void> {
@@ -85,6 +97,22 @@ export default class UserService {
     }
 
     // POST - /auth/change-password
+    /*
+    Need: 🔥
+    Need ko din ng another endpoint for password-reset eto ata yun man?
+
+    mas goods ba if nasa url na yung id? or ipass ko nlng sa req body?
+    url : /auth/password-reset/${UUID resetIdDItoDesyo} then body { newPassword : string }
+    or
+    via body : /auth/password-reset then body { resetId : UUID string, newPassword : string }
+
+    ikaw bahala man
+    
+    - then verify mo nlng sa db kung ano napili paglagyan (redis/db) 
+    nandon din naman { id, userId, accountType } ng specific user na papalitan password
+    
+    walang response kahit http status code
+    */
     public static async ChangePassword(
         data: ChangePasswordRequest
     ): Promise<void> {
