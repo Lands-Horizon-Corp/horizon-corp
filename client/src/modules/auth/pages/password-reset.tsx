@@ -22,7 +22,6 @@ interface Props {}
 const PasswordResetPage = (_props: Props) => {
     const router = useRouter()
     const pathParams = useParams({ from: '/auth/password-reset/$resetId' })
-
     const [done, setDone] = useState(false)
     const [loading, setLoading] = useState(false)
     const [resetEntry, setResetEntry] = useState<{} | null>(null) // replace {} with type of reset entry

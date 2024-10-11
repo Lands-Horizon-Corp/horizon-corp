@@ -1,4 +1,5 @@
 import z from 'zod'
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,20 +19,24 @@ import {
     InputOTPSlot,
 } from '@/components/ui/input-otp'
 import { Button } from '@/components/ui/button'
+import FormErrorMessage from '../form-error-message'
 import LoadingCircle from '@/components/loader/loading-circle'
 
-import { cn } from '@/lib/utils'
+import { cn, handleAxiosError } from '@/lib/utils'
+import { AccountType } from '@/horizon-corp/types'
+import { IAuthForm } from '@/types/auth/form-interface'
 import useCountDown from '@/modules/auth/hooks/use-count-down'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { otpFormSchema } from '@/modules/auth/validations/otp-form'
 
-import { UserBase, UserStatus } from '@/types'
-import { IAuthForm } from '@/types/auth/form-interface'
 
 type TVerifyForm = z.infer<typeof otpFormSchema>
 
 interface Props extends IAuthForm<TVerifyForm> {
-    id: string
-    verifyMode: 'mobile' | 'email'
+    id: number,
+    userType : AccountType,
+    verifyMode: 'mobile' | 'email',
 }
 
 const ResendCountDown = ({
@@ -58,9 +63,10 @@ const VerifyForm = ({
     verifyMode = 'mobile',
     defaultValues = { code: '' },
     onSuccess,
+    onError,
 }: Props) => {
-    const [loading, setLoading] = useState(false)
     const [resent, setResent] = useState(false)
+    const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm({
         resolver: zodResolver(otpFormSchema),
@@ -68,37 +74,22 @@ const VerifyForm = ({
         defaultValues,
     })
 
-    const handleSubmit = (data: TVerifyForm) => {
-        const parsedData = otpFormSchema.parse(data)
+    const handleSubmit = async (data: TVerifyForm) => {
+        setError(null)
         setLoading(true)
         // TODO: Add functionality, delete the code below,
         // it is just for mocking ui flow
-        setTimeout(() => {
-            onSuccess?.(
-                (verifyMode === 'mobile'
-                    ? {
-                          id: '215',
-                          username: 'Jervx',
-                          validEmail: false,
-                          validContactNumber: true,
-                          status: UserStatus['Pending'],
-                          profilePicture: {
-                              url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
-                          },
-                      }
-                    : {
-                          id: '215',
-                          username: 'Jervx',
-                          validEmail: true,
-                          validContactNumber: true,
-                          status: UserStatus['Pending'],
-                          profilePicture: {
-                              url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
-                          },
-                      }) as any as UserBase
-            )
+        try {
+            const response = await UserService.VerifyEmail
+            const parsedData = await otpFormSchema.parseAsync(data);
+        } catch (e) {
+            const errorMessage = handleAxiosError(e)
+            onError?.(e)
+            setError(errorMessage)
+            toast.error(errorMessage)
+        } finally {
             setLoading(false)
-        }, 1000)
+        }
     }
 
     return (
@@ -156,6 +147,7 @@ const VerifyForm = ({
                             </FormItem>
                         )}
                     />
+                    <FormErrorMessage errorMessage={error} />
                     {!resent && !loading && (
                         <p>
                             Didn&apos;t receive the code?{' '}

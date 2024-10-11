@@ -6,6 +6,7 @@ import Verify from '@/modules/auth/pages/verify'
 import NotFoundPage from '@/modules/auth/not-found'
 import SignUpPage from '@/modules/auth/pages/sign-up'
 import PasswordResetPage from './pages/password-reset'
+
 import SignInPage, {
     SignInPageSearchSchema,
 } from '@/modules/auth/pages/sign-in'

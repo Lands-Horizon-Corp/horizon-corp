@@ -1,63 +1,45 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
 
-import LoadingCircle from '@/components/loader/loading-circle'
-
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
+import LoadingCircle from '@/components/loader/loading-circle'
 import VerifyRoot from '@/modules/auth/components/verify-root'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import AccountCancelled from '@/modules/auth/components/account-cancelled'
 
 import { UserBase, UserStatus } from '@/types'
+import useCurrentUser from '@/hooks/use-current-user'
 
 interface Props {}
 
 const Verify = ({}: Props) => {
-    const [loading, setLoading] = useState(true)
+    const { currentUser, setCurrentUser, loadingUser } = useCurrentUser({
+        loadOnMount: true,
+    })
+
     const [display, setDisplay] = useState<
         null | 'verify' | 'verify-complete' | 'account-cancelled'
     >()
-    const [userData, setUserData] = useState<UserBase | null>(null)
 
     const router = useRouter()
 
     useEffect(() => {
-        if (!userData) return
+        if (!currentUser) return
 
-        if (userData.status === UserStatus['Not allowed'])
+        if (currentUser.status === UserStatus['Not allowed'])
             return setDisplay('account-cancelled')
 
-        if (userData.status === UserStatus.Verified)
+        if (currentUser.status === UserStatus.Verified)
             return setDisplay('verify-complete')
 
-        if (!userData.validContactNumber || !userData.validEmail)
+        if (!currentUser.validContactNumber || !currentUser.validEmail)
             setDisplay('verify')
-    }, [userData])
+    }, [currentUser])
 
-    useEffect(() => {
-        // TODO: Fetch User Data
-        // Remove code below it just for simulating user data fetching
-        // and use our Horizon service.auth-service.ts
-        setLoading(true)
-        setTimeout(() => {
-            setUserData({
-                id: '215',
-                username: 'Jervx',
-                validEmail: false,
-                validContactNumber: false,
-                status: UserStatus['Pending'],
-                profilePicture: {
-                    url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
-                },
-            } as any as UserBase)
-            setLoading(false)
-        }, 1000)
-    }, [])
-
-    const autoRedirectAccount = (userData: UserBase) => {
+    const autoRedirectAccount = (currentUser: UserBase) => {
         // TODO Redirect once verified
-        // if (userData.status === UserStatus.Verified) {
+        // if (currentUser.status === UserStatus.Verified) {
         //     // TODO: Auto redirect to page the account belongs
         //     // admin/
         //     // owner/
@@ -70,21 +52,21 @@ const Verify = ({}: Props) => {
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {loading && (
+                {loadingUser && (
                     <div className="flex flex-col items-center gap-y-2">
                         <LoadingCircle />
                         <p className="text-center text-sm text-foreground/50">
-                            please wait.. loading your info
+                            loading user info
                         </p>
                     </div>
                 )}
-                {userData && !loading && (
+                {currentUser && !loadingUser && (
                     <>
                         {display === 'verify' && (
                             <VerifyRoot
-                                userData={userData}
+                                currentUser={currentUser}
                                 onVerifyChange={(newUserData) =>
-                                    setUserData(newUserData)
+                                    setCurrentUser(newUserData)
                                 }
                                 onVerifyComplete={() => {
                                     setDisplay('verify-complete')
@@ -105,13 +87,14 @@ const Verify = ({}: Props) => {
                                 </p>
                                 <UserAvatar
                                     className="my-8 size-28"
-                                    src={userData?.profilePicture?.url ?? ''}
+                                    src={currentUser?.profilePicture?.url ?? ''}
                                     fallback={
-                                        userData?.username.charAt(0) ?? '-'
+                                        currentUser?.username.charAt(0) ?? '-'
                                     }
                                 />
                                 <p className="text-center">
-                                    {userData.status === UserStatus.Pending && (
+                                    {currentUser.status ===
+                                        UserStatus.Pending && (
                                         <span>
                                             Please wait for 7 working days for
                                             validation before you can use your
@@ -124,14 +107,14 @@ const Verify = ({}: Props) => {
                                 <p className="px-4 text-center">
                                     Your ID is{' '}
                                     <span className="font-medium text-green-500">
-                                        {userData.id}
+                                        {currentUser.id}
                                     </span>
                                 </p>
                                 <Button
                                     onClick={() =>
-                                        autoRedirectAccount(userData)
+                                        autoRedirectAccount(currentUser)
                                     }
-                                    disabled={loading}
+                                    disabled={loadingUser}
                                     className="mt-6 w-full bg-[#34C759] hover:bg-[#38b558]"
                                 >
                                     Proceed
@@ -139,9 +122,12 @@ const Verify = ({}: Props) => {
                             </div>
                         )}
                         {display === 'account-cancelled' && (
-                            <AccountCancelled userData={userData} />
+                            <AccountCancelled currentUser={currentUser} />
                         )}
                     </>
+                )}
+                {!currentUser && !loadingUser && (
+                    <p>Couldn&apos;t load info, please reload</p>
                 )}
             </AuthPageWrapper>
         </div>

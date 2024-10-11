@@ -1,9 +1,7 @@
 import z from 'zod'
-import { useState } from 'react'
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-import { AiOutlineKey } from 'react-icons/ai'
 
 import {
     Form,
@@ -12,14 +10,17 @@ import {
     FormItem,
     FormLabel,
 } from '@/components/ui/form'
+import { KeyIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import FormErrorMessage from '../form-error-message'
 import PasswordInput from '@/components/ui/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
 
-import { cn } from '@/lib/utils'
+import { cn, handleAxiosError } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { PASSWORD_MIN_LENGTH } from '@/modules/auth/constants'
-import FormErrorMessage from '../form-error-message'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import useLoadingErrorState from '@/hooks/use-loading-error-state'
 
 const ResetPasswordFormSchema = z
     .object({
@@ -40,15 +41,19 @@ const ResetPasswordFormSchema = z
 
 type TResetPasswordForm = z.infer<typeof ResetPasswordFormSchema>
 
-interface Props extends IAuthForm<TResetPasswordForm> {}
+interface Props extends IAuthForm<TResetPasswordForm> {
+    resetId : string,
+}
 
 const ResetPasswordForm = ({
+    resetId,
     readOnly,
     className,
     defaultValues = { password: '', confirmPassword: '' },
+    onError,
     onSuccess,
 }: Props) => {
-    const [loading, setLoading] = useState(false)
+    const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TResetPasswordForm>({
         resolver: zodResolver(ResetPasswordFormSchema),
@@ -59,14 +64,28 @@ const ResetPasswordForm = ({
 
     const onFormSubmit = async (data: TResetPasswordForm) => {
         setLoading(true)
-        const parsedData = ResetPasswordFormSchema.parse(data)
+        try {
+            const parsedData = await ResetPasswordFormSchema.parseAsync(data)
+            // const response = await UserService.ChangePassword({
+            //     resetId,
+            //     ...parsedData
+            // })
+            // onSuccess?.(response.data)
+        } catch (e) {
+            const errorMessage = handleAxiosError(e)
+            onError?.(e)
+            setError(errorMessage)
+            toast.error(errorMessage)
+        } finally {
+            setLoading(false)
+        }
         // TODO: Logic to create a reset entry and will return
         // authService.resetViaEmail(email, accountType) // return uuid string
         // modify code bellow
-        setInterval(() => {
-            setLoading(false)
-            onSuccess?.('')
-        }, 1000)
+        // setInterval(() => {
+        //     setLoading(false)
+        //     onSuccess?.('')
+        // }, 1000)
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -82,9 +101,9 @@ const ResetPasswordForm = ({
             >
                 <div className="flex flex-col items-center gap-y-4 py-4 text-center">
                     <div className="relative p-8">
-                        <AiOutlineKey className="size-[53px] text-green-500" />
-                        <div className="absolute inset-0 rounded-full bg-green-500/20"></div>
-                        <div className="absolute inset-5 rounded-full bg-green-500/20"></div>
+                        <KeyIcon className="size-[53px] text-green-500" />
+                        <div className="absolute inset-0 rounded-full bg-green-500/20" />
+                        <div className="absolute inset-5 rounded-full bg-green-500/20" />
                     </div>
                     <p className="text-xl font-medium">Set new password</p>
                     <p className="px-10 text-sm text-foreground/70">
@@ -109,7 +128,7 @@ const ResetPasswordForm = ({
                                         {...field}
                                         id={field.name}
                                         placeholder="Password"
-                                        autoComplete="new-password"
+                                        autoComplete="false"
                                     />
                                 </FormControl>
                             </FormItem>
@@ -130,7 +149,7 @@ const ResetPasswordForm = ({
                                     <PasswordInput
                                         {...field}
                                         id={field.name}
-                                        autoComplete="no"
+                                        autoComplete="false"
                                         placeholder="Confirm Password"
                                     />
                                 </FormControl>
@@ -140,7 +159,7 @@ const ResetPasswordForm = ({
                 </fieldset>
 
                 <div className="mt-4 flex flex-col space-y-2">
-                    <FormErrorMessage errorMessage={firstError} />
+                    <FormErrorMessage errorMessage={firstError || error} />
                     <Button type="submit" disabled={loading || readOnly}>
                         {loading ? <LoadingCircle /> : 'Save Password'}
                     </Button>

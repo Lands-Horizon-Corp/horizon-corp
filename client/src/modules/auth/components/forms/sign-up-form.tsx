@@ -77,8 +77,8 @@ const SignUpForm = ({
         setLoading(true)
         try {
             // parse form data
-            const parsedData = signUpFormSchema.parse(data)
-            const response = UserService.SignUp(parsedData) // once success, the server returns the created user with authorization cookie
+            const parsedData = await signUpFormSchema.parseAsync(data)
+            // const response = await UserService.SignUp(parsedData) // once success, the server returns the created user with authorization cookie
             // setCurrentUser(response.data) // then set it to the authStore
             // onSuccess?.(response.data)
             // router.navigate({ to : "/auth/verify" }) // redirect to verify page

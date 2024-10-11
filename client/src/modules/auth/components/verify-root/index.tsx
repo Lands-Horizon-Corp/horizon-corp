@@ -9,7 +9,7 @@ import { IBaseComp } from '@/types/component/base'
 
 interface Props extends IBaseComp {
     readOnly?: boolean
-    userData: UserBase
+    userData: UserBase // TODO: Change based on auth response resource fromn @/horizon-corp/types/auth/...
     onVerifyComplete?: (newUserData: UserBase) => void
     onVerifyChange?: (newUserData: UserBase) => void
 }
@@ -48,7 +48,8 @@ const VerifyRoot = ({
             {step === 1 && (
                 <VerifyForm
                     key="1"
-                    id={userData.id}
+                    id={1} // TODO: Update this after returned resource is defined 
+                    userType='Admin' // TODO: Update this after returned resource is defined
                     readOnly={readOnly}
                     verifyMode="mobile"
                     onSuccess={(data) => handleOnSuccess(data, 2)}
@@ -57,7 +58,8 @@ const VerifyRoot = ({
             {step === 2 && (
                 <VerifyForm
                     key="2"
-                    id={userData.id}
+                    id={1} // TODO: Update this after returned resource is defined 
+                    userType='Member' // TODO: Update this after returned resource is defined 
                     verifyMode="email"
                     readOnly={readOnly}
                     onSuccess={(data) => {

@@ -37,7 +37,7 @@ import {
 import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
 import { BsPatchCheck as VerifiedPatchIcon } from 'react-icons/bs'
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
-import { AiOutlineLoading as LoadingCircleIcon, AiOutlineLoading3Quarters as LoadingSpinnerIcon } from 'react-icons/ai'
+import { AiOutlineKey as KeyIcon, AiOutlineLoading as LoadingCircleIcon, AiOutlineLoading3Quarters as LoadingSpinnerIcon } from 'react-icons/ai'
 
 import { IBaseCompNoChild } from '@/types/component/base'
 
@@ -105,6 +105,7 @@ const CookieIcon: React.FC<IBaseCompNoChild> = (props) => {
 
 export {
     SunIcon,
+    KeyIcon,
     DevIcon,
     UserIcon,
     MoonIcon,
