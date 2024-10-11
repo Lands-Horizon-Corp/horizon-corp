@@ -132,7 +132,6 @@ func LoadConfig() (*AppConfig, error) {
 	return &config, nil
 }
 
-// getEnv retrieves the value of the specified environment variable or returns the default value.
 func getEnv(key, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value
