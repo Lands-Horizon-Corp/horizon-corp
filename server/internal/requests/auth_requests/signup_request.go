@@ -8,6 +8,7 @@ import (
 )
 
 type SignUpRequest struct {
+	Mode             string                 `json:"mode" validate:"required,max=10"`
 	FirstName        string                 `json:"firstName" validate:"required,max=255"`
 	LastName         string                 `json:"lastName" validate:"required,max=255"`
 	MiddleName       string                 `json:"middleName" validate:"max=255"`

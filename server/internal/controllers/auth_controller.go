@@ -51,7 +51,7 @@ func AuthRoutes(router *gin.RouterGroup, controller *AuthController) {
 	group := router.Group("/auth")
 	{
 		// Basic Authentication
-		group.POST("/current-user", controller.CurrentUser) // for signed in
+		group.GET("/current-user", controller.CurrentUser) // for signed in
 
 		// Basic Authentication
 		group.POST("/signup", controller.SignUp)   // for signed out

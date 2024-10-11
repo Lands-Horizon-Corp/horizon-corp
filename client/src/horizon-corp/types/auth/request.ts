@@ -1,5 +1,5 @@
 import { MediaRequest } from "..";
-
+type AccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
 export interface ChangePasswordRequest {
   currentPassword?: string;
   newPassword: string;
@@ -29,6 +29,7 @@ export interface SignOutRequest {
 }
 
 export interface SignUpRequest {
+  mode: AccountType,
   firstName: string;
   lastName: string;
   middleName?: string;
