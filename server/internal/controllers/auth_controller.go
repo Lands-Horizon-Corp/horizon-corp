@@ -68,8 +68,8 @@ func AuthRoutes(router *gin.RouterGroup, controller *AuthController) {
 		group.POST("/verify-email", controller.VerifyEmail)                      // for signed in
 
 		// Contact Number
-		group.POST("/change-contact-number", controller.ChangeContactNumber)           // for signed in
-		group.POST("/send-otp-verification", controller.SendContactNumberVerification) // for signed in
-		group.POST("/verify-otp", controller.VerifyContactNumber)                      // for signed in
+		group.POST("/change-contact-number", controller.ChangeContactNumber)                      // for signed in
+		group.POST("/send-contact-number-verification", controller.SendContactNumberVerification) // for signed in
+		group.POST("/verify-otp", controller.VerifyContactNumber)                                 // for signed in
 	}
 }
