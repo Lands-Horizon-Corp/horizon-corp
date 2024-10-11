@@ -10,6 +10,7 @@ type Employee struct {
 	gorm.Model
 	FirstName         string    `gorm:"size:255;not null" json:"first_name"`
 	LastName          string    `gorm:"size:255;not null" json:"last_name"`
+	MiddleName        string    `gorm:"size:255" json:"middle_name"`
 	PermanentAddress  string    `gorm:"size:500" json:"permanent_address"`
 	Description       string    `gorm:"size:1000" json:"description"`
 	Birthdate         time.Time `gorm:"not null" json:"birthdate"`
