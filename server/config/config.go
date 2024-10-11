@@ -17,6 +17,11 @@ type AppConfig struct {
 	AppMemberToken   []byte
 	LogLevel         string
 
+	// AWS
+	AWSAccessKeyID     string
+	AWSSecretAccessKey string
+	AWSRegion          string
+
 	// Database
 	DBUsername  string
 	DBPassword  string
@@ -40,6 +45,12 @@ type AppConfig struct {
 	StorageSecretKey   string
 	StorageBucketName  string
 	StorageMaxFileSize string
+
+	// Email
+	EmailHost     string
+	EmailPort     string
+	EmailUser     string
+	EmailPassword string
 }
 
 func LoadConfig() (*AppConfig, error) {
@@ -80,6 +91,11 @@ func LoadConfig() (*AppConfig, error) {
 		AppMemberToken:   []byte(os.Getenv("APP_MEMBER_TOKEN")),
 		LogLevel:         getEnv("LOG_LEVEL", "info"),
 
+		// AWS
+		AWSAccessKeyID:     os.Getenv("AWS_ACCESS_KEY_ID"),
+		AWSSecretAccessKey: os.Getenv("AWS_SECRET_ACCESS_KEY"),
+		AWSRegion:          os.Getenv("AWS_REGION"),
+
 		// Database
 		DBUsername:  os.Getenv("DB_USERNAME"),
 		DBPassword:  os.Getenv("DB_PASSWORD"),
@@ -100,9 +116,14 @@ func LoadConfig() (*AppConfig, error) {
 		StorageEndpoint:    os.Getenv("STORAGE_ENDPOINT"),
 		StorageRegion:      os.Getenv("STORAGE_REGION"),
 		StorageAccessKey:   os.Getenv("STORAGE_ACCESS_KEY"),
-		StorageSecretKey:   os.Getenv("STORAGE_SECRET_KEY"),
 		StorageBucketName:  os.Getenv("STORAGE_BUCKET_NAME"),
 		StorageMaxFileSize: os.Getenv("STORAGE_MAX_FILE_SIZE"),
+
+		// Mail
+		EmailHost:     os.Getenv("EMAIL_HOST"),
+		EmailPort:     os.Getenv("EMAIL_PORT"),
+		EmailUser:     os.Getenv("EMAIL_USER"),
+		EmailPassword: os.Getenv("EMAIL_PASSWORD"),
 	}
 
 	return &config, nil
