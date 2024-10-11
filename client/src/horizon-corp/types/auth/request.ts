@@ -1,5 +1,5 @@
 import { MediaRequest } from "..";
-type AccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
+export type AccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
 export interface ChangePasswordRequest {
   currentPassword?: string;
   newPassword: string;
