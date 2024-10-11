@@ -44,7 +44,7 @@ const NavBar = () => {
         <RootNav
             midContents={navLinks.map((link, index) => {
                 const isCurrentTab = pathName === link.path
-                const isExternalLink = link.path.charAt(0) !== '/'
+                const isExternalLink = link.path?.charAt(0) !== '/'
 
                 return (
                     <div key={index} className="relative flex space-x-1">
