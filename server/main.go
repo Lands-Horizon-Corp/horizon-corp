@@ -5,6 +5,7 @@ import (
 	"horizon/server/config"
 	"horizon/server/database"
 	"horizon/server/internal"
+	"horizon/server/internal/auth"
 	"horizon/server/internal/controllers"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/routes"
@@ -19,12 +20,20 @@ import (
 
 func main() {
 	ctx := context.Background()
+
 	app := fx.New(
 		fx.Provide(
+			// Dependencies
 			config.LoadConfig,
 			logger.NewLogger,
 			database.NewDatabaseService,
 			database.NewCacheService,
+
+			// Authentication
+			auth.NewAdminAuthService,
+			auth.NewEmployeeAuthService,
+			auth.NewMemberAuthService,
+			auth.NewOwnerAuthService,
 
 			// Authentication
 			repositories.NewAdminRepository,
