@@ -45,30 +45,6 @@ type AppConfig struct {
 func LoadConfig() (*AppConfig, error) {
 	var errList []string // Collect errors
 
-	// Encrypt tokens
-	appToken, err := Encrypt([]byte(os.Getenv("APP_TOKEN")), []byte(os.Getenv("APP_NAME")))
-	if err != nil {
-		errList = append(errList, fmt.Sprintf("Error encrypting APP_TOKEN: %v", err))
-	}
-
-	// Encrypt other tokens
-	appAdminToken, err := Encrypt([]byte(os.Getenv("APP_ADMIN_TOKEN")), appToken)
-	if err != nil {
-		errList = append(errList, fmt.Sprintf("Error encrypting APP_ADMIN_TOKEN: %v", err))
-	}
-	appOwnerToken, err := Encrypt([]byte(os.Getenv("APP_OWNER_TOKEN")), appToken)
-	if err != nil {
-		errList = append(errList, fmt.Sprintf("Error encrypting APP_OWNER_TOKEN: %v", err))
-	}
-	appEmployeeToken, err := Encrypt([]byte(os.Getenv("APP_EMPLOYEE_TOKEN")), appToken)
-	if err != nil {
-		errList = append(errList, fmt.Sprintf("Error encrypting APP_EMPLOYEE_TOKEN: %v", err))
-	}
-	appMemberToken, err := Encrypt([]byte(os.Getenv("APP_MEMBER_TOKEN")), appToken)
-	if err != nil {
-		errList = append(errList, fmt.Sprintf("Error encrypting APP_MEMBER_TOKEN: %v", err))
-	}
-
 	cachePort, err := strconv.Atoi(getEnv("CACHE_PORT", "6379"))
 	if err != nil {
 		errList = append(errList, fmt.Sprintf("Invalid CACHE_PORT: %v", err))
@@ -97,11 +73,11 @@ func LoadConfig() (*AppConfig, error) {
 	config := AppConfig{
 		// Application
 		AppPort:          getEnv("APP_PORT", "8080"),
-		AppToken:         appToken,
-		AppAdminToken:    appAdminToken,
-		AppOwnerToken:    appOwnerToken,
-		AppEmployeeToken: appEmployeeToken,
-		AppMemberToken:   appMemberToken,
+		AppToken:         []byte(os.Getenv("APP_TOKEN")),
+		AppAdminToken:    []byte(os.Getenv("APP_ADMIN_TOKEN")),
+		AppOwnerToken:    []byte(os.Getenv("APP_OWNER_TOKEN")),
+		AppEmployeeToken: []byte(os.Getenv("APP_EMPLOYEE_TOKEN")),
+		AppMemberToken:   []byte(os.Getenv("APP_MEMBER_TOKEN")),
 		LogLevel:         getEnv("LOG_LEVEL", "info"),
 
 		// Database
