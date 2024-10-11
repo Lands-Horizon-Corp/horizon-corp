@@ -7,6 +7,7 @@ import { useLocation, Link } from '@tanstack/react-router'
 import RootNav from '@/components/navbars/root-nav'
 import { ThemeToggleMenu } from '@/components/theme-toggle'
 import NavAuthContents from '@/components/navbars/auth-nav/nav-auth-contents'
+
 import { cn } from '@/lib/utils'
 
 type NavLink = {
