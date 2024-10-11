@@ -18,7 +18,10 @@ const ConfirmModal = ({}: Props) => {
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent  overlayClassName="backdrop-blur" className="shadow-2 font-inter border !rounded-2xl">
+            <DialogContent
+                overlayClassName="backdrop-blur"
+                className="shadow-2 !rounded-2xl border font-inter"
+            >
                 <DialogHeader>
                     <DialogTitle className="font-medium">
                         {modalData?.title}

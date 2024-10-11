@@ -22,21 +22,21 @@ import { Button } from '@/components/ui/button'
 import FormErrorMessage from '../form-error-message'
 import LoadingCircle from '@/components/loader/loading-circle'
 
-import { cn, handleAxiosError } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { AccountType } from '@/horizon-corp/types'
 import { IAuthForm } from '@/types/auth/form-interface'
+import { handleAxiosError } from '@/horizon-corp/helpers'
 import useCountDown from '@/modules/auth/hooks/use-count-down'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { otpFormSchema } from '@/modules/auth/validations/otp-form'
 
-
 type TVerifyForm = z.infer<typeof otpFormSchema>
 
 interface Props extends IAuthForm<TVerifyForm> {
-    id: number,
-    userType : AccountType,
-    verifyMode: 'mobile' | 'email',
+    id: number
+    userType: AccountType
+    verifyMode: 'mobile' | 'email'
 }
 
 const ResendCountDown = ({
@@ -77,11 +77,9 @@ const VerifyForm = ({
     const handleSubmit = async (data: TVerifyForm) => {
         setError(null)
         setLoading(true)
-        // TODO: Add functionality, delete the code below,
-        // it is just for mocking ui flow
         try {
-            const response = await UserService.VerifyEmail
-            const parsedData = await otpFormSchema.parseAsync(data);
+            const parsedData = await otpFormSchema.parseAsync(data)
+            // const response = await UserService.VerifyEmail()
         } catch (e) {
             const errorMessage = handleAxiosError(e)
             onError?.(e)

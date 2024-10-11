@@ -27,9 +27,10 @@ import PasswordInput from '@/components/ui/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
-import { cn, handleAxiosError } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import useCurrentUser from '@/hooks/use-current-user'
 import { IAuthForm } from '@/types/auth/form-interface'
+import { handleAxiosError } from '@/horizon-corp/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
@@ -44,7 +45,7 @@ const defaultValue: TSignUpForm = {
     contactNumber: '',
     email: '',
     permanentAddress: '',
-    birthdate: format(new Date(), "yyyy-MM-dd"),
+    birthdate: format(new Date(), 'yyyy-MM-dd'),
     firstName: '',
     lastName: '',
     middleName: '',
@@ -259,7 +260,7 @@ const SignUpForm = ({
                     <FormField
                         control={form.control}
                         name="contactNumber"
-                        render={({ field, fieldState : { invalid, error } }) => (
+                        render={({ field, fieldState: { invalid, error } }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
                                     <FormLabel
@@ -276,7 +277,13 @@ const SignUpForm = ({
                                                 autoComplete="tel-country-code"
                                                 placeholder="Contact Number"
                                             />
-                                            <VerifiedPatchIcon className={cn("size-8 text-primary", (invalid || error) && "text-destructive" )} />
+                                            <VerifiedPatchIcon
+                                                className={cn(
+                                                    'size-8 text-primary',
+                                                    (invalid || error) &&
+                                                        'text-destructive'
+                                                )}
+                                            />
                                         </div>
                                     </FormControl>
                                 </div>

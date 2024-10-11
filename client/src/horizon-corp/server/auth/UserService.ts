@@ -46,6 +46,19 @@ export default class UserService {
     */
 
     // POST - /auth/signup
+    /*
+        pagka create return mo sakin user data except password
+
+        NOTE: when creating new user also do the following below
+        - create/new verify email entry
+            - via redis? db? idk
+            yung structure nya sa db/redis { id, userId, accountType, otp, email }
+            - send email generated otp
+        - create/new verify contact entry
+            - via redis? db? idk
+            same lang din yung structure nya sa db/redis { id, userId, accountType, otp, contact }
+            - send generated otp code to contact number via sms
+    */
     public static async SignUp(data: SignUpRequest): Promise<void> {
         const endpoint = `${UserService.BASE_ENDPOINT}/signup`
         await UseServer.post<SignUpRequest, void>(endpoint, data)
@@ -94,6 +107,17 @@ export default class UserService {
     }
 
     // POST - /auth/verify-email
+    /*
+     Need: 🔥🔥
+     I'll pass 
+     {
+        otp : string
+        email : string,
+        userId : number
+     }
+
+     You return new data of user
+    */
     public static async VerifyEmail(data: VerifyEmailRequest): Promise<void> {
         const endpoint = `${UserService.BASE_ENDPOINT}/verify-email`
         await UseServer.post<VerifyEmailRequest, void>(endpoint, data)
