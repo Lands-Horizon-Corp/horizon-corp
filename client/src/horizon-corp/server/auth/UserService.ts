@@ -1,16 +1,49 @@
-/**
- * Service class to handle CRUD operations for contacts.
- */
+import type { ChangeContactNumberRequest, ChangeEmailRequest, ChangePasswordRequest, ForgotPasswordRequest, SendEmailVerificationRequest, SignInRequest, SignOutRequest, SignUpRequest, VerifyContactNumberRequest, VerifyEmailRequest, VerifyOTPRequest } from "@/horizon-corp/types";
+
 export default class UserService {
   private static readonly BASE_ENDPOINT = '/auth'
 
-  public static async signIn() { }
-  public static async signOut() { }
-  public static async signUp() { }
-  public static async changePassword() { }
-  public static async verifyPhone() { }
-  public static async verifyEmail() { }
-  public static async forgotPassword() { }
-  public static async timeIn() { }
-  public static async timeOut() { }
+  public static async SignUp(data: SignUpRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async SignIn(data: SignInRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async SignOut(data: SignOutRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async ForgotPassword(data: ForgotPasswordRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async ChangePassword(data: ChangePasswordRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async ChangeEmail(data: ChangeEmailRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async SendEmailVerification(data: SendEmailVerificationRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async VerifyEmail(data: VerifyEmailRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async ChangeContactNumber(data: ChangeContactNumberRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async SendContactNumberVerification(data: VerifyOTPRequest): Promise<void> {
+    console.log(data)
+  }
+
+  public static async VerifyContactNumber(data: VerifyContactNumberRequest): Promise<void> {
+    console.log(data)
+  }
 }

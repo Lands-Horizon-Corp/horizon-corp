@@ -1,21 +1,23 @@
 package auth_requests
 
 import (
+	"horizon/server/internal/requests"
 	"time"
 
 	"github.com/go-playground/validator/v10"
 )
 
 type SignUpRequest struct {
-	FirstName        string    `json:"firstName" validate:"required,max=255"`
-	LastName         string    `json:"lastName" validate:"required,max=255"`
-	MiddleName       string    `json:"middleName" validate:"max=255"`
-	Email            string    `json:"email" validate:"required,email,max=255"`
-	Password         string    `json:"password" validate:"required,min=8,max=255"`
-	ConfirmPassword  string    `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=Password"`
-	Birthdate        time.Time `json:"birthdate" validate:"required"`
-	ContactNumber    string    `json:"contactNumber" validate:"required,max=15"`
-	PermanentAddress string    `json:"permanentAddress" validate:"required,max=500"`
+	FirstName        string                 `json:"firstName" validate:"required,max=255"`
+	LastName         string                 `json:"lastName" validate:"required,max=255"`
+	MiddleName       string                 `json:"middleName" validate:"max=255"`
+	Email            string                 `json:"email" validate:"required,email,max=255"`
+	Password         string                 `json:"password" validate:"required,min=8,max=255"`
+	ConfirmPassword  string                 `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=Password"`
+	Birthdate        time.Time              `json:"birthdate" validate:"required"`
+	ContactNumber    string                 `json:"contactNumber" validate:"required,max=15"`
+	PermanentAddress string                 `json:"permanentAddress" validate:"required,max=500"`
+	Media            *requests.MediaRequest `json:"media" validate:"omitempty"`
 }
 
 func (r *SignUpRequest) Validate() error {

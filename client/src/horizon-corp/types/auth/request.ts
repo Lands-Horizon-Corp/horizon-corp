@@ -1,3 +1,5 @@
+import { MediaRequest } from "..";
+
 export interface ChangePasswordRequest {
   currentPassword?: string;
   newPassword: string;
@@ -33,9 +35,10 @@ export interface SignUpRequest {
   email: string;
   password: string;
   confirmPassword: string;
-  birthdate: Date;
+  birthdate: string;
   contactNumber: string;
   permanentAddress: string;
+  media?: MediaRequest;
 }
 
 export interface VerifyEmailRequest {
@@ -47,3 +50,18 @@ export interface VerifyOTPRequest {
   contactNumber: string;
   otp: string;
 }
+
+
+export interface ChangeEmailRequest {
+  email: string;
+}
+
+export interface ChangeContactNumberRequest {
+  contactNumber: string
+}
+
+export interface VerifyContactNumberRequest {
+  contactNumber: string;
+  otp: string;
+}
+
