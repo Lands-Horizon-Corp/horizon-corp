@@ -1,5 +1,7 @@
-import { clsx, type ClassValue } from 'clsx'
+import axios from 'axios'
 import { twMerge } from 'tailwind-merge'
+import { clsx, type ClassValue } from 'clsx'
+import { ErrorDetails } from '@/horizon-corp/types'
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
@@ -34,4 +36,22 @@ export default function getSimpleProperties<T extends object>(
     }
 
     return simpleProperties as { [key in keyof T]: SimpleTypes }
+}
+
+export const handleAxiosError = (error: unknown): string => {
+    if (axios.isAxiosError(error)) {
+        if (!error.response) {
+            if (error.message === 'Network Error') {
+                return 'Network error: Please check your internet connection and try again.'
+            } else {
+                return `Error: ${error.message}`
+            }
+        }
+
+        const data = error.response.data as ErrorDetails
+
+        return data.message
+    } else {
+        return 'An unexpected error occurred. Please try again.'
+    }
 }
