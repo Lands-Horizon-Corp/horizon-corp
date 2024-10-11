@@ -1,8 +1,8 @@
 import z from 'zod'
-import { useState } from 'react'
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useRouter } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 
 import {
     Select,
@@ -25,10 +25,11 @@ import PasswordInput from '@/components/ui/password-input'
 import LoadingCircle from '@/components/loader/loading-circle'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
-import { cn } from '@/lib/utils'
-import { UserStatus } from '@/types'
+import { cn, handleAxiosError } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { IBaseCompNoChild } from '@/types/component/base'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
 
 type TSignIn = z.infer<typeof signInFormSchema>
@@ -40,10 +41,9 @@ const SignInForm = ({
     className,
     readOnly,
     onSuccess,
+    onError,
 }: Props) => {
-    const [loading, setLoading] = useState(false)
-
-    const router = useRouter()
+    const { loading, error, setError, setLoading } = useLoadingErrorState()
 
     const form = useForm<TSignIn>({
         resolver: zodResolver(signInFormSchema),
@@ -57,19 +57,21 @@ const SignInForm = ({
         },
     })
 
-    function onFormSubmit(data: TSignIn) {
-        const parsedData = signInFormSchema.parse(data)
-        // TODO: Logic
-        onSuccess?.({
-            id: '215',
-            username: 'Jervx',
-            validEmail: false,
-            validContactNumber: true,
-            status: UserStatus['Pending'],
-            profilePicture: {
-                url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
-            },
-        } as any)
+    const onFormSubmit = async (data: TSignIn) => {
+        setError(null)
+        setLoading(true)
+        try {
+            const parsedData = await signInFormSchema.parse(data) // parse form data
+            // const response = await UserService.signIn(parsedData) // sign in and server return the user data along with auth cookie
+            // onSuccess?.(response.data) // if onSuccess is given, trigger it and pass the data
+        } catch (e) {
+            const errorMessage = handleAxiosError(e)
+            onError?.(e)
+            setError(errorMessage)
+            toast.error(errorMessage)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -206,8 +208,11 @@ const SignInForm = ({
                     />
                 </fieldset>
                 <div className="mt-6 flex flex-col space-y-2">
-                    <FormErrorMessage errorMessage={firstError} />
-                    <Button type="submit" disabled={loading || readOnly}>
+                    <FormErrorMessage errorMessage={firstError || error} />
+                    <Button
+                        type="submit"
+                        disabled={loading || error !== null || readOnly}
+                    >
                         {loading ? <LoadingCircle /> : 'Login'}
                     </Button>
                     <Link

@@ -57,7 +57,7 @@ const ResetPasswordForm = ({
         defaultValues,
     })
 
-    function onFormSubmit(data: TResetPasswordForm) {
+    const onFormSubmit = async (data: TResetPasswordForm) => {
         setLoading(true)
         const parsedData = ResetPasswordFormSchema.parse(data)
         // TODO: Logic to create a reset entry and will return

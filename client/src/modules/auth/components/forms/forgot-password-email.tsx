@@ -24,9 +24,12 @@ import { Button } from '@/components/ui/button'
 import LoadingCircle from '@/components/loader/loading-circle'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
-import { cn } from '@/lib/utils'
+import { cn, handleAxiosError } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { memberTypeSchema, emailSchema } from '@/modules/auth/validations'
+import useLoadingErrorState from '@/hooks/use-loading-error-state'
+import { toast } from 'sonner'
+import UserService from '@/horizon-corp/server/auth/UserService'
 
 const emailFormSchema = z.object({
     email: emailSchema,
@@ -43,9 +46,10 @@ const ForgotPasswordEmail = ({
     readOnly,
     className,
     onSuccess,
+    onError,
     defaultValues = { email: '', mode: 'Member' },
 }: Props) => {
-    const [loading, setLoading] = useState(false)
+    const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TForgotPasswordEmail>({
         resolver: zodResolver(emailFormSchema),
@@ -54,12 +58,25 @@ const ForgotPasswordEmail = ({
         defaultValues,
     })
 
-    function onFormSubmit(data: TForgotPasswordEmail) {
-        const parsedData = emailFormSchema.parse(data)
+    const onFormSubmit = async (data: TForgotPasswordEmail) => {
         // TODO: Logic to create a reset entry and will return
         // authService.resetViaEmail(email, accountType) // return uuid string
         // modify code bellow
-        onSuccess?.(parsedData)
+        // onSuccess?.(parsedData)
+        setError(null)
+        setLoading(true)
+        try {
+            const parsedData = await emailFormSchema.parseAsync(data) // parse form data
+            // const response = await UserService.forgotPassword(parsedData) // send user email and account type to server for reset password link
+            // onSuccess?.(response.data)
+        } catch (e) {
+            const errorMessage = handleAxiosError(e)
+            onError?.(e)
+            setError(errorMessage)
+            toast.error(errorMessage)
+        } finally {
+            setLoading(false)
+        }
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -152,8 +169,11 @@ const ForgotPasswordEmail = ({
                 </fieldset>
 
                 <div className="mt-4 flex flex-col space-y-2">
-                    <FormErrorMessage errorMessage={firstError} />
-                    <Button type="submit" disabled={loading || readOnly}>
+                    <FormErrorMessage errorMessage={firstError || error} />
+                    <Button
+                        type="submit"
+                        disabled={loading || error !== null || readOnly}
+                    >
                         {loading ? <LoadingCircle /> : 'Confirm Email'}
                     </Button>
                 </div>
