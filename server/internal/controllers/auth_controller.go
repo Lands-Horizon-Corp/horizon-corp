@@ -6,6 +6,7 @@ import (
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests/auth_requests"
+	"horizon/server/internal/resources"
 	"horizon/server/services"
 	"net/http"
 
@@ -72,8 +73,8 @@ func NewAuthController(
 }
 
 func (c *AuthController) CurrentUser(ctx *gin.Context) {
-	r := ctx.Request
-	cookie, err := r.Cookie(c.cfg.AppTokenName)
+	// Retrieve the cookie
+	cookie, err := ctx.Request.Cookie(c.cfg.AppTokenName)
 	if err != nil {
 		if err == http.ErrNoCookie {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Cookie not found"})
@@ -83,14 +84,54 @@ func (c *AuthController) CurrentUser(ctx *gin.Context) {
 		return
 	}
 
+	// Verify the token
 	claims, err := c.tokenService.VerifyToken(cookie.Value)
 	if err != nil {
-
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": claims})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"claims": claims})
+	// Fetch user based on account type
+	var response interface{}
+	switch claims.AccountType {
+	case "Member":
+		member, err := c.memberRepo.GetByID(claims.ID)
+		if err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
+			return
+		}
+		response = resources.ToResourceMember(member)
+
+	case "Employee":
+		employee, err := c.employeeRepo.GetByID(claims.ID)
+		if err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Employee not found"})
+			return
+		}
+		response = resources.ToResourceEmployee(employee)
+
+	case "Admin":
+		admin, err := c.adminRepo.GetByID(claims.ID)
+		if err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Admin not found"})
+			return
+		}
+		response = resources.ToResourceAdmin(admin)
+
+	case "Owner":
+		owner, err := c.ownerRepo.GetByID(claims.ID)
+		if err != nil {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Owner not found"})
+			return
+		}
+		response = resources.ToResourceOwner(owner)
+
+	default:
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Invalid account type"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, response)
 }
 
 func (c *AuthController) SignUp(ctx *gin.Context) {

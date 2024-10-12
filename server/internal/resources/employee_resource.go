@@ -6,6 +6,7 @@ import (
 )
 
 type EmployeeResource struct {
+	AccountType       string                `json:"accountType"`
 	ID                uint                  `json:"id"`
 	FirstName         string                `json:"firstName"`
 	LastName          string                `json:"lastName"`
@@ -33,6 +34,7 @@ func ToResourceEmployee(employee models.Employee) EmployeeResource {
 	}
 
 	return EmployeeResource{
+		AccountType:       "Employee",
 		ID:                employee.ID,
 		FirstName:         employee.FirstName,
 		LastName:          employee.LastName,

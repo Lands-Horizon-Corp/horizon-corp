@@ -6,6 +6,7 @@ import (
 )
 
 type OwnerResource struct {
+	AccountType       string             `json:"accountType"`
 	ID                uint               `json:"id"`
 	FirstName         string             `json:"firstName"`
 	LastName          string             `json:"lastName"`
@@ -33,6 +34,7 @@ func ToResourceOwner(owner models.Owner) OwnerResource {
 	}
 
 	return OwnerResource{
+		AccountType:       "Owner",
 		ID:                owner.ID,
 		FirstName:         owner.FirstName,
 		LastName:          owner.LastName,

@@ -6,6 +6,7 @@ import (
 )
 
 type MemberResource struct {
+	AccountType       string              `json:"accountType"`
 	ID                uint                `json:"id"`
 	FirstName         string              `json:"firstName"`
 	LastName          string              `json:"lastName"`
@@ -33,6 +34,7 @@ func ToResourceMember(member models.Member) MemberResource {
 	}
 
 	return MemberResource{
+		AccountType:       "Member",
 		ID:                member.ID,
 		FirstName:         member.FirstName,
 		LastName:          member.LastName,
