@@ -14,7 +14,6 @@ import type {
     VerifyContactNumberRequest,
     VerifyContactResource,
     VerifyEmailRequest,
-    VerifyOTPRequest,
 } from '@/horizon-corp/types'
 import { getSMSContent, getEmailContent } from '@/lib'
 
