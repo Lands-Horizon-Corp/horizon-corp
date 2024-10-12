@@ -41,8 +41,8 @@ export interface SignUpRequest {
   permanentAddress: string
   media?: MediaRequest
 
-  emailTemplate: string
-  contactTemplate: string
+  emailTemplate?: string
+  contactTemplate?: string
 }
 
 export interface VerifyEmailRequest {

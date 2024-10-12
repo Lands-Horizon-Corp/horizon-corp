@@ -6,32 +6,22 @@ import (
 	"go.uber.org/zap"
 )
 
-type EmployeeService struct {
+type EmployeeAuthService struct {
 	tokenService TokenService
 	logger       *zap.Logger
 }
 
-func NewEmployeeAuthService(tokenService TokenService, logger *zap.Logger) *EmployeeService {
-	return &EmployeeService{
+func NewEmployeeAuthService(tokenService TokenService, logger *zap.Logger) *EmployeeAuthService {
+	return &EmployeeAuthService{
 		tokenService: tokenService,
 		logger:       logger,
 	}
 }
 
-func (s *EmployeeService) GenerateEmployeeToken(employee models.Employee) (string, error) {
+func (s *EmployeeAuthService) GenerateEmployeeToken(employee models.Employee) (string, error) {
 	claims := &UserClaims{
-		ID:                employee.ID,
-		Mode:              "employee",
-		FirstName:         employee.FirstName,
-		LastName:          employee.LastName,
-		PermanentAddress:  employee.PermanentAddress,
-		Description:       employee.Description,
-		Birthdate:         employee.Birthdate,
-		Email:             employee.Email,
-		IsEmailVerified:   employee.IsEmailVerified,
-		IsContactVerified: employee.IsContactVerified,
-		ContactNumber:     employee.ContactNumber,
-		MediaID:           employee.MediaID,
+		ID:          employee.ID,
+		AccountType: "Employee",
 	}
 
 	token, err := s.tokenService.GenerateToken(claims)

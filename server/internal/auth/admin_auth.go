@@ -1,37 +1,31 @@
 package auth
 
 import (
+	"horizon/server/config"
 	"horizon/server/internal/models"
 
 	"go.uber.org/zap"
 )
 
-type AdminService struct {
+type AdminAuthService struct {
 	tokenService TokenService
 	logger       *zap.Logger
+	cfg          *config.AppConfig
 }
 
-func NewAdminAuthService(tokenService TokenService, logger *zap.Logger) *AdminService {
-	return &AdminService{
+func NewAdminAuthService(
+	tokenService TokenService, logger *zap.Logger, cfg *config.AppConfig) *AdminAuthService {
+	return &AdminAuthService{
 		tokenService: tokenService,
 		logger:       logger,
+		cfg:          cfg,
 	}
 }
 
-func (s *AdminService) GenerateAdminToken(admin models.Admin) (string, error) {
+func (s *AdminAuthService) GenerateAdminToken(admin models.Admin) (string, error) {
 	claims := &UserClaims{
-		ID:                admin.ID,
-		Mode:              "admin",
-		FirstName:         admin.FirstName,
-		LastName:          admin.LastName,
-		PermanentAddress:  admin.PermanentAddress,
-		Description:       admin.Description,
-		Birthdate:         admin.Birthdate,
-		Email:             admin.Email,
-		IsEmailVerified:   admin.IsEmailVerified,
-		IsContactVerified: admin.IsContactVerified,
-		ContactNumber:     admin.ContactNumber,
-		MediaID:           admin.MediaID,
+		ID:          admin.ID,
+		AccountType: "Admin",
 	}
 
 	token, err := s.tokenService.GenerateToken(claims)

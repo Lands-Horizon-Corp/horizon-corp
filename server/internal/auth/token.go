@@ -11,25 +11,14 @@ import (
 )
 
 type UserClaims struct {
-	ID                uint      `json:"id"`
-	Mode              string    `json:"mode"`
-	FirstName         string    `json:"firstName"`
-	LastName          string    `json:"lastName"`
-	MiddleName        string    `json:"middleName"`
-	PermanentAddress  string    `json:"permanentAddress"`
-	Description       string    `json:"description"`
-	Birthdate         time.Time `json:"birthdate"`
-	Email             string    `json:"email"`
-	IsEmailVerified   bool      `json:"isEmailVerified"`
-	IsContactVerified bool      `json:"isContactVerified"`
-	ContactNumber     string    `json:"contactNumber"`
-	MediaID           *uint     `json:"mediaID"`
+	ID          uint   `json:"id"`
+	AccountType string `json:"accountType"`
 	jwt.StandardClaims
 }
 
 type TokenService interface {
 	GenerateToken(claims *UserClaims) (string, error)
-	VerifyToken(tokenString string) (uint, error)
+	VerifyToken(tokenString string) (*UserClaims, error)
 	StoreToken(tokenString string, userId uint) error
 	DeleteToken(tokenString string) error
 }
@@ -63,7 +52,7 @@ func (s *tokenService) GenerateToken(claims *UserClaims) (string, error) {
 	return tokenString, nil
 }
 
-func (s *tokenService) VerifyToken(tokenString string) (uint, error) {
+func (s *tokenService) VerifyToken(tokenString string) (*UserClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			s.logger.Warn("Unexpected signing method", zap.String("method", token.Header["alg"].(string)))
@@ -73,15 +62,15 @@ func (s *tokenService) VerifyToken(tokenString string) (uint, error) {
 	})
 	if err != nil {
 		s.logger.Error("Error parsing token", zap.Error(err))
-		return 0, fmt.Errorf("error parsing token: %w", err)
+		return nil, fmt.Errorf("error parsing token: %w", err)
 	}
 	claims, ok := token.Claims.(*UserClaims)
 	if !ok || !token.Valid {
 		s.logger.Warn("Invalid token", zap.String("token", tokenString))
-		return 0, fmt.Errorf("invalid token")
+		return nil, fmt.Errorf("invalid token")
 	}
 	s.logger.Info("Token verified successfully", zap.Uint("userID", claims.ID))
-	return claims.ID, nil
+	return claims, nil
 }
 
 func (s *tokenService) StoreToken(tokenString string, userId uint) error {

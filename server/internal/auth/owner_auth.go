@@ -6,32 +6,22 @@ import (
 	"go.uber.org/zap"
 )
 
-type OwnerService struct {
+type OwnerAuthService struct {
 	tokenService TokenService
 	logger       *zap.Logger
 }
 
-func NewOwnerAuthService(tokenService TokenService, logger *zap.Logger) *OwnerService {
-	return &OwnerService{
+func NewOwnerAuthService(tokenService TokenService, logger *zap.Logger) *OwnerAuthService {
+	return &OwnerAuthService{
 		tokenService: tokenService,
 		logger:       logger,
 	}
 }
 
-func (s *OwnerService) GenerateOwnerToken(owner models.Owner) (string, error) {
+func (s *OwnerAuthService) GenerateOwnerToken(owner models.Owner) (string, error) {
 	claims := &UserClaims{
-		ID:                owner.ID,
-		Mode:              "owner",
-		FirstName:         owner.FirstName,
-		LastName:          owner.LastName,
-		PermanentAddress:  owner.PermanentAddress,
-		Description:       owner.Description,
-		Birthdate:         owner.Birthdate,
-		Email:             owner.Email,
-		IsEmailVerified:   owner.IsEmailVerified,
-		IsContactVerified: owner.IsContactVerified,
-		ContactNumber:     owner.ContactNumber,
-		MediaID:           owner.MediaID,
+		ID:          owner.ID,
+		AccountType: "Owner",
 	}
 
 	token, err := s.tokenService.GenerateToken(claims)

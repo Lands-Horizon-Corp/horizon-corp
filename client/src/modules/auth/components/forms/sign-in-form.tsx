@@ -32,6 +32,7 @@ import { handleAxiosError } from '@/horizon-corp/helpers'
 // import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
+import UserService from '@/horizon-corp/server/auth/UserService'
 
 type TSignIn = z.infer<typeof signInFormSchema>
 
@@ -41,7 +42,7 @@ const SignInForm = ({
     defaultValues,
     className,
     readOnly,
-    // onSuccess,
+    onSuccess,
     onError,
 }: Props) => {
     const { loading, error, setError, setLoading } = useLoadingErrorState()
@@ -58,13 +59,13 @@ const SignInForm = ({
         },
     })
 
-    const onFormSubmit = async (_data: TSignIn) => {
+    const onFormSubmit = async (data: TSignIn) => {
         setError(null)
         setLoading(true)
         try {
-            // const parsedData = await signInFormSchema.parse(data) // parse form data
-            // const response = await UserService.SignIn(parsedData) // sign in and server return the user data along with auth cookie
-            // onSuccess?.(response.data) // if onSuccess is given, trigger it and pass the data
+            const parsedData = await signInFormSchema.parseAsync(data)
+            const response = await UserService.SignIn(parsedData) // sign in and server return the user data along with auth cookie
+            onSuccess?.(response.data) // if onSuccess is given, trigger it and pass the data
         } catch (e) {
             const errorMessage = handleAxiosError(e)
             onError?.(e)
