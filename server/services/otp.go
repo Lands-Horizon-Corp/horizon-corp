@@ -35,8 +35,8 @@ func NewOTPService(
 }
 
 // cacheKey generates a unique cache key for storing OTPs by user ID.
-func (es *OTPService) cacheKey(accountType string, id uint) string {
-	return fmt.Sprintf("otp:%s:%d", accountType, id)
+func (es *OTPService) cacheKey(accountType string, id uint, mediumType string) string {
+	return fmt.Sprintf("otp:%s:%d:%s", accountType, id, mediumType)
 }
 
 // generateOTP generates a secure, 6-digit OTP.
@@ -49,13 +49,13 @@ func (es *OTPService) generateOTP() (string, error) {
 }
 
 // generateAndStoreOTP generates an OTP, stores it in the cache, and includes retry handling.
-func (es *OTPService) generateAndStoreOTP(accountType string, id uint) (string, error) {
+func (es *OTPService) generateAndStoreOTP(accountType string, id uint, mediumType string) (string, error) {
 	otpStr, err := es.generateOTP()
 	if err != nil {
 		return "", err
 	}
 
-	key := es.cacheKey(accountType, id)
+	key := es.cacheKey(accountType, id, mediumType)
 	expiration := 10 * time.Minute // Or make this configurable
 
 	if err := es.cacheService.StoreOTP(key, otpStr, expiration); err != nil {
@@ -68,7 +68,7 @@ func (es *OTPService) generateAndStoreOTP(accountType string, id uint) (string, 
 
 // SendEmailOTP generates and sends an OTP via email.
 func (es *OTPService) SendEmailOTP(accountType string, id uint, req EmailRequest) error {
-	otpStr, err := es.generateAndStoreOTP(accountType, id)
+	otpStr, err := es.generateAndStoreOTP(accountType, id, "email")
 	if err != nil {
 		return err
 	}
@@ -90,7 +90,7 @@ func (es *OTPService) SendEmailOTP(accountType string, id uint, req EmailRequest
 
 // SendEContactNumberOTP generates and sends an OTP via SMS.
 func (es *OTPService) SendEContactNumberOTP(accountType string, id uint, req SMSRequest) error {
-	otpStr, err := es.generateAndStoreOTP(accountType, id)
+	otpStr, err := es.generateAndStoreOTP(accountType, id, "sms")
 	if err != nil {
 		return err
 	}
@@ -110,8 +110,8 @@ func (es *OTPService) SendEContactNumberOTP(accountType string, id uint, req SMS
 	return nil
 }
 
-func (es *OTPService) ValidateOTP(accountType string, id uint, providedOTP string) (bool, error) {
-	key := es.cacheKey(accountType, id)
+func (es *OTPService) ValidateOTP(accountType string, id uint, providedOTP string, mediumType string) (bool, error) {
+	key := es.cacheKey(accountType, id, mediumType)
 
 	storedOTP, err := es.cacheService.GetOTP(key)
 	if err != nil {

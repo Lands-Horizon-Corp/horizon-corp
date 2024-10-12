@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"horizon/server/config"
+	"horizon/server/internal/auth"
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests/auth_requests"
+	"horizon/server/internal/resources"
 	"horizon/server/services"
 	"net/http"
 
@@ -16,6 +19,8 @@ type AuthController struct {
 	ownerRepo    *repositories.OwnerRepository
 	memberRepo   *repositories.MemberRepository
 	otpService   *services.OTPService
+	cfg          *config.AppConfig
+	tokenService auth.TokenService
 }
 
 func NewAuthController(
@@ -24,6 +29,8 @@ func NewAuthController(
 	ownerRepo *repositories.OwnerRepository,
 	memberRepo *repositories.MemberRepository,
 	otpService *services.OTPService,
+	cfg *config.AppConfig,
+	tokenService auth.TokenService,
 ) *AuthController {
 	return &AuthController{
 		adminRepo:    adminRepo,
@@ -31,13 +38,13 @@ func NewAuthController(
 		ownerRepo:    ownerRepo,
 		memberRepo:   memberRepo,
 		otpService:   otpService,
+		cfg:          cfg,
+		tokenService: tokenService,
 	}
 }
 
-// User
 func (c *AuthController) CurrentUser(ctx *gin.Context) {}
 
-// Basic Authentication
 func (c *AuthController) SignUp(ctx *gin.Context) {
 	var req auth_requests.SignUpRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -50,8 +57,15 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 	}
 
 	var userID uint
+	hashed, err := config.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-	// Create the user based on AccountType and capture the userID
+	req.Password = hashed
+	var response interface{}
+
 	switch req.AccountType {
 	case "Member":
 		member := models.Member{
@@ -68,12 +82,14 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 			IsContactVerified: false,
 			ContactNumber:     req.ContactNumber,
 			MediaID:           nil,
+			Status:            "Pending",
 		}
 		if err := c.memberRepo.Create(&member); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		userID = member.ID
+		response = resources.ToResourceMember(member) // Use ToResourceAdmin for the member
 
 	case "Owner":
 		owner := models.Owner{
@@ -90,12 +106,14 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 			IsContactVerified: false,
 			ContactNumber:     req.ContactNumber,
 			MediaID:           nil,
+			Status:            "Pending",
 		}
 		if err := c.ownerRepo.Create(&owner); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		userID = owner.ID
+		response = resources.ToResourceOwner(owner) // Use ToResourceAdmin for the owner
 
 	case "Employee":
 		employee := models.Employee{
@@ -112,12 +130,14 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 			IsContactVerified: false,
 			ContactNumber:     req.ContactNumber,
 			MediaID:           nil,
+			Status:            "Pending",
 		}
 		if err := c.employeeRepo.Create(&employee); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		userID = employee.ID
+		response = resources.ToResourceEmployee(employee) // Use ToResourceAdmin for the employee
 
 	case "Admin":
 		admin := models.Admin{
@@ -134,18 +154,28 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 			IsContactVerified: false,
 			ContactNumber:     req.ContactNumber,
 			MediaID:           nil,
+			Status:            "Pending",
 		}
 		if err := c.adminRepo.Create(&admin); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		userID = admin.ID
+		response = resources.ToResourceAdmin(admin) // Use ToResourceAdmin for the admin
 
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
 		return
 	}
 
+	// Token generation
+	token, err := c.tokenService.GenerateToken(&auth.UserClaims{ID: userID, Mode: req.AccountType})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	// Sending OTP via email
 	emailReq := services.EmailRequest{
 		To:      req.Email,
 		Subject: "ECOOP: Email Verification",
@@ -156,6 +186,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
+	// Sending OTP via SMS
 	contactReq := services.SMSRequest{
 		To:   req.ContactNumber,
 		Body: req.ContactTemplate,
@@ -168,7 +199,18 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "User created successfully! OTP sent to email and contact number."})
+	// Set token in cookie
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:     c.cfg.AppTokenName,
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
+	})
+
+	// Final response
+	ctx.JSON(http.StatusCreated, response)
 }
 
 func (c *AuthController) SignIn(ctx *gin.Context)  {}

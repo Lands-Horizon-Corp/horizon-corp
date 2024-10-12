@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
     `contact_number` VARCHAR(15) NOT NULL,
     `is_email_verified` TINYINT(1) DEFAULT 0,
     `is_contact_verified` TINYINT(1) DEFAULT 0,
-
+ `status` VARCHAR(10) DEFAULT 'Pending',
    `media_id` BIGINT UNSIGNED NULL,
     PRIMARY KEY (`id`),
     INDEX `idx_employee_deleted_at` (`deleted_at`),
