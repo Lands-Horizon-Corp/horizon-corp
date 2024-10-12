@@ -86,7 +86,7 @@ const Verify = ({}: Props) => {
                                 </p>
                                 <UserAvatar
                                     className="my-8 size-28"
-                                    src={currentUser.media.url ?? ''}
+                                    src={currentUser?.media?.downloadURL ?? ''}
                                     fallback={
                                         currentUser?.username.charAt(0) ?? '-'
                                     }
