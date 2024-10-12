@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"horizon/server/internal/models"
+	"regexp"
 
 	"gorm.io/gorm"
 )
@@ -42,13 +43,23 @@ func (r *OwnerRepository) Delete(id uint) error {
 	return handleDBError(err)
 }
 
-func (r *OwnerRepository) FindByEmailOrUsername(email, username string) (models.Owner, error) {
+func (r *OwnerRepository) FindByEmailUsernameOrContact(input string) (models.Owner, error) {
 	var owner models.Owner
-	if email != "" {
-		err := r.DB.Where("email = ?", email).First(&owner).Error
+
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	phoneRegex := `^\+?[1-9]\d{1,14}$`
+
+	isEmail, _ := regexp.MatchString(emailRegex, input)
+	isPhone, _ := regexp.MatchString(phoneRegex, input)
+
+	if isEmail {
+		err := r.DB.Where("email = ?", input).First(&owner).Error
+		return owner, handleDBError(err)
+	} else if isPhone {
+		err := r.DB.Where("contact_number = ?", input).First(&owner).Error
 		return owner, handleDBError(err)
 	} else {
-		err := r.DB.Where("username = ?", username).First(&owner).Error
+		err := r.DB.Where("username = ?", input).First(&owner).Error
 		return owner, handleDBError(err)
 	}
 }

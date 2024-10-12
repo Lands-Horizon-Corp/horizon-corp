@@ -240,7 +240,7 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 	}
 	switch req.AccountType {
 	case "Member":
-		fmt.Println(req.Email)
+		fmt.Println(req.Key)
 	}
 }
 func (c *AuthController) SignOut(ctx *gin.Context) {}
