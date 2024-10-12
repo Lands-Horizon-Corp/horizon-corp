@@ -18,12 +18,11 @@ type AuthController struct {
 	otpService   *services.OTPService
 }
 
-func NewAuthController(adminRepo *repositories.AdminRepository,
+func NewAuthController(
+	adminRepo *repositories.AdminRepository,
 	employeeRepo *repositories.EmployeeRepository,
 	ownerRepo *repositories.OwnerRepository,
 	memberRepo *repositories.MemberRepository,
-	emailService *services.EmailService,
-	smsService services.SMSService,
 	otpService *services.OTPService,
 ) *AuthController {
 	return &AuthController{
@@ -213,5 +212,43 @@ func AuthRoutes(router *gin.RouterGroup, controller *AuthController) {
 		group.POST("/change-contact-number", controller.ChangeContactNumber)                      // for signed in
 		group.POST("/send-contact-number-verification", controller.SendContactNumberVerification) // for signed in
 		group.POST("/verify-otp", controller.VerifyContactNumber)                                 // for signed in
+	}
+}
+
+func (c *AuthController) RetrieveEmail(accountType string, userID uint) string {
+	switch accountType {
+	case "Member":
+		member, _ := c.memberRepo.GetByID(userID)
+		return member.Email
+	case "Owner":
+		owner, _ := c.ownerRepo.GetByID(userID)
+		return owner.Email
+	case "Employee":
+		employee, _ := c.employeeRepo.GetByID(userID)
+		return employee.Email
+	case "Admin":
+		admin, _ := c.adminRepo.GetByID(userID)
+		return admin.Email
+	default:
+		return ""
+	}
+}
+
+func (c *AuthController) RetrieveContactNumber(accountType string, userID uint) string {
+	switch accountType {
+	case "Member":
+		member, _ := c.memberRepo.GetByID(userID)
+		return member.ContactNumber
+	case "Owner":
+		owner, _ := c.ownerRepo.GetByID(userID)
+		return owner.ContactNumber
+	case "Employee":
+		employee, _ := c.employeeRepo.GetByID(userID)
+		return employee.ContactNumber
+	case "Admin":
+		admin, _ := c.adminRepo.GetByID(userID)
+		return admin.ContactNumber
+	default:
+		return ""
 	}
 }

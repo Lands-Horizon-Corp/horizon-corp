@@ -3,14 +3,13 @@ package internal
 import (
 	"context"
 	"horizon/server/config"
-	"horizon/server/services"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
-func StartServer(lc fx.Lifecycle, router *gin.Engine, logger *zap.Logger, cfg *config.AppConfig, smsService services.SMSService) {
+func StartServer(lc fx.Lifecycle, router *gin.Engine, logger *zap.Logger, cfg *config.AppConfig) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			go func() {

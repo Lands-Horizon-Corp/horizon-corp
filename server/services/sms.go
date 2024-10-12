@@ -43,6 +43,7 @@ func NewSMSService(logger *zap.Logger, cfg *config.AppConfig) (*SMSService, erro
 		snsSvc: svc,
 	}, nil
 }
+
 func (s *SMSService) FormatSMS(req SMSRequest) (string, error) {
 	var buf bytes.Buffer
 	formattedMessage := req.Body
