@@ -4,9 +4,7 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type SendEmailVerificationRequest struct {
-	Email string `json:"email" validate:"required,email,max=255"`
-}
+type SendEmailVerificationRequest struct{}
 
 func (r *SendEmailVerificationRequest) Validate() error {
 	validate := validator.New()

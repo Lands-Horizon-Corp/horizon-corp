@@ -2,9 +2,7 @@ package auth_requests
 
 import "github.com/go-playground/validator/v10"
 
-type SendContactNumberVerificationRequest struct {
-	ContactNumber string `json:"contactNumber" validate:"required,max=15"`
-}
+type SendContactNumberVerificationRequest struct{}
 
 func (r *SendContactNumberVerificationRequest) Validate() error {
 	validate := validator.New()

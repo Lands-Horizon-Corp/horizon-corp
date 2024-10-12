@@ -23,8 +23,10 @@ export interface SendOTPVerificationRequest {
 }
 
 export interface SignInRequest {
-  email: string
+  email?: string
+  username?: string
   password: string
+  accountType: AccountType
 }
 
 export interface SignUpRequest {

@@ -41,3 +41,14 @@ func (r *MemberRepository) Delete(id uint) error {
 	err := r.DB.Delete(&models.Member{}, id).Error
 	return handleDBError(err)
 }
+
+func (r *MemberRepository) FindByEmailOrUsername(email, username string) (models.Member, error) {
+	var member models.Member
+	if email != "" {
+		err := r.DB.Where("email = ?", email).First(&member).Error
+		return member, handleDBError(err)
+	} else {
+		err := r.DB.Where("username = ?", username).First(&member).Error
+		return member, handleDBError(err)
+	}
+}

@@ -47,3 +47,14 @@ func (r *AdminRepository) GetByEmail(email string) (models.Admin, error) {
 	err := r.DB.Where("email = ?", email).First(&admin).Error
 	return admin, handleDBError(err)
 }
+
+func (r *AdminRepository) FindByEmailOrUsername(email, username string) (models.Admin, error) {
+	var admin models.Admin
+	if email != "" {
+		err := r.DB.Where("email = ?", email).First(&admin).Error
+		return admin, handleDBError(err)
+	} else {
+		err := r.DB.Where("username = ?", username).First(&admin).Error
+		return admin, handleDBError(err)
+	}
+}
