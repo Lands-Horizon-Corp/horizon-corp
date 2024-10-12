@@ -21,6 +21,7 @@ type SignUpRequest struct {
 	ContactNumber    string                 `json:"contactNumber" validate:"required,max=15"`
 	PermanentAddress string                 `json:"permanentAddress" validate:"required,max=500"`
 	Media            *requests.MediaRequest `json:"media" validate:"omitempty"`
+	EmailTemplate    string                 `json:"emailTemplate" validate:"required"`
 }
 
 func accountTypeValidator(fl validator.FieldLevel) bool {

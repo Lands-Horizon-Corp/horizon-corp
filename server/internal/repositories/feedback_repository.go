@@ -15,26 +15,29 @@ func NewFeedbackRepository(db *gorm.DB) *FeedbackRepository {
 }
 
 func (r *FeedbackRepository) Create(feedback *models.Feedback) error {
-	return r.DB.Create(feedback).Error
+	err := r.DB.Create(feedback).Error
+	return handleDBError(err)
 }
 
 func (r *FeedbackRepository) GetAll() ([]models.Feedback, error) {
 	var feedback []models.Feedback
 	err := r.DB.Find(&feedback).Error
-	return feedback, err
+	return feedback, handleDBError(err)
 }
 
 func (r *FeedbackRepository) GetByID(id uint) (models.Feedback, error) {
 	var feedback models.Feedback
 	err := r.DB.First(&feedback, id).Error
-	return feedback, err
+	return feedback, handleDBError(err)
 }
 
 func (r *FeedbackRepository) Update(id uint, feedback *models.Feedback) error {
 	feedback.ID = id
-	return r.DB.Save(feedback).Error
+	err := r.DB.Save(feedback).Error
+	return handleDBError(err)
 }
 
 func (r *FeedbackRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.Feedback{}, id).Error
+	err := r.DB.Delete(&models.Feedback{}, id).Error
+	return handleDBError(err)
 }

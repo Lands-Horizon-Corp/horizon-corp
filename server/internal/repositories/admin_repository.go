@@ -15,32 +15,35 @@ func NewAdminRepository(db *gorm.DB) *AdminRepository {
 }
 
 func (r *AdminRepository) Create(admin *models.Admin) error {
-	return r.DB.Create(admin).Error
+	err := r.DB.Create(admin).Error
+	return handleDBError(err)
 }
 
 func (r *AdminRepository) GetAll() ([]models.Admin, error) {
 	var admin []models.Admin
 	err := r.DB.Find(&admin).Error
-	return admin, err
+	return admin, handleDBError(err)
 }
 
 func (r *AdminRepository) GetByID(id uint) (models.Admin, error) {
 	var admin models.Admin
 	err := r.DB.First(&admin, id).Error
-	return admin, err
+	return admin, handleDBError(err)
 }
 
 func (r *AdminRepository) Update(id uint, admin *models.Admin) error {
 	admin.ID = id
-	return r.DB.Save(admin).Error
+	err := r.DB.Save(admin).Error
+	return handleDBError(err)
 }
 
 func (r *AdminRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.Admin{}, id).Error
+	err := r.DB.Delete(&models.Admin{}, id).Error
+	return handleDBError(err)
 }
 
 func (r *AdminRepository) GetByEmail(email string) (models.Admin, error) {
 	var admin models.Admin
 	err := r.DB.Where("email = ?", email).First(&admin).Error
-	return admin, err
+	return admin, handleDBError(err)
 }
