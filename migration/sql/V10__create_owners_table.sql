@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS `owners` (
     `username` VARCHAR(255) NOT NULL UNIQUE,
     `email` VARCHAR(255) NOT NULL UNIQUE,
     `password` VARCHAR(255) NOT NULL,
-    `contact_number` VARCHAR(15) NOT NULL,
+    `contact_number` VARCHAR(15) NOT NULL UNIQUE,
     `is_email_verified` TINYINT(1) DEFAULT 0,
     `is_contact_verified` TINYINT(1) DEFAULT 0,
 

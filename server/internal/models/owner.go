@@ -28,7 +28,7 @@ type Owner struct {
 	MediaID           *uint       `gorm:"default:NULL" json:"media_id"`
 	IsEmailVerified   bool        `gorm:"default:false" json:"is_email_verified"`
 	IsContactVerified bool        `gorm:"default:false" json:"is_contact_verified"`
-	ContactNumber     string      `json:"contac_number,omitempty"`
+	ContactNumber     string      `gorm:"size:255;not null;unique" json:"contact_number"`
 	Media             Media       `gorm:"foreignKey:MediaID" json:"media"`
 	Status            OwnerStatus `gorm:"type:varchar(255);default:'Pending'" json:"status"` // Add the status field
 
