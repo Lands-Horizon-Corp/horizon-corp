@@ -37,7 +37,13 @@ func (r *EmployeeRepository) Update(id uint, employee *models.Employee) error {
 	return handleDBError(err)
 }
 
-func (r *EmployeeRepository) Delete(id uint) error {
-	err := r.DB.Delete(&models.Employee{}, id).Error
-	return handleDBError(err)
+func (r *EmployeeRepository) FindByEmailOrUsername(email, username string) (models.Employee, error) {
+	var employee models.Employee
+	if email != "" {
+		err := r.DB.Where("email = ?", email).First(&employee).Error
+		return employee, handleDBError(err)
+	} else {
+		err := r.DB.Where("username = ?", username).First(&employee).Error
+		return employee, handleDBError(err)
+	}
 }

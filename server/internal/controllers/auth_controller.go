@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"horizon/server/config"
 	"horizon/server/internal/auth"
 	"horizon/server/internal/models"
@@ -237,7 +238,10 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
+	switch req.AccountType {
+	case "Member":
+		fmt.Println(req.Email)
+	}
 }
 func (c *AuthController) SignOut(ctx *gin.Context) {}
 

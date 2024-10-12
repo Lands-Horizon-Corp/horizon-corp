@@ -41,3 +41,14 @@ func (r *OwnerRepository) Delete(id uint) error {
 	err := r.DB.Delete(&models.Owner{}, id).Error
 	return handleDBError(err)
 }
+
+func (r *OwnerRepository) FindByEmailOrUsername(email, username string) (models.Owner, error) {
+	var owner models.Owner
+	if email != "" {
+		err := r.DB.Where("email = ?", email).First(&owner).Error
+		return owner, handleDBError(err)
+	} else {
+		err := r.DB.Where("username = ?", username).First(&owner).Error
+		return owner, handleDBError(err)
+	}
+}

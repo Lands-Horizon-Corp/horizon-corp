@@ -1,6 +1,8 @@
 package auth_requests
 
 import (
+	"errors"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -11,5 +13,11 @@ type ForgotPasswordRequest struct {
 
 func (r *ForgotPasswordRequest) Validate() error {
 	validate := validator.New()
-	return validate.Struct(r)
+	if err := validate.Struct(r); err != nil {
+		return err
+	}
+	if r.Email == "" && r.ContactNumber == "" {
+		return errors.New("either email or username is required")
+	}
+	return nil
 }

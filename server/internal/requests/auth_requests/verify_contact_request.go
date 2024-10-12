@@ -5,8 +5,7 @@ import (
 )
 
 type VerifyContactNumberRequest struct {
-	ContactNumber string `json:"contactNumber" validate:"required,email,max=255"`
-	Otp           string `json:"otp" validate:"required,max=255"`
+	Otp string `json:"otp" validate:"required,max=255"`
 }
 
 func (r *VerifyContactNumberRequest) Validate() error {
