@@ -282,7 +282,7 @@ const SignUpForm = ({
                                             />
                                             <VerifiedPatchIcon
                                                 className={cn(
-                                                    'size-8 text-primary',
+                                                    'size-8 text-primary delay-300 duration-300 ease-in-out',
                                                     (invalid || error) &&
                                                         'text-destructive'
                                                 )}
