@@ -45,7 +45,16 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	sender := &services.EmailRequest{
+		To:      req.Email,
+		Subject: "ECOOP Email Verification",
+		Body:    req.EmailTemplate,
+	}
 
+	if err := c.emailService.SendEmail(*sender); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 	// if req.AccountType == "Member" {
 	// 	member := models.Member{
 	// 		FirstName:         req.FirstName,
