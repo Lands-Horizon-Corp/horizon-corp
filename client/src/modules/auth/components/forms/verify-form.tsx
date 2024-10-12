@@ -27,15 +27,13 @@ import { AccountType } from '@/horizon-corp/types'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 import useCountDown from '@/modules/auth/hooks/use-count-down'
-// import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { otpFormSchema } from '@/modules/auth/validations/otp-form'
 
 type TVerifyForm = z.infer<typeof otpFormSchema>
 
 interface Props extends IAuthForm<TVerifyForm> {
-    id: number
-    userType: AccountType
     verifyMode: 'mobile' | 'email'
 }
 
@@ -61,7 +59,7 @@ const VerifyForm = ({
     className,
     readOnly = false,
     verifyMode = 'mobile',
-    defaultValues = { code: '' },
+    defaultValues = { otp : '' },
     // onSuccess,
     onError,
 }: Props) => {
@@ -74,12 +72,19 @@ const VerifyForm = ({
         defaultValues,
     })
 
-    const handleSubmit = async (_data: TVerifyForm) => {
+    const handleSubmit = async (data: TVerifyForm) => {
         setError(null)
         setLoading(true)
         try {
-            // const parsedData = await otpFormSchema.parseAsync(data)
-            // const response = await UserService.VerifyEmail()
+            const parsedData = await otpFormSchema.parseAsync(data)
+
+            if (verifyMode === 'email') {
+                // for email
+                const response = await UserService.VerifyEmail(parsedData)
+            }else {
+                // for contact
+                const response = await UserService.VerifyContactNumber(parsedData)
+            }
         } catch (e) {
             const errorMessage = handleAxiosError(e)
             onError?.(e)
