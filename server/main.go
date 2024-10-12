@@ -40,6 +40,7 @@ func main() {
 			auth.NewEmployeeAuthService,
 			auth.NewMemberAuthService,
 			auth.NewOwnerAuthService,
+			auth.NewTokenService,
 
 			// Authentication
 			repositories.NewAdminRepository,

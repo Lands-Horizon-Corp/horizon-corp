@@ -2,9 +2,10 @@ package auth
 
 import (
 	"fmt"
+	"horizon/server/config"
+	"horizon/server/database"
 	"time"
 
-	"github.com/go-redis/redis"
 	"github.com/golang-jwt/jwt"
 	"go.uber.org/zap"
 )
@@ -34,15 +35,15 @@ type TokenService interface {
 }
 
 type tokenService struct {
-	redisClient *redis.Client
-	jwtSecret   string
+	redisClient *database.CacheService
+	cfg         *config.AppConfig
 	logger      *zap.Logger
 }
 
-func NewTokenService(redisClient *redis.Client, jwtSecret string, logger *zap.Logger) TokenService {
+func NewTokenService(redisClient *database.CacheService, cfg *config.AppConfig, logger *zap.Logger) TokenService {
 	return &tokenService{
 		redisClient: redisClient,
-		jwtSecret:   jwtSecret,
+		cfg:         cfg,
 		logger:      logger,
 	}
 }
@@ -53,7 +54,7 @@ func (s *tokenService) GenerateToken(claims *UserClaims) (string, error) {
 	claims.StandardClaims.IssuedAt = time.Now().Unix()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(s.jwtSecret))
+	tokenString, err := token.SignedString([]byte(s.cfg.AppToken))
 	if err != nil {
 		s.logger.Error("Error signing token", zap.Error(err))
 		return "", fmt.Errorf("error signing token: %w", err)
@@ -68,7 +69,7 @@ func (s *tokenService) VerifyToken(tokenString string) (uint, error) {
 			s.logger.Warn("Unexpected signing method", zap.String("method", token.Header["alg"].(string)))
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(s.jwtSecret), nil
+		return []byte(s.cfg.AppToken), nil
 	})
 	if err != nil {
 		s.logger.Error("Error parsing token", zap.Error(err))
@@ -84,7 +85,7 @@ func (s *tokenService) VerifyToken(tokenString string) (uint, error) {
 }
 
 func (s *tokenService) StoreToken(tokenString string, userId uint) error {
-	err := s.redisClient.Set(tokenString, userId, time.Hour*24).Err()
+	err := s.redisClient.Set(tokenString, userId, time.Hour*24)
 	if err != nil {
 		s.logger.Error("Error storing token in Redis", zap.Error(err))
 		return fmt.Errorf("error storing token in Redis: %w", err)
@@ -94,7 +95,7 @@ func (s *tokenService) StoreToken(tokenString string, userId uint) error {
 }
 
 func (s *tokenService) DeleteToken(tokenString string) error {
-	err := s.redisClient.Del(tokenString).Err()
+	err := s.redisClient.Delete(tokenString)
 	if err != nil {
 		s.logger.Error("Error deleting token from Redis", zap.Error(err))
 		return fmt.Errorf("error deleting token from Redis: %w", err)

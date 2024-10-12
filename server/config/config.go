@@ -9,6 +9,7 @@ import (
 type AppConfig struct {
 	// Application
 	AppPort          string
+	AppTokenName     string
 	AppToken         []byte
 	AppForwardPort   []byte
 	AppAdminToken    []byte
@@ -80,6 +81,7 @@ func LoadConfig() (*AppConfig, error) {
 	config := AppConfig{
 		// Application
 		AppPort:          getEnv("APP_PORT", "8080"),
+		AppTokenName:     getEnv("APP_TOKEN_NAME", "horizon-corp"),
 		AppToken:         []byte(os.Getenv("APP_TOKEN")),
 		AppAdminToken:    []byte(os.Getenv("APP_ADMIN_TOKEN")),
 		AppOwnerToken:    []byte(os.Getenv("APP_OWNER_TOKEN")),
