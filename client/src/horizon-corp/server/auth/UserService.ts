@@ -1,35 +1,36 @@
 import { AxiosResponse } from 'axios'
 import UseServer from '@/horizon-corp/request/server'
 import type {
-  ChangeContactNumberRequest,
-  ChangeEmailRequest,
-  ChangePasswordRequest,
-  CurrentUserResource,
-  ForgotPasswordRequest,
-  SendEmailVerificationRequest,
-  SignInRequest,
-  SignInResource,
-  SignUpRequest,
-  SignUpResource,
-  VerifyContactNumberRequest,
-  VerifyEmailRequest,
-  VerifyOTPRequest,
+    ChangeContactNumberRequest,
+    ChangeEmailRequest,
+    ChangePasswordRequest,
+    CurrentUserResource,
+    ForgotPasswordRequest,
+    SendEmailVerificationRequest,
+    SignInRequest,
+    SignInResource,
+    SignUpRequest,
+    SignUpResource,
+    VerifyContactNumberRequest,
+    VerifyContactResource,
+    VerifyEmailRequest,
+    VerifyOTPRequest,
 } from '@/horizon-corp/types'
 import { getSMSContent, getEmailContent } from '@/lib'
 
 export default class UserService {
-  private static readonly BASE_ENDPOINT = '/auth'
+    private static readonly BASE_ENDPOINT = '/auth'
 
-  // GET - /auth/current-user
-  public static async CurrentUser(): Promise<
-    AxiosResponse<CurrentUserResource>
-  > {
-    const endpoint = `${UserService.BASE_ENDPOINT}/current-user`
-    return await UseServer.get<CurrentUserResource>(endpoint)
-  }
+    // GET - /auth/current-user
+    public static async CurrentUser(): Promise<
+        AxiosResponse<CurrentUserResource>
+    > {
+        const endpoint = `${UserService.BASE_ENDPOINT}/current-user`
+        return await UseServer.get<CurrentUserResource>(endpoint)
+    }
 
-  // POST - /auth/signup
-  /*
+    // POST - /auth/signup
+    /*
       pagka create return mo sakin user data except password
 
       NOTE: when creating new user also do the following below
@@ -42,38 +43,38 @@ export default class UserService {
           same lang din yung structure nya sa db/redis { id, userId, accountType, otp, contact }
           - send generated otp code to contact number via sms
   */
-  public static async SignUp(
-    data: SignUpRequest
-  ): Promise<AxiosResponse<SignUpResource>> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/signup`
-    data.birthdate = new Date()
-    data.emailTemplate = getEmailContent("otp")
-    data.contactTemplate = getSMSContent("ContactNumber")
-    return await UseServer.post<SignUpRequest, SignUpResource>(
-      endpoint,
-      data
-    )
-  }
+    public static async SignUp(
+        data: SignUpRequest
+    ): Promise<AxiosResponse<SignUpResource>> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/signup`
+        data.birthdate = new Date()
+        data.emailTemplate = getEmailContent('otp')
+        data.contactTemplate = getSMSContent('ContactNumber')
+        return await UseServer.post<SignUpRequest, SignUpResource>(
+            endpoint,
+            data
+        )
+    }
 
-  // POST - /auth/signin
-  public static async SignIn(
-    data: SignInRequest
-  ): Promise<AxiosResponse<SignInResource>> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/signin`
-    return await UseServer.post<SignInRequest, SignInResource>(
-      endpoint,
-      data
-    )
-  }
+    // POST - /auth/signin
+    public static async SignIn(
+        data: SignInRequest
+    ): Promise<AxiosResponse<SignInResource>> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/signin`
+        return await UseServer.post<SignInRequest, SignInResource>(
+            endpoint,
+            data
+        )
+    }
 
-  // POST - /auth/signout
-  public static async SignOut(): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/signout`
-    await UseServer.post(endpoint)
-  }
+    // POST - /auth/signout
+    public static async SignOut(): Promise<void> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/signout`
+        await UseServer.post(endpoint)
+    }
 
-  // POST - /auth/forgot-password
-  /* 
+    // POST - /auth/forgot-password
+    /* 
   Need : 🔥
   Sa pag create pala man ng password reset entry/url sa db need ko lang 
   UUID as link tapos mode/accountType mastore sa db
@@ -93,15 +94,15 @@ export default class UserService {
 
   need ko lamang mag return ka ng true or false or hahit response status 200 pag exist/valid or 404 if invalid
   */
-  public static async ForgotPassword(
-    data: ForgotPasswordRequest
-  ): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/forgot-password`
-    await UseServer.post<ForgotPasswordRequest, void>(endpoint, data)
-  }
+    public static async ForgotPassword(
+        data: ForgotPasswordRequest
+    ): Promise<void> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/forgot-password`
+        await UseServer.post<ForgotPasswordRequest, void>(endpoint, data)
+    }
 
-  // POST - /auth/change-password
-  /*
+    // POST - /auth/change-password
+    /*
   Need: 🔥
   Need ko din ng another endpoint for password-reset eto ata yun man?
 
@@ -117,29 +118,29 @@ export default class UserService {
   
   walang response kahit http status code
   */
-  public static async ChangePassword(
-    data: ChangePasswordRequest
-  ): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/change-password`
-    await UseServer.post<ChangePasswordRequest, void>(endpoint, data)
-  }
+    public static async ChangePassword(
+        data: ChangePasswordRequest
+    ): Promise<void> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/change-password`
+        await UseServer.post<ChangePasswordRequest, void>(endpoint, data)
+    }
 
-  // POST - /auth/change-email
-  public static async ChangeEmail(data: ChangeEmailRequest): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/change-email`
-    await UseServer.post<ChangeEmailRequest, void>(endpoint, data)
-  }
+    // POST - /auth/change-email
+    public static async ChangeEmail(data: ChangeEmailRequest): Promise<void> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/change-email`
+        await UseServer.post<ChangeEmailRequest, void>(endpoint, data)
+    }
 
-  // POST - /auth/send-email-verification
-  public static async SendEmailVerification(
-    data: SendEmailVerificationRequest
-  ): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/send-email-verification`
-    await UseServer.post<SendEmailVerificationRequest, void>(endpoint, data)
-  }
+    // POST - /auth/send-email-verification
+    public static async SendEmailVerification(
+        data: SendEmailVerificationRequest
+    ): Promise<void> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/send-email-verification`
+        await UseServer.post<SendEmailVerificationRequest, void>(endpoint, data)
+    }
 
-  // POST - /auth/verify-email
-  /*
+    // POST - /auth/verify-email
+    /*
    Need: 🔥🔥
    I'll pass 
    {
@@ -150,32 +151,24 @@ export default class UserService {
 
    You return new data of user
   */
-  public static async VerifyEmail(data: VerifyEmailRequest): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/verify-email`
-    await UseServer.post<VerifyEmailRequest, void>(endpoint, data)
-  }
+    public static async VerifyEmail(data: VerifyEmailRequest): Promise<void> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/verify-email`
+        await UseServer.post<VerifyEmailRequest, void>(endpoint, data)
+    }
 
-  // POST - /auth/change-contact-number
-  public static async ChangeContactNumber(
-    data: ChangeContactNumberRequest
-  ): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/change-contact-number`
-    await UseServer.post<ChangeContactNumberRequest, void>(endpoint, data)
-  }
+    // POST - /auth/verify-otp
+    public static async VerifyContactNumber(
+        data: VerifyContactNumberRequest
+    ): Promise<AxiosResponse<VerifyContactResource>> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/auth/verify-otp`
+        return await UseServer.post<VerifyContactNumberRequest, VerifyContactResource>(endpoint, data)
+    }
 
-  // POST - /auth/send-contact-number-verification
-  public static async SendContactNumberVerification(
-    data: VerifyOTPRequest
-  ): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/send-contact-number-verification`
-    await UseServer.post<ChangeContactNumberRequest, void>(endpoint, data)
-  }
-
-  // POST - /auth/verify-otp
-  public static async VerifyContactNumber(
-    data: VerifyContactNumberRequest
-  ): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/auth/verify-otp`
-    await UseServer.post<ChangeContactNumberRequest, void>(endpoint, data)
-  }
+    // POST - /auth/change-contact-number
+    public static async ChangeContactNumber(
+        data: ChangeContactNumberRequest
+    ): Promise<void> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/change-contact-number`
+        await UseServer.post<ChangeContactNumberRequest, void>(endpoint, data)
+    }
 }
