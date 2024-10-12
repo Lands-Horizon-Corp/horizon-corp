@@ -4,31 +4,53 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"io"
 	"math/big"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 )
+
+func GenerateSalt(length int) (string, error) {
+	salt := make([]byte, length)
+	_, err := rand.Read(salt)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(salt), nil
+}
 
 func HashPassword(password string) (string, error) {
 	if password == "" {
 		return "", errors.New("password cannot be empty")
 	}
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost+2) // Increase cost by 2
+	salt, err := GenerateSalt(12)
 	if err != nil {
 		return "", err
 	}
-	return string(hashedPassword), nil
+	saltedPassword := fmt.Sprintf("%s%s", password, salt)
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(saltedPassword), bcrypt.DefaultCost+2) // Increase cost by 2
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s:%s", base64.StdEncoding.EncodeToString(hashedPassword), salt), nil
 }
 
 func VerifyPassword(hashedPassword, password string) bool {
 	if hashedPassword == "" {
 		return false
 	}
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
-	return err != nil
+	parts := strings.Split(hashedPassword, ":")
+	if len(parts) != 2 {
+		return false
+	}
+	hashedPwd, salt := parts[0], parts[1]
+	saltedPassword := fmt.Sprintf("%s%s", password, salt)
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(saltedPassword))
+	return err == nil
 }
 
 func Encrypt(data []byte, key []byte) ([]byte, error) {
