@@ -6,6 +6,7 @@ import (
 )
 
 type AdminResource struct {
+	AccountType       string             `json:"accountType"`
 	ID                uint               `json:"id"`
 	FirstName         string             `json:"firstName"`
 	LastName          string             `json:"lastName"`
@@ -33,6 +34,7 @@ func ToResourceAdmin(admin models.Admin) AdminResource {
 	}
 
 	return AdminResource{
+		AccountType:       "Admin",
 		ID:                admin.ID,
 		FirstName:         admin.FirstName,
 		LastName:          admin.LastName,
