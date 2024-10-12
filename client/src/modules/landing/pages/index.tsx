@@ -1,8 +1,8 @@
 // assets
-import home_image_1 from '@/assets/images/home_image_1.webp'
-import bg_element_4 from '@/assets/images/bg_element_4.webp'
-import bg_element_5 from '@/assets/images/bg_element_5.webp'
-import home_image_2 from '@/assets/images/home_image_2.webp'
+import home_image_1 from '@/assets/images/landing-page/home_image_1.webp'
+import bg_element_4 from '@/assets/images/landing-page/bg_element_4.webp'
+import bg_element_5 from '@/assets/images/landing-page/bg_element_5.webp'
+import home_image_2 from '@/assets/images/landing-page/home_image_2.webp'
 
 // Assets
 import { Button } from '@/components/ui/button'
