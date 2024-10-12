@@ -3,6 +3,7 @@ package controllers
 import (
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests/auth_requests"
+	"horizon/server/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -13,17 +14,20 @@ type AuthController struct {
 	employeeRepo *repositories.EmployeeRepository
 	ownerRepo    *repositories.OwnerRepository
 	memberRepo   *repositories.MemberRepository
+	emailService *services.EmailService
 }
 
 func NewAuthController(adminRepo *repositories.AdminRepository,
 	employeeRepo *repositories.EmployeeRepository,
 	ownerRepo *repositories.OwnerRepository,
-	memberRepo *repositories.MemberRepository) *AuthController {
+	memberRepo *repositories.MemberRepository,
+	emailService *services.EmailService) *AuthController {
 	return &AuthController{
 		adminRepo:    adminRepo,
 		employeeRepo: employeeRepo,
 		ownerRepo:    ownerRepo,
 		memberRepo:   memberRepo,
+		emailService: emailService,
 	}
 }
 
