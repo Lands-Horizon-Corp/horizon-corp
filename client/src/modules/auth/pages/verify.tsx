@@ -26,7 +26,7 @@ const Verify = ({}: Props) => {
     useEffect(() => {
         if (!currentUser) return
 
-        if (currentUser.status === 'Pending')
+        if (currentUser.status === 'Not Allowed')
             return setDisplay('account-cancelled')
 
         if (currentUser.status === 'Verified')
