@@ -22,7 +22,7 @@ type UserClaims struct {
 	IsEmailVerified   bool      `json:"isEmailVerified"`
 	IsContactVerified bool      `json:"isContactVerified"`
 	ContactNumber     string    `json:"contactNumber"`
-	MediaID           uint      `json:"mediaID"`
+	MediaID           *uint     `json:"mediaID"`
 	jwt.StandardClaims
 }
 

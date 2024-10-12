@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests/auth_requests"
 	"net/http"
@@ -38,7 +39,41 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(req)
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Save sa database
+	if req.AccountType == "Member" {
+		member := models.Member{
+			FirstName:         req.FirstName,
+			LastName:          req.LastName,
+			MiddleName:        req.MiddleName,
+			PermanentAddress:  req.PermanentAddress,
+			Description:       "",
+			Birthdate:         req.Birthdate,
+			Username:          req.Username,
+			Email:             req.Email,
+			Password:          req.Password,
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			ContactNumber:     req.ContactNumber,
+			MediaID:           nil,
+		}
+		if err := c.memberRepo.Create(&member); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+	} else if req.AccountType == "Owner" {
+		fmt.Println(req.AccountType)
+	} else if req.AccountType == "Employee" {
+		fmt.Println(req.AccountType)
+	} else if req.AccountType == "Admin" {
+		fmt.Println(req.AccountType)
+	}
+	// Send ng email notification
+	// Send ng otp notification
 }
 func (c *AuthController) SignIn(ctx *gin.Context)  {}
 func (c *AuthController) SignOut(ctx *gin.Context) {}

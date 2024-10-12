@@ -45,6 +45,7 @@ export default class UserService {
     data: SignUpRequest
   ): Promise<AxiosResponse<SignUpResource>> {
     const endpoint = `${UserService.BASE_ENDPOINT}/signup`
+    data.birthdate = new Date()
     return await UseServer.post<SignUpRequest, SignUpResource>(
       endpoint,
       data
