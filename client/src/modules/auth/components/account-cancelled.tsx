@@ -24,7 +24,7 @@ const AccountCancelled = ({ userData, onBack }: Props) => {
             <div className="relative my-8 rounded-full border-4 border-[#ED6E6E]">
                 <UserAvatar
                     className="size-28"
-                    src={userData?.media.url ?? ''}
+                    src={userData?.media?.downloadURL ?? ''}
                     fallback={userData?.username.charAt(0) ?? '-'}
                 />
                 <WarningCircleIcon className="absolute -bottom-1 -right-1 size-6 text-[#ED6E6E]" />
