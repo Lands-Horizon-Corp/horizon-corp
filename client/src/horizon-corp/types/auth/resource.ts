@@ -1,5 +1,9 @@
 import { AccountType } from '..'
 
+const ACCOUNT_STATUS = ['Pending', 'Verified', 'Not Allowed'] as const
+
+export type AccountStatus = (typeof ACCOUNT_STATUS)[number]
+
 export interface UserData {
     id: number
     username: string
@@ -12,6 +16,7 @@ export interface UserData {
     createdAt: Date
     email: string
     accountType: AccountType
+    status: AccountStatus
     isEmailVerified: boolean
     isContactVerified: boolean
 }
