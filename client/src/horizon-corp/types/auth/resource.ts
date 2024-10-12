@@ -17,7 +17,7 @@ export interface UserData {
     status: AccountStatus
     isEmailVerified: boolean
     isContactVerified: boolean
-    media : MediaResource
+    media? : MediaResource
 }
 
 export interface SignUpResource extends UserData {}
