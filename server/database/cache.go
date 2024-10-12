@@ -24,5 +24,7 @@ func NewCacheService(cfg *config.AppConfig, logger *zap.Logger) (*CacheService, 
 		return nil, errors.New("could not connect to Redis")
 	}
 
+	logger.Info("Successfully connected to Redis")
+
 	return &CacheService{Client: client}, nil
 }
