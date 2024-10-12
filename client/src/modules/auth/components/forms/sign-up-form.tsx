@@ -436,7 +436,7 @@ const SignUpForm = ({
                     <FormErrorMessage errorMessage={firstError} />
                     <Button
                         type="submit"
-                        disabled={loading || error !== null || readOnly}
+                        disabled={loading || readOnly}
                     >
                         {loading ? <LoadingCircle /> : 'Submit'}
                     </Button>
