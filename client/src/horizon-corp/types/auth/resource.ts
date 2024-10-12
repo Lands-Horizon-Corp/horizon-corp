@@ -1,8 +1,6 @@
 import { AccountType, MediaResource } from '..'
 
-const ACCOUNT_STATUS = ['Pending', 'Verified', 'Not Allowed'] as const
-
-export type AccountStatus = (typeof ACCOUNT_STATUS)[number]
+export type AccountStatus = 'Pending' | 'Verified' | 'Not Allowed'
 
 export interface UserData {
     id: number
