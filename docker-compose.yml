@@ -15,22 +15,11 @@ services:
       - "VITE_CLIENT_PORT=${CLIENT_PORT}"
       - "VITE_CLIENT_SERVER_URL=${CLIENT_SERVER_URL}"
       - "VITE_CLIENT_DOCUMENT_URL=${CLIENT_DOCUMENT_URL}"
-    networks:
-      - app-network
-
-  vitepress:
-    build:
-      context: ./document
-      dockerfile: Dockerfile
-    ports:
-      - "${DOCUMENT_FORWARD_PORT}:${DOCUMENT_PORT}"
-    volumes:
-      - ./document:/document
-      - /document/node_modules
-    environment:
-      - "DOCUMENT_FORWARD_PORT=${DOCUMENT_FORWARD_PORT}"
-      - "DOCUMENT_PORT=${DOCUMENT_PORT}"
-      - "DOCUMENT_SERVER_URL=${DOCUMENT_SERVER_URL}"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -69,6 +58,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - app-network
 
@@ -89,14 +80,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test:
-        [
-          "CMD",
-          "mysql",
-          "--user=${DB_USERNAME}",
-          "--password=${DB_PASSWORD}",
-          "--execute=SELECT 1",
-        ]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 20s
       retries: 10
       start_period: 60s
@@ -104,57 +88,6 @@ services:
     networks:
       - app-network
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    platform: linux/amd64
-    env_file: ./.env
-    ports:
-      - "8081:80"
-    environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
-      - PMA_USER=${DB_USERNAME}
-      - PMA_PASSWORD=${DB_PASSWORD}
-    depends_on:
-      - db
-    networks:
-      - app-network
-
-  flyway:
-    build:
-      context: ./migration
-      dockerfile: Dockerfile
-    env_file: ./.env
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DB_HOST: db
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_CHARSET: ${DB_CHARSET}
-      DB_PARSE_TIME: ${DB_PARSE_TIME}
-    entrypoint: ["flyway", "migrate"]
-    networks:
-      - app-network
-
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    restart: always
-    ports:
-      - "9000:9000"
-      - "38813:38813"
-    environment:
-      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY}
-    volumes:
-      - minio_data:/data
-    command: server /data --console-address ":38813"
-    networks:
-      - app-network
   redis:
     image: redis:latest
     container_name: redis
@@ -166,6 +99,11 @@ services:
       - REDIS_PASSWORD=${CACHE_PASSWORD}
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 3
+      timeout: 10s
     networks:
       - app-network
 
@@ -191,14 +129,21 @@ services:
     ports:
       - "${EMAIL_PORT:-1025}:${EMAIL_PORT:-1025}"
       - "8025:8025"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8025"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - app-network
+
 volumes:
   db_data:
   minio_data:
   node_modules:
   redis_data:
   redis_insight_data:
+
 networks:
   app-network:
     driver: bridge
