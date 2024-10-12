@@ -27,7 +27,7 @@ import { AccountType } from '@/horizon-corp/types'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 import useCountDown from '@/modules/auth/hooks/use-count-down'
-import UserService from '@/horizon-corp/server/auth/UserService'
+// import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { otpFormSchema } from '@/modules/auth/validations/otp-form'
 
@@ -62,7 +62,7 @@ const VerifyForm = ({
     readOnly = false,
     verifyMode = 'mobile',
     defaultValues = { code: '' },
-    onSuccess,
+    // onSuccess,
     onError,
 }: Props) => {
     const [resent, setResent] = useState(false)
@@ -74,11 +74,11 @@ const VerifyForm = ({
         defaultValues,
     })
 
-    const handleSubmit = async (data: TVerifyForm) => {
+    const handleSubmit = async (_data: TVerifyForm) => {
         setError(null)
         setLoading(true)
         try {
-            const parsedData = await otpFormSchema.parseAsync(data)
+            // const parsedData = await otpFormSchema.parseAsync(data)
             // const response = await UserService.VerifyEmail()
         } catch (e) {
             const errorMessage = handleAxiosError(e)

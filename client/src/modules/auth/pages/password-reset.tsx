@@ -27,7 +27,7 @@ const PasswordResetPage = (_props: Props) => {
     const [resetEntry, setResetEntry] = useState<{} | null>(null) // replace {} with type of reset entry
 
     useEffect(() => {
-        const { success, data } =
+        const { success } =
             PasswordResetPagePathSchema.safeParse(pathParams)
 
         if (!success) return setResetEntry(null)
@@ -46,7 +46,7 @@ const PasswordResetPage = (_props: Props) => {
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
                 {!done && resetEntry && (
-                    <ResetPasswordForm onSuccess={() => setDone(true)} />
+                    <ResetPasswordForm resetId="" onSuccess={() => setDone(true)} />
                 )}
                 {!done && !loading && !resetEntry && (
                     <div className="flex w-full flex-col gap-y-4 sm:w-[390px]">

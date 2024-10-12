@@ -20,7 +20,7 @@ import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 import { PASSWORD_MIN_LENGTH } from '@/modules/auth/constants'
-import UserService from '@/horizon-corp/server/auth/UserService'
+// import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 
 const ResetPasswordFormSchema = z
@@ -47,12 +47,12 @@ interface Props extends IAuthForm<TResetPasswordForm> {
 }
 
 const ResetPasswordForm = ({
-    resetId,
+    // resetId,
     readOnly,
     className,
     defaultValues = { password: '', confirmPassword: '' },
     onError,
-    onSuccess,
+    // onSuccess,
 }: Props) => {
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
@@ -63,10 +63,10 @@ const ResetPasswordForm = ({
         defaultValues,
     })
 
-    const onFormSubmit = async (data: TResetPasswordForm) => {
+    const onFormSubmit = async (_data: TResetPasswordForm) => {
         setLoading(true)
         try {
-            const parsedData = await ResetPasswordFormSchema.parseAsync(data)
+            // const parsedData = await ResetPasswordFormSchema.parseAsync(data)
             // const response = await UserService.ChangePassword({
             //     resetId,
             //     ...parsedData

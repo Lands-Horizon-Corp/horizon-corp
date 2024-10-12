@@ -1,8 +1,8 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
     Select,
@@ -29,7 +29,7 @@ import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { IBaseCompNoChild } from '@/types/component/base'
 import { handleAxiosError } from '@/horizon-corp/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+// import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
 
@@ -41,7 +41,7 @@ const SignInForm = ({
     defaultValues,
     className,
     readOnly,
-    onSuccess,
+    // onSuccess,
     onError,
 }: Props) => {
     const { loading, error, setError, setLoading } = useLoadingErrorState()
@@ -58,12 +58,12 @@ const SignInForm = ({
         },
     })
 
-    const onFormSubmit = async (data: TSignIn) => {
+    const onFormSubmit = async (_data: TSignIn) => {
         setError(null)
         setLoading(true)
         try {
-            const parsedData = await signInFormSchema.parse(data) // parse form data
-            const response = await UserService.SignIn(parsedData) // sign in and server return the user data along with auth cookie
+            // const parsedData = await signInFormSchema.parse(data) // parse form data
+            // const response = await UserService.SignIn(parsedData) // sign in and server return the user data along with auth cookie
             // onSuccess?.(response.data) // if onSuccess is given, trigger it and pass the data
         } catch (e) {
             const errorMessage = handleAxiosError(e)

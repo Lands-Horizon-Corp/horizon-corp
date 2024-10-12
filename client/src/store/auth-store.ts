@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { UserBase } from '@/types'
 import { UserData } from '@/horizon-corp/types'
 
 interface IAuthStore {
