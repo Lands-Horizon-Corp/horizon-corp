@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"horizon/server/internal/repositories"
+	"horizon/server/internal/requests/auth_requests"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -29,7 +32,14 @@ func NewAuthController(adminRepo *repositories.AdminRepository,
 func (c *AuthController) CurrentUser(ctx *gin.Context) {}
 
 // Basic Authentication
-func (c *AuthController) SignUp(ctx *gin.Context)  {}
+func (c *AuthController) SignUp(ctx *gin.Context) {
+	var req auth_requests.SignUpRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println(req)
+}
 func (c *AuthController) SignIn(ctx *gin.Context)  {}
 func (c *AuthController) SignOut(ctx *gin.Context) {}
 

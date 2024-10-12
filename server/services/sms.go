@@ -9,7 +9,6 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sns"
-	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
@@ -60,21 +59,4 @@ func (s *smsServiceImpl) SendSMS(ctx context.Context, to, message string) error 
 
 	s.logger.Info("SMS sent successfully", zap.String("to", to))
 	return nil
-}
-
-func SMSRun(lc fx.Lifecycle, smsService SMSService, logger *zap.Logger) {
-	lc.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			err := smsService.SendSMS(ctx, "+1234567890", "Hello from AWS SNS via UberFx!")
-			if err != nil {
-				logger.Error("Error sending test SMS", zap.Error(err))
-			} else {
-				logger.Info("Test SMS sent successfully")
-			}
-			return nil
-		},
-		OnStop: func(ctx context.Context) error {
-			return nil
-		},
-	})
 }
