@@ -1,4 +1,4 @@
-import { AccountType } from '..'
+import { AccountType, MediaResource } from '..'
 
 const ACCOUNT_STATUS = ['Pending', 'Verified', 'Not Allowed'] as const
 
@@ -19,6 +19,7 @@ export interface UserData {
     status: AccountStatus
     isEmailVerified: boolean
     isContactVerified: boolean
+    media : MediaResource
 }
 
 export interface SignUpResource extends UserData {}
