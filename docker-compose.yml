@@ -137,6 +137,26 @@ services:
     networks:
       - app-network
 
+  flyway:
+    build:
+      context: ./migration
+      dockerfile: Dockerfile
+    env_file: ./.env
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_CHARSET: ${DB_CHARSET}
+      DB_PARSE_TIME: ${DB_PARSE_TIME}
+    entrypoint: ["flyway", "migrate"]
+    networks:
+      - app-network
+
 volumes:
   db_data:
   minio_data:

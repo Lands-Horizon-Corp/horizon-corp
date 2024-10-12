@@ -226,7 +226,19 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, response)
 }
 
-func (c *AuthController) SignIn(ctx *gin.Context)  {}
+func (c *AuthController) SignIn(ctx *gin.Context) {
+	var req auth_requests.SignInRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+}
 func (c *AuthController) SignOut(ctx *gin.Context) {}
 
 // Password
