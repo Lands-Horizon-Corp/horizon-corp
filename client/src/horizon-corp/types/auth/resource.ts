@@ -2,6 +2,7 @@ import { AccountType } from '..'
 
 export interface UserData {
     id: number
+    username: string
     firstName: string
     middleName?: string
     lastName: string
