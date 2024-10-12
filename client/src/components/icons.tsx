@@ -19,6 +19,7 @@ import {
     PiNewspaper as ReportsIcon,
     PiUsersThree as Users3Icon,
     PiBuildingOffice as BuildingBranchIcon,
+    PiWarningCircleFill as WarningCircleIcon,
 } from 'react-icons/pi'
 import {
     HiOutlineSun as SunIcon,
@@ -137,6 +138,7 @@ export {
     SwitchCameraIcon,
     ChevronRightIcon,
     NotificationIcon,
+    WarningCircleIcon,
     VerifiedPatchIcon,
     LoadingCircleIcon,
     BuildingBranchIcon,

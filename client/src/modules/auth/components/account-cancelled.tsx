@@ -1,9 +1,8 @@
 import { useRouter } from '@tanstack/react-router'
 
-import { PiWarningCircleFill } from 'react-icons/pi'
-
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
+import { WarningCircleIcon } from '@/components/icons'
 
 import { UserBase } from '@/types'
 import { HELP_CONTACT } from '../constants'
@@ -28,7 +27,7 @@ const AccountCancelled = ({ userData, onBack }: Props) => {
                     src={userData?.profilePicture?.url ?? ''}
                     fallback={userData?.username.charAt(0) ?? '-'}
                 />
-                <PiWarningCircleFill className="absolute -bottom-1 -right-1 size-6 text-[#ED6E6E]" />
+                <WarningCircleIcon className="absolute -bottom-1 -right-1 size-6 text-[#ED6E6E]" />
             </div>
             <p className="text-center text-foreground/80">
                 Your account has been canceled. Please contact the number below

@@ -9,6 +9,7 @@ import bg_element_3 from '@/assets/images/landing-page/bg_element_3.webp'
 // components
 import Footer from '@/components/footers/landing-footer'
 import LandingNav from '@/components/navbars/landing-nav'
+import { VersionAndFeedBack } from '@/components/version'
 
 const PublicLayout = () => {
     return (
@@ -34,6 +35,8 @@ const PublicLayout = () => {
                     <Outlet />
                     <Footer />
                 </main>
+
+                <VersionAndFeedBack />
             </div>
         </>
     )
