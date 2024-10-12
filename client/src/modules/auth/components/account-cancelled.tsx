@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import { WarningCircleIcon } from '@/components/icons'
 
-import { UserBase } from '@/types'
 import { HELP_CONTACT } from '../constants'
+import { UserData } from '@/horizon-corp/types'
 import { IBaseComp } from '@/types/component/base'
 
 interface Props extends IBaseComp {
-    userData: UserBase // TODO: Change based on auth response resource fromn @/horizon-corp/types/auth/...
+    userData: UserData // TODO: Change based on auth response resource fromn @/horizon-corp/types/auth/...
     onBack?: () => void
 }
 
@@ -24,7 +24,7 @@ const AccountCancelled = ({ userData, onBack }: Props) => {
             <div className="relative my-8 rounded-full border-4 border-[#ED6E6E]">
                 <UserAvatar
                     className="size-28"
-                    src={userData?.profilePicture?.url ?? ''}
+                    src={userData?.media.url ?? ''}
                     fallback={userData?.username.charAt(0) ?? '-'}
                 />
                 <WarningCircleIcon className="absolute -bottom-1 -right-1 size-6 text-[#ED6E6E]" />

@@ -26,7 +26,7 @@ import FormErrorMessage from '@/modules/auth/components/form-error-message'
 import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+// import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { userAccountTypeSchema, emailSchema } from '@/modules/auth/validations'
 
@@ -44,7 +44,6 @@ interface Props extends IAuthForm<TForgotPasswordEmail> {
 const ForgotPasswordEmail = ({
     readOnly,
     className,
-    onSuccess,
     onError,
     defaultValues = { email: '', accountType: 'Member' },
 }: Props) => {
@@ -57,7 +56,7 @@ const ForgotPasswordEmail = ({
         defaultValues,
     })
 
-    const onFormSubmit = async (data: TForgotPasswordEmail) => {
+    const onFormSubmit = async (_data: TForgotPasswordEmail) => {
         // TODO: Logic to create a reset entry and will return
         // authService.resetViaEmail(email, accountType) // return uuid string
         // modify code bellow
@@ -65,7 +64,7 @@ const ForgotPasswordEmail = ({
         setError(null)
         setLoading(true)
         try {
-            const parsedData = await emailFormSchema.parseAsync(data) // parse form data
+            // const parsedData = await emailFormSchema.parseAsync(data) // parse form data
             // const response = await UserService.forgotPassword(parsedData) // send user email and account type to server for reset password link
             // onSuccess?.(response.data)
         } catch (e) {
@@ -171,7 +170,7 @@ const ForgotPasswordEmail = ({
                     <FormErrorMessage errorMessage={firstError || error} />
                     <Button
                         type="submit"
-                        disabled={loading || error !== null || readOnly}
+                        disabled={loading || readOnly}
                     >
                         {loading ? <LoadingCircle /> : 'Confirm Email'}
                     </Button>

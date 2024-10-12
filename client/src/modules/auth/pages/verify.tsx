@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useRouter } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
@@ -8,8 +7,8 @@ import VerifyRoot from '@/modules/auth/components/verify-root'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import AccountCancelled from '@/modules/auth/components/account-cancelled'
 
-import { UserBase, UserStatus } from '@/types'
 import useCurrentUser from '@/hooks/use-current-user'
+import { UserData } from '@/horizon-corp/types'
 
 interface Props {}
 
@@ -22,22 +21,22 @@ const Verify = ({}: Props) => {
         null | 'verify' | 'verify-complete' | 'account-cancelled'
     >()
 
-    const router = useRouter()
+    // const router = useRouter()
 
     useEffect(() => {
         if (!currentUser) return
 
-        if (currentUser.status === UserStatus['Not allowed'])
+        if (currentUser.status === 'Pending')
             return setDisplay('account-cancelled')
 
-        if (currentUser.status === UserStatus.Verified)
+        if (currentUser.status === 'Verified')
             return setDisplay('verify-complete')
 
-        if (!currentUser.validContactNumber || !currentUser.validEmail)
+        if (!currentUser.isContactVerified || !currentUser.isEmailVerified)
             setDisplay('verify')
     }, [currentUser])
 
-    const autoRedirectAccount = (currentUser: UserBase) => {
+    const autoRedirectAccount = (_currentUser: UserData) => {
         // TODO Redirect once verified
         // if (currentUser.status === UserStatus.Verified) {
         //     // TODO: Auto redirect to page the account belongs
@@ -64,7 +63,7 @@ const Verify = ({}: Props) => {
                     <>
                         {display === 'verify' && (
                             <VerifyRoot
-                                currentUser={currentUser}
+                                userData={currentUser}
                                 onVerifyChange={(newUserData) =>
                                     setCurrentUser(newUserData)
                                 }
@@ -87,14 +86,13 @@ const Verify = ({}: Props) => {
                                 </p>
                                 <UserAvatar
                                     className="my-8 size-28"
-                                    src={currentUser?.profilePicture?.url ?? ''}
+                                    src={currentUser.media.url ?? ''}
                                     fallback={
                                         currentUser?.username.charAt(0) ?? '-'
                                     }
                                 />
                                 <p className="text-center">
-                                    {currentUser.status ===
-                                        UserStatus.Pending && (
+                                    {currentUser.status === "Pending" && (
                                         <span>
                                             Please wait for 7 working days for
                                             validation before you can use your
@@ -122,7 +120,7 @@ const Verify = ({}: Props) => {
                             </div>
                         )}
                         {display === 'account-cancelled' && (
-                            <AccountCancelled currentUser={currentUser} />
+                            <AccountCancelled userData={currentUser} />
                         )}
                     </>
                 )}
