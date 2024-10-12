@@ -33,6 +33,7 @@ func main() {
 			// Services
 			services.NewEmailService,
 			services.NewSMSService,
+			services.NewOTPService,
 
 			// Authentication
 			auth.NewAdminAuthService,
