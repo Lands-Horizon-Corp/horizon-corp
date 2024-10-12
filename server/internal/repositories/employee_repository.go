@@ -15,26 +15,29 @@ func NewEmployeeRepository(db *gorm.DB) *EmployeeRepository {
 }
 
 func (r *EmployeeRepository) Create(employee *models.Employee) error {
-	return r.DB.Create(employee).Error
+	err := r.DB.Create(employee).Error
+	return handleDBError(err)
 }
 
 func (r *EmployeeRepository) GetAll() ([]models.Employee, error) {
 	var employee []models.Employee
 	err := r.DB.Find(&employee).Error
-	return employee, err
+	return employee, handleDBError(err)
 }
 
 func (r *EmployeeRepository) GetByID(id uint) (models.Employee, error) {
 	var employee models.Employee
 	err := r.DB.First(&employee, id).Error
-	return employee, err
+	return employee, handleDBError(err)
 }
 
 func (r *EmployeeRepository) Update(id uint, employee *models.Employee) error {
 	employee.ID = id
-	return r.DB.Save(employee).Error
+	err := r.DB.Save(employee).Error
+	return handleDBError(err)
 }
 
 func (r *EmployeeRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.Employee{}, id).Error
+	err := r.DB.Delete(&models.Employee{}, id).Error
+	return handleDBError(err)
 }

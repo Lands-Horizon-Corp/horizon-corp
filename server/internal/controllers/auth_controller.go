@@ -1,8 +1,6 @@
 package controllers
 
 import (
-	"fmt"
-	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests/auth_requests"
 	"net/http"
@@ -44,34 +42,88 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	// Save sa database
-	if req.AccountType == "Member" {
-		member := models.Member{
-			FirstName:         req.FirstName,
-			LastName:          req.LastName,
-			MiddleName:        req.MiddleName,
-			PermanentAddress:  req.PermanentAddress,
-			Description:       "",
-			Birthdate:         req.Birthdate,
-			Username:          req.Username,
-			Email:             req.Email,
-			Password:          req.Password,
-			IsEmailVerified:   false,
-			IsContactVerified: false,
-			ContactNumber:     req.ContactNumber,
-			MediaID:           nil,
-		}
-		if err := c.memberRepo.Create(&member); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	} else if req.AccountType == "Owner" {
-		fmt.Println(req.AccountType)
-	} else if req.AccountType == "Employee" {
-		fmt.Println(req.AccountType)
-	} else if req.AccountType == "Admin" {
-		fmt.Println(req.AccountType)
-	}
+	// if req.AccountType == "Member" {
+	// 	member := models.Member{
+	// 		FirstName:         req.FirstName,
+	// 		LastName:          req.LastName,
+	// 		MiddleName:        req.MiddleName,
+	// 		PermanentAddress:  req.PermanentAddress,
+	// 		Description:       "",
+	// 		Birthdate:         req.Birthdate,
+	// 		Username:          req.Username,
+	// 		Email:             req.Email,
+	// 		Password:          req.Password,
+	// 		IsEmailVerified:   false,
+	// 		IsContactVerified: false,
+	// 		ContactNumber:     req.ContactNumber,
+	// 		MediaID:           nil,
+	// 	}
+	// 	if err := c.memberRepo.Create(&member); err != nil {
+	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
+	// } else if req.AccountType == "Owner" {
+	// 	owner := models.Owner{
+	// 		FirstName:         req.FirstName,
+	// 		LastName:          req.LastName,
+	// 		MiddleName:        req.MiddleName,
+	// 		PermanentAddress:  req.PermanentAddress,
+	// 		Description:       "",
+	// 		Birthdate:         req.Birthdate,
+	// 		Username:          req.Username,
+	// 		Email:             req.Email,
+	// 		Password:          req.Password,
+	// 		IsEmailVerified:   false,
+	// 		IsContactVerified: false,
+	// 		ContactNumber:     req.ContactNumber,
+	// 		MediaID:           nil,
+	// 	}
+	// 	if err := c.ownerRepo.Create(&owner); err != nil {
+	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
+	// } else if req.AccountType == "Employee" {
+	// 	employee := models.Employee{
+	// 		FirstName:         req.FirstName,
+	// 		LastName:          req.LastName,
+	// 		MiddleName:        req.MiddleName,
+	// 		PermanentAddress:  req.PermanentAddress,
+	// 		Description:       "",
+	// 		Birthdate:         req.Birthdate,
+	// 		Username:          req.Username,
+	// 		Email:             req.Email,
+	// 		Password:          req.Password,
+	// 		IsEmailVerified:   false,
+	// 		IsContactVerified: false,
+	// 		ContactNumber:     req.ContactNumber,
+	// 		MediaID:           nil,
+	// 	}
+	// 	if err := c.employeeRepo.Create(&employee); err != nil {
+	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
+	// } else if req.AccountType == "Admin" {
+	// 	admin := models.Admin{
+	// 		FirstName:         req.FirstName,
+	// 		LastName:          req.LastName,
+	// 		MiddleName:        req.MiddleName,
+	// 		PermanentAddress:  req.PermanentAddress,
+	// 		Description:       "",
+	// 		Birthdate:         req.Birthdate,
+	// 		Username:          req.Username,
+	// 		Email:             req.Email,
+	// 		Password:          req.Password,
+	// 		IsEmailVerified:   false,
+	// 		IsContactVerified: false,
+	// 		ContactNumber:     req.ContactNumber,
+	// 		MediaID:           nil,
+	// 	}
+	// 	if err := c.adminRepo.Create(&admin); err != nil {
+	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	// 		return
+	// 	}
+	// }
+
 	// Send ng email notification
 	// Send ng otp notification
 }

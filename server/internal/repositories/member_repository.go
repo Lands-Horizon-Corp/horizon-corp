@@ -15,26 +15,29 @@ func NewMemberRepository(db *gorm.DB) *MemberRepository {
 }
 
 func (r *MemberRepository) Create(member *models.Member) error {
-	return r.DB.Create(member).Error
+	err := r.DB.Create(member).Error
+	return handleDBError(err)
 }
 
 func (r *MemberRepository) GetAll() ([]models.Member, error) {
 	var member []models.Member
 	err := r.DB.Find(&member).Error
-	return member, err
+	return member, handleDBError(err)
 }
 
 func (r *MemberRepository) GetByID(id uint) (models.Member, error) {
 	var member models.Member
 	err := r.DB.First(&member, id).Error
-	return member, err
+	return member, handleDBError(err)
 }
 
 func (r *MemberRepository) Update(id uint, member *models.Member) error {
 	member.ID = id
-	return r.DB.Save(member).Error
+	err := r.DB.Save(member).Error
+	return handleDBError(err)
 }
 
 func (r *MemberRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.Member{}, id).Error
+	err := r.DB.Delete(&models.Member{}, id).Error
+	return handleDBError(err)
 }

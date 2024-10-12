@@ -15,26 +15,29 @@ func NewOwnerRepository(db *gorm.DB) *OwnerRepository {
 }
 
 func (r *OwnerRepository) Create(owner *models.Owner) error {
-	return r.DB.Create(owner).Error
+	err := r.DB.Create(owner).Error
+	return handleDBError(err)
 }
 
 func (r *OwnerRepository) GetAll() ([]models.Owner, error) {
 	var owner []models.Owner
 	err := r.DB.Find(&owner).Error
-	return owner, err
+	return owner, handleDBError(err)
 }
 
 func (r *OwnerRepository) GetByID(id uint) (models.Owner, error) {
 	var owner models.Owner
 	err := r.DB.First(&owner, id).Error
-	return owner, err
+	return owner, handleDBError(err)
 }
 
 func (r *OwnerRepository) Update(id uint, owner *models.Owner) error {
 	owner.ID = id
-	return r.DB.Save(owner).Error
+	err := r.DB.Save(owner).Error
+	return handleDBError(err)
 }
 
 func (r *OwnerRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.Owner{}, id).Error
+	err := r.DB.Delete(&models.Owner{}, id).Error
+	return handleDBError(err)
 }
