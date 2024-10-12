@@ -15,19 +15,24 @@ import (
 )
 
 func GenerateSalt(length int) (string, error) {
+	if length < 16 {
+		return "", errors.New("salt length should be at least 16 bytes")
+	}
+
 	salt := make([]byte, length)
 	_, err := rand.Read(salt)
 	if err != nil {
 		return "", err
 	}
-	return base64.StdEncoding.EncodeToString(salt), nil
+
+	return base64.RawStdEncoding.EncodeToString(salt), nil
 }
 
 func HashPassword(password string) (string, error) {
 	if password == "" {
 		return "", errors.New("password cannot be empty")
 	}
-	salt, err := GenerateSalt(12)
+	salt, err := GenerateSalt(16)
 	if err != nil {
 		return "", err
 	}
