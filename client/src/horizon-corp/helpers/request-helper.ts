@@ -10,8 +10,8 @@ export const handleAxiosError = (error: unknown): string => {
                 return `Error: ${error.message}`
             }
         }
-        const data = error.response.data as ErrorDetails
-        return data.message
+        const data = error.response.data as ErrorDetails        
+        return data.message ?? error.message
     } else {
         return 'An unexpected error occurred. Please try again.'
     }

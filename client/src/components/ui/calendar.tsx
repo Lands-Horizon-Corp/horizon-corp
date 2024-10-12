@@ -1,9 +1,13 @@
+'use client'
+
 import * as React from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { DayPicker } from 'react-day-picker'
+import { DayPicker, useDayPicker, useNavigation } from 'react-day-picker'
 
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger } from './select'
+import { format, setMonth } from 'date-fns'
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -21,7 +25,13 @@ function Calendar({
                 months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
                 month: 'space-y-4',
                 caption: 'flex justify-center pt-1 relative items-center',
-                caption_label: 'text-sm font-medium',
+                caption_label: cn(
+                    'text-sm font-medium',
+                    (props.captionLayout === 'dropdown' ||
+                        props.captionLayout === 'dropdown-buttons') &&
+                        'hidden'
+                ),
+                caption_dropdowns: 'flex gap-1 items-center',
                 nav: 'space-x-1 flex items-center',
                 nav_button: cn(
                     buttonVariants({ variant: 'outline' }),
@@ -52,10 +62,114 @@ function Calendar({
                 ...classNames,
             }}
             components={{
-                IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-                IconRight: ({ ...props }) => (
-                    <ChevronRight className="h-4 w-4" />
-                ),
+                IconLeft: () => <ChevronLeft className="size-4" />,
+                IconRight: () => <ChevronRight className="size-4" />,
+                Dropdown: ({ name, value }) => {
+                    const {
+                        fromDate,
+                        fromMonth,
+                        fromYear,
+                        toDate,
+                        toMonth,
+                        toYear,
+                    } = useDayPicker()
+
+                    const { goToMonth, currentMonth } = useNavigation()
+
+                    if (name === 'months') {
+                        const selectItems = Array.from(
+                            { length: 12 },
+                            (_, i) => ({
+                                value: i.toString(),
+                                label: format(setMonth(new Date(), i), 'MMM'),
+                            })
+                        )
+                        return (
+                            <Select
+                                onValueChange={(newValue) => {
+                                    const newDate = new Date(currentMonth)
+                                    newDate.setMonth(parseInt(newValue))
+                                    goToMonth(newDate)
+                                }}
+                                value={value?.toString()}
+                            >
+                                <SelectTrigger className="text-sm">
+                                    {format(currentMonth, 'MMM')}
+                                </SelectTrigger>
+                                <SelectContent className="bg-background/70 backdrop-blur-md">
+                                    {selectItems.map((selectItem) => (
+                                        <SelectItem
+                                            className={cn(
+                                                'text-foreground/80 duration-200 ease-in-out hover:font-medium hover:text-foreground',
+                                                value?.toString() ==
+                                                    selectItem.value &&
+                                                    'bg-secondary/80 text-foreground'
+                                            )}
+                                            value={selectItem.value}
+                                            key={selectItem.value}
+                                        >
+                                            {selectItem.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )
+                    } else if (name === 'years') {
+                        const earliestYear =
+                            fromYear ||
+                            fromMonth?.getFullYear() ||
+                            fromDate?.getFullYear()
+                        const latestYear =
+                            toYear ||
+                            toMonth?.getFullYear() ||
+                            toDate?.getFullYear()
+
+                        let selectItems: { label: string; value: string }[] = []
+
+                        if (earliestYear && latestYear) {
+                            const yearsLength = latestYear - earliestYear + 1
+                            selectItems = Array.from(
+                                { length: yearsLength },
+                                (_, i) => ({
+                                    label: (earliestYear + i).toString(),
+                                    value: (earliestYear + i).toString(),
+                                })
+                            )
+                        }
+
+                        return (
+                            <Select
+                                onValueChange={(newValue) => {
+                                    const newDate = new Date(currentMonth)
+                                    newDate.setFullYear(parseInt(newValue))
+                                    goToMonth(newDate)
+                                }}
+                                value={value?.toString()}
+                            >
+                                <SelectTrigger className="text-sm">
+                                    {currentMonth.getFullYear()}
+                                </SelectTrigger>
+                                <SelectContent className="bg-background/70 backdrop-blur-md">
+                                    {selectItems.map((selectItem) => (
+                                        <SelectItem
+                                            className={cn(
+                                                'text-foreground/80 duration-200 ease-in-out hover:font-medium hover:text-foreground',
+                                                value?.toString() ==
+                                                    selectItem.value &&
+                                                    'bg-secondary/80 text-foreground'
+                                            )}
+                                            value={selectItem.value}
+                                            key={selectItem.value}
+                                        >
+                                            {selectItem.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        )
+                    }
+                    return null
+                },
             }}
             {...props}
         />

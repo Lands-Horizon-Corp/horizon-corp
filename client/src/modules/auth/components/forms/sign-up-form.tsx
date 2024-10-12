@@ -24,6 +24,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { VerifiedPatchIcon } from '@/components/icons'
 import PasswordInput from '@/components/ui/password-input'
+import InputDatePicker from '@/components/input-date-picker'
 import LoadingCircle from '@/components/loader/loading-circle'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
@@ -34,7 +35,6 @@ import { handleAxiosError } from '@/horizon-corp/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
-import { format } from 'date-fns'
 
 type TSignUpForm = z.infer<typeof signUpFormSchema>
 
@@ -45,7 +45,7 @@ const defaultValue: TSignUpForm = {
     contactNumber: '',
     email: '',
     permanentAddress: '',
-    birthdate: format(new Date(), 'yyyy-MM-dd'),
+    birthdate: new Date(),
     firstName: '',
     lastName: '',
     middleName: '',
@@ -79,11 +79,7 @@ const SignUpForm = ({
         try {
             // parse form data
             const parsedData = await signUpFormSchema.parseAsync(data)
-            const response = await UserService.SignUp(parsedData).catch(
-                (error) => {
-                    console.log(error)
-                }
-            ) // once success, the server returns the created user with authorization cookie
+            const response = await UserService.SignUp(parsedData) // once success, the server returns the created user with authorization cookie
             // setCurrentUser(response.data) // then set it to the authStore
             // onSuccess?.(response.data)
             // router.navigate({ to : "/auth/verify" }) // redirect to verify page
@@ -250,11 +246,14 @@ const SignUpForm = ({
                                         Birth Date
                                     </FormLabel>
                                     <FormControl>
-                                        <Input
-                                            {...field}
+                                        <InputDatePicker
                                             id={field.name}
-                                            autoComplete="bday"
-                                            placeholder="YYYY-MM-DD"
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            captionLayout='dropdown-buttons'
+                                            disabled={(date) =>
+                                                date > new Date()
+                                            }
                                         />
                                     </FormControl>
                                 </div>
@@ -433,11 +432,8 @@ const SignUpForm = ({
                     />
                 </fieldset>
                 <div className="mt-4 flex flex-col space-y-2">
-                    <FormErrorMessage errorMessage={firstError} />
-                    <Button
-                        type="submit"
-                        disabled={loading || readOnly}
-                    >
+                    <FormErrorMessage errorMessage={firstError || error } />
+                    <Button type="submit" disabled={loading || readOnly}>
                         {loading ? <LoadingCircle /> : 'Submit'}
                     </Button>
                 </div>
