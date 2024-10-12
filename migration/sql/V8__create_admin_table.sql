@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `admin` (
     `is_email_verified` TINYINT(1) DEFAULT 0,
     `is_contact_verified` TINYINT(1) DEFAULT 0,
 
-    `media_id` BIGINT UNSIGNED,
+    `media_id` BIGINT UNSIGNED NULL,
     PRIMARY KEY (`id`),
     INDEX `idx_admin_deleted_at` (`deleted_at`),
     FOREIGN KEY (`media_id`) REFERENCES `media`(`id`) ON DELETE CASCADE ON UPDATE CASCADE

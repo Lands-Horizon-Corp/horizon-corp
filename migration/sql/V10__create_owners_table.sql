@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `owner` (
+CREATE TABLE IF NOT EXISTS `owners` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `first_name` VARCHAR(255) NOT NULL,
     `last_name` VARCHAR(255) NOT NULL,
@@ -16,13 +16,13 @@ CREATE TABLE IF NOT EXISTS `owner` (
     `is_email_verified` TINYINT(1) DEFAULT 0,
     `is_contact_verified` TINYINT(1) DEFAULT 0,
     
-    `media_id` BIGINT UNSIGNED,
+    `media_id` BIGINT UNSIGNED NULL,
     PRIMARY KEY (`id`),
     INDEX `idx_owner_deleted_at` (`deleted_at`),
     FOREIGN KEY (`media_id`) REFERENCES `media`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `owner` 
+INSERT INTO `owners` 
     (`first_name`, `last_name`, `permanent_address`, `description`, `birthdate`, `username`, `email`, `password`, `media_id`, `created_at`, `updated_at`, `deleted_at`, `contact_number`)
 VALUES 
     ('John', 'Doe', '123 Main St, Anytown, USA', 'A software engineer with 5 years of experience.', '1988-01-15', 'johndoe', 'johndoe@example.com', 'hashed_password_1', 1, NOW(), NOW(), NULL, '09194893088'),
