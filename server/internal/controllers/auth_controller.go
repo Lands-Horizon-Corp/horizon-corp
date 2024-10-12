@@ -6,7 +6,6 @@ import (
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests/auth_requests"
-	"horizon/server/internal/resources"
 	"horizon/server/services"
 	"net/http"
 
@@ -14,36 +13,85 @@ import (
 )
 
 type AuthController struct {
+
+	// Database
 	adminRepo    *repositories.AdminRepository
 	employeeRepo *repositories.EmployeeRepository
 	ownerRepo    *repositories.OwnerRepository
 	memberRepo   *repositories.MemberRepository
+
+	// Auth
+	adminAuthService    *auth.AdminAuthService
+	employeeAuthService *auth.EmployeeAuthService
+	memberAuthService   *auth.MemberAuthService
+	ownerAuthService    *auth.OwnerAuthService
+
+	// Services
 	otpService   *services.OTPService
 	cfg          *config.AppConfig
 	tokenService auth.TokenService
 }
 
 func NewAuthController(
+	// Database
 	adminRepo *repositories.AdminRepository,
 	employeeRepo *repositories.EmployeeRepository,
 	ownerRepo *repositories.OwnerRepository,
 	memberRepo *repositories.MemberRepository,
+
+	// Auth
+	adminAuthService *auth.AdminAuthService,
+	employeeAuthService *auth.EmployeeAuthService,
+	memberAuthService *auth.MemberAuthService,
+	ownerAuthService *auth.OwnerAuthService,
+
+	// Services
 	otpService *services.OTPService,
 	cfg *config.AppConfig,
 	tokenService auth.TokenService,
+
 ) *AuthController {
 	return &AuthController{
+		// Database
 		adminRepo:    adminRepo,
 		employeeRepo: employeeRepo,
 		ownerRepo:    ownerRepo,
 		memberRepo:   memberRepo,
+
+		// Auth
+		adminAuthService:    adminAuthService,
+		employeeAuthService: employeeAuthService,
+		memberAuthService:   memberAuthService,
+		ownerAuthService:    ownerAuthService,
+
+		// Services
 		otpService:   otpService,
 		cfg:          cfg,
 		tokenService: tokenService,
 	}
 }
 
-func (c *AuthController) CurrentUser(ctx *gin.Context) {}
+func (c *AuthController) CurrentUser(ctx *gin.Context) {
+	r := ctx.Request
+	cookie, err := r.Cookie(c.cfg.AppTokenName)
+	if err != nil {
+		if err == http.ErrNoCookie {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Cookie not found"})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	claims, err := c.tokenService.VerifyToken(cookie.Value)
+	if err != nil {
+
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": claims})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"claims": claims})
+}
 
 func (c *AuthController) SignUp(ctx *gin.Context) {
 	var req auth_requests.SignUpRequest
@@ -56,150 +104,74 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	var userID uint
+	// Hash the password
 	hashed, err := config.HashPassword(req.Password)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	req.Password = hashed
-	var response interface{}
 
+	var userID uint
+	var response interface{}
+	var token string
+
+	// Create user based on account type
 	switch req.AccountType {
 	case "Member":
-		member := models.Member{
-			FirstName:         req.FirstName,
-			LastName:          req.LastName,
-			MiddleName:        req.MiddleName,
-			PermanentAddress:  req.PermanentAddress,
-			Description:       "",
-			Birthdate:         req.Birthdate,
-			Username:          req.Username,
-			Email:             req.Email,
-			Password:          req.Password,
-			IsEmailVerified:   false,
-			IsContactVerified: false,
-			ContactNumber:     req.ContactNumber,
-			MediaID:           nil,
-			Status:            "Pending",
-		}
+		member := c.createMember(req)
 		if err := c.memberRepo.Create(&member); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		userID = member.ID
-		response = resources.ToResourceMember(member) // Use ToResourceAdmin for the member
+		token, err = c.memberAuthService.GenerateMemberToken(member)
 
 	case "Owner":
-		owner := models.Owner{
-			FirstName:         req.FirstName,
-			LastName:          req.LastName,
-			MiddleName:        req.MiddleName,
-			PermanentAddress:  req.PermanentAddress,
-			Description:       "",
-			Birthdate:         req.Birthdate,
-			Username:          req.Username,
-			Email:             req.Email,
-			Password:          req.Password,
-			IsEmailVerified:   false,
-			IsContactVerified: false,
-			ContactNumber:     req.ContactNumber,
-			MediaID:           nil,
-			Status:            "Pending",
-		}
+		owner := c.createOwner(req)
 		if err := c.ownerRepo.Create(&owner); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		userID = owner.ID
-		response = resources.ToResourceOwner(owner) // Use ToResourceAdmin for the owner
+		token, err = c.ownerAuthService.GenerateOwnerToken(owner)
 
 	case "Employee":
-		employee := models.Employee{
-			FirstName:         req.FirstName,
-			LastName:          req.LastName,
-			MiddleName:        req.MiddleName,
-			PermanentAddress:  req.PermanentAddress,
-			Description:       "",
-			Birthdate:         req.Birthdate,
-			Username:          req.Username,
-			Email:             req.Email,
-			Password:          req.Password,
-			IsEmailVerified:   false,
-			IsContactVerified: false,
-			ContactNumber:     req.ContactNumber,
-			MediaID:           nil,
-			Status:            "Pending",
-		}
+		employee := c.createEmployee(req)
 		if err := c.employeeRepo.Create(&employee); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		userID = employee.ID
-		response = resources.ToResourceEmployee(employee) // Use ToResourceAdmin for the employee
+		token, err = c.employeeAuthService.GenerateEmployeeToken(employee)
 
 	case "Admin":
-		admin := models.Admin{
-			FirstName:         req.FirstName,
-			LastName:          req.LastName,
-			MiddleName:        req.MiddleName,
-			PermanentAddress:  req.PermanentAddress,
-			Description:       "",
-			Birthdate:         req.Birthdate,
-			Username:          req.Username,
-			Email:             req.Email,
-			Password:          req.Password,
-			IsEmailVerified:   false,
-			IsContactVerified: false,
-			ContactNumber:     req.ContactNumber,
-			MediaID:           nil,
-			Status:            "Pending",
-		}
+		admin := c.createAdmin(req)
 		if err := c.adminRepo.Create(&admin); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		userID = admin.ID
-		response = resources.ToResourceAdmin(admin) // Use ToResourceAdmin for the admin
+		token, err = c.adminAuthService.GenerateAdminToken(admin)
 
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
 		return
 	}
 
-	// Token generation
-	token, err := c.tokenService.GenerateToken(&auth.UserClaims{ID: userID, Mode: req.AccountType})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
-	// Sending OTP via email
-	emailReq := services.EmailRequest{
-		To:      req.Email,
-		Subject: "ECOOP: Email Verification",
-		Body:    req.EmailTemplate,
-	}
-	if err := c.otpService.SendEmailOTP(req.AccountType, userID, emailReq); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send OTP via email"})
+	// Send OTP via email
+	if err := c.sendEmailOTP(req, userID); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Sending OTP via SMS
-	contactReq := services.SMSRequest{
-		To:   req.ContactNumber,
-		Body: req.ContactTemplate,
-		Vars: &map[string]string{
-			"name": req.FirstName + " " + req.LastName,
-		},
-	}
-	if err := c.otpService.SendEContactNumberOTP(req.AccountType, userID, contactReq); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send OTP via SMS"})
+	// Send OTP via SMS
+	if err := c.sendSMSOTP(req, userID); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Set token in cookie
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     c.cfg.AppTokenName,
 		Value:    token,
@@ -257,6 +229,83 @@ func AuthRoutes(router *gin.RouterGroup, controller *AuthController) {
 	}
 }
 
+// Helper functions to create user models
+func (c *AuthController) createMember(req auth_requests.SignUpRequest) models.Member {
+	return models.Member{
+		FirstName:         req.FirstName,
+		LastName:          req.LastName,
+		MiddleName:        req.MiddleName,
+		PermanentAddress:  req.PermanentAddress,
+		Description:       "",
+		Birthdate:         req.Birthdate,
+		Username:          req.Username,
+		Email:             req.Email,
+		Password:          req.Password,
+		IsEmailVerified:   false,
+		IsContactVerified: false,
+		ContactNumber:     req.ContactNumber,
+		MediaID:           nil,
+		Status:            "Pending",
+	}
+}
+
+func (c *AuthController) createOwner(req auth_requests.SignUpRequest) models.Owner {
+	return models.Owner{
+		FirstName:         req.FirstName,
+		LastName:          req.LastName,
+		MiddleName:        req.MiddleName,
+		PermanentAddress:  req.PermanentAddress,
+		Description:       "",
+		Birthdate:         req.Birthdate,
+		Username:          req.Username,
+		Email:             req.Email,
+		Password:          req.Password,
+		IsEmailVerified:   false,
+		IsContactVerified: false,
+		ContactNumber:     req.ContactNumber,
+		MediaID:           nil,
+		Status:            "Pending",
+	}
+}
+
+func (c *AuthController) createEmployee(req auth_requests.SignUpRequest) models.Employee {
+	return models.Employee{
+		FirstName:         req.FirstName,
+		LastName:          req.LastName,
+		MiddleName:        req.MiddleName,
+		PermanentAddress:  req.PermanentAddress,
+		Description:       "",
+		Birthdate:         req.Birthdate,
+		Username:          req.Username,
+		Email:             req.Email,
+		Password:          req.Password,
+		IsEmailVerified:   false,
+		IsContactVerified: false,
+		ContactNumber:     req.ContactNumber,
+		MediaID:           nil,
+		Status:            "Pending",
+	}
+}
+
+func (c *AuthController) createAdmin(req auth_requests.SignUpRequest) models.Admin {
+	return models.Admin{
+		FirstName:         req.FirstName,
+		LastName:          req.LastName,
+		MiddleName:        req.MiddleName,
+		PermanentAddress:  req.PermanentAddress,
+		Description:       "",
+		Birthdate:         req.Birthdate,
+		Username:          req.Username,
+		Email:             req.Email,
+		Password:          req.Password,
+		IsEmailVerified:   false,
+		IsContactVerified: false,
+		ContactNumber:     req.ContactNumber,
+		MediaID:           nil,
+		Status:            "Pending",
+	}
+}
+
 func (c *AuthController) RetrieveEmail(accountType string, userID uint) string {
 	switch accountType {
 	case "Member":
@@ -293,4 +342,26 @@ func (c *AuthController) RetrieveContactNumber(accountType string, userID uint) 
 	default:
 		return ""
 	}
+}
+
+// Sending email OTP
+func (c *AuthController) sendEmailOTP(req auth_requests.SignUpRequest, userID uint) error {
+	emailReq := services.EmailRequest{
+		To:      req.Email,
+		Subject: "ECOOP: Email Verification",
+		Body:    req.EmailTemplate,
+	}
+	return c.otpService.SendEmailOTP(req.AccountType, userID, emailReq)
+}
+
+// Sending SMS OTP
+func (c *AuthController) sendSMSOTP(req auth_requests.SignUpRequest, userID uint) error {
+	contactReq := services.SMSRequest{
+		To:   req.ContactNumber,
+		Body: req.ContactTemplate,
+		Vars: &map[string]string{
+			"name": req.FirstName + " " + req.LastName,
+		},
+	}
+	return c.otpService.SendEContactNumberOTP(req.AccountType, userID, contactReq)
 }

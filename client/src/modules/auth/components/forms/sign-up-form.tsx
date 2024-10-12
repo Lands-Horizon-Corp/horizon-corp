@@ -1,7 +1,6 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-// import { useRouter } from '@tanstack/react-router'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
@@ -29,12 +28,13 @@ import LoadingCircle from '@/components/loader/loading-circle'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn } from '@/lib/utils'
-// import useCurrentUser from '@/hooks/use-current-user'
+import useCurrentUser from '@/hooks/use-current-user'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
-// import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
+import { useRouter } from '@tanstack/react-router'
 
 type TSignUpForm = z.infer<typeof signUpFormSchema>
 
@@ -60,10 +60,10 @@ const SignUpForm = ({
     readOnly,
     defaultValues = defaultValue,
     onError,
-    // onSuccess,
+    onSuccess,
 }: Props) => {
-    // const router = useRouter()
-    // const { setCurrentUser  } = useCurrentUser({})
+    const router = useRouter()
+    const { setCurrentUser } = useCurrentUser({})
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TSignUpForm>({
@@ -73,16 +73,16 @@ const SignUpForm = ({
         defaultValues,
     })
 
-    const onFormSubmit = async (_data: TSignUpForm) => {
+    const onFormSubmit = async (data: TSignUpForm) => {
         setError(null)
         setLoading(true)
         try {
             // parse form data
-            // const parsedData = await signUpFormSchema.parseAsync(data)
-            // const response = await UserService.SignUp(parsedData) // once success, the server returns the created user with authorization cookie
-            // setCurrentUser(response.data) // then set it to the authStore
-            // onSuccess?.(response.data)
-            // router.navigate({ to : "/auth/verify" }) // redirect to verify page
+            const parsedData = await signUpFormSchema.parseAsync(data)
+            const response = await UserService.SignUp(parsedData) // once success, the server returns the created user with authorization cookie
+            setCurrentUser(response.data) // then set it to the authStore
+            onSuccess?.(response.data)
+            router.navigate({ to: '/auth/verify' }) // redirect to verify page
         } catch (e) {
             const errorMessage = handleAxiosError(e)
             onError?.(e)
@@ -250,7 +250,7 @@ const SignUpForm = ({
                                             id={field.name}
                                             value={field.value}
                                             onChange={field.onChange}
-                                            captionLayout='dropdown-buttons'
+                                            captionLayout="dropdown-buttons"
                                             disabled={(date) =>
                                                 date > new Date()
                                             }
@@ -432,7 +432,7 @@ const SignUpForm = ({
                     />
                 </fieldset>
                 <div className="mt-4 flex flex-col space-y-2">
-                    <FormErrorMessage errorMessage={firstError || error } />
+                    <FormErrorMessage errorMessage={firstError || error} />
                     <Button type="submit" disabled={loading || readOnly}>
                         {loading ? <LoadingCircle /> : 'Submit'}
                     </Button>

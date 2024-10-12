@@ -25,7 +25,7 @@ export default class UserService {
     AxiosResponse<CurrentUserResource>
   > {
     const endpoint = `${UserService.BASE_ENDPOINT}/current-user`
-    return await UseServer.post<void, CurrentUserResource>(endpoint)
+    return await UseServer.get<CurrentUserResource>(endpoint)
   }
 
   // POST - /auth/signup
