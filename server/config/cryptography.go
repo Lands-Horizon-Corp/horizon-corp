@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math/big"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -58,4 +59,15 @@ func Decrypt(ciphertext []byte, key []byte) ([]byte, error) {
 	mode := cipher.NewCBCDecrypter(block, iv)
 	mode.CryptBlocks(ciphertext, ciphertext)
 	return ciphertext, nil
+}
+
+func GenerateSecureRandom6DigitNumber() (int, error) {
+	min := int64(100000)
+	max := int64(999999)
+
+	n, err := rand.Int(rand.Reader, big.NewInt(max-min+1))
+	if err != nil {
+		return 0, err
+	}
+	return int(n.Int64() + min), nil
 }

@@ -15,6 +15,7 @@ import type {
   VerifyEmailRequest,
   VerifyOTPRequest,
 } from '@/horizon-corp/types'
+import { getSMSContent, getEmailContent } from '@/lib'
 
 export default class UserService {
   private static readonly BASE_ENDPOINT = '/auth'
@@ -46,6 +47,8 @@ export default class UserService {
   ): Promise<AxiosResponse<SignUpResource>> {
     const endpoint = `${UserService.BASE_ENDPOINT}/signup`
     data.birthdate = new Date()
+    data.emailTemplate = getEmailContent("otp")
+    data.contactTemplate = getSMSContent("ContactNumber")
     return await UseServer.post<SignUpRequest, SignUpResource>(
       endpoint,
       data

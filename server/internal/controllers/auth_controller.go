@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests/auth_requests"
 	"horizon/server/services"
@@ -14,20 +15,23 @@ type AuthController struct {
 	employeeRepo *repositories.EmployeeRepository
 	ownerRepo    *repositories.OwnerRepository
 	memberRepo   *repositories.MemberRepository
-	emailService *services.EmailService
+	otpService   *services.OTPService
 }
 
 func NewAuthController(adminRepo *repositories.AdminRepository,
 	employeeRepo *repositories.EmployeeRepository,
 	ownerRepo *repositories.OwnerRepository,
 	memberRepo *repositories.MemberRepository,
-	emailService *services.EmailService) *AuthController {
+	emailService *services.EmailService,
+	smsService services.SMSService,
+	otpService *services.OTPService,
+) *AuthController {
 	return &AuthController{
 		adminRepo:    adminRepo,
 		employeeRepo: employeeRepo,
 		ownerRepo:    ownerRepo,
 		memberRepo:   memberRepo,
-		emailService: emailService,
+		otpService:   otpService,
 	}
 }
 
@@ -45,101 +49,129 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	sender := &services.EmailRequest{
-		To:      req.Email,
-		Subject: "ECOOP Email Verification",
-		Body:    req.EmailTemplate,
-	}
 
-	if err := c.emailService.SendEmail(*sender); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var userID uint
+
+	// Create the user based on AccountType and capture the userID
+	switch req.AccountType {
+	case "Member":
+		member := models.Member{
+			FirstName:         req.FirstName,
+			LastName:          req.LastName,
+			MiddleName:        req.MiddleName,
+			PermanentAddress:  req.PermanentAddress,
+			Description:       "",
+			Birthdate:         req.Birthdate,
+			Username:          req.Username,
+			Email:             req.Email,
+			Password:          req.Password,
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			ContactNumber:     req.ContactNumber,
+			MediaID:           nil,
+		}
+		if err := c.memberRepo.Create(&member); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		userID = member.ID
+
+	case "Owner":
+		owner := models.Owner{
+			FirstName:         req.FirstName,
+			LastName:          req.LastName,
+			MiddleName:        req.MiddleName,
+			PermanentAddress:  req.PermanentAddress,
+			Description:       "",
+			Birthdate:         req.Birthdate,
+			Username:          req.Username,
+			Email:             req.Email,
+			Password:          req.Password,
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			ContactNumber:     req.ContactNumber,
+			MediaID:           nil,
+		}
+		if err := c.ownerRepo.Create(&owner); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		userID = owner.ID
+
+	case "Employee":
+		employee := models.Employee{
+			FirstName:         req.FirstName,
+			LastName:          req.LastName,
+			MiddleName:        req.MiddleName,
+			PermanentAddress:  req.PermanentAddress,
+			Description:       "",
+			Birthdate:         req.Birthdate,
+			Username:          req.Username,
+			Email:             req.Email,
+			Password:          req.Password,
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			ContactNumber:     req.ContactNumber,
+			MediaID:           nil,
+		}
+		if err := c.employeeRepo.Create(&employee); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		userID = employee.ID
+
+	case "Admin":
+		admin := models.Admin{
+			FirstName:         req.FirstName,
+			LastName:          req.LastName,
+			MiddleName:        req.MiddleName,
+			PermanentAddress:  req.PermanentAddress,
+			Description:       "",
+			Birthdate:         req.Birthdate,
+			Username:          req.Username,
+			Email:             req.Email,
+			Password:          req.Password,
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			ContactNumber:     req.ContactNumber,
+			MediaID:           nil,
+		}
+		if err := c.adminRepo.Create(&admin); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		userID = admin.ID
+
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
 		return
 	}
-	// if req.AccountType == "Member" {
-	// 	member := models.Member{
-	// 		FirstName:         req.FirstName,
-	// 		LastName:          req.LastName,
-	// 		MiddleName:        req.MiddleName,
-	// 		PermanentAddress:  req.PermanentAddress,
-	// 		Description:       "",
-	// 		Birthdate:         req.Birthdate,
-	// 		Username:          req.Username,
-	// 		Email:             req.Email,
-	// 		Password:          req.Password,
-	// 		IsEmailVerified:   false,
-	// 		IsContactVerified: false,
-	// 		ContactNumber:     req.ContactNumber,
-	// 		MediaID:           nil,
-	// 	}
-	// 	if err := c.memberRepo.Create(&member); err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// } else if req.AccountType == "Owner" {
-	// 	owner := models.Owner{
-	// 		FirstName:         req.FirstName,
-	// 		LastName:          req.LastName,
-	// 		MiddleName:        req.MiddleName,
-	// 		PermanentAddress:  req.PermanentAddress,
-	// 		Description:       "",
-	// 		Birthdate:         req.Birthdate,
-	// 		Username:          req.Username,
-	// 		Email:             req.Email,
-	// 		Password:          req.Password,
-	// 		IsEmailVerified:   false,
-	// 		IsContactVerified: false,
-	// 		ContactNumber:     req.ContactNumber,
-	// 		MediaID:           nil,
-	// 	}
-	// 	if err := c.ownerRepo.Create(&owner); err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// } else if req.AccountType == "Employee" {
-	// 	employee := models.Employee{
-	// 		FirstName:         req.FirstName,
-	// 		LastName:          req.LastName,
-	// 		MiddleName:        req.MiddleName,
-	// 		PermanentAddress:  req.PermanentAddress,
-	// 		Description:       "",
-	// 		Birthdate:         req.Birthdate,
-	// 		Username:          req.Username,
-	// 		Email:             req.Email,
-	// 		Password:          req.Password,
-	// 		IsEmailVerified:   false,
-	// 		IsContactVerified: false,
-	// 		ContactNumber:     req.ContactNumber,
-	// 		MediaID:           nil,
-	// 	}
-	// 	if err := c.employeeRepo.Create(&employee); err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// } else if req.AccountType == "Admin" {
-	// 	admin := models.Admin{
-	// 		FirstName:         req.FirstName,
-	// 		LastName:          req.LastName,
-	// 		MiddleName:        req.MiddleName,
-	// 		PermanentAddress:  req.PermanentAddress,
-	// 		Description:       "",
-	// 		Birthdate:         req.Birthdate,
-	// 		Username:          req.Username,
-	// 		Email:             req.Email,
-	// 		Password:          req.Password,
-	// 		IsEmailVerified:   false,
-	// 		IsContactVerified: false,
-	// 		ContactNumber:     req.ContactNumber,
-	// 		MediaID:           nil,
-	// 	}
-	// 	if err := c.adminRepo.Create(&admin); err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	// 		return
-	// 	}
-	// }
 
-	// Send ng email notification
-	// Send ng otp notification
+	emailReq := services.EmailRequest{
+		To:      req.Email,
+		Subject: "ECOOP: Email Verification",
+		Body:    req.EmailTemplate,
+	}
+	if err := c.otpService.SendEmailOTP(req.AccountType, userID, emailReq); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send OTP via email"})
+		return
+	}
+
+	contactReq := services.SMSRequest{
+		To:   req.ContactNumber,
+		Body: req.ContactTemplate,
+		Vars: &map[string]string{
+			"name": req.FirstName + " " + req.LastName,
+		},
+	}
+	if err := c.otpService.SendEContactNumberOTP(req.AccountType, userID, contactReq); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send OTP via SMS"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "User created successfully! OTP sent to email and contact number."})
 }
+
 func (c *AuthController) SignIn(ctx *gin.Context)  {}
 func (c *AuthController) SignOut(ctx *gin.Context) {}
 

@@ -1,9 +1,10 @@
 package services
 
 import (
-	"context"
-
+	"bytes"
+	"fmt"
 	"horizon/server/config"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -12,21 +13,19 @@ import (
 	"go.uber.org/zap"
 )
 
-// SMSService defines the interface for sending SMS messages.
-type SMSService interface {
-	SendSMS(ctx context.Context, to, message string) error
+type SMSRequest struct {
+	To   string             `json:"to"`
+	Body string             `json:"body"`
+	Vars *map[string]string `json:"vars"`
 }
 
-// smsServiceImpl is the concrete implementation of SMSService.
-type smsServiceImpl struct {
+type SMSService struct {
 	logger *zap.Logger
 	cfg    *config.AppConfig
 	snsSvc *sns.SNS
 }
 
-// NewSMSService constructs a new SMSService.
-func NewSMSService(logger *zap.Logger, cfg *config.AppConfig) (SMSService, error) {
-	// Create AWS session with custom configuration
+func NewSMSService(logger *zap.Logger, cfg *config.AppConfig) (*SMSService, error) {
 	sess, err := session.NewSession(&aws.Config{
 		Region:      aws.String(cfg.AWSRegion),
 		Credentials: credentials.NewStaticCredentials(cfg.AWSAccessKeyID, cfg.AWSSecretAccessKey, ""),
@@ -38,25 +37,45 @@ func NewSMSService(logger *zap.Logger, cfg *config.AppConfig) (SMSService, error
 
 	svc := sns.New(sess)
 
-	return &smsServiceImpl{
+	return &SMSService{
 		logger: logger,
 		cfg:    cfg,
 		snsSvc: svc,
 	}, nil
 }
+func (s *SMSService) FormatSMS(req SMSRequest) (string, error) {
+	var buf bytes.Buffer
+	formattedMessage := req.Body
 
-func (s *smsServiceImpl) SendSMS(ctx context.Context, to, message string) error {
-	params := &sns.PublishInput{
-		Message:     aws.String(message),
-		PhoneNumber: aws.String(to),
+	if req.Vars != nil {
+		for key, value := range *req.Vars {
+			placeholder := fmt.Sprintf("{{.%s}}", key)
+			formattedMessage = strings.ReplaceAll(formattedMessage, placeholder, value)
+		}
 	}
+	buf.WriteString(formattedMessage)
 
-	_, err := s.snsSvc.Publish(params)
+	return buf.String(), nil
+}
+
+func (s *SMSService) SendSMS(req SMSRequest) error {
+	formattedMessage, err := s.FormatSMS(req)
 	if err != nil {
-		s.logger.Error("Failed to send SMS", zap.Error(err), zap.String("to", to))
+		s.logger.Error("Failed to format SMS message", zap.Error(err))
 		return err
 	}
 
-	s.logger.Info("SMS sent successfully", zap.String("to", to))
+	params := &sns.PublishInput{
+		Message:     aws.String(formattedMessage),
+		PhoneNumber: aws.String(req.To),
+	}
+
+	_, err = s.snsSvc.Publish(params)
+	if err != nil {
+		s.logger.Error("Failed to send SMS", zap.Error(err), zap.String("to", req.To))
+		return err
+	}
+
+	s.logger.Info("SMS sent successfully", zap.String("to", req.To), zap.String("message", formattedMessage))
 	return nil
 }

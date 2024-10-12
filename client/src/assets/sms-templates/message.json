@@ -1,0 +1,3 @@
+{
+  "ContactNumber": "Hello {{.name}},\n\nYour verification code for e-COOP Horizon is \n{{.otp}}\n Please enter this code to complete your registration.\nIf you did not request this code, please disregard this message. For any questions, contact our support at lands.horizon@gmail.com.\n\nThank you!"
+}

@@ -2,10 +2,10 @@ package services
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"horizon/server/config"
-	"net/http"
+	"net/smtp"
+	"text/template"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -20,51 +20,71 @@ type EmailService struct {
 }
 
 type EmailRequest struct {
-	To      string `json:"to"`
-	Subject string `json:"subject"`
-	Body    string `json:"body"`
+	To      string             `json:"to"`
+	Subject string             `json:"subject"`
+	Body    string             `json:"body"`
+	Vars    *map[string]string `json:"vars"`
 }
 
 func NewEmailService(logger *zap.Logger, cfg *config.AppConfig) *EmailService {
 	return &EmailService{logger: logger, cfg: cfg}
 }
+func (es *EmailService) FormatEmail(body string, vars *map[string]string) (string, error) {
+	tmpl, err := template.New("email").Parse(body)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse email template: %w", err)
+	}
+
+	var buf bytes.Buffer
+	if vars != nil {
+		if err := tmpl.Execute(&buf, vars); err != nil {
+			return "", fmt.Errorf("failed to execute email template: %w", err)
+		}
+	} else {
+		if err := tmpl.Execute(&buf, nil); err != nil {
+			return "", fmt.Errorf("failed to execute email template without variables: %w", err)
+		}
+	}
+
+	return buf.String(), nil
+}
 
 func (es *EmailService) SendEmail(req EmailRequest) error {
 	es.logger.Info("Sending email", zap.String("to", req.To), zap.String("subject", req.Subject))
-
-	if es.cfg.EmailHost == "localhost" {
-		return es.sendEmailWithMailHog(req.To, req.Subject, req.Body)
-	}
-	return es.sendEmailWithAWS(req.To, req.Subject, req.Body)
-}
-
-func (es *EmailService) sendEmailWithMailHog(to, subject, body string) error {
-	msg := map[string]interface{}{
-		"to":      to,
-		"subject": subject,
-		"body":    body,
-	}
-	msgJSON, err := json.Marshal(msg)
+	formattedBody, err := es.FormatEmail(req.Body, req.Vars)
+	req.Body = formattedBody
 	if err != nil {
-		es.logger.Error("Failed to marshal email message", zap.Error(err))
+		es.logger.Error("Failed to format email body", zap.Error(err))
 		return err
 	}
-	mailHogURL := fmt.Sprintf("http://%s:%s/api/v2/send", es.cfg.EmailHost, es.cfg.EmailPort)
-	resp, err := http.Post(mailHogURL, "application/json", bytes.NewBuffer(msgJSON))
+	if es.cfg.EmailHost == "mailhog" {
+		return es.sendEmailWithMailHog(req)
+	}
+	return es.sendEmailWithAWS(req)
+}
+
+func (es *EmailService) sendEmailWithMailHog(req EmailRequest) error {
+	var msg bytes.Buffer
+	msg.WriteString(fmt.Sprintf("From: %s\r\n", es.cfg.EmailUser))
+	msg.WriteString(fmt.Sprintf("To: %s\r\n", req.To))
+	msg.WriteString(fmt.Sprintf("Subject: %s\r\n", req.Subject))
+	msg.WriteString("MIME-Version: 1.0\r\n")
+	msg.WriteString("Content-Type: text/html; charset=\"UTF-8\"\r\n")
+	msg.WriteString("\r\n")
+	msg.WriteString(req.Body)
+
+	smtpAddr := fmt.Sprintf("%s:%s", es.cfg.EmailHost, es.cfg.EmailPort)
+	err := smtp.SendMail(smtpAddr, nil, es.cfg.EmailUser, []string{req.To}, msg.Bytes())
 	if err != nil {
 		es.logger.Error("Failed to send email via MailHog", zap.Error(err))
 		return err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		es.logger.Error("Failed to send email via MailHog", zap.String("status", resp.Status))
-		return fmt.Errorf("failed to send email via MailHog: %s", resp.Status)
-	}
+	es.logger.Info("Email sent successfully via MailHog")
 	return nil
 }
 
-func (es *EmailService) sendEmailWithAWS(to, subject, body string) error {
+func (es *EmailService) sendEmailWithAWS(req EmailRequest) error {
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(es.cfg.AWSRegion),
 		Credentials: credentials.NewStaticCredentials(
@@ -83,15 +103,15 @@ func (es *EmailService) sendEmailWithAWS(to, subject, body string) error {
 	input := &ses.SendEmailInput{
 		Source: aws.String(es.cfg.EmailUser),
 		Destination: &ses.Destination{
-			ToAddresses: aws.StringSlice([]string{to}),
+			ToAddresses: aws.StringSlice([]string{req.To}),
 		},
 		Message: &ses.Message{
 			Subject: &ses.Content{
-				Data: aws.String(subject),
+				Data: aws.String(req.Subject),
 			},
 			Body: &ses.Body{
 				Text: &ses.Content{
-					Data: aws.String(body),
+					Data: aws.String(req.Body),
 				},
 			},
 		},
@@ -103,6 +123,6 @@ func (es *EmailService) sendEmailWithAWS(to, subject, body string) error {
 		return err
 	}
 
-	es.logger.Info("Email sent successfully", zap.String("to", to))
+	es.logger.Info("Email sent successfully", zap.String("to", req.To))
 	return nil
 }
