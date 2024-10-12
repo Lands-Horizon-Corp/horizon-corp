@@ -63,7 +63,7 @@ const SignInForm = ({
         setLoading(true)
         try {
             const parsedData = await signInFormSchema.parse(data) // parse form data
-            // const response = await UserService.signIn(parsedData) // sign in and server return the user data along with auth cookie
+            const response = await UserService.SignIn(parsedData) // sign in and server return the user data along with auth cookie
             // onSuccess?.(response.data) // if onSuccess is given, trigger it and pass the data
         } catch (e) {
             const errorMessage = handleAxiosError(e)
