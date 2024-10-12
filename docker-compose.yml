@@ -148,6 +148,7 @@ services:
     restart: always
     ports:
       - "${CACHE_PORT:-6379}:${CACHE_PORT:-6379}"
+    command: ["redis-server", "--requirepass", "${CACHE_PASSWORD}"]
     environment:
       - REDIS_PASSWORD=${CACHE_PASSWORD}
     volumes:

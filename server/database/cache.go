@@ -26,24 +26,23 @@ func NewCacheService(cfg *config.AppConfig, logger *zap.Logger) (*CacheService, 
 		DB:       cfg.CacheDB,
 	})
 
-	// Optional retry mechanism for Redis connection
-	for i := 1; i <= 3; i++ {
+	maxRetries := 3
+	retryDelay := 2 * time.Second
+
+	// Retry mechanism for Redis connection
+	for i := 1; i <= maxRetries; i++ {
 		if err := client.Ping().Err(); err != nil {
 			logger.Warn(fmt.Sprintf("Attempt %d: Could not connect to Redis", i), zap.Error(err))
-			time.Sleep(2 * time.Second)
+			time.Sleep(retryDelay)
 		} else {
 			logger.Info("Successfully connected to Redis")
 			return &CacheService{Client: client}, nil
 		}
 	}
 
-	// Final connection attempt without retry
-	if err := client.Ping().Err(); err != nil {
-		logger.Error("Could not connect to Redis", zap.Error(err))
-		return nil, errors.New("could not connect to Redis after multiple attempts")
-	}
-
-	return &CacheService{Client: client}, nil
+	// Log and return error if all connection attempts fail
+	logger.Error("Could not connect to Redis after multiple attempts")
+	return nil, errors.New("could not connect to Redis after multiple attempts")
 }
 
 // Set stores a key-value pair in the cache with an optional expiration time.
