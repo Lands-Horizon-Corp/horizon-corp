@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"fmt"
+	"errors"
 	"horizon/server/config"
 	"horizon/server/internal/auth"
 	"horizon/server/internal/models"
@@ -77,18 +77,25 @@ func (c *AuthController) CurrentUser(ctx *gin.Context) {
 	// Retrieve the cookie
 	cookie, err := ctx.Request.Cookie(c.cfg.AppTokenName)
 	if err != nil {
-		if err == http.ErrNoCookie {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "Cookie not found"})
+		if errors.Is(err, http.ErrNoCookie) {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Cookie not found"})
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Verify the token
-	claims, err := c.tokenService.VerifyToken(cookie.Value)
+	// Decrypt the token
+	decrypted, err := config.Decrypt([]byte(cookie.Value), []byte(c.cfg.AppAdminToken))
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		return
+	}
+
+	// Verify the token
+	claims, err := c.tokenService.VerifyToken(string(decrypted))
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token verification failed"})
 		return
 	}
 
@@ -128,7 +135,7 @@ func (c *AuthController) CurrentUser(ctx *gin.Context) {
 		response = resources.ToResourceOwner(owner)
 
 	default:
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Invalid account type"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
 		return
 	}
 
@@ -149,7 +156,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 	// Hash the password
 	hashed, err := config.HashPassword(req.Password)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	req.Password = hashed
@@ -166,7 +173,13 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		userID = member.ID
 		token, err = c.memberAuthService.GenerateMemberToken(member)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+		response = resources.ToResourceMember(member)
 
 	case "Owner":
 		owner := c.createOwner(req)
@@ -174,7 +187,13 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		userID = owner.ID
 		token, err = c.ownerAuthService.GenerateOwnerToken(owner)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+		response = resources.ToResourceOwner(owner)
 
 	case "Employee":
 		employee := c.createEmployee(req)
@@ -182,7 +201,13 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		userID = employee.ID
 		token, err = c.employeeAuthService.GenerateEmployeeToken(employee)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+		response = resources.ToResourceEmployee(employee)
 
 	case "Admin":
 		admin := c.createAdmin(req)
@@ -190,15 +215,16 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		userID = admin.ID
 		token, err = c.adminAuthService.GenerateAdminToken(admin)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+		response = resources.ToResourceAdmin(admin)
 
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
-		return
-	}
-
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
@@ -214,9 +240,17 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
+	// Encrypt the token
+	encrypted, err := config.Encrypt([]byte(token), []byte(c.cfg.AppAdminToken))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Set the cookie with the encrypted token
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     c.cfg.AppTokenName,
-		Value:    token,
+		Value:    string(encrypted),
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
@@ -238,11 +272,101 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	var password string
+	var user interface{}
+	var token string
+
 	switch req.AccountType {
 	case "Member":
-		fmt.Println(req.Key)
+		member, err := c.memberRepo.FindByEmailUsernameOrContact(req.Key)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			return
+		}
+		password = member.Password
+		user = resources.ToResourceMember(member)
+		token, err = c.memberAuthService.GenerateMemberToken(member)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+
+	case "Owner":
+		owner, err := c.ownerRepo.FindByEmailUsernameOrContact(req.Key)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			return
+		}
+		password = owner.Password
+		user = resources.ToResourceOwner(owner)
+		token, err = c.ownerAuthService.GenerateOwnerToken(owner)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+
+	case "Employee":
+		employee, err := c.employeeRepo.FindByEmailUsernameOrContact(req.Key)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			return
+		}
+		password = employee.Password
+		user = resources.ToResourceEmployee(employee)
+		token, err = c.employeeAuthService.GenerateEmployeeToken(employee)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+
+	case "Admin":
+		admin, err := c.adminRepo.FindByEmailUsernameOrContact(req.Key)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			return
+		}
+		password = admin.Password
+		user = resources.ToResourceAdmin(admin)
+		token, err = c.adminAuthService.GenerateAdminToken(admin)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+			return
+		}
+
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
+		return
 	}
+
+	// Verify password
+	isValid := config.VerifyPassword(password, req.Password)
+	if !isValid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	// Encrypt the token
+	encrypted, err := config.Encrypt([]byte(token), []byte(c.cfg.AppAdminToken))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Set the cookie with the encrypted token
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:     c.cfg.AppTokenName,
+		Value:    string(encrypted),
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
+	})
+
+	// Successful sign-in
+	ctx.JSON(http.StatusOK, user)
 }
+
 func (c *AuthController) SignOut(ctx *gin.Context) {}
 
 // Password
