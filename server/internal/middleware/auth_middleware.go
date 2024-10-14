@@ -141,6 +141,7 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 
 		// Store the user in context for further use in handlers
 		ctx.Set("current-user", user)
+		ctx.Set("claims", claims)
 		ctx.Next() // Continue to the next handler
 	}
 }
