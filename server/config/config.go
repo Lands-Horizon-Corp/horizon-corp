@@ -65,7 +65,7 @@ func LoadConfig() (*AppConfig, error) {
 		cachePort = 6379
 	}
 
-	cacheURL := getEnv("CACHE_URL", "localhost:"+strconv.Itoa(cachePort))
+	cacheURL := getEnv("CACHE_URL", "redis:"+strconv.Itoa(cachePort))
 
 	requiredVars := []string{"DB_USERNAME", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME", "DB_CHARSET", "STORAGE_ENDPOINT", "STORAGE_REGION", "STORAGE_ACCESS_KEY", "STORAGE_SECRET_KEY", "STORAGE_BUCKET_NAME"}
 	for _, v := range requiredVars {
