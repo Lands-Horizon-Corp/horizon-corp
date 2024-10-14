@@ -10,6 +10,7 @@ import (
 	"horizon/server/internal/resources"
 	"horizon/server/services"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -367,7 +368,38 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
-func (c *AuthController) SignOut(ctx *gin.Context) {}
+func (c *AuthController) SignOut(ctx *gin.Context) {
+	cookie, err := ctx.Request.Cookie(c.cfg.AppTokenName)
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
+		return
+	}
+
+	decryptedToken, err := config.Decrypt([]byte(cookie.Value), []byte(c.cfg.AppAdminToken))
+	if err != nil {
+		ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
+		return
+	}
+
+	_, err = c.tokenService.VerifyToken(string(decryptedToken))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to invalidate token"})
+		return
+	}
+
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:     c.cfg.AppTokenName,
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		SameSite: http.SameSiteNoneMode,
+	})
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
+}
 
 // Password
 func (c *AuthController) ForgotPassword(ctx *gin.Context) {}
