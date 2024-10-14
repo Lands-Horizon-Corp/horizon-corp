@@ -5,6 +5,7 @@ import (
 	"errors"
 	"horizon/server/config"
 	"horizon/server/internal/auth"
+	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/services"
 	"net/http"
@@ -54,14 +55,6 @@ func NewAuthMiddleware(
 	}
 }
 
-type User struct {
-	ID            uint   `json:"id"`
-	Email         string `json:"email"`
-	ContactNumber string `json:"contactNumber"`
-	FirstName     string `json"firstName"`
-	LastName      string `json"firstName"`
-}
-
 func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		cookie, err := ctx.Request.Cookie(c.cfg.AppTokenName)
@@ -93,7 +86,7 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
-			user = User{
+			user = models.User{
 				ID:            member.ID,
 				Email:         member.Email,
 				ContactNumber: member.ContactNumber,
@@ -109,7 +102,7 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
-			user = User{
+			user = models.User{
 				ID:            employee.ID,
 				Email:         employee.Email,
 				ContactNumber: employee.ContactNumber,
@@ -125,7 +118,7 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
-			user = User{
+			user = models.User{
 				ID:            admin.ID,
 				Email:         admin.Email,
 				ContactNumber: admin.ContactNumber,
@@ -141,7 +134,7 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
-			user = User{
+			user = models.User{
 				ID:            owner.ID,
 				Email:         owner.Email,
 				ContactNumber: owner.ContactNumber,
