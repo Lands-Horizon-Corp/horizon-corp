@@ -57,18 +57,20 @@ func VerifyPassword(hashedPassword, password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPwd), []byte(saltedPassword))
 	return err == nil
 }
-
 func Encrypt(data []byte) ([]byte, error) {
 	key := make([]byte, 32)
+	if _, err := rand.Read(key); err != nil {
+		return nil, fmt.Errorf("encryption failed")
+	}
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("encryption failed")
 	}
-	ciphertext := make([]byte, aes.BlockSize+len(data))
 
+	ciphertext := make([]byte, aes.BlockSize+len(data))
 	iv := ciphertext[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("encryption failed")
 	}
 
 	mode := cipher.NewCBCEncrypter(block, iv)
@@ -76,22 +78,31 @@ func Encrypt(data []byte) ([]byte, error) {
 
 	return ciphertext, nil
 }
+
 func Decrypt(ciphertext []byte) ([]byte, error) {
 	key := make([]byte, 32)
+	if _, err := rand.Read(key); err != nil {
+
+		return nil, fmt.Errorf("decryption failed")
+	}
+
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		return nil, err
+
+		return nil, fmt.Errorf("decryption failed")
 	}
 	if len(ciphertext) < aes.BlockSize {
-		return nil, fmt.Errorf("ciphertext too short")
+
+		return nil, fmt.Errorf("decryption failed")
 	}
+
 	iv := ciphertext[:aes.BlockSize]
 	ciphertext = ciphertext[aes.BlockSize:]
 	mode := cipher.NewCBCDecrypter(block, iv)
 	mode.CryptBlocks(ciphertext, ciphertext)
+
 	return ciphertext, nil
 }
-
 func GenerateSecureRandom6DigitNumber() (int, error) {
 	min := int64(100000)
 	max := int64(999999)
