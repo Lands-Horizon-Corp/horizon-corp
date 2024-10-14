@@ -8,6 +8,7 @@ import AccountCancelled from '../components/account-cancelled'
 
 import { UserData } from '@/horizon-corp/types'
 import { emailSchema, userAccountTypeSchema } from '../validations'
+import useCurrentUser from '@/hooks/use-current-user'
 
 export const SignInPageSearchSchema = z.object({
     email: z.string().optional().default('').or(emailSchema),
@@ -21,10 +22,13 @@ export const SignInPageSearchSchema = z.object({
 
 const SignInPage = () => {
     const router = useRouter()
+    const { setCurrentUser } = useCurrentUser()
     const prefilledValues = useSearch({ from: '/auth/sign-in' })
     const [userData, setUserData] = useState<null | UserData>(null)
 
+
     const onSignInSuccess = (userData: UserData) => {
+        setCurrentUser(userData)
         const { isContactVerified, isEmailVerified, status } = userData
         if (status === 'Not Allowed') return setUserData(userData)
 

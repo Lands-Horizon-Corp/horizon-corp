@@ -115,7 +115,7 @@ export default class UserService {
   public static async VerifyContactNumber(
     data: VerifyContactNumberRequest
   ): Promise<AxiosResponse<VerifyContactResource>> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/auth/verify-contact-number`
+    const endpoint = `${UserService.BASE_ENDPOINT}/verify-contact-number`
     return await UseServer.post<
       VerifyContactNumberRequest,
       VerifyContactResource
