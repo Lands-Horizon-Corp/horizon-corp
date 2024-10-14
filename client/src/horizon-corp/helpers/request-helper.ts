@@ -1,17 +1,26 @@
 import axios from 'axios'
-import { ErrorDetails } from '@/horizon-corp/types'
 
 export const handleAxiosError = (error: unknown): string => {
-    console.log(error)
     if (axios.isAxiosError(error)) {
-        if (error.response) {
-            return (error.response.data as ErrorDetails).message
+        if (!error.response) {
+            return "Network error. Please check your connection."
         }
-        if (error.message?.toLocaleLowerCase().includes('network error')) {
-            return 'Network Error. Please try again'
+        const { response } = error
+
+        switch (response.status) {
+            case 404:
+                return 'Sorry, the requested resource is not found'
+            case 500:
+                return 'Sorry, the server encountered an error'
+            default:
+                return (
+                    response.data?.message || response.data?.error ||
+                    'An error occurred. Please try again'
+                )
         }
-        return error.message ?? 'An error occurred without a message'
     } else {
-        return 'An unexpected error occurred. Please try again.'
+        const errorMessage =
+            (error as Error)?.message || 'An unknown error occurred.'
+        return errorMessage
     }
 }
