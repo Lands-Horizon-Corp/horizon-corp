@@ -86,15 +86,8 @@ func (c *AuthController) CurrentUser(ctx *gin.Context) {
 		return
 	}
 
-	// Decrypt the token
-	decrypted, err := config.Decrypt([]byte(cookie.Value))
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-		return
-	}
-
 	// Verify the token
-	claims, err := c.tokenService.VerifyToken(string(decrypted))
+	claims, err := c.tokenService.VerifyToken(cookie.Value)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token verification failed"})
 		return
@@ -241,17 +234,9 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	// Encrypt the token
-	encrypted, err := config.Encrypt([]byte(token))
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Set the cookie with the encrypted token
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     c.cfg.AppTokenName,
-		Value:    string(encrypted),
+		Value:    token,
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
@@ -347,17 +332,9 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 		return
 	}
 
-	// Encrypt the token
-	encrypted, err := config.Encrypt([]byte(token))
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Set the cookie with the encrypted token
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     c.cfg.AppTokenName,
-		Value:    string(encrypted),
+		Value:    token,
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
@@ -375,13 +352,7 @@ func (c *AuthController) SignOut(ctx *gin.Context) {
 		return
 	}
 
-	decryptedToken, err := config.Decrypt([]byte(cookie.Value))
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
-		return
-	}
-
-	_, err = c.tokenService.VerifyToken(string(decryptedToken))
+	_, err = c.tokenService.VerifyToken(cookie.Value)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to invalidate token"})
 		return
