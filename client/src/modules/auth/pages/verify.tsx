@@ -7,8 +7,8 @@ import VerifyRoot from '@/modules/auth/components/verify-root'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import AccountCancelled from '@/modules/auth/components/account-cancelled'
 
-import useCurrentUser from '@/hooks/use-current-user'
 import { UserData } from '@/horizon-corp/types'
+import useCurrentUser from '@/hooks/use-current-user'
 
 interface Props {}
 
@@ -67,8 +67,9 @@ const Verify = ({}: Props) => {
                                 onVerifyChange={(newUserData) =>
                                     setCurrentUser(newUserData)
                                 }
-                                onVerifyComplete={() => {
+                                onVerifyComplete={(newUserData) => {
                                     setDisplay('verify-complete')
+                                    setCurrentUser(newUserData)
                                 }}
                             />
                         )}
@@ -92,7 +93,7 @@ const Verify = ({}: Props) => {
                                     }
                                 />
                                 <p className="text-center">
-                                    {currentUser.status === "Pending" && (
+                                    {currentUser.status === 'Pending' && (
                                         <span>
                                             Please wait for 7 working days for
                                             validation before you can use your

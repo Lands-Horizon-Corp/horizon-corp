@@ -77,14 +77,20 @@ const VerifyForm = ({
         setLoading(true)
         try {
             const parsedData = await otpFormSchema.parseAsync(data)
-            console.log('Auto Submit', data)
+
+            // Send verify otp code to mark verify current signed in users email address
             if (verifyMode === 'email') {
-                // for email
                 const response = await UserService.VerifyEmail(parsedData)
-            } else {
-                // for contact
+                onSuccess?.(response.data)
+                toast.success("Email verified")
+            }
+
+            // Send verify otp code to mark verify current signed in users contact number
+            if (verifyMode === 'mobile') {
                 const response =
                     await UserService.VerifyContactNumber(parsedData)
+                onSuccess?.(response.data)
+                toast.success("Contact verified")
             }
         } catch (e) {
             const errorMessage = handleAxiosError(e)
@@ -100,11 +106,13 @@ const VerifyForm = ({
         setError(null)
         setLoading(true)
         try {
+            // send otp verification code to current logged in user's email
             if (verifyMode === 'email') {
                 await UserService.SendEmailVerification()
                 setResent(true)
             }
 
+            // send otp verification code to current logged in user's contact number
             if (verifyMode === 'mobile') {
                 await UserService.SendContactVerification()
                 setResent(true)
