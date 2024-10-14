@@ -1,6 +1,6 @@
 export interface ErrorDetails {
     id?: number
-    message: string
+    error : string
     name: string
     stack?: string
     response?: unknown

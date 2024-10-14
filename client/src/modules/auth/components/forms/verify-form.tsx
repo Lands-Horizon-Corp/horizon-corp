@@ -23,7 +23,7 @@ import FormErrorMessage from '../form-error-message'
 import LoadingCircle from '@/components/loader/loading-circle'
 
 import { cn } from '@/lib/utils'
-import { AccountType } from '@/horizon-corp/types'
+import { UserData } from '@/horizon-corp/types'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 import useCountDown from '@/modules/auth/hooks/use-count-down'
@@ -33,7 +33,7 @@ import { otpFormSchema } from '@/modules/auth/validations/otp-form'
 
 type TVerifyForm = z.infer<typeof otpFormSchema>
 
-interface Props extends IAuthForm<TVerifyForm> {
+interface Props extends IAuthForm<TVerifyForm, UserData> {
     verifyMode: 'mobile' | 'email'
 }
 
@@ -59,8 +59,8 @@ const VerifyForm = ({
     className,
     readOnly = false,
     verifyMode = 'mobile',
-    defaultValues = { otp : '' },
-    // onSuccess,
+    defaultValues = { otp: '' },
+    onSuccess,
     onError,
 }: Props) => {
     const [resent, setResent] = useState(false)
@@ -77,13 +77,37 @@ const VerifyForm = ({
         setLoading(true)
         try {
             const parsedData = await otpFormSchema.parseAsync(data)
-
+            console.log('Auto Submit', data)
             if (verifyMode === 'email') {
                 // for email
                 const response = await UserService.VerifyEmail(parsedData)
-            }else {
+            } else {
                 // for contact
-                const response = await UserService.VerifyContactNumber(parsedData)
+                const response =
+                    await UserService.VerifyContactNumber(parsedData)
+            }
+        } catch (e) {
+            const errorMessage = handleAxiosError(e)
+            onError?.(e)
+            setError(errorMessage)
+            toast.error(errorMessage)
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleSendOTPVerification = async () => {
+        setError(null)
+        setLoading(true)
+        try {
+            if (verifyMode === 'email') {
+                await UserService.SendEmailVerification()
+                setResent(true)
+            }
+
+            if (verifyMode === 'mobile') {
+                await UserService.SendContactVerification()
+                setResent(true)
             }
         } catch (e) {
             const errorMessage = handleAxiosError(e)
@@ -119,7 +143,7 @@ const VerifyForm = ({
                 >
                     <FormField
                         control={form.control}
-                        name="code"
+                        name="otp"
                         render={({ field }) => (
                             <FormItem className="flex flex-col items-center">
                                 <FormControl>
@@ -155,7 +179,7 @@ const VerifyForm = ({
                         <p>
                             Didn&apos;t receive the code?{' '}
                             <span
-                                onClick={() => setResent(true)}
+                                onClick={handleSendOTPVerification}
                                 className="cursor-pointer text-primary hover:underline"
                             >
                                 Resend Code
