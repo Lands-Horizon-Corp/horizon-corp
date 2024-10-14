@@ -1,4 +1,6 @@
+import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
+import { useRouter } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
@@ -7,12 +9,17 @@ import VerifyRoot from '@/modules/auth/components/verify-root'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import AccountCancelled from '@/modules/auth/components/account-cancelled'
 
-import { UserData } from '@/horizon-corp/types'
 import useCurrentUser from '@/hooks/use-current-user'
+import { handleAxiosError } from '@/horizon-corp/helpers'
+import { getUsersAccountTypeRedirectPage } from './helpers'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import useLoadingErrorState from '@/hooks/use-loading-error-state'
 
 interface Props {}
 
 const Verify = ({}: Props) => {
+    const router = useRouter()
+    const { loading, setLoading } = useLoadingErrorState()
     const { currentUser, setCurrentUser, loadingUser } = useCurrentUser({
         loadOnMount: true,
     })
@@ -21,37 +28,39 @@ const Verify = ({}: Props) => {
         null | 'verify' | 'verify-complete' | 'account-cancelled'
     >()
 
-    // const router = useRouter()
+    const handleBackSignOut = async () => {
+        if (loading || loadingUser) return
+
+        setLoading(true)
+        try {
+            await UserService.SignOut()
+            setCurrentUser(null)
+            router.navigate({ to: '/auth' })
+        } catch (e) {
+            const errorMessage = handleAxiosError(e)
+            toast.error(errorMessage)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
         if (!currentUser) return
 
+        if (currentUser.status === 'Verified') {
+            const redirectPageUrl = getUsersAccountTypeRedirectPage(currentUser)
+            router.navigate({ to: redirectPageUrl })
+        }
+
         if (currentUser.status === 'Not Allowed')
             return setDisplay('account-cancelled')
 
-        // if (currentUser.status === 'Verified')
-            // return setDisplay('verify-complete')
-            // todo: Redirect
-        
-        if(currentUser.isContactVerified && currentUser.isEmailVerified){
+        if (currentUser.isContactVerified && currentUser.isEmailVerified)
             setDisplay('verify-complete')
-        }
 
         if (!currentUser.isContactVerified || !currentUser.isEmailVerified)
             setDisplay('verify')
     }, [currentUser])
-
-    const autoRedirectAccount = (_currentUser: UserData) => {
-        // TODO Redirect once verified
-        // if (currentUser.status === UserStatus.Verified) {
-        //     // TODO: Auto redirect to page the account belongs
-        //     // admin/
-        //     // owner/
-        //     // member/
-        //     // employee
-        // }
-        // router.navigate({ to : "..."})
-    }
 
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
@@ -115,23 +124,25 @@ const Verify = ({}: Props) => {
                                     </span>
                                 </p>
                                 <Button
-                                    onClick={() =>
-                                        autoRedirectAccount(currentUser)
-                                    }
-                                    disabled={loadingUser}
+                                    disabled={loadingUser || loading}
+                                    onClick={handleBackSignOut}
                                     className="mt-6 w-full bg-[#34C759] hover:bg-[#38b558]"
                                 >
-                                    Proceed
+                                    Go Back to signin
                                 </Button>
                             </div>
                         )}
                         {display === 'account-cancelled' && (
-                            <AccountCancelled userData={currentUser} />
+                            <AccountCancelled
+                                loading={loading}
+                                userData={currentUser}
+                                onBack={handleBackSignOut}
+                            />
                         )}
                     </>
                 )}
                 {!currentUser && !loadingUser && (
-                    <p>Couldn&apos;t load info, please reload</p>
+                    <p>Couldn&apos;t load your info, please please try again</p>
                 )}
             </AuthPageWrapper>
         </div>

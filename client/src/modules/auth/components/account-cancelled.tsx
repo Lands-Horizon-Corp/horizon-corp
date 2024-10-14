@@ -3,17 +3,19 @@ import { useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import { WarningCircleIcon } from '@/components/icons'
+import LoadingCircle from '@/components/loader/loading-circle'
 
 import { HELP_CONTACT } from '../constants'
 import { UserData } from '@/horizon-corp/types'
 import { IBaseComp } from '@/types/component/base'
 
 interface Props extends IBaseComp {
+    loading?: boolean
     userData: UserData // TODO: Change based on auth response resource fromn @/horizon-corp/types/auth/...
     onBack?: () => void
 }
 
-const AccountCancelled = ({ userData, onBack }: Props) => {
+const AccountCancelled = ({ loading = false, userData, onBack }: Props) => {
     const router = useRouter()
 
     return (
@@ -36,12 +38,13 @@ const AccountCancelled = ({ userData, onBack }: Props) => {
 
             <p className="text-center font-medium">{HELP_CONTACT}</p>
             <Button
+                disabled={loading}
                 onClick={() => {
                     onBack ? onBack() : router.history.back()
                 }}
                 className="w-full bg-[#34C759] hover:bg-[#38b558]"
             >
-                Back to Sign In
+                {loading ? <LoadingCircle /> : 'Back to Sign In'}
             </Button>
         </div>
     )
