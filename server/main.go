@@ -7,6 +7,7 @@ import (
 	"horizon/server/internal"
 	"horizon/server/internal/auth"
 	"horizon/server/internal/controllers"
+	"horizon/server/internal/middleware"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/routes"
 	"horizon/server/logger"
@@ -41,6 +42,9 @@ func main() {
 			auth.NewMemberAuthService,
 			auth.NewOwnerAuthService,
 			auth.NewTokenService,
+
+			// Middleware
+			middleware.NewAuthMiddleware,
 
 			// Authentication
 			repositories.NewAdminRepository,

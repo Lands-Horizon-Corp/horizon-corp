@@ -1,88 +1,146 @@
 package middleware
 
 import (
-	"context"
-	"fmt"
+	"errors"
 	"horizon/server/config"
 	"horizon/server/internal/auth"
+	"horizon/server/internal/repositories"
+	"horizon/server/internal/resources"
+	"horizon/server/services"
 	"net/http"
-	"strings"
-	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/gin-gonic/gin"
 )
 
-type middleware string
+type AuthMiddleware struct {
 
-const (
-	AuthorizationHeader middleware = "Authorization"
-	BearerPrefix        middleware = "Bearer "
-	ClaimsKey           middleware = "claims"
-)
+	// Database
+	adminRepo    *repositories.AdminRepository
+	employeeRepo *repositories.EmployeeRepository
+	ownerRepo    *repositories.OwnerRepository
+	memberRepo   *repositories.MemberRepository
 
-func JWTMiddleware(mode string, next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get(string(AuthorizationHeader))
-		if authHeader == "" {
-			http.Error(w, "Authorization header is missing", http.StatusUnauthorized)
-			return
-		}
+	// Auth
+	adminAuthService    *auth.AdminAuthService
+	employeeAuthService *auth.EmployeeAuthService
+	memberAuthService   *auth.MemberAuthService
+	ownerAuthService    *auth.OwnerAuthService
 
-		if !strings.HasPrefix(authHeader, string(BearerPrefix)) {
-			http.Error(w, "Invalid authorization format", http.StatusUnauthorized)
-			return
-		}
+	// Services
+	otpService   *services.OTPService
+	cfg          *config.AppConfig
+	tokenService auth.TokenService
+}
 
-		tokenString := strings.TrimPrefix(authHeader, string(BearerPrefix))
+func NewAuthMiddleware(
+	// Database
+	adminRepo *repositories.AdminRepository,
+	employeeRepo *repositories.EmployeeRepository,
+	ownerRepo *repositories.OwnerRepository,
+	memberRepo *repositories.MemberRepository,
 
-		modeToken, err := getTokenMode(mode)
-		if err != nil {
-			http.Error(w, "Could not load mode token", http.StatusInternalServerError)
-			return
-		}
+	// Auth
+	adminAuthService *auth.AdminAuthService,
+	employeeAuthService *auth.EmployeeAuthService,
+	memberAuthService *auth.MemberAuthService,
+	ownerAuthService *auth.OwnerAuthService,
 
-		signed, err := config.Decrypt(modeToken)
-		if err != nil {
-			http.Error(w, "Could not decrypt token", http.StatusInternalServerError)
-			return
-		}
+	// Services
+	otpService *services.OTPService,
+	cfg *config.AppConfig,
+	tokenService auth.TokenService,
 
-		claims := &auth.UserClaims{}
-		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return signed, nil
-		})
+) *AuthMiddleware {
+	return &AuthMiddleware{
+		// Database
+		adminRepo:    adminRepo,
+		employeeRepo: employeeRepo,
+		ownerRepo:    ownerRepo,
+		memberRepo:   memberRepo,
 
-		if err != nil || !token.Valid {
-			http.Error(w, "Invalid token", http.StatusUnauthorized)
-			return
-		}
+		// Auth
+		adminAuthService:    adminAuthService,
+		employeeAuthService: employeeAuthService,
+		memberAuthService:   memberAuthService,
+		ownerAuthService:    ownerAuthService,
 
-		if claims.ExpiresAt < time.Now().Unix() {
-			http.Error(w, "Token has expired", http.StatusUnauthorized)
-			return
-		}
-
-		ctx := r.Context()
-		ctx = context.WithValue(ctx, ClaimsKey, claims)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		// Services
+		otpService:   otpService,
+		cfg:          cfg,
+		tokenService: tokenService,
 	}
 }
 
-func getTokenMode(mode string) ([]byte, error) {
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		return nil, err
-	}
-	switch mode {
-	case "admin":
-		return cfg.AppAdminToken, nil
-	case "owner":
-		return cfg.AppOwnerToken, nil
-	case "member":
-		return cfg.AppMemberToken, nil
-	case "employee":
-		return cfg.AppEmployeeToken, nil
-	default:
-		return nil, fmt.Errorf("unrecognized mode: %s", mode)
+func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// Retrieve the cookie
+		cookie, err := ctx.Request.Cookie(c.cfg.AppTokenName)
+		if err != nil {
+			if errors.Is(err, http.ErrNoCookie) {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: cookie not found"})
+				ctx.Abort()
+				return
+			}
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			ctx.Abort()
+			return
+		}
+
+		// Verify the token
+		claims, err := c.tokenService.VerifyToken(cookie.Value)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: token verification failed"})
+			ctx.Abort()
+			return
+		}
+
+		// Fetch user based on account type and set in context
+		var user interface{}
+		switch claims.AccountType {
+		case "Member":
+			member, err := c.memberRepo.GetByID(claims.ID)
+			if err != nil {
+				ctx.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
+				ctx.Abort()
+				return
+			}
+			user = resources.ToResourceMember(member)
+
+		case "Employee":
+			employee, err := c.employeeRepo.GetByID(claims.ID)
+			if err != nil {
+				ctx.JSON(http.StatusNotFound, gin.H{"error": "Employee not found"})
+				ctx.Abort()
+				return
+			}
+			user = resources.ToResourceEmployee(employee)
+
+		case "Admin":
+			admin, err := c.adminRepo.GetByID(claims.ID)
+			if err != nil {
+				ctx.JSON(http.StatusNotFound, gin.H{"error": "Admin not found"})
+				ctx.Abort()
+				return
+			}
+			user = resources.ToResourceAdmin(admin)
+
+		case "Owner":
+			owner, err := c.ownerRepo.GetByID(claims.ID)
+			if err != nil {
+				ctx.JSON(http.StatusNotFound, gin.H{"error": "Owner not found"})
+				ctx.Abort()
+				return
+			}
+			user = resources.ToResourceOwner(owner)
+
+		default:
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
+			ctx.Abort()
+			return
+		}
+
+		// Store the user in context for further use in handlers
+		ctx.Set("current-user", user)
+		ctx.Next() // Continue to the next handler
 	}
 }
