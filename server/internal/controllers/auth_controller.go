@@ -310,8 +310,8 @@ func (c *AuthController) SignOut(ctx *gin.Context) {
 func (c *AuthController) ForgotPassword(ctx *gin.Context) {}
 func (c *AuthController) ChangePassword(ctx *gin.Context) {}
 
-// Email
 func (c *AuthController) ChangeEmail(ctx *gin.Context) {}
+
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 	var req auth_requests.SendEmailVerificationRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
