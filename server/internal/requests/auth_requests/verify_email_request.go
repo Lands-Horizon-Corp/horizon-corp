@@ -5,7 +5,7 @@ import (
 )
 
 type VerifyEmailRequest struct {
-	Otp string `json:"otp" validate:"required,max=255"`
+	Otp string `json:"otp" validate:"required,len=6"`
 }
 
 func (r *VerifyEmailRequest) Validate() error {
