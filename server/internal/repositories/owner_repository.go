@@ -63,3 +63,14 @@ func (r *OwnerRepository) FindByEmailUsernameOrContact(input string) (models.Own
 		return owner, handleDBError(err)
 	}
 }
+
+func (r *OwnerRepository) UpdateColumns(id uint, columns map[string]interface{}) (models.Owner, error) {
+	var owner models.Owner
+	if err := r.DB.Model(&owner).Where("id = ?", id).Updates(columns).Error; err != nil {
+		return owner, handleDBError(err)
+	}
+	if err := r.DB.First(&owner, id).Error; err != nil {
+		return owner, handleDBError(err)
+	}
+	return owner, nil
+}
