@@ -1,3 +1,4 @@
+// middleware/auth_middleware.go
 package middleware
 
 import (
@@ -5,7 +6,6 @@ import (
 	"horizon/server/config"
 	"horizon/server/internal/auth"
 	"horizon/server/internal/repositories"
-	"horizon/server/internal/resources"
 	"horizon/server/services"
 	"net/http"
 
@@ -13,67 +13,57 @@ import (
 )
 
 type AuthMiddleware struct {
-
-	// Database
-	adminRepo    *repositories.AdminRepository
-	employeeRepo *repositories.EmployeeRepository
-	ownerRepo    *repositories.OwnerRepository
-	memberRepo   *repositories.MemberRepository
-
-	// Auth
+	adminRepo           *repositories.AdminRepository
+	employeeRepo        *repositories.EmployeeRepository
+	ownerRepo           *repositories.OwnerRepository
+	memberRepo          *repositories.MemberRepository
 	adminAuthService    *auth.AdminAuthService
 	employeeAuthService *auth.EmployeeAuthService
 	memberAuthService   *auth.MemberAuthService
 	ownerAuthService    *auth.OwnerAuthService
-
-	// Services
-	otpService   *services.OTPService
-	cfg          *config.AppConfig
-	tokenService auth.TokenService
+	otpService          *services.OTPService
+	cfg                 *config.AppConfig
+	tokenService        auth.TokenService
 }
 
 func NewAuthMiddleware(
-	// Database
 	adminRepo *repositories.AdminRepository,
 	employeeRepo *repositories.EmployeeRepository,
 	ownerRepo *repositories.OwnerRepository,
 	memberRepo *repositories.MemberRepository,
-
-	// Auth
 	adminAuthService *auth.AdminAuthService,
 	employeeAuthService *auth.EmployeeAuthService,
 	memberAuthService *auth.MemberAuthService,
 	ownerAuthService *auth.OwnerAuthService,
-
-	// Services
 	otpService *services.OTPService,
 	cfg *config.AppConfig,
 	tokenService auth.TokenService,
-
 ) *AuthMiddleware {
 	return &AuthMiddleware{
-		// Database
-		adminRepo:    adminRepo,
-		employeeRepo: employeeRepo,
-		ownerRepo:    ownerRepo,
-		memberRepo:   memberRepo,
-
-		// Auth
+		adminRepo:           adminRepo,
+		employeeRepo:        employeeRepo,
+		ownerRepo:           ownerRepo,
+		memberRepo:          memberRepo,
 		adminAuthService:    adminAuthService,
 		employeeAuthService: employeeAuthService,
 		memberAuthService:   memberAuthService,
 		ownerAuthService:    ownerAuthService,
-
-		// Services
-		otpService:   otpService,
-		cfg:          cfg,
-		tokenService: tokenService,
+		otpService:          otpService,
+		cfg:                 cfg,
+		tokenService:        tokenService,
 	}
+}
+
+type User struct {
+	ID            uint   `json:"id"`
+	Email         string `json:"email"`
+	ContactNumber string `json:"contactNumber"`
+	FirstName     string `json"firstName"`
+	LastName      string `json"firstName"`
 }
 
 func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		// Retrieve the cookie
 		cookie, err := ctx.Request.Cookie(c.cfg.AppTokenName)
 		if err != nil {
 			if errors.Is(err, http.ErrNoCookie) {
@@ -86,7 +76,6 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 			return
 		}
 
-		// Verify the token
 		claims, err := c.tokenService.VerifyToken(cookie.Value)
 		if err != nil {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: token verification failed"})
@@ -94,54 +83,80 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 			return
 		}
 
-		// Fetch user based on account type and set in context
 		var user interface{}
 		switch claims.AccountType {
 		case "Member":
 			member, err := c.memberRepo.GetByID(claims.ID)
 			if err != nil {
+				c.tokenService.DeleteToken(cookie.Value)
 				ctx.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
 				ctx.Abort()
 				return
 			}
-			user = resources.ToResourceMember(member)
+			user = User{
+				ID:            member.ID,
+				Email:         member.Email,
+				ContactNumber: member.ContactNumber,
+				FirstName:     member.FirstName,
+				LastName:      member.LastName,
+			}
 
 		case "Employee":
 			employee, err := c.employeeRepo.GetByID(claims.ID)
 			if err != nil {
+				c.tokenService.DeleteToken(cookie.Value)
 				ctx.JSON(http.StatusNotFound, gin.H{"error": "Employee not found"})
 				ctx.Abort()
 				return
 			}
-			user = resources.ToResourceEmployee(employee)
+			user = User{
+				ID:            employee.ID,
+				Email:         employee.Email,
+				ContactNumber: employee.ContactNumber,
+				FirstName:     employee.FirstName,
+				LastName:      employee.LastName,
+			}
 
 		case "Admin":
 			admin, err := c.adminRepo.GetByID(claims.ID)
 			if err != nil {
+				c.tokenService.DeleteToken(cookie.Value)
 				ctx.JSON(http.StatusNotFound, gin.H{"error": "Admin not found"})
 				ctx.Abort()
 				return
 			}
-			user = resources.ToResourceAdmin(admin)
+			user = User{
+				ID:            admin.ID,
+				Email:         admin.Email,
+				ContactNumber: admin.ContactNumber,
+				FirstName:     admin.FirstName,
+				LastName:      admin.LastName,
+			}
 
 		case "Owner":
 			owner, err := c.ownerRepo.GetByID(claims.ID)
 			if err != nil {
+				c.tokenService.DeleteToken(cookie.Value)
 				ctx.JSON(http.StatusNotFound, gin.H{"error": "Owner not found"})
 				ctx.Abort()
 				return
 			}
-			user = resources.ToResourceOwner(owner)
+			user = User{
+				ID:            owner.ID,
+				Email:         owner.Email,
+				ContactNumber: owner.ContactNumber,
+				FirstName:     owner.FirstName,
+				LastName:      owner.LastName}
 
 		default:
+			c.tokenService.DeleteToken(cookie.Value)
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
 			ctx.Abort()
 			return
 		}
 
-		// Store the user in context for further use in handlers
 		ctx.Set("current-user", user)
 		ctx.Set("claims", claims)
-		ctx.Next() // Continue to the next handler
+		ctx.Next()
 	}
 }

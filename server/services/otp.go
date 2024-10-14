@@ -112,6 +112,10 @@ func (es *OTPService) SendEContactNumberOTP(accountType string, id uint, req SMS
 
 func (es *OTPService) ValidateOTP(accountType string, id uint, providedOTP string, mediumType string) (bool, error) {
 	key := es.cacheKey(accountType, id, mediumType)
+	if providedOTP == "" {
+		es.logger.Warn("Provided OTP is empty", zap.Uint("user_id", id))
+		return false, errors.New("provided OTP is invalid: empty input")
+	}
 
 	storedOTP, err := es.cacheService.GetOTP(key)
 	if err != nil {

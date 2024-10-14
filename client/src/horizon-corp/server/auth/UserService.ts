@@ -6,6 +6,8 @@ import type {
   ChangePasswordRequest,
   CurrentUserResource,
   ForgotPasswordRequest,
+  SendEmailVerificationRequest,
+  SendContactNumberVerificationRequest,
   SignInRequest,
   SignInResource,
   SignUpRequest,
@@ -84,10 +86,10 @@ export default class UserService {
   // POST - /auth/send-email-verification
   public static async SendEmailVerification(): Promise<void> {
     const endpoint = `${UserService.BASE_ENDPOINT}/send-email-verification`
-    await UseServer.post<void>(endpoint)
-
-    // on backend read the current user cookie in backend, based on the information there, you'll know the email
-    // address to send the OTP to
+    const data: SendEmailVerificationRequest = {
+      emailTemplate: getSMSContent('ContactNumber')
+    }
+    await UseServer.post<SendEmailVerificationRequest>(endpoint, data)
   }
 
   // POST - /auth/verify-email
@@ -104,10 +106,10 @@ export default class UserService {
   // POST - /auth/send-contact-verification
   public static async SendContactVerification(): Promise<void> {
     const endpoint = `${UserService.BASE_ENDPOINT}/send-contact-verification`
-    await UseServer.post<void>(endpoint)
-
-    // on backend read the current user cookie in backend, based on the information there, you'll know the contact
-    // number to send the OTP to
+    const data: SendContactNumberVerificationRequest = {
+      contactTemplate: getSMSContent('ContactNumber')
+    }
+    await UseServer.post<SendContactNumberVerificationRequest>(endpoint, data)
   }
 
   // POST - /auth/verify-contact
