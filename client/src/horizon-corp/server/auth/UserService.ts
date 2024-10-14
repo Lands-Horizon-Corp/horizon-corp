@@ -6,7 +6,6 @@ import type {
   ChangePasswordRequest,
   CurrentUserResource,
   ForgotPasswordRequest,
-  SendEmailVerificationRequest,
   SignInRequest,
   SignInResource,
   SignUpRequest,
