@@ -311,8 +311,55 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {}
 func (c *AuthController) ChangePassword(ctx *gin.Context) {}
 
 // Email
-func (c *AuthController) ChangeEmail(ctx *gin.Context)           {}
-func (c *AuthController) SendEmailVerification(ctx *gin.Context) {}
+func (c *AuthController) ChangeEmail(ctx *gin.Context) {}
+func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
+	var req auth_requests.SendEmailVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, exists := ctx.Get("current-user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	currentUser, ok := user.(middleware.User)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user email"})
+		return
+	}
+
+	emailReq := services.EmailRequest{
+		To:      currentUser.Email,
+		Subject: "ECOOP: Email Verification",
+		Body:    req.EmailTemplate,
+	}
+
+	claims, exists := ctx.Get("claims")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	getClaims, err := claims.(*auth.UserClaims)
+	if !err {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+		return
+	}
+
+	if err := c.otpService.SendEmailOTP(getClaims.AccountType, currentUser.ID, emailReq); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed send email OTP. Please try again"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully Sent you the mail. Check your inbox or spam folder"})
+}
+
 func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 	user, exists := ctx.Get("claims")
 	if !exists {
@@ -393,18 +440,53 @@ func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 // Contact Number
 func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {}
 func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
-	// user, exists := ctx.Get("claims")
-	// if !exists {
-	// 	ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
-	// 	return
-	// }
-	// userDetails, ok := user.(*auth.UserClaims)
-	// if !ok {
-	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
-	// 	return
-	// }
+	var req auth_requests.SendContactNumberVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user, exists := ctx.Get("current-user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	currentUser, ok := user.(middleware.User)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user user"})
+		return
+	}
+
+	claims, exists := ctx.Get("claims")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	getClaims, err := claims.(*auth.UserClaims)
+	if !err {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+		return
+	}
+
+	contactReq := services.SMSRequest{
+		To:   currentUser.ContactNumber,
+		Body: req.ContactTemplate,
+		Vars: &map[string]string{
+			"name": currentUser.FirstName + " " + currentUser.LastName,
+		},
+	}
+	if err := c.otpService.SendEContactNumberOTP(getClaims.AccountType, getClaims.ID, contactReq); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed send OTP from your number. Please try again"})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully Sent you the mail. Check your inbox or spam folder"})
 }
+
 func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 	user, exists := ctx.Get("claims")
 	if !exists {
