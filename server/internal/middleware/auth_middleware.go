@@ -35,19 +35,13 @@ func JWTMiddleware(mode string, next http.Handler) http.HandlerFunc {
 
 		tokenString := strings.TrimPrefix(authHeader, string(BearerPrefix))
 
-		cfg, err := config.LoadConfig()
-		if err != nil {
-			http.Error(w, "Could not load config", http.StatusInternalServerError)
-			return
-		}
-
 		modeToken, err := getTokenMode(mode)
 		if err != nil {
 			http.Error(w, "Could not load mode token", http.StatusInternalServerError)
 			return
 		}
 
-		signed, err := config.Decrypt(modeToken, cfg.AppToken)
+		signed, err := config.Decrypt(modeToken)
 		if err != nil {
 			http.Error(w, "Could not decrypt token", http.StatusInternalServerError)
 			return
