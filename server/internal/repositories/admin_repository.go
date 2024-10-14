@@ -69,3 +69,14 @@ func (r *AdminRepository) FindByEmailUsernameOrContact(input string) (models.Adm
 		return admin, handleDBError(err)
 	}
 }
+
+func (r *AdminRepository) UpdateColumns(id uint, columns map[string]interface{}) (models.Admin, error) {
+	var admin models.Admin
+	if err := r.DB.Model(&admin).Where("id = ?", id).Updates(columns).Error; err != nil {
+		return admin, handleDBError(err)
+	}
+	if err := r.DB.First(&admin, id).Error; err != nil {
+		return admin, handleDBError(err)
+	}
+	return admin, nil
+}

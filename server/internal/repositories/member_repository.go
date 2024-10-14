@@ -63,3 +63,14 @@ func (r *MemberRepository) FindByEmailUsernameOrContact(input string) (models.Me
 		return member, handleDBError(err)
 	}
 }
+
+func (r *MemberRepository) UpdateColumns(id uint, columns map[string]interface{}) (models.Member, error) {
+	var member models.Member
+	if err := r.DB.Model(&member).Where("id = ?", id).Updates(columns).Error; err != nil {
+		return member, handleDBError(err)
+	}
+	if err := r.DB.First(&member, id).Error; err != nil {
+		return member, handleDBError(err)
+	}
+	return member, nil
+}

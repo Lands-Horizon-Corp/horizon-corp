@@ -311,65 +311,192 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {}
 func (c *AuthController) ChangePassword(ctx *gin.Context) {}
 
 // Email
-func (c *AuthController) ChangeEmail(ctx *gin.Context) {
-	// if find email
-	// if email exists return error
-
-	// if check if email verified
-	// if veriefied continue success
-
-	// if hindi verified
-	// send otp to email
-}
+func (c *AuthController) ChangeEmail(ctx *gin.Context)           {}
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {}
 func (c *AuthController) VerifyEmail(ctx *gin.Context) {
+	user, exists := ctx.Get("current-user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	userDetails, ok := user.(*auth.UserClaims)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+		return
+	}
 	var req auth_requests.VerifyEmailRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	if err := req.Validate(); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	isValid, err := c.otpService.ValidateOTP(userDetails.AccountType, userDetails.ID, req.Otp, "email")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+	if !isValid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
+		return
+	}
+	var response interface{}
 
-	// req.Otp
+	switch userDetails.AccountType {
+	case "Member":
+		updatedMember, err := c.memberRepo.UpdateColumns(userDetails.ID, map[string]interface{}{
+			"is_email_verified": true,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member"})
+			return
+		}
+		response = resources.ToResourceMember(updatedMember)
+	case "Owner":
+		updatedOwner, err := c.ownerRepo.UpdateColumns(userDetails.ID, map[string]interface{}{
+			"is_email_verified": true,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner"})
+			return
+		}
+		response = resources.ToResourceOwner(updatedOwner)
+
+	case "Employee":
+		updatedEmployee, err := c.employeeRepo.UpdateColumns(userDetails.ID, map[string]interface{}{
+			"is_email_verified": true,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee"})
+			return
+		}
+		response = resources.ToResourceEmployee(updatedEmployee)
+
+	case "Admin":
+		updatedAdmin, err := c.adminRepo.UpdateColumns(userDetails.ID, map[string]interface{}{
+			"is_email_verified": true,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin"})
+			return
+		}
+		response = resources.ToResourceAdmin(updatedAdmin)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
+		return
+	}
+	ctx.JSON(http.StatusOK, response)
 }
 
 // Contact Number
 func (c *AuthController) ChangeContactNumber(ctx *gin.Context)           {}
 func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {}
-func (c *AuthController) VerifyContactNumber(ctx *gin.Context)           {}
+func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
+	user, exists := ctx.Get("current-user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	userDetails, ok := user.(*auth.UserClaims)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+		return
+	}
+	var req auth_requests.VerifyContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	isValid, err := c.otpService.ValidateOTP(userDetails.AccountType, userDetails.ID, req.Otp, "sms")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		return
+	}
+	if !isValid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
+		return
+	}
+	var response interface{}
+
+	switch userDetails.AccountType {
+	case "Member":
+		updatedMember, err := c.memberRepo.UpdateColumns(userDetails.ID, map[string]interface{}{
+			"is_contact_verified": true,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member"})
+			return
+		}
+		response = resources.ToResourceMember(updatedMember)
+	case "Owner":
+		updatedOwner, err := c.ownerRepo.UpdateColumns(userDetails.ID, map[string]interface{}{
+			"is_contact_verified": true,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner"})
+			return
+		}
+		response = resources.ToResourceOwner(updatedOwner)
+
+	case "Employee":
+		updatedEmployee, err := c.employeeRepo.UpdateColumns(userDetails.ID, map[string]interface{}{
+			"is_contact_verified": true,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee"})
+			return
+		}
+		response = resources.ToResourceEmployee(updatedEmployee)
+
+	case "Admin":
+		updatedAdmin, err := c.adminRepo.UpdateColumns(userDetails.ID, map[string]interface{}{
+			"is_contact_verified": true,
+		})
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin"})
+			return
+		}
+		response = resources.ToResourceAdmin(updatedAdmin)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
+		return
+	}
+	ctx.JSON(http.StatusOK, response)
+}
 
 func AuthRoutes(router *gin.RouterGroup, middleware *middleware.AuthMiddleware, controller *AuthController) {
 	group := router.Group("/auth")
 	{
 		// Basic Authentication
+		group.POST("/signup", controller.SignUp)
+		group.POST("/signin", controller.SignIn)
+		// Password
+		group.POST("/forgot-password", controller.ForgotPassword)
+		group.POST("/change-password", controller.ChangePassword)
+
 		group.Use(middleware.Middleware())
 		{
 			// Route for getting the current user information
 			group.GET("/current-user", controller.CurrentUser)
 			group.POST("/signout", controller.SignOut)
+
+			// Email
+			group.POST("/change-email", controller.ChangeEmail)
+			group.POST("/send-email-verification", controller.SendEmailVerification)
+			group.POST("/verify-email", controller.VerifyEmail)
+
+			// Contact Number
+			group.POST("/change-contact-number", controller.ChangeContactNumber)
+			group.POST("/send-contact-number-verification", controller.SendContactNumberVerification)
+			group.POST("/verify-otp", controller.VerifyContactNumber)
 		}
 
-		// Basic Authentication
-		group.POST("/signup", controller.SignUp)
-		group.POST("/signin", controller.SignIn)
-
-		// Password
-		group.POST("/forgot-password", controller.ForgotPassword) // for signed out
-		group.POST("/change-password", controller.ChangePassword) // for signed out
-
-		// Email
-		group.POST("/change-email", controller.ChangeEmail)                      // for signed in
-		group.POST("/send-email-verification", controller.SendEmailVerification) // for signed in
-		group.POST("/verify-email", controller.VerifyEmail)                      // for signed in
-
-		// Contact Number
-		group.POST("/change-contact-number", controller.ChangeContactNumber)                      // for signed in
-		group.POST("/send-contact-number-verification", controller.SendContactNumberVerification) // for signed in
-		group.POST("/verify-otp", controller.VerifyContactNumber)                                 // for signed in
 	}
 }
 
@@ -447,44 +574,6 @@ func (c *AuthController) createAdmin(req auth_requests.SignUpRequest) models.Adm
 		ContactNumber:     req.ContactNumber,
 		MediaID:           nil,
 		Status:            "Pending",
-	}
-}
-
-func (c *AuthController) RetrieveEmail(accountType string, userID uint) string {
-	switch accountType {
-	case "Member":
-		member, _ := c.memberRepo.GetByID(userID)
-		return member.Email
-	case "Owner":
-		owner, _ := c.ownerRepo.GetByID(userID)
-		return owner.Email
-	case "Employee":
-		employee, _ := c.employeeRepo.GetByID(userID)
-		return employee.Email
-	case "Admin":
-		admin, _ := c.adminRepo.GetByID(userID)
-		return admin.Email
-	default:
-		return ""
-	}
-}
-
-func (c *AuthController) RetrieveContactNumber(accountType string, userID uint) string {
-	switch accountType {
-	case "Member":
-		member, _ := c.memberRepo.GetByID(userID)
-		return member.ContactNumber
-	case "Owner":
-		owner, _ := c.ownerRepo.GetByID(userID)
-		return owner.ContactNumber
-	case "Employee":
-		employee, _ := c.employeeRepo.GetByID(userID)
-		return employee.ContactNumber
-	case "Admin":
-		admin, _ := c.adminRepo.GetByID(userID)
-		return admin.ContactNumber
-	default:
-		return ""
 	}
 }
 
