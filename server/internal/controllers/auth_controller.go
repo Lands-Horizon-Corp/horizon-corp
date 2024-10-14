@@ -329,7 +329,7 @@ func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
-	currentUser, ok := user.(middleware.User)
+	currentUser, ok := user.(models.User)
 	if !ok {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user email"})
 		return
@@ -456,7 +456,7 @@ func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
-	currentUser, ok := user.(middleware.User)
+	currentUser, ok := user.(models.User)
 	if !ok {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user user"})
 		return
