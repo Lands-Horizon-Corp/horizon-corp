@@ -58,22 +58,26 @@ func VerifyPassword(hashedPassword, password string) bool {
 	return err == nil
 }
 
-func Encrypt(data []byte, key []byte) ([]byte, error) {
+func Encrypt(data []byte) ([]byte, error) {
+	key := make([]byte, 32)
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
 	}
 	ciphertext := make([]byte, aes.BlockSize+len(data))
+
 	iv := ciphertext[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		return nil, err
 	}
+
 	mode := cipher.NewCBCEncrypter(block, iv)
 	mode.CryptBlocks(ciphertext[aes.BlockSize:], data)
+
 	return ciphertext, nil
 }
-
-func Decrypt(ciphertext []byte, key []byte) ([]byte, error) {
+func Decrypt(ciphertext []byte) ([]byte, error) {
+	key := make([]byte, 32)
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err

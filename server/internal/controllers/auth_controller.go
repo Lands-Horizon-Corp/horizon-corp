@@ -87,7 +87,7 @@ func (c *AuthController) CurrentUser(ctx *gin.Context) {
 	}
 
 	// Decrypt the token
-	decrypted, err := config.Decrypt([]byte(cookie.Value), []byte(c.cfg.AppAdminToken))
+	decrypted, err := config.Decrypt([]byte(cookie.Value))
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		return
@@ -242,7 +242,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 	}
 
 	// Encrypt the token
-	encrypted, err := config.Encrypt([]byte(token), []byte(c.cfg.AppAdminToken))
+	encrypted, err := config.Encrypt([]byte(token))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -348,7 +348,7 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 	}
 
 	// Encrypt the token
-	encrypted, err := config.Encrypt([]byte(token), []byte(c.cfg.AppAdminToken))
+	encrypted, err := config.Encrypt([]byte(token))
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -375,7 +375,7 @@ func (c *AuthController) SignOut(ctx *gin.Context) {
 		return
 	}
 
-	decryptedToken, err := config.Decrypt([]byte(cookie.Value), []byte(c.cfg.AppAdminToken))
+	decryptedToken, err := config.Decrypt([]byte(cookie.Value))
 	if err != nil {
 		ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
 		return
@@ -415,7 +415,6 @@ func (c *AuthController) ChangeEmail(ctx *gin.Context) {
 
 	// if hindi verified
 	// send otp to email
-
 }
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {}
 func (c *AuthController) VerifyEmail(ctx *gin.Context)           {}
