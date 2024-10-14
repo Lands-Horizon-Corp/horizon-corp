@@ -3,7 +3,7 @@ import { PASSWORD_MIN_LENGTH } from '../constants'
 
 export const emailSchema = z
     .string({ required_error: 'Email is required' })
-    .email('Email must be valid')
+    .email('Invalid email')
 
 const AccountTypes = ['Member', 'Owner', 'Admin', 'Employee'] as const
 

@@ -52,10 +52,9 @@ const SignInForm = ({
         reValidateMode: 'onChange',
         mode: 'onChange',
         defaultValues: {
-            email: defaultValues?.email ?? '',
-            username: defaultValues?.username ?? '',
-            accountType: defaultValues?.accountType ?? 'Member',
+            key: defaultValues?.key ?? '',
             password: '',
+            accountType: defaultValues?.accountType ?? 'Member',
         },
     })
 
@@ -94,8 +93,8 @@ const SignInForm = ({
 
                 <fieldset disabled={loading || readOnly} className="space-y-4">
                     <FormField
-                        name="email"
                         control={form.control}
+                        name="key"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
@@ -103,40 +102,14 @@ const SignInForm = ({
                                         htmlFor={field.name}
                                         className="w-full max-w-[90px] text-right font-medium"
                                     >
-                                        Email
-                                    </FormLabel>
-                                    <FormControl>
-                                        <div className="flex-1 space-y-2">
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                autoComplete="on"
-                                                placeholder="Email"
-                                            />
-                                        </div>
-                                    </FormControl>
-                                </div>
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="username"
-                        render={({ field }) => (
-                            <FormItem className="min-w-[277px]">
-                                <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full max-w-[90px] text-right font-medium"
-                                    >
-                                        Username
+                                        Key
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             id={field.name}
-                                            placeholder="Username"
-                                            autoComplete="username"
+                                            placeholder="Email, contact, or username"
+                                            autoComplete="off"
                                         />
                                     </FormControl>
                                 </div>
@@ -159,7 +132,7 @@ const SignInForm = ({
                                         <PasswordInput
                                             {...field}
                                             id="password-field"
-                                            autoComplete="current-password"
+                                            autoComplete="off"
                                             placeholder="Password"
                                         />
                                     </FormControl>
@@ -211,17 +184,13 @@ const SignInForm = ({
                 </fieldset>
                 <div className="mt-6 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError || error} />
-                    <Button
-                        type="submit"
-                        disabled={loading || error !== null || readOnly}
-                    >
+                    <Button type="submit" disabled={loading || readOnly}>
                         {loading ? <LoadingCircle /> : 'Login'}
                     </Button>
                     <Link
                         className="text-sm text-primary"
                         to="/auth/forgot-password"
                         search={{
-                            email: form.getValues('email'),
                             accountType: form.getValues('accountType'),
                         }}
                     >
