@@ -9,7 +9,7 @@ import { UserData } from '@/horizon-corp/types'
 
 interface Props extends IBaseComp {
     readOnly?: boolean
-    userData: UserData// TODO: Change based on auth response resource fromn @/horizon-corp/types/auth/...
+    userData: UserData // TODO: Change based on auth response resource fromn @/horizon-corp/types/auth/...
     onVerifyComplete?: (newUserData: UserData) => void
     onVerifyChange?: (newUserData: UserData) => void
 }
@@ -25,13 +25,15 @@ const VerifyRoot = ({
     useEffect(() => {
         if (
             (userData.isContactVerified && userData.isEmailVerified) ||
-            userData.status === "Verified"
+            userData.status === 'Verified'
         )
             return onVerifyComplete?.(userData)
+        if (userData.isContactVerified) setStep(2)
     }, [userData])
 
-    const handleOnSuccess = (userData: UserData, nextStep: number) => {
-        onVerifyChange?.(userData)
+    const handleOnSuccess = (newUserData: UserData, nextStep: number) => {
+        console.log('User data after verify', newUserData)
+        onVerifyChange?.(newUserData)
         setStep(nextStep)
     }
 

@@ -29,8 +29,13 @@ const Verify = ({}: Props) => {
         if (currentUser.status === 'Not Allowed')
             return setDisplay('account-cancelled')
 
-        if (currentUser.status === 'Verified')
-            return setDisplay('verify-complete')
+        // if (currentUser.status === 'Verified')
+            // return setDisplay('verify-complete')
+            // todo: Redirect
+        
+        if(currentUser.isContactVerified && currentUser.isEmailVerified){
+            setDisplay('verify-complete')
+        }
 
         if (!currentUser.isContactVerified || !currentUser.isEmailVerified)
             setDisplay('verify')
