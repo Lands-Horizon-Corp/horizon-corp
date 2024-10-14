@@ -74,19 +74,24 @@ services:
       MYSQL_DATABASE: ${DB_NAME}
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ALLOW_EMPTY_PASSWORD: # Assuming you want to leave this unset or remove it
+      MYSQL_ALLOW_EMPTY_PASSWORD:
     ports:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      test:
+        [
+          "CMD",
+          "mysql",
+          "--user=${DB_USERNAME}",
+          "--password=${DB_PASSWORD}",
+          "--execute=SELECT 1",
+        ]
       interval: 20s
       retries: 10
       start_period: 60s
       timeout: 20s
-    networks:
-      - app-network
 
   redis:
     image: redis:latest
@@ -134,8 +139,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    networks:
-      - app-network
 
   flyway:
     build:
@@ -154,8 +157,20 @@ services:
       DB_CHARSET: ${DB_CHARSET}
       DB_PARSE_TIME: ${DB_PARSE_TIME}
     entrypoint: ["flyway", "migrate"]
-    networks:
-      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
+    env_file: ./.env
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=${DB_USERNAME}
+      - PMA_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
 
 volumes:
   db_data:
