@@ -393,7 +393,17 @@ func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 // Contact Number
 func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {}
 func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
-	// Resend OTP here
+	// user, exists := ctx.Get("claims")
+	// if !exists {
+	// 	ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+	// 	return
+	// }
+	// userDetails, ok := user.(*auth.UserClaims)
+	// if !ok {
+	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+	// 	return
+	// }
+
 }
 func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 	user, exists := ctx.Get("claims")
