@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"errors"
 	"horizon/server/config"
 	"horizon/server/internal/auth"
+	"horizon/server/internal/middleware"
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests/auth_requests"
@@ -75,65 +75,12 @@ func NewAuthController(
 }
 
 func (c *AuthController) CurrentUser(ctx *gin.Context) {
-	// Retrieve the cookie
-	cookie, err := ctx.Request.Cookie(c.cfg.AppTokenName)
-	if err != nil {
-		if errors.Is(err, http.ErrNoCookie) {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Cookie not found"})
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	user, exists := ctx.Get("current-user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
-
-	// Verify the token
-	claims, err := c.tokenService.VerifyToken(cookie.Value)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Token verification failed"})
-		return
-	}
-
-	// Fetch user based on account type
-	var response interface{}
-	switch claims.AccountType {
-	case "Member":
-		member, err := c.memberRepo.GetByID(claims.ID)
-		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "Member not found"})
-			return
-		}
-		response = resources.ToResourceMember(member)
-
-	case "Employee":
-		employee, err := c.employeeRepo.GetByID(claims.ID)
-		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "Employee not found"})
-			return
-		}
-		response = resources.ToResourceEmployee(employee)
-
-	case "Admin":
-		admin, err := c.adminRepo.GetByID(claims.ID)
-		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "Admin not found"})
-			return
-		}
-		response = resources.ToResourceAdmin(admin)
-
-	case "Owner":
-		owner, err := c.ownerRepo.GetByID(claims.ID)
-		if err != nil {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "Owner not found"})
-			return
-		}
-		response = resources.ToResourceOwner(owner)
-
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusOK, user)
 }
 
 func (c *AuthController) SignUp(ctx *gin.Context) {
@@ -346,18 +293,6 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 }
 
 func (c *AuthController) SignOut(ctx *gin.Context) {
-	cookie, err := ctx.Request.Cookie(c.cfg.AppTokenName)
-	if err != nil {
-		ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
-		return
-	}
-
-	_, err = c.tokenService.VerifyToken(cookie.Value)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to invalidate token"})
-		return
-	}
-
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     c.cfg.AppTokenName,
 		Value:    "",
@@ -368,7 +303,6 @@ func (c *AuthController) SignOut(ctx *gin.Context) {
 		MaxAge:   -1,
 		SameSite: http.SameSiteNoneMode,
 	})
-
 	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
 }
 
@@ -388,23 +322,40 @@ func (c *AuthController) ChangeEmail(ctx *gin.Context) {
 	// send otp to email
 }
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {}
-func (c *AuthController) VerifyEmail(ctx *gin.Context)           {}
+func (c *AuthController) VerifyEmail(ctx *gin.Context) {
+	var req auth_requests.VerifyEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// req.Otp
+}
 
 // Contact Number
 func (c *AuthController) ChangeContactNumber(ctx *gin.Context)           {}
 func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {}
 func (c *AuthController) VerifyContactNumber(ctx *gin.Context)           {}
 
-func AuthRoutes(router *gin.RouterGroup, controller *AuthController) {
+func AuthRoutes(router *gin.RouterGroup, middleware *middleware.AuthMiddleware, controller *AuthController) {
 	group := router.Group("/auth")
 	{
 		// Basic Authentication
-		group.GET("/current-user", controller.CurrentUser) // for signed in
+		group.Use(middleware.Middleware())
+		{
+			// Route for getting the current user information
+			group.GET("/current-user", controller.CurrentUser)
+			group.POST("/signout", controller.SignOut)
+		}
 
 		// Basic Authentication
-		group.POST("/signup", controller.SignUp)   // for signed out
-		group.POST("/signin", controller.SignIn)   // for signed out
-		group.POST("/signout", controller.SignOut) // for signed in
+		group.POST("/signup", controller.SignUp)
+		group.POST("/signin", controller.SignIn)
 
 		// Password
 		group.POST("/forgot-password", controller.ForgotPassword) // for signed out
