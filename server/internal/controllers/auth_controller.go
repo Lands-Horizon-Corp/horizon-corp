@@ -314,7 +314,7 @@ func (c *AuthController) ChangePassword(ctx *gin.Context) {}
 func (c *AuthController) ChangeEmail(ctx *gin.Context)           {}
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {}
 func (c *AuthController) VerifyEmail(ctx *gin.Context) {
-	user, exists := ctx.Get("current-user")
+	user, exists := ctx.Get("claims")
 	if !exists {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
@@ -391,10 +391,12 @@ func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 }
 
 // Contact Number
-func (c *AuthController) ChangeContactNumber(ctx *gin.Context)           {}
-func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {}
+func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {}
+func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
+	// Resend OTP here
+}
 func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
-	user, exists := ctx.Get("current-user")
+	user, exists := ctx.Get("claims")
 	if !exists {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
