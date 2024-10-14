@@ -494,7 +494,7 @@ func AuthRoutes(router *gin.RouterGroup, middleware *middleware.AuthMiddleware, 
 			// Contact Number
 			group.POST("/change-contact-number", controller.ChangeContactNumber)
 			group.POST("/send-contact-number-verification", controller.SendContactNumberVerification)
-			group.POST("/verify-otp", controller.VerifyContactNumber)
+			group.POST("/verify-contact-number", controller.VerifyContactNumber)
 		}
 
 	}
