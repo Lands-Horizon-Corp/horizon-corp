@@ -12,7 +12,8 @@ import (
 
 func NewDatabaseService(cfg *config.AppConfig) (*gorm.DB, error) {
 	dsn := buildDSN(cfg)
-
+	fmt.Println(dsn)
+	fmt.Println("------")
 	maxRetries := 5
 	retryDelay := 2 * time.Second
 

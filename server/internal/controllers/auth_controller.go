@@ -406,7 +406,17 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {}
 func (c *AuthController) ChangePassword(ctx *gin.Context) {}
 
 // Email
-func (c *AuthController) ChangeEmail(ctx *gin.Context)           {}
+func (c *AuthController) ChangeEmail(ctx *gin.Context) {
+	// if find email
+	// if email exists return error
+
+	// if check if email verified
+	// if veriefied continue success
+
+	// if hindi verified
+	// send otp to email
+
+}
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {}
 func (c *AuthController) VerifyEmail(ctx *gin.Context)           {}
 
