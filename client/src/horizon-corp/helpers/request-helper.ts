@@ -3,7 +3,7 @@ import axios from 'axios'
 export const handleAxiosError = (error: unknown): string => {
     if (axios.isAxiosError(error)) {
         if (!error.response) {
-            return "Network error. Please check your connection."
+            return 'Network error. Please check your connection.'
         }
         const { response } = error
 
@@ -14,7 +14,8 @@ export const handleAxiosError = (error: unknown): string => {
                 return 'Sorry, the server encountered an error'
             default:
                 return (
-                    response.data?.message || response.data?.error ||
+                    response.data?.message ||
+                    response.data?.error ||
                     'An error occurred. Please try again'
                 )
         }
