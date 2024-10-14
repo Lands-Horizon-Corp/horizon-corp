@@ -11,5 +11,7 @@ export const getUsersAccountTypeRedirectPage = (currentUser: UserData) => {
             return '/employee'
         case 'Owner':
             return '/owner'
+        default:
+            return '/'
     }
 }
