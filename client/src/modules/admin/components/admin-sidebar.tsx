@@ -10,7 +10,7 @@ import {
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 import { TSidebarItem } from '@/types/component/sidebar'
 
 export const adminSidebarItems: TSidebarItem[] = [

@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/input-otp'
 import { Button } from '@/components/ui/button'
 import FormErrorMessage from '../form-error-message'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import MiniUpdateContactsModal from '../modal/mini-update-contact-modal'
 
 import { cn } from '@/lib/utils'
@@ -236,7 +236,7 @@ const VerifyForm = ({
                             </Button>
 
                             <Button type="submit">
-                                {loading ? <LoadingCircle /> : 'Submit'}
+                                {loading ? <LoadingSpinner /> : 'Submit'}
                             </Button>
                         </div>
                     </fieldset>

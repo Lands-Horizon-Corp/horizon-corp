@@ -7,7 +7,7 @@ import { GoArrowLeft } from 'react-icons/go'
 import { AiOutlineKey } from 'react-icons/ai'
 
 import { Button } from '@/components/ui/button'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import ResetPasswordForm from '@/modules/auth/components/forms/reset-password-form'
 
@@ -78,7 +78,7 @@ const PasswordResetPage = (_props: Props) => {
                 )}
                 {loading && (
                     <div className="flex flex-col items-center gap-y-2 py-16">
-                        <LoadingCircle />
+                        <LoadingSpinner />
                         <p className="text-center text-sm text-foreground/50">
                             verifying reset password link
                         </p>

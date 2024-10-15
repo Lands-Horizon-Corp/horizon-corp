@@ -7,7 +7,7 @@ import { useCameraGrant } from './use-camera-grant'
 import CameraDevicePicker from './camera-device-picker'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
     enableBleed?: boolean

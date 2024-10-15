@@ -20,7 +20,7 @@ import {
 import { KeyIcon } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn } from '@/lib/utils'
@@ -172,7 +172,7 @@ const ForgotPasswordEmail = ({
                         type="submit"
                         disabled={loading || readOnly}
                     >
-                        {loading ? <LoadingCircle /> : 'Confirm Email'}
+                        {loading ? <LoadingSpinner /> : 'Confirm Email'}
                     </Button>
                 </div>
             </form>

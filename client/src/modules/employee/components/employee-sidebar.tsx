@@ -11,7 +11,7 @@ import {
 import Sidebar from '@/components/sidebar'
 
 import { cn } from '@/lib/utils'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 import { TSidebarItem } from '@/types/component/sidebar'
 
 export const employeeSidebarItems: TSidebarItem[] = [

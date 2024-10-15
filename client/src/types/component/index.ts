@@ -1,5 +1,7 @@
 import { ReactNode } from 'react'
 
+export * from './sidebar'
+
 export interface IBaseComp {
     className?: string
     children?: ReactNode

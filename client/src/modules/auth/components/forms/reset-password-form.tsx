@@ -14,7 +14,7 @@ import { KeyIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import FormErrorMessage from '../form-error-message'
 import PasswordInput from '@/components/ui/password-input'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
@@ -162,7 +162,7 @@ const ResetPasswordForm = ({
                 <div className="mt-4 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError || error} />
                     <Button type="submit" disabled={loading || readOnly}>
-                        {loading ? <LoadingCircle /> : 'Save Password'}
+                        {loading ? <LoadingSpinner /> : 'Save Password'}
                     </Button>
                 </div>
             </form>

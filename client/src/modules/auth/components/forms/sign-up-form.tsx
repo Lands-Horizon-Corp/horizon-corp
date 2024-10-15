@@ -24,7 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { VerifiedPatchIcon } from '@/components/icons'
 import PasswordInput from '@/components/ui/password-input'
 import InputDatePicker from '@/components/input-date-picker'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn } from '@/lib/utils'
@@ -434,7 +434,7 @@ const SignUpForm = ({
                 <div className="mt-4 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError || error} />
                     <Button type="submit" disabled={loading || readOnly}>
-                        {loading ? <LoadingCircle /> : 'Submit'}
+                        {loading ? <LoadingSpinner /> : 'Submit'}
                     </Button>
                 </div>
             </form>

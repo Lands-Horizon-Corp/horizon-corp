@@ -3,7 +3,7 @@ import { Link, useLocation } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {}
 

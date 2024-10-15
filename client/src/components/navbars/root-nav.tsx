@@ -3,7 +3,7 @@ import { Link, ReactNode } from '@tanstack/react-router'
 import EcoopLogo from '@/components/ecoop-logo'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
     iconHref?: string

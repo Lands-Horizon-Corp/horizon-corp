@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 
 interface Props extends IBaseComp {}
 

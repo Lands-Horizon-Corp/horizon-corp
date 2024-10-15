@@ -44,7 +44,7 @@ import {
     AiOutlineLoading3Quarters as LoadingSpinnerIcon,
 } from 'react-icons/ai'
 
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 const CookieIcon: React.FC<IBaseCompNoChild> = (props) => {
     return (

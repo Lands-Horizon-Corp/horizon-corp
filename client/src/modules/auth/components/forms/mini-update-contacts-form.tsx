@@ -6,12 +6,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import FormErrorMessage from '../form-error-message'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 
 import { cn } from '@/lib'
 import { IAuthForm } from '@/types/auth/form-interface'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { emailSchema, contactNumberSchema } from '../../validations/common'
@@ -123,7 +123,7 @@ const MiniUpdateContactsForm = ({
                     </Button>
                     <Button type="submit" disabled={loading || readOnly}>
                         {loading ? (
-                            <LoadingCircle className="size-4" />
+                            <LoadingSpinner className="size-4" />
                         ) : (
                             'Save'
                         )}
