@@ -21,9 +21,11 @@ import {
 import { Button } from '@/components/ui/button'
 import FormErrorMessage from '../form-error-message'
 import LoadingCircle from '@/components/loader/loading-circle'
+import MiniUpdateContactsModal from '../modal/mini-update-contact-modal'
 
 import { cn } from '@/lib/utils'
 import { UserData } from '@/horizon-corp/types'
+import useCurrentUser from '@/hooks/use-current-user'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 import useCountDown from '@/modules/auth/hooks/use-count-down'
@@ -40,10 +42,12 @@ interface Props extends IAuthForm<TVerifyForm, UserData> {
 const ResendCountDown = ({
     trigger,
     duration,
+    className,
     onComplete,
 }: {
     trigger: boolean
     duration: number
+    className?: string
     onComplete: () => void
 }) => {
     const countDown = useCountDown({
@@ -52,7 +56,11 @@ const ResendCountDown = ({
         onComplete,
     })
 
-    return <p>Please wait for {countDown}s to resend again</p>
+    return (
+        <p className={className}>
+            Please wait for {countDown}s to resend again
+        </p>
+    )
 }
 
 const VerifyForm = ({
@@ -64,6 +72,8 @@ const VerifyForm = ({
     onError,
 }: Props) => {
     const [resent, setResent] = useState(false)
+    const { currentUser, setCurrentUser } = useCurrentUser()
+    const [showChangeContact, setShowChangeContact] = useState(false)
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm({
@@ -82,7 +92,7 @@ const VerifyForm = ({
             if (verifyMode === 'email') {
                 const response = await UserService.VerifyEmail(parsedData)
                 onSuccess?.(response.data)
-                toast.success("Email verified")
+                toast.success('Email verified')
             }
 
             // Send verify otp code to mark verify current signed in users contact number
@@ -90,7 +100,7 @@ const VerifyForm = ({
                 const response =
                     await UserService.VerifyContactNumber(parsedData)
                 onSuccess?.(response.data)
-                toast.success("Contact verified")
+                toast.success('Contact verified')
             }
         } catch (e) {
             const errorMessage = handleAxiosError(e)
@@ -128,96 +138,126 @@ const VerifyForm = ({
     }
 
     return (
-        <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(handleSubmit)}
-                className={cn('flex min-w-[380px] flex-col gap-y-4', className)}
-            >
-                <div className="flex flex-col items-center justify-center gap-y-4 pt-4">
-                    <p className="text-xl font-medium">
-                        Verify your{' '}
-                        {verifyMode === 'mobile'
-                            ? 'OTP Account'
-                            : 'Email Address'}
-                    </p>
-                    <p className="max-w-[320px] text-center text-foreground/80">
-                        Enter the one time password sent to your{' '}
-                        {verifyMode === 'mobile' ? 'Mobile Number' : 'Email'}
-                    </p>
-                </div>
-                <fieldset
-                    disabled={readOnly || loading}
-                    className="flex flex-col gap-y-4"
+        <>
+            <Form {...form}>
+                <form
+                    onSubmit={form.handleSubmit(handleSubmit)}
+                    className={cn(
+                        'flex min-w-[380px] flex-col gap-y-4',
+                        className
+                    )}
                 >
-                    <FormField
-                        control={form.control}
-                        name="otp"
-                        render={({ field }) => (
-                            <FormItem className="flex flex-col items-center">
-                                <FormControl>
-                                    <InputOTP
-                                        autoFocus
-                                        maxLength={6}
-                                        onComplete={() =>
-                                            form.handleSubmit(handleSubmit)()
-                                        }
-                                        pattern={REGEXP_ONLY_DIGITS_AND_CHARS}
-                                        containerClassName="mx-auto capitalize w-fit"
-                                        {...field}
-                                    >
-                                        <InputOTPGroup>
-                                            <InputOTPSlot index={0} />
-                                            <InputOTPSlot index={1} />
-                                            <InputOTPSlot index={2} />
-                                        </InputOTPGroup>
-                                        <InputOTPSeparator />
-                                        <InputOTPGroup>
-                                            <InputOTPSlot index={3} />
-                                            <InputOTPSlot index={4} />
-                                            <InputOTPSlot index={5} />
-                                        </InputOTPGroup>
-                                    </InputOTP>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormErrorMessage errorMessage={error} />
-                    {!resent && !loading && (
-                        <p>
-                            Didn&apos;t receive the code?{' '}
-                            <span
-                                onClick={handleSendOTPVerification}
-                                className="cursor-pointer text-primary hover:underline"
-                            >
-                                Resend Code
-                            </span>
+                    <div className="flex flex-col items-center justify-center gap-y-4 pt-4">
+                        <p className="text-xl font-medium">
+                            Verify your{' '}
+                            {verifyMode === 'mobile'
+                                ? 'OTP Account'
+                                : 'Email Address'}
                         </p>
-                    )}
-                    {resent && !loading && (
-                        <ResendCountDown
-                            duration={5}
-                            trigger={resent}
-                            onComplete={() => setResent(false)}
-                        />
-                    )}
-                    <div className="flex flex-col gap-y-2">
-                        <Button
-                            variant={'outline'}
-                            disabled={readOnly}
-                            onClick={(e) => {
-                                e.preventDefault()
-                            }}
-                        >
-                            Change {verifyMode === 'email' ? 'Email' : 'Mobile'}
-                        </Button>
-                        <Button type="submit">
-                            {loading ? <LoadingCircle /> : 'Submit'}
-                        </Button>
+                        <p className="max-w-[320px] text-center text-foreground/80">
+                            Enter the one time password sent to your{' '}
+                            {verifyMode === 'mobile'
+                                ? 'Mobile Number'
+                                : 'Email'}
+                        </p>
                     </div>
-                </fieldset>
-            </form>
-        </Form>
+                    <fieldset
+                        disabled={readOnly || loading}
+                        className="flex flex-col gap-y-4"
+                    >
+                        <FormField
+                            control={form.control}
+                            name="otp"
+                            render={({ field }) => (
+                                <FormItem className="flex flex-col items-center">
+                                    <FormControl>
+                                        <InputOTP
+                                            autoFocus
+                                            maxLength={6}
+                                            onComplete={() =>
+                                                form.handleSubmit(
+                                                    handleSubmit
+                                                )()
+                                            }
+                                            pattern={
+                                                REGEXP_ONLY_DIGITS_AND_CHARS
+                                            }
+                                            containerClassName="mx-auto capitalize w-fit"
+                                            {...field}
+                                        >
+                                            <InputOTPGroup>
+                                                <InputOTPSlot index={0} />
+                                                <InputOTPSlot index={1} />
+                                                <InputOTPSlot index={2} />
+                                            </InputOTPGroup>
+                                            <InputOTPSeparator />
+                                            <InputOTPGroup>
+                                                <InputOTPSlot index={3} />
+                                                <InputOTPSlot index={4} />
+                                                <InputOTPSlot index={5} />
+                                            </InputOTPGroup>
+                                        </InputOTP>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormErrorMessage errorMessage={error} />
+                        {!resent && !loading && (
+                            <p className="text-center text-sm opacity-85">
+                                Didn&apos;t receive the code?{' '}
+                                <span
+                                    onClick={handleSendOTPVerification}
+                                    className="cursor-pointer text-primary hover:underline"
+                                >
+                                    Resend Code
+                                </span>
+                            </p>
+                        )}
+                        {resent && !loading && (
+                            <ResendCountDown
+                                duration={5}
+                                trigger={resent}
+                                className="text-center text-sm opacity-85"
+                                onComplete={() => setResent(false)}
+                            />
+                        )}
+                        <div className="flex flex-col gap-y-2">
+                            <Button
+                                variant={'outline'}
+                                disabled={readOnly || !currentUser}
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    setShowChangeContact(true)
+                                }}
+                            >
+                                Change{' '}
+                                {verifyMode === 'email' ? 'Email' : 'Mobile'}
+                            </Button>
+
+                            <Button type="submit">
+                                {loading ? <LoadingCircle /> : 'Submit'}
+                            </Button>
+                        </div>
+                    </fieldset>
+                </form>
+            </Form>
+            {currentUser && (
+                <MiniUpdateContactsModal
+                    open={showChangeContact}
+                    onOpenChange={(state) => setShowChangeContact(state)}
+                    onSuccess={(newUserData) => {
+                        setShowChangeContact(false)
+                        setCurrentUser(newUserData)
+                    }}
+                    defaultValues={{
+                        email: currentUser.email,
+                        contactNumber: currentUser.contactNumber,
+                    }}
+                    onCancel={() => setShowChangeContact(false)}
+                />
+            )}
+        </>
     )
 }
 

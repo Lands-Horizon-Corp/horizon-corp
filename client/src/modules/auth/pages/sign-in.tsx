@@ -10,7 +10,7 @@ import AccountCancelled from '../components/account-cancelled'
 import { UserData } from '@/horizon-corp/types'
 import useCurrentUser from '@/hooks/use-current-user'
 import { getUsersAccountTypeRedirectPage } from './helpers'
-import { emailSchema, userAccountTypeSchema } from '../validations'
+import { emailSchema, userAccountTypeSchema } from '../validations/common'
 
 export const SignInPageSearchSchema = z.object({
     email: z.string().optional().default('').or(emailSchema),

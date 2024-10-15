@@ -13,6 +13,7 @@ export interface UserData {
   birthDate: Date
   createdAt: Date
   email: string
+  contactNumber : string
   accountType: AccountType
   status: AccountStatus
   isEmailVerified: boolean

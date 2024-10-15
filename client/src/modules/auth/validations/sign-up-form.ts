@@ -1,13 +1,11 @@
 import z from 'zod'
 
-import { userAccountTypeSchema } from '.'
+import { contactNumberSchema, emailSchema, userAccountTypeSchema } from './common'
 import { PASSWORD_MIN_LENGTH, LETTERS_REGEX } from '../constants'
 
 export const signUpFormSchema = z
     .object({
-        email: z
-            .string({ required_error: 'Email is required' })
-            .email('Email must be valid'),
+        email: emailSchema,
         username: z
             .string({ required_error: 'Username is required' })
             .min(1, 'User Name is required'),
@@ -32,21 +30,15 @@ export const signUpFormSchema = z
             .string({ required_error: 'Last Name is required' })
             .min(1, 'Last Name is required')
             .regex(LETTERS_REGEX, 'Last Name must contain only letters'),
-        birthdate: z
-            .date()
-            .refine(
-                (date) => {
-                    const today = new Date()
-                    today.setHours(0, 0, 0, 0)
-                    return date < today
-                },
-                { message: 'Birthdate cannot be today or in the future' }
-            ),
-        contactNumber: z
-            .string()
-            .min(1, 'Invalid contact')
-            .max(11)
-            .regex(/^\d+$/, 'Contact number must contain only numbers'),
+        birthdate: z.date().refine(
+            (date) => {
+                const today = new Date()
+                today.setHours(0, 0, 0, 0)
+                return date < today
+            },
+            { message: 'Birthdate cannot be today or in the future' }
+        ),
+        contactNumber: contactNumberSchema,
         permanentAddress: z.string().min(1, 'Permanent address is required'),
         password: z
             .string({ required_error: 'Password is required' })

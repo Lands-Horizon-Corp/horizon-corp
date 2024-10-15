@@ -103,9 +103,9 @@ export default class UserService {
     )
   }
 
-  // POST - /auth/send-contact-verification
+  // POST - /auth/send-contact-number-verification
   public static async SendContactVerification(): Promise<void> {
-    const endpoint = `${UserService.BASE_ENDPOINT}/send-contact-verification`
+    const endpoint = `${UserService.BASE_ENDPOINT}/send-contact-number-verification`
     const data: SendContactNumberVerificationRequest = {
       contactTemplate: getSMSContent('ContactNumber')
     }

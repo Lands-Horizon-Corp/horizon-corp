@@ -1,5 +1,5 @@
 import z from 'zod'
-import { userAccountTypeSchema } from '.'
+import { userAccountTypeSchema } from './common'
 
 export const signInFormSchema = z.object({
     key: z.string().min(1, 'email, username, or contact is required'),

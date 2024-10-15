@@ -36,7 +36,7 @@ const RootNav = ({
         >
             <div
                 className={cn(
-                    'flex w-fit items-center justify-center',
+                    'flex pointer-events-auto w-fit items-center justify-center',
                     leftGroupClassName
                 )}
             >
@@ -49,7 +49,7 @@ const RootNav = ({
             </div>
             <div
                 className={cn(
-                    'flex h-full items-center justify-center space-x-[14px] text-[15px]',
+                    'pointer-events-auto flex h-full items-center justify-center space-x-[14px] text-[15px]',
                     midGroupClassName
                 )}
             >
@@ -57,7 +57,7 @@ const RootNav = ({
             </div>
             <div
                 className={cn(
-                    'flex h-full items-center justify-center gap-x-4',
+                    'pointer-events-auto flex h-full items-center justify-center gap-x-4',
                     rightGroupClassName
                 )}
             >

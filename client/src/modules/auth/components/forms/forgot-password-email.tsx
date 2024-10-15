@@ -28,7 +28,7 @@ import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 // import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
-import { userAccountTypeSchema, emailSchema } from '@/modules/auth/validations'
+import { userAccountTypeSchema, emailSchema } from '@/modules/auth/validations/common'
 
 const emailFormSchema = z.object({
     email: emailSchema,

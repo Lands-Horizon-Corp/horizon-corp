@@ -10,7 +10,7 @@ interface Props extends IBaseCompNoChild {}
 const AuthNavBar = ({ className }: Props) => {
     return (
         <RootNav
-            className={cn('fixed w-full', className)}
+            className={cn('fixed w-full pointer-events-none', className)}
             rightContents={
                 <>
                     <NavAuthContents />

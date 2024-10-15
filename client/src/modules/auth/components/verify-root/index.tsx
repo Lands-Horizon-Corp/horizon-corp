@@ -4,8 +4,8 @@ import EcoopLogo from '@/components/ecoop-logo'
 import StepIndicator from '@/components/steps-indicator'
 import VerifyForm from '@/modules/auth/components/forms/verify-form'
 
-import { IBaseComp } from '@/types/component/base'
 import { UserData } from '@/horizon-corp/types'
+import { IBaseComp } from '@/types/component/base'
 
 interface Props extends IBaseComp {
     readOnly?: boolean
