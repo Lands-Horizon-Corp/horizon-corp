@@ -103,7 +103,7 @@ const Verify = ({}: Props) => {
                                     className="my-8 size-28"
                                     src={currentUser?.media?.downloadURL ?? ''}
                                     fallback={
-                                        currentUser?.username.charAt(0) ?? '-'
+                                        currentUser?.username?.charAt(0) ?? '-'
                                     }
                                 />
                                 <p className="text-center">
