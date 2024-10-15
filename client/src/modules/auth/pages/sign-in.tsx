@@ -1,4 +1,5 @@
 import z from 'zod'
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { useRouter, useSearch } from '@tanstack/react-router'
 
@@ -7,10 +8,9 @@ import AuthPageWrapper from '../components/auth-page-wrapper'
 import AccountCancelled from '../components/account-cancelled'
 
 import { UserData } from '@/horizon-corp/types'
-import { emailSchema, userAccountTypeSchema } from '../validations'
 import useCurrentUser from '@/hooks/use-current-user'
 import { getUsersAccountTypeRedirectPage } from './helpers'
-import { toast } from 'sonner'
+import { emailSchema, userAccountTypeSchema } from '../validations'
 
 export const SignInPageSearchSchema = z.object({
     email: z.string().optional().default('').or(emailSchema),
