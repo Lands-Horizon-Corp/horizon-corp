@@ -3,11 +3,11 @@ import { useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import { WarningCircleIcon } from '@/components/icons'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { HELP_CONTACT } from '../constants'
 import { UserData } from '@/horizon-corp/types'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 
 interface Props extends IBaseComp {
     loading?: boolean
@@ -44,7 +44,7 @@ const AccountCancelled = ({ loading = false, userData, onBack }: Props) => {
                 }}
                 className="w-full bg-[#34C759] hover:bg-[#38b558]"
             >
-                {loading ? <LoadingCircle /> : 'Back to Sign In'}
+                {loading ? <LoadingSpinner /> : 'Back to Sign In'}
             </Button>
         </div>
     )

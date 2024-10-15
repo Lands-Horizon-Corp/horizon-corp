@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button'
 
 import { cn } from '@/lib/utils'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 import { useTheme } from '@/providers/theme-provider'
 
 interface IThemeToggle extends IBaseComp {}

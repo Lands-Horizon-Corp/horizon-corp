@@ -5,14 +5,14 @@ import { useCallback, useRef, useState } from 'react'
 import WebCam from '@/components/webcam'
 import { ClockIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import TimeInCounter from '@/components/time-in-out/time-in-counter'
 import RealtimeTimeText from '@/components/time-in-out/realtime-time-text'
 
 import { cn } from '@/lib/utils'
 import { UserBase } from '@/types'
 import { TTImeInEntry } from './time-in-bar'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 
 interface Props extends IBaseComp {
     currentUser: UserBase
@@ -109,7 +109,7 @@ const TimeInTimeOut = ({
                     variant={!timeEntry ? 'default' : 'outline'}
                 >
                     {loading ? (
-                        <LoadingCircle />
+                        <LoadingSpinner />
                     ) : timeEntry ? (
                         <>
                             <ClockIcon className="size-4" />

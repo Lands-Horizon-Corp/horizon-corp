@@ -5,7 +5,7 @@ import StepIndicator from '@/components/steps-indicator'
 import VerifyForm from '@/modules/auth/components/forms/verify-form'
 
 import { UserData } from '@/horizon-corp/types'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 
 interface Props extends IBaseComp {
     readOnly?: boolean

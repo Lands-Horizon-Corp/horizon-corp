@@ -4,7 +4,7 @@ import { useRouter } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import VerifyRoot from '@/modules/auth/components/verify-root'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import AccountCancelled from '@/modules/auth/components/account-cancelled'
@@ -67,7 +67,7 @@ const Verify = ({}: Props) => {
             <AuthPageWrapper>
                 {loadingUser && (
                     <div className="flex flex-col items-center gap-y-2">
-                        <LoadingCircle />
+                        <LoadingSpinner />
                         <p className="text-center text-sm text-foreground/50">
                             loading user info
                         </p>

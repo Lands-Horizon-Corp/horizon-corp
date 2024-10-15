@@ -1,11 +1,11 @@
 import { LoadingCircleIcon } from '@/components/icons'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {}
 
-const LoadingCircle = ({ className }: Props) => {
+const LoadingSpinner = ({ className }: Props) => {
     return (
         <LoadingCircleIcon
             className={cn(
@@ -16,4 +16,4 @@ const LoadingCircle = ({ className }: Props) => {
     )
 }
 
-export default LoadingCircle
+export default LoadingSpinner

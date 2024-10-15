@@ -1,7 +1,7 @@
 import { MdError } from 'react-icons/md'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
     errorMessage?: string | null

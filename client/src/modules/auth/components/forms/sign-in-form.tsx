@@ -22,12 +22,12 @@ import { Input } from '@/components/ui/input'
 import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
 import PasswordInput from '@/components/ui/password-input'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
@@ -184,7 +184,7 @@ const SignInForm = ({
                 <div className="mt-6 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError || error} />
                     <Button type="submit" disabled={loading || readOnly}>
-                        {loading ? <LoadingCircle /> : 'Login'}
+                        {loading ? <LoadingSpinner /> : 'Login'}
                     </Button>
                     <Link
                         className="text-sm text-primary"
