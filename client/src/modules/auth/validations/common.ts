@@ -5,6 +5,12 @@ export const emailSchema = z
     .string({ required_error: 'Email is required' })
     .email('Invalid email')
 
+export const contactNumberSchema = z
+    .string()
+    .min(1, 'Invalid contact')
+    .max(11)
+    .regex(/^\d+$/, 'Contact number must contain only numbers')
+
 const AccountTypes = ['Member', 'Owner', 'Admin', 'Employee'] as const
 
 export const userAccountTypeSchema = z.enum(AccountTypes, {

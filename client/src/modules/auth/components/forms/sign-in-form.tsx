@@ -29,10 +29,9 @@ import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { IBaseCompNoChild } from '@/types/component/base'
 import { handleAxiosError } from '@/horizon-corp/helpers'
-// import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
-import UserService from '@/horizon-corp/server/auth/UserService'
 
 type TSignIn = z.infer<typeof signInFormSchema>
 

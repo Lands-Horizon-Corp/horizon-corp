@@ -13,7 +13,7 @@ import ForgotPasswordEmail, {
     TForgotPasswordEmail,
 } from '@/modules/auth/components/forms/forgot-password-email'
 
-import { userAccountTypeSchema, emailSchema } from '../validations'
+import { userAccountTypeSchema, emailSchema } from '../validations/common'
 
 export const ForgotPasswordPageSearchSchema = z.object({
     email: z.string().optional().default('').or(emailSchema),
