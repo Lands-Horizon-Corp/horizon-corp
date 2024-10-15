@@ -113,3 +113,38 @@
     opacity: 0;
     animation: fadeIn 0.7s ease-out 1s forwards;
 }
+
+.toolbar-custom {
+    color: white;
+}
+
+.toolbar-custom h1,
+.toolbar-custom h2,
+.toolbar-custom h3,
+.toolbar-custom h4,
+.toolbar-custom h5,
+.toolbar-custom h6,
+.toolbar-custom p,
+.toolbar-custom a,
+.toolbar-custom ul,
+.toolbar-custom ol,
+.toolbar-custom strong,
+.toolbar-custom listItem,
+.toolbar-custom blockquote {
+    color: white;
+}
+
+/* Inline code styling */
+.toolbar-custom code {
+    @apply rounded bg-secondary/80 px-1 py-0.5 text-[0.95em] font-semibold text-gray-100;
+}
+
+/* Code block styling */
+.toolbar-custom pre {
+    @apply overflow-x-auto rounded-lg bg-secondary/70 p-4 text-gray-100;
+}
+
+/* Remove background for nested code within pre */
+.toolbar-custom pre code {
+    @apply bg-transparent text-[0.9em] text-inherit;
+}
