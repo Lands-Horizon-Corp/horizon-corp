@@ -32,7 +32,6 @@ const VerifyRoot = ({
     }, [userData])
 
     const handleOnSuccess = (newUserData: UserData, nextStep: number) => {
-        console.log('User data after verify', newUserData)
         onVerifyChange?.(newUserData)
         setStep(nextStep)
     }
