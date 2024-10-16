@@ -2,12 +2,10 @@ import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
 
-import { Button } from '@/components/ui/button'
-import UserAvatar from '@/components/user-avatar'
-import LoadingSpinner from '@/components/spinners/loading-spinner'
 import VerifyRoot from '@/modules/auth/components/verify-root'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
-import AccountCancelled from '@/modules/auth/components/account-cancelled'
+import ShowAccountStatus from '../components/verify-root/show-account-status'
 
 import useCurrentUser from '@/hooks/use-current-user'
 import { handleAxiosError } from '@/horizon-corp/helpers'
@@ -24,9 +22,9 @@ const Verify = ({}: Props) => {
         loadOnMount: true,
     })
 
-    const [display, setDisplay] = useState<
-        null | 'verify' | 'verify-complete' | 'account-cancelled'
-    >()
+    const [display, setDisplay] = useState<null | 'verify' | 'account-status'>(
+        null
+    )
 
     const handleBackSignOut = async () => {
         if (loading || loadingUser) return
@@ -34,8 +32,8 @@ const Verify = ({}: Props) => {
         setLoading(true)
         try {
             await UserService.SignOut()
-            setCurrentUser(null)
             router.navigate({ to: '/auth' })
+            setCurrentUser(null)
         } catch (e) {
             const errorMessage = handleAxiosError(e)
             toast.error(errorMessage)
@@ -46,20 +44,17 @@ const Verify = ({}: Props) => {
 
     useEffect(() => {
         if (!currentUser) return
-
-        if (currentUser.status === 'Verified') {
-            const redirectPageUrl = getUsersAccountTypeRedirectPage(currentUser)
-            router.navigate({ to: redirectPageUrl })
-        }
-
-        if (currentUser.status === 'Not Allowed')
-            return setDisplay('account-cancelled')
-
-        if (currentUser.isContactVerified && currentUser.isEmailVerified)
-            setDisplay('verify-complete')
-
-        if (!currentUser.isContactVerified || !currentUser.isEmailVerified)
+        else if (currentUser.status === 'Verified') {
+            const redirectUrl = getUsersAccountTypeRedirectPage(currentUser)
+            router.navigate({ to: redirectUrl })
+        } else if (
+            !currentUser.isContactVerified ||
+            !currentUser.isEmailVerified
+        ) {
             setDisplay('verify')
+        } else {
+            setDisplay('account-status')
+        }
     }, [currentUser])
 
     return (
@@ -82,61 +77,16 @@ const Verify = ({}: Props) => {
                                     setCurrentUser(newUserData)
                                 }
                                 onVerifyComplete={(newUserData) => {
-                                    setDisplay('verify-complete')
+                                    setDisplay('account-status')
                                     setCurrentUser(newUserData)
                                 }}
                             />
                         )}
-                        {display === 'verify-complete' && (
-                            <div className="flex max-w-sm flex-col items-center gap-y-4">
-                                <p className="text-xl font-medium text-green-500">
-                                    Account Verify Complete
-                                </p>
-                                <p className="text-center text-foreground/70">
-                                    Your account email & phone number is
-                                    verified.{' '}
-                                    <span className="font-medium text-foreground/90">
-                                        Thank you for joining with us!
-                                    </span>
-                                </p>
-                                <UserAvatar
-                                    className="my-8 size-28"
-                                    src={currentUser?.media?.downloadURL ?? ''}
-                                    fallback={
-                                        currentUser?.username?.charAt(0) ?? '-'
-                                    }
-                                />
-                                <p className="text-center">
-                                    {currentUser.status === 'Pending' && (
-                                        <span>
-                                            Please wait for 7 working days for
-                                            validation before you can use your
-                                            account, we will send an email once
-                                            your account is activated.
-                                            <br />
-                                        </span>
-                                    )}
-                                </p>
-                                <p className="px-4 text-center">
-                                    Your ID is{' '}
-                                    <span className="font-medium text-green-500">
-                                        {currentUser.id}
-                                    </span>
-                                </p>
-                                <Button
-                                    disabled={loadingUser || loading}
-                                    onClick={handleBackSignOut}
-                                    className="mt-6 w-full bg-[#34C759] hover:bg-[#38b558]"
-                                >
-                                    Go Back to signin
-                                </Button>
-                            </div>
-                        )}
-                        {display === 'account-cancelled' && (
-                            <AccountCancelled
+                        {display === 'account-status' && (
+                            <ShowAccountStatus
                                 loading={loading}
+                                onBackSignOut={handleBackSignOut}
                                 userData={currentUser}
-                                onBack={handleBackSignOut}
                             />
                         )}
                     </>

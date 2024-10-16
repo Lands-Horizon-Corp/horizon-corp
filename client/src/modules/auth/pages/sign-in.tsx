@@ -1,11 +1,10 @@
 import z from 'zod'
 import { toast } from 'sonner'
-import { useState } from 'react'
+import { useEffect } from 'react'
 import { useRouter, useSearch } from '@tanstack/react-router'
 
 import SignInForm from '../components/forms/sign-in-form'
 import AuthPageWrapper from '../components/auth-page-wrapper'
-import AccountCancelled from '../components/account-cancelled'
 
 import { UserData } from '@/horizon-corp/types'
 import useCurrentUser from '@/hooks/use-current-user'
@@ -24,9 +23,8 @@ export const SignInPageSearchSchema = z.object({
 
 const SignInPage = () => {
     const router = useRouter()
-    const { setCurrentUser } = useCurrentUser()
+    const { currentUser, setCurrentUser } = useCurrentUser()
     const prefilledValues = useSearch({ from: '/auth/sign-in' })
-    const [userData, setUserData] = useState<null | UserData>(null)
 
     const onSignInSuccess = (userData: UserData) => {
         const { isContactVerified, isEmailVerified, status } = userData
@@ -51,23 +49,18 @@ const SignInPage = () => {
         }
     }
 
-    const handleOnCancelBack = () => {
-        setUserData(null)
-    }
+    useEffect(() => {
+        if (!currentUser) return
+        onSignInSuccess(currentUser)
+    }, [currentUser])
 
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {!userData && (
+                {currentUser === null && (
                     <SignInForm
                         defaultValues={prefilledValues}
                         onSuccess={onSignInSuccess}
-                    />
-                )}
-                {userData && (
-                    <AccountCancelled
-                        userData={userData}
-                        onBack={handleOnCancelBack}
                     />
                 )}
             </AuthPageWrapper>
