@@ -5,13 +5,19 @@ import Toolbar from './toolbar'
 import { IBaseComp } from '@/types/component/base'
 
 interface Props extends IBaseComp {
-    content: string
-    spellCheck: boolean
+    content?: string
+    spellCheck?: boolean
+    showToolbar?: boolean
 }
 
 export type THeadingLevel = 1 | 2 | 3 | 4
 
-const TextEditor = ({ content, className, spellCheck }: Props) => {
+const TextEditor = ({
+    content = '',
+    className = '',
+    spellCheck = true,
+    showToolbar = true,
+}: Props) => {
     const [activeHeading, setActiveHeading] = useState<THeadingLevel | null>(
         null
     )
@@ -29,7 +35,7 @@ const TextEditor = ({ content, className, spellCheck }: Props) => {
         editorProps: {
             attributes: {
                 spellcheck: spellCheck ? 'true' : 'false',
-                class: `toolbar-custom prose-sm sm:prose lg:prose-lg rounded-lg p-2 px-5 focus:outline-none ${className ?? ''} `,
+                class: `toolbar-custom ${className ?? ''} `,
             },
         },
     })
@@ -41,11 +47,13 @@ const TextEditor = ({ content, className, spellCheck }: Props) => {
 
     return (
         <div className="w-fit">
-            <Toolbar
-                activeHeading={activeHeading}
-                toggleHeading={toggleHeading}
-                editor={editor}
-            />
+            {showToolbar && editor && (
+                <Toolbar
+                    activeHeading={activeHeading}
+                    toggleHeading={toggleHeading}
+                    editor={editor}
+                />
+            )}
             <EditorContent editor={editor} />
         </div>
     )

@@ -5,11 +5,9 @@ const PublicPracticeLayout = () => {
         <>
             <div className="m-auto mt-10 h-[100vh] w-[90%]">
                 <TextEditor
-                    className=""
                     spellCheck={true}
                     content={`<p>start typing...</p>`}
                 />
-                <li>hello</li>
             </div>
         </>
     )
