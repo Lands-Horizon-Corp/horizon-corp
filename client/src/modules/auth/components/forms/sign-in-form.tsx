@@ -1,9 +1,11 @@
+// dependencies
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { Link } from '@tanstack/react-router'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+// components
 import {
     Select,
     SelectContent,
@@ -25,13 +27,16 @@ import PasswordInput from '@/components/ui/password-input'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
-import { cn } from '@/lib/utils'
-import { IAuthForm } from '@/types/auth/form-interface'
-import { IBaseCompNoChild } from '@/types/component'
-import { handleAxiosError } from '@/horizon-corp/helpers'
+// functions/hooks
+import { cn, withCatchAsync } from '@/lib/utils'
+import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
+
+// types/interfaces
+import { IBaseCompNoChild } from '@/types/component'
+import { IAuthForm } from '@/types/auth/form-interface'
 
 type TSignIn = z.infer<typeof signInFormSchema>
 
@@ -60,18 +65,20 @@ const SignInForm = ({
     const onFormSubmit = async (data: TSignIn) => {
         setError(null)
         setLoading(true)
-        try {
-            const parsedData = await signInFormSchema.parseAsync(data)
-            const response = await UserService.SignIn(parsedData) // sign in and server return the user data along with auth cookie
-            onSuccess?.(response.data) // if onSuccess is given, trigger it and pass the data
-        } catch (e) {
-            const errorMessage = handleAxiosError(e)
-            onError?.(e)
+
+        const [error, response] = await withCatchAsync(UserService.SignIn(data))
+
+        setLoading(false)
+
+        if (error) {
+            const errorMessage = serverRequestErrExtractor({ error })
+            onError?.(error)
             setError(errorMessage)
             toast.error(errorMessage)
-        } finally {
-            setLoading(false)
+            return
         }
+
+        onSuccess?.(response.data)
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
