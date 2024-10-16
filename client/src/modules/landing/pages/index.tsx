@@ -1,8 +1,8 @@
 // assets
-import home_image_1 from '@/assets/images/landing-page/home_image_1.webp'
+import home_image_1 from '@/assets/images/landing-page/home-image-1.webp'
 import bg_element_4 from '@/assets/images/landing-page/bg_element_4.webp'
 import bg_element_5 from '@/assets/images/landing-page/bg_element_5.webp'
-import home_image_2 from '@/assets/images/landing-page/home_image_2.webp'
+import home_image_2 from '@/assets/images/landing-page/home-image-2.webp'
 
 // Assets
 import { Button } from '@/components/ui/button'
@@ -42,7 +42,7 @@ const LandingPage = () => {
                 </div>
                 <img
                     src={home_image_1}
-                    className="h-auto w-[350px] pt-5 md:w-[500px] xl:w-[651px] xl:-translate-y-20"
+                    className="h-auto w-[350px] pt-5 md:w-[500px] xl:w-[951px] xl:-translate-y-20"
                     alt="iamge-1"
                 ></img>
                 <div className="relative space-y-2 lg:space-y-10">
