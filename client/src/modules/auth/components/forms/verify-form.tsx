@@ -21,11 +21,9 @@ import {
 import { Button } from '@/components/ui/button'
 import FormErrorMessage from '../form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-import MiniUpdateContactsModal from '../modal/mini-update-contact-modal'
 
 import { cn } from '@/lib/utils'
 import { UserData } from '@/horizon-corp/types'
-import useCurrentUser from '@/hooks/use-current-user'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { handleAxiosError } from '@/horizon-corp/helpers'
 import useCountDown from '@/modules/auth/hooks/use-count-down'
@@ -37,30 +35,7 @@ type TVerifyForm = z.infer<typeof otpFormSchema>
 
 interface Props extends IAuthForm<TVerifyForm, UserData> {
     verifyMode: 'mobile' | 'email'
-}
-
-const ResendCountDown = ({
-    trigger,
-    duration,
-    className,
-    onComplete,
-}: {
-    trigger: boolean
-    duration: number
-    className?: string
-    onComplete: () => void
-}) => {
-    const countDown = useCountDown({
-        trigger,
-        duration,
-        onComplete,
-    })
-
-    return (
-        <p className={className}>
-            Please wait for {countDown}s to resend again
-        </p>
-    )
+    onSkip?: () => void
 }
 
 const VerifyForm = ({
@@ -70,10 +45,9 @@ const VerifyForm = ({
     defaultValues = { otp: '' },
     onSuccess,
     onError,
+    onSkip,
 }: Props) => {
     const [resent, setResent] = useState(false)
-    const { currentUser, setCurrentUser } = useCurrentUser()
-    const [showChangeContact, setShowChangeContact] = useState(false)
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm({
@@ -223,18 +197,18 @@ const VerifyForm = ({
                             />
                         )}
                         <div className="flex flex-col gap-y-2">
-                            <Button
-                                variant={'outline'}
-                                disabled={readOnly || !currentUser}
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    setShowChangeContact(true)
-                                }}
-                            >
-                                Change{' '}
-                                {verifyMode === 'email' ? 'Email' : 'Mobile'}
-                            </Button>
-
+                            {onSkip && (
+                                <Button
+                                    variant={'outline'}
+                                    disabled={readOnly}
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        onSkip()
+                                    }}
+                                >
+                                    Skip
+                                </Button>
+                            )}
                             <Button type="submit">
                                 {loading ? <LoadingSpinner /> : 'Submit'}
                             </Button>
@@ -242,22 +216,31 @@ const VerifyForm = ({
                     </fieldset>
                 </form>
             </Form>
-            {currentUser && (
-                <MiniUpdateContactsModal
-                    open={showChangeContact}
-                    onOpenChange={(state) => setShowChangeContact(state)}
-                    onSuccess={(newUserData) => {
-                        setShowChangeContact(false)
-                        setCurrentUser(newUserData)
-                    }}
-                    defaultValues={{
-                        email: currentUser.email,
-                        contactNumber: currentUser.contactNumber,
-                    }}
-                    onCancel={() => setShowChangeContact(false)}
-                />
-            )}
         </>
+    )
+}
+
+const ResendCountDown = ({
+    trigger,
+    duration,
+    className,
+    onComplete,
+}: {
+    trigger: boolean
+    duration: number
+    className?: string
+    onComplete: () => void
+}) => {
+    const countDown = useCountDown({
+        trigger,
+        duration,
+        onComplete,
+    })
+
+    return (
+        <p className={className}>
+            Please wait for {countDown}s to resend again
+        </p>
     )
 }
 
