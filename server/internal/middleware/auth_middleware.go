@@ -87,11 +87,14 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				return
 			}
 			user = models.User{
-				ID:            member.ID,
-				Email:         member.Email,
-				ContactNumber: member.ContactNumber,
-				FirstName:     member.FirstName,
-				LastName:      member.LastName,
+				AccountType:       "Member",
+				ID:                member.ID,
+				Email:             member.Email,
+				ContactNumber:     member.ContactNumber,
+				FirstName:         member.FirstName,
+				LastName:          member.LastName,
+				IsEmailVerified:   member.IsEmailVerified,
+				IsContactVerified: member.IsContactVerified,
 			}
 
 		case "Employee":
@@ -103,11 +106,14 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				return
 			}
 			user = models.User{
-				ID:            employee.ID,
-				Email:         employee.Email,
-				ContactNumber: employee.ContactNumber,
-				FirstName:     employee.FirstName,
-				LastName:      employee.LastName,
+				AccountType:       "Employee",
+				ID:                employee.ID,
+				Email:             employee.Email,
+				ContactNumber:     employee.ContactNumber,
+				FirstName:         employee.FirstName,
+				LastName:          employee.LastName,
+				IsEmailVerified:   employee.IsEmailVerified,
+				IsContactVerified: employee.IsContactVerified,
 			}
 
 		case "Admin":
@@ -119,11 +125,14 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				return
 			}
 			user = models.User{
-				ID:            admin.ID,
-				Email:         admin.Email,
-				ContactNumber: admin.ContactNumber,
-				FirstName:     admin.FirstName,
-				LastName:      admin.LastName,
+				AccountType:       "Admin",
+				ID:                admin.ID,
+				Email:             admin.Email,
+				ContactNumber:     admin.ContactNumber,
+				FirstName:         admin.FirstName,
+				LastName:          admin.LastName,
+				IsEmailVerified:   admin.IsEmailVerified,
+				IsContactVerified: admin.IsContactVerified,
 			}
 
 		case "Owner":
@@ -135,11 +144,15 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				return
 			}
 			user = models.User{
-				ID:            owner.ID,
-				Email:         owner.Email,
-				ContactNumber: owner.ContactNumber,
-				FirstName:     owner.FirstName,
-				LastName:      owner.LastName}
+				AccountType:       "Owner",
+				ID:                owner.ID,
+				Email:             owner.Email,
+				ContactNumber:     owner.ContactNumber,
+				FirstName:         owner.FirstName,
+				LastName:          owner.LastName,
+				IsEmailVerified:   owner.IsEmailVerified,
+				IsContactVerified: owner.IsContactVerified,
+			}
 
 		default:
 			c.tokenService.DeleteToken(cookie.Value)
