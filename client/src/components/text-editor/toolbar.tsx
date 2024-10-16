@@ -77,7 +77,7 @@ const Toolbar = ({ editor, toggleHeading, activeHeading }: Props) => {
                     <Toggle
                         key={level}
                         onClick={() => toggleHeading(level as THeadingLevel)}
-                        pressed={activeHeading === level}
+                        pressed={activeHeading === level && editor.isFocused}
                     >
                         {`H${level}`}
                     </Toggle>
