@@ -25,7 +25,7 @@ import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn } from '@/lib/utils'
 import { IAuthForm } from '@/types/auth/form-interface'
-import { handleAxiosError } from '@/horizon-corp/helpers'
+import { axiosErrorMessageExtractor } from '@/horizon-corp/helpers'
 // import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { userAccountTypeSchema, emailSchema } from '@/modules/auth/validations/common'
@@ -68,7 +68,7 @@ const ForgotPasswordEmail = ({
             // const response = await UserService.forgotPassword(parsedData) // send user email and account type to server for reset password link
             // onSuccess?.(response.data)
         } catch (e) {
-            const errorMessage = handleAxiosError(e)
+            const errorMessage = axiosErrorMessageExtractor(e)
             onError?.(e)
             setError(errorMessage)
             toast.error(errorMessage)

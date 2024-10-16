@@ -8,7 +8,7 @@ import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import ShowAccountStatus from '../components/verify-root/show-account-status'
 
 import useCurrentUser from '@/hooks/use-current-user'
-import { handleAxiosError } from '@/horizon-corp/helpers'
+import { axiosErrorMessageExtractor } from '@/horizon-corp/helpers'
 import { getUsersAccountTypeRedirectPage } from './helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
@@ -35,7 +35,7 @@ const Verify = ({}: Props) => {
             router.navigate({ to: '/auth' })
             setCurrentUser(null)
         } catch (e) {
-            const errorMessage = handleAxiosError(e)
+            const errorMessage = axiosErrorMessageExtractor(e)
             toast.error(errorMessage)
         } finally {
             setLoading(false)

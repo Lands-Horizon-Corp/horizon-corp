@@ -16,16 +16,17 @@ import FormErrorMessage from '../form-error-message'
 import PasswordInput from '@/components/ui/password-input'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { cn } from '@/lib/utils'
-import { IAuthForm } from '@/types/auth/form-interface'
-import { handleAxiosError } from '@/horizon-corp/helpers'
+import { cn, withCatchAsync } from '@/lib/utils'
+import { serverRequestErrExtractor } from '@/helpers'
 import { PASSWORD_MIN_LENGTH } from '@/modules/auth/constants'
-// import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
+
+import { IAuthForm } from '@/types/auth/form-interface'
 
 const ResetPasswordFormSchema = z
     .object({
-        password: z
+        newPassword: z
             .string({ required_error: 'Password is required' })
             .min(
                 PASSWORD_MIN_LENGTH,
@@ -35,10 +36,13 @@ const ResetPasswordFormSchema = z
             .string({ required_error: 'Confirm password' })
             .min(PASSWORD_MIN_LENGTH, `Password doesn't match`),
     })
-    .refine(({ password, confirmPassword }) => password === confirmPassword, {
-        message: "Password doesn't match",
-        path: ['confirm_password'],
-    })
+    .refine(
+        ({ newPassword, confirmPassword }) => newPassword === confirmPassword,
+        {
+            message: "Password doesn't match",
+            path: ['confirm_password'],
+        }
+    )
 
 type TResetPasswordForm = z.infer<typeof ResetPasswordFormSchema>
 
@@ -47,12 +51,12 @@ interface Props extends IAuthForm<TResetPasswordForm> {
 }
 
 const ResetPasswordForm = ({
-    // resetId,
+    resetId,
     readOnly,
     className,
-    defaultValues = { password: '', confirmPassword: '' },
+    defaultValues = { newPassword: '', confirmPassword: '' },
     onError,
-    // onSuccess,
+    onSuccess,
 }: Props) => {
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
@@ -63,30 +67,24 @@ const ResetPasswordForm = ({
         defaultValues,
     })
 
-    const onFormSubmit = async (_data: TResetPasswordForm) => {
+    const onFormSubmit = async (data: TResetPasswordForm) => {
         setLoading(true)
-        try {
-            // const parsedData = await ResetPasswordFormSchema.parseAsync(data)
-            // const response = await UserService.ChangePassword({
-            //     resetId,
-            //     ...parsedData
-            // })
-            // onSuccess?.(response.data)
-        } catch (e) {
-            const errorMessage = handleAxiosError(e)
-            onError?.(e)
+        setError(null)
+
+        const [error] = await withCatchAsync(
+            UserService.ChangePassword({ ...data, resetId })
+        )
+        setLoading(false)
+
+        if (error) {
+            const errorMessage = serverRequestErrExtractor({ error })
+            onError?.(error)
             setError(errorMessage)
             toast.error(errorMessage)
-        } finally {
-            setLoading(false)
+            return
         }
-        // TODO: Logic to create a reset entry and will return
-        // authService.resetViaEmail(email, accountType) // return uuid string
-        // modify code bellow
-        // setInterval(() => {
-        //     setLoading(false)
-        //     onSuccess?.('')
-        // }, 1000)
+
+        onSuccess?.(undefined)
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -115,7 +113,7 @@ const ResetPasswordForm = ({
                 <fieldset disabled={loading || readOnly} className="space-y-4">
                     <FormField
                         control={form.control}
-                        name="password"
+                        name="newPassword"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <FormLabel

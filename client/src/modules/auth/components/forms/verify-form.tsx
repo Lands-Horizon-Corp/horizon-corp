@@ -23,13 +23,14 @@ import FormErrorMessage from '../form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib/utils'
-import { UserData } from '@/horizon-corp/types'
-import { IAuthForm } from '@/types/auth/form-interface'
-import { handleAxiosError } from '@/horizon-corp/helpers'
+import { serverRequestErrExtractor } from '@/helpers'
 import useCountDown from '@/modules/auth/hooks/use-count-down'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { otpFormSchema } from '@/modules/auth/validations/otp-form'
+
+import { UserData } from '@/horizon-corp/types'
+import { IAuthForm } from '@/types/auth/form-interface'
 
 type TVerifyForm = z.infer<typeof otpFormSchema>
 
@@ -60,25 +61,20 @@ const VerifyForm = ({
         setError(null)
         setLoading(true)
         try {
-            const parsedData = await otpFormSchema.parseAsync(data)
-
-            // Send verify otp code to mark verify current signed in users email address
             if (verifyMode === 'email') {
-                const response = await UserService.VerifyEmail(parsedData)
+                const response = await UserService.VerifyEmail(data)
                 onSuccess?.(response.data)
                 toast.success('Email verified')
             }
 
-            // Send verify otp code to mark verify current signed in users contact number
             if (verifyMode === 'mobile') {
-                const response =
-                    await UserService.VerifyContactNumber(parsedData)
+                const response = await UserService.VerifyContactNumber(data)
                 onSuccess?.(response.data)
                 toast.success('Contact verified')
             }
-        } catch (e) {
-            const errorMessage = handleAxiosError(e)
-            onError?.(e)
+        } catch (error) {
+            const errorMessage = serverRequestErrExtractor({ error })
+            onError?.(error)
             setError(errorMessage)
             toast.error(errorMessage)
         } finally {
@@ -101,9 +97,9 @@ const VerifyForm = ({
                 await UserService.SendContactVerification()
                 setResent(true)
             }
-        } catch (e) {
-            const errorMessage = handleAxiosError(e)
-            onError?.(e)
+        } catch (error) {
+            const errorMessage = serverRequestErrExtractor({ error })
+            onError?.(error)
             setError(errorMessage)
             toast.error(errorMessage)
         } finally {

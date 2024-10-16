@@ -1,6 +1,7 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { useRouter } from '@tanstack/react-router'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
@@ -27,14 +28,14 @@ import InputDatePicker from '@/components/input-date-picker'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
-import { cn } from '@/lib/utils'
+import { cn, withCatchAsync } from '@/lib/utils'
 import useCurrentUser from '@/hooks/use-current-user'
-import { IAuthForm } from '@/types/auth/form-interface'
-import { handleAxiosError } from '@/horizon-corp/helpers'
+import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
-import { useRouter } from '@tanstack/react-router'
+
+import { IAuthForm } from '@/types/auth/form-interface'
 
 type TSignUpForm = z.infer<typeof signUpFormSchema>
 
@@ -76,21 +77,22 @@ const SignUpForm = ({
     const onFormSubmit = async (data: TSignUpForm) => {
         setError(null)
         setLoading(true)
-        try {
-            // parse form data
-            const parsedData = await signUpFormSchema.parseAsync(data)
-            const response = await UserService.SignUp(parsedData) // once success, the server returns the created user with authorization cookie
-            setCurrentUser(response.data) // then set it to the authStore
-            onSuccess?.(response.data)
-            router.navigate({ to: '/auth/verify' }) // redirect to verify page
-        } catch (e) {
-            const errorMessage = handleAxiosError(e)
-            onError?.(e)
+
+        const [error, response] = await withCatchAsync(UserService.SignUp(data))
+
+        setLoading(false)
+
+        if (error) {
+            const errorMessage = serverRequestErrExtractor({ error })
+            onError?.(error)
             setError(errorMessage)
             toast.error(errorMessage)
-        } finally {
-            setLoading(false)
+            return
         }
+
+        setCurrentUser(response.data)
+        onSuccess?.(response.data)
+        router.navigate({ to: '/auth/verify' })
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
