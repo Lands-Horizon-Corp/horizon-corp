@@ -310,8 +310,6 @@ func (c *AuthController) SignOut(ctx *gin.Context) {
 func (c *AuthController) ForgotPassword(ctx *gin.Context) {}
 func (c *AuthController) ChangePassword(ctx *gin.Context) {}
 
-func (c *AuthController) ChangeEmail(ctx *gin.Context) {}
-
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 	var req auth_requests.SendEmailVerificationRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -438,7 +436,6 @@ func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 }
 
 // Contact Number
-func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {}
 func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
 	var req auth_requests.SendContactNumberVerificationRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -581,12 +578,11 @@ func AuthRoutes(router *gin.RouterGroup, middleware *middleware.AuthMiddleware, 
 			group.POST("/signout", controller.SignOut)
 
 			// Email
-			group.POST("/change-email", controller.ChangeEmail)
+
 			group.POST("/send-email-verification", controller.SendEmailVerification)
 			group.POST("/verify-email", controller.VerifyEmail)
 
 			// Contact Number
-			group.POST("/change-contact-number", controller.ChangeContactNumber)
 			group.POST("/send-contact-number-verification", controller.SendContactNumberVerification)
 			group.POST("/verify-contact-number", controller.VerifyContactNumber)
 		}
