@@ -35,14 +35,15 @@ import {
     HiOutlineChatBubbleBottomCenterText as FeedbackIcon,
     HiOutlineCamera as CameraIcon,
 } from 'react-icons/hi2'
-import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
-import { BsPatchCheck as VerifiedPatchIcon } from 'react-icons/bs'
-import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
 import {
     AiOutlineKey as KeyIcon,
     AiOutlineLoading as LoadingCircleIcon,
     AiOutlineLoading3Quarters as LoadingSpinnerIcon,
 } from 'react-icons/ai'
+import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
+import { MdMarkEmailRead as EmailCheckIcon } from 'react-icons/md'
+import { BsPatchCheck as VerifiedPatchIcon } from 'react-icons/bs'
+import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
 
 import { IBaseCompNoChild } from '@/types/component'
 
@@ -133,6 +134,7 @@ export {
     FootstepsIcon,
     UserClockIcon,
     DashboardIcon,
+    EmailCheckIcon,
     UserShieldIcon,
     BuildingCogIcon,
     SwitchCameraIcon,
