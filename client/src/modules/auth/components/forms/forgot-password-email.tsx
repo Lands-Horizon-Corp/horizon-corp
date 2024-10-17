@@ -23,12 +23,15 @@ import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
-import { cn } from '@/lib/utils'
+import {
+    emailSchema,
+    userAccountTypeSchema,
+} from '@/modules/auth/validations/common'
+import { cn, withCatchAsync } from '@/lib/utils'
+import { serverRequestErrExtractor } from '@/helpers'
 import { IAuthForm } from '@/types/auth/form-interface'
-import { axiosErrorMessageExtractor } from '@/horizon-corp/helpers'
-// import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
-import { userAccountTypeSchema, emailSchema } from '@/modules/auth/validations/common'
 
 const emailFormSchema = z.object({
     email: emailSchema,
@@ -44,8 +47,9 @@ interface Props extends IAuthForm<TForgotPasswordEmail> {
 const ForgotPasswordEmail = ({
     readOnly,
     className,
-    onError,
     defaultValues = { email: '', accountType: 'Member' },
+    onError,
+    onSuccess,
 }: Props) => {
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
@@ -56,25 +60,25 @@ const ForgotPasswordEmail = ({
         defaultValues,
     })
 
-    const onFormSubmit = async (_data: TForgotPasswordEmail) => {
-        // TODO: Logic to create a reset entry and will return
-        // authService.resetViaEmail(email, accountType) // return uuid string
-        // modify code bellow
-        // onSuccess?.(parsedData)
+    const onFormSubmit = async (data: TForgotPasswordEmail) => {
         setError(null)
         setLoading(true)
-        try {
-            // const parsedData = await emailFormSchema.parseAsync(data) // parse form data
-            // const response = await UserService.forgotPassword(parsedData) // send user email and account type to server for reset password link
-            // onSuccess?.(response.data)
-        } catch (e) {
-            const errorMessage = axiosErrorMessageExtractor(e)
-            onError?.(e)
+
+        const [error] = await withCatchAsync(UserService.ForgotPassword(data))
+
+        setLoading(false)
+        onSuccess?.(data)
+
+        if (error) {
+            const errorMessage = serverRequestErrExtractor({ error })
+            onError?.(error)
             setError(errorMessage)
             toast.error(errorMessage)
-        } finally {
-            setLoading(false)
+            return;
         }
+
+        onSuccess?.(data)
+        toast.success(`Password reset link was sent to ${data.email}`)
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -168,10 +172,7 @@ const ForgotPasswordEmail = ({
 
                 <div className="mt-4 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError || error} />
-                    <Button
-                        type="submit"
-                        disabled={loading || readOnly}
-                    >
+                    <Button type="submit" disabled={loading || readOnly}>
                         {loading ? <LoadingSpinner /> : 'Confirm Email'}
                     </Button>
                 </div>

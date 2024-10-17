@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from 'react'
 import useAuthStore from '@/store/auth-store'
 import UserService from '@/horizon-corp/server/auth/UserService'
-import { UserData } from '@/horizon-corp/types'
 
 const useCurrentUser = (opt?: { loadOnMount?: boolean }) => {
     const { currentUser, setCurrentUser, loadingUser, setLoadingUser } =
@@ -13,14 +12,7 @@ const useCurrentUser = (opt?: { loadOnMount?: boolean }) => {
 
         try {
             const userData = await UserService.CurrentUser()
-
-            setCurrentUser({
-                ...userData.data,
-                isEmailVerified: false,
-                isContactVerified: false,
-                accountType : "Member",
-                status: 'Pending',
-            } as UserData)
+            setCurrentUser(userData.data)
         } catch (e) {
             setCurrentUser(null)
         } finally {
