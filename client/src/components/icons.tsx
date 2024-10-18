@@ -2,10 +2,20 @@ import {
     LuClock8 as ClockIcon,
     LuCameraOff as CameraOffIcon,
     LuSwitchCamera as SwitchCameraIcon,
+    LuHeading1 as LuHeading1Icon,
+    LuHeading2 as LuHeading2Icon,
+    LuHeading3 as LuHeading3Icon,
+    LuHeading4 as LuHeading4Icon,
+    LuHeading5 as LuHeading5Icon,
+    LuHeading6 as LuHeading6Icon,
+    LuListOrdered as LuListOrderedIcon,
+    LuUndo2 as LuUndo2Icon,
+    LuRedo2 as LuRedo2Icon,
 } from 'react-icons/lu'
 import {
     BsBuildingGear as BuildingCogIcon,
     BsLayoutSidebarInset as SidebarIcon,
+    BsTextParagraph as BsTextParagraphIcon,
 } from 'react-icons/bs'
 import {
     LiaUser as UserIcon,
@@ -20,6 +30,9 @@ import {
     PiUsersThree as Users3Icon,
     PiBuildingOffice as BuildingBranchIcon,
     PiWarningCircleFill as WarningCircleIcon,
+    PiTextStrikethroughLight as PiTextStrikethroughLightIcon,
+    PiListBulletsBold as PiListBulletsBoldIcon,
+    PiCodeBlock as PiCodeBlockIcon,
 } from 'react-icons/pi'
 import {
     HiOutlineSun as SunIcon,
@@ -40,10 +53,20 @@ import {
     AiOutlineLoading as LoadingCircleIcon,
     AiOutlineLoading3Quarters as LoadingSpinnerIcon,
 } from 'react-icons/ai'
-import { TbSunMoon as SunMoonIcon } from 'react-icons/tb'
 import { MdMarkEmailRead as EmailCheckIcon } from 'react-icons/md'
 import { BsPatchCheck as VerifiedPatchIcon } from 'react-icons/bs'
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
+import { RxFontItalic as ToolbarItalicIcon } from 'react-icons/rx'
+import {
+    FaBold as FaBoldIcon,
+    FaRulerHorizontal as FaRulerHorizontalIcon,
+} from 'react-icons/fa'
+import { IoIosCode as IoIosCodeIcon } from 'react-icons/io'
+import {
+    TbClearFormatting as TbClearFormattingIcon,
+    TbBlockquote as TbBlockquoteIcon,
+    TbSunMoon as SunMoonIcon,
+} from 'react-icons/tb'
 
 import { IBaseCompNoChild } from '@/types/component'
 
@@ -145,4 +168,23 @@ export {
     LoadingCircleIcon,
     BuildingBranchIcon,
     LoadingSpinnerIcon,
+    ToolbarItalicIcon,
+    LuHeading1Icon,
+    LuHeading2Icon,
+    LuHeading3Icon,
+    LuHeading4Icon,
+    LuHeading5Icon,
+    LuHeading6Icon,
+    LuUndo2Icon,
+    LuRedo2Icon,
+    LuListOrderedIcon,
+    PiTextStrikethroughLightIcon,
+    PiListBulletsBoldIcon,
+    PiCodeBlockIcon,
+    FaBoldIcon,
+    FaRulerHorizontalIcon,
+    IoIosCodeIcon,
+    TbClearFormattingIcon,
+    BsTextParagraphIcon,
+    TbBlockquoteIcon,
 }
