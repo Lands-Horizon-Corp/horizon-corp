@@ -1,13 +1,15 @@
 import otpVerificationRaw from '../assets/email-templates/account-otp-verification.html?raw'
 import accountVerificationRaw from '../assets/email-templates/account-verification.html?raw'
+import accountChangepasswordRaw from '../assets/email-templates/account-change-password.html?raw'
 
 // Define the types of templates available
-type Templates = 'otp' | 'verification'
+type Templates = 'otp' | 'verification' | 'changePassword'
 
 // Precompile the Handlebars templates
 const TEMPLATE_MAP: Record<Templates, string> = {
   otp: otpVerificationRaw,
   verification: accountVerificationRaw,
+  changePassword: accountChangepasswordRaw,
 }
 
 /**

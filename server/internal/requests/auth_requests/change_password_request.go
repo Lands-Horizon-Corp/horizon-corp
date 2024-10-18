@@ -5,6 +5,7 @@ import (
 )
 
 type ChangePasswordRequest struct {
+	ResetID         string `json:"resetId" validate:"required,min=8,max=255"`
 	NewPassword     string `json:"newPassword" validate:"required,min=8,max=255"`
 	ConfirmPassword string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
 }

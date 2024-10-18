@@ -1,8 +1,8 @@
 package auth_requests
 
 import (
+	"errors"
 	"horizon/server/internal/requests"
-	"log"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -25,7 +25,7 @@ type SignUpRequest struct {
 	ContactTemplate  string                 `json:"contactTemplate" validate:"required"`
 }
 
-func accountTypeValidator(fl validator.FieldLevel) bool {
+func AccountTypeValidator(fl validator.FieldLevel) bool {
 	accountType := fl.Field().String()
 	validTypes := []string{"Member", "Employee", "Admin", "Owner"}
 	for _, validType := range validTypes {
@@ -38,8 +38,8 @@ func accountTypeValidator(fl validator.FieldLevel) bool {
 
 func (r *SignUpRequest) Validate() error {
 	validate := validator.New()
-	if err := validate.RegisterValidation("accounttype", accountTypeValidator); err != nil {
-		log.Fatalf("Could not register validation: %v", err)
+	if err := validate.RegisterValidation("accountType", AccountTypeValidator); err != nil {
+		return errors.New("account type is not valid")
 	}
 	return validate.Struct(r)
 }

@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"horizon/server/config"
+	"horizon/server/helpers"
 	"horizon/server/internal/auth"
 	"horizon/server/internal/middleware"
 	"horizon/server/internal/models"
@@ -29,10 +31,14 @@ type AuthController struct {
 	memberAuthService   *auth.MemberAuthService
 	ownerAuthService    *auth.OwnerAuthService
 
+	// App
+	cfg *config.AppConfig
+
 	// Services
-	otpService   *services.OTPService
-	cfg          *config.AppConfig
-	tokenService auth.TokenService
+	emailService   *services.EmailService
+	contactService *services.SMSService
+	otpService     *services.OTPService
+	tokenService   auth.TokenService
 }
 
 func NewAuthController(
@@ -48,29 +54,30 @@ func NewAuthController(
 	memberAuthService *auth.MemberAuthService,
 	ownerAuthService *auth.OwnerAuthService,
 
-	// Services
-	otpService *services.OTPService,
+	// App
 	cfg *config.AppConfig,
+
+	// Services
+	emailService *services.EmailService,
+	contactService *services.SMSService,
+	otpService *services.OTPService,
 	tokenService auth.TokenService,
 
 ) *AuthController {
 	return &AuthController{
-		// Database
-		adminRepo:    adminRepo,
-		employeeRepo: employeeRepo,
-		ownerRepo:    ownerRepo,
-		memberRepo:   memberRepo,
-
-		// Auth
+		adminRepo:           adminRepo,
+		employeeRepo:        employeeRepo,
+		ownerRepo:           ownerRepo,
+		memberRepo:          memberRepo,
 		adminAuthService:    adminAuthService,
 		employeeAuthService: employeeAuthService,
 		memberAuthService:   memberAuthService,
 		ownerAuthService:    ownerAuthService,
-
-		// Services
-		otpService:   otpService,
-		cfg:          cfg,
-		tokenService: tokenService,
+		cfg:                 cfg,
+		emailService:        emailService,
+		contactService:      contactService,
+		otpService:          otpService,
+		tokenService:        tokenService,
 	}
 }
 
@@ -307,8 +314,155 @@ func (c *AuthController) SignOut(ctx *gin.Context) {
 }
 
 // Password
-func (c *AuthController) ForgotPassword(ctx *gin.Context) {}
-func (c *AuthController) ChangePassword(ctx *gin.Context) {}
+func (c *AuthController) ForgotPassword(ctx *gin.Context) {
+	var req auth_requests.ForgotPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	var userClaims *auth.UserClaims
+	var user models.User
+	switch req.AccountType {
+	case "Member":
+		member, err := c.memberRepo.FindByEmailUsernameOrContact(req.Key)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			return
+		}
+		user = models.User{
+			ContactNumber: member.ContactNumber,
+			FirstName:     member.FirstName,
+			LastName:      member.LastName,
+			Email:         member.Email,
+		}
+		userClaims = &auth.UserClaims{
+			ID:          member.ID,
+			AccountType: "Member",
+		}
+	case "Owner":
+		owner, err := c.ownerRepo.FindByEmailUsernameOrContact(req.Key)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			return
+		}
+		user = models.User{
+			ContactNumber: owner.ContactNumber,
+			FirstName:     owner.FirstName,
+			LastName:      owner.LastName,
+			Email:         owner.Email,
+		}
+		userClaims = &auth.UserClaims{
+			ID:          owner.ID,
+			AccountType: "Owner",
+		}
+	case "Employee":
+		employee, err := c.employeeRepo.FindByEmailUsernameOrContact(req.Key)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			return
+		}
+		user = models.User{
+			ContactNumber: employee.ContactNumber,
+			FirstName:     employee.FirstName,
+			LastName:      employee.LastName,
+			Email:         employee.Email,
+		}
+		userClaims = &auth.UserClaims{
+			ID:          employee.ID,
+			AccountType: "Employee",
+		}
+	case "Admin":
+		admin, err := c.adminRepo.FindByEmailUsernameOrContact(req.Key)
+		if err != nil {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			return
+		}
+		user = models.User{
+			ContactNumber: admin.ContactNumber,
+			FirstName:     admin.FirstName,
+			LastName:      admin.LastName,
+			Email:         admin.Email,
+		}
+		userClaims = &auth.UserClaims{
+			ID:          admin.ID,
+			AccountType: "Admin",
+		}
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid account type"})
+		return
+	}
+
+	token, err := c.tokenService.GenerateToken(userClaims)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate reset token"})
+		return
+	}
+	keyType := helpers.GetKeyType(req.Key)
+
+	resetLink := fmt.Sprintf("%s/auth/password-reset?token=%s", c.cfg.AppClientUrl, token)
+	if keyType == "contact" {
+		contactReq := services.SMSRequest{
+			To:   user.ContactNumber,
+			Body: req.ContactTemplate,
+			Vars: &map[string]string{
+				"name":      user.FirstName + " " + user.LastName,
+				"eventLink": resetLink,
+			},
+		}
+		if err := c.contactService.SendSMS(contactReq); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed send OTP from your number. Please try again"})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{"message": "Successfully Sent you the mail. Check your inbox or spam folder"})
+	} else if keyType == "email" {
+		emailReq := services.EmailRequest{
+			To:      user.Email,
+			Subject: "ECOOP: Change Password Request",
+			Body:    req.EmailTemplate,
+			Vars: &map[string]string{
+				"name":      user.FirstName + " " + user.LastName,
+				"eventLink": resetLink,
+			},
+		}
+		if err := c.emailService.SendEmail(emailReq); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed send email OTP. Please try again"})
+			return
+		}
+	}
+
+}
+
+func (c *AuthController) ChangePassword(ctx *gin.Context) {
+	var req auth_requests.ChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	claims, err := c.tokenService.VerifyToken(req.ResetID)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired reset token"})
+		return
+	}
+	hashedNewPassword, err := config.HashPassword(req.NewPassword)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash new password"})
+		return
+	}
+	if err := c.updatePassword(claims.AccountType, claims.ID, hashedNewPassword); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
+}
 
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 	var req auth_requests.SendEmailVerificationRequest
@@ -319,7 +473,6 @@ func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 
 	if err := req.Validate(); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
 	}
 
 	user, exists := ctx.Get("current-user")
@@ -578,7 +731,6 @@ func AuthRoutes(router *gin.RouterGroup, middleware *middleware.AuthMiddleware, 
 			group.POST("/signout", controller.SignOut)
 
 			// Email
-
 			group.POST("/send-email-verification", controller.SendEmailVerification)
 			group.POST("/verify-email", controller.VerifyEmail)
 
@@ -587,6 +739,33 @@ func AuthRoutes(router *gin.RouterGroup, middleware *middleware.AuthMiddleware, 
 			group.POST("/verify-contact-number", controller.VerifyContactNumber)
 		}
 
+	}
+}
+
+func (c *AuthController) updatePassword(accountType string, userID uint, newPassword string) error {
+	switch accountType {
+	case "Member":
+		_, err := c.memberRepo.UpdateColumns(userID, map[string]interface{}{
+			"password": newPassword,
+		})
+		return err
+	case "Owner":
+		_, err := c.ownerRepo.UpdateColumns(userID, map[string]interface{}{
+			"password": newPassword,
+		})
+		return err
+	case "Employee":
+		_, err := c.employeeRepo.UpdateColumns(userID, map[string]interface{}{
+			"password": newPassword,
+		})
+		return err
+	case "Admin":
+		_, err := c.adminRepo.UpdateColumns(userID, map[string]interface{}{
+			"password": newPassword,
+		})
+		return err
+	default:
+		return fmt.Errorf("invalid account type")
 	}
 }
 
