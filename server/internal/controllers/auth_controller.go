@@ -94,38 +94,23 @@ func (c *AuthController) CurrentUser(ctx *gin.Context) {
 
 	switch currentUser.AccountType {
 	case "Owner":
-		owner, ok := user.(models.Owner)
-		if !ok {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Account type mismatch. Owner account not found."})
-			return
-		}
+		owner, _ := user.(models.Owner)
 		resource := resources.ToResourceOwner(owner)
 		ctx.JSON(http.StatusOK, resource)
 		return
 	case "Employee":
-		employee, ok := user.(models.Employee)
-		if !ok {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Account type mismatch. Employee account not found."})
-			return
-		}
+		employee, _ := user.(models.Employee)
 		resource := resources.ToResourceEmployee(employee)
 		ctx.JSON(http.StatusOK, resource)
 		return
 	case "Admin":
-		admin, ok := user.(models.Admin)
-		if !ok {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Account type mismatch. Admin account not found."})
-			return
-		}
+		admin, _ := user.(models.Admin)
 		resource := resources.ToResourceAdmin(admin)
 		ctx.JSON(http.StatusOK, resource)
 		return
 	case "Member":
-		member, ok := user.(models.Member)
-		if !ok {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Account type mismatch. Member account not found."})
-			return
-		}
+		member, _ := user.(models.Member)
+
 		resource := resources.ToResourceMember(member)
 		ctx.JSON(http.StatusOK, resource)
 		return
