@@ -7,8 +7,10 @@ import (
 )
 
 type ForgotPasswordRequest struct {
-	Email         string `json:"email,omitempty" validate:"required,email,max=255"`
-	ContactNumber string `json:"contactNumber,omitempty" validate:"required,contactNumber,max=255"`
+	Key             string `json:"key" validate:"required,max=255"`
+	AccountType     string `json:"accountType" validate:"required,max=10"`
+	EmailTemplate   string `json:"emailTemplate"`
+	ContactTemplate string `json:"contactTemplate"`
 }
 
 func (r *ForgotPasswordRequest) Validate() error {
@@ -16,7 +18,10 @@ func (r *ForgotPasswordRequest) Validate() error {
 	if err := validate.Struct(r); err != nil {
 		return err
 	}
-	if r.Email == "" && r.ContactNumber == "" {
+	if err := validate.RegisterValidation("accountType", AccountTypeValidator); err != nil {
+		return errors.New("account type is not valid")
+	}
+	if r.EmailTemplate == "" && r.ContactTemplate == "" {
 		return errors.New("either email or username is required")
 	}
 	return nil

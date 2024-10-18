@@ -34,6 +34,7 @@ services:
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:
+      - APP_CLIENT_URL=${APP_CLIENT_URL}
       - APP_PORT=${APP_PORT}
       - APP_TOKEN=${APP_TOKEN}
       - LOG_LEVEL=${LOG_LEVEL}

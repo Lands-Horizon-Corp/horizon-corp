@@ -8,6 +8,7 @@ import (
 
 type AppConfig struct {
 	// Application
+	AppClientUrl     string
 	AppPort          string
 	AppTokenName     string
 	AppToken         []byte
@@ -80,6 +81,7 @@ func LoadConfig() (*AppConfig, error) {
 
 	config := AppConfig{
 		// Application
+		AppClientUrl:     getEnv("APP_CLIENT_URL", "http://client:80"),
 		AppPort:          getEnv("APP_PORT", "8080"),
 		AppTokenName:     getEnv("APP_TOKEN_NAME", "horizon-corp"),
 		AppToken:         []byte(os.Getenv("APP_TOKEN")),

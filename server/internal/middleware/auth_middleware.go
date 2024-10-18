@@ -14,44 +14,62 @@ import (
 )
 
 type AuthMiddleware struct {
-	adminRepo           *repositories.AdminRepository
-	employeeRepo        *repositories.EmployeeRepository
-	ownerRepo           *repositories.OwnerRepository
-	memberRepo          *repositories.MemberRepository
+	// Repositories
+	adminRepo    *repositories.AdminRepository
+	employeeRepo *repositories.EmployeeRepository
+	ownerRepo    *repositories.OwnerRepository
+	memberRepo   *repositories.MemberRepository
+	mediaRepo    *repositories.MediaRepository
+
+	// Auth Service
 	adminAuthService    *auth.AdminAuthService
 	employeeAuthService *auth.EmployeeAuthService
 	memberAuthService   *auth.MemberAuthService
 	ownerAuthService    *auth.OwnerAuthService
-	otpService          *services.OTPService
-	cfg                 *config.AppConfig
-	tokenService        auth.TokenService
+
+	// Services
+	otpService   *services.OTPService
+	cfg          *config.AppConfig
+	tokenService auth.TokenService
 }
 
 func NewAuthMiddleware(
+	// Repositories
 	adminRepo *repositories.AdminRepository,
 	employeeRepo *repositories.EmployeeRepository,
 	ownerRepo *repositories.OwnerRepository,
 	memberRepo *repositories.MemberRepository,
+	mediaRepo *repositories.MediaRepository,
+
+	// Auth service
 	adminAuthService *auth.AdminAuthService,
 	employeeAuthService *auth.EmployeeAuthService,
 	memberAuthService *auth.MemberAuthService,
 	ownerAuthService *auth.OwnerAuthService,
+
+	// Services
 	otpService *services.OTPService,
 	cfg *config.AppConfig,
 	tokenService auth.TokenService,
 ) *AuthMiddleware {
 	return &AuthMiddleware{
-		adminRepo:           adminRepo,
-		employeeRepo:        employeeRepo,
-		ownerRepo:           ownerRepo,
-		memberRepo:          memberRepo,
+		// Repositories
+		adminRepo:    adminRepo,
+		employeeRepo: employeeRepo,
+		ownerRepo:    ownerRepo,
+		memberRepo:   memberRepo,
+		mediaRepo:    mediaRepo,
+
+		// Auth service
 		adminAuthService:    adminAuthService,
 		employeeAuthService: employeeAuthService,
 		memberAuthService:   memberAuthService,
 		ownerAuthService:    ownerAuthService,
-		otpService:          otpService,
-		cfg:                 cfg,
-		tokenService:        tokenService,
+
+		// Services
+		otpService:   otpService,
+		cfg:          cfg,
+		tokenService: tokenService,
 	}
 }
 
@@ -143,6 +161,15 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
+			// var mediaResource interface{}
+			// if owner.MediaID != nil {
+			// 	media, err := c.mediaRepo.GetByID(owner.ID)
+			// 	if err != nil {
+			// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid getting profile"})
+			// 		return
+			// 	}
+			// 	mediaResource = resources.ToResourceMedia(media)
+			// }
 			user = models.User{
 				AccountType:       "Owner",
 				ID:                owner.ID,
@@ -150,8 +177,11 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ContactNumber:     owner.ContactNumber,
 				FirstName:         owner.FirstName,
 				LastName:          owner.LastName,
+				MiddleName:        owner.MiddleName,
 				IsEmailVerified:   owner.IsEmailVerified,
 				IsContactVerified: owner.IsContactVerified,
+				Status:            string(owner.Status),
+				// Media:             mediaResource,
 			}
 
 		default:

@@ -1,11 +1,12 @@
 import contactNumberVerificationRaw from '../assets/sms-templates/message.json'
 
 // Define the types of templates available
-type Templates = 'ContactNumber'
+type Templates = 'contactNumber' | 'changePassword'
 
 // Precompile the Handlebars templates
 const TEMPLATE_MAP: Record<Templates, string> = {
-  ContactNumber: contactNumberVerificationRaw['ContactNumber'],
+  contactNumber: contactNumberVerificationRaw['ContactNumber'],
+  changePassword: contactNumberVerificationRaw['ChangePassword']
 }
 
 /**
