@@ -9,7 +9,7 @@ import { CgFacebook } from 'react-icons/cg'
 import { Link } from '@tanstack/react-router'
 
 // Libraries
-import { contactFormSchema } from '@/modules/auth/validations/contact-form'
+import { contactFormSchema } from '@/modules/landing/validations/contact-form'
 import { cn } from '@/lib/utils'
 
 // Components
