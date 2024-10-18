@@ -104,6 +104,14 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
+			var media *models.Media
+			if member.MediaID != nil {
+				m, err := c.mediaRepo.GetByID(*member.MediaID)
+				if err == nil {
+					media = &m // create a pointer to the media
+				}
+			}
+
 			user = models.User{
 				AccountType:       "Member",
 				ID:                member.ID,
@@ -113,6 +121,8 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				LastName:          member.LastName,
 				IsEmailVerified:   member.IsEmailVerified,
 				IsContactVerified: member.IsContactVerified,
+				Status:            string(member.Status),
+				Media:             media,
 			}
 
 		case "Employee":
@@ -123,6 +133,13 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
+			var media *models.Media
+			if employee.MediaID != nil {
+				m, err := c.mediaRepo.GetByID(*employee.MediaID)
+				if err == nil {
+					media = &m // create a pointer to the media
+				}
+			}
 			user = models.User{
 				AccountType:       "Employee",
 				ID:                employee.ID,
@@ -132,6 +149,8 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				LastName:          employee.LastName,
 				IsEmailVerified:   employee.IsEmailVerified,
 				IsContactVerified: employee.IsContactVerified,
+				Status:            string(employee.Status),
+				Media:             media,
 			}
 
 		case "Admin":
@@ -142,6 +161,13 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
+			var media *models.Media
+			if admin.MediaID != nil {
+				m, err := c.mediaRepo.GetByID(*admin.MediaID)
+				if err == nil {
+					media = &m // create a pointer to the media
+				}
+			}
 			user = models.User{
 				AccountType:       "Admin",
 				ID:                admin.ID,
@@ -151,6 +177,8 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				LastName:          admin.LastName,
 				IsEmailVerified:   admin.IsEmailVerified,
 				IsContactVerified: admin.IsContactVerified,
+				Status:            string(admin.Status),
+				Media:             media,
 			}
 
 		case "Owner":
@@ -161,15 +189,13 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				ctx.Abort()
 				return
 			}
-			// var mediaResource interface{}
-			// if owner.MediaID != nil {
-			// 	media, err := c.mediaRepo.GetByID(owner.ID)
-			// 	if err != nil {
-			// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid getting profile"})
-			// 		return
-			// 	}
-			// 	mediaResource = resources.ToResourceMedia(media)
-			// }
+			var media *models.Media
+			if owner.MediaID != nil {
+				m, err := c.mediaRepo.GetByID(*owner.MediaID)
+				if err == nil {
+					media = &m
+				}
+			}
 			user = models.User{
 				AccountType:       "Owner",
 				ID:                owner.ID,
@@ -181,7 +207,7 @@ func (c *AuthMiddleware) Middleware() gin.HandlerFunc {
 				IsEmailVerified:   owner.IsEmailVerified,
 				IsContactVerified: owner.IsContactVerified,
 				Status:            string(owner.Status),
-				// Media:             mediaResource,
+				Media:             media,
 			}
 
 		default:
