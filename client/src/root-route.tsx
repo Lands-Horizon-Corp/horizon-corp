@@ -10,6 +10,7 @@ import TestRoute from '@/modules/test/route';
 
 import RootLayout from '@/modules/root-layout';
 import NotFoundPage from '@/components/not-found';
+import practiceLandingRoute from './public/route';
 
 export const rootRoute = createRootRoute();
 
@@ -21,6 +22,7 @@ const routeTree = rootRoute.addChildren([
     LandingRoute,
     EmployeeRoute,
     TestRoute,
+    practiceLandingRoute,
 ]);
 
 const router = createRouter({
