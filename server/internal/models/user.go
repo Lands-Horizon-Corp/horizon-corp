@@ -11,4 +11,5 @@ type User struct {
 	IsEmailVerified   bool   `json:"isEmailVerified"`
 	IsContactVerified bool   `json:"isContactVerified"`
 	Status            string `json:"status"`
+	Media             *Media `json:"media"`
 }

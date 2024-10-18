@@ -87,7 +87,7 @@ const ShowAccountStatus = ({ loading, userData, onBackSignOut }: Props) => {
 
     return (
         <p className="text-center">
-            Sorry, couldn&apos;t identify you account status
+            Sorry, couldn&apos;t identify your account status
         </p>
     )
 }
