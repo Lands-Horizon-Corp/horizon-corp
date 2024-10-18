@@ -45,7 +45,7 @@ func ToResourceMember(member models.Member) MemberResource {
 		IsEmailVerified:   member.IsEmailVerified,
 		IsContactVerified: member.IsContactVerified,
 		ContactNumber:     member.ContactNumber,
-		Media:             mediaResource, // Set the media resource if exists
+		Media:             mediaResource,
 		Status:            member.Status,
 		CreatedAt:         member.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:         member.UpdatedAt.Format(time.RFC3339),
