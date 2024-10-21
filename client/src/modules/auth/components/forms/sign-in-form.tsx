@@ -200,7 +200,7 @@ const SignInForm = ({
                             accountType: form.getValues('accountType'),
                         }}
                     >
-                        Forgor Password
+                        Forgot Password
                     </Link>
                 </div>
             </form>
