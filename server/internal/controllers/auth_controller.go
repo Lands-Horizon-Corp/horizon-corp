@@ -544,7 +544,7 @@ func AuthRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controll
 		authGroup.POST("/signin", controller.SignIn)
 		authGroup.POST("/forgot-password", controller.ForgotPassword)
 		authGroup.POST("/change-password", controller.ChangePassword)
-		authGroup.POST("/verify-reset-link/:id", controller.VerifyResetLink)
+		authGroup.GET("/verify-reset-link/:id", controller.VerifyResetLink)
 		// Protected Routes
 		authGroup.Use(mw.Middleware())
 		{
