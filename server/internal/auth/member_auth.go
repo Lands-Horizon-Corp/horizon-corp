@@ -19,6 +19,7 @@ func NewMemberAuthService(tokenService TokenService, logger *zap.Logger) *Member
 }
 
 func (s *MemberAuthService) GenerateMemberToken(member models.Member) (string, error) {
+
 	claims := &UserClaims{
 		ID:          member.ID,
 		AccountType: "Member",

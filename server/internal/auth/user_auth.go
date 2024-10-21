@@ -42,7 +42,6 @@ func NewUserAuthService(
 func (s *UserAuthService) GenerateUserToken(user models.User, accountType string) (string, error) {
 	var token string
 	var err error
-
 	switch accountType {
 	case "Admin":
 		token, err = s.adminAuthService.GenerateAdminToken(repositories.ConvertUserToAdmin(user))
