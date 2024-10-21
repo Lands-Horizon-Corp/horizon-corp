@@ -75,7 +75,7 @@ export const VersionAndFeedBack = () => {
                                 Send Feedback
                             </Button>
                         </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-[425px] lg:max-w-[600px]">
                             <DialogHeader>
                                 <DialogTitle>
                                     We’d love to hear your feedback!
@@ -86,7 +86,6 @@ export const VersionAndFeedBack = () => {
                                 </DialogDescription>
                             </DialogHeader>
                             <FeedbackForm />
-                            <DialogFooter></DialogFooter>
                         </DialogContent>
                     </Dialog>
                 </PopoverContent>
