@@ -4,6 +4,7 @@ import (
 	"errors"
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -39,18 +40,18 @@ func NewUserAuthService(
 }
 
 // GenerateUserToken generates a token for the specified user based on their account type
-func (s *UserAuthService) GenerateUserToken(user models.User, accountType string) (string, error) {
+func (s *UserAuthService) GenerateUserToken(user models.User, accountType string, expiration time.Duration) (string, error) {
 	var token string
 	var err error
 	switch accountType {
 	case "Admin":
-		token, err = s.adminAuthService.GenerateAdminToken(repositories.ConvertUserToAdmin(user))
+		token, err = s.adminAuthService.GenerateAdminToken(repositories.ConvertUserToAdmin(user), expiration)
 	case "Employee":
-		token, err = s.employeeAuthService.GenerateEmployeeToken(repositories.ConvertUserToEmployee(user))
+		token, err = s.employeeAuthService.GenerateEmployeeToken(repositories.ConvertUserToEmployee(user), expiration)
 	case "Member":
-		token, err = s.memberAuthService.GenerateMemberToken(repositories.ConvertUserToMember(user))
+		token, err = s.memberAuthService.GenerateMemberToken(repositories.ConvertUserToMember(user), expiration)
 	case "Owner":
-		token, err = s.ownerAuthService.GenerateOwnerToken(repositories.ConvertUserToOwner(user))
+		token, err = s.ownerAuthService.GenerateOwnerToken(repositories.ConvertUserToOwner(user), expiration)
 	default:
 		s.logger.Error("Invalid account type for token generation", zap.String("accountType", accountType))
 		return "", errors.New("invalid account type")

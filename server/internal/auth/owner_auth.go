@@ -2,6 +2,7 @@ package auth
 
 import (
 	"horizon/server/internal/models"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -18,13 +19,13 @@ func NewOwnerAuthService(tokenService TokenService, logger *zap.Logger) *OwnerAu
 	}
 }
 
-func (s *OwnerAuthService) GenerateOwnerToken(owner models.Owner) (string, error) {
+func (s *OwnerAuthService) GenerateOwnerToken(owner models.Owner, expiration time.Duration) (string, error) {
 	claims := &UserClaims{
 		ID:          owner.ID,
 		AccountType: "Owner",
 	}
 
-	token, err := s.tokenService.GenerateToken(claims)
+	token, err := s.tokenService.GenerateToken(claims, 0)
 	if err != nil {
 		s.logger.Error("Failed to generate owner token", zap.Error(err))
 		return "", err

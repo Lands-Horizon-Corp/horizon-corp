@@ -2,6 +2,7 @@ package auth
 
 import (
 	"horizon/server/internal/models"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -18,14 +19,14 @@ func NewMemberAuthService(tokenService TokenService, logger *zap.Logger) *Member
 	}
 }
 
-func (s *MemberAuthService) GenerateMemberToken(member models.Member) (string, error) {
+func (s *MemberAuthService) GenerateMemberToken(member models.Member, expiration time.Duration) (string, error) {
 
 	claims := &UserClaims{
 		ID:          member.ID,
 		AccountType: "Member",
 	}
 
-	token, err := s.tokenService.GenerateToken(claims)
+	token, err := s.tokenService.GenerateToken(claims, 0)
 	if err != nil {
 		s.logger.Error("Failed to generate member token", zap.Error(err))
 		return "", err

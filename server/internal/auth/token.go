@@ -19,7 +19,7 @@ type UserClaims struct {
 }
 
 type TokenService interface {
-	GenerateToken(claims *UserClaims) (string, error)
+	GenerateToken(claims *UserClaims, expiration time.Duration) (string, error)
 	VerifyToken(tokenString string) (*UserClaims, error)
 	StoreToken(tokenString string, userId uint) error
 	DeleteToken(tokenString string) error
@@ -40,8 +40,11 @@ func NewTokenService(redisClient *database.CacheService, cfg *config.AppConfig, 
 	}
 }
 
-func (s *tokenService) GenerateToken(claims *UserClaims) (string, error) {
-	claims.StandardClaims.ExpiresAt = time.Now().Add(time.Hour * 24).Unix()
+func (s *tokenService) GenerateToken(claims *UserClaims, expiration time.Duration) (string, error) {
+	if expiration == 0 {
+		expiration = time.Hour * 24
+	}
+	claims.StandardClaims.ExpiresAt = time.Now().Add(expiration).Unix()
 	claims.StandardClaims.Issuer = "horizon-server"
 	claims.StandardClaims.IssuedAt = time.Now().Unix()
 
