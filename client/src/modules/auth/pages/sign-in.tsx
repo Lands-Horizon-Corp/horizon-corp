@@ -26,7 +26,7 @@ export const SignInPageSearchSchema = z.object({
 const SignInPage = () => {
     const router = useRouter()
     const queryClient = useQueryClient()
-    const { data: currentUser, isFetching } = useCurrentUser({ loadOnMount : true })
+    const { data: currentUser, isFetching } = useCurrentUser({ })
     const prefilledValues = useSearch({ from: '/auth/sign-in' })
 
     const onSignInSuccess = useCallback(
@@ -68,7 +68,7 @@ const SignInPage = () => {
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {currentUser === null && !isFetching && (
+                {!currentUser && !isFetching && (
                     <SignInForm
                         defaultValues={prefilledValues}
                         onSuccess={onSignInSuccess}

@@ -16,13 +16,7 @@ import UserService from '@/horizon-corp/server/auth/UserService'
 
 const Verify = () => {
     const router = useRouter()
-    const {
-        data: currentUser,
-        isFetching,
-        setCurrentUser,
-    } = useCurrentUser({
-        loadOnMount: true,
-    })
+    const { data: currentUser, isFetching, setCurrentUser } = useCurrentUser({})
 
     const { mutate: onBackSignOut, isPending } = useMutation<void, string>({
         mutationKey: ['sign-out'],

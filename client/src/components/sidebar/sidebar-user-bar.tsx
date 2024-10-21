@@ -37,9 +37,7 @@ interface Props extends IBaseCompNoChild {
 const SidebarUserBar = ({ className, isExpanded }: Props) => {
     const router = useRouter()
     const { setTheme, resolvedTheme } = useTheme()
-    const { data : currentUser, setCurrentUser } = useCurrentUser({
-        loadOnMount: true,
-    })
+    const { data: currentUser, setCurrentUser } = useCurrentUser({})
 
     const handleSignout = async () => {
         const [error] = await withCatchAsync(UserService.SignOut())
@@ -50,9 +48,10 @@ const SidebarUserBar = ({ className, isExpanded }: Props) => {
             return
         }
 
+        router.navigate({ to: '/auth/sign-in' })
+
         setCurrentUser(null)
-        toast.success("Signed out")
-        router.navigate({ to: '/auth' })
+        toast.success('Signed out')
     }
 
     return (

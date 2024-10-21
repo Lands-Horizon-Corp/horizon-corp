@@ -5,11 +5,9 @@ import { UserData } from '@/horizon-corp/types'
 import UserService from '@/horizon-corp/server/auth/UserService'
 
 const useCurrentUser = ({
-    loadOnMount = false,
     onError,
     onSuccess,
 }: {
-    loadOnMount?: boolean
     onError?: (error: unknown) => void
     onSuccess?: (userData: UserData) => void
 }) => {
@@ -18,6 +16,7 @@ const useCurrentUser = ({
     const query = useQuery<UserData | null>({
         queryKey: ['current-user'],
         queryFn: async () => {
+            console.log("Fetching")
             const [error, response] = await withCatchAsync(UserService.CurrentUser())
 
             if(error){
@@ -28,8 +27,6 @@ const useCurrentUser = ({
             onSuccess?.(response.data)
             return response.data
         },
-        refetchOnMount: loadOnMount,
-        initialData: null,
         retry : 2,
     })
 
@@ -37,7 +34,7 @@ const useCurrentUser = ({
         queryClient.setQueryData<UserData | null>(['current-user'], newUserData)
     }
 
-    return { setCurrentUser, ...query }
+    return { ...query, setCurrentUser }
 }
 
 export default useCurrentUser
