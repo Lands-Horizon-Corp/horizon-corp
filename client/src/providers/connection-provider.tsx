@@ -11,14 +11,24 @@ import { cn } from '@/lib/utils'
 // import Connection from '@/horizon-corp/server/common/Connection'
 
 const ConnectionProvider = ({ interval = 10_000 }: { interval?: number }) => {
-    const [isConnected, _setIsConnected] = useState(true)
+    const [isConnected, setIsConnected] = useState(true)
 
     useEffect(() => {
-        const checkerFunction = setInterval(async () => {
-            // setIsConnected(await Connection.test())
-        }, interval)
-        return () => clearInterval(checkerFunction)
-    }, [interval])
+        const updateConnectionStatus = () => {
+            setIsConnected(navigator.onLine);
+        };
+
+        const checkerFunction = setInterval(updateConnectionStatus, interval);
+        
+        window.addEventListener('online', updateConnectionStatus);
+      window.addEventListener('offline', updateConnectionStatus);
+      
+        return () => {
+            clearInterval(checkerFunction);
+            window.removeEventListener('online', updateConnectionStatus);
+            window.removeEventListener('offline', updateConnectionStatus);
+        };
+    }, [interval]);
 
     return (
         <Dialog open={!isConnected}>
