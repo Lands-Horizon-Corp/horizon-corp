@@ -151,7 +151,11 @@ const VerifyForm = ({
                             )}
                         />
                         <FormErrorMessage errorMessage={error} />
-                        <ResendVerifyContactButton interval={1000} duration={20} verifyMode={verifyMode} />
+                        <ResendVerifyContactButton
+                            interval={1000}
+                            duration={20}
+                            verifyMode={verifyMode}
+                        />
                         <div className="flex flex-col gap-y-2">
                             {onSkip && (
                                 <Button

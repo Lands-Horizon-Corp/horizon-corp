@@ -11,15 +11,17 @@ const useCurrentUser = ({
     onError?: (error: unknown) => void
     onSuccess?: (userData: UserData) => void
 }) => {
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
 
     const query = useQuery<UserData | null>({
         queryKey: ['current-user'],
         queryFn: async () => {
-            console.log("Fetching")
-            const [error, response] = await withCatchAsync(UserService.CurrentUser())
+            console.log('Fetching')
+            const [error, response] = await withCatchAsync(
+                UserService.CurrentUser()
+            )
 
-            if(error){
+            if (error) {
                 onError?.(error)
                 throw error
             }
@@ -27,7 +29,7 @@ const useCurrentUser = ({
             onSuccess?.(response.data)
             return response.data
         },
-        retry : 2,
+        retry: 2,
     })
 
     const setCurrentUser = (newUserData: UserData | null) => {

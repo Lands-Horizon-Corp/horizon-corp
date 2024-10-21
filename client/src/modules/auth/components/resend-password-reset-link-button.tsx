@@ -30,10 +30,11 @@ const ResendPasswordResetLinkButton = ({
         counterInterval: interval,
     })
 
-    const {
-        mutate: resendResetLink,
-        isPending,
-    } = useMutation<void, string, TSentTo>({
+    const { mutate: resendResetLink, isPending } = useMutation<
+        void,
+        string,
+        TSentTo
+    >({
         mutationKey: ['resend-reset-password-link'],
         mutationFn: async (sentTo) => {
             if (!sentTo) return

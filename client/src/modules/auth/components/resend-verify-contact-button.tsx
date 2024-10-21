@@ -56,7 +56,7 @@ const ResendVerifyContactButton = ({
         <Button
             size="sm"
             variant="ghost"
-            className={cn("underline", cooldownCount > 0 && "no-underline")}
+            className={cn('underline', cooldownCount > 0 && 'no-underline')}
             onClick={(e) => {
                 e.preventDefault()
                 resendOtpVerification()
