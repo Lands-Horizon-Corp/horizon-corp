@@ -98,7 +98,7 @@ func (s *tokenService) DeleteToken(tokenString string) error {
 
 func (s *tokenService) ClearTokenCookie(ctx *gin.Context) {
 	http.SetCookie(ctx.Writer, &http.Cookie{
-		Name:     ctx.Request.Header.Get("App-Token-Name"),
+		Name:     s.cfg.AppTokenName,
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
