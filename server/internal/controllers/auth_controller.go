@@ -65,6 +65,19 @@ func (c *AuthController) CurrentUser(ctx *gin.Context) {
 		return
 	}
 
+	claims, exists := ctx.Get("claims")
+	if !exists {
+		c.tokenService.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	userClaims, ok := claims.(*auth.UserClaims)
+	if !ok {
+		c.tokenService.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user claims"})
+		return
+	}
+	currentUser.AccountType = userClaims.AccountType
 	ctx.JSON(http.StatusOK, resources.ToResourceUser(currentUser, currentUser.AccountType))
 }
 
@@ -103,7 +116,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	token, err := c.userAuthService.GenerateUserToken(user, user.AccountType)
+	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
@@ -171,7 +184,7 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 		return
 	}
 
-	token, err := c.userAuthService.GenerateUserToken(user, user.AccountType)
+	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
@@ -188,7 +201,7 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 	})
 
 	// Respond with the authenticated user
-	ctx.JSON(http.StatusOK, resources.ToResourceUser(user, user.AccountType))
+	ctx.JSON(http.StatusOK, resources.ToResourceUser(user, req.AccountType))
 }
 
 // SignOut handles user sign-out by clearing the auth token.
@@ -317,12 +330,14 @@ func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 
 	claims, exists := ctx.Get("claims")
 	if !exists {
+		c.tokenService.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
+		c.tokenService.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user claims"})
 		return
 	}
@@ -339,12 +354,14 @@ func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 	claims, exists := ctx.Get("claims")
 	if !exists {
+		c.tokenService.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
+		c.tokenService.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
 		return
 	}
@@ -406,12 +423,14 @@ func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
 
 	claims, exists := ctx.Get("claims")
 	if !exists {
+		c.tokenService.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
+		c.tokenService.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user claims"})
 		return
 	}
@@ -436,12 +455,14 @@ func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
 func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 	claims, exists := ctx.Get("claims")
 	if !exists {
+		c.tokenService.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
+		c.tokenService.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
 		return
 	}

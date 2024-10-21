@@ -27,7 +27,6 @@ type UserResource struct {
 
 func ToResourceUser(user models.User, accountType string) UserResource {
 	var mediaResource *MediaResource
-
 	if user.MediaID != nil {
 		media := ToResourceMedia(user.Media)
 		mediaResource = &media
