@@ -35,12 +35,12 @@ const VerifyRoot = ({
     const [skipped, setSkipped] = useState<TStep[]>([])
     const completedCount = countCompleted(userData)
 
-    if(completedCount === 2) {
+    if (completedCount === 2) {
         onVerifyComplete?.(userData)
         return
     }
 
-    if(skipped.length + completedCount >= 2) {
+    if (skipped.length + completedCount >= 2) {
         onVerifyComplete?.(userData)
         return
     }
@@ -55,7 +55,7 @@ const VerifyRoot = ({
                     currentStep={completedCount + 1}
                 />
             </div>
-            {!userData.isContactVerified && !skipped.includes("mobile") && (
+            {!userData.isContactVerified && !skipped.includes('mobile') && (
                 <VerifyForm
                     key="1"
                     readOnly={readOnly}
@@ -64,17 +64,19 @@ const VerifyRoot = ({
                     onSkip={() => setSkipped((val) => [...val, 'mobile'])}
                 />
             )}
-            {!userData.isEmailVerified && ( userData.isContactVerified || skipped.includes("mobile")) && !skipped.includes("email") && (
-                <VerifyForm
-                    key="2"
-                    verifyMode="email"
-                    readOnly={readOnly}
-                    onSuccess={(data) => {
-                        onVerifyComplete?.(data)
-                    }}
-                    onSkip={() => setSkipped((val) => [...val, 'email'])}
-                />
-            )}
+            {!userData.isEmailVerified &&
+                (userData.isContactVerified || skipped.includes('mobile')) &&
+                !skipped.includes('email') && (
+                    <VerifyForm
+                        key="2"
+                        verifyMode="email"
+                        readOnly={readOnly}
+                        onSuccess={(data) => {
+                            onVerifyComplete?.(data)
+                        }}
+                        onSkip={() => setSkipped((val) => [...val, 'email'])}
+                    />
+                )}
         </div>
     )
 }

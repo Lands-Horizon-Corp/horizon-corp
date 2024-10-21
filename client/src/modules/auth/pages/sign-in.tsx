@@ -26,7 +26,7 @@ export const SignInPageSearchSchema = z.object({
 const SignInPage = () => {
     const router = useRouter()
     const queryClient = useQueryClient()
-    const { data: currentUser, isFetching } = useCurrentUser({ })
+    const { data: currentUser, isFetching } = useCurrentUser({})
     const prefilledValues = useSearch({ from: '/auth/sign-in' })
 
     const onSignInSuccess = useCallback(
@@ -74,9 +74,7 @@ const SignInPage = () => {
                         onSuccess={onSignInSuccess}
                     />
                 )}
-                {
-                    isFetching && <LoadingSpinner />
-                }
+                {isFetching && <LoadingSpinner />}
             </AuthPageWrapper>
         </div>
     )

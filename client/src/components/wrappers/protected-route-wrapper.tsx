@@ -30,18 +30,17 @@ const ProtectedRouteWrapper = ({
 
         if (!currentUser) return <Navigate to="/auth/sign-in" />
 
-
         if (
-            currentUser &&
-            !allowedAccountTypes.includes(currentUser?.accountType) ||
+            (currentUser &&
+                !allowedAccountTypes.includes(currentUser?.accountType)) ||
             currentUser.status !== 'Verified'
         )
             return (
                 <div className="flex h-screen w-full flex-col items-center justify-center gap-y-4">
                     <p className="text-xl font-medium">Restricted</p>
                     <p className="text-foreground/80">
-                        Sorry but you&apos;r account type or account status is restricted in
-                        accessing this page
+                        Sorry but you&apos;r account type or account status is
+                        restricted in accessing this page
                     </p>
                     <Button
                         variant="outline"

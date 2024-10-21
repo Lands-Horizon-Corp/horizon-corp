@@ -15,8 +15,7 @@ const NavAuthContents = ({ className }: IBaseCompNoChild) => {
         select: (location) => location.pathname,
     })
 
-    const { data: currentUser, setCurrentUser } = useCurrentUser({
-    })
+    const { data: currentUser, setCurrentUser } = useCurrentUser({})
 
     const { mutate: handleSignout, isPending: isSigningOut } = useMutation({
         mutationKey: ['sign-out'],

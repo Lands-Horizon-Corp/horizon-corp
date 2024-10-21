@@ -15,20 +15,20 @@ const ConnectionProvider = ({ interval = 10_000 }: { interval?: number }) => {
 
     useEffect(() => {
         const updateConnectionStatus = () => {
-            setIsConnected(navigator.onLine);
-        };
+            setIsConnected(navigator.onLine)
+        }
 
-        const checkerFunction = setInterval(updateConnectionStatus, interval);
-        
-        window.addEventListener('online', updateConnectionStatus);
-      window.addEventListener('offline', updateConnectionStatus);
-      
+        const checkerFunction = setInterval(updateConnectionStatus, interval)
+
+        window.addEventListener('online', updateConnectionStatus)
+        window.addEventListener('offline', updateConnectionStatus)
+
         return () => {
-            clearInterval(checkerFunction);
-            window.removeEventListener('online', updateConnectionStatus);
-            window.removeEventListener('offline', updateConnectionStatus);
-        };
-    }, [interval]);
+            clearInterval(checkerFunction)
+            window.removeEventListener('online', updateConnectionStatus)
+            window.removeEventListener('offline', updateConnectionStatus)
+        }
+    }, [interval])
 
     return (
         <Dialog open={!isConnected}>
