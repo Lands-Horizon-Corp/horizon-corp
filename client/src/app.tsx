@@ -3,6 +3,7 @@ import { RouterProvider } from '@tanstack/react-router';
 
 import router from '@/root-route';
 import { ThemeProvider } from '@/providers/theme-provider';
+import useCurrentUser from './hooks/use-current-user';
 
 const TanStackRouterDevtoolsPanel =
     process.env.NODE_ENV === 'production'
@@ -20,6 +21,8 @@ declare module '@tanstack/react-router' {
 }
 
 const App = () => {
+    useCurrentUser({ loadOnMount: true });
+
     return (
         <ThemeProvider>
             <RouterProvider router={router} />

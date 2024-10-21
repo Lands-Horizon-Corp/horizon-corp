@@ -23,18 +23,15 @@ import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
-import {
-    emailSchema,
-    userAccountTypeSchema,
-} from '@/modules/auth/validations/common'
 import { cn, withCatchAsync } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { IAuthForm } from '@/types/auth/form-interface'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
+import { userAccountTypeSchema } from '@/modules/auth/validations/common'
 
 const emailFormSchema = z.object({
-    email: emailSchema,
+    key: z.string().min(1, 'key is required'),
     accountType: userAccountTypeSchema,
 })
 
@@ -47,7 +44,7 @@ interface Props extends IAuthForm<TForgotPasswordEmail> {
 const ForgotPasswordEmail = ({
     readOnly,
     className,
-    defaultValues = { email: '', accountType: 'Member' },
+    defaultValues = { key: '', accountType: 'Member' },
     onError,
     onSuccess,
 }: Props) => {
@@ -74,11 +71,11 @@ const ForgotPasswordEmail = ({
             onError?.(error)
             setError(errorMessage)
             toast.error(errorMessage)
-            return;
+            return
         }
 
         onSuccess?.(data)
-        toast.success(`Password reset link was sent to ${data.email}`)
+        toast.success(`Password reset link was sent to ${data.key}`)
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -106,7 +103,7 @@ const ForgotPasswordEmail = ({
                 </div>
                 <fieldset disabled={loading || readOnly} className="space-y-4">
                     <FormField
-                        name="email"
+                        name="key"
                         control={form.control}
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
@@ -114,15 +111,15 @@ const ForgotPasswordEmail = ({
                                     htmlFor={field.name}
                                     className="w-full text-right font-medium"
                                 >
-                                    Email Address
+                                    Key
                                 </FormLabel>
                                 <FormControl>
                                     <div className="flex-1 space-y-2">
                                         <Input
                                             {...field}
                                             id={field.name}
-                                            autoComplete="email"
-                                            placeholder="Enter your email address"
+                                            autoComplete="off"
+                                            placeholder="Enter email, contact, or username"
                                         />
                                     </div>
                                 </FormControl>

@@ -9,7 +9,7 @@ import { UserData } from '@/horizon-corp/types'
 
 interface Props extends IBaseComp {
     readOnly?: boolean
-    userData: UserData 
+    userData: UserData
     onVerifyChange?: (newUserData: UserData) => void
     onVerifyComplete?: (newUserData: UserData) => void
 }

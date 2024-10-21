@@ -17,19 +17,25 @@ const landingIndexRoute = createRoute({
 const aboutRoute = createRoute({
     getParentRoute: () => landingRoute,
     path: 'about',
-    component: lazyRouteComponent(() => import('@/modules/landing/pages/about')),
+    component: lazyRouteComponent(
+        () => import('@/modules/landing/pages/about')
+    ),
 })
 
 const contactRoute = createRoute({
     getParentRoute: () => landingRoute,
     path: 'contact',
-    component: lazyRouteComponent(() => import('@/modules/landing/pages/contact')),
+    component: lazyRouteComponent(
+        () => import('@/modules/landing/pages/contact')
+    ),
 })
 
 const developersRoute = createRoute({
     getParentRoute: () => landingRoute,
     path: 'developers',
-    component: lazyRouteComponent(() => import('@/modules/landing/pages/developers')),
+    component: lazyRouteComponent(
+        () => import('@/modules/landing/pages/developers')
+    ),
 })
 
 const LandingRoute = landingRoute.addChildren([

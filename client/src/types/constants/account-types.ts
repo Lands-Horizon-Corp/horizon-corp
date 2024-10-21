@@ -1,3 +1,3 @@
-import { AccountType } from "@/horizon-corp/types";
+import { AccountType } from '@/horizon-corp/types'
 
 export type TAccountType = AccountType

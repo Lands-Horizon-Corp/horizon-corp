@@ -7,18 +7,17 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import ShowAccountStatus from '../components/verify-root/show-account-status'
 
+import { withCatchAsync } from '@/lib'
 import useCurrentUser from '@/hooks/use-current-user'
-import { axiosErrorMessageExtractor } from '@/horizon-corp/helpers'
+import { serverRequestErrExtractor } from '@/helpers'
 import { getUsersAccountTypeRedirectPage } from './helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 
-interface Props {}
-
-const Verify = ({}: Props) => {
+const Verify = () => {
     const router = useRouter()
     const { loading, setLoading } = useLoadingErrorState()
-    const { currentUser, setCurrentUser, loadingUser } = useCurrentUser({
+    const { currentUser, setCurrentUser, authState } = useCurrentUser({
         loadOnMount: true,
     })
 
@@ -27,19 +26,21 @@ const Verify = ({}: Props) => {
     )
 
     const handleBackSignOut = async () => {
-        if (loading || loadingUser) return
+        if (loading || authState === 'Loading') return
 
         setLoading(true)
-        try {
-            await UserService.SignOut()
-            router.navigate({ to: '/auth' })
-            setCurrentUser(null)
-        } catch (e) {
-            const errorMessage = axiosErrorMessageExtractor(e)
+
+        const [error] = await withCatchAsync(UserService.SignOut())
+
+        setLoading(false)
+
+        if (error) {
+            const errorMessage = serverRequestErrExtractor({ error })
             toast.error(errorMessage)
-        } finally {
-            setLoading(false)
         }
+
+        router.navigate({ to: '/auth' })
+        setCurrentUser(null)
     }
 
     useEffect(() => {
@@ -60,7 +61,7 @@ const Verify = ({}: Props) => {
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {loadingUser && (
+                {authState === 'Loading' && (
                     <div className="flex flex-col items-center gap-y-2">
                         <LoadingSpinner />
                         <p className="text-center text-sm text-foreground/50">
@@ -68,7 +69,7 @@ const Verify = ({}: Props) => {
                         </p>
                     </div>
                 )}
-                {currentUser && !loadingUser && (
+                {currentUser && authState === 'Authenticated' && (
                     <>
                         {display === 'verify' && (
                             <VerifyRoot
@@ -91,7 +92,7 @@ const Verify = ({}: Props) => {
                         )}
                     </>
                 )}
-                {!currentUser && !loadingUser && (
+                {!currentUser && authState === 'UnAuthenticated' && (
                     <p>Couldn&apos;t load your info, please please try again</p>
                 )}
             </AuthPageWrapper>

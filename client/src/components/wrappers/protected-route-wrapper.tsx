@@ -17,10 +17,10 @@ const ProtectedRouteWrapper = ({
     allowedAccountTypes,
 }: Props) => {
     const router = useRouter()
-    const { currentUser, loadingUser } = useCurrentUser({ loadOnMount: true })
+    const { currentUser, authState } = useCurrentUser({ loadOnMount: true })
 
     if (pageType === 'AUTHENTICATED') {
-        if (loadingUser)
+        if (authState === 'Loading')
             return (
                 <div className="relative flex h-screen w-full items-center justify-center">
                     <LoadingSpinner />
@@ -32,7 +32,7 @@ const ProtectedRouteWrapper = ({
             !allowedAccountTypes.includes(currentUser?.accountType)
         )
             return (
-                <div className="h-screen w-full flex flex-col items-center justify-center">
+                <div className="flex h-screen w-full flex-col items-center justify-center">
                     <p className="text-xl font-medium">Restricted</p>
                     <p className="text-foreground/80">
                         Sorry but you&apos;r account type is restricted in

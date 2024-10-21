@@ -1,3 +1,6 @@
+import { toast } from 'sonner'
+import { useRouter } from '@tanstack/react-router'
+
 import {
     DropdownMenu,
     DropdownMenuSub,
@@ -21,13 +24,11 @@ import {
 import UserAvatar from '@/components/user-avatar'
 
 import { cn, withCatchAsync } from '@/lib/utils'
-import { useTheme } from '@/providers/theme-provider'
 import { IBaseCompNoChild } from '@/types/component'
+import { useTheme } from '@/providers/theme-provider'
 import useCurrentUser from '@/hooks/use-current-user'
-import UserService from '@/horizon-corp/server/auth/UserService'
 import { serverRequestErrExtractor } from '@/helpers'
-import { toast } from 'sonner'
-import { useRouter } from '@tanstack/react-router'
+import UserService from '@/horizon-corp/server/auth/UserService'
 
 interface Props extends IBaseCompNoChild {
     isExpanded: boolean
@@ -50,7 +51,7 @@ const SidebarUserBar = ({ className, isExpanded }: Props) => {
         }
 
         setCurrentUser(null)
-        router.navigate({ to : "/auth"})
+        router.navigate({ to: '/auth' })
     }
 
     return (

@@ -1,5 +1,9 @@
 import { zodSearchValidator } from '@tanstack/router-zod-adapter'
-import { createRoute, redirect, lazyRouteComponent } from '@tanstack/react-router'
+import {
+    createRoute,
+    redirect,
+    lazyRouteComponent,
+} from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
 import { SignInPageSearchSchema } from '@/modules/auth/pages/sign-in'
@@ -15,7 +19,9 @@ const authRoute = createRoute({
                 to: '/auth/sign-in',
             })
     },
-    notFoundComponent: lazyRouteComponent(() => import('@/modules/auth/not-found')),
+    notFoundComponent: lazyRouteComponent(
+        () => import('@/modules/auth/not-found')
+    ),
 })
 
 const signUpRoute = createRoute({

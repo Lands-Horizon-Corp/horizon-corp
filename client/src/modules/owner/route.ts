@@ -30,19 +30,25 @@ const ownerViewMembersRoute = createRoute({
 const ownerMembersActivityRoute = createRoute({
     getParentRoute: () => ownerRoute,
     path: 'users/members/members-activity',
-    component: lazyRouteComponent(() => import('./pages/members/members-activity')),
+    component: lazyRouteComponent(
+        () => import('./pages/members/members-activity')
+    ),
 })
 
 const ownerViewEmployeesRoute = createRoute({
     getParentRoute: () => ownerRoute,
     path: 'users/employees/view-employees',
-    component: lazyRouteComponent(() => import('./pages/employees/view-employees')),
+    component: lazyRouteComponent(
+        () => import('./pages/employees/view-employees')
+    ),
 })
 
 const ownerEmployeeFootstepsRoute = createRoute({
     getParentRoute: () => ownerRoute,
     path: 'users/employees/employee-footsteps',
-    component: lazyRouteComponent(() => import('./pages/employees/employee-footsteps')),
+    component: lazyRouteComponent(
+        () => import('./pages/employees/employee-footsteps')
+    ),
 })
 
 const ownerRolesManagementRoute = createRoute({

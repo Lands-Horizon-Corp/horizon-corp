@@ -7,9 +7,9 @@ type Templates = 'otp' | 'verification' | 'changePassword'
 
 // Precompile the Handlebars templates
 const TEMPLATE_MAP: Record<Templates, string> = {
-  otp: otpVerificationRaw,
-  verification: accountVerificationRaw,
-  changePassword: accountChangepasswordRaw,
+    otp: otpVerificationRaw,
+    verification: accountVerificationRaw,
+    changePassword: accountChangepasswordRaw,
 }
 
 /**
@@ -19,17 +19,15 @@ const TEMPLATE_MAP: Record<Templates, string> = {
  * @returns The generated email content as a string.
  * @throws Will throw an error if the template type is invalid or generation fails.
  */
-export const getEmailContent = (
-  template: Templates,
-): string => {
-  const compiledTemplate = TEMPLATE_MAP[template]
-  if (!compiledTemplate) {
-    throw new Error(`"${template}" is not a valid template type.`)
-  }
-  try {
-    return compiledTemplate
-  } catch (error) {
-    console.error('Error generating email content:', error)
-    throw new Error('Failed to generate email content.')
-  }
+export const getEmailContent = (template: Templates): string => {
+    const compiledTemplate = TEMPLATE_MAP[template]
+    if (!compiledTemplate) {
+        throw new Error(`"${template}" is not a valid template type.`)
+    }
+    try {
+        return compiledTemplate
+    } catch (error) {
+        console.error('Error generating email content:', error)
+        throw new Error('Failed to generate email content.')
+    }
 }
