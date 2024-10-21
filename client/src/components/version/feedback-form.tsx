@@ -11,7 +11,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { Textarea } from '../ui/textarea'
 import {
     Form,
     FormControl,
@@ -24,6 +23,7 @@ import { Input } from '../ui/input'
 import { FeedbackFormSchema } from './validations'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 import { UpdateStatus } from '@/types/constants'
+import TextEditor from '../text-editor'
 
 type TFeedBack = z.infer<typeof FeedbackFormSchema>
 
@@ -76,7 +76,7 @@ const FeedbackForm = () => {
                                         >
                                             <SelectTrigger
                                                 className={cn(
-                                                    'rounded-[10px] bg-transparent placeholder:text-[#838383]'
+                                                    'max-w-80 rounded-[10px] bg-transparent placeholder:text-[#838383]'
                                                 )}
                                                 id={field.name}
                                             >
@@ -111,7 +111,7 @@ const FeedbackForm = () => {
                         name="description"
                         control={feedbackForm.control}
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="h-[24px] w-full text-[14px]"
@@ -119,14 +119,10 @@ const FeedbackForm = () => {
                                     Description
                                 </FormLabel>
                                 <FormControl>
-                                    <Textarea
-                                        {...field}
-                                        id={field.name}
-                                        placeholder="Leave us some feedback..."
-                                        className={cn(
-                                            'max-h-40 rounded-[10px] bg-transparent placeholder:text-[#838383]'
-                                        )}
-                                    />
+                                    <TextEditor
+                                        content={''}
+                                        onChange={field.onChange}
+                                    ></TextEditor>
                                 </FormControl>
                             </FormItem>
                         )}
@@ -135,7 +131,7 @@ const FeedbackForm = () => {
                         name="email"
                         control={feedbackForm.control}
                         render={({ field }) => (
-                            <FormItem className="">
+                            <FormItem className="max-w-80">
                                 <div className="flex flex-col justify-start">
                                     <FormLabel
                                         htmlFor={field.name}
@@ -161,10 +157,12 @@ const FeedbackForm = () => {
                         )}
                     />
                     <FormErrorMessage
-                        className="text-[12px]"
+                        className="w-fit text-[12px]"
                         errorMessage={showFieldError}
                     />
-                    <Button className={cn('w-full')}>send</Button>
+                    <Button variant={'secondary'} className={cn('w-full')}>
+                        send
+                    </Button>
                 </form>
             </Form>
         </div>
