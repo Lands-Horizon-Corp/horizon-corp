@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"horizon/server/config"
 	"horizon/server/database"
+	"net/http"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"go.uber.org/zap"
 )
@@ -21,6 +23,7 @@ type TokenService interface {
 	VerifyToken(tokenString string) (*UserClaims, error)
 	StoreToken(tokenString string, userId uint) error
 	DeleteToken(tokenString string) error
+	ClearTokenCookie(ctx *gin.Context)
 }
 
 type tokenService struct {
@@ -91,4 +94,17 @@ func (s *tokenService) DeleteToken(tokenString string) error {
 	}
 	s.logger.Info("Token deleted successfully from Redis", zap.String("token", tokenString))
 	return nil
+}
+
+func (s *tokenService) ClearTokenCookie(ctx *gin.Context) {
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:     ctx.Request.Header.Get("App-Token-Name"),
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		Expires:  time.Unix(0, 0),
+		MaxAge:   -1,
+		SameSite: http.SameSiteNoneMode,
+	})
 }
