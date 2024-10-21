@@ -97,7 +97,7 @@ importers:
         version: 2.1.1
       date-fns:
         specifier: ^3.0.0
-        version: 3.0.0
+        version: 3.6.0
       handlebars:
         specifier: 4.7.8
         version: 4.7.8
@@ -115,7 +115,7 @@ importers:
         version: 18.3.1
       react-day-picker:
         specifier: 8.10.1
-        version: 8.10.1(date-fns@3.0.0)(react@18.3.1)
+        version: 8.10.1(date-fns@3.6.0)(react@18.3.1)
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
@@ -1842,8 +1842,8 @@ packages:
   csstype@3.1.3:
     resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
-  date-fns@3.0.0:
-    resolution: {integrity: sha512-xjDz3rNN9jp+Lh3P/4MeY4E5HkaRnEnrJCcrdRZnKdn42gJlIe6hwrrwVXePRwVR2kh1UcMnz00erYBnHF8PFA==}
+  date-fns@3.6.0:
+    resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
 
   debug@4.3.7:
     resolution: {integrity: sha512-Er2nc/H7RrMXZBFCEim6TCmMk02Z8vLC2Rbi1KEBggpo0fS6l0S1nnapwmIi3yW/+GOJap1Krg4w0Hg80oCqgQ==}
@@ -4761,7 +4761,7 @@ snapshots:
 
   csstype@3.1.3: {}
 
-  date-fns@3.0.0: {}
+  date-fns@3.6.0: {}
 
   debug@4.3.7:
     dependencies:
@@ -5432,9 +5432,9 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
-  react-day-picker@8.10.1(date-fns@3.0.0)(react@18.3.1):
+  react-day-picker@8.10.1(date-fns@3.6.0)(react@18.3.1):
     dependencies:
-      date-fns: 3.0.0
+      date-fns: 3.6.0
       react: 18.3.1
 
   react-dom@18.3.1(react@18.3.1):
