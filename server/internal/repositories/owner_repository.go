@@ -21,14 +21,14 @@ func (r *OwnerRepository) Create(owner *models.Owner) error {
 }
 
 func (r *OwnerRepository) GetAll() ([]models.Owner, error) {
-	var owner []models.Owner
-	err := r.DB.Find(&owner).Error
-	return owner, handleDBError(err)
+	var owners []models.Owner
+	err := r.DB.Preload("Media").Find(&owners).Error
+	return owners, handleDBError(err)
 }
 
 func (r *OwnerRepository) GetByID(id uint) (models.Owner, error) {
 	var owner models.Owner
-	err := r.DB.First(&owner, id).Error
+	err := r.DB.Preload("Media").First(&owner, id).Error
 	return owner, handleDBError(err)
 }
 
@@ -53,13 +53,13 @@ func (r *OwnerRepository) FindByEmailUsernameOrContact(input string) (models.Own
 	isPhone, _ := regexp.MatchString(phoneRegex, input)
 
 	if isEmail {
-		err := r.DB.Where("email = ?", input).First(&owner).Error
+		err := r.DB.Preload("Media").Where("email = ?", input).First(&owner).Error
 		return owner, handleDBError(err)
 	} else if isPhone {
-		err := r.DB.Where("contact_number = ?", input).First(&owner).Error
+		err := r.DB.Preload("Media").Where("contact_number = ?", input).First(&owner).Error
 		return owner, handleDBError(err)
 	} else {
-		err := r.DB.Where("username = ?", input).First(&owner).Error
+		err := r.DB.Preload("Media").Where("username = ?", input).First(&owner).Error
 		return owner, handleDBError(err)
 	}
 }
@@ -69,7 +69,7 @@ func (r *OwnerRepository) UpdateColumns(id uint, columns map[string]interface{})
 	if err := r.DB.Model(&owner).Where("id = ?", id).Updates(columns).Error; err != nil {
 		return owner, handleDBError(err)
 	}
-	if err := r.DB.First(&owner, id).Error; err != nil {
+	if err := r.DB.Preload("Media").First(&owner, id).Error; err != nil {
 		return owner, handleDBError(err)
 	}
 	return owner, nil

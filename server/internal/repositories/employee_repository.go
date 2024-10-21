@@ -21,20 +21,25 @@ func (r *EmployeeRepository) Create(employee *models.Employee) error {
 }
 
 func (r *EmployeeRepository) GetAll() ([]models.Employee, error) {
-	var employee []models.Employee
-	err := r.DB.Find(&employee).Error
-	return employee, handleDBError(err)
+	var employees []models.Employee
+	err := r.DB.Preload("Media").Find(&employees).Error
+	return employees, handleDBError(err)
 }
 
 func (r *EmployeeRepository) GetByID(id uint) (models.Employee, error) {
 	var employee models.Employee
-	err := r.DB.First(&employee, id).Error
+	err := r.DB.Preload("Media").First(&employee, id).Error
 	return employee, handleDBError(err)
 }
 
 func (r *EmployeeRepository) Update(id uint, employee *models.Employee) error {
 	employee.ID = id
 	err := r.DB.Save(employee).Error
+	return handleDBError(err)
+}
+
+func (r *EmployeeRepository) Delete(id uint) error {
+	err := r.DB.Delete(&models.Member{}, id).Error
 	return handleDBError(err)
 }
 
@@ -48,13 +53,13 @@ func (r *EmployeeRepository) FindByEmailUsernameOrContact(input string) (models.
 	isPhone, _ := regexp.MatchString(phoneRegex, input)
 
 	if isEmail {
-		err := r.DB.Where("email = ?", input).First(&employee).Error
+		err := r.DB.Preload("Media").Where("email = ?", input).First(&employee).Error
 		return employee, handleDBError(err)
 	} else if isPhone {
-		err := r.DB.Where("contact_number = ?", input).First(&employee).Error
+		err := r.DB.Preload("Media").Where("contact_number = ?", input).First(&employee).Error
 		return employee, handleDBError(err)
 	} else {
-		err := r.DB.Where("username = ?", input).First(&employee).Error
+		err := r.DB.Preload("Media").Where("username = ?", input).First(&employee).Error
 		return employee, handleDBError(err)
 	}
 }
@@ -64,7 +69,7 @@ func (r *EmployeeRepository) UpdateColumns(id uint, columns map[string]interface
 	if err := r.DB.Model(&employee).Where("id = ?", id).Updates(columns).Error; err != nil {
 		return employee, handleDBError(err)
 	}
-	if err := r.DB.First(&employee, id).Error; err != nil {
+	if err := r.DB.Preload("Media").First(&employee, id).Error; err != nil {
 		return employee, handleDBError(err)
 	}
 	return employee, nil

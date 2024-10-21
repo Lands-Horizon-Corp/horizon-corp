@@ -1,15 +1,27 @@
 package models
 
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
+
 type User struct {
-	AccountType       string `json:"accountType"`
-	ID                uint   `json:"id"`
-	Email             string `json:"email"`
-	ContactNumber     string `json:"contactNumbeår"`
-	FirstName         string `json:"firstName"`
-	LastName          string `json:"lastName"`
-	MiddleName        string `json:"middleName"`
-	IsEmailVerified   bool   `json:"isEmailVerified"`
-	IsContactVerified bool   `json:"isContactVerified"`
-	Status            string `json:"status"`
-	Media             *Media `json:"media"`
+	gorm.Model
+	AccountType       string    `json:"accountType"`
+	FirstName         string    `json:"first_name"`
+	LastName          string    `json:"last_name"`
+	MiddleName        string    `json:"middle_name"`
+	PermanentAddress  string    `json:"permanent_address"`
+	Description       string    `json:"description"`
+	Birthdate         time.Time `json:"birthdate"`
+	Username          string    `json:"username"`
+	Email             string    `json:"email"`
+	Password          string    `json:"password"`
+	MediaID           *uint     `json:"media_id"`
+	IsEmailVerified   bool      `json:"is_email_verified"`
+	IsContactVerified bool      `json:"is_contact_verified"`
+	ContactNumber     string    `json:"contact_number"`
+	Media             Media     `json:"media"`
+	Status            string    `json:"status"`
 }
