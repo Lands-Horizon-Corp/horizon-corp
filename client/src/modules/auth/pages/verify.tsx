@@ -1,6 +1,7 @@
 import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
+import { useMutation } from '@tanstack/react-query'
 
 import VerifyRoot from '@/modules/auth/components/verify-root'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
@@ -12,39 +13,41 @@ import useCurrentUser from '@/hooks/use-current-user'
 import { serverRequestErrExtractor } from '@/helpers'
 import { getUsersAccountTypeRedirectPage } from './helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
-import useLoadingErrorState from '@/hooks/use-loading-error-state'
 
 const Verify = () => {
     const router = useRouter()
-    const { loading, setLoading } = useLoadingErrorState()
-    const { currentUser, setCurrentUser, authState } = useCurrentUser({
+    const {
+        data: currentUser,
+        isFetching,
+        setCurrentUser,
+    } = useCurrentUser({
         loadOnMount: true,
+    })
+
+    const { mutate: onBackSignOut, isPending } = useMutation<void, string>({
+        mutationKey: ['sign-out'],
+        mutationFn: async () => {
+            const [error] = await withCatchAsync(UserService.SignOut())
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                throw errorMessage
+            }
+
+            router.navigate({ to: '/auth' })
+
+            setCurrentUser(null)
+            return
+        },
     })
 
     const [display, setDisplay] = useState<null | 'verify' | 'account-status'>(
         null
     )
 
-    const handleBackSignOut = async () => {
-        if (loading || authState === 'Loading') return
-
-        setLoading(true)
-
-        const [error] = await withCatchAsync(UserService.SignOut())
-
-        setLoading(false)
-
-        if (error) {
-            const errorMessage = serverRequestErrExtractor({ error })
-            toast.error(errorMessage)
-        }
-
-        router.navigate({ to: '/auth' })
-        setCurrentUser(null)
-    }
-
     useEffect(() => {
-        if (!currentUser) return
+        if (!currentUser || isFetching) return
         else if (currentUser.status === 'Verified') {
             const redirectUrl = getUsersAccountTypeRedirectPage(currentUser)
             router.navigate({ to: redirectUrl })
@@ -56,20 +59,20 @@ const Verify = () => {
         } else {
             setDisplay('account-status')
         }
-    }, [currentUser])
+    }, [currentUser, isFetching, router])
 
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {authState === 'Loading' && (
+                {isFetching && (
                     <div className="flex flex-col items-center gap-y-2">
-                        <LoadingSpinner />
+                        <LoadingSpinner className="block" />
                         <p className="text-center text-sm text-foreground/50">
                             loading user info
                         </p>
                     </div>
                 )}
-                {currentUser && authState === 'Authenticated' && (
+                {currentUser && !isFetching && (
                     <>
                         {display === 'verify' && (
                             <VerifyRoot
@@ -85,14 +88,14 @@ const Verify = () => {
                         )}
                         {display === 'account-status' && (
                             <ShowAccountStatus
-                                loading={loading}
-                                onBackSignOut={handleBackSignOut}
+                                loading={isFetching || isPending}
+                                onBackSignOut={onBackSignOut}
                                 userData={currentUser}
                             />
                         )}
                     </>
                 )}
-                {!currentUser && authState === 'UnAuthenticated' && (
+                {!currentUser && !isFetching && (
                     <p>Couldn&apos;t load your info, please please try again</p>
                 )}
             </AuthPageWrapper>

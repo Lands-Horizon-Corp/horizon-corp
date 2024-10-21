@@ -1,11 +1,10 @@
-// dependencies
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { Link } from '@tanstack/react-router'
+import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-// components
 import {
     Select,
     SelectContent,
@@ -27,16 +26,14 @@ import PasswordInput from '@/components/ui/password-input'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
-// functions/hooks
 import { cn, withCatchAsync } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
-import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
 
-// types/interfaces
 import { IBaseCompNoChild } from '@/types/component'
 import { IAuthForm } from '@/types/auth/form-interface'
+import { SignInRequest, UserData } from '@/horizon-corp/types'
 
 type TSignIn = z.infer<typeof signInFormSchema>
 
@@ -49,7 +46,28 @@ const SignInForm = ({
     onSuccess,
     onError,
 }: Props) => {
-    const { loading, error, setError, setLoading } = useLoadingErrorState()
+    const { mutate, error, isPending } = useMutation<
+        UserData,
+        string,
+        SignInRequest
+    >({
+        mutationKey: ['sign-in-user'],
+        mutationFn: async (signInCredentials) => {
+            const [error, response] = await withCatchAsync(
+                UserService.SignIn(signInCredentials)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(error)
+                throw errorMessage
+            }
+
+            onSuccess?.(response.data)
+            return response.data
+        },
+    })
 
     const form = useForm<TSignIn>({
         resolver: zodResolver(signInFormSchema),
@@ -62,31 +80,12 @@ const SignInForm = ({
         },
     })
 
-    const onFormSubmit = async (data: TSignIn) => {
-        setError(null)
-        setLoading(true)
-
-        const [error, response] = await withCatchAsync(UserService.SignIn(data))
-
-        setLoading(false)
-
-        if (error) {
-            const errorMessage = serverRequestErrExtractor({ error })
-            onError?.(error)
-            setError(errorMessage)
-            toast.error(errorMessage)
-            return
-        }
-
-        onSuccess?.(response.data)
-    }
-
     const firstError = Object.values(form.formState.errors)[0]?.message
 
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit(onFormSubmit)}
+                onSubmit={form.handleSubmit((data) => mutate(data))}
                 className={cn(
                     'flex w-full flex-col gap-y-4 sm:w-[390px]',
                     className
@@ -97,7 +96,10 @@ const SignInForm = ({
                     <p className="text-xl">Login to your account</p>
                 </div>
 
-                <fieldset disabled={loading || readOnly} className="space-y-4">
+                <fieldset
+                    disabled={isPending || readOnly}
+                    className="space-y-4"
+                >
                     <FormField
                         control={form.control}
                         name="key"
@@ -190,13 +192,14 @@ const SignInForm = ({
                 </fieldset>
                 <div className="mt-6 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError || error} />
-                    <Button type="submit" disabled={loading || readOnly}>
-                        {loading ? <LoadingSpinner /> : 'Login'}
+                    <Button type="submit" disabled={isPending || readOnly}>
+                        {isPending ? <LoadingSpinner /> : 'Login'}
                     </Button>
                     <Link
                         className="text-sm text-primary"
                         to="/auth/forgot-password"
                         search={{
+                            key: form.getValues('key'),
                             accountType: form.getValues('accountType'),
                         }}
                     >

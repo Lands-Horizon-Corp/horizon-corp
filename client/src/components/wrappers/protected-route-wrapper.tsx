@@ -1,4 +1,4 @@
-import { useRouter } from '@tanstack/react-router'
+import { Navigate, useRouter } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
@@ -8,24 +8,26 @@ import { IBaseComp, TAccountType, TPageType } from '@/types'
 
 interface Props extends IBaseComp {
     pageType?: TPageType
-    allowedAccountTypes: TAccountType[]
+    allowedAccountTypes?: TAccountType[]
 }
 
 const ProtectedRouteWrapper = ({
     children,
+    allowedAccountTypes = [],
     pageType = 'AUTHENTICATED',
-    allowedAccountTypes,
 }: Props) => {
     const router = useRouter()
-    const { currentUser, authState } = useCurrentUser({ loadOnMount: true })
+    const { data : currentUser, isFetching } = useCurrentUser({ loadOnMount : false })
 
     if (pageType === 'AUTHENTICATED') {
-        if (authState === 'Loading')
+        if (isFetching)
             return (
                 <div className="relative flex h-screen w-full items-center justify-center">
                     <LoadingSpinner />
                 </div>
             )
+
+        if (currentUser === null) return <Navigate to="/auth" />
 
         if (
             currentUser &&

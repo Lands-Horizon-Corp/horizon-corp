@@ -15,9 +15,7 @@ const authRoute = createRoute({
     component: lazyRouteComponent(() => import('./layout')),
     beforeLoad: ({ location }) => {
         if (location.pathname === '/auth' || location.pathname === '/auth/')
-            throw redirect({
-                to: '/auth/sign-in',
-            })
+            throw redirect({ to: '/auth/sign-in' })
     },
     notFoundComponent: lazyRouteComponent(
         () => import('@/modules/auth/not-found')

@@ -1,6 +1,7 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
@@ -20,9 +21,9 @@ import { cn, withCatchAsync } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { PASSWORD_MIN_LENGTH } from '@/modules/auth/constants'
 import UserService from '@/horizon-corp/server/auth/UserService'
-import useLoadingErrorState from '@/hooks/use-loading-error-state'
 
 import { IAuthForm } from '@/types/auth/form-interface'
+import { ChangePasswordRequest } from '@/horizon-corp/types'
 
 const ResetPasswordFormSchema = z
     .object({
@@ -46,7 +47,7 @@ const ResetPasswordFormSchema = z
 
 type TResetPasswordForm = z.infer<typeof ResetPasswordFormSchema>
 
-interface Props extends IAuthForm<TResetPasswordForm> {
+interface Props extends IAuthForm<TResetPasswordForm, void> {
     resetId: string
 }
 
@@ -58,8 +59,6 @@ const ResetPasswordForm = ({
     onError,
     onSuccess,
 }: Props) => {
-    const { loading, setLoading, error, setError } = useLoadingErrorState()
-
     const form = useForm<TResetPasswordForm>({
         resolver: zodResolver(ResetPasswordFormSchema),
         reValidateMode: 'onChange',
@@ -67,32 +66,38 @@ const ResetPasswordForm = ({
         defaultValues,
     })
 
-    const onFormSubmit = async (data: TResetPasswordForm) => {
-        setLoading(true)
-        setError(null)
+    const {
+        mutate: changePassword,
+        isPending,
+        error,
+    } = useMutation<void | true, string, ChangePasswordRequest>({
+        mutationKey: ['change-password', resetId],
+        mutationFn: async (data) => {
+            const [error] = await withCatchAsync(
+                UserService.ChangePassword(data)
+            )
 
-        const [error] = await withCatchAsync(
-            UserService.ChangePassword({ ...data, resetId })
-        )
-        setLoading(false)
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
 
-        if (error) {
-            const errorMessage = serverRequestErrExtractor({ error })
-            onError?.(error)
-            setError(errorMessage)
-            toast.error(errorMessage)
-            return
-        }
+            onSuccess?.()
 
-        onSuccess?.(undefined)
-    }
+            return true
+        },
+    })
 
     const firstError = Object.values(form.formState.errors)[0]?.message
 
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit(onFormSubmit)}
+                onSubmit={form.handleSubmit((data) =>
+                    changePassword({ ...data, resetId })
+                )}
                 className={cn(
                     'flex w-full flex-col gap-y-4 sm:w-[390px]',
                     className
@@ -110,7 +115,10 @@ const ResetPasswordForm = ({
                         strong password.
                     </p>
                 </div>
-                <fieldset disabled={loading || readOnly} className="space-y-4">
+                <fieldset
+                    disabled={isPending || readOnly}
+                    className="space-y-4"
+                >
                     <FormField
                         control={form.control}
                         name="newPassword"
@@ -159,8 +167,8 @@ const ResetPasswordForm = ({
 
                 <div className="mt-4 flex flex-col space-y-2">
                     <FormErrorMessage errorMessage={firstError || error} />
-                    <Button type="submit" disabled={loading || readOnly}>
-                        {loading ? <LoadingSpinner /> : 'Save Password'}
+                    <Button type="submit" disabled={isPending || readOnly}>
+                        {isPending ? <LoadingSpinner /> : 'Save Password'}
                     </Button>
                 </div>
             </form>
