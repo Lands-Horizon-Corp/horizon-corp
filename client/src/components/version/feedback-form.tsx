@@ -160,9 +160,7 @@ const FeedbackForm = () => {
                         className="w-fit text-[12px]"
                         errorMessage={showFieldError}
                     />
-                    <Button variant={'secondary'} className={cn('w-full')}>
-                        send
-                    </Button>
+                    <Button className={cn('w-full')}>send</Button>
                 </form>
             </Form>
         </div>
