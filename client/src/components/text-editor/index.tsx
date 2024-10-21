@@ -8,6 +8,8 @@ interface Props extends IBaseComp {
     content?: string
     spellCheck?: boolean
     showToolbar?: boolean
+    onChange: (content: string) => void
+    isHeadingDisabled?: boolean
 }
 
 export type THeadingLevel = 1 | 2 | 3 | 4
@@ -17,6 +19,8 @@ const TextEditor = ({
     className = '',
     spellCheck = true,
     showToolbar = true,
+    onChange,
+    isHeadingDisabled = true,
 }: Props) => {
     const [activeHeading, setActiveHeading] = useState<THeadingLevel | null>(
         null
@@ -38,17 +42,20 @@ const TextEditor = ({
                 class: `toolbar-custom ${className ?? ''} `,
             },
         },
+        onUpdate({ editor }) {
+            onChange(editor.getHTML())
+        },
     })
 
     const toggleHeading = (level: THeadingLevel) => {
         editor?.chain().focus().toggleHeading({ level }).run()
         setActiveHeading(level)
     }
-
     return (
-        <div className="w-fit">
+        <div className="w-full space-y-2">
             {showToolbar && editor && (
                 <Toolbar
+                    isHeadingDisabled={isHeadingDisabled}
                     activeHeading={activeHeading}
                     toggleHeading={toggleHeading}
                     editor={editor}

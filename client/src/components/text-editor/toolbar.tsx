@@ -1,3 +1,5 @@
+import { type Editor } from '@tiptap/react'
+
 import { Toggle } from '@/components/ui/toggle'
 import { Button } from '@/components/ui/button'
 
@@ -11,27 +13,30 @@ import {
     PiListBulletsBoldIcon,
     PiCodeBlockIcon,
     FaBoldIcon,
-    FaRulerHorizontalIcon,
     IoIosCodeIcon,
-    TbClearFormattingIcon,
-    BsTextParagraphIcon,
     TbBlockquoteIcon,
 } from '@/components/icons'
 
 import { THeadingLevel } from '.'
 
 type Props = {
-    editor: any
+    editor: Editor | null
     toggleHeading: (level: THeadingLevel) => void
     activeHeading: THeadingLevel | null
+    isHeadingDisabled?: boolean
 }
 
-const Toolbar = ({ editor, toggleHeading, activeHeading }: Props) => {
+const Toolbar = ({
+    editor,
+    toggleHeading,
+    activeHeading,
+    isHeadingDisabled = true,
+}: Props) => {
     if (!editor) {
         return null
     }
     return (
-        <div className="flex w-fit min-w-fit flex-wrap space-x-2 border">
+        <div className="flex w-full min-w-fit flex-wrap space-x-2">
             <Toggle
                 pressed={editor.isActive('italic')}
                 onClick={() => editor.chain().focus().toggleItalic().run()}
@@ -60,29 +65,23 @@ const Toolbar = ({ editor, toggleHeading, activeHeading }: Props) => {
             >
                 <IoIosCodeIcon className="size-4" />
             </Toggle>
-            <Toggle
-                onClick={() => editor.chain().focus().unsetAllMarks().run()}
-            >
-                <TbClearFormattingIcon className="size-4" />
-            </Toggle>
-            <Toggle
-                onClick={() => editor.chain().focus().setParagraph().run()}
-                className={editor.isActive('paragraph') ? 'is-active' : ''}
-            >
-                <BsTextParagraphIcon className="size-4" />
-            </Toggle>
-            {Array.from({ length: 4 }, (_, i) => {
-                const level = i + 1
-                return (
-                    <Toggle
-                        key={level}
-                        onClick={() => toggleHeading(level as THeadingLevel)}
-                        pressed={activeHeading === level && editor.isFocused}
-                    >
-                        {`H${level}`}
-                    </Toggle>
-                )
-            })}
+            {!isHeadingDisabled &&
+                Array.from({ length: 4 }, (_, i) => {
+                    const level = i + 1
+                    return (
+                        <Toggle
+                            key={level}
+                            onClick={() =>
+                                toggleHeading(level as THeadingLevel)
+                            }
+                            pressed={
+                                activeHeading === level && editor.isFocused
+                            }
+                        >
+                            {`H${level}`}
+                        </Toggle>
+                    )
+                })}
             <Toggle
                 pressed={editor.isActive('bulletList')}
                 onPressedChange={() =>
@@ -110,12 +109,6 @@ const Toolbar = ({ editor, toggleHeading, activeHeading }: Props) => {
                 className={editor.isActive('blockquote') ? 'is-active' : ''}
             >
                 <TbBlockquoteIcon className="size-4" />
-            </Button>
-            <Button
-                variant={'ghost'}
-                onClick={() => editor.chain().focus().setHorizontalRule().run()}
-            >
-                <FaRulerHorizontalIcon className="size-4" />
             </Button>
             <Button
                 variant={'ghost'}
