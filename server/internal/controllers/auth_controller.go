@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
 	"horizon/server/config"
@@ -49,47 +50,57 @@ func NewAuthController(
 	}
 }
 
+// respondWithError logs the error and sends a generic error message to the client.
+func (c *AuthController) respondWithError(ctx *gin.Context, statusCode int, logMessage string, clientMessage string) {
+	log.Println(logMessage)
+	ctx.JSON(statusCode, gin.H{"error": clientMessage})
+}
+
 // CurrentUser retrieves the current authenticated user.
 func (c *AuthController) CurrentUser(ctx *gin.Context) {
 	user, exists := ctx.Get("current-user")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication required. Please log in."})
+		c.respondWithError(ctx, http.StatusUnauthorized, "Current user not found in context", "Authentication required.")
 		return
 	}
 
 	currentUser, ok := user.(models.User)
 	if !ok {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to retrieve user details. Please try again later."})
+		c.respondWithError(ctx, http.StatusInternalServerError, "Failed to cast user to models.User", "Unable to retrieve user details.")
 		return
 	}
 
 	claims, exists := ctx.Get("claims")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "Claims not found in context", "User not authenticated.")
 		return
 	}
+
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user claims"})
+		c.respondWithError(ctx, http.StatusInternalServerError, "Failed to cast claims to *auth.UserClaims", "Failed to retrieve user claims.")
 		return
 	}
+
 	currentUser.AccountType = userClaims.AccountType
-	ctx.JSON(http.StatusOK, resources.ToResourceUser(currentUser, currentUser.AccountType))
+	response := resources.ToResourceUser(currentUser, currentUser.AccountType)
+	ctx.JSON(http.StatusOK, response)
 }
 
 // SignUp handles user registration.
 func (c *AuthController) SignUp(ctx *gin.Context) {
 	var req auth_requests.SignUpRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("SignUp: JSON binding error: %v", err), "Invalid request payload.")
 		return
 	}
+
 	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("SignUp: Validation error: %v", err), "Invalid input data.")
 		return
 	}
 
@@ -112,13 +123,13 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 
 	user, err := c.userRepo.Create(req.AccountType, userReq)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignUp: User repository create error: %v", err), "Failed to create user account.")
 		return
 	}
 
 	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignUp: Token generation error: %v", err), "Failed to process registration.")
 		return
 	}
 
@@ -129,7 +140,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		Body:    req.EmailTemplate,
 	}
 	if err := c.otpService.SendEmailOTP(req.AccountType, user.ID, emailReq); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email OTP. Please try again later"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignUp: Email OTP sending error: %v", err), "Failed to send verification email.")
 		return
 	}
 
@@ -142,7 +153,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		},
 	}
 	if err := c.contactService.SendSMS(contactReq); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send OTP to your number. Please try again"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignUp: SMS sending error: %v", err), "Failed to send verification SMS.")
 		return
 	}
 
@@ -165,28 +176,29 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 func (c *AuthController) SignIn(ctx *gin.Context) {
 	var req auth_requests.SignInRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("SignIn: JSON binding error: %v", err), "Invalid request payload.")
 		return
 	}
+
 	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("SignIn: Validation error: %v", err), "Invalid input data.")
 		return
 	}
 
 	user, err := c.userRepo.FindByEmailUsernameOrContact(req.AccountType, req.Key)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		c.respondWithError(ctx, http.StatusUnauthorized, fmt.Sprintf("SignIn: User not found: %v", err), "Invalid credentials.")
 		return
 	}
 
 	if !config.VerifyPassword(user.Password, req.Password) {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "SignIn: Password verification failed", "Invalid credentials.")
 		return
 	}
 
 	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignIn: Token generation error: %v", err), "Failed to authenticate user.")
 		return
 	}
 
@@ -201,7 +213,8 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 	})
 
 	// Respond with the authenticated user
-	ctx.JSON(http.StatusOK, resources.ToResourceUser(user, req.AccountType))
+	response := resources.ToResourceUser(user, req.AccountType)
+	ctx.JSON(http.StatusOK, response)
 }
 
 // SignOut handles user sign-out by clearing the auth token.
@@ -214,30 +227,32 @@ func (c *AuthController) SignOut(ctx *gin.Context) {
 func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 	var req auth_requests.ForgotPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ForgotPassword: JSON binding error: %v", err), "Invalid request payload.")
 		return
 	}
+
 	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ForgotPassword: Validation error: %v", err), "Invalid input data.")
 		return
 	}
 
 	user, err := c.userRepo.FindByEmailUsernameOrContact(req.AccountType, req.Key)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+		c.respondWithError(ctx, http.StatusUnauthorized, fmt.Sprintf("ForgotPassword: User not found: %v", err), "User not found.")
 		return
 	}
 
 	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate reset token"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ForgotPassword: Token generation error: %v", err), "Failed to process password reset.")
 		return
 	}
 
 	resetLink := fmt.Sprintf("%s/auth/password-reset?token=%s", c.cfg.AppClientUrl, token)
 	keyType := helpers.GetKeyType(req.Key)
 
-	if keyType == "contact" {
+	switch keyType {
+	case "contact":
 		contactReq := services.SMSRequest{
 			To:   user.ContactNumber,
 			Body: req.ContactTemplate,
@@ -247,11 +262,12 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 			},
 		}
 		if err := c.contactService.SendSMS(contactReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send OTP to your number. Please try again"})
+			c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ForgotPassword: SMS sending error: %v", err), "Failed to send password reset SMS.")
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "Password reset instructions have been sent via SMS"})
-	} else if keyType == "email" {
+		ctx.JSON(http.StatusOK, gin.H{"message": "Password reset instructions have been sent via SMS."})
+
+	case "email":
 		emailReq := services.EmailRequest{
 			To:      user.Email,
 			Subject: "ECOOP: Change Password Request",
@@ -262,12 +278,13 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 			},
 		}
 		if err := c.emailService.SendEmail(emailReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email OTP. Please try again"})
+			c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ForgotPassword: Email sending error: %v", err), "Failed to send password reset email.")
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "Password reset instructions have been sent via email"})
-	} else {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid key type"})
+		ctx.JSON(http.StatusOK, gin.H{"message": "Password reset instructions have been sent via email."})
+
+	default:
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ForgotPassword: Invalid key type: %s", keyType), "Invalid key type provided.")
 	}
 }
 
@@ -275,50 +292,52 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 func (c *AuthController) ChangePassword(ctx *gin.Context) {
 	var req auth_requests.ChangePasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangePassword: JSON binding error: %v", err), "Invalid request payload.")
 		return
 	}
+
 	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangePassword: Validation error: %v", err), "Invalid input data.")
 		return
 	}
 
 	claims, err := c.tokenService.VerifyToken(req.ResetID)
 	if err != nil {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired reset token"})
+		c.respondWithError(ctx, http.StatusUnauthorized, fmt.Sprintf("ChangePassword: Token verification error: %v", err), "Invalid or expired reset token.")
 		return
 	}
 
 	if err := c.userRepo.UpdatePassword(claims.AccountType, claims.ID, req.ConfirmPassword); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangePassword: Password update error: %v", err), "Failed to update password.")
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
 
 // SendEmailVerification sends an email verification OTP to the user.
 func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 	var req auth_requests.SendEmailVerificationRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request: " + err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("SendEmailVerification: JSON binding error: %v", err), "Invalid request payload.")
 		return
 	}
+
 	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation error: " + err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("SendEmailVerification: Validation error: %v", err), "Invalid input data.")
 		return
 	}
 
 	user, exists := ctx.Get("current-user")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "SendEmailVerification: Current user not found in context", "User not authenticated.")
 		return
 	}
 
 	currentUser, ok := user.(models.User)
 	if !ok {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user data"})
+		c.respondWithError(ctx, http.StatusInternalServerError, "SendEmailVerification: Failed to cast user to models.User", "Failed to retrieve user data.")
 		return
 	}
 
@@ -331,23 +350,23 @@ func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 	claims, exists := ctx.Get("claims")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "SendEmailVerification: Claims not found in context", "User not authenticated.")
 		return
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user claims"})
+		c.respondWithError(ctx, http.StatusInternalServerError, "SendEmailVerification: Failed to cast claims to *auth.UserClaims", "Failed to retrieve user claims.")
 		return
 	}
 
 	if err := c.otpService.SendEmailOTP(userClaims.AccountType, currentUser.ID, emailReq); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email OTP. Please try again later"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SendEmailVerification: Email OTP sending error: %v", err), "Failed to send email verification.")
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Check your inbox or spam folder"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Please check your inbox or spam folder."})
 }
 
 // VerifyEmail verifies the user's email using the provided OTP.
@@ -355,34 +374,35 @@ func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 	claims, exists := ctx.Get("claims")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "VerifyEmail: Claims not found in context", "User not authenticated.")
 		return
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+		c.respondWithError(ctx, http.StatusInternalServerError, "VerifyEmail: Failed to cast claims to *auth.UserClaims", "Failed to retrieve user details.")
 		return
 	}
 
 	var req auth_requests.VerifyEmailRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("VerifyEmail: JSON binding error: %v", err), "Invalid request payload.")
 		return
 	}
+
 	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("VerifyEmail: Validation error: %v", err), "Invalid input data.")
 		return
 	}
 
 	isValid, err := c.otpService.ValidateOTP(userClaims.AccountType, userClaims.ID, req.Otp, "email")
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("VerifyEmail: OTP validation error: %v", err), "Internal server error.")
 		return
 	}
 	if !isValid {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "VerifyEmail: Invalid or expired OTP", "Invalid or expired OTP.")
 		return
 	}
 
@@ -390,48 +410,50 @@ func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 		"is_email_verified": true,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user status"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("VerifyEmail: User update error: %v", err), "Failed to update user status.")
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resources.ToResourceUser(updatedUser, userClaims.AccountType))
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	ctx.JSON(http.StatusOK, response)
 }
 
 // SendContactNumberVerification sends an SMS verification OTP to the user's contact number.
 func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
 	var req auth_requests.SendContactNumberVerificationRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err), "Invalid request payload.")
 		return
 	}
+
 	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err), "Invalid input data.")
 		return
 	}
 
 	user, exists := ctx.Get("current-user")
 	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "SendContactNumberVerification: Current user not found in context", "User not authenticated.")
 		return
 	}
 
 	currentUser, ok := user.(models.User)
 	if !ok {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user data"})
+		c.respondWithError(ctx, http.StatusInternalServerError, "SendContactNumberVerification: Failed to cast user to models.User", "Failed to retrieve user data.")
 		return
 	}
 
 	claims, exists := ctx.Get("claims")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "SendContactNumberVerification: Claims not found in context", "User not authenticated.")
 		return
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user claims"})
+		c.respondWithError(ctx, http.StatusInternalServerError, "SendContactNumberVerification: Failed to cast claims to *auth.UserClaims", "Failed to retrieve user claims.")
 		return
 	}
 
@@ -444,11 +466,11 @@ func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
 	}
 
 	if err := c.otpService.SendEContactNumberOTP(userClaims.AccountType, userClaims.ID, contactReq); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send OTP to your number. Please try again"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SendContactNumberVerification: SMS sending error: %v", err), "Failed to send contact number verification OTP.")
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully."})
 }
 
 // VerifyContactNumber verifies the user's contact number using the provided OTP.
@@ -456,34 +478,35 @@ func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 	claims, exists := ctx.Get("claims")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "VerifyContactNumber: Claims not found in context", "User not authenticated.")
 		return
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
 		c.tokenService.ClearTokenCookie(ctx)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user details"})
+		c.respondWithError(ctx, http.StatusInternalServerError, "VerifyContactNumber: Failed to cast claims to *auth.UserClaims", "Failed to retrieve user details.")
 		return
 	}
 
 	var req auth_requests.VerifyContactNumberRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("VerifyContactNumber: JSON binding error: %v", err), "Invalid request payload.")
 		return
 	}
+
 	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("VerifyContactNumber: Validation error: %v", err), "Invalid input data.")
 		return
 	}
 
 	isValid, err := c.otpService.ValidateOTP(userClaims.AccountType, userClaims.ID, req.Otp, "sms")
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("VerifyContactNumber: OTP validation error: %v", err), "Internal server error.")
 		return
 	}
 	if !isValid {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
+		c.respondWithError(ctx, http.StatusUnauthorized, "VerifyContactNumber: Invalid or expired OTP", "Invalid or expired OTP.")
 		return
 	}
 
@@ -491,11 +514,12 @@ func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 		"is_contact_verified": true,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user status"})
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("VerifyContactNumber: User update error: %v", err), "Failed to update user status.")
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resources.ToResourceUser(updatedUser, userClaims.AccountType))
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	ctx.JSON(http.StatusOK, response)
 }
 
 // AuthRoutes sets up the authentication routes.
