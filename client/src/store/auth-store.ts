@@ -1,18 +1,25 @@
 import { create } from 'zustand'
 import { UserData } from '@/horizon-corp/types'
 
+type AuthState =
+    | 'Idle'
+    | 'Loading'
+    | 'Authenticated'
+    | 'UnAuthenticated'
+    | 'Error'
+
 interface IAuthStore {
-    loadingUser: boolean
+    authState: AuthState
     currentUser: UserData | null
     setCurrentUser: (user: UserData | null) => void
-    setLoadingUser: (loading: boolean) => void
+    setAuthState: (newAuthState: AuthState) => void
 }
 
 const useAuthStore = create<IAuthStore>((set) => ({
-    loadingUser: false,
+    authState: 'Idle',
     currentUser: null,
     setCurrentUser: (user) => set({ currentUser: user }),
-    setLoadingUser: (loading) => set({ loadingUser: loading }),
+    setAuthState: (newAuthState) => set({ authState: newAuthState }),
 }))
 
 export default useAuthStore

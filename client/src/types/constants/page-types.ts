@@ -1,1 +1,1 @@
-export type TPageType = "PUBLIC" | "AUTHENTICATED" 
+export type TPageType = 'PUBLIC' | 'AUTHENTICATED'

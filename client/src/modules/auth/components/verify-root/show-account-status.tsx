@@ -7,13 +7,12 @@ import { HELP_CONTACT } from '../../constants'
 import { UserData } from '@/horizon-corp/types'
 
 interface Props {
-    loading : boolean,
-    userData: UserData,
-    onBackSignOut : () => void
+    loading: boolean
+    userData: UserData
+    onBackSignOut: () => void
 }
 
 const ShowAccountStatus = ({ loading, userData, onBackSignOut }: Props) => {
-
     if (userData.status === 'Pending')
         return (
             <div className="flex max-w-sm flex-col items-center gap-y-4">

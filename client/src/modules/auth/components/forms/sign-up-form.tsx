@@ -54,15 +54,13 @@ const defaultValue: TSignUpForm = {
     accountType: 'Member',
 }
 
-interface Props extends IAuthForm<TSignUpForm> {}
-
 const SignUpForm = ({
     className,
     readOnly,
     defaultValues = defaultValue,
     onError,
     onSuccess,
-}: Props) => {
+}: IAuthForm<TSignUpForm>) => {
     const router = useRouter()
     const { setCurrentUser } = useCurrentUser({})
     const { loading, setLoading, error, setError } = useLoadingErrorState()

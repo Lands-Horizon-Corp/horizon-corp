@@ -1,6 +1,10 @@
 import z from 'zod'
 
-import { contactNumberSchema, emailSchema, userAccountTypeSchema } from './common'
+import {
+    contactNumberSchema,
+    emailSchema,
+    userAccountTypeSchema,
+} from './common'
 import { PASSWORD_MIN_LENGTH, LETTERS_REGEX } from '../constants'
 
 export const signUpFormSchema = z

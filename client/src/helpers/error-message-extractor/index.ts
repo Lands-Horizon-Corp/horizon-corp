@@ -52,7 +52,11 @@ export const allErrorMessageExtractor = ({
  * this function returns error message
  * @returns {string}
  */
-export const serverRequestErrExtractor = ({ error }: { error: unknown }): string => {
+export const serverRequestErrExtractor = ({
+    error,
+}: {
+    error: unknown
+}): string => {
     return extractErrorMessage({
         error,
         errorMessageExtractors: [axiosErrExtractor],

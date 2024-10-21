@@ -36,7 +36,7 @@ const RootNav = ({
         >
             <div
                 className={cn(
-                    'flex pointer-events-auto w-fit items-center justify-center',
+                    'pointer-events-auto flex w-fit items-center justify-center',
                     leftGroupClassName
                 )}
             >
