@@ -24,6 +24,7 @@ func ProvideAPI(
 	contactController *controllers.ContactsController,
 	feedbackController *controllers.FeedbackController,
 	mediaController *controllers.MediaController,
+	userController *controllers.UserController,
 
 	// Middleware
 	authMiddleware *middleware.AuthMiddleware,
@@ -69,6 +70,7 @@ func ProvideAPI(
 		controllers.ContactsRoutes(v1, contactController)
 		controllers.FeedbackRoutes(v1, feedbackController)
 		controllers.MediaRoutes(v1, mediaController)
+		controllers.UserRoutes(v1, authMiddleware, userController)
 	}
 	return router
 }

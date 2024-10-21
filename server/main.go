@@ -37,7 +37,6 @@ func main() {
 			services.NewOTPService,
 
 			// Authentication
-			auth.NewUserAuthService,
 			auth.NewAdminAuthService,
 			auth.NewEmployeeAuthService,
 			auth.NewMemberAuthService,
@@ -48,12 +47,16 @@ func main() {
 			middleware.NewAuthMiddleware,
 
 			// Authentication
-			repositories.NewUserRepository,
 			repositories.NewAdminRepository,
 			repositories.NewEmployeeRepository,
 			repositories.NewOwnerRepository,
 			repositories.NewMemberRepository,
 			controllers.NewAuthController,
+
+			// User
+			auth.NewUserAuthService,
+			repositories.NewUserRepository,
+			controllers.NewUserController,
 
 			// Roles
 			repositories.NewRolesRepository,
