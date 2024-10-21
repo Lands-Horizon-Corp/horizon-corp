@@ -6,7 +6,7 @@ import ProtectedRouteWrapper from '@/components/wrappers/protected-route-wrapper
 
 const OwnerLayout = () => {
     return (
-        <ProtectedRouteWrapper allowedAccountTypes={['Member']}>
+        <ProtectedRouteWrapper allowedAccountTypes={['Employee']}>
             <div className="grid min-h-[100dvh] grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
                 <EmployeeSidebar />
                 <main>

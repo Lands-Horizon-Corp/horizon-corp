@@ -17,27 +17,30 @@ const ProtectedRouteWrapper = ({
     pageType = 'AUTHENTICATED',
 }: Props) => {
     const router = useRouter()
-    const { data : currentUser, isFetching } = useCurrentUser({ loadOnMount : false })
+
+    const { data: currentUser, status } = useCurrentUser({})
 
     if (pageType === 'AUTHENTICATED') {
-        if (isFetching)
+        if (status === 'pending')
             return (
                 <div className="relative flex h-screen w-full items-center justify-center">
                     <LoadingSpinner />
                 </div>
             )
 
-        if (currentUser === null) return <Navigate to="/auth" />
+        if (!currentUser) return <Navigate to="/auth/sign-in" />
+
 
         if (
             currentUser &&
-            !allowedAccountTypes.includes(currentUser?.accountType)
+            !allowedAccountTypes.includes(currentUser?.accountType) ||
+            currentUser.status !== 'Verified'
         )
             return (
-                <div className="flex h-screen w-full flex-col items-center justify-center">
+                <div className="flex h-screen w-full flex-col items-center justify-center gap-y-4">
                     <p className="text-xl font-medium">Restricted</p>
                     <p className="text-foreground/80">
-                        Sorry but you&apos;r account type is restricted in
+                        Sorry but you&apos;r account type or account status is restricted in
                         accessing this page
                     </p>
                     <Button
