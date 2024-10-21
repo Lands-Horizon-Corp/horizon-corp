@@ -3,6 +3,7 @@ package auth
 import (
 	"horizon/server/config"
 	"horizon/server/internal/models"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -22,13 +23,13 @@ func NewAdminAuthService(
 	}
 }
 
-func (s *AdminAuthService) GenerateAdminToken(admin models.Admin) (string, error) {
+func (s *AdminAuthService) GenerateAdminToken(admin models.Admin, expiration time.Duration) (string, error) {
 	claims := &UserClaims{
 		ID:          admin.ID,
 		AccountType: "Admin",
 	}
 
-	token, err := s.tokenService.GenerateToken(claims)
+	token, err := s.tokenService.GenerateToken(claims, 0)
 	if err != nil {
 		s.logger.Error("Failed to generate admin token", zap.Error(err))
 		return "", err

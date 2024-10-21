@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"horizon/server/config"
 	"horizon/server/helpers"
@@ -127,7 +128,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType)
+	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType, 0)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignUp: Token generation error: %v", err), "Failed to process registration.")
 		return
@@ -196,7 +197,7 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 		return
 	}
 
-	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType)
+	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType, 0)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignIn: Token generation error: %v", err), "Failed to authenticate user.")
 		return
@@ -242,13 +243,13 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 		return
 	}
 
-	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType)
+	token, err := c.userAuthService.GenerateUserToken(user, req.AccountType, time.Minute*10)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ForgotPassword: Token generation error: %v", err), "Failed to process password reset.")
 		return
 	}
 
-	resetLink := fmt.Sprintf("%s/auth/password-reset?token=%s", c.cfg.AppClientUrl, token)
+	resetLink := fmt.Sprintf("%s/auth/password-reset/%s", c.cfg.AppClientUrl, token)
 	keyType := helpers.GetKeyType(req.Key)
 
 	switch keyType {
@@ -314,6 +315,18 @@ func (c *AuthController) ChangePassword(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
+}
+
+func (c *AuthController) VerifyResetLink(ctx *gin.Context) {
+	_, err := c.tokenService.VerifyToken(ctx.Param("id"))
+
+	if err != nil {
+		c.tokenService.ClearTokenCookie(ctx)
+		c.respondWithError(ctx, http.StatusUnauthorized, fmt.Sprintf("ChangePassword: Token verification error: %v", err), "Invalid or expired reset token.")
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Link verified successfully."})
 }
 
 // SendEmailVerification sends an email verification OTP to the user.
@@ -531,7 +544,7 @@ func AuthRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controll
 		authGroup.POST("/signin", controller.SignIn)
 		authGroup.POST("/forgot-password", controller.ForgotPassword)
 		authGroup.POST("/change-password", controller.ChangePassword)
-
+		authGroup.POST("/verify-reset-link/:id", controller.VerifyResetLink)
 		// Protected Routes
 		authGroup.Use(mw.Middleware())
 		{
