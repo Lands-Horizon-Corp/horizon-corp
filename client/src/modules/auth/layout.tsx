@@ -1,4 +1,5 @@
 import { Outlet } from '@tanstack/react-router'
+
 import AuthNavBar from '@/components/navbars/auth-nav'
 import AuthFooter from '@/components/footers/auth-footer'
 

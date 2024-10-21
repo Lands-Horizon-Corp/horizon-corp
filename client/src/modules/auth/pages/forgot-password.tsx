@@ -10,14 +10,14 @@ import ForgotPasswordEmail, {
     TForgotPasswordEmail,
 } from '@/modules/auth/components/forms/forgot-password-email'
 import FormErrorMessage from '../components/form-error-message'
-import ResetPasswordButton from '../components/resent-password-button'
+import ResendPasswordResetLinkButton from '../components/resend-password-reset-link-button'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { userAccountTypeSchema, emailSchema } from '../validations/common'
 
 export const ForgotPasswordPageSearchSchema = z.object({
-    email: z.string().optional().default('').or(emailSchema),
+    key: z.string().optional().default('').or(emailSchema),
     accountType: z
         .string()
         .optional()
@@ -26,9 +26,7 @@ export const ForgotPasswordPageSearchSchema = z.object({
         .catch('Member'),
 })
 
-interface Props {}
-
-const ForgotPasswordPage = (_props: Props) => {
+const ForgotPasswordPage = () => {
     const router = useRouter()
     const preFilledValues = useSearch({ from: '/auth/forgot-password' })
     const [sentTo, setSentTo] = useState<null | TForgotPasswordEmail>(null)
@@ -64,7 +62,7 @@ const ForgotPasswordPage = (_props: Props) => {
                         <p className="text-center text-sm text-foreground/80">
                             Didn&apos;t receive the email?
                         </p>
-                        <ResetPasswordButton
+                        <ResendPasswordResetLinkButton
                             duration={12}
                             interval={1000}
                             sentTo={sentTo}

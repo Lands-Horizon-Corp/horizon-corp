@@ -30,12 +30,12 @@ import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { userAccountTypeSchema } from '@/modules/auth/validations/common'
 
-const emailFormSchema = z.object({
+const forgotPasswordFormSchema = z.object({
     key: z.string().min(1, 'key is required'),
     accountType: userAccountTypeSchema,
 })
 
-export type TForgotPasswordEmail = z.infer<typeof emailFormSchema>
+export type TForgotPasswordEmail = z.infer<typeof forgotPasswordFormSchema>
 
 interface Props extends IAuthForm<TForgotPasswordEmail> {
     onSuccess: (responseData: TForgotPasswordEmail) => void
@@ -51,7 +51,7 @@ const ForgotPasswordEmail = ({
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TForgotPasswordEmail>({
-        resolver: zodResolver(emailFormSchema),
+        resolver: zodResolver(forgotPasswordFormSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
         defaultValues,

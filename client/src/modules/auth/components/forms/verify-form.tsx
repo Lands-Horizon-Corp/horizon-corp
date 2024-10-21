@@ -1,6 +1,5 @@
 import z from 'zod'
 import { toast } from 'sonner'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
@@ -24,13 +23,13 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import useCountDown from '@/modules/auth/hooks/use-count-down'
 import UserService from '@/horizon-corp/server/auth/UserService'
-import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { otpFormSchema } from '@/modules/auth/validations/otp-form'
 
 import { UserData } from '@/horizon-corp/types'
 import { IAuthForm } from '@/types/auth/form-interface'
+import { useMutation } from '@tanstack/react-query'
+import ResendVerifyContactButton from '../resend-verify-contact-button'
 
 type TVerifyForm = z.infer<typeof otpFormSchema>
 
@@ -48,70 +47,49 @@ const VerifyForm = ({
     onError,
     onSkip,
 }: Props) => {
-    const [resent, setResent] = useState(false)
-    const { loading, setLoading, error, setError } = useLoadingErrorState()
-
     const form = useForm({
         resolver: zodResolver(otpFormSchema),
         reValidateMode: 'onChange',
         defaultValues,
     })
 
-    const handleSubmit = async (data: TVerifyForm) => {
-        setError(null)
-        setLoading(true)
-        try {
-            if (verifyMode === 'email') {
-                const response = await UserService.VerifyEmail(data)
-                onSuccess?.(response.data)
-                toast.success('Email verified')
-            }
+    const {
+        mutate: handleVerify,
+        isPending,
+        error,
+    } = useMutation<UserData, string, TVerifyForm>({
+        mutationKey: ['verify', verifyMode],
+        mutationFn: async (data) => {
+            try {
+                if (verifyMode === 'email') {
+                    const response = await UserService.VerifyEmail(data)
+                    onSuccess?.(response.data)
+                    toast.success('Email verified')
+                    return response.data
+                }
 
-            if (verifyMode === 'mobile') {
-                const response = await UserService.VerifyContactNumber(data)
-                onSuccess?.(response.data)
-                toast.success('Contact verified')
-            }
-        } catch (error) {
-            const errorMessage = serverRequestErrExtractor({ error })
-            onError?.(error)
-            setError(errorMessage)
-            toast.error(errorMessage)
-        } finally {
-            setLoading(false)
-        }
-    }
+                if (verifyMode === 'mobile') {
+                    const response = await UserService.VerifyContactNumber(data)
+                    onSuccess?.(response.data)
+                    toast.success('Contact verified')
+                    return response.data
+                }
 
-    const handleSendOTPVerification = async () => {
-        setError(null)
-        setLoading(true)
-        try {
-            // send otp verification code to current logged in user's email
-            if (verifyMode === 'email') {
-                await UserService.SendEmailVerification()
-                setResent(true)
+                throw 'Unknown verify mode'
+            } catch (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                onError?.(error)
+                toast.error(errorMessage)
+                throw errorMessage
             }
-
-            // send otp verification code to current logged in user's contact number
-            if (verifyMode === 'mobile') {
-                await UserService.SendContactVerification()
-                setResent(true)
-            }
-        } catch (error) {
-            const errorMessage = serverRequestErrExtractor({ error })
-            onError?.(error)
-            setError(errorMessage)
-            toast.error(errorMessage)
-        } finally {
-            setLoading(false)
-        }
-    }
+        },
+    })
 
     return (
         <>
             <Form {...form}>
                 <form
-                    onSubmit={form.handleSubmit(handleSubmit)}
+                    onSubmit={form.handleSubmit((data) => handleVerify(data))}
                     className={cn(
                         'flex min-w-[380px] flex-col gap-y-4',
                         className
@@ -132,7 +110,7 @@ const VerifyForm = ({
                         </p>
                     </div>
                     <fieldset
-                        disabled={readOnly || loading}
+                        disabled={readOnly || isPending}
                         className="flex flex-col gap-y-4"
                     >
                         <FormField
@@ -145,8 +123,8 @@ const VerifyForm = ({
                                             autoFocus
                                             maxLength={6}
                                             onComplete={() =>
-                                                form.handleSubmit(
-                                                    handleSubmit
+                                                form.handleSubmit((data) =>
+                                                    handleVerify(data)
                                                 )()
                                             }
                                             pattern={
@@ -173,25 +151,7 @@ const VerifyForm = ({
                             )}
                         />
                         <FormErrorMessage errorMessage={error} />
-                        {!resent && !loading && (
-                            <p className="text-center text-sm opacity-85">
-                                Didn&apos;t receive the code?{' '}
-                                <span
-                                    onClick={handleSendOTPVerification}
-                                    className="cursor-pointer text-primary hover:underline"
-                                >
-                                    Resend Code
-                                </span>
-                            </p>
-                        )}
-                        {resent && !loading && (
-                            <ResendCountDown
-                                duration={5}
-                                trigger={resent}
-                                className="text-center text-sm opacity-85"
-                                onComplete={() => setResent(false)}
-                            />
-                        )}
+                        <ResendVerifyContactButton interval={1000} duration={20} verifyMode={verifyMode} />
                         <div className="flex flex-col gap-y-2">
                             {onSkip && (
                                 <Button
@@ -206,37 +166,13 @@ const VerifyForm = ({
                                 </Button>
                             )}
                             <Button type="submit">
-                                {loading ? <LoadingSpinner /> : 'Submit'}
+                                {isPending ? <LoadingSpinner /> : 'Submit'}
                             </Button>
                         </div>
                     </fieldset>
                 </form>
             </Form>
         </>
-    )
-}
-
-const ResendCountDown = ({
-    trigger,
-    duration,
-    className,
-    onComplete,
-}: {
-    trigger: boolean
-    duration: number
-    className?: string
-    onComplete: () => void
-}) => {
-    const countDown = useCountDown({
-        trigger,
-        duration,
-        onComplete,
-    })
-
-    return (
-        <p className={className}>
-            Please wait for {countDown}s to resend again
-        </p>
     )
 }
 

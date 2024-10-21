@@ -1,53 +1,43 @@
-import { useCallback, useEffect } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { withCatchAsync } from '@/lib'
-import useAuthStore from '@/store/auth-store'
 import { UserData } from '@/horizon-corp/types'
 import UserService from '@/horizon-corp/server/auth/UserService'
 
-const useCurrentUser = (opt?: { loadOnMount?: boolean }) => {
-    console.log('use current user hook')
-    const { currentUser, setCurrentUser, authState, setAuthState } =
-        useAuthStore()
+const useCurrentUser = ({
+    loadOnMount = false,
+    onError,
+    onSuccess,
+}: {
+    loadOnMount?: boolean
+    onError?: (error: unknown) => void
+    onSuccess?: (userData: UserData) => void
+}) => {
+    const queryClient = useQueryClient();
 
-    const fetchCurrentUser = useCallback(
-        async ({
-            shouldSetToLoading = false,
-            onError,
-            onSuccess,
-        }: {
-            shouldSetToLoading?: boolean
-            onError?: (error: unknown) => void
-            onSuccess?: (userData: UserData) => void
-        }) => {
-            if (!opt?.loadOnMount) return
+    const query = useQuery<UserData | null>({
+        queryKey: ['current-user'],
+        queryFn: async () => {
+            const [error, response] = await withCatchAsync(UserService.CurrentUser())
 
-            if (shouldSetToLoading) setAuthState('Loading')
-
-            const [error, response] = await withCatchAsync(
-                UserService.CurrentUser()
-            )
-
-            if (shouldSetToLoading) setAuthState('Authenticated')
-
-            if (error) {
-                setAuthState('Error')
-                setCurrentUser(null)
+            if(error){
                 onError?.(error)
-                return
+                throw error
             }
 
-            setCurrentUser(response.data)
             onSuccess?.(response.data)
+            return response.data
         },
-        [opt?.loadOnMount, setAuthState, setCurrentUser]
-    )
+        refetchOnMount: loadOnMount,
+        initialData: null,
+        retry : 2,
+    })
 
-    useEffect(() => {
-        fetchCurrentUser({ shouldSetToLoading: true })
-    }, [fetchCurrentUser])
+    const setCurrentUser = (newUserData: UserData | null) => {
+        queryClient.setQueryData<UserData | null>(['current-user'], newUserData)
+    }
 
-    return { currentUser, authState, fetchCurrentUser, setCurrentUser }
+    return { setCurrentUser, ...query }
 }
 
 export default useCurrentUser

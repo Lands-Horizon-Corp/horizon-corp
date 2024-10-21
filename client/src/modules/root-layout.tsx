@@ -6,6 +6,7 @@ import ConnectionProvider from '@/providers/connection-provider'
 import ConfirmModal from '@/components/modals/confirm-modal'
 
 const RootLayout = () => {
+
     return (
         <div className="relative">
             <Outlet />
