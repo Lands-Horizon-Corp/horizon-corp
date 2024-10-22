@@ -1,3 +1,4 @@
+import { toast } from 'sonner'
 import { Navigate, useRouter } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
@@ -6,7 +7,6 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { isUserUnverified } from '@/helpers'
 import useCurrentUser from '@/hooks/use-current-user'
 import { IBaseComp, TAccountType, TPageType } from '@/types'
-import { toast } from 'sonner'
 
 interface Props extends IBaseComp {
     pageType?: TPageType

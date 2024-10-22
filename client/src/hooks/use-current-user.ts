@@ -1,9 +1,9 @@
+import { AxiosError } from 'axios'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { withCatchAsync } from '@/lib'
 import { UserData } from '@/horizon-corp/types'
 import UserService from '@/horizon-corp/server/auth/UserService'
-import { AxiosError } from 'axios'
 
 const useCurrentUser = (options?: {
     onError?: (error: unknown) => void
