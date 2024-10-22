@@ -1,4 +1,3 @@
-// Dependencies
 import z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -8,11 +7,9 @@ import { IoCallOutline } from 'react-icons/io5'
 import { CgFacebook } from 'react-icons/cg'
 import { Link } from '@tanstack/react-router'
 
-// Libraries
 import { contactFormSchema } from '@/modules/landing/validations/contact-form'
 import { cn } from '@/lib/utils'
 
-// Components
 import {
     Form,
     FormControl,

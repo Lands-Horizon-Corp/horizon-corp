@@ -1,13 +1,10 @@
-// assets
 import home_image_1 from '@/assets/images/landing-page/home-image-1.webp'
 import bg_element_4 from '@/assets/images/landing-page/bg_element_4.webp'
 import bg_element_5 from '@/assets/images/landing-page/bg_element_5.webp'
 import home_image_2 from '@/assets/images/landing-page/home-image-2.webp'
 
-// Assets
 import { Button } from '@/components/ui/button'
 
-// Dependencies
 import { cn } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
 

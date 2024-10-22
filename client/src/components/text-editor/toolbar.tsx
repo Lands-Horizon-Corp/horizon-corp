@@ -3,7 +3,6 @@ import { type Editor } from '@tiptap/react'
 import { Toggle } from '@/components/ui/toggle'
 import { Button } from '@/components/ui/button'
 
-//icons
 import {
     ToolbarItalicIcon,
     LuListOrderedIcon,

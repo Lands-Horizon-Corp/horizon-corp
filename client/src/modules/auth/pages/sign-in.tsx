@@ -31,7 +31,12 @@ const SignInPage = () => {
 
     const onSignInSuccess = useCallback(
         (userData: UserData) => {
-            const { isContactVerified, isEmailVerified, IsSkipVerification, status } = userData
+            const {
+                isContactVerified,
+                isEmailVerified,
+                IsSkipVerification,
+                status,
+            } = userData
 
             queryClient.setQueryData(['current-user'], userData)
 
