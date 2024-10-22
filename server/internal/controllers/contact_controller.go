@@ -32,10 +32,11 @@ func (c *ContactsController) Create(ctx *gin.Context) {
 	}
 
 	contacts := models.Contact{
-		FirstName:   req.FirstName,
-		LastName:    req.LastName,
-		Email:       req.Email,
-		Description: req.Description,
+		FirstName:     req.FirstName,
+		LastName:      req.LastName,
+		Email:         req.Email,
+		Description:   req.Description,
+		ContactNumber: req.ContactNumber,
 	}
 
 	if err := c.repo.Create(&contacts); err != nil {
@@ -88,10 +89,11 @@ func (c *ContactsController) Update(ctx *gin.Context) {
 	}
 
 	contacts := models.Contact{
-		FirstName:   req.FirstName,
-		LastName:    req.LastName,
-		Email:       req.Email,
-		Description: req.Description,
+		FirstName:     req.FirstName,
+		LastName:      req.LastName,
+		Email:         req.Email,
+		Description:   req.Description,
+		ContactNumber: req.ContactNumber,
 	}
 
 	if err := c.repo.Update(id, &contacts); err != nil {

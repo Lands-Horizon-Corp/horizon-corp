@@ -1,10 +1,13 @@
 CREATE TABLE IF NOT EXISTS `genders` (
-    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+   `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY (`id`),
+    
     `created_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
     `deleted_at` DATETIME(3) DEFAULT NULL,
     `name` VARCHAR(255) NOT NULL UNIQUE,
     `description` TEXT
+    INDEX `idx_gender_deleted_at` (`deleted_at`),
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `genders` (`name`, `description`)
