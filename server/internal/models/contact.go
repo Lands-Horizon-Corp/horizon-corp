@@ -8,5 +8,5 @@ type Contact struct {
 	LastName      string `json:"last_name" gorm:"unique;not null"`
 	Email         string `json:"email" gorm:"unique;not null"`
 	Description   string `json:"description,omitempty"`
-	ContactNumber string `json:"contac_number,omitempty"`
+	ContactNumber string `json:"contact_number,omitempty"`
 }
