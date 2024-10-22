@@ -600,6 +600,23 @@ func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+func (c *AuthController) SkipVerification(ctx *gin.Context) {
+	userClaims, err := c.getUserClaims(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
+		return
+	}
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.AccountType, userClaims.ID, map[string]interface{}{
+		"is_skip_verification": false,
+	})
+	if err != nil {
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeContactNumber: User update error: %v", err), "Failed to update contact number.")
+		return
+	}
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	ctx.JSON(http.StatusOK, response)
+}
+
 // AuthRoutes sets up the authentication routes.
 func AuthRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controller *AuthController) {
 	authGroup := router.Group("/auth")
@@ -615,6 +632,8 @@ func AuthRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controll
 		{
 			authGroup.GET("/current-user", controller.CurrentUser)
 			authGroup.POST("/signout", controller.SignOut)
+
+			authGroup.POST("/skip-verification", controller.SkipVerification)
 
 			authGroup.POST("/send-email-verification", controller.SendEmailVerification)
 			authGroup.POST("/verify-email", controller.VerifyEmail)
