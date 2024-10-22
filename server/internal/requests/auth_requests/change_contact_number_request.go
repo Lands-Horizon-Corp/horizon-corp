@@ -5,7 +5,8 @@ import (
 )
 
 type ChangeContactNumberRequest struct {
-	ContactNumber string `json:"contactNumber" validate:"required,min=8,max=255"`
+	ContactNumber   string `json:"contactNumber" validate:"required,min=8,max=255"`
+	ContactTemplate string `json:"contactTemplate" validate:"required"`
 }
 
 func (r *ChangeContactNumberRequest) Validate() error {

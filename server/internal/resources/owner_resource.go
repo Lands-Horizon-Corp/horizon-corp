@@ -6,23 +6,24 @@ import (
 )
 
 type OwnerResource struct {
-	AccountType       string             `json:"accountType"`
-	ID                uint               `json:"id"`
-	FirstName         string             `json:"firstName"`
-	LastName          string             `json:"lastName"`
-	MiddleName        string             `json:"middleName"`
-	PermanentAddress  string             `json:"permanentAddress"`
-	Description       string             `json:"description"`
-	Birthdate         time.Time          `json:"birthdate"`
-	Username          string             `json:"username"`
-	Email             string             `json:"email"`
-	IsEmailVerified   bool               `json:"isEmailVerified"`
-	IsContactVerified bool               `json:"isContactVerified"`
-	ContactNumber     string             `json:"contactNumber"`
-	Media             *MediaResource     `json:"media,omitempty"`
-	Status            models.OwnerStatus `json:"status"`
-	CreatedAt         string             `json:"createdAt"`
-	UpdatedAt         string             `json:"updatedAt"`
+	AccountType        string             `json:"accountType"`
+	ID                 uint               `json:"id"`
+	FirstName          string             `json:"firstName"`
+	LastName           string             `json:"lastName"`
+	MiddleName         string             `json:"middleName"`
+	PermanentAddress   string             `json:"permanentAddress"`
+	Description        string             `json:"description"`
+	Birthdate          time.Time          `json:"birthdate"`
+	Username           string             `json:"username"`
+	Email              string             `json:"email"`
+	IsEmailVerified    bool               `json:"isEmailVerified"`
+	IsContactVerified  bool               `json:"isContactVerified"`
+	IsSkipVerification bool               `json:"isSkipVerification"`
+	ContactNumber      string             `json:"contactNumber"`
+	Media              *MediaResource     `json:"media,omitempty"`
+	Status             models.OwnerStatus `json:"status"`
+	CreatedAt          string             `json:"createdAt"`
+	UpdatedAt          string             `json:"updatedAt"`
 }
 
 func ToResourceOwner(owner models.Owner) OwnerResource {
@@ -34,23 +35,24 @@ func ToResourceOwner(owner models.Owner) OwnerResource {
 	}
 
 	return OwnerResource{
-		AccountType:       "Owner",
-		ID:                owner.ID,
-		FirstName:         owner.FirstName,
-		LastName:          owner.LastName,
-		MiddleName:        owner.MiddleName,
-		PermanentAddress:  owner.PermanentAddress,
-		Description:       owner.Description,
-		Birthdate:         owner.Birthdate,
-		Username:          owner.Username,
-		Email:             owner.Email,
-		IsEmailVerified:   owner.IsEmailVerified,
-		IsContactVerified: owner.IsContactVerified,
-		ContactNumber:     owner.ContactNumber,
-		Media:             mediaResource, // Set the media resource if exists
-		Status:            owner.Status,
-		CreatedAt:         owner.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:         owner.UpdatedAt.Format(time.RFC3339),
+		AccountType:        "Owner",
+		ID:                 owner.ID,
+		FirstName:          owner.FirstName,
+		LastName:           owner.LastName,
+		MiddleName:         owner.MiddleName,
+		PermanentAddress:   owner.PermanentAddress,
+		Description:        owner.Description,
+		Birthdate:          owner.Birthdate,
+		Username:           owner.Username,
+		Email:              owner.Email,
+		IsEmailVerified:    owner.IsEmailVerified,
+		IsContactVerified:  owner.IsContactVerified,
+		IsSkipVerification: owner.IsSkipVerification,
+		ContactNumber:      owner.ContactNumber,
+		Media:              mediaResource, // Set the media resource if exists
+		Status:             owner.Status,
+		CreatedAt:          owner.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:          owner.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

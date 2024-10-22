@@ -1,3 +1,5 @@
+import { useRouter } from '@tanstack/react-router'
+
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import { WarningCircleIcon } from '@/components/icons'
@@ -5,6 +7,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { HELP_CONTACT } from '../../constants'
 import { UserData } from '@/horizon-corp/types'
+import { getUsersAccountTypeRedirectPage } from '@/helpers'
 
 interface Props {
     loading: boolean
@@ -13,6 +16,7 @@ interface Props {
 }
 
 const ShowAccountStatus = ({ loading, userData, onBackSignOut }: Props) => {
+    const router = useRouter()
     if (userData.status === 'Pending')
         return (
             <div className="flex max-w-sm flex-col items-center gap-y-4">
@@ -83,6 +87,39 @@ const ShowAccountStatus = ({ loading, userData, onBackSignOut }: Props) => {
                 </Button>
             </div>
         )
+
+    if (userData.status === 'Verified') {
+        return (
+            <div className="flex max-w-sm flex-col items-center gap-y-4">
+                <p className="text-xl font-medium text-primary">
+                    You are all set
+                </p>
+                <div className="relative my-8 rounded-full border-4 border-primary">
+                    <UserAvatar
+                        className="size-28"
+                        src={userData?.media?.downloadURL ?? ''}
+                        fallback={userData?.username?.charAt(0) ?? '-'}
+                    />
+                </div>
+                <p className="text-center text-foreground/80">
+                    Your account is verified, you can now proceed
+                </p>
+
+                <Button
+                    onClick={() => {
+                        const redirectUrl =
+                            getUsersAccountTypeRedirectPage(userData)
+                        router.navigate({ to: redirectUrl })
+                    }}
+                    className="w-full"
+                >
+                    Proceed
+                </Button>
+            </div>
+        )
+    }
+
+    console.log(userData)
 
     return (
         <p className="text-center">

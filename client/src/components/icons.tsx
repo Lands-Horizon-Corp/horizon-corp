@@ -53,6 +53,7 @@ import {
     AiOutlineLoading as LoadingCircleIcon,
     AiOutlineLoading3Quarters as LoadingSpinnerIcon,
 } from 'react-icons/ai'
+import { GoArrowLeft as ArrowLeftIcon } from 'react-icons/go'
 import { MdMarkEmailRead as EmailCheckIcon } from 'react-icons/md'
 import { BsPatchCheck as VerifiedPatchIcon } from 'react-icons/bs'
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
@@ -153,6 +154,7 @@ export {
     MessagesIcon,
     FeedbackIcon,
     BuildingIcon,
+    ArrowLeftIcon,
     CameraOffIcon,
     FootstepsIcon,
     UserClockIcon,
