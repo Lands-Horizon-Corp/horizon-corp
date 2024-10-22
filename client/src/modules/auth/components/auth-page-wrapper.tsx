@@ -1,9 +1,7 @@
 import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component'
 
-interface Props extends IBaseComp {}
-
-const AuthPageWrapper = ({ className, children }: Props) => {
+const AuthPageWrapper = ({ className, children }: IBaseComp) => {
     return (
         <div
             className={cn(

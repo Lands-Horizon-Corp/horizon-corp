@@ -11,7 +11,7 @@ import ShowAccountStatus from '../components/verify-root/show-account-status'
 import { withCatchAsync } from '@/lib'
 import useCurrentUser from '@/hooks/use-current-user'
 import { serverRequestErrExtractor } from '@/helpers'
-import { getUsersAccountTypeRedirectPage } from './helpers'
+import { getUsersAccountTypeRedirectPage } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 
 const Verify = () => {

@@ -1,21 +1,5 @@
-import { AccountStatus, UserData } from '@/horizon-corp/types'
 import { toast } from 'sonner'
-
-export const getUsersAccountTypeRedirectPage = (currentUser: UserData) => {
-    const { accountType } = currentUser
-    switch (accountType) {
-        case 'Admin':
-            return '/admin'
-        case 'Member':
-            return '/member'
-        case 'Employee':
-            return '/employee'
-        case 'Owner':
-            return '/owner'
-        default:
-            return '/'
-    }
-}
+import { AccountStatus } from '@/horizon-corp/types'
 
 export const toastAccountStatus = (accountStatus: AccountStatus) => {
     switch (accountStatus) {
