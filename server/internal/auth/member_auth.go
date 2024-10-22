@@ -1,40 +1,35 @@
 package auth
 
 import (
-	"horizon/server/config"
 	"horizon/server/internal/models"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"go.uber.org/zap"
 )
 
-func GenerateMemberJWT(member models.Member) (string, error) {
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		return "", err
+type MemberAuthService struct {
+	tokenService TokenService
+	logger       *zap.Logger
+}
+
+func NewMemberAuthService(tokenService TokenService, logger *zap.Logger) *MemberAuthService {
+	return &MemberAuthService{
+		tokenService: tokenService,
+		logger:       logger,
 	}
-	signed, err := config.Decrypt(cfg.AppMemberToken, cfg.AppToken)
-	if err != nil {
-		return "", err
-	}
-	expirationTime := time.Now().Add(24 * time.Hour)
+}
+
+func (s *MemberAuthService) GenerateMemberToken(member models.Member, expiration time.Duration) (string, error) {
+
 	claims := &UserClaims{
-		Mode:              "member",
-		ID:                member.ID,
-		FirstName:         member.FirstName,
-		LastName:          member.LastName,
-		PermanentAddress:  member.PermanentAddress,
-		Description:       member.Description,
-		Birthdate:         member.Birthdate,
-		Email:             member.Email,
-		IsEmailVerified:   member.IsEmailVerified,
-		IsContactVerified: member.IsContactVerified,
-		StandardClaims: jwt.StandardClaims{
-			Subject:   member.FirstName + " " + member.LastName,
-			ExpiresAt: expirationTime.Unix(),
-			IssuedAt:  time.Now().Unix(),
-		},
+		ID:          member.ID,
+		AccountType: "Member",
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(signed)
+
+	token, err := s.tokenService.GenerateToken(claims, 0)
+	if err != nil {
+		s.logger.Error("Failed to generate member token", zap.Error(err))
+		return "", err
+	}
+	return token, nil
 }

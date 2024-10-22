@@ -220,7 +220,7 @@ const ContactPage = () => {
                                     type="submit"
                                     className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
                                 >
-                                    {/* {loading ? <LoadingCircle /> : 'Send Message'} */}
+                                    {/* {loading ? <LoadingSpinner /> : 'Send Message'} */}
                                     Send Message
                                 </Button>
                             </div>

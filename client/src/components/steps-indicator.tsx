@@ -1,7 +1,7 @@
 import { Progress } from '@/components/ui/progress'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
     totalSteps: number

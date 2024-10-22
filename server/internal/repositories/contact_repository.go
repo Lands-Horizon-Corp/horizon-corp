@@ -15,26 +15,29 @@ func NewContactsRepository(db *gorm.DB) *ContactsRepository {
 }
 
 func (r *ContactsRepository) Create(contact *models.Contact) error {
-	return r.DB.Create(contact).Error
+	err := r.DB.Create(contact).Error
+	return handleDBError(err)
 }
 
 func (r *ContactsRepository) GetAll() ([]models.Contact, error) {
 	var contact []models.Contact
 	err := r.DB.Find(&contact).Error
-	return contact, err
+	return contact, handleDBError(err)
 }
 
 func (r *ContactsRepository) GetByID(id uint) (models.Contact, error) {
 	var contact models.Contact
 	err := r.DB.First(&contact, id).Error
-	return contact, err
+	return contact, handleDBError(err)
 }
 
 func (r *ContactsRepository) Update(id uint, contact *models.Contact) error {
 	contact.ID = id
-	return r.DB.Save(contact).Error
+	err := r.DB.Save(contact).Error
+	return handleDBError(err)
 }
 
 func (r *ContactsRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.Contact{}, id).Error
+	err := r.DB.Delete(&models.Contact{}, id).Error
+	return handleDBError(err)
 }

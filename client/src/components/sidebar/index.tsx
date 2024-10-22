@@ -9,13 +9,13 @@ import SidebarItem from '@/components/sidebar/sidebar-item'
 import SidebarUserBar from '@/components/sidebar/sidebar-user-bar'
 
 import { cn } from '@/lib/utils'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 import type { TSidebarItem } from '@/types/component/sidebar'
 
 export interface ISidebarProps extends IBaseComp {
     items: TSidebarItem[]
     enableCollapse?: boolean
-    logoRedirectUrl? : string
+    logoRedirectUrl?: string
     enableFocusBlur?: boolean
     defaultExpanded?: boolean
 }

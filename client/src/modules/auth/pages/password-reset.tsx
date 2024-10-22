@@ -1,61 +1,64 @@
 import z from 'zod'
-import { useEffect, useState } from 'react'
-import { useParams } from '@tanstack/react-router'
-import { useRouter } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import { useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useParams, useRouter } from '@tanstack/react-router'
 
 import { GoArrowLeft } from 'react-icons/go'
-import { AiOutlineKey } from 'react-icons/ai'
-
 import { Button } from '@/components/ui/button'
-import LoadingCircle from '@/components/loader/loading-circle'
+
+import { KeyIcon } from '@/components/icons'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import ResetPasswordForm from '@/modules/auth/components/forms/reset-password-form'
 
+import { withCatchAsync } from '@/lib'
+import { serverRequestErrExtractor } from '@/helpers'
+import UserService from '@/horizon-corp/server/auth/UserService'
+
 export const PasswordResetPagePathSchema = z.object({
-    resetId: z
-        .string({ required_error: 'Missing Reset Link' })
-        .uuid('Invalid Reset Link'),
+    resetId: z.string({ required_error: 'Missing Reset Link' }),
 })
 
-interface Props {}
-
-const PasswordResetPage = (_props: Props) => {
+const PasswordResetPage = () => {
     const router = useRouter()
     const pathParams = useParams({ from: '/auth/password-reset/$resetId' })
-
     const [done, setDone] = useState(false)
-    const [loading, setLoading] = useState(false)
-    const [resetEntry, setResetEntry] = useState<{} | null>(null) // replace {} with type of reset entry
 
-    useEffect(() => {
-        const { success, data } =
-            PasswordResetPagePathSchema.safeParse(pathParams)
+    const { data: resetEntry, isFetching } = useQuery<null | boolean, string>({
+        queryKey: ['password-reset-link', pathParams.resetId],
+        queryFn: async () => {
+            const [error] = await withCatchAsync(
+                UserService.CheckResetLink(pathParams.resetId)
+            )
 
-        if (!success) return setResetEntry(null)
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.message(errorMessage)
+                throw errorMessage
+            }
 
-        setLoading(true)
-        // todo fetch reset entry from db if it exist
-        // authService.verifyResetEntry(data?.resetId)
-        // then set the data to resetEntry state
-        setTimeout(() => {
-            setLoading(false)
-            setResetEntry(Math.floor(Math.random() * 2) % 2 === 0 ? null : {})
-        }, 1000)
-    }, [])
+            return true
+        },
+        initialData: null,
+    })
 
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {!done && resetEntry && (
-                    <ResetPasswordForm onSuccess={() => setDone(true)} />
+                {!done && !isFetching && resetEntry && (
+                    <ResetPasswordForm
+                        resetId={pathParams.resetId}
+                        onSuccess={() => setDone(true)}
+                    />
                 )}
-                {!done && !loading && !resetEntry && (
+                {!done && !isFetching && !resetEntry && (
                     <div className="flex w-full flex-col gap-y-4 sm:w-[390px]">
                         <div className="flex flex-col items-center gap-y-4 py-4 text-center">
                             <div className="relative p-8">
-                                <AiOutlineKey className="size-[53px] text-[#FF7E47]" />
-                                <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20"></div>
-                                <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20"></div>
+                                <KeyIcon className="size-[53px] text-[#FF7E47]" />
+                                <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20" />
+                                <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20" />
                             </div>
                             <p className="text-xl font-medium">
                                 Invalid reset link
@@ -77,9 +80,9 @@ const PasswordResetPage = (_props: Props) => {
                         </Button>
                     </div>
                 )}
-                {loading && (
+                {isFetching && (
                     <div className="flex flex-col items-center gap-y-2 py-16">
-                        <LoadingCircle />
+                        <LoadingSpinner />
                         <p className="text-center text-sm text-foreground/50">
                             verifying reset password link
                         </p>
@@ -89,9 +92,9 @@ const PasswordResetPage = (_props: Props) => {
                     <div className="flex w-full flex-col gap-y-4 sm:w-[390px]">
                         <div className="flex flex-col items-center gap-y-4 py-4 text-center">
                             <div className="relative p-8">
-                                <AiOutlineKey className="size-[53px] text-green-500" />
-                                <div className="absolute inset-0 rounded-full bg-green-500/20"></div>
-                                <div className="absolute inset-5 rounded-full bg-green-500/20"></div>
+                                <KeyIcon className="size-[53px] text-green-500" />
+                                <div className="absolute inset-0 rounded-full bg-green-500/20" />
+                                <div className="absolute inset-5 rounded-full bg-green-500/20" />
                             </div>
                             <p className="text-xl font-medium">Password Set</p>
                             <p className="text-sm text-foreground/70">

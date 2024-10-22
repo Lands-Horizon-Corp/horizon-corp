@@ -1,8 +1,10 @@
-import React from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { useState } from 'react';
 import { RouterProvider } from '@tanstack/react-router';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 import router from '@/root-route';
-import { ThemeProvider } from '@/components/providers/theme-provider';
+import { ThemeProvider } from '@/providers/theme-provider';
 
 const TanStackRouterDevtoolsPanel =
     process.env.NODE_ENV === 'production'
@@ -20,14 +22,19 @@ declare module '@tanstack/react-router' {
 }
 
 const App = () => {
+    const [queryClient] = useState(new QueryClient());
+
     return (
-        <ThemeProvider>
-            <RouterProvider router={router} />
-            <TanStackRouterDevtoolsPanel
-                position="bottom-left"
-                router={router}
-            />
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+                <RouterProvider router={router} />
+                <TanStackRouterDevtoolsPanel
+                    position="bottom-left"
+                    router={router}
+                />
+            </ThemeProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
     );
 };
 

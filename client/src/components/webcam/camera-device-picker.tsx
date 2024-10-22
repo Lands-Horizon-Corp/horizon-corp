@@ -13,7 +13,7 @@ import { CameraIcon, SwitchCameraIcon } from '@/components/icons'
 import { useCameraDevices } from '@/components/webcam/use-camera-devices'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
     autoPick?: boolean

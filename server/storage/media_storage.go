@@ -89,9 +89,10 @@ func UploadFile(fileHeader *multipart.FileHeader) (*models.Media, error) {
 
 	mc := GetFileClient()
 	if err := CreateBucketIfNotExists(); err != nil {
+		fmt.Println(err)
+
 		return nil, err
 	}
-
 	uploader := s3manager.NewUploaderWithClient(mc.Client)
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(mc.cfg.StorageBucketName),

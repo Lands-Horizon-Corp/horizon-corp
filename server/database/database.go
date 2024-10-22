@@ -3,15 +3,15 @@ package database
 import (
 	"fmt"
 	"horizon/server/config"
+	"log" // Import log package for logging
 	"time"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
-func NewDB(cfg *config.AppConfig) (*gorm.DB, error) {
+func NewDatabaseService(cfg *config.AppConfig) (*gorm.DB, error) {
 	dsn := buildDSN(cfg)
-
 	maxRetries := 5
 	retryDelay := 2 * time.Second
 
@@ -20,6 +20,7 @@ func NewDB(cfg *config.AppConfig) (*gorm.DB, error) {
 	for attempt := 1; attempt <= maxRetries; attempt++ {
 		db, err = tryConnect(dsn)
 		if err == nil {
+			log.Println("Successfully connected to the database.")
 			return db, nil
 		}
 		if attempt < maxRetries {

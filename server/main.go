@@ -5,10 +5,13 @@ import (
 	"horizon/server/config"
 	"horizon/server/database"
 	"horizon/server/internal"
+	"horizon/server/internal/auth"
 	"horizon/server/internal/controllers"
+	"horizon/server/internal/middleware"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/routes"
 	"horizon/server/logger"
+	"horizon/server/services"
 	"log"
 	"os"
 	"os/signal"
@@ -19,11 +22,41 @@ import (
 
 func main() {
 	ctx := context.Background()
+
 	app := fx.New(
 		fx.Provide(
+			// Dependencies
 			config.LoadConfig,
 			logger.NewLogger,
-			database.NewDB,
+			database.NewDatabaseService,
+			database.NewCacheService,
+
+			// Services
+			services.NewEmailService,
+			services.NewSMSService,
+			services.NewOTPService,
+
+			// Authentication
+			auth.NewAdminAuthService,
+			auth.NewEmployeeAuthService,
+			auth.NewMemberAuthService,
+			auth.NewOwnerAuthService,
+			auth.NewTokenService,
+
+			// Middleware
+			middleware.NewAuthMiddleware,
+
+			// Authentication
+			repositories.NewAdminRepository,
+			repositories.NewEmployeeRepository,
+			repositories.NewOwnerRepository,
+			repositories.NewMemberRepository,
+			controllers.NewAuthController,
+
+			// User
+			auth.NewUserAuthService,
+			repositories.NewUserRepository,
+			controllers.NewUserController,
 
 			// Roles
 			repositories.NewRolesRepository,
