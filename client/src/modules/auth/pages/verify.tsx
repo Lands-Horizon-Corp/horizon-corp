@@ -10,13 +10,16 @@ import ShowAccountStatus from '../components/verify-root/show-account-status'
 
 import { withCatchAsync } from '@/lib'
 import useCurrentUser from '@/hooks/use-current-user'
-import { serverRequestErrExtractor } from '@/helpers'
-import { getUsersAccountTypeRedirectPage } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
+import {
+    isUserHasUnverified,
+    serverRequestErrExtractor,
+    getUsersAccountTypeRedirectPage,
+} from '@/helpers'
 
 const Verify = () => {
     const router = useRouter()
-    const { data: currentUser, isFetching, setCurrentUser } = useCurrentUser({})
+    const { data: currentUser, isFetching, setCurrentUser } = useCurrentUser()
 
     const { mutate: onBackSignOut, isPending } = useMutation<void, string>({
         mutationKey: ['sign-out'],
@@ -42,14 +45,14 @@ const Verify = () => {
 
     useEffect(() => {
         if (!currentUser || isFetching) return
-        else if (currentUser.status === 'Verified') {
+        else if (isUserHasUnverified(currentUser)) {
+            setDisplay('verify')
+        } else if (
+            currentUser.status === 'Verified' &&
+            !isUserHasUnverified(currentUser)
+        ) {
             const redirectUrl = getUsersAccountTypeRedirectPage(currentUser)
             router.navigate({ to: redirectUrl })
-        } else if (
-            !currentUser.isContactVerified ||
-            !currentUser.isEmailVerified
-        ) {
-            setDisplay('verify')
         } else {
             setDisplay('account-status')
         }

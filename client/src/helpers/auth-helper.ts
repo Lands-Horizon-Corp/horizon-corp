@@ -1,4 +1,4 @@
-import { UserData } from "@/horizon-corp/types"
+import { UserData } from '@/horizon-corp/types'
 
 export const getUsersAccountTypeRedirectPage = (currentUser: UserData) => {
     const { accountType } = currentUser
@@ -14,4 +14,16 @@ export const getUsersAccountTypeRedirectPage = (currentUser: UserData) => {
         default:
             return '/'
     }
+}
+
+export const isUserUnverified = (userData: UserData) => {
+    return userData.status !== 'Verified'
+}
+
+export const isUserHasUnverified = (userData: UserData) => {
+    return (
+        userData.status === 'Pending' ||
+        !userData.isEmailVerified ||
+        !userData.isContactVerified
+    )
 }

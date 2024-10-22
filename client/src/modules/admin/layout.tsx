@@ -2,11 +2,11 @@ import { Outlet } from '@tanstack/react-router'
 
 import AdminNavbar from './components/admin-navbar'
 import AdminSidebar from './components/admin-sidebar'
-import ProtectedRouteWrapper from '@/components/wrappers/protected-route-wrapper'
+import AuthGuard from '@/components/wrappers/auth-guard'
 
 const AdminLayout = () => {
     return (
-        <ProtectedRouteWrapper allowedAccountTypes={['Admin']}>
+        <AuthGuard allowedAccountTypes={['Admin']}>
             <div className="grid min-h-[100dvh] grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
                 <AdminSidebar />
                 <main className="">
@@ -14,7 +14,7 @@ const AdminLayout = () => {
                     <Outlet />
                 </main>
             </div>
-        </ProtectedRouteWrapper>
+        </AuthGuard>
     )
 }
 
