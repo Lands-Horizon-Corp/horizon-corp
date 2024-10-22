@@ -35,7 +35,7 @@ const NavAuthContents = ({ className }: IBaseCompNoChild) => {
             }
 
             setCurrentUser(null)
-            router.navigate({ to : "/auth/sign-in" })
+            router.navigate({ to: '/auth/sign-in' })
             toast.success('Signed out')
         },
     })

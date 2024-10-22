@@ -5,9 +5,6 @@ import { rootRoute } from '@/root-route'
 const memberRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'member',
-    beforeLoad: () => {
-        // TODO: Once middleware is implemented
-    },
     component: lazyRouteComponent(() => import('@/modules/member/layout')),
 })
 

@@ -48,9 +48,6 @@ const TimeInTimeOut = ({
         }
 
         if (!timeEntry) {
-            // todo create time in request
-            // backend checks if user already did some action 5 mins ago
-            // toast.warning(reqeust error message here)
             return setTimeout(() => {
                 onTimeInEntry({
                     timeStart: new Date('Mon, 07 Oct 2024 06:50:39 GMT'),
@@ -58,10 +55,6 @@ const TimeInTimeOut = ({
             }, 1000)
         }
 
-        // todo time out request
-        // backend checks if user already did some action 5 mins ago
-        // then show error here via toast
-        // toast.warning(reqeust error message here)
         return setTimeout(() => {
             onTimeOut({
                 timeStart: new Date('Mon, 07 Oct 2024 06:50:39 GMT'),

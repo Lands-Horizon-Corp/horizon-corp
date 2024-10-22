@@ -8,7 +8,6 @@ import {
 } from '@/components/ui/dialog'
 
 import { cn } from '@/lib/utils'
-// import Connection from '@/horizon-corp/server/common/Connection'
 
 const ConnectionProvider = ({ interval = 10_000 }: { interval?: number }) => {
     const [isConnected, setIsConnected] = useState(true)
