@@ -1,14 +1,14 @@
 import { MdError } from 'react-icons/md'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
-    errorMessage?: string
+    errorMessage?: string | null
 }
 
 const FormErrorMessage = ({ className, errorMessage }: Props) => {
-    if (!errorMessage) return null
+    if (!errorMessage || errorMessage === null) return null
 
     return (
         <span

@@ -3,6 +3,7 @@ package routes
 import (
 	"horizon/server/config"
 	"horizon/server/internal/controllers"
+	"horizon/server/internal/middleware"
 	"net/http"
 	"time"
 
@@ -15,12 +16,18 @@ func ProvideAPI(
 	lc fx.Lifecycle,
 	cfg *config.AppConfig,
 
+	// Controller
+	authController *controllers.AuthController,
 	roleController *controllers.RolesController,
 	genderController *controllers.GenderController,
 	errorDetailController *controllers.ErrorDetailController,
 	contactController *controllers.ContactsController,
 	feedbackController *controllers.FeedbackController,
 	mediaController *controllers.MediaController,
+	userController *controllers.UserController,
+
+	// Middleware
+	authMiddleware *middleware.AuthMiddleware,
 
 ) *gin.Engine {
 	router := gin.Default()
@@ -57,11 +64,13 @@ func ProvideAPI(
 		v1.GET("/", func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
+		controllers.AuthRoutes(v1, authMiddleware, authController)
 		controllers.GenderRoutes(v1, genderController)
 		controllers.ErrorDetailRoutes(v1, errorDetailController)
 		controllers.ContactsRoutes(v1, contactController)
 		controllers.FeedbackRoutes(v1, feedbackController)
 		controllers.MediaRoutes(v1, mediaController)
+		controllers.UserRoutes(v1, authMiddleware, userController)
 	}
 	return router
 }

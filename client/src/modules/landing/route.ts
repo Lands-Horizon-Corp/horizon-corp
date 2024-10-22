@@ -1,41 +1,41 @@
-import { createRoute } from '@tanstack/react-router'
-
-import LandingPage from '@/modules/landing/pages'
-import AboutPage from '@/modules/landing/pages/about'
-import ContactPage from '@/modules/landing/pages/contact'
-import DevelopersPage from '@/modules/landing/pages/developers'
-import PublicLayout from '@/modules/landing/layout'
+import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
 
 const landingRoute = createRoute({
     getParentRoute: () => rootRoute,
     id: 'public',
-    component: PublicLayout,
+    component: lazyRouteComponent(() => import('@/modules/landing/layout')),
 })
 
 const landingIndexRoute = createRoute({
     getParentRoute: () => landingRoute,
     path: '/',
-    component: LandingPage,
+    component: lazyRouteComponent(() => import('@/modules/landing/pages')),
 })
 
 const aboutRoute = createRoute({
     getParentRoute: () => landingRoute,
     path: 'about',
-    component: AboutPage,
+    component: lazyRouteComponent(
+        () => import('@/modules/landing/pages/about')
+    ),
 })
 
 const contactRoute = createRoute({
     getParentRoute: () => landingRoute,
     path: 'contact',
-    component: ContactPage,
+    component: lazyRouteComponent(
+        () => import('@/modules/landing/pages/contact')
+    ),
 })
 
 const developersRoute = createRoute({
     getParentRoute: () => landingRoute,
     path: 'developers',
-    component: DevelopersPage,
+    component: lazyRouteComponent(
+        () => import('@/modules/landing/pages/developers')
+    ),
 })
 
 const LandingRoute = landingRoute.addChildren([

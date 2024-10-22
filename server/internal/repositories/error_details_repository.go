@@ -15,26 +15,29 @@ func NewErrorDetailRepository(db *gorm.DB) *ErrorDetailRepository {
 }
 
 func (r *ErrorDetailRepository) Create(errorDetails *models.ErrorDetail) error {
-	return r.DB.Create(errorDetails).Error
+	err := r.DB.Create(errorDetails).Error
+	return handleDBError(err)
 }
 
 func (r *ErrorDetailRepository) GetAll() ([]models.ErrorDetail, error) {
 	var errorDetailss []models.ErrorDetail
 	err := r.DB.Find(&errorDetailss).Error
-	return errorDetailss, err
+	return errorDetailss, handleDBError(err)
 }
 
 func (r *ErrorDetailRepository) GetByID(id uint) (models.ErrorDetail, error) {
 	var errorDetails models.ErrorDetail
 	err := r.DB.First(&errorDetails, id).Error
-	return errorDetails, err
+	return errorDetails, handleDBError(err)
 }
 
 func (r *ErrorDetailRepository) Update(id uint, errorDetails *models.ErrorDetail) error {
 	errorDetails.ID = id
-	return r.DB.Save(errorDetails).Error
+	err := r.DB.Save(errorDetails).Error
+	return handleDBError(err)
 }
 
 func (r *ErrorDetailRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.ErrorDetail{}, id).Error
+	err := r.DB.Delete(&models.ErrorDetail{}, id).Error
+	return handleDBError(err)
 }

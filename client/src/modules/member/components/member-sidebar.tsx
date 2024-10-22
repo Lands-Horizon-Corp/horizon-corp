@@ -7,7 +7,7 @@ import {
 } from '@/components/icons'
 import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
 
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 import { TSidebarItem } from '@/types/component/sidebar'
 
 const memberSidebarItems: TSidebarItem[] = [

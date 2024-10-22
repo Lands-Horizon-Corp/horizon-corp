@@ -72,8 +72,16 @@
         @apply border-border font-inter;
     }
     body {
-        @apply ecoop-scroll bg-background text-foreground;
+        @apply ecoop-scroll w-screen overflow-x-hidden bg-background text-foreground;
     }
+
+    /* input:-webkit-autofill,
+    textarea:-webkit-autofill,
+    select:-webkit-autofill {
+        -webkit-box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+        box-shadow: 0 0 0 1000px hsl(var(--background)) inset !important;
+        -webkit-text-fill-color: hsl(var(--foreground)) !important;
+    } */
 }
 
 .ecoop-scroll::-webkit-scrollbar {

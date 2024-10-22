@@ -15,26 +15,29 @@ func NewMediaRepository(db *gorm.DB) *MediaRepository {
 }
 
 func (r *MediaRepository) Create(media *models.Media) error {
-	return r.DB.Create(media).Error
+	err := r.DB.Create(media).Error
+	return handleDBError(err)
 }
 
 func (r *MediaRepository) GetAll() ([]models.Media, error) {
 	var medias []models.Media
 	err := r.DB.Find(&medias).Error
-	return medias, err
+	return medias, handleDBError(err)
 }
 
 func (r *MediaRepository) GetByID(id uint) (models.Media, error) {
 	var media models.Media
 	err := r.DB.First(&media, id).Error
-	return media, err
+	return media, handleDBError(err)
 }
 
 func (r *MediaRepository) Update(id uint, media *models.Media) error {
 	media.ID = id
-	return r.DB.Save(media).Error
+	err := r.DB.Save(media).Error
+	return handleDBError(err)
 }
 
 func (r *MediaRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.Media{}, id).Error
+	err := r.DB.Delete(&models.Media{}, id).Error
+	return handleDBError(err)
 }
