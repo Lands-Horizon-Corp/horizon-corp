@@ -617,6 +617,38 @@ func (c *AuthController) SkipVerification(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+func (c *AuthController) NewPassword(ctx *gin.Context) {
+
+	var req auth_requests.NewPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("Change Password: JSON binding error: %v", err), "Invalid request payload.")
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("Change Password: Validation error: %v", err), "Invalid input data.")
+		return
+	}
+
+	claims, err := c.getCurrentUser(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "Authentication required.")
+		return
+	}
+
+	if !config.VerifyPassword(claims.Password, req.PreviousPassword) {
+		c.respondWithError(ctx, http.StatusUnauthorized, "SignIn: Password verification failed", "Invalid credentials.")
+		return
+	}
+
+	if err := c.userRepo.UpdatePassword(claims.AccountType, claims.ID, req.ConfirmPassword); err != nil {
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangePassword: Password update error: %v", err), "Failed to update password.")
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
+}
+
 // AuthRoutes sets up the authentication routes.
 func AuthRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controller *AuthController) {
 	authGroup := router.Group("/auth")
@@ -632,6 +664,8 @@ func AuthRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controll
 		{
 			authGroup.GET("/current-user", controller.CurrentUser)
 			authGroup.POST("/signout", controller.SignOut)
+
+			authGroup.POST("/new-password", controller.NewPassword)
 
 			authGroup.POST("/skip-verification", controller.SkipVerification)
 
