@@ -1,4 +1,3 @@
-// Assets
 import bg_element_5 from '@/assets/images/landing-page/bg_element_5.webp'
 import about_image_1 from '@/assets/images/about-page/about_image_1.webp'
 import about_bg_element_1 from '@/assets/images/about-page/about_bg_element_1.webp'

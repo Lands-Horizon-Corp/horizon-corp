@@ -16,6 +16,8 @@ import type {
     VerifyContactNumberRequest,
     VerifyContactResource,
     VerifyEmailRequest,
+    SkipResource,
+    NewPasswordRequest,
 } from '@/horizon-corp/types'
 import { getSMSContent, getEmailContent } from '@/lib'
 
@@ -90,6 +92,7 @@ export default class UserService {
     // POST - /auth/change-email
     public static async ChangeEmail(data: ChangeEmailRequest): Promise<void> {
         const endpoint = `${UserService.BASE_ENDPOINT}/change-email`
+        data.emailTemplate = getEmailContent('otp')
         await UseServer.post<ChangeEmailRequest, void>(endpoint, data)
     }
 
@@ -144,6 +147,21 @@ export default class UserService {
         data: ChangeContactNumberRequest
     ): Promise<void> {
         const endpoint = `${UserService.BASE_ENDPOINT}/change-contact-number`
+        data.contactTemplate = getSMSContent('contactNumber')
         await UseServer.post<ChangeContactNumberRequest, void>(endpoint, data)
+    }
+
+    // POST - /auth/skip-verification
+    public static async SkipVerification(): Promise<
+        AxiosResponse<SkipResource>
+    > {
+        const endpoint = `${UserService.BASE_ENDPOINT}/skip-verification`
+        return await UseServer.post<void, SkipResource>(endpoint)
+    }
+
+    // POST - /auth/new-password
+    public static async NewPassword(data: NewPasswordRequest): Promise<void> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/new-password`
+        await UseServer.post<NewPasswordRequest>(endpoint, data)
     }
 }

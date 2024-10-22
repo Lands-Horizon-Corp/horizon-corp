@@ -5,9 +5,16 @@ import { IBaseComp } from '@/types/component'
 interface Props extends IBaseComp {
     src: string
     fallback: string
+    fallbackClassName?: string
 }
 
-const UserAvatar = ({ src, fallback, className, children }: Props) => {
+const UserAvatar = ({
+    src,
+    fallback,
+    className,
+    fallbackClassName,
+    children,
+}: Props) => {
     if (fallback.length === 0 || fallback.length > 2)
         throw new Error(
             'User avatar fallback must atleast contain 2 characters'
@@ -16,7 +23,9 @@ const UserAvatar = ({ src, fallback, className, children }: Props) => {
     return (
         <Avatar className={cn('size-6', className)}>
             <AvatarImage src={src} />
-            <AvatarFallback>{fallback}</AvatarFallback>
+            <AvatarFallback className={fallbackClassName}>
+                {fallback}
+            </AvatarFallback>
             {children}
         </Avatar>
     )

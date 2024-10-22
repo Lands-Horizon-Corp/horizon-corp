@@ -30,14 +30,12 @@ const ResendVerifyContactButton = ({
             mutationKey: ['verify-resend', verifyMode],
             mutationFn: async () => {
                 try {
-                    // send otp verification code to current logged in user's email
                     if (verifyMode === 'email') {
                         await UserService.SendEmailVerification()
                         startCooldown()
                         return
                     }
 
-                    // send otp verification code to current logged in user's contact number
                     if (verifyMode === 'mobile') {
                         await UserService.SendContactVerification()
                         startCooldown()

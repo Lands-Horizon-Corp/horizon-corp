@@ -1,16 +1,22 @@
 import { toast } from 'sonner'
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useLocation, useRouter } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 
 import { cn, withCatchAsync } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component'
 import useCurrentUser from '@/hooks/use-current-user'
-import { serverRequestErrExtractor } from '@/helpers'
+import {
+    getUsersAccountTypeRedirectPage,
+    serverRequestErrExtractor,
+} from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import { useMutation } from '@tanstack/react-query'
+import UserAvatar from '@/components/user-avatar'
 
 const NavAuthContents = ({ className }: IBaseCompNoChild) => {
+    const router = useRouter()
+
     const pathname = useLocation({
         select: (location) => location.pathname,
     })
@@ -29,6 +35,7 @@ const NavAuthContents = ({ className }: IBaseCompNoChild) => {
             }
 
             setCurrentUser(null)
+            router.navigate({ to: '/auth/sign-in' })
             toast.success('Signed out')
         },
     })
@@ -38,14 +45,34 @@ const NavAuthContents = ({ className }: IBaseCompNoChild) => {
     return (
         <div className={cn('flex items-center gap-x-2', className)}>
             {currentUser && (
-                <Button
-                    variant="outline"
-                    disabled={isSigningOut}
-                    onClick={() => handleSignout()}
-                    className="scale-effects rounded-full"
-                >
-                    Sign-Out
-                </Button>
+                <>
+                    <Button
+                        disabled={isSigningOut}
+                        onClick={() => {
+                            router.navigate({
+                                to: getUsersAccountTypeRedirectPage(
+                                    currentUser
+                                ),
+                            })
+                        }}
+                        className="scale-effects gap-x-2 rounded-full px-2"
+                    >
+                        <UserAvatar
+                            src={currentUser.media?.downloadURL ?? ''}
+                            fallback={currentUser?.username.charAt(0) ?? '-'}
+                            fallbackClassName="bg-secondary text-secondary-foreground"
+                        />
+                        <span className="mr-2">Get Started</span>
+                    </Button>
+                    <Button
+                        variant="outline"
+                        disabled={isSigningOut}
+                        onClick={() => handleSignout()}
+                        className="scale-effects rounded-full"
+                    >
+                        Sign-Out
+                    </Button>
+                </>
             )}
             {shouldShowAuthButtons &&
                 !currentUser &&

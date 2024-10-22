@@ -18,6 +18,7 @@ export interface UserData {
     status: AccountStatus
     isEmailVerified: boolean
     isContactVerified: boolean
+    IsSkipVerification: boolean
     media?: MediaResource
 }
 
@@ -31,5 +32,4 @@ export interface CurrentUserResource extends UserData {}
 
 export interface SignInResource extends UserData {}
 
-// auth/forgot-password -> just http status code 200
-// auth/password-reset/${resetId} -> just http status code
+export interface SkipResource extends UserData {}
