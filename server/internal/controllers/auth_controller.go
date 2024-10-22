@@ -57,33 +57,63 @@ func (c *AuthController) respondWithError(ctx *gin.Context, statusCode int, logM
 	ctx.JSON(statusCode, gin.H{"error": clientMessage})
 }
 
-// CurrentUser retrieves the current authenticated user.
-func (c *AuthController) CurrentUser(ctx *gin.Context) {
+// getCurrentUser retrieves the current authenticated user from the context.
+func (c *AuthController) getCurrentUser(ctx *gin.Context) (models.User, error) {
 	user, exists := ctx.Get("current-user")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusUnauthorized, "Current user not found in context", "Authentication required.")
-		return
+		return models.User{}, fmt.Errorf("current user not found in context")
 	}
 
 	currentUser, ok := user.(models.User)
 	if !ok {
 		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusInternalServerError, "Failed to cast user to models.User", "Unable to retrieve user details.")
-		return
+		return models.User{}, fmt.Errorf("failed to cast user to models.User")
 	}
 
+	return currentUser, nil
+}
+
+// getUserClaims retrieves the user claims from the context.
+func (c *AuthController) getUserClaims(ctx *gin.Context) (*auth.UserClaims, error) {
 	claims, exists := ctx.Get("claims")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusUnauthorized, "Claims not found in context", "User not authenticated.")
-		return
+		return nil, fmt.Errorf("claims not found in context")
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
 	if !ok {
 		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusInternalServerError, "Failed to cast claims to *auth.UserClaims", "Failed to retrieve user claims.")
+		return nil, fmt.Errorf("failed to cast claims to *auth.UserClaims")
+	}
+
+	return userClaims, nil
+}
+
+// setAuthTokenCookie sets the authentication token as an HTTP-only cookie.
+func (c *AuthController) setAuthTokenCookie(ctx *gin.Context, token string) {
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:     c.cfg.AppTokenName,
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
+	})
+}
+
+// CurrentUser retrieves the current authenticated user.
+func (c *AuthController) CurrentUser(ctx *gin.Context) {
+	currentUser, err := c.getCurrentUser(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "Authentication required.")
+		return
+	}
+
+	userClaims, err := c.getUserClaims(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
 		return
 	}
 
@@ -159,14 +189,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 	}
 
 	// Set Auth Token Cookie
-	http.SetCookie(ctx.Writer, &http.Cookie{
-		Name:     c.cfg.AppTokenName,
-		Value:    token,
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteNoneMode,
-	})
+	c.setAuthTokenCookie(ctx, token)
 
 	// Respond with the created user
 	response := resources.ToResourceUser(user, user.AccountType)
@@ -204,14 +227,7 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 	}
 
 	// Set Auth Token Cookie
-	http.SetCookie(ctx.Writer, &http.Cookie{
-		Name:     c.cfg.AppTokenName,
-		Value:    token,
-		Path:     "/",
-		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteNoneMode,
-	})
+	c.setAuthTokenCookie(ctx, token)
 
 	// Respond with the authenticated user
 	response := resources.ToResourceUser(user, req.AccountType)
@@ -322,7 +338,7 @@ func (c *AuthController) VerifyResetLink(ctx *gin.Context) {
 
 	if err != nil {
 		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusUnauthorized, fmt.Sprintf("ChangePassword: Token verification error: %v", err), "Invalid or expired reset token.")
+		c.respondWithError(ctx, http.StatusUnauthorized, fmt.Sprintf("VerifyResetLink: Token verification error: %v", err), "Invalid or expired reset token.")
 		return
 	}
 
@@ -342,15 +358,15 @@ func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 		return
 	}
 
-	user, exists := ctx.Get("current-user")
-	if !exists {
-		c.respondWithError(ctx, http.StatusUnauthorized, "SendEmailVerification: Current user not found in context", "User not authenticated.")
+	currentUser, err := c.getCurrentUser(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
 		return
 	}
 
-	currentUser, ok := user.(models.User)
-	if !ok {
-		c.respondWithError(ctx, http.StatusInternalServerError, "SendEmailVerification: Failed to cast user to models.User", "Failed to retrieve user data.")
+	userClaims, err := c.getUserClaims(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
 		return
 	}
 
@@ -358,20 +374,6 @@ func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 		To:      currentUser.Email,
 		Subject: "ECOOP: Email Verification",
 		Body:    req.EmailTemplate,
-	}
-
-	claims, exists := ctx.Get("claims")
-	if !exists {
-		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusUnauthorized, "SendEmailVerification: Claims not found in context", "User not authenticated.")
-		return
-	}
-
-	userClaims, ok := claims.(*auth.UserClaims)
-	if !ok {
-		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusInternalServerError, "SendEmailVerification: Failed to cast claims to *auth.UserClaims", "Failed to retrieve user claims.")
-		return
 	}
 
 	if err := c.otpService.SendEmailOTP(userClaims.AccountType, currentUser.ID, emailReq); err != nil {
@@ -384,17 +386,9 @@ func (c *AuthController) SendEmailVerification(ctx *gin.Context) {
 
 // VerifyEmail verifies the user's email using the provided OTP.
 func (c *AuthController) VerifyEmail(ctx *gin.Context) {
-	claims, exists := ctx.Get("claims")
-	if !exists {
-		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusUnauthorized, "VerifyEmail: Claims not found in context", "User not authenticated.")
-		return
-	}
-
-	userClaims, ok := claims.(*auth.UserClaims)
-	if !ok {
-		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusInternalServerError, "VerifyEmail: Failed to cast claims to *auth.UserClaims", "Failed to retrieve user details.")
+	userClaims, err := c.getUserClaims(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
 		return
 	}
 
@@ -444,29 +438,15 @@ func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
 		return
 	}
 
-	user, exists := ctx.Get("current-user")
-	if !exists {
-		c.respondWithError(ctx, http.StatusUnauthorized, "SendContactNumberVerification: Current user not found in context", "User not authenticated.")
+	currentUser, err := c.getCurrentUser(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
 		return
 	}
 
-	currentUser, ok := user.(models.User)
-	if !ok {
-		c.respondWithError(ctx, http.StatusInternalServerError, "SendContactNumberVerification: Failed to cast user to models.User", "Failed to retrieve user data.")
-		return
-	}
-
-	claims, exists := ctx.Get("claims")
-	if !exists {
-		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusUnauthorized, "SendContactNumberVerification: Claims not found in context", "User not authenticated.")
-		return
-	}
-
-	userClaims, ok := claims.(*auth.UserClaims)
-	if !ok {
-		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusInternalServerError, "SendContactNumberVerification: Failed to cast claims to *auth.UserClaims", "Failed to retrieve user claims.")
+	userClaims, err := c.getUserClaims(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
 		return
 	}
 
@@ -488,17 +468,9 @@ func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
 
 // VerifyContactNumber verifies the user's contact number using the provided OTP.
 func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
-	claims, exists := ctx.Get("claims")
-	if !exists {
-		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusUnauthorized, "VerifyContactNumber: Claims not found in context", "User not authenticated.")
-		return
-	}
-
-	userClaims, ok := claims.(*auth.UserClaims)
-	if !ok {
-		c.tokenService.ClearTokenCookie(ctx)
-		c.respondWithError(ctx, http.StatusInternalServerError, "VerifyContactNumber: Failed to cast claims to *auth.UserClaims", "Failed to retrieve user details.")
+	userClaims, err := c.getUserClaims(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
 		return
 	}
 
@@ -535,6 +507,99 @@ func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+// ChangeEmail updates the user's email and sends a verification email.
+func (c *AuthController) ChangeEmail(ctx *gin.Context) {
+	var req auth_requests.ChangeEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangeEmail: JSON binding error: %v", err), "Invalid request payload.")
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangeEmail: Validation error: %v", err), "Invalid input data.")
+		return
+	}
+
+	userClaims, err := c.getUserClaims(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
+		return
+	}
+
+	// Send Email OTP
+	emailReq := services.EmailRequest{
+		To:      req.Email,
+		Subject: "ECOOP: Email Verification",
+		Body:    req.EmailTemplate,
+	}
+	if err := c.otpService.SendEmailOTP(userClaims.AccountType, userClaims.ID, emailReq); err != nil {
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeEmail: Email OTP sending error: %v", err), "Failed to send verification email.")
+		return
+	}
+
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.AccountType, userClaims.ID, map[string]interface{}{
+		"is_email_verified": false,
+		"email":             req.Email,
+	})
+	if err != nil {
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeEmail: User update error: %v", err), "Failed to update user email.")
+		return
+	}
+
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	ctx.JSON(http.StatusOK, response)
+}
+
+// ChangeContactNumber updates the user's contact number and sends a verification SMS.
+func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {
+	var req auth_requests.ChangeContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangeContactNumber: JSON binding error: %v", err), "Invalid request payload.")
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangeContactNumber: Validation error: %v", err), "Invalid input data.")
+		return
+	}
+
+	userClaims, err := c.getUserClaims(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
+		return
+	}
+
+	currentUser, err := c.getCurrentUser(ctx)
+	if err != nil {
+		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
+		return
+	}
+
+	contactReq := services.SMSRequest{
+		To:   req.ContactNumber,
+		Body: req.ContactTemplate,
+		Vars: &map[string]string{
+			"name": fmt.Sprintf("%s %s", currentUser.FirstName, currentUser.LastName),
+		},
+	}
+	if err := c.contactService.SendSMS(contactReq); err != nil {
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeContactNumber: SMS sending error: %v", err), "Failed to send verification SMS.")
+		return
+	}
+
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.AccountType, userClaims.ID, map[string]interface{}{
+		"is_contact_verified": false,
+		"contact_number":      req.ContactNumber,
+	})
+	if err != nil {
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeContactNumber: User update error: %v", err), "Failed to update contact number.")
+		return
+	}
+
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	ctx.JSON(http.StatusOK, response)
+}
+
 // AuthRoutes sets up the authentication routes.
 func AuthRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controller *AuthController) {
 	authGroup := router.Group("/auth")
@@ -550,10 +615,14 @@ func AuthRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controll
 		{
 			authGroup.GET("/current-user", controller.CurrentUser)
 			authGroup.POST("/signout", controller.SignOut)
+
 			authGroup.POST("/send-email-verification", controller.SendEmailVerification)
 			authGroup.POST("/verify-email", controller.VerifyEmail)
+			authGroup.POST("/change-email", controller.ChangeEmail)
+
 			authGroup.POST("/send-contact-number-verification", controller.SendContactNumberVerification)
 			authGroup.POST("/verify-contact-number", controller.VerifyContactNumber)
+			authGroup.POST("/change-contact-number", controller.ChangeContactNumber)
 		}
 	}
 }
