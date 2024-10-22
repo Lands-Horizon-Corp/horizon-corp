@@ -14,12 +14,11 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '../ui/button'
 
-import { MdOutlineExpandLess } from 'react-icons/md'
 import { MdExpandMore } from 'react-icons/md'
+import { MdOutlineExpandLess } from 'react-icons/md'
 
 import FeedbackForm from './feedback-form'
 import { softwareUpdates } from '@/constants'

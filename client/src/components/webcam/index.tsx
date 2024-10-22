@@ -7,7 +7,7 @@ import { useCameraGrant } from './use-camera-grant'
 import CameraDevicePicker from './camera-device-picker'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
     enableBleed?: boolean
@@ -66,7 +66,7 @@ const WebCam = forwardRef<Webcam, Props>(
                             <video
                                 ref={bleedRef}
                                 className={cn(
-                                    'fade-in-anims absolute inset-0 left-1/2 -z-10 -translate-x-1/2 blur-md scale-x-110',
+                                    'fade-in-anims absolute inset-0 left-1/2 -z-10 -translate-x-1/2 scale-x-110 blur-md',
                                     bleedClassName
                                 )}
                             />

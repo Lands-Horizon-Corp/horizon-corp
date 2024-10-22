@@ -1,4 +1,4 @@
-import { randomChoose } from '@/utils'
+import { randomChoose } from '@/helpers'
 
 export const startOfDayQuotes: string[] = [
     'Start your day with a positive mindset and watch the magic happen.',

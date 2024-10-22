@@ -1,13 +1,10 @@
 import z from 'zod'
-import { memberTypeSchema, emailSchema } from '.'
+import { userAccountTypeSchema } from './common'
 
 export const signInFormSchema = z.object({
-    email: emailSchema,
-    username: z
-        .string({ required_error: 'Username is required' })
-        .min(1, 'User Name is required'),
+    key: z.string().min(1, 'email, username, or contact is required'),
     password: z
         .string({ required_error: 'Password is required' })
         .min(1, 'Password is empty'),
-    mode: memberTypeSchema,
+    accountType: userAccountTypeSchema.default('Member'),
 })

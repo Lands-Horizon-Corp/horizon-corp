@@ -1,8 +1,9 @@
+import { useState } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import { useEditor, EditorContent } from '@tiptap/react'
-import { useState } from 'react'
+
 import Toolbar from './toolbar'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types'
 
 interface Props extends IBaseComp {
     content?: string

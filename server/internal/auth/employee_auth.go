@@ -1,40 +1,34 @@
 package auth
 
 import (
-	"horizon/server/config"
 	"horizon/server/internal/models"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"go.uber.org/zap"
 )
 
-func GenerateEmployeeJWT(employee models.Employee) (string, error) {
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		return "", err
+type EmployeeAuthService struct {
+	tokenService TokenService
+	logger       *zap.Logger
+}
+
+func NewEmployeeAuthService(tokenService TokenService, logger *zap.Logger) *EmployeeAuthService {
+	return &EmployeeAuthService{
+		tokenService: tokenService,
+		logger:       logger,
 	}
-	signed, err := config.Decrypt(cfg.AppEmployeeToken, cfg.AppToken)
-	if err != nil {
-		return "", err
-	}
-	expirationTime := time.Now().Add(24 * time.Hour)
+}
+
+func (s *EmployeeAuthService) GenerateEmployeeToken(employee models.Employee, expiration time.Duration) (string, error) {
 	claims := &UserClaims{
-		ID:                employee.ID,
-		Mode:              "employee",
-		FirstName:         employee.FirstName,
-		LastName:          employee.LastName,
-		PermanentAddress:  employee.PermanentAddress,
-		Description:       employee.Description,
-		Birthdate:         employee.Birthdate,
-		Email:             employee.Email,
-		IsEmailVerified:   employee.IsEmailVerified,
-		IsContactVerified: employee.IsContactVerified,
-		StandardClaims: jwt.StandardClaims{
-			Subject:   employee.FirstName + " " + employee.LastName,
-			ExpiresAt: expirationTime.Unix(),
-			IssuedAt:  time.Now().Unix(),
-		},
+		ID:          employee.ID,
+		AccountType: "Employee",
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(signed)
+
+	token, err := s.tokenService.GenerateToken(claims, 0)
+	if err != nil {
+		s.logger.Error("Failed to generate employee token", zap.Error(err))
+		return "", err
+	}
+	return token, nil
 }

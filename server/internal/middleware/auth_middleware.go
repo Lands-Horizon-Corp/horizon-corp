@@ -1,94 +1,70 @@
+// middleware/auth_middleware.go
 package middleware
 
 import (
-	"context"
-	"fmt"
+	"errors"
 	"horizon/server/config"
 	"horizon/server/internal/auth"
+	"horizon/server/internal/repositories"
+	"horizon/server/services"
 	"net/http"
-	"strings"
-	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/gin-gonic/gin"
 )
 
-type middleware string
+type AuthMiddleware struct {
+	useRepo      *repositories.UserRepository
+	otpService   *services.OTPService
+	cfg          *config.AppConfig
+	tokenService auth.TokenService
+}
 
-const (
-	AuthorizationHeader middleware = "Authorization"
-	BearerPrefix        middleware = "Bearer "
-	ClaimsKey           middleware = "claims"
-)
-
-func JWTMiddleware(mode string, next http.Handler) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get(string(AuthorizationHeader))
-		if authHeader == "" {
-			http.Error(w, "Authorization header is missing", http.StatusUnauthorized)
-			return
-		}
-
-		if !strings.HasPrefix(authHeader, string(BearerPrefix)) {
-			http.Error(w, "Invalid authorization format", http.StatusUnauthorized)
-			return
-		}
-
-		tokenString := strings.TrimPrefix(authHeader, string(BearerPrefix))
-
-		cfg, err := config.LoadConfig()
-		if err != nil {
-			http.Error(w, "Could not load config", http.StatusInternalServerError)
-			return
-		}
-
-		modeToken, err := getTokenMode(mode)
-		if err != nil {
-			http.Error(w, "Could not load mode token", http.StatusInternalServerError)
-			return
-		}
-
-		signed, err := config.Decrypt(modeToken, cfg.AppToken)
-		if err != nil {
-			http.Error(w, "Could not decrypt token", http.StatusInternalServerError)
-			return
-		}
-
-		claims := &auth.UserClaims{}
-		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return signed, nil
-		})
-
-		if err != nil || !token.Valid {
-			http.Error(w, "Invalid token", http.StatusUnauthorized)
-			return
-		}
-
-		if claims.ExpiresAt < time.Now().Unix() {
-			http.Error(w, "Token has expired", http.StatusUnauthorized)
-			return
-		}
-
-		ctx := r.Context()
-		ctx = context.WithValue(ctx, ClaimsKey, claims)
-		next.ServeHTTP(w, r.WithContext(ctx))
+func NewAuthMiddleware(
+	useRepo *repositories.UserRepository,
+	otpService *services.OTPService,
+	cfg *config.AppConfig,
+	tokenService auth.TokenService,
+) *AuthMiddleware {
+	return &AuthMiddleware{
+		useRepo:      useRepo,
+		otpService:   otpService,
+		cfg:          cfg,
+		tokenService: tokenService,
 	}
 }
 
-func getTokenMode(mode string) ([]byte, error) {
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		return nil, err
-	}
-	switch mode {
-	case "admin":
-		return cfg.AppAdminToken, nil
-	case "owner":
-		return cfg.AppOwnerToken, nil
-	case "member":
-		return cfg.AppMemberToken, nil
-	case "employee":
-		return cfg.AppEmployeeToken, nil
-	default:
-		return nil, fmt.Errorf("unrecognized mode: %s", mode)
+func (m *AuthMiddleware) Middleware() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		cookie, err := ctx.Request.Cookie(m.cfg.AppTokenName)
+		if err != nil {
+			m.tokenService.ClearTokenCookie(ctx)
+			if errors.Is(err, http.ErrNoCookie) {
+				ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: cookie not found"})
+			} else {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
+			}
+			ctx.Abort()
+			return
+		}
+
+		claims, err := m.tokenService.VerifyToken(cookie.Value)
+		if err != nil {
+			m.tokenService.ClearTokenCookie(ctx)
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: token verification failed"})
+			ctx.Abort()
+			return
+		}
+
+		user, err := m.useRepo.GetByID(claims.AccountType, claims.ID)
+		if err != nil {
+			m.tokenService.ClearTokenCookie(ctx)
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: user not found"})
+			ctx.Abort()
+			return
+		}
+
+		ctx.Set("current-user", user)
+		ctx.Set("claims", claims)
+		ctx.Next()
 	}
 }

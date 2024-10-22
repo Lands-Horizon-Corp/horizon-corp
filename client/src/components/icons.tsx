@@ -29,6 +29,7 @@ import {
     PiNewspaper as ReportsIcon,
     PiUsersThree as Users3Icon,
     PiBuildingOffice as BuildingBranchIcon,
+    PiWarningCircleFill as WarningCircleIcon,
     PiTextStrikethroughLight as PiTextStrikethroughLightIcon,
     PiListBulletsBold as PiListBulletsBoldIcon,
     PiCodeBlock as PiCodeBlockIcon,
@@ -47,8 +48,14 @@ import {
     HiOutlineChatBubbleBottomCenterText as FeedbackIcon,
     HiOutlineCamera as CameraIcon,
 } from 'react-icons/hi2'
+import {
+    AiOutlineKey as KeyIcon,
+    AiOutlineLoading as LoadingCircleIcon,
+    AiOutlineLoading3Quarters as LoadingSpinnerIcon,
+} from 'react-icons/ai'
+import { MdMarkEmailRead as EmailCheckIcon } from 'react-icons/md'
+import { BsPatchCheck as VerifiedPatchIcon } from 'react-icons/bs'
 import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
-import { AiOutlineLoading3Quarters as LoadingSpinnerIcon } from 'react-icons/ai'
 import { RxFontItalic as ToolbarItalicIcon } from 'react-icons/rx'
 import {
     FaBold as FaBoldIcon,
@@ -61,7 +68,7 @@ import {
     TbSunMoon as SunMoonIcon,
 } from 'react-icons/tb'
 
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 const CookieIcon: React.FC<IBaseCompNoChild> = (props) => {
     return (
@@ -127,6 +134,7 @@ const CookieIcon: React.FC<IBaseCompNoChild> = (props) => {
 
 export {
     SunIcon,
+    KeyIcon,
     DevIcon,
     UserIcon,
     MoonIcon,
@@ -149,11 +157,15 @@ export {
     FootstepsIcon,
     UserClockIcon,
     DashboardIcon,
+    EmailCheckIcon,
     UserShieldIcon,
     BuildingCogIcon,
     SwitchCameraIcon,
     ChevronRightIcon,
     NotificationIcon,
+    WarningCircleIcon,
+    VerifiedPatchIcon,
+    LoadingCircleIcon,
     BuildingBranchIcon,
     LoadingSpinnerIcon,
     ToolbarItalicIcon,

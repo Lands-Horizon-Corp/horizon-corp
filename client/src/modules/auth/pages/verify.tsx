@@ -1,147 +1,96 @@
+import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
+import { useMutation } from '@tanstack/react-query'
 
-import LoadingCircle from '@/components/loader/loading-circle'
-
-import { Button } from '@/components/ui/button'
-import UserAvatar from '@/components/user-avatar'
 import VerifyRoot from '@/modules/auth/components/verify-root'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
-import AccountCancelled from '@/modules/auth/components/account-cancelled'
+import ShowAccountStatus from '../components/verify-root/show-account-status'
 
-import { UserBase, UserStatus } from '@/types'
+import { withCatchAsync } from '@/lib'
+import useCurrentUser from '@/hooks/use-current-user'
+import { serverRequestErrExtractor } from '@/helpers'
+import { getUsersAccountTypeRedirectPage } from './helpers'
+import UserService from '@/horizon-corp/server/auth/UserService'
 
-interface Props {}
-
-const Verify = ({}: Props) => {
-    const [loading, setLoading] = useState(true)
-    const [display, setDisplay] = useState<
-        null | 'verify' | 'verify-complete' | 'account-cancelled'
-    >()
-    const [userData, setUserData] = useState<UserBase | null>(null)
-
+const Verify = () => {
     const router = useRouter()
+    const { data: currentUser, isFetching, setCurrentUser } = useCurrentUser({})
+
+    const { mutate: onBackSignOut, isPending } = useMutation<void, string>({
+        mutationKey: ['sign-out'],
+        mutationFn: async () => {
+            const [error] = await withCatchAsync(UserService.SignOut())
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                throw errorMessage
+            }
+
+            router.navigate({ to: '/auth' })
+
+            setCurrentUser(null)
+            return
+        },
+    })
+
+    const [display, setDisplay] = useState<null | 'verify' | 'account-status'>(
+        null
+    )
 
     useEffect(() => {
-        if (!userData) return
-
-        if (userData.status === UserStatus['Not allowed'])
-            return setDisplay('account-cancelled')
-
-        if (userData.status === UserStatus.Verified)
-            return setDisplay('verify-complete')
-
-        if (!userData.validContactNumber || !userData.validEmail)
+        if (!currentUser || isFetching) return
+        else if (currentUser.status === 'Verified') {
+            const redirectUrl = getUsersAccountTypeRedirectPage(currentUser)
+            router.navigate({ to: redirectUrl })
+        } else if (
+            !currentUser.isContactVerified ||
+            !currentUser.isEmailVerified
+        ) {
             setDisplay('verify')
-    }, [userData])
-
-    useEffect(() => {
-        // TODO: Fetch User Data
-        // Remove code below it just for simulating user data fetching
-        // and use our Horizon service.auth-service.ts
-        setLoading(true)
-        setTimeout(() => {
-            setUserData({
-                id: '215',
-                username: 'Jervx',
-                validEmail: false,
-                validContactNumber: false,
-                status: UserStatus['Pending'],
-                profilePicture: {
-                    url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
-                },
-            } as any as UserBase)
-            setLoading(false)
-        }, 1000)
-    }, [])
-
-    const autoRedirectAccount = (userData: UserBase) => {
-        // TODO Redirect once verified
-        // if (userData.status === UserStatus.Verified) {
-        //     // TODO: Auto redirect to page the account belongs
-        //     // admin/
-        //     // owner/
-        //     // member/
-        //     // employee
-        // }
-        // router.navigate({ to : "..."})
-    }
+        } else {
+            setDisplay('account-status')
+        }
+    }, [currentUser, isFetching, router])
 
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {loading && (
+                {isFetching && (
                     <div className="flex flex-col items-center gap-y-2">
-                        <LoadingCircle />
+                        <LoadingSpinner className="block" />
                         <p className="text-center text-sm text-foreground/50">
-                            please wait.. loading your info
+                            loading user info
                         </p>
                     </div>
                 )}
-                {userData && !loading && (
+                {currentUser && !isFetching && (
                     <>
                         {display === 'verify' && (
                             <VerifyRoot
-                                userData={userData}
+                                userData={currentUser}
                                 onVerifyChange={(newUserData) =>
-                                    setUserData(newUserData)
+                                    setCurrentUser(newUserData)
                                 }
-                                onVerifyComplete={() => {
-                                    setDisplay('verify-complete')
+                                onVerifyComplete={(newUserData) => {
+                                    setDisplay('account-status')
+                                    setCurrentUser(newUserData)
                                 }}
                             />
                         )}
-                        {display === 'verify-complete' && (
-                            <div className="flex max-w-sm flex-col items-center gap-y-4">
-                                <p className="text-xl font-medium text-green-500">
-                                    Account Verify Complete
-                                </p>
-                                <p className="text-center text-foreground/70">
-                                    Your account email & phone number is
-                                    verified.{' '}
-                                    <span className="font-medium text-foreground/90">
-                                        Thank you for joining with us!
-                                    </span>
-                                </p>
-                                <UserAvatar
-                                    className="my-8 size-28"
-                                    src={userData?.profilePicture?.url ?? ''}
-                                    fallback={
-                                        userData?.username.charAt(0) ?? '-'
-                                    }
-                                />
-                                <p className="text-center">
-                                    {userData.status === UserStatus.Pending && (
-                                        <span>
-                                            Please wait for 7 working days for
-                                            validation before you can use your
-                                            account, we will send an email once
-                                            your account is activated.
-                                            <br />
-                                        </span>
-                                    )}
-                                </p>
-                                <p className="px-4 text-center">
-                                    Your ID is{' '}
-                                    <span className="font-medium text-green-500">
-                                        {userData.id}
-                                    </span>
-                                </p>
-                                <Button
-                                    onClick={() =>
-                                        autoRedirectAccount(userData)
-                                    }
-                                    disabled={loading}
-                                    className="mt-6 w-full bg-[#34C759] hover:bg-[#38b558]"
-                                >
-                                    Proceed
-                                </Button>
-                            </div>
-                        )}
-                        {display === 'account-cancelled' && (
-                            <AccountCancelled userData={userData} />
+                        {display === 'account-status' && (
+                            <ShowAccountStatus
+                                loading={isFetching || isPending}
+                                onBackSignOut={onBackSignOut}
+                                userData={currentUser}
+                            />
                         )}
                     </>
+                )}
+                {!currentUser && !isFetching && (
+                    <p>Couldn&apos;t load your info, please please try again</p>
                 )}
             </AuthPageWrapper>
         </div>

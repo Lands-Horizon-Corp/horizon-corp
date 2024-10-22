@@ -1,84 +1,75 @@
-import { createRoute } from '@tanstack/react-router'
-
-import AdminLandingPage from './pages'
-import AdminProfilePage from './pages/profile'
-import AdminSettingsPage from './pages/settings'
-import AdminDashboardPage from './pages/dashboard'
-import AdminNotificationsPage from './pages/notifications'
-import AdminFootstepsTrackingsPage from './pages/footsteps'
-import AdminViewMembersPage from './pages/members/view-members'
-import AdminMembersFeedbacksPage from './pages/members/feedbacks'
-import AdminViewCompaniesPage from './pages/companies-management/view-companies'
-import AdminCompaniesFeedbacksPage from './pages/companies-management/feedbacks'
-
-import AdminLayout from '@/modules/admin/layout'
+import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
 
 const adminRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'admin',
-    component: AdminLayout,
+    component: lazyRouteComponent(() => import('./layout')),
 })
 
 const adminLandingRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: '/',
-    component: AdminLandingPage,
+    component: lazyRouteComponent(() => import('./pages/')),
 })
 
 const adminDashboardRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'dashboard',
-    component: AdminDashboardPage,
+    component: lazyRouteComponent(() => import('./pages/dashboard')),
 })
 
 const adminViewMembersRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'members-management/view-members',
-    component: AdminViewMembersPage,
+    component: lazyRouteComponent(() => import('./pages/members/view-members')),
 })
 
 const adminMembersFeedbackRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'members-management/feedbacks',
-    component: AdminMembersFeedbacksPage,
+    component: lazyRouteComponent(() => import('./pages/members/feedbacks')),
 })
 
 const adminViewCompaniesRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'companies-management/view-companies',
-    component: AdminViewCompaniesPage,
+    component: lazyRouteComponent(
+        () => import('./pages/companies-management/view-companies')
+    ),
 })
 
 const adminCompaniesFeedbackRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'companies-management/feedbacks',
-    component: AdminCompaniesFeedbacksPage,
+    component: lazyRouteComponent(
+        () => import('./pages/companies-management/feedbacks')
+    ),
 })
 
 const adminFootstepTrackingRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'footstep-tracking',
-    component: AdminFootstepsTrackingsPage,
+    component: lazyRouteComponent(() => import('./pages/footsteps')),
 })
 
 const adminProfileRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'profile',
-    component: AdminProfilePage,
+    component: lazyRouteComponent(() => import('./pages/profile')),
 })
 
 const adminNotificationsRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'notifications',
-    component: AdminNotificationsPage,
+    component: lazyRouteComponent(() => import('./pages/notifications')),
 })
 
 const adminSettingsRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'settings',
-    component: AdminSettingsPage,
+    component: lazyRouteComponent(() => import('./pages/settings')),
 })
 
 const AdminRoute = adminRoute.addChildren([

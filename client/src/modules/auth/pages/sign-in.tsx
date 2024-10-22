@@ -1,73 +1,80 @@
 import z from 'zod'
-import { useState } from 'react'
-import { useRouter } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import { useCallback, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useRouter, useSearch } from '@tanstack/react-router'
 
 import SignInForm from '../components/forms/sign-in-form'
-import AccountCancelled from '../components/account-cancelled'
-
-import { UserBase, UserStatus } from '@/types'
-import { emailSchema, memberTypeSchema } from '../validations'
-import { useSearch } from '@tanstack/react-router'
 import AuthPageWrapper from '../components/auth-page-wrapper'
 
+import { UserData } from '@/horizon-corp/types'
+import useCurrentUser from '@/hooks/use-current-user'
+import { getUsersAccountTypeRedirectPage } from './helpers'
+import { userAccountTypeSchema } from '../validations/common'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
+
 export const SignInPageSearchSchema = z.object({
-    email: z.string().optional().default('').or(emailSchema),
-    mode: z
+    key: z.string().optional(),
+    accountType: z
         .string()
         .optional()
         .default('Member')
-        .pipe(memberTypeSchema)
+        .pipe(userAccountTypeSchema)
         .catch('Member'),
 })
 
 const SignInPage = () => {
     const router = useRouter()
+    const queryClient = useQueryClient()
+    const { data: currentUser, isFetching } = useCurrentUser({})
     const prefilledValues = useSearch({ from: '/auth/sign-in' })
-    const [userData, setUserData] = useState<null | UserBase>(null)
 
-    const onSignInSuccess = (userData: UserBase) => {
-        const { validContactNumber, validEmail, status } = userData
-        if (status === UserStatus['Not allowed']) return setUserData(userData)
+    const onSignInSuccess = useCallback(
+        (userData: UserData) => {
+            const { isContactVerified, isEmailVerified, status } = userData
 
-        if (
-            status === UserStatus.Pending &&
-            (!validContactNumber || !validEmail)
-        ) {
-            router.navigate({ to: '/auth/verify' })
-        }
+            queryClient.setQueryData(['current-user'], userData)
 
-        if (status === UserStatus.Verified) {
-            // TODO
-            // Navigate to respective page
-            // owner
-            // member
-            // admin
-            // employee
-        }
-    }
+            if (status === 'Not Allowed') {
+                toast.error(
+                    'Your account has been canceled, and you can no longer log in.'
+                )
+                router.navigate({ to: '/auth/verify' })
+            }
 
-    const handleOnCancelBack = () => {
-        // TODO:
-        // Sign Out user since he/she is restricted
-        // unset userData
-        setUserData(null)
-    }
+            if (
+                status === 'Pending' ||
+                !isContactVerified ||
+                !isEmailVerified
+            ) {
+                toast.warning('Your account is pending approval')
+                router.navigate({ to: '/auth/verify' })
+            }
+
+            if (status === 'Verified') {
+                const redirectUrl = getUsersAccountTypeRedirectPage(userData)
+                toast.success("You're logged in!")
+                router.navigate({ to: redirectUrl })
+            }
+        },
+        [queryClient, router]
+    )
+
+    useEffect(() => {
+        if (!currentUser) return
+        onSignInSuccess(currentUser)
+    }, [currentUser, onSignInSuccess])
 
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {!userData && (
+                {!currentUser && !isFetching && (
                     <SignInForm
                         defaultValues={prefilledValues}
                         onSuccess={onSignInSuccess}
                     />
                 )}
-                {userData && (
-                    <AccountCancelled
-                        userData={userData}
-                        onBack={handleOnCancelBack}
-                    />
-                )}
+                {isFetching && <LoadingSpinner />}
             </AuthPageWrapper>
         </div>
     )
