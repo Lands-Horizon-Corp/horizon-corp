@@ -17,6 +17,7 @@ import type {
   VerifyContactResource,
   VerifyEmailRequest,
   SkipResource,
+  NewPasswordRequest,
 } from '@/horizon-corp/types'
 import { getSMSContent, getEmailContent } from '@/lib'
 
@@ -156,5 +157,11 @@ export default class UserService {
   > {
     const endpoint = `${UserService.BASE_ENDPOINT}/skip-verification`
     return await UseServer.post<void, SkipResource>(endpoint)
+  }
+
+  // POST - /auth/new-password
+  public static async NewPassword(data: NewPasswordRequest): Promise<void> {
+    const endpoint = `${UserService.BASE_ENDPOINT}/new-password`
+    await UseServer.post<NewPasswordRequest>(endpoint, data)
   }
 }

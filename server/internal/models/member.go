@@ -31,6 +31,5 @@ type Member struct {
 	IsSkipVerification bool         `gorm:"default:false" json:"is_skip_verification"`
 	ContactNumber      string       `gorm:"size:255;not null;unique" json:"contact_number"`
 	Media              Media        `gorm:"foreignKey:MediaID" json:"media"`
-	Status             MemberStatus `gorm:"type:varchar(255);default:'Pending'" json:"status"` // Add the status field
-
+	Status             MemberStatus `gorm:"type:varchar(255);default:'Pending'" json:"status"`
 }
