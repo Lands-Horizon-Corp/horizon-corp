@@ -5,14 +5,14 @@ import { useCallback, useRef, useState } from 'react'
 import WebCam from '@/components/webcam'
 import { ClockIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import TimeInCounter from '@/components/time-in-out/time-in-counter'
 import RealtimeTimeText from '@/components/time-in-out/realtime-time-text'
 
 import { cn } from '@/lib/utils'
 import { UserBase } from '@/types'
 import { TTImeInEntry } from './time-in-bar'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
 
 interface Props extends IBaseComp {
     currentUser: UserBase
@@ -48,9 +48,6 @@ const TimeInTimeOut = ({
         }
 
         if (!timeEntry) {
-            // todo create time in request
-            // backend checks if user already did some action 5 mins ago
-            // toast.warning(reqeust error message here)
             return setTimeout(() => {
                 onTimeInEntry({
                     timeStart: new Date('Mon, 07 Oct 2024 06:50:39 GMT'),
@@ -58,10 +55,6 @@ const TimeInTimeOut = ({
             }, 1000)
         }
 
-        // todo time out request
-        // backend checks if user already did some action 5 mins ago
-        // then show error here via toast
-        // toast.warning(reqeust error message here)
         return setTimeout(() => {
             onTimeOut({
                 timeStart: new Date('Mon, 07 Oct 2024 06:50:39 GMT'),
@@ -109,7 +102,7 @@ const TimeInTimeOut = ({
                     variant={!timeEntry ? 'default' : 'outline'}
                 >
                     {loading ? (
-                        <LoadingCircle />
+                        <LoadingSpinner />
                     ) : timeEntry ? (
                         <>
                             <ClockIcon className="size-4" />

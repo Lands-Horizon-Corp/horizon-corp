@@ -30,3 +30,5 @@ server/main
 .env.development
 .env.staging
 .env.production
+
+./server/tmp/*

@@ -1,57 +1,47 @@
-import { createRoute } from '@tanstack/react-router'
+import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
-import MemberProfilePage from './pages/profile'
-import MemberMessagesPage from './pages/messages'
-import MemberSettingsPage from './pages/settings'
-import MemberLayout from '@/modules/member/layout'
-import MemberDashboardPage from './pages/dashboard'
-import MemberLandingPage from '@/modules/member/pages'
-import MemberNotificationPage from './pages/notifications'
 
 const memberRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'member',
-    beforeLoad: () => {
-        // TODO: Once middleware is implemented
-    },
-    component: MemberLayout,
+    component: lazyRouteComponent(() => import('@/modules/member/layout')),
 })
 
 const memberLandingRoute = createRoute({
     getParentRoute: () => memberRoute,
     path: '/',
-    component: MemberLandingPage,
+    component: lazyRouteComponent(() => import('@/modules/member/pages')),
 })
 
 const memberDashboardRoute = createRoute({
     getParentRoute: () => memberRoute,
     path: '/dashboard',
-    component: MemberDashboardPage,
+    component: lazyRouteComponent(() => import('./pages/dashboard')),
 })
 
 const memberProfileRoute = createRoute({
     getParentRoute: () => memberRoute,
     path: '/profile',
-    component: MemberProfilePage,
+    component: lazyRouteComponent(() => import('./pages/profile')),
 })
 
 const memberNotificationRoute = createRoute({
     getParentRoute: () => memberRoute,
     path: '/notifications',
-    component: MemberNotificationPage,
+    component: lazyRouteComponent(() => import('./pages/notifications')),
 })
 
 const memberMessagesRoute = createRoute({
     getParentRoute: () => memberRoute,
     path: '/messages',
-    component: MemberMessagesPage,
+    component: lazyRouteComponent(() => import('./pages/messages')),
 })
 
 const memberSettingsRoute = createRoute({
     getParentRoute: () => memberRoute,
     path: '/settings',
-    component: MemberSettingsPage,
+    component: lazyRouteComponent(() => import('./pages/settings')),
 })
 
 const MemberRoute = memberRoute.addChildren([

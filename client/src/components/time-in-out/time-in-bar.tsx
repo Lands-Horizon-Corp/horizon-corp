@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import TimeInTimeOut from '@/components/time-in-out'
 import ActionTooltip from '@/components/action-tooltip'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import {
     randomEndOfDayQuoute,
@@ -20,7 +20,7 @@ import {
 } from '@/constants/quoutes'
 import { cn } from '@/lib/utils'
 import { UserBase } from '@/types'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
     currentUser: UserBase | null
@@ -70,7 +70,7 @@ const TimeInBar = ({ className, currentUser }: Props) => {
                         !loading && 'pointer-events-auto cursor-pointer pr-3'
                     )}
                 >
-                    {loading && <LoadingCircle />}
+                    {loading && <LoadingSpinner />}
                     {!loading && (
                         <>
                             <UserAvatar
@@ -104,7 +104,7 @@ const TimeInBar = ({ className, currentUser }: Props) => {
                         <DialogTitle>Time In Out Form</DialogTitle>
                         <DialogDescription>Shows time in out</DialogDescription>
                     </DialogHeader>
-                    <div className="ecoop-scroll [&::-webkit-scrollbar]:size-0 max-h-screen overflow-y-scroll">
+                    <div className="ecoop-scroll max-h-screen overflow-y-scroll [&::-webkit-scrollbar]:size-0">
                         <TimeInTimeOut
                             timeEntry={timeInEntry}
                             currentUser={currentUser}

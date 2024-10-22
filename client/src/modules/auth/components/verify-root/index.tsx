@@ -1,38 +1,48 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 import EcoopLogo from '@/components/ecoop-logo'
 import StepIndicator from '@/components/steps-indicator'
 import VerifyForm from '@/modules/auth/components/forms/verify-form'
 
-import { UserBase, UserStatus } from '@/types'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
+import { UserData } from '@/horizon-corp/types'
 
 interface Props extends IBaseComp {
     readOnly?: boolean
-    userData: UserBase
-    onVerifyComplete?: (newUserData: UserBase) => void
-    onVerifyChange?: (newUserData: UserBase) => void
+
+    userData: UserData
+    onVerifyChange?: (newUserData: UserData) => void
+    onVerifyComplete?: (newUserData: UserData) => void
+}
+
+type TStep = 'mobile' | 'email'
+
+const countCompleted = (userData: UserData) => {
+    let completed = 0
+
+    if (userData.isEmailVerified) completed++
+    if (userData.isContactVerified) completed++
+
+    return completed
 }
 
 const VerifyRoot = ({
-    readOnly = false,
     userData,
+    readOnly = false,
     onVerifyChange,
     onVerifyComplete,
 }: Props) => {
-    const [step, setStep] = useState(1)
+    const [skipped, setSkipped] = useState<TStep[]>([])
+    const completedCount = countCompleted(userData)
 
-    useEffect(() => {
-        if (
-            (userData.validContactNumber && userData.validEmail) ||
-            userData.status === UserStatus.Verified
-        )
-            return onVerifyComplete?.(userData)
-    }, [userData])
+    if (completedCount === 2) {
+        onVerifyComplete?.(userData)
+        return
+    }
 
-    const handleOnSuccess = (userData: UserBase, nextStep: number) => {
-        onVerifyChange?.(userData)
-        setStep(nextStep)
+    if (skipped.length + completedCount >= 2) {
+        onVerifyComplete?.(userData)
+        return
     }
 
     return (
@@ -41,30 +51,32 @@ const VerifyRoot = ({
                 <EcoopLogo className="size-10" />
                 <StepIndicator
                     totalSteps={2}
-                    currentStep={step}
                     className="w-full"
+                    currentStep={completedCount + 1}
                 />
             </div>
-            {step === 1 && (
+            {!userData.isContactVerified && !skipped.includes('mobile') && (
                 <VerifyForm
                     key="1"
-                    id={userData.id}
                     readOnly={readOnly}
                     verifyMode="mobile"
-                    onSuccess={(data) => handleOnSuccess(data, 2)}
+                    onSuccess={(data) => onVerifyChange?.(data)}
+                    onSkip={() => setSkipped((val) => [...val, 'mobile'])}
                 />
             )}
-            {step === 2 && (
-                <VerifyForm
-                    key="2"
-                    id={userData.id}
-                    verifyMode="email"
-                    readOnly={readOnly}
-                    onSuccess={(data) => {
-                        onVerifyComplete?.(data)
-                    }}
-                />
-            )}
+            {!userData.isEmailVerified &&
+                (userData.isContactVerified || skipped.includes('mobile')) &&
+                !skipped.includes('email') && (
+                    <VerifyForm
+                        key="2"
+                        verifyMode="email"
+                        readOnly={readOnly}
+                        onSuccess={(data) => {
+                            onVerifyComplete?.(data)
+                        }}
+                        onSkip={() => setSkipped((val) => [...val, 'email'])}
+                    />
+                )}
         </div>
     )
 }
