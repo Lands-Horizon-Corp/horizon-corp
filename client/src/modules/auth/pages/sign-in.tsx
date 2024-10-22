@@ -5,13 +5,13 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearch } from '@tanstack/react-router'
 
 import SignInForm from '../components/forms/sign-in-form'
+import GuestGuard from '@/components/wrappers/guest-guard'
 import AuthPageWrapper from '../components/auth-page-wrapper'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { UserData } from '@/horizon-corp/types'
 import useCurrentUser from '@/hooks/use-current-user'
-import { getUsersAccountTypeRedirectPage } from './helpers'
 import { userAccountTypeSchema } from '../validations/common'
-import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 export const SignInPageSearchSchema = z.object({
     key: z.string().optional(),
@@ -50,12 +50,6 @@ const SignInPage = () => {
                 toast.warning('Your account is pending approval')
                 router.navigate({ to: '/auth/verify' })
             }
-
-            if (status === 'Verified') {
-                const redirectUrl = getUsersAccountTypeRedirectPage(userData)
-                toast.success("You're logged in!")
-                router.navigate({ to: redirectUrl })
-            }
         },
         [queryClient, router]
     )
@@ -66,17 +60,19 @@ const SignInPage = () => {
     }, [currentUser, onSignInSuccess])
 
     return (
-        <div className="flex min-h-full flex-col items-center justify-center">
-            <AuthPageWrapper>
-                {!currentUser && !isFetching && (
-                    <SignInForm
-                        defaultValues={prefilledValues}
-                        onSuccess={onSignInSuccess}
-                    />
-                )}
-                {isFetching && <LoadingSpinner />}
-            </AuthPageWrapper>
-        </div>
+        <GuestGuard>
+            <div className="flex min-h-full flex-col items-center justify-center">
+                <AuthPageWrapper>
+                    {!currentUser && !isFetching && (
+                        <SignInForm
+                            defaultValues={prefilledValues}
+                            onSuccess={onSignInSuccess}
+                        />
+                    )}
+                    {isFetching || (currentUser && <LoadingSpinner />)}
+                </AuthPageWrapper>
+            </div>
+        </GuestGuard>
     )
 }
 
