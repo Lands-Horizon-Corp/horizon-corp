@@ -18,7 +18,7 @@ import { useUserAuthStore } from '@/store/user-auth-store'
 const NavAuthContents = ({ className }: IBaseCompNoChild) => {
     const router = useRouter()
     const { onOpen } = useConfirmModalStore()
-    const { currentUser, setCurrentUser } = useUserAuthStore();
+    const { currentUser, setCurrentUser } = useUserAuthStore()
 
     const pathname = useLocation({
         select: (location) => location.pathname,

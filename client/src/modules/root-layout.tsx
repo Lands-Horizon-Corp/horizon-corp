@@ -7,8 +7,7 @@ import ConnectionProvider from '@/providers/connection-provider'
 import useFetchCurrentUser from '@/hooks/use-fetch-current-user'
 
 const RootLayout = () => {
-
-    useFetchCurrentUser();
+    useFetchCurrentUser()
 
     return (
         <div className="relative">

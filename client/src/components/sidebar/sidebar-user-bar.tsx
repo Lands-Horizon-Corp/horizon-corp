@@ -56,7 +56,7 @@ const SidebarUserBar = ({ className, isExpanded }: Props) => {
     }
 
     return (
-        <DropdownMenu >
+        <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <div
                     className={cn(
