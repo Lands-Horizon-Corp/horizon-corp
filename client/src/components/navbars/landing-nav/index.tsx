@@ -9,7 +9,6 @@ import { ThemeToggleMenu } from '@/components/theme-toggle'
 import NavAuthContents from '@/components/navbars/auth-nav/nav-auth-contents'
 
 import { cn } from '@/lib/utils'
-import { EnvironmentManager } from '@/manager'
 
 type NavLink = {
     name: string
