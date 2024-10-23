@@ -12,12 +12,12 @@ const useFetchCurrentUser = (options?: {
     onSuccess?: (userData: UserData) => void
     retry?: number
 }) => {
-    const { setAuthStatus, setCurrentUser } = useUserAuthStore()
+    const { currentUser, setAuthStatus, setCurrentUser } = useUserAuthStore()
 
     const query = useQuery<UserData | null>({
         queryKey: ['current-user'],
         queryFn: async () => {
-            setAuthStatus('loading')
+            if (!currentUser) setAuthStatus('loading')
 
             const [error, response] = await withCatchAsync(
                 UserService.CurrentUser()
