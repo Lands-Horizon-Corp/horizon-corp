@@ -89,7 +89,7 @@ func (es *OTPService) SendEmailOTP(accountType string, id uint, req EmailRequest
 }
 
 // SendEContactNumberOTP generates and sends an OTP via SMS.
-func (es *OTPService) SendEContactNumberOTP(accountType string, id uint, req SMSRequest) error {
+func (es *OTPService) SendContactNumberOTP(accountType string, id uint, req SMSRequest) error {
 	otpStr, err := es.generateAndStoreOTP(accountType, id, "sms")
 	if err != nil {
 		return err
