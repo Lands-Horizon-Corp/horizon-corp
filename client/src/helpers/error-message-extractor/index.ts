@@ -38,12 +38,13 @@ export const extractErrorMessage = ({
  */
 export const allErrorMessageExtractor = ({
     errorMessageExtractors = [
-        zodErrExtractor, 
+        zodErrExtractor,
         axiosErrExtractor,
         // add your own error extractor here
     ],
     ...other
-}: TExtractErrorMessageParams): any => { // Error, AxiosError, or any other error
+}: TExtractErrorMessageParams): any => {
+    // Error, AxiosError, or any other error
     return extractErrorMessage({ ...other, errorMessageExtractors })
 }
 

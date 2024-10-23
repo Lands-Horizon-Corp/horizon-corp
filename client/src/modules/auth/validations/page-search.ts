@@ -1,5 +1,5 @@
-import z from "zod"
-import { emailSchema, userAccountTypeSchema } from "./common"
+import z from 'zod'
+import { emailSchema, userAccountTypeSchema } from './common'
 
 export const SignInPageSearchSchema = z.object({
     key: z.string().optional(),
