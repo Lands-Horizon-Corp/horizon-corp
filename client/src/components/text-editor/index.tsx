@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import { useEditor, EditorContent } from '@tiptap/react'
 
@@ -47,6 +47,12 @@ const TextEditor = ({
             onChange(editor.getHTML())
         },
     })
+
+    useEffect(() => {
+        if (editor && content !== editor.getHTML()) {
+            editor.commands.setContent(content || '')
+        }
+    }, [content, editor])
 
     const toggleHeading = (level: THeadingLevel) => {
         editor?.chain().focus().toggleHeading({ level }).run()
