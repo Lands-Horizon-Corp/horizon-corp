@@ -19,9 +19,17 @@ import {
 
 const Verify = () => {
     const router = useRouter()
-    const { data: currentUser, isFetching, setCurrentUser } = useCurrentUser()
+    const {
+        data: currentUser,
+        isFetching,
+        status,
+        setCurrentUser,
+    } = useCurrentUser()
 
-    const { mutate: onBackSignOut, isPending } = useMutation<void, string>({
+    const { mutate: onBackSignOut, isPending: isSigningOut } = useMutation<
+        void,
+        string
+    >({
         mutationKey: ['sign-out'],
         mutationFn: async () => {
             const [error] = await withCatchAsync(UserService.SignOut())
@@ -64,7 +72,7 @@ const Verify = () => {
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {isFetching && (
+                {status === 'pending' && (
                     <div className="flex flex-col items-center gap-y-2">
                         <LoadingSpinner className="block" />
                         <p className="text-center text-sm text-foreground/50">
@@ -72,12 +80,12 @@ const Verify = () => {
                         </p>
                     </div>
                 )}
-                {currentUser && !isFetching && (
+                {status !== 'pending' && currentUser && (
                     <>
                         {display === 'verify' && (
                             <VerifyRoot
                                 userData={currentUser}
-                                onSkip={() => setDisplay("account-status")}
+                                onSkip={() => setDisplay('account-status')}
                                 onVerifyChange={(newUserData) =>
                                     setCurrentUser(newUserData)
                                 }
@@ -89,7 +97,7 @@ const Verify = () => {
                         )}
                         {display === 'account-status' && (
                             <ShowAccountStatus
-                                loading={isFetching || isPending}
+                                loading={isSigningOut}
                                 onBackSignOut={onBackSignOut}
                                 userData={currentUser}
                             />
