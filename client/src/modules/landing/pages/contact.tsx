@@ -249,9 +249,15 @@ const ContactPage = () => {
                             <div className="bg- flex flex-col space-y-2">
                                 <Button
                                     disabled={isPending}
+                                    disabled={isPending}
                                     type="submit"
                                     className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
                                 >
+                                    {isPending ? (
+                                        <LoadingCircleIcon className="animate-spin" />
+                                    ) : (
+                                        'Send Message'
+                                    )}
                                     {isPending ? (
                                         <LoadingCircleIcon className="animate-spin" />
                                     ) : (
@@ -274,17 +280,20 @@ const ContactPage = () => {
                             </div>
                             <div className="flex space-x-2">
                                 <AiOutlineMessageIcon className="self-center" />
+                                <AiOutlineMessageIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     start a live chat
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
                                 <MdOutlineEmailIcon className="self-center" />
+                                <MdOutlineEmailIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     shoot us an email
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
+                                <CgFacebookIcon className="self-center" />
                                 <CgFacebookIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     Message us on Facebook
