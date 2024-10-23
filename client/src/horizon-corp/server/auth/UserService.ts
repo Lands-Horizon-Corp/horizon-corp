@@ -4,19 +4,19 @@ import type {
     ChangeContactNumberRequest,
     ChangeEmailRequest,
     ChangePasswordRequest,
-    CurrentUserResource,
+    UserData,
     ForgotPasswordRequest,
     SendEmailVerificationRequest,
     SendContactNumberVerificationRequest,
     SignInRequest,
-    SignInResource,
+    UserData,
     SignUpRequest,
-    SignUpResource,
+    UserData,
     UserData,
     VerifyContactNumberRequest,
-    VerifyContactResource,
+    UserData,
     VerifyEmailRequest,
-    SkipResource,
+    UserData,
     NewPasswordRequest,
 } from '@/horizon-corp/types'
 import { getSMSContent, getEmailContent } from '@/lib'
@@ -26,21 +26,21 @@ export default class UserService {
 
     // GET - /auth/current-user
     public static async CurrentUser(): Promise<
-        AxiosResponse<CurrentUserResource>
+        AxiosResponse<UserData>
     > {
         const endpoint = `${UserService.BASE_ENDPOINT}/current-user`
-        return await UseServer.get<CurrentUserResource>(endpoint)
+        return await UseServer.get<UserData>(endpoint)
     }
 
     // POST - /auth/signup
     public static async SignUp(
         data: SignUpRequest
-    ): Promise<AxiosResponse<SignUpResource>> {
+    ): Promise<AxiosResponse<UserData>> {
         const endpoint = `${UserService.BASE_ENDPOINT}/signup`
         data.birthdate = new Date()
         data.emailTemplate = getEmailContent('otp')
         data.contactTemplate = getSMSContent('contactNumber')
-        return await UseServer.post<SignUpRequest, SignUpResource>(
+        return await UseServer.post<SignUpRequest, UserData>(
             endpoint,
             data
         )
@@ -49,9 +49,9 @@ export default class UserService {
     // POST - /auth/signin
     public static async SignIn(
         data: SignInRequest
-    ): Promise<AxiosResponse<SignInResource>> {
+    ): Promise<AxiosResponse<UserData>> {
         const endpoint = `${UserService.BASE_ENDPOINT}/signin`
-        return await UseServer.post<SignInRequest, SignInResource>(
+        return await UseServer.post<SignInRequest, UserData>(
             endpoint,
             data
         )
@@ -131,11 +131,11 @@ export default class UserService {
     // POST - /auth/verify-contact
     public static async VerifyContactNumber(
         data: VerifyContactNumberRequest
-    ): Promise<AxiosResponse<VerifyContactResource>> {
+    ): Promise<AxiosResponse<UserData>> {
         const endpoint = `${UserService.BASE_ENDPOINT}/verify-contact-number`
         return await UseServer.post<
             VerifyContactNumberRequest,
-            VerifyContactResource
+            UserData
         >(endpoint, data)
 
         // on backend read the current user cookie in backend, based on the information there, you'll know the contact
@@ -153,10 +153,10 @@ export default class UserService {
 
     // POST - /auth/skip-verification
     public static async SkipVerification(): Promise<
-        AxiosResponse<SkipResource>
+        AxiosResponse<UserData>
     > {
         const endpoint = `${UserService.BASE_ENDPOINT}/skip-verification`
-        return await UseServer.post<void, SkipResource>(endpoint)
+        return await UseServer.post<void, UserData>(endpoint)
     }
 
     // POST - /auth/new-password

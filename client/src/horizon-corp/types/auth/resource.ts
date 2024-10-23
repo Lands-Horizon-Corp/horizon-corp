@@ -18,18 +18,6 @@ export interface UserData {
     status: AccountStatus
     isEmailVerified: boolean
     isContactVerified: boolean
-    IsSkipVerification: boolean
+    isSkipVerification: boolean
     media?: MediaResource
 }
-
-export interface SignUpResource extends UserData {}
-
-export interface VerifyEmailResource extends UserData {}
-
-export interface VerifyContactResource extends UserData {}
-
-export interface CurrentUserResource extends UserData {}
-
-export interface SignInResource extends UserData {}
-
-export interface SkipResource extends UserData {}
