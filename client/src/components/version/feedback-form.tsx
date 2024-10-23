@@ -53,11 +53,11 @@ const FeedbackForm = () => {
         TFeedBack
     >({
         mutationKey: ['send-feedback-message'],
-        mutationFn: async (contact: TFeedBack) => {
-            if (!contact) return
+        mutationFn: async (feedbackRequest: TFeedBack) => {
+            if (!feedbackRequest) return
 
             const [error] = await withCatchAsync(
-                FeedbackService.create(contact)
+                FeedbackService.create(feedbackRequest)
             )
 
             if (error) {
@@ -123,11 +123,9 @@ const FeedbackForm = () => {
                                                     {UpdateStatus.BUG}
                                                 </SelectItem>
                                                 <SelectItem
-                                                    value={
-                                                        UpdateStatus.IMPROVEMENT
-                                                    }
+                                                    value={UpdateStatus.GENERAL}
                                                 >
-                                                    {UpdateStatus.IMPROVEMENT}
+                                                    {UpdateStatus.GENERAL}
                                                 </SelectItem>
                                             </SelectContent>
                                         </Select>

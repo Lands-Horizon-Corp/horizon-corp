@@ -3,7 +3,7 @@ import { ReactNode } from 'react'
 export enum UpdateStatus {
     FEATURE = 'Feature',
     BUG = 'Bug',
-    IMPROVEMENT = 'Improvement',
+    GENERAL = 'General',
 }
 
 export interface SoftwareUpdates {
