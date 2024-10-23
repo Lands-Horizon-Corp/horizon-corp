@@ -1,4 +1,3 @@
-import z from 'zod'
 import { toast } from 'sonner'
 import { useCallback, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
@@ -12,17 +11,6 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { UserData } from '@/horizon-corp/types'
 import { isUserHasUnverified } from '@/helpers'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import { userAccountTypeSchema } from '../validations/common'
-
-export const SignInPageSearchSchema = z.object({
-    key: z.string().optional(),
-    accountType: z
-        .string()
-        .optional()
-        .default('Member')
-        .pipe(userAccountTypeSchema)
-        .catch('Member'),
-})
 
 const SignInPage = () => {
     const router = useRouter()
@@ -54,7 +42,7 @@ const SignInPage = () => {
                 return
             }
         },
-        [queryClient, router]
+        [queryClient, router, setCurrentUser]
     )
 
     useEffect(() => {
