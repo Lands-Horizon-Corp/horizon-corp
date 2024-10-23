@@ -15,7 +15,7 @@ export const contactFormSchema = z.object({
         .min(10, 'Contact number must be at least 10 digits long')
         .max(11, 'Contact number must not exceed 11 digits')
         .regex(/^\d+$/, 'Contact number must contain only numbers'),
-    message: z
+    description: z
         .string({ required_error: 'Message is required' })
         .min(20, 'Message must be at least 20 characters long')
         .max(100, 'Message must not exceed 100 characters'),
