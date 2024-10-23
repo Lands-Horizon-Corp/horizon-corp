@@ -249,7 +249,6 @@ const ContactPage = () => {
                             <div className="bg- flex flex-col space-y-2">
                                 <Button
                                     disabled={isPending}
-                                    disabled={isPending}
                                     type="submit"
                                     className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
                                 >
