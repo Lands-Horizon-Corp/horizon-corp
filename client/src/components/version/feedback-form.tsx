@@ -1,7 +1,9 @@
 import z from 'zod'
-import { cn } from '@/lib/utils'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { serverRequestErrExtractor } from '@/helpers'
+import { cn, withCatchAsync } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -24,14 +26,18 @@ import { FeedbackFormSchema } from './validations'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 import { UpdateStatus } from '@/types/constants'
 import TextEditor from '../text-editor'
+import FeedbackService from '@/horizon-corp/server/common/FeedbackService'
+import { toast } from 'sonner'
+
+import { LoadingCircleIcon } from '../icons'
 
 type TFeedBack = z.infer<typeof FeedbackFormSchema>
 
 const FeedbackForm = () => {
     const defaultValues = {
-        description: '',
+        feedbackType: '',
         email: '',
-        message: '',
+        description: '',
     }
 
     const feedbackForm = useForm<TFeedBack>({
@@ -41,10 +47,33 @@ const FeedbackForm = () => {
         defaultValues,
     })
 
+    const { mutate: sendFeedbackMessage, isPending } = useMutation<
+        void,
+        string,
+        TFeedBack
+    >({
+        mutationKey: ['send-feedback-message'],
+        mutationFn: async (contact: TFeedBack) => {
+            if (!contact) return
+
+            const [error] = await withCatchAsync(
+                FeedbackService.create(contact)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                return
+            }
+
+            feedbackForm.reset()
+            toast.success(`Feedback Message was Already Sent!`)
+        },
+    })
+
     const handleFeedBackSubmit = (data: TFeedBack) => {
         const parsedData = FeedbackFormSchema.parse(data)
-        console.log(parsedData)
-        // TODO: Logic
+        sendFeedbackMessage(parsedData)
     }
 
     const showFieldError = Object.values(feedbackForm.formState.errors)[0]
@@ -120,7 +149,7 @@ const FeedbackForm = () => {
                                 </FormLabel>
                                 <FormControl>
                                     <TextEditor
-                                        content={''}
+                                        content={field.value}
                                         onChange={field.onChange}
                                     ></TextEditor>
                                 </FormControl>
@@ -160,7 +189,13 @@ const FeedbackForm = () => {
                         className="w-fit text-[12px]"
                         errorMessage={showFieldError}
                     />
-                    <Button className={cn('w-full')}>send</Button>
+                    <Button className={cn('w-full')}>
+                        {isPending ? (
+                            <LoadingCircleIcon className="animate-spin" />
+                        ) : (
+                            'Send Feedback'
+                        )}
+                    </Button>
                 </form>
             </Form>
         </div>
