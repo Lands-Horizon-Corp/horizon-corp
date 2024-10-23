@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react"
+import { createContext, useContext } from 'react'
 
 export const ExpandContext = createContext<boolean | null>(true)
 
@@ -10,4 +10,3 @@ export const useSidebarExpandContext = () => {
 
     return sidebarExpandContext
 }
-
