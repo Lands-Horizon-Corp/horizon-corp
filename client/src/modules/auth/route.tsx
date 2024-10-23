@@ -6,7 +6,10 @@ import {
 import { zodSearchValidator } from '@tanstack/router-zod-adapter'
 
 import { rootRoute } from '@/root-route'
-import { ForgotPasswordPageSearchSchema, SignInPageSearchSchema } from '@/modules/auth/validations/page-search'
+import {
+    ForgotPasswordPageSearchSchema,
+    SignInPageSearchSchema,
+} from '@/modules/auth/validations/page-search'
 
 const authRoute = createRoute({
     getParentRoute: () => rootRoute,

@@ -11,9 +11,12 @@ interface UserAuthStore {
 }
 
 export const useUserAuthStore = create<UserAuthStore>((set) => ({
-    currentUser : null,
+    currentUser: null,
     authStatus: 'loading',
-    setCurrentUser : (newUserData : UserData | null) =>
-        set({ currentUser : newUserData, authStatus: newUserData ? 'authorized' : 'unauthorized' }),
+    setCurrentUser: (newUserData: UserData | null) =>
+        set({
+            currentUser: newUserData,
+            authStatus: newUserData ? 'authorized' : 'unauthorized',
+        }),
     setAuthStatus: (authStatus: TAuthStoreStatus) => set({ authStatus }),
 }))
