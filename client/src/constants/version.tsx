@@ -11,7 +11,7 @@ export const softwareUpdates: SoftwareUpdates = {
     updates: [
         {
             text: 'Improved loading times by optimizing database queries.',
-            updateStatus: UpdateStatus.IMPROVEMENT,
+            updateStatus: UpdateStatus.GENERAL,
             Icon: <TbGrowth />,
         },
         {
