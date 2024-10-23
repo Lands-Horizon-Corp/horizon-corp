@@ -45,7 +45,10 @@ const Verify = () => {
 
     useEffect(() => {
         if (!currentUser || isFetching) return
-        else if (isUserHasUnverified(currentUser)) {
+        else if (
+            isUserHasUnverified(currentUser) &&
+            !currentUser.isSkipVerification
+        ) {
             setDisplay('verify')
         } else if (
             currentUser.status === 'Verified' &&
@@ -74,6 +77,7 @@ const Verify = () => {
                         {display === 'verify' && (
                             <VerifyRoot
                                 userData={currentUser}
+                                onSkip={() => setDisplay("account-status")}
                                 onVerifyChange={(newUserData) =>
                                     setCurrentUser(newUserData)
                                 }

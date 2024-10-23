@@ -6,16 +6,21 @@ import VerifyForm from '@/modules/auth/components/forms/verify-form'
 
 import { IBaseComp } from '@/types/component'
 import { UserData } from '@/horizon-corp/types'
+import { useMutation } from '@tanstack/react-query'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import { withCatchAsync } from '@/lib'
+import { toast } from 'sonner'
+import { serverRequestErrExtractor } from '@/helpers'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 interface Props extends IBaseComp {
     readOnly?: boolean
-
     userData: UserData
+
+    onSkip: () => void
     onVerifyChange?: (newUserData: UserData) => void
     onVerifyComplete?: (newUserData: UserData) => void
 }
-
-type TStep = 'mobile' | 'email'
 
 const countCompleted = (userData: UserData) => {
     let completed = 0
@@ -29,18 +34,36 @@ const countCompleted = (userData: UserData) => {
 const VerifyRoot = ({
     userData,
     readOnly = false,
+    onSkip,
     onVerifyChange,
     onVerifyComplete,
 }: Props) => {
-    const [skipped, setSkipped] = useState<TStep[]>([])
-    const completedCount = countCompleted(userData)
+    const [userStoredData, setStoredUserData] = useState(userData)
+
+    const completedCount = countCompleted(userStoredData)
+
+    const { mutate: handleSkip, isPending: isSkipping } = useMutation<
+        UserData,
+        string
+    >({
+        mutationKey: ['skip-verification'],
+        mutationFn: async () => {
+            const [error, response] = await withCatchAsync(
+                UserService.SkipVerification()
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                throw errorMessage
+            }
+
+            onSkip()
+            return response.data
+        },
+    })
 
     if (completedCount === 2) {
-        onVerifyComplete?.(userData)
-        return
-    }
-
-    if (skipped.length + completedCount >= 2) {
         onVerifyComplete?.(userData)
         return
     }
@@ -55,28 +78,33 @@ const VerifyRoot = ({
                     currentStep={completedCount + 1}
                 />
             </div>
-            {!userData.isContactVerified && !skipped.includes('mobile') && (
+            {!userStoredData.isContactVerified && !isSkipping && (
                 <VerifyForm
                     key="1"
                     readOnly={readOnly}
                     verifyMode="mobile"
-                    onSuccess={(data) => onVerifyChange?.(data)}
-                    onSkip={() => setSkipped((val) => [...val, 'mobile'])}
+                    onSuccess={(data) => {
+                        onVerifyChange?.(data)
+                        setStoredUserData(data)
+                    }}
+                    onSkip={handleSkip}
                 />
             )}
-            {!userData.isEmailVerified &&
-                (userData.isContactVerified || skipped.includes('mobile')) &&
-                !skipped.includes('email') && (
+            {!userStoredData.isEmailVerified &&
+                userStoredData.isContactVerified &&
+                !isSkipping && (
                     <VerifyForm
                         key="2"
                         verifyMode="email"
                         readOnly={readOnly}
                         onSuccess={(data) => {
-                            onVerifyComplete?.(data)
+                            onVerifyChange?.(data)
+                            setStoredUserData(data)
                         }}
-                        onSkip={() => setSkipped((val) => [...val, 'email'])}
+                        onSkip={handleSkip}
                     />
                 )}
+            {isSkipping && <LoadingSpinner className="mx-auto" />}
         </div>
     )
 }
