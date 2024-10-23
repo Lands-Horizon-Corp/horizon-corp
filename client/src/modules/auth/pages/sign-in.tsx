@@ -12,6 +12,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { UserData } from '@/horizon-corp/types'
 import useCurrentUser from '@/hooks/use-current-user'
 import { userAccountTypeSchema } from '../validations/common'
+import { isUserHasUnverified } from '@/helpers'
 
 export const SignInPageSearchSchema = z.object({
     key: z.string().optional(),
@@ -31,12 +32,7 @@ const SignInPage = () => {
 
     const onSignInSuccess = useCallback(
         (userData: UserData) => {
-            const {
-                isContactVerified,
-                isEmailVerified,
-                IsSkipVerification,
-                status,
-            } = userData
+            const { status } = userData
 
             queryClient.setQueryData(['current-user'], userData)
 
@@ -45,15 +41,13 @@ const SignInPage = () => {
                     'Your account has been canceled, and you can no longer log in.'
                 )
                 router.navigate({ to: '/auth/verify' })
+                return
             }
 
-            if (
-                status === 'Pending' ||
-                !isContactVerified ||
-                !isEmailVerified
-            ) {
+            if (!userData.isSkipVerification && isUserHasUnverified(userData)) {
                 toast.warning('Your account is pending approval')
                 router.navigate({ to: '/auth/verify' })
+                return
             }
         },
         [queryClient, router]

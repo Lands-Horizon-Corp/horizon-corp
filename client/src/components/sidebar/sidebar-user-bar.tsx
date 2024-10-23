@@ -28,6 +28,7 @@ import { IBaseCompNoChild } from '@/types/component'
 import { useTheme } from '@/providers/theme-provider'
 import useCurrentUser from '@/hooks/use-current-user'
 import { serverRequestErrExtractor } from '@/helpers'
+import useConfirmModalStore from '@/store/confirm-modal-store'
 import UserService from '@/horizon-corp/server/auth/UserService'
 
 interface Props extends IBaseCompNoChild {
@@ -36,6 +37,7 @@ interface Props extends IBaseCompNoChild {
 
 const SidebarUserBar = ({ className, isExpanded }: Props) => {
     const router = useRouter()
+    const { onOpen } = useConfirmModalStore()
     const { setTheme, resolvedTheme } = useTheme()
     const { data: currentUser, setCurrentUser } = useCurrentUser({})
 
@@ -55,7 +57,7 @@ const SidebarUserBar = ({ className, isExpanded }: Props) => {
     }
 
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false} >
             <DropdownMenuTrigger asChild>
                 <div
                     className={cn(
@@ -82,53 +84,55 @@ const SidebarUserBar = ({ className, isExpanded }: Props) => {
                 </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="right" align="end">
-                <DropdownMenuGroup>
-                    <DropdownMenuItem>
-                        <QuestionIcon className="mr-2 size-4 duration-150 ease-in-out" />
-                        <span>Help</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSub>
-                        <DropdownMenuSubTrigger>
-                            {resolvedTheme === 'light' && (
+                <DropdownMenuItem>
+                    <QuestionIcon className="mr-2 size-4 duration-150 ease-in-out" />
+                    <span>Help</span>
+                </DropdownMenuItem>
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>
+                        {resolvedTheme === 'light' && (
+                            <SunIcon className="mr-2 size-4" />
+                        )}
+                        {resolvedTheme === 'dark' && (
+                            <MoonIcon className="mr-2 size-4" />
+                        )}
+                        <span>Theme</span>
+                    </DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                            <DropdownMenuItem onClick={() => setTheme('light')}>
                                 <SunIcon className="mr-2 size-4" />
-                            )}
-                            {resolvedTheme === 'dark' && (
+                                <span>Light</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => setTheme('dark')}>
                                 <MoonIcon className="mr-2 size-4" />
-                            )}
-                            <span>Theme</span>
-                        </DropdownMenuSubTrigger>
-                        <DropdownMenuPortal>
-                            <DropdownMenuSubContent>
-                                <DropdownMenuItem
-                                    onClick={() => setTheme('light')}
-                                >
-                                    <SunIcon className="mr-2 size-4" />
-                                    <span>Light</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => setTheme('dark')}
-                                >
-                                    <MoonIcon className="mr-2 size-4" />
-                                    <span>Dark</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => setTheme('system')}
-                                >
-                                    <SunMoonIcon className="mr-2 size-4" />
-                                    <span>System</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuSubContent>
-                        </DropdownMenuPortal>
-                    </DropdownMenuSub>
-                    <DropdownMenuItem>
-                        <DevIcon className="mr-2 size-4 duration-150 ease-in-out" />
-                        <span>Dev Mode</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleSignout}>
-                        <LogoutIcon className="mr-2 size-4 duration-150 ease-in-out" />
-                        <span>Sign Out</span>
-                    </DropdownMenuItem>
-                </DropdownMenuGroup>
+                                <span>Dark</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => setTheme('system')}
+                            >
+                                <SunMoonIcon className="mr-2 size-4" />
+                                <span>System</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                </DropdownMenuSub>
+                <DropdownMenuItem>
+                    <DevIcon className="mr-2 size-4 duration-150 ease-in-out" />
+                    <span>Dev Mode</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                    onClick={() =>
+                        onOpen({
+                            title: 'Sign Out',
+                            description: 'Are you sure you want to sign out?',
+                            onConfirm: () => handleSignout(),
+                        })
+                    }
+                >
+                    <LogoutIcon className="mr-2 size-4 duration-150 ease-in-out" />
+                    <span>Sign Out</span>
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )
