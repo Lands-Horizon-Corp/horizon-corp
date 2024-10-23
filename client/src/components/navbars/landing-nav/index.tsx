@@ -9,6 +9,7 @@ import { ThemeToggleMenu } from '@/components/theme-toggle'
 import NavAuthContents from '@/components/navbars/auth-nav/nav-auth-contents'
 
 import { cn } from '@/lib/utils'
+import { EnvironmentManager } from '@/manager'
 
 type NavLink = {
     name: string
@@ -31,7 +32,9 @@ const navLinks: NavLink[] = [
     },
     {
         name: 'Developers',
-        path: import.meta.env.VITE_CLIENT_DOCUMENT_URL,
+        path: await EnvironmentManager.getDecryptedEnvVariable(
+            'VITE_CLIENT_DOCUMENT_URL'
+        ),
         icon: <TbExternalLink />,
     },
 ]
