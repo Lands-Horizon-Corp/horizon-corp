@@ -31,6 +31,8 @@ import {
     PiBuildingOffice as BuildingBranchIcon,
     PiWarningCircleFill as WarningCircleIcon,
     PiCodeBlock as PiCodeBlockIcon,
+    PiTextStrikethroughLight as PiTextStrikethroughLightIcon,
+    PiListBulletsBold as PiListBulletsBoldIcon,
 } from 'react-icons/pi'
 import {
     HiOutlineSun as SunIcon,
@@ -71,6 +73,7 @@ import {
     TbBlockquote as TbBlockquoteIcon,
     TbSunMoon as SunMoonIcon,
 } from 'react-icons/tb'
+
 import { CgFacebook as CgFacebookIcon } from 'react-icons/cg'
 
 import { IBaseCompNoChild } from '@/types/component'
@@ -194,4 +197,7 @@ export {
     PatchExclamationIcon,
     FaRulerHorizontalIcon,
     TbClearFormattingIcon,
+    CgFacebookIcon,
+    PiTextStrikethroughLightIcon,
+    PiListBulletsBoldIcon,
 }
