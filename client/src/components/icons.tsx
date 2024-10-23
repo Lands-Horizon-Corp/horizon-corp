@@ -52,11 +52,18 @@ import {
     AiOutlineKey as KeyIcon,
     AiOutlineLoading as LoadingCircleIcon,
     AiOutlineLoading3Quarters as LoadingSpinnerIcon,
+    AiOutlineMessage as AiOutlineMessageIcon,
 } from 'react-icons/ai'
 import { GoArrowLeft as ArrowLeftIcon } from 'react-icons/go'
-import { MdMarkEmailRead as EmailCheckIcon } from 'react-icons/md'
+import {
+    MdMarkEmailRead as EmailCheckIcon,
+    MdOutlineEmail as MdOutlineEmailIcon,
+} from 'react-icons/md'
 import { BsPatchCheck as VerifiedPatchIcon } from 'react-icons/bs'
-import { IoFootstepsOutline as FootstepsIcon } from 'react-icons/io5'
+import {
+    IoFootstepsOutline as FootstepsIcon,
+    IoCallOutline as IoCallOutlineIcon,
+} from 'react-icons/io5'
 import { RxFontItalic as ToolbarItalicIcon } from 'react-icons/rx'
 import {
     FaBold as FaBoldIcon,
@@ -68,6 +75,7 @@ import {
     TbBlockquote as TbBlockquoteIcon,
     TbSunMoon as SunMoonIcon,
 } from 'react-icons/tb'
+import { CgFacebook as CgFacebookIcon } from 'react-icons/cg'
 
 import { IBaseCompNoChild } from '@/types/component'
 
@@ -189,4 +197,8 @@ export {
     TbClearFormattingIcon,
     BsTextParagraphIcon,
     TbBlockquoteIcon,
+    AiOutlineMessageIcon,
+    CgFacebookIcon,
+    MdOutlineEmailIcon,
+    IoCallOutlineIcon,
 }
