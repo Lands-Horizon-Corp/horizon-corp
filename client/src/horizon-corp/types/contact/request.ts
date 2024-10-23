@@ -1,6 +1,7 @@
 export interface ContactsRequest {
-    first_name: string
-    last_name: string
+    firstName: string
+    lastName: string
     email: string
+    contactNumber: string
     description?: string
 }
