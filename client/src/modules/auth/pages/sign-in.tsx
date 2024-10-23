@@ -10,9 +10,9 @@ import AuthPageWrapper from '../components/auth-page-wrapper'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { UserData } from '@/horizon-corp/types'
-import useCurrentUser from '@/hooks/use-current-user'
-import { userAccountTypeSchema } from '../validations/common'
 import { isUserHasUnverified } from '@/helpers'
+import { useUserAuthStore } from '@/store/user-auth-store'
+import { userAccountTypeSchema } from '../validations/common'
 
 export const SignInPageSearchSchema = z.object({
     key: z.string().optional(),
@@ -27,11 +27,15 @@ export const SignInPageSearchSchema = z.object({
 const SignInPage = () => {
     const router = useRouter()
     const queryClient = useQueryClient()
-    const { data: currentUser, isFetched, isLoading } = useCurrentUser()
+
+    const { currentUser, authStatus, setCurrentUser } = useUserAuthStore()
+
     const prefilledValues = useSearch({ from: '/auth/sign-in' })
 
     const onSignInSuccess = useCallback(
         (userData: UserData) => {
+            setCurrentUser(userData)
+
             const { status } = userData
 
             queryClient.setQueryData(['current-user'], userData)
@@ -62,14 +66,14 @@ const SignInPage = () => {
         <GuestGuard>
             <div className="flex min-h-full flex-col items-center justify-center">
                 <AuthPageWrapper>
-                    {!currentUser && isFetched && (
+                    {!currentUser && (
                         <SignInForm
                             defaultValues={prefilledValues}
                             onSuccess={onSignInSuccess}
                         />
                     )}
                     {currentUser && <LoadingSpinner />}
-                    {isLoading && !isFetched && <LoadingSpinner />}
+                    {authStatus === 'loading' && <LoadingSpinner />}
                 </AuthPageWrapper>
             </div>
         </GuestGuard>

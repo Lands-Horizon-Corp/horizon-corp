@@ -1,17 +1,16 @@
-import { toast } from 'sonner'
+import { ReactNode } from 'react'
 import { Navigate, useRouter } from '@tanstack/react-router'
 
 import UserAvatar from '../user-avatar'
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { isUserHasUnverified, isUserUnverified } from '@/helpers'
-import useCurrentUser from '@/hooks/use-current-user'
-import { IBaseComp, TAccountType, TPageType } from '@/types'
 import { cn } from '@/lib'
-import { PatchCheckIcon, PatchExclamationIcon, PatchMinusIcon } from '../icons'
-import { ReactNode } from 'react'
 import { UserData } from '@/horizon-corp/types'
+import { useUserAuthStore } from '@/store/user-auth-store'
+import { IBaseComp, TAccountType, TPageType } from '@/types'
+import { isUserHasUnverified, isUserUnverified } from '@/helpers'
+import { PatchCheckIcon, PatchExclamationIcon, PatchMinusIcon } from '../icons'
 
 interface Props extends IBaseComp {
     pageType?: TPageType
@@ -24,12 +23,10 @@ const AuthGuard = ({
     pageType = 'AUTHENTICATED',
 }: Props) => {
     const router = useRouter()
-    const { data: currentUser, status } = useCurrentUser({
-        onUnauthorized: () => toast.error('You are not logged in'),
-    })
+    const { currentUser, authStatus } = useUserAuthStore()
 
     if (pageType === 'AUTHENTICATED') {
-        if (status === 'pending')
+        if (authStatus === 'loading')
             return (
                 <div className="relative flex h-screen w-full items-center justify-center">
                     <LoadingSpinner />
@@ -48,7 +45,7 @@ const AuthGuard = ({
                     <AccountInfoContent
                         currentUser={currentUser}
                         infoTitle="Verification Required"
-                        infoDescription="It looks like you have unverified contacts. For security reasons, please verify your contact information to access all features."
+                        infoDescription="It looks like you have unverified contacts or your account status is still pending. For security reasons, please verify your contact information to access all features."
                     />
                     <Button
                         className="rounded-full"

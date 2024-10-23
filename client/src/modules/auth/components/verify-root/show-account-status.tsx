@@ -20,7 +20,7 @@ const ShowAccountStatus = ({ loading, userData, onBackSignOut }: Props) => {
     if (userData.status === 'Pending')
         return (
             <div className="flex max-w-sm flex-col items-center gap-y-4">
-                <p className="text-xl font-medium text-green-500">
+                <p className="text-xl font-medium text-amber-500">
                     Account Pending
                 </p>
                 <p className="text-center text-foreground/70">
@@ -33,11 +33,11 @@ const ShowAccountStatus = ({ loading, userData, onBackSignOut }: Props) => {
                     src={userData?.media?.downloadURL ?? ''}
                     fallback={userData?.username?.charAt(0) ?? '-'}
                 />
-                <p className="text-center">
+                <p className="text-center text-foreground/90">
                     <span>
-                        Please wait for 7 working days for validation before you
-                        can use your account, we will send an email once your
-                        account is activated.
+                        Please allow 1 to 7 business days for account
+                        validation. You will receive an email notification once
+                        your account has been activated and is ready for use.
                         <br />
                     </span>
                 </p>
@@ -118,8 +118,6 @@ const ShowAccountStatus = ({ loading, userData, onBackSignOut }: Props) => {
             </div>
         )
     }
-
-    console.log(userData)
 
     return (
         <p className="text-center">
