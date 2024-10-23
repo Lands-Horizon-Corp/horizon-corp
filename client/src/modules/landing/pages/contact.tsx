@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { serverRequestErrExtractor } from '@/helpers'
-import UseCooldown from '@/hooks/use-cooldown'
 import { contactFormSchema } from '@/modules/landing/validations/contact-form'
 import { cn, withCatchAsync } from '@/lib/utils'
 
@@ -46,10 +45,6 @@ const ContactPage = () => {
         mode: 'onChange',
         defaultValues,
     })
-    const { startCooldown } = UseCooldown({
-        cooldownDuration: 12,
-        counterInterval: 1000,
-    })
 
     const { mutate: sendContactMessage, isPending } = useMutation<
         void,
@@ -68,7 +63,6 @@ const ContactPage = () => {
                 return
             }
 
-            startCooldown()
             form.reset()
             toast.success(`Message was Already Sent!`)
         },
