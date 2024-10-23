@@ -2,20 +2,22 @@ import { toast } from 'sonner'
 import { Link, useLocation, useRouter } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
+import UserAvatar from '@/components/user-avatar'
 
-import { cn, withCatchAsync } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component'
-import useCurrentUser from '@/hooks/use-current-user'
 import {
     getUsersAccountTypeRedirectPage,
     serverRequestErrExtractor,
 } from '@/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import { cn, withCatchAsync } from '@/lib/utils'
 import { useMutation } from '@tanstack/react-query'
-import UserAvatar from '@/components/user-avatar'
+import { IBaseCompNoChild } from '@/types/component'
+import useCurrentUser from '@/hooks/use-current-user'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import useConfirmModalStore from '@/store/confirm-modal-store'
 
 const NavAuthContents = ({ className }: IBaseCompNoChild) => {
     const router = useRouter()
+    const { onOpen } = useConfirmModalStore()
 
     const pathname = useLocation({
         select: (location) => location.pathname,
@@ -67,7 +69,14 @@ const NavAuthContents = ({ className }: IBaseCompNoChild) => {
                     <Button
                         variant="outline"
                         disabled={isSigningOut}
-                        onClick={() => handleSignout()}
+                        onClick={() =>
+                            onOpen({
+                                title: 'Sign Out',
+                                description:
+                                    'Are you sure you want to sign out?',
+                                onConfirm: () => handleSignout(),
+                            })
+                        }
                         className="scale-effects rounded-full"
                     >
                         Sign-Out
