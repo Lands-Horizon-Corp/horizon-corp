@@ -1,13 +1,12 @@
-import { zodSearchValidator } from '@tanstack/router-zod-adapter'
 import {
     createRoute,
     redirect,
     lazyRouteComponent,
 } from '@tanstack/react-router'
+import { zodSearchValidator } from '@tanstack/router-zod-adapter'
 
 import { rootRoute } from '@/root-route'
-import { SignInPageSearchSchema } from '@/modules/auth/pages/sign-in'
-import { ForgotPasswordPageSearchSchema } from './pages/forgot-password'
+import { ForgotPasswordPageSearchSchema, SignInPageSearchSchema } from '@/modules/auth/validations/page-search'
 
 const authRoute = createRoute({
     getParentRoute: () => rootRoute,
