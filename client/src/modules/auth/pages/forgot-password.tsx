@@ -1,4 +1,3 @@
-import z from 'zod'
 import { useState } from 'react'
 import { useRouter, useSearch } from '@tanstack/react-router'
 
@@ -13,17 +12,6 @@ import { EmailCheckIcon, ArrowLeftIcon } from '@/components/icons'
 import ResendPasswordResetLinkButton from '../components/resend-password-reset-link-button'
 
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
-import { userAccountTypeSchema, emailSchema } from '../validations/common'
-
-export const ForgotPasswordPageSearchSchema = z.object({
-    key: z.string().optional().default('').or(emailSchema),
-    accountType: z
-        .string()
-        .optional()
-        .default('Member')
-        .pipe(userAccountTypeSchema)
-        .catch('Member'),
-})
 
 const ForgotPasswordPage = () => {
     const router = useRouter()
