@@ -177,6 +177,7 @@ services:
       - db
     networks:
       - app-network
+
   minio:
     image: minio/minio:latest
     container_name: minio
@@ -190,7 +191,8 @@ services:
     volumes:
       - minio_data:/data
     command: server /data --console-address ":38813"
-
+    networks:
+      - app-network
 volumes:
   db_data:
   minio_data:
