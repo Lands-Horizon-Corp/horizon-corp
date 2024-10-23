@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { serverRequestErrExtractor } from '@/helpers'
+import UseCooldown from '@/hooks/use-cooldown'
 import { contactFormSchema } from '@/modules/landing/validations/contact-form'
 import { cn, withCatchAsync } from '@/lib/utils'
 
@@ -45,6 +46,10 @@ const ContactPage = () => {
         mode: 'onChange',
         defaultValues,
     })
+    const { startCooldown } = UseCooldown({
+        cooldownDuration: 12,
+        counterInterval: 1000,
+    })
 
     const { mutate: sendContactMessage, isPending } = useMutation<
         void,
@@ -63,6 +68,7 @@ const ContactPage = () => {
                 return
             }
 
+            startCooldown()
             form.reset()
             toast.success(`Message was Already Sent!`)
         },
@@ -251,6 +257,11 @@ const ContactPage = () => {
                                     ) : (
                                         'Send Message'
                                     )}
+                                    {isPending ? (
+                                        <LoadingCircleIcon className="animate-spin" />
+                                    ) : (
+                                        'Send Message'
+                                    )}
                                 </Button>
                             </div>
                         </form>
@@ -268,17 +279,20 @@ const ContactPage = () => {
                             </div>
                             <div className="flex space-x-2">
                                 <AiOutlineMessageIcon className="self-center" />
+                                <AiOutlineMessageIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     start a live chat
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
                                 <MdOutlineEmailIcon className="self-center" />
+                                <MdOutlineEmailIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     shoot us an email
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
+                                <CgFacebookIcon className="self-center" />
                                 <CgFacebookIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     Message us on Facebook

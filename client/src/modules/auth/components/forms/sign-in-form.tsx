@@ -37,7 +37,7 @@ import { SignInRequest, UserData } from '@/horizon-corp/types'
 
 type TSignIn = z.infer<typeof signInFormSchema>
 
-interface Props extends IBaseCompNoChild, IAuthForm<Partial<TSignIn>> {}
+interface Props extends IBaseCompNoChild, IAuthForm<Partial<TSignIn>, UserData> {}
 
 const SignInForm = ({
     defaultValues,
