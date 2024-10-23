@@ -25,7 +25,7 @@ type AuthController struct {
 	userAuthService *auth.UserAuthService
 	cfg             *config.AppConfig
 	emailService    *services.EmailService
-	contactService  *services.SMSService
+	smsService      *services.SMSService
 	otpService      *services.OTPService
 	tokenService    auth.TokenService
 }
@@ -36,7 +36,7 @@ func NewAuthController(
 	userAuthService *auth.UserAuthService,
 	cfg *config.AppConfig,
 	emailService *services.EmailService,
-	contactService *services.SMSService,
+	smsService *services.SMSService,
 	otpService *services.OTPService,
 	tokenService auth.TokenService,
 ) *AuthController {
@@ -45,7 +45,7 @@ func NewAuthController(
 		userAuthService: userAuthService,
 		cfg:             cfg,
 		emailService:    emailService,
-		contactService:  contactService,
+		smsService:      smsService,
 		otpService:      otpService,
 		tokenService:    tokenService,
 	}
@@ -183,7 +183,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
 		},
 	}
-	if err := c.contactService.SendSMS(contactReq); err != nil {
+	if err := c.otpService.SendContactNumberOTP(req.AccountType, user.ID, contactReq); err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignUp: SMS sending error: %v", err), "Failed to send verification SMS.")
 		return
 	}
@@ -278,7 +278,7 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 				"eventLink": resetLink,
 			},
 		}
-		if err := c.contactService.SendSMS(contactReq); err != nil {
+		if err := c.smsService.SendSMS(contactReq); err != nil {
 			c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ForgotPassword: SMS sending error: %v", err), "Failed to send password reset SMS.")
 			return
 		}
@@ -458,7 +458,7 @@ func (c *AuthController) SendContactNumberVerification(ctx *gin.Context) {
 		},
 	}
 
-	if err := c.otpService.SendEContactNumberOTP(userClaims.AccountType, userClaims.ID, contactReq); err != nil {
+	if err := c.otpService.SendContactNumberOTP(userClaims.AccountType, userClaims.ID, contactReq); err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SendContactNumberVerification: SMS sending error: %v", err), "Failed to send contact number verification OTP.")
 		return
 	}
@@ -582,7 +582,7 @@ func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {
 			"name": fmt.Sprintf("%s %s", currentUser.FirstName, currentUser.LastName),
 		},
 	}
-	if err := c.contactService.SendSMS(contactReq); err != nil {
+	if err := c.otpService.SendContactNumberOTP(userClaims.AccountType, userClaims.ID, contactReq); err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeContactNumber: SMS sending error: %v", err), "Failed to send verification SMS.")
 		return
 	}
