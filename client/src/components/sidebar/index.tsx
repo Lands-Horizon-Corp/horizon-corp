@@ -1,5 +1,5 @@
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { createContext, useContext, useState } from 'react'
 
 import { GoChevronLeft } from 'react-icons/go'
 
@@ -11,6 +11,7 @@ import SidebarUserBar from '@/components/sidebar/sidebar-user-bar'
 import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component'
 import type { TSidebarItem } from '@/types/component/sidebar'
+import { ExpandContext } from './sidebar-expand-context'
 
 export interface ISidebarProps extends IBaseComp {
     items: TSidebarItem[]
@@ -18,17 +19,6 @@ export interface ISidebarProps extends IBaseComp {
     logoRedirectUrl?: string
     enableFocusBlur?: boolean
     defaultExpanded?: boolean
-}
-
-const ExpandContext = createContext<boolean | null>(true)
-
-export const useSidebarExpandContext = () => {
-    const sidebarExpandContext = useContext(ExpandContext)
-
-    if (sidebarExpandContext === null)
-        throw new Error('This hook must only be used within the sidebar')
-
-    return sidebarExpandContext
 }
 
 const Sidebar = ({

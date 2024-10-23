@@ -25,8 +25,8 @@ import UserAvatar from '@/components/user-avatar'
 import { cn, withCatchAsync } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component'
 import { useTheme } from '@/providers/theme-provider'
-import useCurrentUser from '@/hooks/use-current-user'
 import { serverRequestErrExtractor } from '@/helpers'
+import { useUserAuthStore } from '@/store/user-auth-store'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import UserService from '@/horizon-corp/server/auth/UserService'
 
@@ -38,7 +38,7 @@ const SidebarUserBar = ({ className, isExpanded }: Props) => {
     const router = useRouter()
     const { onOpen } = useConfirmModalStore()
     const { setTheme, resolvedTheme } = useTheme()
-    const { data: currentUser, setCurrentUser } = useCurrentUser({})
+    const { currentUser, setCurrentUser } = useUserAuthStore()
 
     const handleSignout = async () => {
         const [error] = await withCatchAsync(UserService.SignOut())

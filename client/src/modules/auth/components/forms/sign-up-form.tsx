@@ -29,13 +29,13 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn, withCatchAsync } from '@/lib/utils'
-import useCurrentUser from '@/hooks/use-current-user'
 import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
 
 import { IAuthForm } from '@/types/auth/form-interface'
+import { useUserAuthStore } from '@/store/user-auth-store'
 
 type TSignUpForm = z.infer<typeof signUpFormSchema>
 
@@ -62,7 +62,7 @@ const SignUpForm = ({
     onSuccess,
 }: IAuthForm<TSignUpForm>) => {
     const router = useRouter()
-    const { setCurrentUser } = useCurrentUser({})
+    const { setCurrentUser } = useUserAuthStore()
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TSignUpForm>({

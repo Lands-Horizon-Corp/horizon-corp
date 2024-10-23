@@ -11,19 +11,18 @@ import {
 import { cn, withCatchAsync } from '@/lib/utils'
 import { useMutation } from '@tanstack/react-query'
 import { IBaseCompNoChild } from '@/types/component'
-import useCurrentUser from '@/hooks/use-current-user'
-import UserService from '@/horizon-corp/server/auth/UserService'
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import { useUserAuthStore } from '@/store/user-auth-store'
 
 const NavAuthContents = ({ className }: IBaseCompNoChild) => {
     const router = useRouter()
     const { onOpen } = useConfirmModalStore()
+    const { currentUser, setCurrentUser } = useUserAuthStore();
 
     const pathname = useLocation({
         select: (location) => location.pathname,
     })
-
-    const { data: currentUser, setCurrentUser } = useCurrentUser({})
 
     const { mutate: handleSignout, isPending: isSigningOut } = useMutation({
         mutationKey: ['sign-out'],

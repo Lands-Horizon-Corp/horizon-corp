@@ -8,23 +8,18 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import ShowAccountStatus from '../components/verify-root/show-account-status'
 
-import { withCatchAsync } from '@/lib'
-import useCurrentUser from '@/hooks/use-current-user'
-import UserService from '@/horizon-corp/server/auth/UserService'
 import {
     isUserHasUnverified,
     serverRequestErrExtractor,
     getUsersAccountTypeRedirectPage,
 } from '@/helpers'
+import { withCatchAsync } from '@/lib'
+import { useUserAuthStore } from '@/store/user-auth-store'
+import UserService from '@/horizon-corp/server/auth/UserService'
 
 const Verify = () => {
     const router = useRouter()
-    const {
-        data: currentUser,
-        isFetching,
-        status,
-        setCurrentUser,
-    } = useCurrentUser()
+    const { currentUser, setCurrentUser, authStatus } = useUserAuthStore()
 
     const { mutate: onBackSignOut, isPending: isSigningOut } = useMutation<
         void,
@@ -52,7 +47,7 @@ const Verify = () => {
     )
 
     useEffect(() => {
-        if (!currentUser || isFetching) return
+        if (!currentUser || authStatus === 'loading') return
         else if (
             isUserHasUnverified(currentUser) &&
             !currentUser.isSkipVerification
@@ -67,12 +62,12 @@ const Verify = () => {
         } else {
             setDisplay('account-status')
         }
-    }, [currentUser, isFetching, router])
+    }, [authStatus, currentUser, router])
 
     return (
         <div className="flex min-h-full flex-col items-center justify-center">
             <AuthPageWrapper>
-                {status === 'pending' && (
+                {authStatus === 'loading' && (
                     <div className="flex flex-col items-center gap-y-2">
                         <LoadingSpinner className="block" />
                         <p className="text-center text-sm text-foreground/50">
@@ -80,7 +75,7 @@ const Verify = () => {
                         </p>
                     </div>
                 )}
-                {status !== 'pending' && currentUser && (
+                {authStatus === 'authorized' && currentUser && (
                     <>
                         {display === 'verify' && (
                             <VerifyRoot
@@ -104,7 +99,7 @@ const Verify = () => {
                         )}
                     </>
                 )}
-                {!currentUser && !isFetching && (
+                {authStatus === 'unauthorized' && (
                     <p>Couldn&apos;t load your info, please please try again</p>
                 )}
             </AuthPageWrapper>

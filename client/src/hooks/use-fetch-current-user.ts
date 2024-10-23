@@ -1,20 +1,24 @@
 import { AxiosError } from 'axios'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 
 import { withCatchAsync } from '@/lib'
 import { UserData } from '@/horizon-corp/types'
+import { useUserAuthStore } from '@/store/user-auth-store'
 import UserService from '@/horizon-corp/server/auth/UserService'
 
-const useCurrentUser = (options?: {
-    onError?: (error: unknown) => void
+const useFetchCurrentUser = (options?: {
     onUnauthorized?: () => void
+    onError?: (error: unknown) => void
     onSuccess?: (userData: UserData) => void
     retry?: number
 }) => {
-    const queryClient = useQueryClient()
+    const { setAuthStatus, setCurrentUser } = useUserAuthStore()
+
     const query = useQuery<UserData | null>({
         queryKey: ['current-user'],
         queryFn: async () => {
+            setAuthStatus('loading')
+
             const [error, response] = await withCatchAsync(
                 UserService.CurrentUser()
             )
@@ -22,23 +26,24 @@ const useCurrentUser = (options?: {
             if (error) {
                 if (error instanceof AxiosError && error.status === 401) {
                     options?.onUnauthorized?.()
+                    setCurrentUser(null)
+                    setAuthStatus('unauthorized')
                     return null
                 }
                 options?.onError?.(error)
                 throw error
             }
 
-            options?.onSuccess?.(response.data)
-            return response.data
+            const userData = response.data
+            setCurrentUser(userData)
+            setAuthStatus('authorized')
+            options?.onSuccess?.(userData)
+            return userData
         },
         retry: options?.retry ?? 0,
     })
 
-    const setCurrentUser = (newUserData: UserData | null) => {
-        queryClient.setQueryData<UserData | null>(['current-user'], newUserData)
-    }
-
-    return { ...query, setCurrentUser }
+    return { query }
 }
 
-export default useCurrentUser
+export default useFetchCurrentUser
