@@ -32,3 +32,6 @@ server/main
 .env.production
 
 ./server/tmp/*
+
+./client/stats.html
+client/stats.html
