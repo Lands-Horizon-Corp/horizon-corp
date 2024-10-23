@@ -1,7 +1,7 @@
 import { Navigate } from '@tanstack/react-router'
 
 import { IBaseComp } from '@/types'
-import useCurrentUser from '@/hooks/use-current-user'
+import { useUserAuthStore } from '@/store/user-auth-store'
 import { getUsersAccountTypeRedirectPage } from '@/helpers'
 
 interface IGuestGuardProps extends Omit<IBaseComp, 'className'> {
@@ -12,7 +12,7 @@ const GuestGuard = ({
     allowAuthenticatedUser = false,
     children,
 }: IGuestGuardProps) => {
-    const { data: currentUser } = useCurrentUser()
+    const { currentUser } = useUserAuthStore()
 
     if (!allowAuthenticatedUser && currentUser) {
         if (currentUser.status !== 'Verified') {

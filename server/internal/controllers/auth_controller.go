@@ -607,7 +607,7 @@ func (c *AuthController) SkipVerification(ctx *gin.Context) {
 		return
 	}
 	updatedUser, err := c.userRepo.UpdateColumns(userClaims.AccountType, userClaims.ID, map[string]interface{}{
-		"is_skip_verification": false,
+		"is_skip_verification": true,
 	})
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeContactNumber: User update error: %v", err), "Failed to update contact number.")

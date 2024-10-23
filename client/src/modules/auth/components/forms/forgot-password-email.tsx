@@ -37,17 +37,13 @@ const forgotPasswordFormSchema = z.object({
 
 export type TForgotPasswordEmail = z.infer<typeof forgotPasswordFormSchema>
 
-interface Props extends IAuthForm<TForgotPasswordEmail> {
-    onSuccess: (responseData: TForgotPasswordEmail) => void
-}
-
 const ForgotPasswordEmail = ({
     readOnly,
     className,
     defaultValues = { key: '', accountType: 'Member' },
     onError,
     onSuccess,
-}: Props) => {
+}: IAuthForm<TForgotPasswordEmail, TForgotPasswordEmail>) => {
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TForgotPasswordEmail>({
@@ -64,7 +60,6 @@ const ForgotPasswordEmail = ({
         const [error] = await withCatchAsync(UserService.ForgotPassword(data))
 
         setLoading(false)
-        onSuccess?.(data)
 
         if (error) {
             const errorMessage = serverRequestErrExtractor({ error })

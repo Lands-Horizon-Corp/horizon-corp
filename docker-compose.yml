@@ -15,6 +15,8 @@ services:
       - "VITE_CLIENT_PORT=${CLIENT_PORT}"
       - "VITE_CLIENT_SERVER_URL=${CLIENT_SERVER_URL}"
       - "VITE_CLIENT_DOCUMENT_URL=${CLIENT_DOCUMENT_URL}"
+      - "VITE_CLIENT_SECRET_KEY=${CLIENT_SECRET_KEY}"
+      - "VITE_CLIENT_GOOGLE_API_KEY=${CLIENT_GOOGLE_API_KEY}"
     depends_on:
       db:
         condition: service_healthy
@@ -175,6 +177,22 @@ services:
       - PMA_PASSWORD=${DB_PASSWORD}
     depends_on:
       - db
+    networks:
+      - app-network
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "38813:38813"
+    environment:
+      MINIO_ROOT_USER: ${STORAGE_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":38813"
     networks:
       - app-network
 volumes:

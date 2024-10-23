@@ -1,6 +1,6 @@
 import { AxiosResponse } from 'axios'
 import UseServer from '@/horizon-corp/request/server'
-import { CurrentUserResource, DescriptionRequest, MediaRequest } from '@/horizon-corp/types'
+import { UserData, DescriptionRequest, MediaRequest } from '@/horizon-corp/types'
 
 export default class ProfileService {
   private static readonly BASE_ENDPOINT = '/profile'
@@ -8,9 +8,9 @@ export default class ProfileService {
   // POST - /profile/profile-picture
   public static async ProfilePicture(
     data: MediaRequest
-  ): Promise<AxiosResponse<CurrentUserResource>> {
+  ): Promise<AxiosResponse<UserData>> {
     const endpoint = `${ProfileService.BASE_ENDPOINT}/profile-picture`
-    return await UseServer.post<MediaRequest, CurrentUserResource>(
+    return await UseServer.post<MediaRequest, UserData>(
       endpoint,
       data
     )
@@ -18,9 +18,9 @@ export default class ProfileService {
 
   public static async Description(
     data: DescriptionRequest
-  ): Promise<AxiosResponse<CurrentUserResource>> {
+  ): Promise<AxiosResponse<UserData>> {
     const endpoint = `${ProfileService.BASE_ENDPOINT}/description`
-    return await UseServer.post<DescriptionRequest, CurrentUserResource>(
+    return await UseServer.post<DescriptionRequest, UserData>(
       endpoint,
       data
     )

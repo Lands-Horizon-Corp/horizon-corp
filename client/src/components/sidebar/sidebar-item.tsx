@@ -2,7 +2,6 @@ import { FC, useState } from 'react'
 import { useLocation, useRouter } from '@tanstack/react-router'
 
 import type { TSidebarItem } from '@/types/component/sidebar'
-import { useSidebarExpandContext } from '@/components/sidebar'
 import SidebarItemContent from '@/components/sidebar/sidebar-item-content'
 import SidebarItemWithTooltip from '@/components/sidebar/sidebar-with-tooltip-wrapper'
 
@@ -11,6 +10,7 @@ import {
     concatParentUrl,
     sidebarRouteMatcher,
 } from '@/components/sidebar/sidebar-utils'
+import { useSidebarExpandContext } from './sidebar-expand-context'
 
 const SidebarItem: FC<TSidebarItem> = (props) => {
     const router = useRouter()
