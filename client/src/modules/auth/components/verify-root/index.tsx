@@ -1,17 +1,18 @@
+import { toast } from 'sonner'
 import { useState } from 'react'
 
 import EcoopLogo from '@/components/ecoop-logo'
 import StepIndicator from '@/components/steps-indicator'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import VerifyForm from '@/modules/auth/components/forms/verify-form'
 
+import { withCatchAsync } from '@/lib'
 import { IBaseComp } from '@/types/component'
 import { UserData } from '@/horizon-corp/types'
 import { useMutation } from '@tanstack/react-query'
-import UserService from '@/horizon-corp/server/auth/UserService'
-import { withCatchAsync } from '@/lib'
-import { toast } from 'sonner'
 import { serverRequestErrExtractor } from '@/helpers'
-import LoadingSpinner from '@/components/spinners/loading-spinner'
+import { useUserAuthStore } from '@/store/user-auth-store'
+import UserService from '@/horizon-corp/server/auth/UserService'
 
 interface Props extends IBaseComp {
     readOnly?: boolean
@@ -38,6 +39,7 @@ const VerifyRoot = ({
     onVerifyChange,
     onVerifyComplete,
 }: Props) => {
+    const { setCurrentUser } = useUserAuthStore()
     const [userStoredData, setStoredUserData] = useState(userData)
 
     const completedCount = countCompleted(userStoredData)
@@ -59,6 +61,8 @@ const VerifyRoot = ({
             }
 
             onSkip()
+            setCurrentUser(response.data)
+
             return response.data
         },
     })
