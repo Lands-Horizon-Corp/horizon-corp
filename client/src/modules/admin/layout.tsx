@@ -1,6 +1,6 @@
 import { Outlet } from '@tanstack/react-router'
 
-import AdminNavbar from './components/admin-navbar'
+import UserNav from '@/components/nav/navs/user-nav'
 import AdminSidebar from './components/admin-sidebar'
 import AuthGuard from '@/components/wrappers/auth-guard'
 
@@ -10,7 +10,7 @@ const AdminLayout = () => {
             <div className="grid min-h-[100dvh] grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
                 <AdminSidebar />
                 <main className="">
-                    <AdminNavbar />
+                    <UserNav />
                     <Outlet />
                 </main>
             </div>
