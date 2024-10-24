@@ -7,31 +7,27 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import TimeInCounter from './time-in-counter'
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
-import TimeInTimeOut from '@/components/time-in-out'
 import ActionTooltip from '@/components/action-tooltip'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import TimeInCounter from '@/components/time-in-out/time-in-counter'
+import TimeInTimeOut, { TTImeInEntry } from '@/components/time-in-out'
 
 import {
     randomEndOfDayQuoute,
     randomStartOfDayQuoute,
 } from '@/constants/quoutes'
 import { cn } from '@/lib/utils'
-import { UserBase } from '@/types'
+import { UserData } from '@/horizon-corp/types'
 import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
-    currentUser: UserBase | null
+    currentUser: UserData | null
 }
 
-export type TTImeInEntry = {
-    timeStart: Date
-    timeEnd?: Date
-}
 
-const TimeInBar = ({ className, currentUser }: Props) => {
+const NavTimeInBar = ({ className, currentUser }: Props) => {
     const [loading, setLoading] = useState(true)
     const [showTimeInOut, setShowTimeInOut] = useState(false)
     const [timeInEntry, setTimeInEntry] = useState<TTImeInEntry | undefined>(
@@ -125,4 +121,4 @@ const TimeInBar = ({ className, currentUser }: Props) => {
     )
 }
 
-export default TimeInBar
+export default NavTimeInBar

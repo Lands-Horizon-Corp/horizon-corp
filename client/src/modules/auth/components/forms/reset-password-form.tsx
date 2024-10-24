@@ -135,7 +135,7 @@ const ResetPasswordForm = ({
                                         {...field}
                                         id={field.name}
                                         placeholder="Password"
-                                        autoComplete="false"
+                                        autoComplete="no"
                                     />
                                 </FormControl>
                             </FormItem>
