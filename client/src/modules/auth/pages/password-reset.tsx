@@ -26,7 +26,11 @@ const PasswordResetPage = () => {
     const pathParams = useParams({ from: '/auth/password-reset/$resetId' })
     const [done, setDone] = useState(false)
 
-    const { data: resetEntry, isFetching } = useQuery<null | boolean, string>({
+    const {
+        data: resetEntry,
+        isPending,
+        isFetching,
+    } = useQuery<null | boolean, string>({
         queryKey: ['password-reset-link', pathParams.resetId],
         queryFn: async () => {
             const [error] = await withCatchAsync(
@@ -48,7 +52,15 @@ const PasswordResetPage = () => {
         <GuestGuard>
             <div className="flex min-h-full flex-col items-center justify-center">
                 <AuthPageWrapper>
-                    {!done && !isFetching && resetEntry && (
+                    {isPending && !resetEntry && (
+                        <div className="flex flex-col items-center gap-y-2 py-16">
+                            <LoadingSpinner />
+                            <p className="text-center text-sm text-foreground/50">
+                                verifying reset password link
+                            </p>
+                        </div>
+                    )}
+                    {!done && !isPending && resetEntry && (
                         <ResetPasswordForm
                             resetId={pathParams.resetId}
                             onSuccess={() => setDone(true)}
@@ -83,14 +95,7 @@ const PasswordResetPage = () => {
                             </Button>
                         </div>
                     )}
-                    {isFetching && (
-                        <div className="flex flex-col items-center gap-y-2 py-16">
-                            <LoadingSpinner />
-                            <p className="text-center text-sm text-foreground/50">
-                                verifying reset password link
-                            </p>
-                        </div>
-                    )}
+
                     {done && (
                         <div className="flex w-full flex-col gap-y-4 sm:w-[390px]">
                             <div className="flex flex-col items-center gap-y-4 py-4 text-center">

@@ -5,8 +5,8 @@ import bg_element_2 from '@/assets/images/landing-page/bg_element_2.webp'
 import bg_element_3 from '@/assets/images/landing-page/bg_element_3.webp'
 
 import Footer from '@/components/footers/landing-footer'
-import LandingNav from '@/components/navbars/landing-nav'
 import { VersionAndFeedBack } from '@/components/version'
+import LandingNav from '@/components/nav/navs/landing-nav'
 
 const PublicLayout = () => {
     return (
