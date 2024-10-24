@@ -114,7 +114,7 @@ const ForgotPasswordEmail = ({
                                             {...field}
                                             id={field.name}
                                             autoComplete="off"
-                                            placeholder="Enter email, contact, or username"
+                                            placeholder="Enter email or contact"
                                         />
                                     </div>
                                 </FormControl>

@@ -10,12 +10,16 @@ import TimeInCounter from '@/components/time-in-out/time-in-counter'
 import RealtimeTimeText from '@/components/time-in-out/realtime-time-text'
 
 import { cn } from '@/lib/utils'
-import { UserBase } from '@/types'
-import { TTImeInEntry } from './time-in-bar'
 import { IBaseComp } from '@/types/component'
+import { UserData } from '@/horizon-corp/types'
+
+export type TTImeInEntry = {
+    timeStart: Date
+    timeEnd?: Date
+}
 
 interface Props extends IBaseComp {
-    currentUser: UserBase
+    currentUser: UserData
     timeEntry?: TTImeInEntry
     message?: string
     onTimeInEntry: (timeEntry: TTImeInEntry) => void

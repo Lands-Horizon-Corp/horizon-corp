@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RouterProvider } from '@tanstack/react-router';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
@@ -7,14 +7,14 @@ import router from '@/root-route';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { EnvironmentManager } from './manager';
 
-const TanStackRouterDevtoolsPanel =
-    process.env.NODE_ENV === 'production'
-        ? () => null
-        : React.lazy(() =>
-              import('@tanstack/router-devtools').then((res) => ({
-                  default: res.TanStackRouterDevtools,
-              }))
-          );
+// const TanStackRouterDevtoolsPanel =
+//     process.env.NODE_ENV === 'production'
+//         ? () => null
+//         : React.lazy(() =>
+//               import('@tanstack/router-devtools').then((res) => ({
+//                   default: res.TanStackRouterDevtools,
+//               }))
+//           );
 
 declare module '@tanstack/react-router' {
     interface Register {
@@ -32,10 +32,10 @@ const App = () => {
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
                 <RouterProvider router={router} />
-                <TanStackRouterDevtoolsPanel
+                {/* <TanStackRouterDevtoolsPanel
                     position="bottom-left"
                     router={router}
-                />
+                /> */}
             </ThemeProvider>
             <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
