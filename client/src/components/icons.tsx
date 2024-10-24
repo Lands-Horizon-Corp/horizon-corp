@@ -60,6 +60,7 @@ import {
     MdOutlineEmail as MdOutlineEmailIcon,
 } from 'react-icons/md'
 import {
+    BsCameraFill as CameraFillIcon,
     BsPatchCheck as VerifiedPatchIcon,
     BsFillPatchMinusFill as PatchMinusIcon,
     BsFillPatchCheckFill as PatchCheckIcon,
@@ -72,6 +73,7 @@ import {
 import { RxFontItalic as ToolbarItalicIcon } from 'react-icons/rx'
 import {
     FaBold as FaBoldIcon,
+    FaImage as ImageIcon,
     FaRulerHorizontal as FaRulerHorizontalIcon,
 } from 'react-icons/fa'
 import { IoIosCode as IoIosCodeIcon } from 'react-icons/io'
@@ -154,6 +156,7 @@ export {
     UserIcon,
     MoonIcon,
     ClockIcon,
+    ImageIcon,
     CookieIcon,
     CameraIcon,
     FaBoldIcon,
@@ -177,6 +180,7 @@ export {
     UserClockIcon,
     DashboardIcon,
     IoIosCodeIcon,
+    CameraFillIcon,
     PatchMinusIcon,
     PatchCheckIcon,
     LuHeading1Icon,
