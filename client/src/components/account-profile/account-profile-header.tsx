@@ -4,7 +4,6 @@ import {
     DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
@@ -25,10 +24,12 @@ const AccountProfileBanner = ({ currentUser }: { currentUser: UserData }) => {
                     <DialogHeader>
                         <DialogTitle>Change Profile Picture</DialogTitle>
                         <DialogDescription>
-                            Change or modify your profile photo
+                            Change your profile photo
                         </DialogDescription>
                     </DialogHeader>
-                    <ProfileUpload />
+                    <ProfileUpload
+                        currentUserPhotoUrl={currentUser.media?.downloadURL ?? null}
+                    />
                 </DialogContent>
             </Dialog>
 
