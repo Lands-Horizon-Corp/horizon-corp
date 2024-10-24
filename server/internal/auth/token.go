@@ -100,6 +100,12 @@ func (s *tokenService) DeleteToken(tokenString string) error {
 }
 
 func (s *tokenService) ClearTokenCookie(ctx *gin.Context) {
+	cookie, err := ctx.Cookie(s.cfg.AppTokenName)
+	if err == nil {
+		if delErr := s.DeleteToken(cookie); delErr != nil {
+			s.logger.Error("Failed to delete token from Redis", zap.Error(delErr))
+		}
+	}
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     s.cfg.AppTokenName,
 		Value:    "",
