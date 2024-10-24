@@ -329,7 +329,7 @@ func (c *AuthController) ChangePassword(ctx *gin.Context) {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangePassword: Password update error: %v", err), "Failed to update password.")
 		return
 	}
-	c.tokenService.ClearTokenCookie(ctx)
+	c.tokenService.DeleteToken(req.ResetID)
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
 
