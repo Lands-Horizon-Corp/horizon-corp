@@ -7,13 +7,13 @@ import { Button } from '@/components/ui/button'
 import { withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import UserService from '@/horizon-corp/server/auth/UserService'
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import UserService from '@/horizon-corp/server/auth/UserService'
 
 const NavSignOut = () => {
     const router = useRouter()
     const { onOpen } = useConfirmModalStore()
-    const { authStatus, setCurrentUser } = useUserAuthStore()
+    const { authStatus, currentUser, setCurrentUser } = useUserAuthStore()
 
     const { mutate: handleSignout, isPending: isSigningOut } = useMutation({
         mutationKey: ['sign-out'],
@@ -32,7 +32,7 @@ const NavSignOut = () => {
         },
     })
 
-    if (authStatus === 'unauthorized') return null
+    if (authStatus === 'unauthorized' || !currentUser) return null
 
     return (
         <Button
