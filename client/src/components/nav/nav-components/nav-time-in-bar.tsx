@@ -26,7 +26,6 @@ interface Props extends IBaseCompNoChild {
     currentUser: UserData | null
 }
 
-
 const NavTimeInBar = ({ className, currentUser }: Props) => {
     const [loading, setLoading] = useState(true)
     const [showTimeInOut, setShowTimeInOut] = useState(false)
@@ -100,7 +99,7 @@ const NavTimeInBar = ({ className, currentUser }: Props) => {
                         <DialogTitle>Time In Out Form</DialogTitle>
                         <DialogDescription>Shows time in out</DialogDescription>
                     </DialogHeader>
-                    <div className="ecoop-scroll max-h-screen overflow-y-scroll [&::-webkit-scrollbar]:size-0">
+                    <div className="ecoop-scroll max-h-screen overflow-x-hidden overflow-y-scroll [&::-webkit-scrollbar]:size-0">
                         <TimeInTimeOut
                             timeEntry={timeInEntry}
                             currentUser={currentUser}
