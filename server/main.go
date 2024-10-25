@@ -82,6 +82,10 @@ func main() {
 			repositories.NewMediaRepository,
 			controllers.NewMediaController,
 
+			// Timesheets
+			repositories.NewTimesheetRepository,
+			controllers.NewTimesheetController,
+
 			// Router
 			routes.ProvideAPI,
 		),

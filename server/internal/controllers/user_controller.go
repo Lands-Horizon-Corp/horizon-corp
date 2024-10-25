@@ -25,7 +25,6 @@ func NewUserController(userRepo *repositories.UserRepository, tokenService auth.
 	}
 }
 
-// ProfilePicture handles the profile picture upload.
 func (c *UserController) ProfilePicture(ctx *gin.Context) {
 	var req requests.MediaRequest
 
@@ -68,7 +67,6 @@ func (c *UserController) ProfilePicture(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-// ProfilePicture handles the profile picture upload.
 func (c *UserController) Description(ctx *gin.Context) {
 	var req user_requests.DescriptionRequest
 

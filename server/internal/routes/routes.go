@@ -25,6 +25,7 @@ func ProvideAPI(
 	feedbackController *controllers.FeedbackController,
 	mediaController *controllers.MediaController,
 	userController *controllers.UserController,
+	timesheetController *controllers.TimesheetController,
 
 	// Middleware
 	authMiddleware *middleware.AuthMiddleware,
@@ -65,6 +66,8 @@ func ProvideAPI(
 			c.Status(http.StatusOK)
 		})
 		controllers.AuthRoutes(v1, authMiddleware, authController)
+		controllers.TimesheetRoutes(v1, authMiddleware, timesheetController)
+
 		controllers.GenderRoutes(v1, genderController)
 		controllers.ErrorDetailRoutes(v1, errorDetailController)
 		controllers.ContactsRoutes(v1, contactController)
