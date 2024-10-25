@@ -13,11 +13,3 @@ CREATE TABLE IF NOT EXISTS `timesheets` (
     FOREIGN KEY (`media_in_id`) REFERENCES `media`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (`media_out_id`) REFERENCES `media`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Inserting sample data into timesheets
-INSERT INTO `timesheets` 
-    (`employee_id`, `time_in`, `time_out`, `media_in_id`, `media_out_id`, `created_at`, `updated_at`)
-VALUES 
-    (1, '2024-10-01 08:00:00', '2024-10-01 17:00:00', 1, 2, NOW(), NOW()),
-    (2, '2024-10-01 09:00:00', '2024-10-01 18:00:00', 2, 3, NOW(), NOW()),
-    (3, '2024-10-01 08:30:00', '2024-10-01 17:30:00', 3, 1, NOW(), NOW());
