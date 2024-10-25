@@ -1,4 +1,5 @@
-import { useEffect } from 'react'
+import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
 
 import {
     DropdownMenu,
@@ -8,41 +9,67 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Button } from '@/components/ui/button'
-import { CameraIcon, SwitchCameraIcon } from '@/components/icons'
-import { useCameraDevices } from '@/components/webcam/use-camera-devices'
+import { CameraIcon, RefreshIcon } from '@/components/icons'
 
-import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component'
+import { IBaseComp } from '@/types/component'
+import { cn, withCatchAsync } from '@/lib/utils'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-interface Props extends IBaseCompNoChild {
-    autoPick?: boolean
-    currentDevice?: MediaDeviceInfo | null
-    onPick: (device: MediaDeviceInfo) => void
+interface Props extends IBaseComp {
+    currentCamId: string | undefined
+    onPick: (camId: string) => void
 }
 
-const CameraDevicePicker = ({
-    onPick,
-    className,
-    currentDevice,
-    autoPick = false,
-}: Props) => {
-    const { devices } = useCameraDevices()
+interface MediaDeviceInfo {
+    kind: string
+    label?: string
+    deviceId: string
+}
 
-    useEffect(() => {
-        if (!autoPick || devices.length < 1) return
-        onPick(devices[0])
-    }, [devices])
+const fetchVideoInputDevices = async (): Promise<MediaDeviceInfo[]> => {
+    const mediaDevices = await navigator.mediaDevices.enumerateDevices()
+    return mediaDevices.filter(
+        (device) => device.kind === 'videoinput' && device.deviceId
+    )
+}
+
+const CameraDevicePicker = ({ onPick, currentCamId, children }: Props) => {
+    const {
+        data: devices,
+        refetch,
+        isRefetching,
+    } = useQuery<MediaDeviceInfo[]>({
+        queryKey: ['videoInputDevices'],
+        queryFn: async () => {
+            const [err, devices] = await withCatchAsync(
+                fetchVideoInputDevices()
+            )
+
+            if (err) {
+                throw err
+            }
+
+            const deviceCount = devices.length
+
+            if (deviceCount === 0) throw 'No camera found'
+
+            if (deviceCount > 0)
+                toast.success(
+                    `Found ${deviceCount} camera${deviceCount > 0 ? 's' : ''}`
+                )
+
+            return devices
+        },
+        retry: true,
+        retryOnMount: true,
+        initialData: [],
+        retryDelay: 1000,
+    })
 
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button
-                    variant="secondary"
-                    className={cn('size-fit rounded-full p-2', className)}
-                >
-                    <SwitchCameraIcon className="size-4" />
-                </Button>
+                <span>{children}</span>
             </DropdownMenuTrigger>
             <DropdownMenuContent side="bottom" align="end">
                 <DropdownMenuLabel>Camera</DropdownMenuLabel>
@@ -50,12 +77,11 @@ const CameraDevicePicker = ({
                 {devices.map((camDevice, id) => (
                     <DropdownMenuItem
                         key={id}
-                        onClick={() => onPick(camDevice)}
+                        onClick={() => onPick(camDevice.deviceId)}
                         className={cn(
                             '',
-                            currentDevice !== null &&
-                                currentDevice?.deviceId ===
-                                    camDevice.deviceId &&
+                            currentCamId &&
+                                currentCamId === camDevice.deviceId &&
                                 'bg-primary'
                         )}
                     >
@@ -70,6 +96,25 @@ const CameraDevicePicker = ({
                         no camera available
                     </DropdownMenuLabel>
                 )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                    onClick={(e) => {
+                        e.preventDefault()
+                        refetch()
+                    }}
+                >
+                    {!isRefetching ? (
+                        <RefreshIcon
+                            className={cn(
+                                'mr-2 size-4',
+                                isRefetching && 'animate-spin'
+                            )}
+                        />
+                    ) : (
+                        <LoadingSpinner className="mr-2 size-4 [animation-duration:1.5s]" />
+                    )}
+                    Refresh Camera List
+                </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>
     )

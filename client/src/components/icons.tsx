@@ -1,7 +1,6 @@
 import {
     LuClock8 as ClockIcon,
     LuCameraOff as CameraOffIcon,
-    LuSwitchCamera as SwitchCameraIcon,
     LuHeading1 as LuHeading1Icon,
     LuHeading2 as LuHeading2Icon,
     LuHeading3 as LuHeading3Icon,
@@ -56,6 +55,8 @@ import {
 } from 'react-icons/ai'
 import { GoArrowLeft as ArrowLeftIcon } from 'react-icons/go'
 import {
+    MdCameraEnhance as CameraSelectIcon,
+    MdFlipCameraAndroid as CameraFlipIcon,
     MdMarkEmailRead as EmailCheckIcon,
     MdOutlineEmail as MdOutlineEmailIcon,
 } from 'react-icons/md'
@@ -66,6 +67,7 @@ import {
     BsPatchExclamationFill as PatchExclamationIcon,
 } from 'react-icons/bs'
 import {
+    IoRefresh as RefreshIcon,
     IoFootstepsOutline as FootstepsIcon,
     IoCallOutline as IoCallOutlineIcon,
 } from 'react-icons/io5'
@@ -160,6 +162,7 @@ export {
     ShieldIcon,
     Users3Icon,
     LogoutIcon,
+    RefreshIcon,
     LuUndo2Icon,
     LuRedo2Icon,
     SidebarIcon,
@@ -186,12 +189,13 @@ export {
     LuHeading5Icon,
     LuHeading6Icon,
     EmailCheckIcon,
+    CameraFlipIcon,
     UserShieldIcon,
     BuildingCogIcon,
     PiCodeBlockIcon,
-    SwitchCameraIcon,
     TbBlockquoteIcon,
     ChevronRightIcon,
+    CameraSelectIcon,
     NotificationIcon,
     ToolbarItalicIcon,
     LuListOrderedIcon,
