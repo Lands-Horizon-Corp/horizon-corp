@@ -80,6 +80,7 @@ const PictureDrop = ({ onFileSelect, children }: Props) => {
                 <Input
                     id="picture"
                     type="file"
+                    accept="image/png, image/jpeg, image/jpg, image/webm"
                     className="hidden"
                     onChange={(e) => {
                         if (e.target.files) {
