@@ -42,7 +42,7 @@ const NavProfileMenu = () => {
         toast.success('Signed out')
     }
 
-    if(!currentUser) return null
+    if (!currentUser) return null
 
     return (
         <DropdownMenu>
