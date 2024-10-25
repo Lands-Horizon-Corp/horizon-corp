@@ -7,8 +7,8 @@ import (
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests"
+	"horizon/server/internal/resources"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,14 +36,9 @@ func (c *TimesheetController) getUserClaims(ctx *gin.Context) (*auth.UserClaims,
 	}
 
 	userClaims, ok := claims.(*auth.UserClaims)
-	if !ok {
+	if !ok || userClaims.AccountType != "Employee" {
 		c.tokenService.ClearTokenCookie(ctx)
-		return nil, fmt.Errorf("failed to cast claims")
-	}
-
-	if userClaims.AccountType != "Employee" {
-		c.tokenService.ClearTokenCookie(ctx)
-		return nil, fmt.Errorf("failed to get user")
+		return nil, fmt.Errorf("unauthorized user")
 	}
 	return userClaims, nil
 }
@@ -54,7 +49,6 @@ func (c *TimesheetController) CurrentEmployeeTime(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
-
 	employeeID := userClaims.ID
 	timesheet, err := c.timesheetRepo.GetLatestForEmployee(employeeID)
 	if err != nil {
@@ -63,18 +57,10 @@ func (c *TimesheetController) CurrentEmployeeTime(ctx *gin.Context) {
 	}
 
 	if timesheet.ID == 0 {
-		ctx.JSON(http.StatusOK, gin.H{"timeIn": time.Now(), "timeOut": nil})
+		ctx.JSON(http.StatusOK, gin.H{"timesheet": nil})
 		return
 	}
-
-	timeSinceLastEntry := time.Since(timesheet.TimeIn)
-	isNewEntry := timesheet.TimeOut != nil && timeSinceLastEntry > 5*time.Minute
-
-	if isNewEntry {
-		ctx.JSON(http.StatusOK, gin.H{"timeIn": time.Now(), "timeOut": nil})
-	} else {
-		ctx.JSON(http.StatusOK, gin.H{"timeIn": timesheet.TimeIn, "timeOut": timesheet.TimeOut})
-	}
+	ctx.JSON(http.StatusOK, resources.ToResourceTimesheet(timesheet))
 }
 
 func (c *TimesheetController) TimeIn(ctx *gin.Context) {
@@ -118,7 +104,7 @@ func (c *TimesheetController) TimeIn(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Time in recorded successfully"})
+	ctx.JSON(http.StatusOK, resources.ToResourceTimesheet(timesheet))
 }
 
 func (c *TimesheetController) TimeOut(ctx *gin.Context) {
@@ -154,7 +140,7 @@ func (c *TimesheetController) TimeOut(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Time out recorded successfully"})
+	ctx.JSON(http.StatusOK, resources.ToResourceTimesheet(timesheet))
 }
 
 func TimesheetRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controller *TimesheetController) {
@@ -162,7 +148,7 @@ func TimesheetRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, con
 	authGroup.Use(mw.Middleware())
 	{
 		authGroup.GET("/current", controller.CurrentEmployeeTime)
-		authGroup.GET("/time-in", controller.TimeIn)
-		authGroup.GET("/time-out", controller.TimeOut)
+		authGroup.POST("/time-in", controller.TimeIn)
+		authGroup.POST("/time-out", controller.TimeOut)
 	}
 }
