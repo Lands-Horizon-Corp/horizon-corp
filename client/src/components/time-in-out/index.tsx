@@ -75,7 +75,7 @@ const TimeInTimeOut = ({
             <div className="flex flex-col items-center gap-y-6 px-4">
                 <p
                     style={{ fontFamily: 'cursive' }}
-                    className="text-center text-base italic text-foreground/60"
+                    className="text-center text-lg italic text-foreground/60"
                 >
                     "{message}"
                 </p>
