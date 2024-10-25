@@ -100,7 +100,7 @@ const NavTimeInBar = ({ className, currentUser }: Props) => {
                         <DialogTitle>Time In Out Form</DialogTitle>
                         <DialogDescription>Shows time in out</DialogDescription>
                     </DialogHeader>
-                    <div className="ecoop-scroll max-h-screen overflow-y-scroll [&::-webkit-scrollbar]:size-0">
+                    <div className="ecoop-scroll max-h-screen overflow-y-scroll overflow-x-hidden [&::-webkit-scrollbar]:size-0">
                         <TimeInTimeOut
                             timeEntry={timeInEntry}
                             currentUser={currentUser}
