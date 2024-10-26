@@ -22,9 +22,10 @@ type OwnerResource struct {
 	Status            models.OwnerStatus `json:"status"`
 	Media             *MediaResource     `json:"media,omitempty"`
 	Companies         []CompanyResource  `json:"companies,omitempty"`
-
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	GenderID          *uint              `json:"genderId,omitempty"`
+	Gender            *GenderResource    `json:"gender,omitempty"`
+	CreatedAt         string             `json:"createdAt"`
+	UpdatedAt         string             `json:"updatedAt"`
 }
 
 func ToResourceOwner(owner models.Owner) OwnerResource {
@@ -32,6 +33,12 @@ func ToResourceOwner(owner models.Owner) OwnerResource {
 	if owner.Media != nil {
 		mediaRes := ToResourceMedia(*owner.Media)
 		mediaResource = &mediaRes
+	}
+
+	var genderResource *GenderResource
+	if owner.Gender != nil {
+		genderRes := ToResourceGender(*owner.Gender)
+		genderResource = &genderRes
 	}
 	return OwnerResource{
 		AccountType:       "Owner",
@@ -49,6 +56,8 @@ func ToResourceOwner(owner models.Owner) OwnerResource {
 		IsContactVerified: owner.IsContactVerified,
 		Status:            owner.Status,
 		Media:             mediaResource,
+		GenderID:          owner.GenderID,
+		Gender:            genderResource,
 		Companies:         ToResourceListCompanies(owner.Companies),
 		CreatedAt:         owner.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:         owner.UpdatedAt.Format(time.RFC3339),

@@ -24,9 +24,11 @@ type MemberResource struct {
 	Latitude          *float64            `json:"latitude"`
 
 	// Related entities
-	Media  *MediaResource  `json:"media,omitempty"`
-	Branch *BranchResource `json:"branch,omitempty"`
-	Role   *RoleResource   `json:"role,omitempty"`
+	Media    *MediaResource  `json:"media,omitempty"`
+	Branch   *BranchResource `json:"branch,omitempty"`
+	Role     *RoleResource   `json:"role,omitempty"`
+	GenderID *uint           `json:"genderId,omitempty"`
+	Gender   *GenderResource `json:"gender,omitempty"`
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -54,6 +56,12 @@ func ToResourceMember(member models.Member) MemberResource {
 		roleResource = &roleRes
 	}
 
+	var genderResource *GenderResource
+	if member.Gender != nil {
+		genderRes := ToResourceGender(*member.Gender)
+		genderResource = &genderRes
+	}
+
 	return MemberResource{
 		AccountType:       "Member",
 		ID:                member.ID,
@@ -74,6 +82,8 @@ func ToResourceMember(member models.Member) MemberResource {
 		Media:             mediaResource,
 		Branch:            branchResource,
 		Role:              roleResource,
+		GenderID:          member.GenderID,
+		Gender:            genderResource,
 		CreatedAt:         member.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:         member.UpdatedAt.Format(time.RFC3339),
 	}
