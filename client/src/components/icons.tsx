@@ -39,6 +39,7 @@ import {
     HiOutlineCog as SettingsIcon,
     HiOutlineCodeBracket as DevIcon,
     HiOutlineBell as NotificationIcon,
+    HiAdjustmentsHorizontal as AdjustIcon,
     HiOutlineSquaresPlus as DashboardIcon,
     HiOutlineChevronRight as ChevronRightIcon,
     HiOutlineQuestionMarkCircle as QuestionIcon,
@@ -61,6 +62,8 @@ import {
     MdOutlineEmail as MdOutlineEmailIcon,
 } from 'react-icons/md'
 import {
+    BsZoomIn as ZoomInIcon,
+    BsZoomOut as ZoomOutIcon,
     BsCameraFill as CameraFillIcon,
     BsPatchCheck as VerifiedPatchIcon,
     BsFillPatchMinusFill as PatchMinusIcon,
@@ -78,6 +81,10 @@ import {
     FaImage as ImageIcon,
     FaRulerHorizontal as FaRulerHorizontalIcon,
 } from 'react-icons/fa'
+import {
+    GrRotateRight as RotateRightIcon,
+    GrRotateLeft as RotateLeftIcon,
+} from 'react-icons/gr'
 import { IoIosCode as IoIosCodeIcon } from 'react-icons/io'
 import {
     TbClearFormatting as TbClearFormattingIcon,
@@ -165,12 +172,15 @@ export {
     ShieldIcon,
     Users3Icon,
     LogoutIcon,
+    ZoomInIcon,
+    AdjustIcon,
     RefreshIcon,
     LuUndo2Icon,
     LuRedo2Icon,
     SidebarIcon,
     ReportsIcon,
     SunMoonIcon,
+    ZoomOutIcon,
     QuestionIcon,
     SettingsIcon,
     UserListIcon,
@@ -186,6 +196,7 @@ export {
     CameraFillIcon,
     PatchMinusIcon,
     PatchCheckIcon,
+    RotateLeftIcon,
     LuHeading1Icon,
     LuHeading2Icon,
     LuHeading3Icon,
@@ -195,6 +206,7 @@ export {
     EmailCheckIcon,
     CameraFlipIcon,
     UserShieldIcon,
+    RotateRightIcon,
     BuildingCogIcon,
     PiCodeBlockIcon,
     TbBlockquoteIcon,

@@ -11,8 +11,8 @@ const testRoute = createRoute({
 
 const testLandingRoute = createRoute({
     getParentRoute: () => testRoute,
-    path: '/upload',
-    component: React.lazy(() => import('./pages/upload')),
+    path: '/cropper',
+    component: React.lazy(() => import('./pages/cropper')),
 })
 
 const TestRoute = testRoute.addChildren([testLandingRoute])
