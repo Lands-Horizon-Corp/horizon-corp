@@ -6,20 +6,20 @@ import (
 )
 
 type MemberResource struct {
-	AccountType       string              `json:"account_type"`
+	AccountType       string              `json:"accountType"`
 	ID                uint                `json:"id"`
-	FirstName         string              `json:"first_name"`
-	LastName          string              `json:"last_name"`
-	MiddleName        string              `json:"middle_name"`
-	PermanentAddress  string              `json:"permanent_address"`
+	FirstName         string              `json:"firstName"`
+	LastName          string              `json:"lastName"`
+	MiddleName        string              `json:"middleName"`
+	PermanentAddress  string              `json:"permanentAddress"`
 	Description       string              `json:"description"`
 	Birthdate         time.Time           `json:"birthdate"`
 	Username          string              `json:"username"`
 	Email             string              `json:"email"`
-	IsEmailVerified   bool                `json:"is_email_verified"`
-	IsContactVerified bool                `json:"is_contact_verified"`
+	IsEmailVerified   bool                `json:"isEmailVerified"`
+	IsContactVerified bool                `json:"isContactVerified"`
 	Status            models.MemberStatus `json:"status"`
-	ContactNumber     string              `json:"contact_number"`
+	ContactNumber     string              `json:"contactNumber"`
 	Longitude         *float64            `json:"longitude"`
 	Latitude          *float64            `json:"latitude"`
 
@@ -28,8 +28,8 @@ type MemberResource struct {
 	Branch *BranchResource `json:"branch,omitempty"`
 	Role   *RoleResource   `json:"role,omitempty"`
 
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceMember(member models.Member) MemberResource {

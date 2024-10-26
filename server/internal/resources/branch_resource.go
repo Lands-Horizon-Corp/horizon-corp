@@ -12,15 +12,15 @@ type BranchResource struct {
 	Longitude       float64            `json:"longitude,omitempty"`
 	Latitude        float64            `json:"latitude,omitempty"`
 	Email           string             `json:"email"`
-	ContactNumber   string             `json:"contact_number"`
-	IsAdminVerified bool               `json:"is_admin_verified"`
+	ContactNumber   string             `json:"contactNumber"`
+	IsAdminVerified bool               `json:"isAdminVerified"`
 	Media           *MediaResource     `json:"media,omitempty"`
 	Company         CompanyResource    `json:"company,omitempty"`
 	Employees       []EmployeeResource `json:"employees,omitempty"`
 	Members         []MemberResource   `json:"members,omitempty"`
 
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceBranch(branch models.Branch) BranchResource {
