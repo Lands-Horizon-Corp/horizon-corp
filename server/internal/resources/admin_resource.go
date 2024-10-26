@@ -25,6 +25,7 @@ type AdminResource struct {
 	Role               *RoleResource      `json:"role,omitempty"`
 	GenderID           *uint              `json:"genderId,omitempty"`
 	Gender             *GenderResource    `json:"gender,omitempty"`
+	Footsteps          []FootstepResource `json:"footsteps,omitempty"`
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -68,6 +69,7 @@ func ToResourceAdmin(admin models.Admin) AdminResource {
 		Role:               roleResource,
 		GenderID:           admin.GenderID,
 		Gender:             genderResource,
+		Footsteps:          ToResourceListFootsteps(admin.Footsteps),
 		CreatedAt:          admin.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:          admin.UpdatedAt.Format(time.RFC3339),
 	}

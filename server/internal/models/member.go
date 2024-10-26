@@ -40,6 +40,7 @@ type Member struct {
 	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
 	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 
-	GenderID *uint   `gorm:"type:bigint;unsigned" json:"gender_id"`
-	Gender   *Gender `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
+	GenderID  *uint      `gorm:"type:bigint;unsigned" json:"gender_id"`
+	Gender    *Gender    `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
+	Footsteps []Footstep `gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
 }
