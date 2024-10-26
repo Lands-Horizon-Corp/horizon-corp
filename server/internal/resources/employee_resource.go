@@ -30,7 +30,7 @@ func ToResourceEmployee(employee models.Employee) EmployeeResource {
 	var mediaResource *MediaResource
 
 	if employee.MediaID != nil {
-		media := ToResourceMedia(employee.Media)
+		media := ToResourceMedia(*employee.Media)
 		mediaResource = &media
 	}
 

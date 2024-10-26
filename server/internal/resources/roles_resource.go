@@ -4,7 +4,7 @@ import (
 	"horizon/server/internal/models"
 )
 
-type RolesResource struct {
+type RoleResource struct {
 	ID          uint   `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
@@ -28,8 +28,8 @@ type RolesResource struct {
 	DeleteGender       bool `json:"deleteGender,omitempty"`
 }
 
-func ToResourceRoles(roles models.Roles) RolesResource {
-	return RolesResource{
+func ToResourceRole(roles models.Role) RoleResource {
+	return RoleResource{
 		ID:          roles.ID,
 		Name:        roles.Name,
 		Description: roles.Description,
@@ -53,10 +53,10 @@ func ToResourceRoles(roles models.Roles) RolesResource {
 	}
 }
 
-func ToResourceListRoles(rolesList []models.Roles) []RolesResource {
-	var resources []RolesResource
+func ToResourceListRole(rolesList []models.Role) []RoleResource {
+	var resources []RoleResource
 	for _, roles := range rolesList {
-		resources = append(resources, ToResourceRoles(roles))
+		resources = append(resources, ToResourceRole(roles))
 	}
 	return resources
 }

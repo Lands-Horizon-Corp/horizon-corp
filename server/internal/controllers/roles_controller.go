@@ -11,16 +11,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type RolesController struct {
-	repo *repositories.RolesRepository
+type RoleController struct {
+	repo *repositories.RoleRepository
 }
 
-func NewRolesController(repo *repositories.RolesRepository) *RolesController {
-	return &RolesController{repo: repo}
+func NewRoleController(repo *repositories.RoleRepository) *RoleController {
+	return &RoleController{repo: repo}
 }
 
-func (c *RolesController) Create(ctx *gin.Context) {
-	var req requests.RolesRequest
+func (c *RoleController) Create(ctx *gin.Context) {
+	var req requests.RoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -32,8 +32,8 @@ func (c *RolesController) Create(ctx *gin.Context) {
 		return
 	}
 
-	// Create Roles instance
-	roles := models.Roles{
+	// Create Role instance
+	roles := models.Role{
 		Name:               req.Name,
 		Description:        req.Description,
 		ApiKey:             req.ApiKey,
@@ -59,18 +59,18 @@ func (c *RolesController) Create(ctx *gin.Context) {
 	}
 
 	// Return the created error details as a resource
-	ctx.JSON(http.StatusCreated, resources.ToResourceRoles(roles))
+	ctx.JSON(http.StatusCreated, resources.ToResourceRole(roles))
 }
-func (c *RolesController) GetAll(ctx *gin.Context) {
+func (c *RoleController) GetAll(ctx *gin.Context) {
 	errorDetail, err := c.repo.GetAll()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, resources.ToResourceListRoles(errorDetail))
+	ctx.JSON(http.StatusOK, resources.ToResourceListRole(errorDetail))
 }
 
-func (c *RolesController) GetByID(ctx *gin.Context) {
+func (c *RoleController) GetByID(ctx *gin.Context) {
 	uid, err := helpers.ParseIDParam(ctx, "id")
 	if err != nil {
 		return
@@ -78,19 +78,19 @@ func (c *RolesController) GetByID(ctx *gin.Context) {
 
 	roles, err := c.repo.GetByID(uid)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Roles not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Role not found"})
 		return
 	}
-	ctx.JSON(http.StatusOK, resources.ToResourceRoles(roles))
+	ctx.JSON(http.StatusOK, resources.ToResourceRole(roles))
 }
 
-func (c *RolesController) Update(ctx *gin.Context) {
+func (c *RoleController) Update(ctx *gin.Context) {
 	id, err := helpers.ParseIDParam(ctx, "id")
 	if err != nil {
 		return
 	}
 
-	var req requests.RolesRequest
+	var req requests.RoleRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -101,8 +101,8 @@ func (c *RolesController) Update(ctx *gin.Context) {
 		return
 	}
 
-	// Create Roles instance
-	roles := models.Roles{
+	// Create Role instance
+	roles := models.Role{
 		Name:               req.Name,
 		Description:        req.Description,
 		Color:              req.Color,
@@ -126,23 +126,23 @@ func (c *RolesController) Update(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resources.ToResourceRoles(roles))
+	ctx.JSON(http.StatusOK, resources.ToResourceRole(roles))
 }
 
-func (c *RolesController) Delete(ctx *gin.Context) {
+func (c *RoleController) Delete(ctx *gin.Context) {
 	id, err := helpers.ParseIDParam(ctx, "id")
 	if err != nil {
 		return
 	}
 	if err := c.repo.Delete(id); err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Roles not found"})
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Role not found"})
 		return
 	}
 
 	ctx.JSON(http.StatusNoContent, nil)
 }
 
-func RolesRoutes(router *gin.RouterGroup, controller *RolesController) {
+func RoleRoutes(router *gin.RouterGroup, controller *RoleController) {
 	group := router.Group("/role")
 	{
 		group.POST("", controller.Create)

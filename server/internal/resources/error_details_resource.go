@@ -1,7 +1,6 @@
 package resources
 
 import (
-	"horizon/server/helpers"
 	"horizon/server/internal/models"
 	"time"
 )
@@ -22,9 +21,9 @@ func ToResourceErrorDetail(errorDetails models.ErrorDetail) ErrorDetailResource 
 		ID:        errorDetails.ID,
 		Message:   errorDetails.Message,
 		Name:      errorDetails.Name,
-		Stack:     helpers.SafeString(errorDetails.Stack),
-		Response:  helpers.SafeString(errorDetails.Response),
-		Status:    helpers.SafeInt(errorDetails.Status),
+		Stack:     errorDetails.Stack,
+		Response:  errorDetails.Response,
+		Status:    errorDetails.Status,
 		CreatedAt: errorDetails.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: errorDetails.UpdatedAt.Format(time.RFC3339),
 	}

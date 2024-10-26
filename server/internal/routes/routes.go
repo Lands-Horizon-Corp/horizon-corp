@@ -18,7 +18,7 @@ func ProvideAPI(
 
 	// Controller
 	authController *controllers.AuthController,
-	roleController *controllers.RolesController,
+	roleController *controllers.RoleController,
 	genderController *controllers.GenderController,
 	errorDetailController *controllers.ErrorDetailController,
 	contactController *controllers.ContactsController,

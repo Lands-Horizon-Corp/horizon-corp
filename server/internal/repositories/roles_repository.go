@@ -6,38 +6,38 @@ import (
 	"gorm.io/gorm"
 )
 
-type RolesRepository struct {
+type RoleRepository struct {
 	DB *gorm.DB
 }
 
-func NewRolesRepository(db *gorm.DB) *RolesRepository {
-	return &RolesRepository{DB: db}
+func NewRoleRepository(db *gorm.DB) *RoleRepository {
+	return &RoleRepository{DB: db}
 }
 
-func (r *RolesRepository) Create(roles *models.Roles) error {
-	err := r.DB.Create(roles).Error
+func (r *RoleRepository) Create(Role *models.Role) error {
+	err := r.DB.Create(Role).Error
 	return handleDBError(err)
 }
 
-func (r *RolesRepository) GetAll() ([]models.Roles, error) {
-	var roless []models.Roles
-	err := r.DB.Find(&roless).Error
-	return roless, handleDBError(err)
+func (r *RoleRepository) GetAll() ([]models.Role, error) {
+	var Roles []models.Role
+	err := r.DB.Find(&Roles).Error
+	return Roles, handleDBError(err)
 }
 
-func (r *RolesRepository) GetByID(id uint) (models.Roles, error) {
-	var roles models.Roles
-	err := r.DB.First(&roles, id).Error
-	return roles, handleDBError(err)
+func (r *RoleRepository) GetByID(id uint) (models.Role, error) {
+	var Role models.Role
+	err := r.DB.First(&Role, id).Error
+	return Role, handleDBError(err)
 }
 
-func (r *RolesRepository) Update(id uint, roles *models.Roles) error {
-	roles.ID = id
-	err := r.DB.Save(roles).Error
+func (r *RoleRepository) Update(id uint, Role *models.Role) error {
+	Role.ID = id
+	err := r.DB.Save(Role).Error
 	return handleDBError(err)
 }
 
-func (r *RolesRepository) Delete(id uint) error {
-	err := r.DB.Delete(&models.Roles{}, id).Error
+func (r *RoleRepository) Delete(id uint) error {
+	err := r.DB.Delete(&models.Role{}, id).Error
 	return handleDBError(err)
 }

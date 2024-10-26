@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS `timesheets` (
     `id` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
     `employee_id` BIGINT UNSIGNED NOT NULL,
-    `time_in` DATETIME(3) NOT NULL,
-    `time_out` DATETIME(3) NOT NULL,
+    `time_in` DATETIME(3) NULL,
+    `time_out` DATETIME(3) NULL,
     `media_in_id` BIGINT UNSIGNED NULL,
     `media_out_id` BIGINT UNSIGNED NULL,
     `created_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),

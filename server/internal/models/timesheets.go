@@ -8,14 +8,12 @@ import (
 
 type Timesheet struct {
 	gorm.Model
-	ID         uint       `gorm:"primaryKey;autoIncrement;not null"`
-	EmployeeID uint       `gorm:"not null;index"`
-	TimeIn     time.Time  `gorm:"type:datetime(3);not null"`
-	TimeOut    *time.Time `gorm:"type:datetime(3)"`
-	MediaInID  *uint      `gorm:"index"`
-	MediaOutID *uint      `gorm:"index"`
-	CreatedAt  time.Time  `gorm:"type:datetime(3);default:CURRENT_TIMESTAMP(3)"`
-	UpdatedAt  time.Time  `gorm:"type:datetime(3);default:CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3)"`
-	MediaIn    Media      `gorm:"foreignKey:MediaInID"`
-	MediaOut   Media      `gorm:"foreignKey:MediaOutID"`
+	EmployeeID uint       `gorm:"type:bigint;unsigned;not null;index" json:"employee_id"`
+	Employee   Employee   `gorm:"foreignKey:EmployeeID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"employee"`
+	TimeIn     *time.Time `gorm:"type:datetime(3)" json:"time_in"`
+	TimeOut    *time.Time `gorm:"type:datetime(3)" json:"time_out"`
+	MediaInID  *uint      `gorm:"type:bigint;unsigned" json:"media_in_id"`
+	MediaIn    *Media     `gorm:"foreignKey:MediaInID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media_in"`
+	MediaOutID *uint      `gorm:"type:bigint;unsigned" json:"media_out_id"`
+	MediaOut   *Media     `gorm:"foreignKey:MediaOutID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media_out"`
 }
