@@ -41,6 +41,7 @@ func NewTokenService(redisClient *database.CacheService, cfg *config.AppConfig, 
 }
 
 func (s *tokenService) GenerateToken(claims *UserClaims, expiration time.Duration) (string, error) {
+
 	if expiration == 0 {
 		expiration = time.Hour * 12
 	}

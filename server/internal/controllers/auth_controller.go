@@ -58,17 +58,17 @@ func (c *AuthController) respondWithError(ctx *gin.Context, statusCode int, logM
 }
 
 // getCurrentUser retrieves the current authenticated user from the context.
-func (c *AuthController) getCurrentUser(ctx *gin.Context) (models.User, error) {
+func (c *AuthController) getCurrentUser(ctx *gin.Context) (*models.User, error) {
 	user, exists := ctx.Get("current-user")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
-		return models.User{}, fmt.Errorf("current user not found in context")
+		return nil, fmt.Errorf("current user not found in context")
 	}
 
-	currentUser, ok := user.(models.User)
+	currentUser, ok := user.(*models.User)
 	if !ok {
 		c.tokenService.ClearTokenCookie(ctx)
-		return models.User{}, fmt.Errorf("failed to cast user to models.User")
+		return nil, fmt.Errorf("failed to cast user to models.User")
 	}
 
 	return currentUser, nil
@@ -117,7 +117,7 @@ func (c *AuthController) CurrentUser(ctx *gin.Context) {
 	}
 
 	currentUser.AccountType = userClaims.AccountType
-	response := resources.ToResourceUser(currentUser, currentUser.AccountType)
+	response := resources.ToResourceUser(*currentUser, currentUser.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -218,7 +218,7 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 		c.respondWithError(ctx, http.StatusUnauthorized, "SignIn: Password verification failed", "Invalid credentials.")
 		return
 	}
-
+	user.AccountType = req.AccountType
 	token, err := c.userAuthService.GenerateUserToken(user, 0)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignIn: Token generation error: %v", err), "Failed to authenticate user.")
@@ -227,8 +227,6 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 
 	// Set Auth Token Cookie
 	c.setAuthTokenCookie(ctx, token)
-
-	// Respond with the authenticated user
 	response := resources.ToResourceUser(*user, req.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
@@ -254,9 +252,12 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 
 	user, err := c.userRepo.FindByEmailUsernameOrContact(req.AccountType, req.Key)
 	if err != nil {
-		c.respondWithError(ctx, http.StatusUnauthorized, fmt.Sprintf("ForgotPassword: User not found: %v", err), "User not found.")
+		// Log the error but do not reveal whether the user exists
+		log.Printf("ForgotPassword: User not found: %v", err)
+		ctx.JSON(http.StatusOK, gin.H{"message": "If the account exists, password reset instructions have been sent."})
 		return
 	}
+	user.AccountType = req.AccountType
 
 	token, err := c.userAuthService.GenerateUserToken(user, time.Minute*10)
 	if err != nil {
@@ -281,7 +282,6 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 			c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ForgotPassword: SMS sending error: %v", err), "Failed to send password reset SMS.")
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "Password reset instructions have been sent via SMS."})
 
 	case "email":
 		emailReq := services.EmailRequest{
@@ -297,11 +297,14 @@ func (c *AuthController) ForgotPassword(ctx *gin.Context) {
 			c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ForgotPassword: Email sending error: %v", err), "Failed to send password reset email.")
 			return
 		}
-		ctx.JSON(http.StatusOK, gin.H{"message": "Password reset instructions have been sent via email."})
 
 	default:
 		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ForgotPassword: Invalid key type: %s", keyType), "Invalid key type provided.")
+		return
 	}
+
+	// Send a generic success message to avoid revealing account existence
+	ctx.JSON(http.StatusOK, gin.H{"message": "If the account exists, password reset instructions have been sent."})
 }
 
 // ChangePassword updates the user's password.
@@ -412,15 +415,16 @@ func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 		return
 	}
 	user := &models.User{
+		AccountType:     userClaims.AccountType,
 		IsEmailVerified: true,
 	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, *user)
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("VerifyEmail: User update error: %v", err), "Failed to update user status.")
 		return
 	}
 
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -495,15 +499,16 @@ func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 	}
 
 	user := &models.User{
+		AccountType:       userClaims.AccountType,
 		IsContactVerified: true,
 	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, *user)
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("VerifyContactNumber: User update error: %v", err), "Failed to update user status.")
 		return
 	}
 
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -538,16 +543,17 @@ func (c *AuthController) ChangeEmail(ctx *gin.Context) {
 	}
 
 	user := &models.User{
+		AccountType:     userClaims.AccountType,
 		IsEmailVerified: false,
 		Email:           req.Email,
 	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, *user)
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeEmail: User update error: %v", err), "Failed to update user email.")
 		return
 	}
 
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -589,16 +595,17 @@ func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {
 	}
 
 	user := &models.User{
+		AccountType:       userClaims.AccountType,
 		IsContactVerified: false,
 		ContactNumber:     req.ContactNumber,
 	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, *user)
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
 	if err != nil {
-		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("VerifyEmail: User update error: %v", err), "Failed to update user status.")
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeContactNumber: User update error: %v", err), "Failed to update contact number.")
 		return
 	}
 
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -610,14 +617,15 @@ func (c *AuthController) SkipVerification(ctx *gin.Context) {
 	}
 
 	user := &models.User{
+		AccountType:        userClaims.AccountType,
 		IsSkipVerification: true,
 	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, *user)
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
 	if err != nil {
-		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeContactNumber: User update error: %v", err), "Failed to update contact number.")
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SkipVerification: User update error: %v", err), "Failed to update verification status.")
 		return
 	}
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -625,28 +633,28 @@ func (c *AuthController) NewPassword(ctx *gin.Context) {
 
 	var req auth_requests.NewPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("Change Password: JSON binding error: %v", err), "Invalid request payload.")
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("NewPassword: JSON binding error: %v", err), "Invalid request payload.")
 		return
 	}
 
 	if err := req.Validate(); err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("Change Password: Validation error: %v", err), "Invalid input data.")
+		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("NewPassword: Validation error: %v", err), "Invalid input data.")
 		return
 	}
 
-	claims, err := c.getCurrentUser(ctx)
+	currentUser, err := c.getCurrentUser(ctx)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "Authentication required.")
 		return
 	}
 
-	if !config.VerifyPassword(claims.Password, req.PreviousPassword) {
-		c.respondWithError(ctx, http.StatusUnauthorized, "SignIn: Password verification failed", "Invalid credentials.")
+	if !config.VerifyPassword(currentUser.Password, req.PreviousPassword) {
+		c.respondWithError(ctx, http.StatusUnauthorized, "NewPassword: Password verification failed", "Invalid previous password.")
 		return
 	}
 
-	if err := c.userRepo.UpdatePassword(claims.AccountType, claims.ID, req.ConfirmPassword); err != nil {
-		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangePassword: Password update error: %v", err), "Failed to update password.")
+	if err := c.userRepo.UpdatePassword(currentUser.AccountType, currentUser.ID, req.ConfirmPassword); err != nil {
+		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("NewPassword: Password update error: %v", err), "Failed to update password.")
 		return
 	}
 
