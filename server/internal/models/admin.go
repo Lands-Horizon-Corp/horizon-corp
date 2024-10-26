@@ -32,4 +32,7 @@ type Admin struct {
 	Status             AdminStatus `gorm:"type:varchar(11);default:'Pending'" json:"status"`
 	MediaID            *uint       `gorm:"type:bigint;unsigned" json:"media_id"`
 	Media              *Media      `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"media"`
+
+	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
+	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 }

@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS `admins` (
     `is_skip_verification` BOOLEAN DEFAULT FALSE,
     `status` VARCHAR(11) DEFAULT 'Pending',
     `media_id` BIGINT UNSIGNED NULL,
+    `role_id` BIGINT UNSIGNED NULL,
     PRIMARY KEY (`id`),
     INDEX `idx_admin_deleted_at` (`deleted_at`),
-    FOREIGN KEY (`media_id`) REFERENCES `media`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (`media_id`) REFERENCES `media`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON DELETE SET NULL ON UPDATE CASCADE 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
