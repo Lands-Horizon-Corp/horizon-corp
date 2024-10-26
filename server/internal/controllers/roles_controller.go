@@ -62,12 +62,12 @@ func (c *RoleController) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, resources.ToResourceRole(roles))
 }
 func (c *RoleController) GetAll(ctx *gin.Context) {
-	errorDetail, err := c.repo.GetAll()
+	roles, err := c.repo.GetAll()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, resources.ToResourceListRole(errorDetail))
+	ctx.JSON(http.StatusOK, resources.ToResourceListRoles(roles))
 }
 
 func (c *RoleController) GetByID(ctx *gin.Context) {

@@ -6,44 +6,59 @@ import (
 )
 
 type TimesheetResource struct {
-	ID         uint           `json:"id"`
-	EmployeeID uint           `json:"employeeId"`
-	TimeIn     *time.Time     `json:"timeIn"`
-	TimeOut    *time.Time     `json:"timeOut"`
-	MediaIn    *MediaResource `json:"mediaIn,omitempty"`
-	MediaOut   *MediaResource `json:"mediaOut,omitempty"`
-	CreatedAt  string         `json:"createdAt"`
-	UpdatedAt  string         `json:"updatedAt"`
+	ID         uint              `json:"id"`
+	EmployeeID uint              `json:"employee_id"`
+	Employee   *EmployeeResource `json:"employee,omitempty"`
+	TimeIn     *time.Time        `json:"time_in"`
+	TimeOut    *time.Time        `json:"time_out"`
+	MediaInID  *uint             `json:"media_in_id"`
+	MediaIn    *MediaResource    `json:"media_in,omitempty"`
+	MediaOutID *uint             `json:"media_out_id"`
+	MediaOut   *MediaResource    `json:"media_out,omitempty"`
+
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 func ToResourceTimesheet(timesheet models.Timesheet) TimesheetResource {
-	var mediaInResource, mediaOutResource *MediaResource
-
-	if timesheet.MediaInID != nil {
-		mediaIn := ToResourceMedia(*timesheet.MediaIn)
-		mediaInResource = &mediaIn
+	var employeeResource *EmployeeResource
+	if timesheet.EmployeeID != 0 {
+		empRes := ToResourceEmployee(timesheet.Employee)
+		employeeResource = &empRes
 	}
-	if timesheet.MediaOutID != nil {
-		mediaOut := ToResourceMedia(*timesheet.MediaOut)
-		mediaOutResource = &mediaOut
+
+	var mediaInResource *MediaResource
+	if timesheet.MediaIn != nil {
+		mediaInRes := ToResourceMedia(*timesheet.MediaIn)
+		mediaInResource = &mediaInRes
+	}
+
+	var mediaOutResource *MediaResource
+	if timesheet.MediaOut != nil {
+		mediaOutRes := ToResourceMedia(*timesheet.MediaOut)
+		mediaOutResource = &mediaOutRes
 	}
 
 	return TimesheetResource{
 		ID:         timesheet.ID,
 		EmployeeID: timesheet.EmployeeID,
+		Employee:   employeeResource,
 		TimeIn:     timesheet.TimeIn,
 		TimeOut:    timesheet.TimeOut,
+		MediaInID:  timesheet.MediaInID,
 		MediaIn:    mediaInResource,
+		MediaOutID: timesheet.MediaOutID,
 		MediaOut:   mediaOutResource,
-		CreatedAt:  timesheet.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:  timesheet.UpdatedAt.Format(time.RFC3339),
+
+		CreatedAt: timesheet.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: timesheet.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
 func ToResourceListTimesheets(timesheets []models.Timesheet) []TimesheetResource {
-	var resources []TimesheetResource
-	for _, timesheet := range timesheets {
-		resources = append(resources, ToResourceTimesheet(timesheet))
+	resourceList := make([]TimesheetResource, len(timesheets))
+	for i, timesheet := range timesheets {
+		resourceList[i] = ToResourceTimesheet(timesheet)
 	}
-	return resources
+	return resourceList
 }
