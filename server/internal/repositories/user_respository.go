@@ -185,45 +185,48 @@ func (r *UserRepository) FindByEmailUsernameOrContact(accountType, input string)
 		return nil, errors.New("invalid account type")
 	}
 }
-func (r *UserRepository) UpdateColumns(id uint, user models.User) (models.User, error) {
+func (r *UserRepository) UpdateColumns(id uint, user *models.User) (*models.User, error) {
+	// Hash the password if it's provided
 	if user.Password != "" {
 		hashedPassword, err := config.HashPassword(user.Password)
 		if err != nil {
-			return models.User{}, fmt.Errorf("error hashing password: %v", err)
+			return nil, fmt.Errorf("error hashing password: %v", err)
 		}
 		user.Password = hashedPassword
 	}
+
+	// Update based on account type
 	switch user.AccountType {
 	case "Admin":
-		admin := ConvertUserToAdmin(&user)
+		admin := ConvertUserToAdmin(user)
 		updatedAdmin, err := r.admin.UpdateColumns(id, *admin)
 		if err != nil {
-			return models.User{}, err
+			return nil, err
 		}
-		return *ConvertAdminToUser(updatedAdmin), nil
+		return ConvertAdminToUser(updatedAdmin), nil
 	case "Owner":
-		owner := ConvertUserToOwner(&user)
+		owner := ConvertUserToOwner(user)
 		updatedOwner, err := r.owner.UpdateColumns(id, *owner)
 		if err != nil {
-			return models.User{}, err
+			return nil, err
 		}
-		return *ConvertOwnerToUser(updatedOwner), nil
+		return ConvertOwnerToUser(updatedOwner), nil
 	case "Employee":
-		employee := ConvertUserToEmployee(&user)
+		employee := ConvertUserToEmployee(user)
 		updatedEmployee, err := r.employee.UpdateColumns(id, *employee)
 		if err != nil {
-			return models.User{}, err
+			return nil, err
 		}
-		return *ConvertEmployeeToUser(updatedEmployee), nil
+		return ConvertEmployeeToUser(updatedEmployee), nil
 	case "Member":
-		member := ConvertUserToMember(&user)
+		member := ConvertUserToMember(user)
 		updatedMember, err := r.member.UpdateColumns(id, *member)
 		if err != nil {
-			return models.User{}, err
+			return nil, err
 		}
-		return *ConvertMemberToUser(updatedMember), nil
+		return ConvertMemberToUser(updatedMember), nil
 	default:
-		return models.User{}, errors.New("invalid account type")
+		return nil, errors.New("invalid account type")
 	}
 }
 
@@ -350,7 +353,6 @@ func ConvertAdminToUser(admin *models.Admin) *models.User {
 		MediaID:            admin.MediaID,
 		Media:              admin.Media,
 		Status:             string(admin.Status),
-		AccountType:        "Admin",
 	}
 }
 func ConvertOwnerToUser(owner *models.Owner) *models.User {
@@ -372,7 +374,6 @@ func ConvertOwnerToUser(owner *models.Owner) *models.User {
 		MediaID:            owner.MediaID,
 		Media:              owner.Media,
 		Status:             string(owner.Status),
-		AccountType:        "Owner",
 	}
 }
 
@@ -395,7 +396,6 @@ func ConvertEmployeeToUser(employee *models.Employee) *models.User {
 		MediaID:            employee.MediaID,
 		Media:              employee.Media,
 		Status:             string(employee.Status),
-		AccountType:        "Employee",
 	}
 }
 
@@ -418,7 +418,6 @@ func ConvertMemberToUser(member *models.Member) *models.User {
 		MediaID:            member.MediaID,
 		Media:              member.Media,
 		Status:             string(member.Status),
-		AccountType:        "Member",
 	}
 }
 

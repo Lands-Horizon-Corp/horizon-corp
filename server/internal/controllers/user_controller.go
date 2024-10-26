@@ -55,14 +55,14 @@ func (c *UserController) ProfilePicture(ctx *gin.Context) {
 	user := &models.User{
 		MediaID: &req.ID,
 	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, *user)
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload profile picture to user status."})
 		return
 	}
 
 	// Return updated user resource
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -94,14 +94,14 @@ func (c *UserController) Description(ctx *gin.Context) {
 	user := &models.User{
 		Description: req.Description,
 	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, *user)
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload profile picture to user status."})
 		return
 	}
 
 	// Return updated user resource
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
