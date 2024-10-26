@@ -19,13 +19,13 @@ func NewEmployeeAuthService(tokenService TokenService, logger *zap.Logger) *Empl
 	}
 }
 
-func (s *EmployeeAuthService) GenerateEmployeeToken(employee models.Employee, expiration time.Duration) (string, error) {
+func (s *EmployeeAuthService) GenerateEmployeeToken(employee *models.Employee, expiration time.Duration) (string, error) {
 	claims := &UserClaims{
 		ID:          employee.ID,
 		AccountType: "Employee",
 	}
 
-	token, err := s.tokenService.GenerateToken(claims, 0)
+	token, err := s.tokenService.GenerateToken(claims, expiration)
 	if err != nil {
 		s.logger.Error("Failed to generate employee token", zap.Error(err))
 		return "", err
