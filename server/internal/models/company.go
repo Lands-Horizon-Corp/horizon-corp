@@ -16,5 +16,5 @@ type Company struct {
 	Media           *Media  `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
 	IsAdminVerified bool    `gorm:"default:false" json:"is_admin_verified"`
 
-	Branches []Branch `gorm:"foreignKey:CompanyID" json:"branches"`
+	Branches []*Branch `gorm:"foreignKey:CompanyID" json:"branches"`
 }

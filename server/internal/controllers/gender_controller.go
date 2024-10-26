@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type GenderController struct {
@@ -31,12 +32,12 @@ func (c *GenderController) Create(ctx *gin.Context) {
 		return
 	}
 
-	gender := models.Gender{
+	gender := &models.Gender{
 		Name:        req.Name,
 		Description: req.Description,
 	}
 
-	if err := c.repo.Create(&gender); err != nil {
+	if err := c.repo.Create(gender); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -84,12 +85,13 @@ func (c *GenderController) Update(ctx *gin.Context) {
 		return
 	}
 
-	gender := models.Gender{
+	gender := &models.Gender{
+		Model:       gorm.Model{ID: id},
 		Name:        req.Name,
 		Description: req.Description,
 	}
 
-	if err := c.repo.Update(id, &gender); err != nil {
+	if err := c.repo.Update(gender); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -62,7 +62,7 @@ func (c *UserController) ProfilePicture(ctx *gin.Context) {
 	}
 
 	// Return updated user resource
-	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -101,7 +101,7 @@ func (c *UserController) Description(ctx *gin.Context) {
 	}
 
 	// Return updated user resource
-	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 

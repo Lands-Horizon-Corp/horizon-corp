@@ -37,10 +37,10 @@ type Employee struct {
 	Longitude          *float64       `gorm:"type:decimal(10,7)" json:"longitude"`
 	Latitude           *float64       `gorm:"type:decimal(10,7)" json:"latitude"`
 
-	Timesheets []Timesheet `gorm:"foreignKey:EmployeeID" json:"timesheets"`
-	RoleID     *uint       `gorm:"type:bigint;unsigned" json:"role_id"`
-	Role       *Role       `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
-	GenderID   *uint       `gorm:"type:bigint;unsigned" json:"gender_id"`
-	Gender     *Gender     `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
-	Footsteps  []Footstep  `gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
+	Timesheets []*Timesheet `gorm:"foreignKey:EmployeeID" json:"timesheets"`
+	RoleID     *uint        `gorm:"type:bigint;unsigned" json:"role_id"`
+	Role       *Role        `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+	GenderID   *uint        `gorm:"type:bigint;unsigned" json:"gender_id"`
+	Gender     *Gender      `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
+	Footsteps  []*Footstep  `gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
 }

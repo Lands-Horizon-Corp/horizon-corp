@@ -12,10 +12,10 @@ type Media struct {
 	Key        string `gorm:"type:varchar(255)" json:"key"`
 	BucketName string `gorm:"type:varchar(255)" json:"bucket_name"`
 
-	Employees []Employee `gorm:"foreignKey:MediaID" json:"employees"`
-	Members   []Member   `gorm:"foreignKey:MediaID" json:"members"`
-	Owners    []Owner    `gorm:"foreignKey:MediaID" json:"owners"`
-	Admins    []Admin    `gorm:"foreignKey:MediaID" json:"admins"`
-	Companies []Company  `gorm:"foreignKey:MediaID" json:"companies"`
-	Branches  []Branch   `gorm:"foreignKey:MediaID" json:"branches"`
+	Employees []*Employee `gorm:"foreignKey:MediaID" json:"employees"`
+	Members   []*Member   `gorm:"foreignKey:MediaID" json:"members"`
+	Owners    []*Owner    `gorm:"foreignKey:MediaID" json:"owners"`
+	Admins    []*Admin    `gorm:"foreignKey:MediaID" json:"admins"`
+	Companies []*Company  `gorm:"foreignKey:MediaID" json:"companies"`
+	Branches  []*Branch   `gorm:"foreignKey:MediaID" json:"branches"`
 }

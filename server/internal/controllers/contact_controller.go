@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type ContactsController struct {
@@ -44,16 +45,16 @@ func (c *ContactsController) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, resources.ToResourceContact(contacts))
+	ctx.JSON(http.StatusCreated, resources.ToResourceContact(&contacts))
 }
 
 func (c *ContactsController) GetAll(ctx *gin.Context) {
-	contact, err := c.repo.GetAll()
+	contacts, err := c.repo.GetAll()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, resources.ToResourceListContacts(contact))
+	ctx.JSON(http.StatusOK, resources.ToResourceListContacts(contacts))
 }
 
 func (c *ContactsController) GetByID(ctx *gin.Context) {
@@ -71,7 +72,6 @@ func (c *ContactsController) GetByID(ctx *gin.Context) {
 }
 
 func (c *ContactsController) Update(ctx *gin.Context) {
-
 	id, err := helpers.ParseIDParam(ctx, "id")
 	if err != nil {
 		return
@@ -88,7 +88,8 @@ func (c *ContactsController) Update(ctx *gin.Context) {
 		return
 	}
 
-	contacts := models.Contact{
+	contact := &models.Contact{
+		Model:         gorm.Model{ID: id},
 		FirstName:     req.FirstName,
 		LastName:      req.LastName,
 		Email:         req.Email,
@@ -96,12 +97,13 @@ func (c *ContactsController) Update(ctx *gin.Context) {
 		ContactNumber: req.ContactNumber,
 	}
 
-	if err := c.repo.Update(id, &contacts); err != nil {
+	// Call the Update method from Repository
+	if err := c.repo.Update(contact); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resources.ToResourceContact(contacts))
+	ctx.JSON(http.StatusOK, resources.ToResourceContact(contact))
 }
 
 func (c *ContactsController) Delete(ctx *gin.Context) {
@@ -113,7 +115,6 @@ func (c *ContactsController) Delete(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Contacts not found"})
 		return
 	}
-
 	ctx.JSON(http.StatusNoContent, nil)
 }
 

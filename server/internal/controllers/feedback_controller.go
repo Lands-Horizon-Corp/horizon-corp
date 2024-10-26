@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type FeedbackController struct {
@@ -42,7 +43,7 @@ func (c *FeedbackController) Create(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, resources.ToResourceFeedback(feedback))
+	ctx.JSON(http.StatusCreated, resources.ToResourceFeedback(&feedback))
 }
 
 func (c *FeedbackController) GetAll(ctx *gin.Context) {
@@ -85,13 +86,14 @@ func (c *FeedbackController) Update(ctx *gin.Context) {
 		return
 	}
 
-	feedback := models.Feedback{
+	feedback := &models.Feedback{
+		Model:        gorm.Model{ID: id},
 		Email:        req.Email,
 		Description:  req.Description,
 		FeedbackType: req.FeedbackType,
 	}
 
-	if err := c.repo.Update(id, &feedback); err != nil {
+	if err := c.repo.Update(feedback); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

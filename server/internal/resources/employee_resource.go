@@ -25,42 +25,47 @@ type EmployeeResource struct {
 	Branch             *BranchResource       `json:"branch,omitempty"`
 	Longitude          *float64              `json:"longitude,omitempty"`
 	Latitude           *float64              `json:"latitude,omitempty"`
-	Timesheets         []TimesheetResource   `json:"timesheets,omitempty"`
+	Timesheets         []*TimesheetResource  `json:"timesheets,omitempty"` // Updated to slice of pointers
 	Role               *RoleResource         `json:"role,omitempty"`
 	GenderID           *uint                 `json:"genderId,omitempty"`
 	Gender             *GenderResource       `json:"gender,omitempty"`
-	Footsteps          []FootstepResource    `json:"footsteps,omitempty"`
+	Footsteps          []*FootstepResource   `json:"footsteps,omitempty"` // Updated to slice of pointers
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
 
-func ToResourceEmployee(employee models.Employee) EmployeeResource {
+// Convert models.Employee to *EmployeeResource
+func ToResourceEmployee(employee *models.Employee) *EmployeeResource {
+	if employee == nil {
+		return nil
+	}
+
+	// Convert Media
 	var mediaResource *MediaResource
 	if employee.Media != nil {
-		mediaRes := ToResourceMedia(*employee.Media)
-		mediaResource = &mediaRes
+		mediaResource = ToResourceMedia(employee.Media)
 	}
 
+	// Convert Branch
 	var branchResource *BranchResource
 	if employee.Branch != nil {
-		branchRes := ToResourceBranch(*employee.Branch)
-		branchResource = &branchRes
+		branchResource = ToResourceBranch(employee.Branch)
 	}
 
+	// Convert Role
 	var roleResource *RoleResource
 	if employee.Role != nil {
-		roleRes := ToResourceRole(*employee.Role)
-		roleResource = &roleRes
+		roleResource = ToResourceRole(employee.Role)
 	}
 
+	// Convert Gender
 	var genderResource *GenderResource
 	if employee.Gender != nil {
-		genderRes := ToResourceGender(*employee.Gender)
-		genderResource = &genderRes
+		genderResource = ToResourceGender(employee.Gender)
 	}
 
-	return EmployeeResource{
+	return &EmployeeResource{
 		AccountType:        "Employee",
 		ID:                 employee.ID,
 		FirstName:          employee.FirstName,
@@ -90,8 +95,9 @@ func ToResourceEmployee(employee models.Employee) EmployeeResource {
 	}
 }
 
-func ToResourceListEmployees(employees []models.Employee) []EmployeeResource {
-	var resources []EmployeeResource
+// Convert []models.Employee to []*EmployeeResource
+func ToResourceListEmployees(employees []*models.Employee) []*EmployeeResource {
+	var resources []*EmployeeResource
 	for _, employee := range employees {
 		resources = append(resources, ToResourceEmployee(employee))
 	}

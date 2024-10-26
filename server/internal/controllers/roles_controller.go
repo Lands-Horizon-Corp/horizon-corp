@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type RoleController struct {
@@ -33,7 +34,7 @@ func (c *RoleController) Create(ctx *gin.Context) {
 	}
 
 	// Create Role instance
-	roles := models.Role{
+	roles := &models.Role{
 		Name:               req.Name,
 		Description:        req.Description,
 		ApiKey:             req.ApiKey,
@@ -53,7 +54,7 @@ func (c *RoleController) Create(ctx *gin.Context) {
 	}
 
 	// Save to the repository
-	if err := c.repo.Create(&roles); err != nil {
+	if err := c.repo.Create(roles); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -102,7 +103,8 @@ func (c *RoleController) Update(ctx *gin.Context) {
 	}
 
 	// Create Role instance
-	roles := models.Role{
+	roles := &models.Role{
+		Model:              gorm.Model{ID: id},
 		Name:               req.Name,
 		Description:        req.Description,
 		Color:              req.Color,
@@ -121,7 +123,7 @@ func (c *RoleController) Update(ctx *gin.Context) {
 		DeleteGender:       req.DeleteGender,
 	}
 
-	if err := c.repo.Update(id, &roles); err != nil {
+	if err := c.repo.Update(roles); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
