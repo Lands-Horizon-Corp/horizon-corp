@@ -29,6 +29,7 @@ type EmployeeResource struct {
 	Role               *RoleResource         `json:"role,omitempty"`
 	GenderID           *uint                 `json:"genderId,omitempty"`
 	Gender             *GenderResource       `json:"gender,omitempty"`
+	Footsteps          []FootstepResource    `json:"footsteps,omitempty"`
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -80,6 +81,7 @@ func ToResourceEmployee(employee models.Employee) EmployeeResource {
 		Longitude:          employee.Longitude,
 		Latitude:           employee.Latitude,
 		Timesheets:         ToResourceListTimesheets(employee.Timesheets),
+		Footsteps:          ToResourceListFootsteps(employee.Footsteps),
 		Role:               roleResource,
 		GenderID:           employee.GenderID,
 		Gender:             genderResource,

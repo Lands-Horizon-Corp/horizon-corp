@@ -24,8 +24,10 @@ type OwnerResource struct {
 	Companies         []CompanyResource  `json:"companies,omitempty"`
 	GenderID          *uint              `json:"genderId,omitempty"`
 	Gender            *GenderResource    `json:"gender,omitempty"`
-	CreatedAt         string             `json:"createdAt"`
-	UpdatedAt         string             `json:"updatedAt"`
+	Footsteps         []FootstepResource `json:"footsteps,omitempty"`
+
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceOwner(owner models.Owner) OwnerResource {
@@ -59,6 +61,7 @@ func ToResourceOwner(owner models.Owner) OwnerResource {
 		GenderID:          owner.GenderID,
 		Gender:            genderResource,
 		Companies:         ToResourceListCompanies(owner.Companies),
+		Footsteps:         ToResourceListFootsteps(owner.Footsteps),
 		CreatedAt:         owner.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:         owner.UpdatedAt.Format(time.RFC3339),
 	}
