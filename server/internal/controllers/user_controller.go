@@ -3,6 +3,7 @@ package controllers
 import (
 	"horizon/server/internal/auth"
 	"horizon/server/internal/middleware"
+	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests"
 	"horizon/server/internal/requests/user_requests"
@@ -28,7 +29,6 @@ func NewUserController(userRepo *repositories.UserRepository, tokenService auth.
 func (c *UserController) ProfilePicture(ctx *gin.Context) {
 	var req requests.MediaRequest
 
-	// Bind JSON request and validate
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -38,7 +38,6 @@ func (c *UserController) ProfilePicture(ctx *gin.Context) {
 		return
 	}
 
-	// Retrieve claims from context
 	claims, exists := ctx.Get("claims")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
@@ -53,10 +52,10 @@ func (c *UserController) ProfilePicture(ctx *gin.Context) {
 		return
 	}
 
-	// Update user profile picture
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.AccountType, userClaims.ID, map[string]interface{}{
-		"media_id": req.ID,
-	})
+	user := &models.User{
+		MediaID: &req.ID,
+	}
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, *user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload profile picture to user status."})
 		return
@@ -79,7 +78,6 @@ func (c *UserController) Description(ctx *gin.Context) {
 		return
 	}
 
-	// Retrieve claims from context
 	claims, exists := ctx.Get("claims")
 	if !exists {
 		c.tokenService.ClearTokenCookie(ctx)
@@ -93,11 +91,10 @@ func (c *UserController) Description(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve user claims."})
 		return
 	}
-
-	// Update user profile picture
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.AccountType, userClaims.ID, map[string]interface{}{
-		"description": req.Description,
-	})
+	user := &models.User{
+		Description: req.Description,
+	}
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, *user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload profile picture to user status."})
 		return
