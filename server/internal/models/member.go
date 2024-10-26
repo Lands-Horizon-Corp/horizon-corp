@@ -36,4 +36,7 @@ type Member struct {
 	Branch             *Branch      `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"branch"`
 	Longitude          *float64     `gorm:"type:decimal(10,7)" json:"longitude"`
 	Latitude           *float64     `gorm:"type:decimal(10,7)" json:"latitude"`
+
+	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
+	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 }

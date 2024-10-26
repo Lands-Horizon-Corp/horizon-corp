@@ -32,4 +32,6 @@ type Owner struct {
 	Status             OwnerStatus `gorm:"type:varchar(11);default:'Pending'" json:"status"`
 	MediaID            *uint       `gorm:"type:bigint;unsigned" json:"media_id"`
 	Media              *Media      `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"media"`
+
+	Companies []Company `gorm:"foreignKey:OwnerID" json:"companies"`
 }
