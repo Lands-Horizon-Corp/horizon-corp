@@ -95,7 +95,7 @@ func (c *TimesheetController) TimeIn(ctx *gin.Context) {
 
 	timesheet := models.Timesheet{
 		EmployeeID: employeeID,
-		TimeIn:     timeInReq.TimeIn,
+		TimeIn:     &timeInReq.TimeIn,
 		MediaInID:  &timeInReq.MediaIn.ID,
 	}
 

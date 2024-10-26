@@ -59,8 +59,8 @@ func main() {
 			controllers.NewUserController,
 
 			// Roles
-			repositories.NewRolesRepository,
-			controllers.NewRolesController,
+			repositories.NewRoleRepository,
+			controllers.NewRoleController,
 
 			// Error Details
 			repositories.NewErrorDetailRepository,

@@ -29,8 +29,8 @@ type AdminResource struct {
 func ToResourceAdmin(admin models.Admin) AdminResource {
 	var mediaResource *MediaResource
 
-	if admin.MediaID != nil {
-		media := ToResourceMedia(admin.Media)
+	if admin.MediaID != nil && admin.Media != nil {
+		media := ToResourceMedia(*admin.Media)
 		mediaResource = &media
 	}
 

@@ -30,7 +30,7 @@ func ToResourceOwner(owner models.Owner) OwnerResource {
 	var mediaResource *MediaResource
 
 	if owner.MediaID != nil {
-		media := ToResourceMedia(owner.Media)
+		media := ToResourceMedia(*owner.Media)
 		mediaResource = &media
 	}
 

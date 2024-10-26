@@ -20,18 +20,18 @@ func ToResourceTimesheet(timesheet models.Timesheet) TimesheetResource {
 	var mediaInResource, mediaOutResource *MediaResource
 
 	if timesheet.MediaInID != nil {
-		mediaIn := ToResourceMedia(timesheet.MediaIn)
+		mediaIn := ToResourceMedia(*timesheet.MediaIn)
 		mediaInResource = &mediaIn
 	}
 	if timesheet.MediaOutID != nil {
-		mediaOut := ToResourceMedia(timesheet.MediaOut)
+		mediaOut := ToResourceMedia(*timesheet.MediaOut)
 		mediaOutResource = &mediaOut
 	}
 
 	return TimesheetResource{
 		ID:         timesheet.ID,
 		EmployeeID: timesheet.EmployeeID,
-		TimeIn:     &timesheet.TimeIn,
+		TimeIn:     timesheet.TimeIn,
 		TimeOut:    timesheet.TimeOut,
 		MediaIn:    mediaInResource,
 		MediaOut:   mediaOutResource,

@@ -2,7 +2,7 @@ package requests
 
 import "github.com/go-playground/validator/v10"
 
-type RolesRequest struct {
+type RoleRequest struct {
 	ID          uint   `json:"id,omitempty"`
 	Name        string `json:"name" validate:"required,max=255"`
 	Description string `json:"description,omitempty" validate:"omitempty,max=3000"`
@@ -23,7 +23,7 @@ type RolesRequest struct {
 	DeleteGender       bool `json:"deleteGender,omitempty"`
 }
 
-func (r *RolesRequest) Validate() error {
+func (r *RoleRequest) Validate() error {
 	validate := validator.New()
 	return validate.Struct(r)
 }

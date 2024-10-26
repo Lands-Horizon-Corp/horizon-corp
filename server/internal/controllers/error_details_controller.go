@@ -33,14 +33,14 @@ func (c *ErrorDetailController) Create(ctx *gin.Context) {
 	}
 
 	// Convert Stack and Response to JSON string if present
-	var stackJSON, responseJSON *string
+	var stackJSON, responseJSON string
 	if req.Stack != "" {
 		stack := helpers.JSONStringify(req.Stack)
-		stackJSON = &stack
+		stackJSON = stack
 	}
 	if req.Response != "" {
 		response := helpers.JSONStringify(req.Response)
-		responseJSON = &response
+		responseJSON = response
 	}
 
 	// Create ErrorDetail instance
@@ -49,7 +49,7 @@ func (c *ErrorDetailController) Create(ctx *gin.Context) {
 		Name:     req.Name,
 		Stack:    stackJSON,
 		Response: responseJSON,
-		Status:   &req.Status,
+		Status:   req.Status,
 	}
 
 	// Save to the repository
@@ -101,14 +101,14 @@ func (c *ErrorDetailController) Update(ctx *gin.Context) {
 		return
 	}
 
-	var stackJSON, responseJSON *string
+	var stackJSON, responseJSON string
 	if req.Stack != "" {
 		stack := helpers.JSONStringify(req.Stack)
-		stackJSON = &stack
+		stackJSON = stack
 	}
 	if req.Response != "" {
 		response := helpers.JSONStringify(req.Response)
-		responseJSON = &response
+		responseJSON = response
 	}
 
 	// Create ErrorDetail instance
@@ -117,7 +117,7 @@ func (c *ErrorDetailController) Update(ctx *gin.Context) {
 		Name:     req.Name,
 		Stack:    stackJSON,
 		Response: responseJSON,
-		Status:   &req.Status,
+		Status:   req.Status,
 	}
 
 	if err := c.repo.Update(id, &errorDetail); err != nil {

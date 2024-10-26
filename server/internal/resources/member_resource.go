@@ -29,7 +29,7 @@ type MemberResource struct {
 func ToResourceMember(member models.Member) MemberResource {
 	var mediaResource *MediaResource
 	if member.MediaID != nil {
-		media := ToResourceMedia(member.Media)
+		media := ToResourceMedia(*member.Media)
 		mediaResource = &media
 	}
 	return MemberResource{

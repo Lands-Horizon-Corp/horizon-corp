@@ -9,9 +9,3 @@ CREATE TABLE IF NOT EXISTS `feedbacks` (
     PRIMARY KEY (`id`),
     INDEX `idx_feedback_deleted_at` (`deleted_at`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO `feedbacks` (`email`, `description`, `feedback_type`)
-VALUES 
-    ('user1@example.com', 'I encountered a bug when trying to submit the form.', 'bug'),
-    ('user2@example.com', 'It would be great to have a dark mode feature.', 'feature'),
-    ('user3@example.com', 'Loving the new update! Keep up the good work.', 'general');
