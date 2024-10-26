@@ -6,33 +6,35 @@ import (
 )
 
 type ErrorDetailResource struct {
-	ID        uint   `json:"id"`
-	Message   string `json:"message"`
-	Name      string `json:"name"`
-	Stack     string `json:"stack,omitempty"`
-	Response  string `json:"response,omitempty"`
-	Status    int    `json:"status,omitempty"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	ID       uint   `json:"id"`
+	Message  string `json:"message"`
+	Name     string `json:"name"`
+	Stack    string `json:"stack"`
+	Response string `json:"response"`
+	Status   int    `json:"status"`
+
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
-func ToResourceErrorDetail(errorDetails models.ErrorDetail) ErrorDetailResource {
+func ToResourceErrorDetail(errorDetail models.ErrorDetail) ErrorDetailResource {
 	return ErrorDetailResource{
-		ID:        errorDetails.ID,
-		Message:   errorDetails.Message,
-		Name:      errorDetails.Name,
-		Stack:     errorDetails.Stack,
-		Response:  errorDetails.Response,
-		Status:    errorDetails.Status,
-		CreatedAt: errorDetails.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: errorDetails.UpdatedAt.Format(time.RFC3339),
+		ID:       errorDetail.ID,
+		Message:  errorDetail.Message,
+		Name:     errorDetail.Name,
+		Stack:    errorDetail.Stack,
+		Response: errorDetail.Response,
+		Status:   errorDetail.Status,
+
+		CreatedAt: errorDetail.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: errorDetail.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
-func ToResourceListErrorDetail(errorDetailsList []models.ErrorDetail) []ErrorDetailResource {
-	var resources []ErrorDetailResource
-	for _, errorDetails := range errorDetailsList {
-		resources = append(resources, ToResourceErrorDetail(errorDetails))
+func ToResourceListErrorDetail(errorDetails []models.ErrorDetail) []ErrorDetailResource {
+	resourceList := make([]ErrorDetailResource, len(errorDetails))
+	for i, errorDetail := range errorDetails {
+		resourceList[i] = ToResourceErrorDetail(errorDetail)
 	}
-	return resources
+	return resourceList
 }

@@ -6,32 +6,49 @@ import (
 )
 
 type EmployeeResource struct {
-	AccountType        string                `json:"accountType"`
+	AccountType        string                `json:"account_type"`
 	ID                 uint                  `json:"id"`
-	FirstName          string                `json:"firstName"`
-	LastName           string                `json:"lastName"`
-	MiddleName         string                `json:"middleName"`
-	PermanentAddress   string                `json:"permanentAddress"`
-	Description        string                `json:"description"`
+	FirstName          string                `json:"first_name"`
+	LastName           string                `json:"last_name"`
+	MiddleName         string                `json:"middle_name,omitempty"`
+	PermanentAddress   string                `json:"permanent_address,omitempty"`
+	Description        string                `json:"description,omitempty"`
 	Birthdate          time.Time             `json:"birthdate"`
 	Username           string                `json:"username"`
 	Email              string                `json:"email"`
-	IsEmailVerified    bool                  `json:"isEmailVerified"`
-	IsContactVerified  bool                  `json:"isContactVerified"`
-	IsSkipVerification bool                  `json:"isSkipVerification"`
-	ContactNumber      string                `json:"contactNumber"`
-	Media              *MediaResource        `json:"media,omitempty"`
+	ContactNumber      string                `json:"contact_number"`
+	IsEmailVerified    bool                  `json:"is_email_verified"`
+	IsContactVerified  bool                  `json:"is_contact_verified"`
+	IsSkipVerification bool                  `json:"is_skip_verification"`
 	Status             models.EmployeeStatus `json:"status"`
-	CreatedAt          string                `json:"createdAt"`
-	UpdatedAt          string                `json:"updatedAt"`
+	Media              *MediaResource        `json:"media,omitempty"`
+	Branch             *BranchResource       `json:"branch,omitempty"`
+	Longitude          *float64              `json:"longitude,omitempty"`
+	Latitude           *float64              `json:"latitude,omitempty"`
+	Timesheets         []TimesheetResource   `json:"timesheets,omitempty"`
+	Role               *RoleResource         `json:"role,omitempty"`
+
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
 }
 
 func ToResourceEmployee(employee models.Employee) EmployeeResource {
 	var mediaResource *MediaResource
+	if employee.Media != nil {
+		mediaRes := ToResourceMedia(*employee.Media)
+		mediaResource = &mediaRes
+	}
 
-	if employee.MediaID != nil {
-		media := ToResourceMedia(*employee.Media)
-		mediaResource = &media
+	var branchResource *BranchResource
+	if employee.Branch != nil {
+		branchRes := ToResourceBranch(*employee.Branch)
+		branchResource = &branchRes
+	}
+
+	var roleResource *RoleResource
+	if employee.Role != nil {
+		roleRes := ToResourceRole(*employee.Role)
+		roleResource = &roleRes
 	}
 
 	return EmployeeResource{
@@ -45,14 +62,20 @@ func ToResourceEmployee(employee models.Employee) EmployeeResource {
 		Birthdate:          employee.Birthdate,
 		Username:           employee.Username,
 		Email:              employee.Email,
+		ContactNumber:      employee.ContactNumber,
 		IsEmailVerified:    employee.IsEmailVerified,
 		IsContactVerified:  employee.IsContactVerified,
 		IsSkipVerification: employee.IsSkipVerification,
-		ContactNumber:      employee.ContactNumber,
-		Media:              mediaResource, // Set the media resource if exists
 		Status:             employee.Status,
-		CreatedAt:          employee.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:          employee.UpdatedAt.Format(time.RFC3339),
+		Media:              mediaResource,
+		Branch:             branchResource,
+		Longitude:          employee.Longitude,
+		Latitude:           employee.Latitude,
+		Timesheets:         ToResourceListTimesheets(employee.Timesheets),
+		Role:               roleResource,
+
+		CreatedAt: employee.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: employee.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

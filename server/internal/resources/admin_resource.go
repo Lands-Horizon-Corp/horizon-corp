@@ -10,28 +10,35 @@ type AdminResource struct {
 	ID                 uint               `json:"id"`
 	FirstName          string             `json:"firstName"`
 	LastName           string             `json:"lastName"`
-	MiddleName         string             `json:"middleName"`
-	PermanentAddress   string             `json:"permanentAddress"`
-	Description        string             `json:"description"`
+	MiddleName         string             `json:"middleName,omitempty"`
+	PermanentAddress   string             `json:"permanentAddress,omitempty"`
+	Description        string             `json:"description,omitempty"`
 	Birthdate          time.Time          `json:"birthdate"`
 	Username           string             `json:"username"`
 	Email              string             `json:"email"`
+	ContactNumber      string             `json:"contactNumber"`
 	IsEmailVerified    bool               `json:"isEmailVerified"`
 	IsContactVerified  bool               `json:"isContactVerified"`
 	IsSkipVerification bool               `json:"isSkipVerification"`
-	ContactNumber      string             `json:"contactNumber"`
-	Media              *MediaResource     `json:"media,omitempty"`
 	Status             models.AdminStatus `json:"status"`
-	CreatedAt          string             `json:"createdAt"`
-	UpdatedAt          string             `json:"updatedAt"`
+	Media              *MediaResource     `json:"media,omitempty"`
+	Role               *RoleResource      `json:"role,omitempty"`
+
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceAdmin(admin models.Admin) AdminResource {
 	var mediaResource *MediaResource
+	if admin.Media != nil {
+		mediaRes := ToResourceMedia(*admin.Media)
+		mediaResource = &mediaRes
+	}
 
-	if admin.MediaID != nil && admin.Media != nil {
-		media := ToResourceMedia(*admin.Media)
-		mediaResource = &media
+	var roleResource *RoleResource
+	if admin.Role != nil {
+		roleRes := ToResourceRole(*admin.Role)
+		roleResource = &roleRes
 	}
 
 	return AdminResource{
@@ -45,14 +52,16 @@ func ToResourceAdmin(admin models.Admin) AdminResource {
 		Birthdate:          admin.Birthdate,
 		Username:           admin.Username,
 		Email:              admin.Email,
+		ContactNumber:      admin.ContactNumber,
 		IsEmailVerified:    admin.IsEmailVerified,
 		IsContactVerified:  admin.IsContactVerified,
 		IsSkipVerification: admin.IsSkipVerification,
-		ContactNumber:      admin.ContactNumber,
-		Media:              mediaResource, // Set the media resource if exists
 		Status:             admin.Status,
-		CreatedAt:          admin.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:          admin.UpdatedAt.Format(time.RFC3339),
+		Media:              mediaResource,
+		Role:               roleResource,
+
+		CreatedAt: admin.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: admin.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
