@@ -34,4 +34,6 @@ type Owner struct {
 	Media              *Media      `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"media"`
 
 	Companies []Company `gorm:"foreignKey:OwnerID" json:"companies"`
+	GenderID  *uint     `gorm:"type:bigint;unsigned" json:"gender_id"`
+	Gender    *Gender   `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
 }

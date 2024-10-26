@@ -27,6 +27,8 @@ type EmployeeResource struct {
 	Latitude           *float64              `json:"latitude,omitempty"`
 	Timesheets         []TimesheetResource   `json:"timesheets,omitempty"`
 	Role               *RoleResource         `json:"role,omitempty"`
+	GenderID           *uint                 `json:"genderId,omitempty"`
+	Gender             *GenderResource       `json:"gender,omitempty"`
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -51,6 +53,12 @@ func ToResourceEmployee(employee models.Employee) EmployeeResource {
 		roleResource = &roleRes
 	}
 
+	var genderResource *GenderResource
+	if employee.Gender != nil {
+		genderRes := ToResourceGender(*employee.Gender)
+		genderResource = &genderRes
+	}
+
 	return EmployeeResource{
 		AccountType:        "Employee",
 		ID:                 employee.ID,
@@ -73,9 +81,10 @@ func ToResourceEmployee(employee models.Employee) EmployeeResource {
 		Latitude:           employee.Latitude,
 		Timesheets:         ToResourceListTimesheets(employee.Timesheets),
 		Role:               roleResource,
-
-		CreatedAt: employee.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: employee.UpdatedAt.Format(time.RFC3339),
+		GenderID:           employee.GenderID,
+		Gender:             genderResource,
+		CreatedAt:          employee.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:          employee.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

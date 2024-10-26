@@ -5,29 +5,35 @@ import (
 	"time"
 )
 
-// GenderResource struct for API response
 type GenderResource struct {
-	ID          uint   `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          uint               `json:"id"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Employees   []EmployeeResource `json:"employees,omitempty"`
+	Members     []MemberResource   `json:"members,omitempty"`
+	Owners      []OwnerResource    `json:"owners,omitempty"`
+	Admins      []AdminResource    `json:"admins,omitempty"`
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
 
-// ToResourceGender converts a Gender model to a GenderResource
 func ToResourceGender(gender models.Gender) GenderResource {
 	return GenderResource{
 		ID:          gender.ID,
 		Name:        gender.Name,
 		Description: gender.Description,
 
+		Employees: ToResourceListEmployees(gender.Employees),
+		Members:   ToResourceListMembers(gender.Members),
+		Owners:    ToResourceListOwners(gender.Owners),
+		Admins:    ToResourceListAdmins(gender.Admins),
+
 		CreatedAt: gender.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: gender.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
-// ToResourceListGender converts a slice of Gender models to a slice of GenderResource
 func ToResourceListGender(genderList []models.Gender) []GenderResource {
 	resourceList := make([]GenderResource, len(genderList))
 	for i, gender := range genderList {

@@ -23,6 +23,8 @@ type AdminResource struct {
 	Status             models.AdminStatus `json:"status"`
 	Media              *MediaResource     `json:"media,omitempty"`
 	Role               *RoleResource      `json:"role,omitempty"`
+	GenderID           *uint              `json:"genderId,omitempty"`
+	Gender             *GenderResource    `json:"gender,omitempty"`
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -39,6 +41,11 @@ func ToResourceAdmin(admin models.Admin) AdminResource {
 	if admin.Role != nil {
 		roleRes := ToResourceRole(*admin.Role)
 		roleResource = &roleRes
+	}
+	var genderResource *GenderResource
+	if admin.Gender != nil {
+		genderRes := ToResourceGender(*admin.Gender)
+		genderResource = &genderRes
 	}
 
 	return AdminResource{
@@ -59,9 +66,10 @@ func ToResourceAdmin(admin models.Admin) AdminResource {
 		Status:             admin.Status,
 		Media:              mediaResource,
 		Role:               roleResource,
-
-		CreatedAt: admin.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: admin.UpdatedAt.Format(time.RFC3339),
+		GenderID:           admin.GenderID,
+		Gender:             genderResource,
+		CreatedAt:          admin.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:          admin.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
