@@ -46,7 +46,7 @@ func (c *GenderController) Create(ctx *gin.Context) {
 }
 
 func (c *GenderController) GetAll(ctx *gin.Context) {
-	genders, err := c.repo.GetAll()
+	genders, err := c.repo.GetAll([]string{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -60,7 +60,7 @@ func (c *GenderController) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	gender, err := c.repo.GetByID(uid)
+	gender, err := c.repo.GetByID(uid, []string{})
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Gender not found"})
 		return

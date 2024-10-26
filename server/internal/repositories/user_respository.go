@@ -65,18 +65,19 @@ func (r *UserRepository) Create(user *models.User) (*models.User, error) {
 }
 
 func (r *UserRepository) GetAll(accountType string) ([]*models.User, error) {
+	preloads := []string{"Media", "Branch", "Role", "Gender"}
 	switch accountType {
 	case "Admin":
-		admins, err := r.admin.GetAll()
+		admins, err := r.admin.GetAll(preloads)
 		return convertToUserSliceAdmin(admins), err
 	case "Owner":
-		owners, err := r.owner.GetAll()
+		owners, err := r.owner.GetAll(preloads)
 		return convertToUserSliceOwner(owners), err
 	case "Employee":
-		employees, err := r.employee.GetAll()
+		employees, err := r.employee.GetAll(preloads)
 		return convertToUserSliceEmployee(employees), err
 	case "Member":
-		members, err := r.member.GetAll()
+		members, err := r.member.GetAll(preloads)
 		return convertToUserSliceMember(members), err
 	default:
 		return nil, errors.New("invalid account type")
@@ -84,27 +85,29 @@ func (r *UserRepository) GetAll(accountType string) ([]*models.User, error) {
 }
 
 func (r *UserRepository) GetByID(accountType string, id uint) (*models.User, error) {
+	preloads := []string{"Media", "Branch", "Role", "Gender"}
 	switch accountType {
 	case "Admin":
-		admin, err := r.admin.GetByID(id)
+
+		admin, err := r.admin.GetByID(id, preloads)
 		if err != nil {
 			return nil, err
 		}
 		return ConvertAdminToUser(admin), nil
 	case "Owner":
-		owner, err := r.owner.GetByID(id)
+		owner, err := r.owner.GetByID(id, preloads)
 		if err != nil {
 			return nil, err
 		}
 		return ConvertOwnerToUser(owner), nil
 	case "Employee":
-		employee, err := r.employee.GetByID(id)
+		employee, err := r.employee.GetByID(id, preloads)
 		if err != nil {
 			return nil, err
 		}
 		return ConvertEmployeeToUser(employee), nil
 	case "Member":
-		member, err := r.member.GetByID(id)
+		member, err := r.member.GetByID(id, preloads)
 		if err != nil {
 			return nil, err
 		}

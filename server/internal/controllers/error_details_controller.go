@@ -63,7 +63,7 @@ func (c *ErrorDetailController) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, resources.ToResourceErrorDetail(&errorDetails))
 }
 func (c *ErrorDetailController) GetAll(ctx *gin.Context) {
-	errorDetail, err := c.repo.GetAll()
+	errorDetail, err := c.repo.GetAll([]string{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -77,7 +77,7 @@ func (c *ErrorDetailController) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	errorDetails, err := c.repo.GetByID(uid)
+	errorDetails, err := c.repo.GetByID(uid, []string{})
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "ErrorDetail not found"})
 		return

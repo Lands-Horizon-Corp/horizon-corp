@@ -22,24 +22,30 @@ func (r *Repository[T]) Create(entity *T) error {
 	return handleDBError(err)
 }
 
-func (r *Repository[T]) GetAll(preloads ...string) ([]*T, error) {
-	var entities []*T
-	db := r.DB
-	for _, preload := range preloads {
-		db = db.Preload(preload)
-	}
-	err := db.Find(&entities).Error
-	return entities, handleDBError(err)
-}
-
-func (r *Repository[T]) GetByID(id uint, preloads ...string) (*T, error) {
+func (r *Repository[T]) GetByID(id uint, preloads []string) (*T, error) {
 	entity := new(T)
 	db := r.DB
-	for _, preload := range preloads {
-		db = db.Preload(preload)
+	if len(preloads) > 0 {
+		for _, preload := range preloads {
+			db = db.Preload(preload)
+		}
 	}
+
 	err := db.First(entity, id).Error
 	return entity, handleDBError(err)
+}
+
+func (r *Repository[T]) GetAll(preloads []string) ([]*T, error) {
+	var entities []*T
+	db := r.DB
+	if len(preloads) > 0 {
+		for _, preload := range preloads {
+			db = db.Preload(preload)
+		}
+	}
+
+	err := db.Find(&entities).Error
+	return entities, handleDBError(err)
 }
 
 func (r *Repository[T]) Update(entity *T) error {

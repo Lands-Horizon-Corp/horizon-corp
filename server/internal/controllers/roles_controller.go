@@ -63,7 +63,7 @@ func (c *RoleController) Create(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, resources.ToResourceRole(roles))
 }
 func (c *RoleController) GetAll(ctx *gin.Context) {
-	roles, err := c.repo.GetAll()
+	roles, err := c.repo.GetAll([]string{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -77,7 +77,7 @@ func (c *RoleController) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	roles, err := c.repo.GetByID(uid)
+	roles, err := c.repo.GetByID(uid, []string{})
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Role not found"})
 		return

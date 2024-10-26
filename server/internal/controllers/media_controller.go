@@ -39,7 +39,7 @@ func (h *MediaController) Create(ctx *gin.Context) {
 }
 
 func (c *MediaController) GetAll(ctx *gin.Context) {
-	medias, err := c.repo.GetAll()
+	medias, err := c.repo.GetAll([]string{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -53,7 +53,7 @@ func (c *MediaController) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	media, err := c.repo.GetByID(uid)
+	media, err := c.repo.GetByID(uid, []string{})
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Media not found"})
 		return
@@ -101,7 +101,7 @@ func (c *MediaController) Delete(ctx *gin.Context) {
 	if err != nil {
 		return
 	}
-	media, err := c.repo.GetByID(uid)
+	media, err := c.repo.GetByID(uid, []string{})
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Media not found"})
 		return
