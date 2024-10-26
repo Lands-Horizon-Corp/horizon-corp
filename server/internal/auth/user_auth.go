@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"time"
@@ -42,9 +41,6 @@ func NewUserAuthService(
 
 // GenerateUserToken generates a token for the specified user based on their account type
 func (s *UserAuthService) GenerateUserToken(user *models.User, expiration time.Duration) (string, error) {
-	fmt.Println("-------------------------")
-	fmt.Println(user.AccountType)
-	fmt.Println("-------------------------")
 	var token string
 	var err error
 	switch user.AccountType {
