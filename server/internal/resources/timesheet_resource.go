@@ -7,17 +7,17 @@ import (
 
 type TimesheetResource struct {
 	ID         uint              `json:"id"`
-	EmployeeID uint              `json:"employee_id"`
+	EmployeeID uint              `json:"employeeId"`
 	Employee   *EmployeeResource `json:"employee,omitempty"`
-	TimeIn     *time.Time        `json:"time_in"`
-	TimeOut    *time.Time        `json:"time_out"`
-	MediaInID  *uint             `json:"media_in_id"`
-	MediaIn    *MediaResource    `json:"media_in,omitempty"`
-	MediaOutID *uint             `json:"media_out_id"`
-	MediaOut   *MediaResource    `json:"media_out,omitempty"`
+	TimeIn     *time.Time        `json:"timeIn"`
+	TimeOut    *time.Time        `json:"timeOut"`
+	MediaInID  *uint             `json:"mediaInId"`
+	MediaIn    *MediaResource    `json:"mediaIn,omitempty"`
+	MediaOutID *uint             `json:"mediaOutId"`
+	MediaOut   *MediaResource    `json:"mediaOut,omitempty"`
 
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceTimesheet(timesheet models.Timesheet) TimesheetResource {

@@ -7,13 +7,13 @@ import (
 
 type MediaResource struct {
 	ID         uint               `json:"id"`
-	FileName   string             `json:"file_name"`
-	FileSize   int64              `json:"file_size"`
-	FileType   string             `json:"file_type"`
-	StorageKey string             `json:"storage_key"`
+	FileName   string             `json:"fileName"`
+	FileSize   int64              `json:"fileSize"`
+	FileType   string             `json:"fileType"`
+	StorageKey string             `json:"storageKey"`
 	URL        string             `json:"url"`
 	Key        string             `json:"key,omitempty"`
-	BucketName string             `json:"bucket_name,omitempty"`
+	BucketName string             `json:"bucketName,omitempty"`
 	Employees  []EmployeeResource `json:"employees,omitempty"`
 	Members    []MemberResource   `json:"members,omitempty"`
 	Owners     []OwnerResource    `json:"owners,omitempty"`
@@ -21,8 +21,8 @@ type MediaResource struct {
 	Companies  []CompanyResource  `json:"companies,omitempty"`
 	Branches   []BranchResource   `json:"branches,omitempty"`
 
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceMedia(media models.Media) MediaResource {

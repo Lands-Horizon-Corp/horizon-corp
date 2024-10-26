@@ -13,8 +13,8 @@ type ErrorDetailResource struct {
 	Response string `json:"response"`
 	Status   int    `json:"status"`
 
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceErrorDetail(errorDetail models.ErrorDetail) ErrorDetailResource {

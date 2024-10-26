@@ -7,14 +7,14 @@ import (
 
 type ContactResource struct {
 	ID            uint   `json:"id"`
-	FirstName     string `json:"first_name"`
-	LastName      string `json:"last_name"`
+	FirstName     string `json:"firstName"`
+	LastName      string `json:"lastName"`
 	Email         string `json:"email"`
-	ContactNumber string `json:"contact_number"`
+	ContactNumber string `json:"contactNumber"`
 	Description   string `json:"description,omitempty"`
 
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceContact(contact models.Contact) ContactResource {

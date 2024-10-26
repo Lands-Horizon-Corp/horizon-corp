@@ -6,20 +6,20 @@ import (
 )
 
 type EmployeeResource struct {
-	AccountType        string                `json:"account_type"`
+	AccountType        string                `json:"accountType"`
 	ID                 uint                  `json:"id"`
-	FirstName          string                `json:"first_name"`
-	LastName           string                `json:"last_name"`
-	MiddleName         string                `json:"middle_name,omitempty"`
-	PermanentAddress   string                `json:"permanent_address,omitempty"`
+	FirstName          string                `json:"firstName"`
+	LastName           string                `json:"lastName"`
+	MiddleName         string                `json:"middleName,omitempty"`
+	PermanentAddress   string                `json:"permanentAddress,omitempty"`
 	Description        string                `json:"description,omitempty"`
 	Birthdate          time.Time             `json:"birthdate"`
 	Username           string                `json:"username"`
 	Email              string                `json:"email"`
-	ContactNumber      string                `json:"contact_number"`
-	IsEmailVerified    bool                  `json:"is_email_verified"`
-	IsContactVerified  bool                  `json:"is_contact_verified"`
-	IsSkipVerification bool                  `json:"is_skip_verification"`
+	ContactNumber      string                `json:"contactNumber"`
+	IsEmailVerified    bool                  `json:"isEmailVerified"`
+	IsContactVerified  bool                  `json:"isContactVerified"`
+	IsSkipVerification bool                  `json:"isSkipVerification"`
 	Status             models.EmployeeStatus `json:"status"`
 	Media              *MediaResource        `json:"media,omitempty"`
 	Branch             *BranchResource       `json:"branch,omitempty"`
@@ -28,8 +28,8 @@ type EmployeeResource struct {
 	Timesheets         []TimesheetResource   `json:"timesheets,omitempty"`
 	Role               *RoleResource         `json:"role,omitempty"`
 
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceEmployee(employee models.Employee) EmployeeResource {

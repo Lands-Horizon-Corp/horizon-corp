@@ -9,31 +9,31 @@ type RoleResource struct {
 	ID          uint   `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	ApiKey      string `json:"api_key"`
+	ApiKey      string `json:"apiKey"`
 	Color       string `json:"color"`
 
 	// Permissions
-	ReadRole   bool `json:"read_role"`
-	WriteRole  bool `json:"write_role"`
-	UpdateRole bool `json:"update_role"`
-	DeleteRole bool `json:"delete_role"`
+	ReadRole   bool `json:"readRole"`
+	WriteRole  bool `json:"writeRole"`
+	UpdateRole bool `json:"updateRole"`
+	DeleteRole bool `json:"deleteRole"`
 
-	ReadErrorDetails   bool `json:"read_error_details"`
-	WriteErrorDetails  bool `json:"write_error_details"`
-	UpdateErrorDetails bool `json:"update_error_details"`
-	DeleteErrorDetails bool `json:"delete_error_details"`
+	ReadErrorDetails   bool `json:"readErrorDetails"`
+	WriteErrorDetails  bool `json:"writeErrorDetails"`
+	UpdateErrorDetails bool `json:"updateErrorDetails"`
+	DeleteErrorDetails bool `json:"deleteErrorDetails"`
 
-	ReadGender   bool `json:"read_gender"`
-	WriteGender  bool `json:"write_gender"`
-	UpdateGender bool `json:"update_gender"`
-	DeleteGender bool `json:"delete_gender"`
+	ReadGender   bool `json:"readGender"`
+	WriteGender  bool `json:"writeGender"`
+	UpdateGender bool `json:"updateGender"`
+	DeleteGender bool `json:"deleteGender"`
 
 	Admins    []AdminResource    `json:"admins,omitempty"`
 	Employees []EmployeeResource `json:"employees,omitempty"`
 	Members   []MemberResource   `json:"members,omitempty"`
 
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceRole(role models.Role) RoleResource {

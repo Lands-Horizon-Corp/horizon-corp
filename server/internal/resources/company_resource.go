@@ -12,14 +12,14 @@ type CompanyResource struct {
 	Address         string           `json:"address,omitempty"`
 	Longitude       float64          `json:"longitude,omitempty"`
 	Latitude        float64          `json:"latitude,omitempty"`
-	ContactNumber   string           `json:"contact_number"`
-	IsAdminVerified bool             `json:"is_admin_verified"`
+	ContactNumber   string           `json:"contactNumber"`
+	IsAdminVerified bool             `json:"isAdminVerified"`
 	Owner           *OwnerResource   `json:"owner,omitempty"`
 	Media           *MediaResource   `json:"media,omitempty"`
 	Branches        []BranchResource `json:"branches,omitempty"`
 
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
 func ToResourceCompany(company models.Company) CompanyResource {
