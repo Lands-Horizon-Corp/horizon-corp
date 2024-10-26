@@ -20,9 +20,13 @@ type FootstepResource struct {
 	Member   *MemberResource   `json:"member,omitempty"`
 }
 
-// ToResourceFootstep converts a Footstep model to a FootstepResource.
-func ToResourceFootstep(footstep models.Footstep) FootstepResource {
-	resource := FootstepResource{
+// ToResourceFootstep converts a Footstep model to a *FootstepResource.
+func ToResourceFootstep(footstep *models.Footstep) *FootstepResource {
+	if footstep == nil {
+		return nil
+	}
+
+	resource := &FootstepResource{
 		ID:          footstep.ID,
 		Description: footstep.Description,
 		Activity:    footstep.Activity,
@@ -31,35 +35,32 @@ func ToResourceFootstep(footstep models.Footstep) FootstepResource {
 		UpdatedAt:   footstep.UpdatedAt.Format(time.RFC3339),
 	}
 
+	// Populate the relevant field based on AccountType
 	switch footstep.AccountType {
 	case "Admin":
 		if footstep.Admin != nil {
-			adminResource := ToResourceAdmin(*footstep.Admin)
-			resource.Admin = &adminResource
+			resource.Admin = ToResourceAdmin(footstep.Admin)
 		}
 	case "Employee":
 		if footstep.Employee != nil {
-			employeeResource := ToResourceEmployee(*footstep.Employee)
-			resource.Employee = &employeeResource
+			resource.Employee = ToResourceEmployee(footstep.Employee)
 		}
 	case "Owner":
 		if footstep.Owner != nil {
-			ownerResource := ToResourceOwner(*footstep.Owner)
-			resource.Owner = &ownerResource
+			resource.Owner = ToResourceOwner(footstep.Owner)
 		}
 	case "Member":
 		if footstep.Member != nil {
-			memberResource := ToResourceMember(*footstep.Member)
-			resource.Member = &memberResource
+			resource.Member = ToResourceMember(footstep.Member)
 		}
 	}
 
 	return resource
 }
 
-// ToResourceListFootsteps converts a slice of Footstep models to a slice of FootstepResource.
-func ToResourceListFootsteps(footsteps []models.Footstep) []FootstepResource {
-	resources := make([]FootstepResource, len(footsteps))
+// ToResourceListFootsteps converts a slice of Footstep models to a slice of *FootstepResource.
+func ToResourceListFootsteps(footsteps []*models.Footstep) []*FootstepResource {
+	resources := make([]*FootstepResource, len(footsteps))
 	for i, footstep := range footsteps {
 		resources[i] = ToResourceFootstep(footstep)
 	}

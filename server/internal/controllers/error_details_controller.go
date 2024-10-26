@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type ErrorDetailController struct {
@@ -59,7 +60,7 @@ func (c *ErrorDetailController) Create(ctx *gin.Context) {
 	}
 
 	// Return the created error details as a resource
-	ctx.JSON(http.StatusCreated, resources.ToResourceErrorDetail(errorDetails))
+	ctx.JSON(http.StatusCreated, resources.ToResourceErrorDetail(&errorDetails))
 }
 func (c *ErrorDetailController) GetAll(ctx *gin.Context) {
 	errorDetail, err := c.repo.GetAll()
@@ -112,7 +113,8 @@ func (c *ErrorDetailController) Update(ctx *gin.Context) {
 	}
 
 	// Create ErrorDetail instance
-	errorDetail := models.ErrorDetail{
+	errorDetail := &models.ErrorDetail{
+		Model:    gorm.Model{ID: id},
 		Message:  req.Message,
 		Name:     req.Name,
 		Stack:    stackJSON,
@@ -120,7 +122,7 @@ func (c *ErrorDetailController) Update(ctx *gin.Context) {
 		Status:   req.Status,
 	}
 
-	if err := c.repo.Update(id, &errorDetail); err != nil {
+	if err := c.repo.Update(errorDetail); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

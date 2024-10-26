@@ -28,17 +28,21 @@ type RoleResource struct {
 	UpdateGender bool `json:"updateGender"`
 	DeleteGender bool `json:"deleteGender"`
 
-	Admins    []AdminResource    `json:"admins,omitempty"`
-	Employees []EmployeeResource `json:"employees,omitempty"`
-	Members   []MemberResource   `json:"members,omitempty"`
+	Admins    []*AdminResource    `json:"admins,omitempty"`    // Updated to slice of pointers
+	Employees []*EmployeeResource `json:"employees,omitempty"` // Updated to slice of pointers
+	Members   []*MemberResource   `json:"members,omitempty"`   // Updated to slice of pointers
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
 
-func ToResourceRole(role models.Role) RoleResource {
+// Convert models.Role to *RoleResource
+func ToResourceRole(role *models.Role) *RoleResource {
+	if role == nil {
+		return nil
+	}
 
-	return RoleResource{
+	return &RoleResource{
 		ID:          role.ID,
 		Name:        role.Name,
 		Description: role.Description,
@@ -69,8 +73,9 @@ func ToResourceRole(role models.Role) RoleResource {
 	}
 }
 
-func ToResourceListRoles(roles []models.Role) []RoleResource {
-	resourceList := make([]RoleResource, len(roles))
+// Convert []*models.Role to []*RoleResource
+func ToResourceListRoles(roles []*models.Role) []*RoleResource {
+	resourceList := make([]*RoleResource, len(roles))
 	for i, role := range roles {
 		resourceList[i] = ToResourceRole(role)
 	}

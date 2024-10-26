@@ -6,43 +6,49 @@ import (
 )
 
 type OwnerResource struct {
-	AccountType       string             `json:"accountType"`
-	ID                uint               `json:"id"`
-	FirstName         string             `json:"firstName"`
-	LastName          string             `json:"lastName"`
-	MiddleName        string             `json:"middleName"`
-	PermanentAddress  string             `json:"permanentAddress"`
-	Description       string             `json:"description"`
-	Birthdate         time.Time          `json:"birthdate"`
-	Username          string             `json:"username"`
-	Email             string             `json:"email"`
-	ContactNumber     string             `json:"contactNumber"`
-	IsEmailVerified   bool               `json:"isEmailVerified"`
-	IsContactVerified bool               `json:"isContactVerified"`
-	Status            models.OwnerStatus `json:"status"`
-	Media             *MediaResource     `json:"media,omitempty"`
-	Companies         []CompanyResource  `json:"companies,omitempty"`
-	GenderID          *uint              `json:"genderId,omitempty"`
-	Gender            *GenderResource    `json:"gender,omitempty"`
-	Footsteps         []FootstepResource `json:"footsteps,omitempty"`
+	AccountType       string              `json:"accountType"`
+	ID                uint                `json:"id"`
+	FirstName         string              `json:"firstName"`
+	LastName          string              `json:"lastName"`
+	MiddleName        string              `json:"middleName"`
+	PermanentAddress  string              `json:"permanentAddress"`
+	Description       string              `json:"description"`
+	Birthdate         time.Time           `json:"birthdate"`
+	Username          string              `json:"username"`
+	Email             string              `json:"email"`
+	ContactNumber     string              `json:"contactNumber"`
+	IsEmailVerified   bool                `json:"isEmailVerified"`
+	IsContactVerified bool                `json:"isContactVerified"`
+	Status            models.OwnerStatus  `json:"status"`
+	Media             *MediaResource      `json:"media,omitempty"`
+	Companies         []*CompanyResource  `json:"companies,omitempty"` // Updated to slice of pointers
+	GenderID          *uint               `json:"genderId,omitempty"`
+	Gender            *GenderResource     `json:"gender,omitempty"`
+	Footsteps         []*FootstepResource `json:"footsteps,omitempty"` // Updated to slice of pointers
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
 
-func ToResourceOwner(owner models.Owner) OwnerResource {
-	var mediaResource *MediaResource
-	if owner.Media != nil {
-		mediaRes := ToResourceMedia(*owner.Media)
-		mediaResource = &mediaRes
+// Convert models.Owner to *OwnerResource
+func ToResourceOwner(owner *models.Owner) *OwnerResource {
+	if owner == nil {
+		return nil
 	}
 
+	// Convert Media
+	var mediaResource *MediaResource
+	if owner.Media != nil {
+		mediaResource = ToResourceMedia(owner.Media)
+	}
+
+	// Convert Gender
 	var genderResource *GenderResource
 	if owner.Gender != nil {
-		genderRes := ToResourceGender(*owner.Gender)
-		genderResource = &genderRes
+		genderResource = ToResourceGender(owner.Gender)
 	}
-	return OwnerResource{
+
+	return &OwnerResource{
 		AccountType:       "Owner",
 		ID:                owner.ID,
 		FirstName:         owner.FirstName,
@@ -67,8 +73,9 @@ func ToResourceOwner(owner models.Owner) OwnerResource {
 	}
 }
 
-func ToResourceListOwners(owners []models.Owner) []OwnerResource {
-	var resources []OwnerResource
+// Convert []*models.Owner to []*OwnerResource
+func ToResourceListOwners(owners []*models.Owner) []*OwnerResource {
+	var resources []*OwnerResource
 	for _, owner := range owners {
 		resources = append(resources, ToResourceOwner(owner))
 	}

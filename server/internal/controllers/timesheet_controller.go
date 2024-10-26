@@ -60,7 +60,7 @@ func (c *TimesheetController) CurrentEmployeeTime(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{"timesheet": nil})
 		return
 	}
-	ctx.JSON(http.StatusOK, resources.ToResourceTimesheet(timesheet))
+	ctx.JSON(http.StatusOK, resources.ToResourceTimesheet(&timesheet))
 }
 
 func (c *TimesheetController) TimeIn(ctx *gin.Context) {
@@ -104,7 +104,7 @@ func (c *TimesheetController) TimeIn(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resources.ToResourceTimesheet(timesheet))
+	ctx.JSON(http.StatusOK, resources.ToResourceTimesheet(&timesheet))
 }
 
 func (c *TimesheetController) TimeOut(ctx *gin.Context) {
@@ -135,12 +135,12 @@ func (c *TimesheetController) TimeOut(ctx *gin.Context) {
 	timesheet.TimeOut = &timeOutReq.TimeOut
 	timesheet.MediaOutID = &timeOutReq.MediaOut.ID
 
-	if err := c.timesheetRepo.Update(timesheet.ID, &timesheet); err != nil {
+	if err := c.timesheetRepo.Update(&timesheet); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record time out"})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, resources.ToResourceTimesheet(timesheet))
+	ctx.JSON(http.StatusOK, resources.ToResourceTimesheet(&timesheet))
 }
 
 func TimesheetRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controller *TimesheetController) {

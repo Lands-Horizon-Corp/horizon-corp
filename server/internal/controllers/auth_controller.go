@@ -117,7 +117,7 @@ func (c *AuthController) CurrentUser(ctx *gin.Context) {
 	}
 
 	currentUser.AccountType = userClaims.AccountType
-	response := resources.ToResourceUser(*currentUser, currentUser.AccountType)
+	response := resources.ToResourceUser(currentUser, currentUser.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -191,7 +191,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 	c.setAuthTokenCookie(ctx, token)
 
 	// Respond with the created user
-	response := resources.ToResourceUser(*user, user.AccountType)
+	response := resources.ToResourceUser(user, user.AccountType)
 	ctx.JSON(http.StatusCreated, response)
 }
 
@@ -227,7 +227,7 @@ func (c *AuthController) SignIn(ctx *gin.Context) {
 
 	// Set Auth Token Cookie
 	c.setAuthTokenCookie(ctx, token)
-	response := resources.ToResourceUser(*user, req.AccountType)
+	response := resources.ToResourceUser(user, req.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -424,7 +424,7 @@ func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 		return
 	}
 
-	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -508,7 +508,7 @@ func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 		return
 	}
 
-	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -553,7 +553,7 @@ func (c *AuthController) ChangeEmail(ctx *gin.Context) {
 		return
 	}
 
-	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -605,7 +605,7 @@ func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {
 		return
 	}
 
-	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -625,7 +625,7 @@ func (c *AuthController) SkipVerification(ctx *gin.Context) {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SkipVerification: User update error: %v", err), "Failed to update verification status.")
 		return
 	}
-	response := resources.ToResourceUser(*updatedUser, userClaims.AccountType)
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
 	ctx.JSON(http.StatusOK, response)
 }
 

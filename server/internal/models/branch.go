@@ -16,6 +16,6 @@ type Branch struct {
 	CompanyID       uint    `gorm:"type:bigint;unsigned;not null" json:"company_id"`
 	Company         Company `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 
-	Employees []Employee `gorm:"foreignKey:BranchID" json:"employees"`
-	Members   []Member   `gorm:"foreignKey:BranchID" json:"members"`
+	Employees []*Employee `gorm:"foreignKey:BranchID" json:"employees"`
+	Members   []*Member   `gorm:"foreignKey:BranchID" json:"members"`
 }

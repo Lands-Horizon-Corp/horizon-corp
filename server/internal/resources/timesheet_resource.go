@@ -20,26 +20,28 @@ type TimesheetResource struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
-func ToResourceTimesheet(timesheet models.Timesheet) TimesheetResource {
+// Convert models.Timesheet to *TimesheetResource
+func ToResourceTimesheet(timesheet *models.Timesheet) *TimesheetResource {
+	if timesheet == nil {
+		return nil
+	}
+
 	var employeeResource *EmployeeResource
-	if timesheet.EmployeeID != 0 {
-		empRes := ToResourceEmployee(timesheet.Employee)
-		employeeResource = &empRes
+	if timesheet.Employee != nil {
+		employeeResource = ToResourceEmployee(timesheet.Employee)
 	}
 
 	var mediaInResource *MediaResource
 	if timesheet.MediaIn != nil {
-		mediaInRes := ToResourceMedia(*timesheet.MediaIn)
-		mediaInResource = &mediaInRes
+		mediaInResource = ToResourceMedia(timesheet.MediaIn)
 	}
 
 	var mediaOutResource *MediaResource
 	if timesheet.MediaOut != nil {
-		mediaOutRes := ToResourceMedia(*timesheet.MediaOut)
-		mediaOutResource = &mediaOutRes
+		mediaOutResource = ToResourceMedia(timesheet.MediaOut)
 	}
 
-	return TimesheetResource{
+	return &TimesheetResource{
 		ID:         timesheet.ID,
 		EmployeeID: timesheet.EmployeeID,
 		Employee:   employeeResource,
@@ -49,14 +51,14 @@ func ToResourceTimesheet(timesheet models.Timesheet) TimesheetResource {
 		MediaIn:    mediaInResource,
 		MediaOutID: timesheet.MediaOutID,
 		MediaOut:   mediaOutResource,
-
-		CreatedAt: timesheet.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: timesheet.UpdatedAt.Format(time.RFC3339),
+		CreatedAt:  timesheet.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:  timesheet.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
-func ToResourceListTimesheets(timesheets []models.Timesheet) []TimesheetResource {
-	resourceList := make([]TimesheetResource, len(timesheets))
+// Convert []*models.Timesheet to []*TimesheetResource
+func ToResourceListTimesheets(timesheets []*models.Timesheet) []*TimesheetResource {
+	resourceList := make([]*TimesheetResource, len(timesheets))
 	for i, timesheet := range timesheets {
 		resourceList[i] = ToResourceTimesheet(timesheet)
 	}

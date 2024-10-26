@@ -24,46 +24,48 @@ type MemberResource struct {
 	Latitude          *float64            `json:"latitude"`
 
 	// Related entities
-	Media     *MediaResource     `json:"media,omitempty"`
-	Branch    *BranchResource    `json:"branch,omitempty"`
-	Role      *RoleResource      `json:"role,omitempty"`
-	GenderID  *uint              `json:"genderId,omitempty"`
-	Gender    *GenderResource    `json:"gender,omitempty"`
-	Footsteps []FootstepResource `json:"footsteps,omitempty"`
+	Media     *MediaResource      `json:"media,omitempty"`
+	Branch    *BranchResource     `json:"branch,omitempty"`
+	Role      *RoleResource       `json:"role,omitempty"`
+	GenderID  *uint               `json:"genderId,omitempty"`
+	Gender    *GenderResource     `json:"gender,omitempty"`
+	Footsteps []*FootstepResource `json:"footsteps,omitempty"` // Updated to slice of pointers
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
 
-func ToResourceMember(member models.Member) MemberResource {
-	// Handle Media conversion
+// Convert models.Member to *MemberResource
+func ToResourceMember(member *models.Member) *MemberResource {
+	if member == nil {
+		return nil
+	}
+
+	// Convert Media
 	var mediaResource *MediaResource
 	if member.Media != nil {
-		mediaRes := ToResourceMedia(*member.Media)
-		mediaResource = &mediaRes
+		mediaResource = ToResourceMedia(member.Media)
 	}
 
-	// Handle Branch conversion
+	// Convert Branch
 	var branchResource *BranchResource
 	if member.Branch != nil {
-		branchRes := ToResourceBranch(*member.Branch)
-		branchResource = &branchRes
+		branchResource = ToResourceBranch(member.Branch)
 	}
 
-	// Handle Role conversion
+	// Convert Role
 	var roleResource *RoleResource
 	if member.Role != nil {
-		roleRes := ToResourceRole(*member.Role)
-		roleResource = &roleRes
+		roleResource = ToResourceRole(member.Role)
 	}
 
+	// Convert Gender
 	var genderResource *GenderResource
 	if member.Gender != nil {
-		genderRes := ToResourceGender(*member.Gender)
-		genderResource = &genderRes
+		genderResource = ToResourceGender(member.Gender)
 	}
 
-	return MemberResource{
+	return &MemberResource{
 		AccountType:       "Member",
 		ID:                member.ID,
 		FirstName:         member.FirstName,
@@ -91,8 +93,9 @@ func ToResourceMember(member models.Member) MemberResource {
 	}
 }
 
-func ToResourceListMembers(members []models.Member) []MemberResource {
-	resourceList := make([]MemberResource, len(members))
+// Convert []*models.Member to []*MemberResource
+func ToResourceListMembers(members []*models.Member) []*MemberResource {
+	resourceList := make([]*MemberResource, len(members))
 	for i, member := range members {
 		resourceList[i] = ToResourceMember(member)
 	}

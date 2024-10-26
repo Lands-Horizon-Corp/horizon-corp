@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type MediaController struct {
@@ -34,7 +35,7 @@ func (h *MediaController) Create(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusCreated, resources.ToResourceMedia(*media))
+	ctx.JSON(http.StatusCreated, resources.ToResourceMedia(media))
 }
 
 func (c *MediaController) GetAll(ctx *gin.Context) {
@@ -77,7 +78,8 @@ func (c *MediaController) Update(ctx *gin.Context) {
 		return
 	}
 
-	media := models.Media{
+	media := &models.Media{
+		Model:      gorm.Model{ID: id},
 		FileName:   req.FileName,
 		FileSize:   req.FileSize,
 		FileType:   req.FileType,
@@ -86,7 +88,7 @@ func (c *MediaController) Update(ctx *gin.Context) {
 		BucketName: req.BucketName,
 	}
 
-	if err := c.repo.Update(id, &media); err != nil {
+	if err := c.repo.Update(media); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

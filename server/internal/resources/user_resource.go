@@ -26,14 +26,18 @@ type UserResource struct {
 	UpdatedAt          string         `json:"updatedAt"`
 }
 
-func ToResourceUser(user models.User, accountType string) UserResource {
-	var mediaResource *MediaResource
-	if user.MediaID != nil {
-		media := ToResourceMedia(*user.Media)
-		mediaResource = &media
+// Convert models.User to *UserResource
+func ToResourceUser(user *models.User, accountType string) *UserResource {
+	if user == nil {
+		return nil
 	}
 
-	return UserResource{
+	var mediaResource *MediaResource
+	if user.Media != nil {
+		mediaResource = ToResourceMedia(user.Media)
+	}
+
+	return &UserResource{
 		AccountType:        accountType,
 		ID:                 user.ID,
 		FirstName:          user.FirstName,
@@ -55,8 +59,9 @@ func ToResourceUser(user models.User, accountType string) UserResource {
 	}
 }
 
-func ToResourceListUsers(users []models.User, accountType string) []UserResource {
-	var resources []UserResource
+// Convert []*models.User to []*UserResource
+func ToResourceListUsers(users []*models.User, accountType string) []*UserResource {
+	var resources []*UserResource
 	for _, user := range users {
 		resources = append(resources, ToResourceUser(user, accountType))
 	}

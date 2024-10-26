@@ -15,20 +15,25 @@ type FeedbackResource struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
-func ToResourceFeedback(feedback models.Feedback) FeedbackResource {
-	return FeedbackResource{
+// Convert models.Feedback to *FeedbackResource
+func ToResourceFeedback(feedback *models.Feedback) *FeedbackResource {
+	if feedback == nil {
+		return nil
+	}
+
+	return &FeedbackResource{
 		ID:           feedback.ID,
 		Email:        feedback.Email,
 		Description:  feedback.Description,
 		FeedbackType: feedback.FeedbackType,
-
-		CreatedAt: feedback.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: feedback.UpdatedAt.Format(time.RFC3339),
+		CreatedAt:    feedback.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:    feedback.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
-func ToResourceListFeedback(feedbackList []models.Feedback) []FeedbackResource {
-	resourceList := make([]FeedbackResource, len(feedbackList))
+// Convert []*models.Feedback to []*FeedbackResource
+func ToResourceListFeedback(feedbackList []*models.Feedback) []*FeedbackResource {
+	resourceList := make([]*FeedbackResource, len(feedbackList))
 	for i, feedback := range feedbackList {
 		resourceList[i] = ToResourceFeedback(feedback)
 	}

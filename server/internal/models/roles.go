@@ -26,7 +26,7 @@ type Role struct {
 	UpdateGender bool `gorm:"default:false" json:"update_gender"`
 	DeleteGender bool `gorm:"default:false" json:"delete_gender"`
 
-	Admins    []Admin    `gorm:"foreignKey:RoleID" json:"admins"`
-	Employees []Employee `gorm:"foreignKey:RoleID" json:"employees"`
-	Members   []Member   `gorm:"foreignKey:RoleID" json:"members"`
+	Admins    []*Admin    `gorm:"foreignKey:RoleID" json:"admins"`
+	Employees []*Employee `gorm:"foreignKey:RoleID" json:"employees"`
+	Members   []*Member   `gorm:"foreignKey:RoleID" json:"members"`
 }
