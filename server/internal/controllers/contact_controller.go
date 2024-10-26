@@ -49,7 +49,7 @@ func (c *ContactsController) Create(ctx *gin.Context) {
 }
 
 func (c *ContactsController) GetAll(ctx *gin.Context) {
-	contacts, err := c.repo.GetAll()
+	contacts, err := c.repo.GetAll([]string{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -63,7 +63,7 @@ func (c *ContactsController) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	contacts, err := c.repo.GetByID(uid)
+	contacts, err := c.repo.GetByID(uid, []string{})
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Contacts not found"})
 		return

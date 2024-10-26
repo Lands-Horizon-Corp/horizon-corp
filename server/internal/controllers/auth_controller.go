@@ -156,7 +156,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignUp: User repository create error: %v", err), "Failed to create user account.")
 		return
 	}
-
+	user.AccountType = req.AccountType
 	token, err := c.userAuthService.GenerateUserToken(user, 0)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SignUp: Token generation error: %v", err), "Failed to process registration.")

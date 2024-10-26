@@ -47,7 +47,7 @@ func (c *FeedbackController) Create(ctx *gin.Context) {
 }
 
 func (c *FeedbackController) GetAll(ctx *gin.Context) {
-	feedbacks, err := c.repo.GetAll()
+	feedbacks, err := c.repo.GetAll([]string{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -61,7 +61,7 @@ func (c *FeedbackController) GetByID(ctx *gin.Context) {
 		return
 	}
 
-	feedback, err := c.repo.GetByID(uid)
+	feedback, err := c.repo.GetByID(uid, []string{})
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Feedback not found"})
 		return
