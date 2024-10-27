@@ -70,6 +70,7 @@ import {
     IoRefresh as RefreshIcon,
     IoFootstepsOutline as FootstepsIcon,
     IoCallOutline as IoCallOutlineIcon,
+    IoLocationSharp as IoLocationSharpIcon,
 } from 'react-icons/io5'
 import { RxFontItalic as ToolbarItalicIcon } from 'react-icons/rx'
 import {
@@ -86,6 +87,8 @@ import {
 import { CgFacebook as CgFacebookIcon } from 'react-icons/cg'
 
 import { IBaseCompNoChild } from '@/types/component'
+import { SiGooglemaps as SiGooglemapsIcon } from 'react-icons/si'
+import { VscLocation as VscLocationIcon } from 'react-icons/vsc'
 
 const CookieIcon: React.FC<IBaseCompNoChild> = (props) => {
     return (
@@ -214,4 +217,7 @@ export {
     AiOutlineMessageIcon,
     MdOutlineEmailIcon,
     IoCallOutlineIcon,
+    IoLocationSharpIcon,
+    SiGooglemapsIcon,
+    VscLocationIcon,
 }

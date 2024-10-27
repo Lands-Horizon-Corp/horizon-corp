@@ -1,11 +1,16 @@
-import { Outlet } from '@tanstack/react-router'
+import MainMapContainer from '@/components/map'
+import { LatLngExpression } from 'leaflet'
 
 const TestLayout = () => {
+    const defaultCenter: LatLngExpression = [14.5995, 120.9842]
+    const defaultZoom = 13
+
     return (
-        <div className="grid min-h-[100dvh] grid-cols-[auto_1fr]">
-            <main>
-                <Outlet />
-            </main>
+        <div className="mx-auto h-[100vh] w-[80%]">
+            <MainMapContainer
+                defaultCenter={defaultCenter}
+                defaultZoom={defaultZoom}
+            />
         </div>
     )
 }
