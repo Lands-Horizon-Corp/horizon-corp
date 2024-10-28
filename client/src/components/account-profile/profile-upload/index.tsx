@@ -29,8 +29,8 @@ const ProfileUpload = ({
 }: IProfileUploadProps) => {
     const [reAdjust, setReAdjust] = useState(false)
     const [newImage, setNewImage] = useState<string | null>(null)
-    const [uploadMediaProgress, setUploadMediaProgress] = useState<number>(0)
     const [croppedImage, setCroppedImage] = useState<string | null>(null)
+    const [uploadMediaProgress, setUploadMediaProgress] = useState<number>(0)
 
     const {
         data: newUserData,
@@ -117,7 +117,7 @@ const ProfileUpload = ({
                         setCroppedImage(result)
                     }}
                     onCancel={() => {
-                        if (newImage) {
+                        if (croppedImage) {
                             setReAdjust(false)
                         } else {
                             setNewImage(null)
@@ -150,7 +150,10 @@ const ProfileUpload = ({
                     </div>
                     {(isUploadingPhoto || isUpdatingUserProfile) && (
                         <>
-                            <Progress value={5} className="h-1" />
+                            <Progress
+                                value={uploadMediaProgress}
+                                className="h-1"
+                            />
                             <div className="flex items-center justify-center gap-x-1 text-center text-xs text-foreground/60">
                                 <LoadingSpinner className="size-2" />
                                 {isUploadingPhoto && 'uploading picture...'}
