@@ -65,7 +65,7 @@ const PictureDrop = ({ onFileSelect, children }: Props) => {
                             setIsDragging(false)
                         }}
                         className={cn(
-                            'text-foreground/60 hover:text-foreground/80 min-h-[322px]',
+                            'min-h-[322px] text-foreground/60 hover:text-foreground/80',
                             'flex flex-col items-center justify-center space-y-4 rounded-xl border-2 border-dashed p-8 duration-700 ease-in-out',
                             isDragging && 'border-primary text-foreground'
                         )}
