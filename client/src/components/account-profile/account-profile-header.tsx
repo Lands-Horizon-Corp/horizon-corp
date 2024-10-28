@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
     Dialog,
     DialogContent,
@@ -5,22 +7,30 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
+import ProfileUpload from './profile-upload'
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import { CameraFillIcon } from '@/components/icons'
 import ActionTooltip from '@/components/action-tooltip'
 
 import { UserData } from '@/horizon-corp/types'
-import { useState } from 'react'
-import ProfileUpload from './profile-upload'
 
-const AccountProfileBanner = ({ currentUser }: { currentUser: UserData }) => {
+const AccountProfileBanner = ({
+    currentUser,
+    updateUserData,
+}: {
+    currentUser: UserData
+    updateUserData: (newUserData: UserData) => void
+}) => {
     const [uploadState, toggleProfileUpload] = useState(false)
 
     return (
         <div className="overflow-clip rounded-2xl bg-secondary shadow-md">
             <Dialog open={uploadState} onOpenChange={toggleProfileUpload}>
-                <DialogContent className="!rounded-2xl">
+                <DialogContent
+                    closeButtonClassName="sm:hidden"
+                    className="!rounded-2xl"
+                >
                     <DialogHeader>
                         <DialogTitle>Change Profile Picture</DialogTitle>
                         <DialogDescription>
@@ -28,7 +38,11 @@ const AccountProfileBanner = ({ currentUser }: { currentUser: UserData }) => {
                         </DialogDescription>
                     </DialogHeader>
                     <ProfileUpload
-                        currentUserPhotoUrl={currentUser.media?.downloadURL ?? null}
+                        currentUser={currentUser}
+                        onUploadComplete={(newUserData) => {
+                            updateUserData(newUserData)
+                            toggleProfileUpload(false)
+                        }}
                     />
                 </DialogContent>
             </Dialog>
@@ -39,10 +53,7 @@ const AccountProfileBanner = ({ currentUser }: { currentUser: UserData }) => {
                     <div className="relative size-fit">
                         <UserAvatar
                             className="size-28 border-4 border-popover shadow-sm"
-                            src={
-                                currentUser.media?.downloadURL ??
-                                'https://avatars.githubusercontent.com/u/48374007?s=80&v=4'
-                            }
+                            src={currentUser.media?.downloadURL ?? ''}
                             fallback={currentUser.username.charAt(0) ?? '-'}
                         />
                         <ActionTooltip

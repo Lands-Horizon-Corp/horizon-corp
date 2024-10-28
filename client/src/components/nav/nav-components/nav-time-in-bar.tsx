@@ -69,8 +69,8 @@ const NavTimeInBar = ({ className, currentUser }: Props) => {
                     {!loading && (
                         <>
                             <UserAvatar
-                                src="https://avatars.githubusercontent.com/u/48374007?s=80&v=4"
-                                fallback="JX"
+                                src={currentUser.media?.downloadURL ?? ''}
+                                fallback={currentUser.username.charAt(0) ?? '-'}
                             />
                             {!timeInEntry && <span>Time-in</span>}
                             {timeInEntry && (
