@@ -91,7 +91,7 @@ func (c *GenderController) Update(ctx *gin.Context) {
 		Description: req.Description,
 	}
 
-	if err := c.repo.Update(gender); err != nil {
+	if err := c.repo.Update(gender, []string{}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

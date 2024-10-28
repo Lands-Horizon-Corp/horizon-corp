@@ -98,7 +98,7 @@ func (c *ContactsController) Update(ctx *gin.Context) {
 	}
 
 	// Call the Update method from Repository
-	if err := c.repo.Update(contact); err != nil {
+	if err := c.repo.Update(contact, []string{}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

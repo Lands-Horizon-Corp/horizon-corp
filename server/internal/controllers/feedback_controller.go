@@ -93,7 +93,7 @@ func (c *FeedbackController) Update(ctx *gin.Context) {
 		FeedbackType: req.FeedbackType,
 	}
 
-	if err := c.repo.Update(feedback); err != nil {
+	if err := c.repo.Update(feedback, []string{}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

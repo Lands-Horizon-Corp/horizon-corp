@@ -123,7 +123,7 @@ func (c *RoleController) Update(ctx *gin.Context) {
 		DeleteGender:       req.DeleteGender,
 	}
 
-	if err := c.repo.Update(roles); err != nil {
+	if err := c.repo.Update(roles, []string{}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
