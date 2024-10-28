@@ -11,7 +11,10 @@ const AccountProfile = ({ className }: IBaseCompNoChild) => {
 
     return (
         <div className={cn('w-full max-w-4xl flex-1', className)}>
-            <AccountProfileBanner currentUser={currentUser} updateUserData={setCurrentUser} />
+            <AccountProfileBanner
+                currentUser={currentUser}
+                updateUserData={setCurrentUser}
+            />
         </div>
     )
 }
