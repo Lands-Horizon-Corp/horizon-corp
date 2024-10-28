@@ -53,6 +53,6 @@ func (r *EmployeeRepository) UpdatePassword(id uint, password string) error {
 		return err
 	}
 	updated := &models.Employee{Password: newPassword}
-	_, err = r.Repository.UpdateColumns(id, *updated)
+	_, err = r.Repository.UpdateColumns(id, *updated, []string{})
 	return err
 }
