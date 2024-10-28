@@ -28,6 +28,7 @@ import {
     IoCallOutlineIcon,
     CgFacebookIcon,
 } from '@/components/icons'
+import { PhoneInput } from '@/components/contact-input/contact-input'
 
 type TContact = z.infer<typeof contactFormSchema>
 
@@ -199,12 +200,9 @@ const ContactPage = () => {
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="flex-1 space-y-2">
-                                                    <Input
-                                                        id={field.name}
-                                                        className={cn(
-                                                            'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
-                                                        )}
-                                                        placeholder="09311784912"
+                                                    <PhoneInput
+                                                        placeholder="Enter a phone number"
+                                                        className={cn('rounded-[10px] border border-[#4D4C4C] !bg-transparent placeholder:text-[#838383]')}
                                                         {...field}
                                                     />
                                                 </div>
@@ -213,6 +211,7 @@ const ContactPage = () => {
                                     </FormItem>
                                 )}
                             />
+
                             <FormField
                                 name="description"
                                 control={form.control}
@@ -257,11 +256,6 @@ const ContactPage = () => {
                                     ) : (
                                         'Send Message'
                                     )}
-                                    {isPending ? (
-                                        <LoadingCircleIcon className="animate-spin" />
-                                    ) : (
-                                        'Send Message'
-                                    )}
                                 </Button>
                             </div>
                         </form>
@@ -279,20 +273,17 @@ const ContactPage = () => {
                             </div>
                             <div className="flex space-x-2">
                                 <AiOutlineMessageIcon className="self-center" />
-                                <AiOutlineMessageIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     start a live chat
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
                                 <MdOutlineEmailIcon className="self-center" />
-                                <MdOutlineEmailIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     shoot us an email
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
-                                <CgFacebookIcon className="self-center" />
                                 <CgFacebookIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     Message us on Facebook
