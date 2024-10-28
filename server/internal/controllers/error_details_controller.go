@@ -122,7 +122,7 @@ func (c *ErrorDetailController) Update(ctx *gin.Context) {
 		Status:   req.Status,
 	}
 
-	if err := c.repo.Update(errorDetail); err != nil {
+	if err := c.repo.Update(errorDetail, []string{}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

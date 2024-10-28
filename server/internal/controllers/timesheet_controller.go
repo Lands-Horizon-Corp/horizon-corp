@@ -135,7 +135,7 @@ func (c *TimesheetController) TimeOut(ctx *gin.Context) {
 	timesheet.TimeOut = &timeOutReq.TimeOut
 	timesheet.MediaOutID = &timeOutReq.MediaOut.ID
 
-	if err := c.timesheetRepo.Update(&timesheet); err != nil {
+	if err := c.timesheetRepo.Update(&timesheet, []string{}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to record time out"})
 		return
 	}

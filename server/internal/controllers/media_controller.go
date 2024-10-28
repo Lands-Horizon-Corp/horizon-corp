@@ -88,7 +88,7 @@ func (c *MediaController) Update(ctx *gin.Context) {
 		BucketName: req.BucketName,
 	}
 
-	if err := c.repo.Update(media); err != nil {
+	if err := c.repo.Update(media, []string{}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
