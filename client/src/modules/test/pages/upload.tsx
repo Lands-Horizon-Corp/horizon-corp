@@ -68,16 +68,16 @@ const UploadPage = () => {
     }
 
     const renderMedia = (media: MediaResource) => {
-        const { downloadURL, fileType, fileName } = media
+        const { url, fileType, fileName } = media
 
         if (fileType.startsWith('image')) {
             return (
-                <img src={downloadURL} alt={fileName} className="mt-2 w-full" />
+                <img src={url} alt={fileName} className="mt-2 w-full" />
             )
         } else if (fileType.startsWith('video')) {
-            return <video src={downloadURL} controls className="mt-2 w-full" />
+            return <video src={url} controls className="mt-2 w-full" />
         } else if (fileType.startsWith('audio')) {
-            return <audio src={downloadURL} controls className="mt-2 w-full" />
+            return <audio src={url} controls className="mt-2 w-full" />
         } else {
             return <p>{fileName}</p> // Display file name for non-media files
         }

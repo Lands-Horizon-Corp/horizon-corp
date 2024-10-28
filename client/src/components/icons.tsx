@@ -51,6 +51,8 @@ import {
 import {
     AiOutlineKey as KeyIcon,
     AiOutlineLoading as LoadingCircleIcon,
+    AiOutlineRotateRight as RotateRightIcon,
+    AiOutlineRotateLeft as RotateLeftIcon,
     AiOutlineLoading3Quarters as LoadingSpinnerIcon,
     AiOutlineMessage as AiOutlineMessageIcon,
 } from 'react-icons/ai'
@@ -60,6 +62,8 @@ import {
     MdFlipCameraAndroid as CameraFlipIcon,
     MdMarkEmailRead as EmailCheckIcon,
     MdOutlineEmail as MdOutlineEmailIcon,
+    MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
+    MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
 } from 'react-icons/md'
 import {
     BsZoomIn as ZoomInIcon,
@@ -82,9 +86,12 @@ import {
     FaRulerHorizontal as FaRulerHorizontalIcon,
 } from 'react-icons/fa'
 import {
-    GrRotateRight as RotateRightIcon,
-    GrRotateLeft as RotateLeftIcon,
-} from 'react-icons/gr'
+    RiFlipVerticalFill as FlipVerticalIcon,
+    RiFlipVerticalLine as FlipVerticalLineIcon,
+    RiFlipHorizontalFill as FlipHorizontalIcon,
+    RiFlipHorizontalLine as FlipHorizontalLineIcon,
+} from 'react-icons/ri'
+
 import { IoIosCode as IoIosCodeIcon } from 'react-icons/io'
 import {
     TbClearFormatting as TbClearFormattingIcon,
@@ -193,10 +200,10 @@ export {
     UserClockIcon,
     DashboardIcon,
     IoIosCodeIcon,
+    RotateLeftIcon,
     CameraFillIcon,
     PatchMinusIcon,
     PatchCheckIcon,
-    RotateLeftIcon,
     LuHeading1Icon,
     LuHeading2Icon,
     LuHeading3Icon,
@@ -209,6 +216,7 @@ export {
     RotateRightIcon,
     BuildingCogIcon,
     PiCodeBlockIcon,
+    FlipVerticalIcon,
     TbBlockquoteIcon,
     ChevronRightIcon,
     CameraSelectIcon,
@@ -218,12 +226,17 @@ export {
     WarningCircleIcon,
     VerifiedPatchIcon,
     LoadingCircleIcon,
+    FlipHorizontalIcon,
     BuildingBranchIcon,
     LoadingSpinnerIcon,
     BsTextParagraphIcon,
     PatchExclamationIcon,
+    FlipVerticalLineIcon,
     FaRulerHorizontalIcon,
     TbClearFormattingIcon,
+    FlipHorizontalLineIcon,
+    Rotate90DegreeLeftIcon,
+    Rotate90DegreeRightIcon,
     CgFacebookIcon,
     PiTextStrikethroughLightIcon,
     PiListBulletsBoldIcon,
