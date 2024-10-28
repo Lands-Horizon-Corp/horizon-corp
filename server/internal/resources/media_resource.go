@@ -2,6 +2,7 @@ package resources
 
 import (
 	"horizon/server/internal/models"
+	"horizon/server/storage"
 	"time"
 )
 
@@ -27,6 +28,10 @@ type MediaResource struct {
 
 // Convert models.Media to *MediaResource
 func ToResourceMedia(media *models.Media) *MediaResource {
+	temporaryURL, err := storage.GeneratePresignedURL(media.StorageKey)
+	if err != nil {
+		return &MediaResource{}
+	}
 	if media == nil {
 		return nil
 	}
@@ -37,7 +42,7 @@ func ToResourceMedia(media *models.Media) *MediaResource {
 		FileSize:   media.FileSize,
 		FileType:   media.FileType,
 		StorageKey: media.StorageKey,
-		URL:        media.URL,
+		URL:        temporaryURL,
 		Key:        media.Key,
 		BucketName: media.BucketName,
 		Employees:  ToResourceListEmployees(media.Employees),
