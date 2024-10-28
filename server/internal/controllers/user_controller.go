@@ -53,7 +53,8 @@ func (c *UserController) ProfilePicture(ctx *gin.Context) {
 	}
 
 	user := &models.User{
-		MediaID: &req.ID,
+		AccountType: userClaims.AccountType,
+		MediaID:     &req.ID,
 	}
 	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
 	if err != nil {
@@ -92,6 +93,7 @@ func (c *UserController) Description(ctx *gin.Context) {
 		return
 	}
 	user := &models.User{
+		AccountType: userClaims.AccountType,
 		Description: req.Description,
 	}
 	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
