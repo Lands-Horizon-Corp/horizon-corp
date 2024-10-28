@@ -125,19 +125,20 @@ func (r *UserRepository) Update(user *models.User) error {
 		}
 		user.Password = hashedPassword
 	}
+	preloads := []string{"Media", "Branch", "Role", "Gender"}
 	switch user.AccountType {
 	case "Admin":
 		admin := ConvertUserToAdmin(user)
-		return r.admin.Update(admin)
+		return r.admin.Update(admin, preloads)
 	case "Owner":
 		owner := ConvertUserToOwner(user)
-		return r.owner.Update(owner)
+		return r.owner.Update(owner, preloads)
 	case "Employee":
 		employee := ConvertUserToEmployee(user)
-		return r.employee.Update(employee)
+		return r.employee.Update(employee, preloads)
 	case "Member":
 		member := ConvertUserToMember(user)
-		return r.member.Update(member)
+		return r.member.Update(member, preloads)
 	default:
 		return errors.New("invalid account type")
 	}
@@ -198,32 +199,32 @@ func (r *UserRepository) UpdateColumns(id uint, user *models.User) (*models.User
 		user.Password = hashedPassword
 	}
 
-	// Update based on account type
+	preloads := []string{"Media", "Branch", "Role", "Gender"}
 	switch user.AccountType {
 	case "Admin":
 		admin := ConvertUserToAdmin(user)
-		updatedAdmin, err := r.admin.UpdateColumns(id, *admin)
+		updatedAdmin, err := r.admin.UpdateColumns(id, *admin, preloads)
 		if err != nil {
 			return nil, err
 		}
 		return ConvertAdminToUser(updatedAdmin), nil
 	case "Owner":
 		owner := ConvertUserToOwner(user)
-		updatedOwner, err := r.owner.UpdateColumns(id, *owner)
+		updatedOwner, err := r.owner.UpdateColumns(id, *owner, preloads)
 		if err != nil {
 			return nil, err
 		}
 		return ConvertOwnerToUser(updatedOwner), nil
 	case "Employee":
 		employee := ConvertUserToEmployee(user)
-		updatedEmployee, err := r.employee.UpdateColumns(id, *employee)
+		updatedEmployee, err := r.employee.UpdateColumns(id, *employee, preloads)
 		if err != nil {
 			return nil, err
 		}
 		return ConvertEmployeeToUser(updatedEmployee), nil
 	case "Member":
 		member := ConvertUserToMember(user)
-		updatedMember, err := r.member.UpdateColumns(id, *member)
+		updatedMember, err := r.member.UpdateColumns(id, *member, preloads)
 		if err != nil {
 			return nil, err
 		}

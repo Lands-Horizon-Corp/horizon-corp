@@ -48,8 +48,16 @@ func (r *Repository[T]) GetAll(preloads []string) ([]*T, error) {
 	return entities, handleDBError(err)
 }
 
-func (r *Repository[T]) Update(entity *T) error {
-	err := r.DB.Save(entity).Error
+func (r *Repository[T]) Update(entity *T, preloads []string) error {
+	db := r.DB
+
+	if len(preloads) > 0 {
+		for _, preload := range preloads {
+			db = db.Preload(preload)
+		}
+	}
+
+	err := db.Save(entity).Error
 	return handleDBError(err)
 }
 
@@ -59,14 +67,27 @@ func (r *Repository[T]) Delete(id uint) error {
 	return handleDBError(err)
 }
 
-func (r *Repository[T]) UpdateColumns(id uint, updates T) (*T, error) {
+func (r *Repository[T]) UpdateColumns(id uint, updates T, preloads []string) (*T, error) {
 	entity := new(T)
-	if err := r.DB.Model(entity).Where("id = ?", id).Updates(updates).Error; err != nil {
+
+	// Preload relationships if provided
+	db := r.DB
+	if len(preloads) > 0 {
+		for _, preload := range preloads {
+			db = db.Preload(preload)
+		}
+	}
+
+	// Update the specified columns
+	if err := db.Model(entity).Where("id = ?", id).Updates(updates).Error; err != nil {
 		return nil, handleDBError(err)
 	}
-	if err := r.DB.First(entity, id).Error; err != nil {
+
+	// Retrieve the updated entity with preloads
+	if err := db.First(entity, id).Error; err != nil {
 		return nil, handleDBError(err)
 	}
+
 	return entity, nil
 }
 

@@ -53,6 +53,6 @@ func (r *OwnerRepository) UpdatePassword(id uint, password string) error {
 		return err
 	}
 	updated := &models.Owner{Password: newPassword}
-	_, err = r.Repository.UpdateColumns(id, *updated)
+	_, err = r.Repository.UpdateColumns(id, *updated, []string{})
 	return err
 }
