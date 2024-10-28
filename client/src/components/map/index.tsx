@@ -1,4 +1,4 @@
-import 'leaflet/dist/leaflet.css'
+ import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
 import { useState, useEffect, useCallback } from 'react'
 import {
@@ -12,8 +12,6 @@ import {
 import { useMutation } from '@tanstack/react-query'
 import debounce from 'lodash-es/debounce'
 import L, { LatLngExpression, latLng } from 'leaflet'
-import 'leaflet-geosearch/dist/geosearch.css'
-import 'leaflet-control-geocoder'
 
 import { Input } from '../ui/input'
 import LayerControl from './LayerControl'
