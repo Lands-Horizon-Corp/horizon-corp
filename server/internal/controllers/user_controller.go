@@ -48,16 +48,61 @@ func (c *UserController) getUserClaims(ctx *gin.Context) (*auth.UserClaims, erro
 	return userClaims, nil
 }
 
-// ProfilePicture updates the user's profile picture.
-func (c *UserController) ProfilePicture(ctx *gin.Context) {
-	var req requests.MediaRequest
+// getUser retrieves the user model based on user claims.
+func (c *UserController) getUser(ctx *gin.Context) (*models.User, error) {
+	userClaims, err := c.getUserClaims(ctx)
+	if err != nil {
+		return nil, err
+	}
 
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	user, err := c.userRepo.GetByID(userClaims.AccountType, userClaims.ID)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found."})
+		return nil, err
+	}
+
+	return user, nil
+}
+
+// verifyPassword checks if the provided password matches the user's password.
+func (c *UserController) verifyPassword(ctx *gin.Context, user *models.User, password string) bool {
+	if !config.VerifyPassword(user.Password, password) {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Password verification failed."})
+		return false
+	}
+	return true
+}
+
+// updateUser updates the user and sends the response.
+func (c *UserController) updateUser(ctx *gin.Context, userUpdate *models.User) {
+	userClaims, _ := c.getUserClaims(ctx)
+
+	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, userUpdate)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user."})
 		return
+	}
+
+	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
+	ctx.JSON(http.StatusOK, response)
+}
+
+// handleRequest handles the request binding and validation.
+func (c *UserController) handleRequest(ctx *gin.Context, req requests.Validatable) bool {
+	if err := ctx.ShouldBindJSON(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return false
 	}
 	if err := req.Validate(); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return false
+	}
+	return true
+}
+
+func (c *UserController) ProfilePicture(ctx *gin.Context) {
+	var req requests.MediaRequest
+	if !c.handleRequest(ctx, &req) {
 		return
 	}
 
@@ -71,26 +116,13 @@ func (c *UserController) ProfilePicture(ctx *gin.Context) {
 		MediaID:     &req.ID,
 	}
 
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, userUpdate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update profile picture."})
-		return
-	}
-
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
-	ctx.JSON(http.StatusOK, response)
+	c.updateUser(ctx, userUpdate)
 }
 
 // AccountSetting updates the user's account settings.
 func (c *UserController) AccountSetting(ctx *gin.Context) {
 	var req user_requests.AccountSettingRequest
-
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if !c.handleRequest(ctx, &req) {
 		return
 	}
 
@@ -109,107 +141,84 @@ func (c *UserController) AccountSetting(ctx *gin.Context) {
 		PermanentAddress: req.PermanentAddress,
 	}
 
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, userUpdate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update account settings."})
-		return
-	}
-
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
-	ctx.JSON(http.StatusOK, response)
+	c.updateUser(ctx, userUpdate)
 }
 
 // ChangeEmail changes the user's email address.
 func (c *UserController) ChangeEmail(ctx *gin.Context) {
 	var req user_requests.ChangeEmailRequest
-
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if !c.handleRequest(ctx, &req) {
 		return
 	}
 
-	userClaims, err := c.getUserClaims(ctx)
+	user, err := c.getUser(ctx)
 	if err != nil {
 		return
 	}
 
-	user, err := c.userRepo.GetByID(userClaims.AccountType, userClaims.ID)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found."})
-		return
-	}
-
-	if !config.VerifyPassword(user.Password, req.Password) {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Password verification failed."})
+	if !c.verifyPassword(ctx, user, req.Password) {
 		return
 	}
 
 	userUpdate := &models.User{
-		AccountType:     userClaims.AccountType,
+		AccountType:     user.AccountType,
 		Email:           req.Email,
 		IsEmailVerified: false,
 	}
 
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, userUpdate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update email."})
-		return
-	}
-
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
-	ctx.JSON(http.StatusOK, response)
+	c.updateUser(ctx, userUpdate)
 }
 
 // ChangeContactNumber changes the user's contact number.
 func (c *UserController) ChangeContactNumber(ctx *gin.Context) {
 	var req user_requests.ChangeContactNumberRequest
-
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if !c.handleRequest(ctx, &req) {
 		return
 	}
 
-	userClaims, err := c.getUserClaims(ctx)
+	user, err := c.getUser(ctx)
 	if err != nil {
 		return
 	}
 
-	user, err := c.userRepo.GetByID(userClaims.AccountType, userClaims.ID)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found."})
-		return
-	}
-
-	if !config.VerifyPassword(user.Password, req.Password) {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Password verification failed."})
+	if !c.verifyPassword(ctx, user, req.Password) {
 		return
 	}
 
 	userUpdate := &models.User{
-		AccountType:       userClaims.AccountType,
+		AccountType:       user.AccountType,
 		ContactNumber:     req.ContactNumber,
 		IsContactVerified: false,
 	}
 
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, userUpdate)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update contact number."})
+	c.updateUser(ctx, userUpdate)
+}
+
+// ChangeUsername changes the user's username.
+func (c *UserController) ChangeUsername(ctx *gin.Context) {
+	var req user_requests.ChangeUsernameRequest
+	if !c.handleRequest(ctx, &req) {
 		return
 	}
 
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
-	ctx.JSON(http.StatusOK, response)
+	user, err := c.getUser(ctx)
+	if err != nil {
+		return
+	}
+
+	if !c.verifyPassword(ctx, user, req.Password) {
+		return
+	}
+
+	userUpdate := &models.User{
+		AccountType: user.AccountType,
+		Username:    req.Username,
+	}
+
+	c.updateUser(ctx, userUpdate)
 }
 
-// UserRoutes registers user-related routes.
+// UserRoutes sets up the user-related routes.
 func UserRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controller *UserController) {
 	authGroup := router.Group("/profile")
 	authGroup.Use(mw.Middleware())
@@ -218,5 +227,6 @@ func UserRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controll
 		authGroup.POST("/account-setting", controller.AccountSetting)
 		authGroup.POST("/change-email", controller.ChangeEmail)
 		authGroup.POST("/change-contact-number", controller.ChangeContactNumber)
+		authGroup.POST("/change-username", controller.ChangeUsername)
 	}
 }

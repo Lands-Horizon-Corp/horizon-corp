@@ -83,3 +83,7 @@ export interface ChangeContactNumberRequest {
   password: string
   contactNumber: string
 }
+export interface ChangeUsernameRequest {
+  password: string
+  username: string
+}
