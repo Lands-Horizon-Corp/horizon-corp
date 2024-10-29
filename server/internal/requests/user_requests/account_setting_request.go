@@ -9,6 +9,7 @@ import (
 type AccountSettingRequest struct {
 	Birthdate        time.Time `json:"birthdate" validate:"required"`
 	FirstName        string    `json:"firstName" validate:"required,max=255"`
+	MiddleName       string    `json:"middleName" validate:"required,max=255"`
 	LastName         string    `json:"lastName" validate:"required,max=255"`
 	Description      string    `json:"description" validate:"required,min=20,max=255"`
 	PermanentAddress string    `json:"permanentAddress" validate:"required,max=500"`

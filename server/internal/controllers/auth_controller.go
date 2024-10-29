@@ -512,103 +512,6 @@ func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-// ChangeEmail updates the user's email and sends a verification email.
-func (c *AuthController) ChangeEmail(ctx *gin.Context) {
-	var req auth_requests.ChangeEmailRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangeEmail: JSON binding error: %v", err), "Invalid request payload.")
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangeEmail: Validation error: %v", err), "Invalid input data.")
-		return
-	}
-
-	userClaims, err := c.getUserClaims(ctx)
-	if err != nil {
-		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
-		return
-	}
-
-	// Send Email OTP
-	emailReq := services.EmailRequest{
-		To:      req.Email,
-		Subject: "ECOOP: Email Verification",
-		Body:    req.EmailTemplate,
-	}
-	if err := c.otpService.SendEmailOTP(userClaims.AccountType, userClaims.ID, emailReq); err != nil {
-		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeEmail: Email OTP sending error: %v", err), "Failed to send verification email.")
-		return
-	}
-
-	user := &models.User{
-		AccountType:     userClaims.AccountType,
-		IsEmailVerified: false,
-		Email:           req.Email,
-	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
-	if err != nil {
-		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeEmail: User update error: %v", err), "Failed to update user email.")
-		return
-	}
-
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
-	ctx.JSON(http.StatusOK, response)
-}
-
-// ChangeContactNumber updates the user's contact number and sends a verification SMS.
-func (c *AuthController) ChangeContactNumber(ctx *gin.Context) {
-	var req auth_requests.ChangeContactNumberRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangeContactNumber: JSON binding error: %v", err), "Invalid request payload.")
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		c.respondWithError(ctx, http.StatusBadRequest, fmt.Sprintf("ChangeContactNumber: Validation error: %v", err), "Invalid input data.")
-		return
-	}
-
-	userClaims, err := c.getUserClaims(ctx)
-	if err != nil {
-		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
-		return
-	}
-
-	currentUser, err := c.getCurrentUser(ctx)
-	if err != nil {
-		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
-		return
-	}
-
-	contactReq := services.SMSRequest{
-		To:   req.ContactNumber,
-		Body: req.ContactTemplate,
-		Vars: &map[string]string{
-			"name": fmt.Sprintf("%s %s", currentUser.FirstName, currentUser.LastName),
-		},
-	}
-	if err := c.otpService.SendContactNumberOTP(userClaims.AccountType, userClaims.ID, contactReq); err != nil {
-		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeContactNumber: SMS sending error: %v", err), "Failed to send verification SMS.")
-		return
-	}
-
-	user := &models.User{
-		AccountType:       userClaims.AccountType,
-		IsContactVerified: false,
-		ContactNumber:     req.ContactNumber,
-	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
-	if err != nil {
-		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("ChangeContactNumber: User update error: %v", err), "Failed to update contact number.")
-		return
-	}
-
-	response := resources.ToResourceUser(updatedUser, userClaims.AccountType)
-	ctx.JSON(http.StatusOK, response)
-}
-
 func (c *AuthController) SkipVerification(ctx *gin.Context) {
 	userClaims, err := c.getUserClaims(ctx)
 	if err != nil {
@@ -683,11 +586,9 @@ func AuthRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controll
 
 			authGroup.POST("/send-email-verification", controller.SendEmailVerification)
 			authGroup.POST("/verify-email", controller.VerifyEmail)
-			authGroup.POST("/change-email", controller.ChangeEmail)
 
 			authGroup.POST("/send-contact-number-verification", controller.SendContactNumberVerification)
 			authGroup.POST("/verify-contact-number", controller.VerifyContactNumber)
-			authGroup.POST("/change-contact-number", controller.ChangeContactNumber)
 		}
 	}
 }

@@ -57,15 +57,8 @@ export interface VerifyContactNumberRequest {
   otp: string
 }
 
-export interface ChangeEmailRequest {
-  email: string
-  emailTemplate?: string
-}
 
-export interface ChangeContactNumberRequest {
-  contactNumber: string
-  contactTemplate?: string
-}
+
 
 export interface NewPasswordRequest {
   PreviousPassword: string
@@ -74,9 +67,19 @@ export interface NewPasswordRequest {
 }
 
 export interface AccountSettingRequest {
-  birthdate: Date,
-  firstName: string,
-  lastName: string,
+  birthdate: Date
+  firstName: string
+  lastName: string
   description: string
-  permanentAddress: string,
+  permanentAddress: string
+}
+
+export interface ChangeEmailRequest {
+  password: string
+  email: string
+}
+
+export interface ChangeContactNumberRequest {
+  password: string
+  contactNumber: string
 }

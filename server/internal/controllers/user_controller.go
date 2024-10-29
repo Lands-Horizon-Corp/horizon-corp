@@ -102,6 +102,7 @@ func (c *UserController) AccountSetting(ctx *gin.Context) {
 	userUpdate := &models.User{
 		AccountType:      userClaims.AccountType,
 		Birthdate:        req.Birthdate,
+		MiddleName:       req.MiddleName,
 		FirstName:        req.FirstName,
 		LastName:         req.LastName,
 		Description:      req.Description,
