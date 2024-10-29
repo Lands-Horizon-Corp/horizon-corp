@@ -26,7 +26,7 @@ const InputDatePicker = ({
     value,
     onChange,
     disabled,
-    fromYear = 1930,
+    fromYear = 1900,
     toYear = new Date().getFullYear(),
     ...other
 }: InputDatePickerProps) => {
