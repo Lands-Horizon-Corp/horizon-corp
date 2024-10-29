@@ -48,8 +48,8 @@ const AccountProfileBanner = ({
             </Dialog>
 
             <div className="h-[180px] bg-[url('/profile-cover.png')] bg-cover bg-center" />
-            <div className="relative p-8">
-                <div className="group absolute -top-16 left-8 size-fit">
+            <div className="relative p-3 sm:p-5">
+                <div className="group absolute -top-24 left-8 size-fit">
                     <div className="relative size-fit">
                         <UserAvatar
                             className="size-28 border-4 border-popover shadow-sm"
@@ -71,7 +71,7 @@ const AccountProfileBanner = ({
                         </ActionTooltip>
                     </div>
                 </div>
-                <p className="mt-9 text-2xl font-medium">
+                <p className=" text-2xl font-medium">
                     {currentUser.username}
                 </p>
                 <span className="text-sm text-foreground/80">

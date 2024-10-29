@@ -68,7 +68,7 @@ const NavProfileMenu = () => {
                         const userProfileUrl =
                             getUsersAccountTypeRedirectPage(currentUser) +
                             '/profile'
-                        router.navigate({ to: userProfileUrl })
+                        router.navigate({ to: userProfileUrl, hash : 'account-settings' })
                     }}
                 >
                     <UserIcon className="mr-2 size-4 duration-150 ease-in-out" />

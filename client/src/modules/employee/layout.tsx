@@ -7,9 +7,9 @@ import EmployeeSidebar from './components/employee-sidebar'
 const OwnerLayout = () => {
     return (
         <AuthGuard allowedAccountTypes={['Employee']}>
-            <div className="grid min-h-[100dvh] grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
+            <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
                 <EmployeeSidebar />
-                <main>
+                <main className="overflow-x-hidden">
                     <UserNav />
                     <Outlet />
                 </main>
