@@ -72,7 +72,7 @@ const AccountSettings = () => {
         form.setValue('firstName', currentUser.firstName)
         form.setValue('middleName', currentUser.middleName)
         form.setValue('description', currentUser.description)
-        form.setValue('birthDate', new Date(currentUser.birthdate))
+        form.setValue('birthDate', new Date(currentUser.birthDate))
         form.setValue('permanentAddress', currentUser.permanentAddress)
     }, [form, currentUser])
 
@@ -207,10 +207,10 @@ const AccountSettings = () => {
                                             id={field.name}
                                             value={field.value}
                                             onChange={field.onChange}
-                                            // captionLayout="dropdown-buttons"
-                                            // disabled={(date) =>
-                                            //     date > new Date()
-                                            // }
+                                            captionLayout="dropdown-buttons"
+                                            disabled={(date) =>
+                                                date > new Date()
+                                            }
                                         />
                                     </FormControl>
                                 </FormItem>
