@@ -1,6 +1,6 @@
 import z from 'zod'
 
-import { NUMBER_LETTER_REGEX } from '../constants'
+import { NUMBER_LETTER_REGEX } from '@/constants'
 
 export const otpFormSchema = z.object({
     otp: z

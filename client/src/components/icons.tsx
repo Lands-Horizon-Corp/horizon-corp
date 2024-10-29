@@ -10,6 +10,7 @@ import {
     LuListOrdered as LuListOrderedIcon,
     LuUndo2 as LuUndo2Icon,
     LuRedo2 as LuRedo2Icon,
+    LuPenLine as EditLineIcon,
 } from 'react-icons/lu'
 import {
     BsBuildingGear as BuildingCogIcon,
@@ -78,8 +79,10 @@ import {
 } from 'react-icons/bs'
 import {
     IoRefresh as RefreshIcon,
+    IoCloseOutline as CloseIcon,
     IoFootstepsOutline as FootstepsIcon,
     IoCallOutline as IoCallOutlineIcon,
+    IoPencilOutline as EditPencilIcon,
 } from 'react-icons/io5'
 import { RxFontItalic as ToolbarItalicIcon } from 'react-icons/rx'
 import {
@@ -175,6 +178,7 @@ export {
     UserIcon,
     MoonIcon,
     ClockIcon,
+    CloseIcon,
     ImageIcon,
     CookieIcon,
     CameraIcon,
@@ -188,9 +192,9 @@ export {
     LuUndo2Icon,
     LuRedo2Icon,
     SidebarIcon,
-    ReportsIcon,
     SunMoonIcon,
     ZoomOutIcon,
+    ReportsIcon,
     PaymentsIcon,
     QuestionIcon,
     SettingsIcon,
@@ -207,6 +211,7 @@ export {
     RotateLeftIcon,
     CameraFillIcon,
     PatchMinusIcon,
+    EditPencilIcon,
     PatchCheckIcon,
     LuHeading1Icon,
     LuHeading2Icon,
