@@ -1,10 +1,13 @@
+import AccountSettings from './account-settings'
+import AccountSecurity from './account-security'
+import AccountTransactions from './account-transactions'
 import AccountProfileBanner from './account-profile-banner'
+import AccountModeOfPayment from './account-mode-of-payment'
+import AccountProfileNavigation from './account-profile-navigation'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import AccountProfileNavigation from './account-profile-navigation'
-import AccountSettings from './account-settings'
 
 const AccountProfile = ({ className }: IBaseCompNoChild) => {
     const { currentUser, setCurrentUser } = useUserAuthStore()
@@ -23,7 +26,11 @@ const AccountProfile = ({ className }: IBaseCompNoChild) => {
                 updateUserData={setCurrentUser}
             />
             <AccountProfileNavigation />
+
             <AccountSettings />
+            <AccountSecurity />
+            <AccountTransactions />
+            <AccountModeOfPayment />
         </div>
     )
 }
