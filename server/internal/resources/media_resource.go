@@ -36,9 +36,6 @@ func ToResourceMedia(media *models.Media) *MediaResource {
 	if media == nil {
 		return nil
 	}
-	if media == nil {
-		return nil
-	}
 
 	return &MediaResource{
 		ID:          media.ID,
