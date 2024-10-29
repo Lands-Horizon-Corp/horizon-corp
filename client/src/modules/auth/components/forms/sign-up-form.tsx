@@ -46,7 +46,7 @@ const defaultValue: TSignUpForm = {
     contactNumber: '',
     email: '',
     permanentAddress: '',
-    birthdate: new Date(),
+    birthDate: new Date(),
     firstName: '',
     lastName: '',
     middleName: '',
@@ -235,7 +235,7 @@ const SignUpForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="birthdate"
+                        name="birthDate"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
