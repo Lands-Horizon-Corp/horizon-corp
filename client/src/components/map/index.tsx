@@ -1,10 +1,9 @@
- import 'leaflet/dist/leaflet.css'
+import 'leaflet/dist/leaflet.css'
 import axios from 'axios'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import {
     MapContainer,
     TileLayer,
-    Marker,
     useMapEvent,
     useMap,
     ZoomControl,
@@ -21,9 +20,11 @@ import {
     TLatLngExpressionWithDesc,
     TMapProps,
     TMapWithClickProps,
+    Pin,
 } from '@/types/custom-component'
 
 import { LoadingCircleIcon, VscLocationIcon } from '../icons'
+import { Button } from '../ui/button'
 
 const getLocationDescription = async (latlng: LatLngExpression) => {
     const { lat, lng } = latLng(latlng)
@@ -37,35 +38,14 @@ const getLocationDescription = async (latlng: LatLngExpression) => {
     }
 }
 
-const MapWithClick = ({
-    onLocationFound,
-    map,
-    setSearchedAddress,
-}: TMapWithClickProps) => {
+const MapWithClick = ({ onLocationFound }: TMapWithClickProps) => {
     useMapEvent('click', async (e) => {
-        const latLng = e.latlng
-        onLocationFound(latLng)
-
-        map?.eachLayer((layer: any) => {
-            if (layer instanceof L.Marker) {
-                map.removeLayer(layer)
-            }
-        })
-        const marker = L.marker([latLng.lat, latLng.lng]).addTo(map as L.Map)
-        const address = await getLocationDescription(latLng)
-        setSearchedAddress(address)
-        marker.bindPopup(address || 'No address found').openPopup()
+        onLocationFound( e.latlng)
     })
-
     return null
 }
 
-// Custom search component
-const CustomSearch = ({
-    onLocationFound,
-    map,
-    setSearchedAddress,
-}: TCustomSearchProps) => {
+const CustomSearch = ({ onLocationFound }: TCustomSearchProps) => {
     const [results, setResults] = useState<TLatLngExpressionWithDesc[]>([])
     const [query, setQuery] = useState('')
 
@@ -104,23 +84,10 @@ const CustomSearch = ({
         debouncedSearch(value)
     }
 
-    const handleLocationClick = async (lat: number, lng: number) => {
-        if (map) {
-            map?.eachLayer((layer) => {
-                if (layer instanceof L.Marker) {
-                    map.removeLayer(layer)
-                }
-            })
-            const marker = L.marker([lat, lng]).addTo(map as L.Map)
-            const location = latLng(lat, lng)
-            const address = await getLocationDescription(location)
-            setSearchedAddress(address)
-            marker.bindPopup(address || 'No address found').openPopup()
-        }
-        onLocationFound([lat, lng])
-        map?.setView([lat, lng], 13)
+    const handleOnLocationFound = (lat: number, lng: number) => {
+        const latLng = new L.LatLng(lat, lng)
+        onLocationFound(latLng)
     }
-
     const isResultEmpty = results.length === 0
 
     return (
@@ -141,36 +108,43 @@ const CustomSearch = ({
                     </div>
                 ) : (
                     <div>
-                        {results.map((location, index) => (
-                            <div
-                                key={index}
-                                className="cursor-pointer hover:rounded-lg hover:bg-slate-200/40 focus:rounded-lg focus:bg-slate-200/40 focus:outline-none focus:ring-0"
-                                onClick={() =>
-                                    handleLocationClick(
-                                        parseFloat(location.lat),
-                                        parseFloat(location.lng)
-                                    )
-                                }
-                                tabIndex={0}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' || e.key == ' ') {
-                                        handleLocationClick(
-                                            parseFloat(location.lat),
-                                            parseFloat(location.lng)
-                                        )
-                                    }
-                                }}
-                            >
-                                <div className="flex p-2">
-                                    <div className="w-9">
-                                        <VscLocationIcon className="size-6 text-slate-600 dark:text-destructive-foreground" />
+                        {results.length > 0 && (
+                            <>
+                                {results.map((location, index) => (
+                                    <div
+                                        key={index}
+                                        className="cursor-pointer hover:rounded-lg hover:bg-slate-200/40 focus:rounded-lg focus:bg-slate-200/40 focus:outline-none focus:ring-0"
+                                        onClick={() =>
+                                            handleOnLocationFound(
+                                                parseFloat(location.lat),
+                                                parseFloat(location.lng)
+                                            )
+                                        }
+                                        tabIndex={0}
+                                        onKeyDown={(e) => {
+                                            if (
+                                                e.key === 'Enter' ||
+                                                e.key == ' '
+                                            ) {
+                                                handleOnLocationFound(
+                                                    parseFloat(location.lat),
+                                                    parseFloat(location.lng)
+                                                )
+                                            }
+                                        }}
+                                    >
+                                        <div className="flex p-2">
+                                            <div className="w-9">
+                                                <VscLocationIcon className="size-6 text-slate-600 dark:text-destructive-foreground" />
+                                            </div>
+                                            <p className="truncate text-sm">
+                                                {location.desc}
+                                            </p>
+                                        </div>
                                     </div>
-                                    <p className="truncate text-sm">
-                                        {location.desc}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                                ))}
+                            </>
+                        )}
                     </div>
                 )}
             </div>
@@ -178,13 +152,7 @@ const CustomSearch = ({
     )
 }
 
-const Maps = ({
-    defaultCenter,
-    searchedAddress,
-    handleMapCreated,
-    setSearchedAddress,
-}: TMapProps) => {
-    const [position, setPosition] = useState<LatLngExpression>(defaultCenter)
+const Maps = ({ handleMapCreated }: TMapProps) => {
     const map = useMap()
 
     useEffect(() => {
@@ -200,36 +168,85 @@ const Maps = ({
                 attribution="&copy; OpenStreetMap contributors"
             />
             <LayerControl />
-            <MapWithClick
-                map={map}
-                setSearchedAddress={setSearchedAddress}
-                searchedAddress={searchedAddress}
-                onLocationFound={setPosition}
-            />
-            <Marker position={position}>
-                <p>{searchedAddress}</p>
-            </Marker>
         </>
     )
 }
 
 const MainMapContainer = ({
-    defaultCenter,
-    defaultZoom = 13,
     disabledSearch = false,
-    className,
+    center,
+    zoom = 13,
+    zoomControl = false,
+    className = '',
     style,
+    scrollWheelZoom = true,
+    minZoom,
+    maxZoom,
+    whenReady,
+    children,
+    multiplePins = false,
 }: TMainMapProps) => {
-    const [position, setPosition] = useState<LatLngExpression>(defaultCenter)
-    const [searchedAddress, setSearchedAddress] = useState('')
+    const [_, setSearchedAddress] = useState('')
+    const [selectedPins, setSelectedPins] = useState<Pin[]>([])
     const [map, setMap] = useState<L.Map | null>(null)
-
-    const handleLocationFound = (latLng: LatLngExpression) =>
-        setPosition(latLng)
+    const markerRefs = useRef<{ [key: string]: L.Marker }>({})
 
     const handleMapReady = (mapInstance: L.Map) => {
         setMap(mapInstance)
     }
+
+    const deletePin = useCallback(
+        (id: number) => {
+            
+            setSelectedPins((pins) => pins.filter((pin) => pin.id !== id))
+            const pin = selectedPins.find((pin) => pin.id === id)
+
+            if (pin) {
+                const { lat, lng } = pin.position as L.LatLngLiteral
+                const markerKey = `${lat},${lng}`
+                markerRefs.current[markerKey]?.remove()
+                delete markerRefs.current[markerKey]
+            }
+        },
+        [selectedPins]
+    )
+
+    const addMarker = useCallback(
+        async (latLng: LatLngExpression) => {
+            const { lat, lng } = latLng as L.LatLngLiteral
+            const markerKey = `${lat},${lng}`
+
+            if (markerRefs.current[markerKey])
+                markerRefs.current[markerKey].remove()
+
+            const marker = L.marker(latLng).addTo(map as L.Map)
+            markerRefs.current[markerKey] = marker
+            const address = await getLocationDescription(latLng)
+            marker.bindPopup(address).openPopup()
+        },
+        [map]
+    )
+
+    const handleLocationFound = useCallback(
+        async (latLng: LatLngExpression) => {
+            const newPin: Pin = { id: Date.now(), position: latLng }
+
+            setSelectedPins((prevPins) =>
+                multiplePins ? [...prevPins, newPin] : [newPin]
+            )
+
+            if (!multiplePins && map) {
+                map.eachLayer((layer: any) => {
+                    if (layer instanceof L.Marker) {
+                        map.removeLayer(layer)
+                    }
+                })
+            }
+
+            addMarker(latLng)
+        },
+        [addMarker, map, multiplePins]
+    )
 
     return (
         <div className={`relative w-full p-5 pt-20 shadow-sm ${style ?? ''}`}>
@@ -241,21 +258,40 @@ const MainMapContainer = ({
                 />
             )}
             <MapContainer
-                center={position}
-                zoom={defaultZoom}
+                center={center}
+                zoom={zoom}
                 className={`-z-0 h-[500px] w-full min-w-[500px] rounded-lg ${className ?? ''}`}
                 ref={setMap}
-                zoomControl={false}
+                style={style}
+                zoomControl={zoomControl}
+                scrollWheelZoom={scrollWheelZoom}
+                minZoom={minZoom}
+                maxZoom={maxZoom}
+                whenReady={whenReady}
             >
-                <Maps
-                    map={map}
-                    setSearchedAddress={setSearchedAddress}
-                    searchedAddress={searchedAddress}
-                    defaultCenter={defaultCenter}
-                    handleMapCreated={handleMapReady}
-                />
+                <Maps handleMapCreated={handleMapReady} />
+                <MapWithClick onLocationFound={handleLocationFound} />
                 <ZoomControl position="bottomright" />
+                {children}
             </MapContainer>
+            <ul className="mt-4">
+                {selectedPins.map((pin) => {
+                    const { lat, lng } = pin.position as L.LatLngLiteral
+                    return (
+                        <div key={pin.id}>
+                            <li>
+                                Latitude: {lat}, Longitude: {lng}
+                            </li>
+                            <Button
+                                onClick={() => deletePin(pin.id)}
+                                variant="secondary"
+                            >
+                                Delete
+                            </Button>
+                        </div>
+                    )
+                })}
+            </ul>
         </div>
     )
 }

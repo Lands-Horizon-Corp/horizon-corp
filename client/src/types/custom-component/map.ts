@@ -1,44 +1,31 @@
 import { SetStateAction, Dispatch } from 'react'
 import L, { LatLngExpression } from 'leaflet'
-
-interface TLocationProps {
-    defaultCenter: LatLngExpression
-    defaultZoom?: number
-}
+import {MapContainerProps } from 'react-leaflet';
 
 interface TSearchableProps {
     searchedAddress?: string
-    setSearchedAddress: Dispatch<SetStateAction<string>>
+    setSearchedAddress?: Dispatch<SetStateAction<string>>
 }
-
+export interface Pin {
+    id: number;
+    position: LatLngExpression;
+}
 export interface TCustomSearchProps extends TSearchableProps {
     onLocationFound: (latLng: LatLngExpression) => void
     map: L.Map | null
 }
-
-export interface TMainMapProps
-    extends TLocationProps,
-        Partial<TSearchableProps> {
-    handleMapCreated?: (map: L.Map) => void
-    map?: L.Map | null
-    disabledSearch?: boolean
-    className?: string
-    style?: string
-}
-
 export interface TLatLngExpressionWithDesc {
     lat: string
     lng: string
     desc: string
 }
-
-export interface TMapProps extends TLocationProps, TSearchableProps {
-    handleMapCreated?: (map: L.Map) => void
-    map?: L.Map | null
-    className?: string
+export interface TMainMapProps extends Partial<MapContainerProps>{
+    disabledSearch?: boolean
+    multiplePins?: boolean
 }
-
-export interface TMapWithClickProps extends TSearchableProps {
+export interface TMapProps {
+    handleMapCreated?: (map: L.Map) => void
+}
+export interface TMapWithClickProps {
     onLocationFound: (latLng: LatLngExpression) => void
-    map: L.Map
 }
