@@ -11,6 +11,7 @@ const useFetchCurrentUser = (options?: {
     onError?: (error: unknown) => void
     onSuccess?: (userData: UserData) => void
     retry?: number
+    refetchOnWindowFocus?: boolean
 }) => {
     const { currentUser, setAuthStatus, setCurrentUser } = useUserAuthStore()
 
@@ -40,6 +41,7 @@ const useFetchCurrentUser = (options?: {
             options?.onSuccess?.(userData)
             return userData
         },
+        refetchOnWindowFocus: options?.refetchOnWindowFocus,
         retry: options?.retry ?? 0,
     })
 
