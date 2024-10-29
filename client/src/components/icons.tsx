@@ -61,7 +61,9 @@ import {
     MdCameraEnhance as CameraSelectIcon,
     MdFlipCameraAndroid as CameraFlipIcon,
     MdMarkEmailRead as EmailCheckIcon,
+    MdOutlinePayments as PaymentsIcon,
     MdOutlineEmail as MdOutlineEmailIcon,
+    MdManageAccounts as AccountSettingIcon,
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
 } from 'react-icons/md'
@@ -86,6 +88,7 @@ import {
     FaRulerHorizontal as FaRulerHorizontalIcon,
 } from 'react-icons/fa'
 import {
+    RiListCheck3 as TransactionListIcon,
     RiFlipVerticalFill as FlipVerticalIcon,
     RiFlipVerticalLine as FlipVerticalLineIcon,
     RiFlipHorizontalFill as FlipHorizontalIcon,
@@ -188,6 +191,7 @@ export {
     ReportsIcon,
     SunMoonIcon,
     ZoomOutIcon,
+    PaymentsIcon,
     QuestionIcon,
     SettingsIcon,
     UserListIcon,
@@ -229,7 +233,9 @@ export {
     FlipHorizontalIcon,
     BuildingBranchIcon,
     LoadingSpinnerIcon,
+    AccountSettingIcon,
     BsTextParagraphIcon,
+    TransactionListIcon,
     PatchExclamationIcon,
     FlipVerticalLineIcon,
     FaRulerHorizontalIcon,

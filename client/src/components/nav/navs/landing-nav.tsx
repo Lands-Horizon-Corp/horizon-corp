@@ -2,12 +2,12 @@ import { Link, ReactNode, useLocation } from '@tanstack/react-router'
 
 import RootNav from '@/components/nav/root-nav'
 import NavContainer from '@/components/nav/nav-container'
-import NavEcoopLogo from '../nav-components/nav-ecoop-logo'
+import NavEcoopLogo from '@/components/nav/nav-components/nav-ecoop-logo'
+import NavAuthGroup from '@/components/nav/nav-components/nav-auth-group'
+import NavThemeToggle from '@/components/nav/nav-components/nav-theme-toggle'
 
 import { cn } from '@/lib'
 import { TbExternalLink } from 'react-icons/tb'
-import NavAuthGroup from '../nav-components/nav-auth-group'
-import NavThemeToggle from '../nav-components/nav-theme-toggle'
 
 type NavLink = {
     name: string

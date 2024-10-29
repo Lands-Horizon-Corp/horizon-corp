@@ -1,8 +1,9 @@
 import RootNav from '@/components/nav/root-nav'
 import NavContainer from '@/components/nav/nav-container'
+import NavTimeInBar from '../nav-components/nav-time-in-bar'
 import NavThemeToggle from '@/components/nav/nav-components/nav-theme-toggle'
 import NavProfileMenu from '@/components/nav/nav-components/nav-profile-menu'
-import NavTimeInBar from '../nav-components/nav-time-in-bar'
+
 import { useUserAuthStore } from '@/store/user-auth-store'
 
 const UserNav = () => {

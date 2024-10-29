@@ -1,12 +1,24 @@
 import { cn } from '@/lib'
 import { useEffect } from 'react'
+import { IconType } from 'react-icons/lib'
 import { useRouter, useRouterState } from '@tanstack/react-router'
 
-const PATHS: { hash: string; name: string }[] = [
-    { hash: 'account-settings', name: 'Account Settings' },
-    { hash: 'security', name: 'Security' },
-    { hash: 'mode-of-payments', name: 'Mode of Payments' },
-    { hash: 'transactions', name: 'Transactions' },
+import {
+    AccountSettingIcon,
+    PaymentsIcon,
+    ShieldIcon,
+    TransactionListIcon,
+} from '@/components/icons'
+
+const PATHS: { hash: string; name: string; Icon: IconType }[] = [
+    {
+        hash: 'account-settings',
+        name: 'Account Settings',
+        Icon: AccountSettingIcon,
+    },
+    { hash: 'security', name: 'Security', Icon: ShieldIcon },
+    { hash: 'mode-of-payments', name: 'Mode of Payments', Icon: PaymentsIcon },
+    { hash: 'transactions', name: 'Transactions', Icon: TransactionListIcon },
 ]
 
 const AccountProfileNavigation = () => {
@@ -24,18 +36,19 @@ const AccountProfileNavigation = () => {
     }, [router])
 
     return (
-        <div className="flex items-center gap-x-1 rounded-xl bg-secondary p-1 text-sm">
+        <div className="flex w-fit sm:w-full mx-auto sm:mx-0 max-w-full justify-center gap-x-1 overflow-x-scroll rounded-xl bg-secondary p-1 text-sm sm:justify-start">
             {PATHS.map((hashPath) => (
-                <span
+                <button
                     key={hashPath.hash}
                     className={cn(
-                        'cursor-pointer rounded-xl p-2 text-secondary-foreground/70 duration-300 ease-in-out hover:text-secondary-foreground',
+                        'flex w-fit cursor-pointer items-center gap-x-1 whitespace-nowrap rounded-lg p-2 text-secondary-foreground/70 duration-300 ease-in-out hover:text-secondary-foreground',
                         routeHash === hashPath.hash && 'bg-background'
                     )}
                     onClick={() => router.navigate({ hash: hashPath.hash })}
                 >
-                    {hashPath.name}
-                </span>
+                    <hashPath.Icon className="size-6 sm:size-4" />
+                    <span className="hidden sm:block">{hashPath.name}</span>
+                </button>
             ))}
         </div>
     )
