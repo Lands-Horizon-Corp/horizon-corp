@@ -72,7 +72,7 @@ const AccountSettings = () => {
         form.setValue('firstName', currentUser.firstName)
         form.setValue('middleName', currentUser.middleName)
         form.setValue('description', currentUser.description)
-        form.setValue('birthDate', new Date(currentUser.birthDate))
+        form.setValue('birthDate', new Date(currentUser.birthdate))
         form.setValue('permanentAddress', currentUser.permanentAddress)
     }, [form, currentUser])
 

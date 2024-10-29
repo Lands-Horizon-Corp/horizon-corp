@@ -10,7 +10,7 @@ export interface UserData {
     lastName: string
     permanentAddress: string
     description: string
-    birthDate: Date
+    birthdate: Date
     createdAt: Date
     email: string
     contactNumber: string
