@@ -58,5 +58,5 @@ export const birthDateSchema = z.date().refine(
         today.setHours(0, 0, 0, 0)
         return date < today
     },
-    { message: 'Birthdate cannot be today or in the future' }
+    { message: 'BirthDate cannot be today or in the future' }
 )
