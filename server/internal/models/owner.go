@@ -21,7 +21,7 @@ type Owner struct {
 	MiddleName         string      `gorm:"type:varchar(255)" json:"middle_name"`
 	PermanentAddress   string      `gorm:"type:text" json:"permanent_address"`
 	Description        string      `gorm:"type:text" json:"description"`
-	Birthdate          time.Time   `gorm:"type:date" json:"birthdate"`
+	Birthdate          time.Time   `gorm:"type:date" json:"birthDate"`
 	Username           string      `gorm:"type:varchar(255);unique;not null" json:"username"`
 	Email              string      `gorm:"type:varchar(255);unique;not null" json:"email"`
 	Password           string      `gorm:"type:varchar(255);not null" json:"password"`

@@ -13,7 +13,7 @@ type EmployeeResource struct {
 	MiddleName         string                `json:"middleName,omitempty"`
 	PermanentAddress   string                `json:"permanentAddress,omitempty"`
 	Description        string                `json:"description,omitempty"`
-	Birthdate          time.Time             `json:"birthdate"`
+	Birthdate          time.Time             `json:"birthDate"`
 	Username           string                `json:"username"`
 	Email              string                `json:"email"`
 	ContactNumber      string                `json:"contactNumber"`
