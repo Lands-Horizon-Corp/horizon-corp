@@ -69,6 +69,7 @@ export interface NewPasswordRequest {
 export interface AccountSettingRequest {
   birthdate: Date
   firstName: string
+  middleName: string
   lastName: string
   description: string
   permanentAddress: string
