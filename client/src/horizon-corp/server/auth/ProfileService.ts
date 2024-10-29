@@ -4,7 +4,9 @@ import {
   UserData,
   AccountSettingRequest,
   MediaRequest,
+  NewPasswordRequest
 } from '@/horizon-corp/types'
+import UserService from './UserService'
 
 export default class ProfileService {
   private static readonly BASE_ENDPOINT = '/profile'
@@ -25,5 +27,9 @@ export default class ProfileService {
       endpoint,
       data
     )
+  }
+
+  public static async NewPassword(data: NewPasswordRequest): Promise<void> {
+    return UserService.NewPassword(data)
   }
 }
