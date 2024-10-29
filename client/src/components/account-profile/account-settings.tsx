@@ -200,7 +200,7 @@ const AccountSettings = () => {
                                         htmlFor={field.name}
                                         className="text-right text-sm font-normal text-foreground/60"
                                     >
-                                        Birthdate
+                                        BirthDate
                                     </FormLabel>
                                     <FormControl>
                                         <InputDatePicker
