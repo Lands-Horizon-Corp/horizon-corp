@@ -1,11 +1,10 @@
 import z from 'zod'
 import { toast } from 'sonner'
-import { format } from 'date-fns'
 import { useForm } from 'react-hook-form'
+import { useCallback, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouterState } from '@tanstack/react-router'
-import { useCallback, useEffect, useState } from 'react'
 import { useUserAuthStore } from '@/store/user-auth-store'
 
 import {
@@ -19,11 +18,9 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import ActionTooltip from '@/components/action-tooltip'
 import InputDatePicker from '@/components/input-date-picker'
-import { CloseIcon, EditPencilIcon } from '@/components/icons'
+import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import {
     birthDateSchema,
@@ -33,7 +30,6 @@ import {
 } from '@/validations/common'
 import { cn, withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
-import useConfirmModalStore from '@/store/confirm-modal-store'
 import { AccountSettingRequest, UserData } from '@/horizon-corp/types'
 import ProfileService from '@/horizon-corp/server/auth/ProfileService'
 
@@ -51,8 +47,6 @@ const AccountSettingsFormSchema = z.object({
 type TAccountSettings = z.infer<typeof AccountSettingsFormSchema>
 
 const AccountSettings = () => {
-    const { onOpen } = useConfirmModalStore()
-    const [isEditing, setIsEditing] = useState(false)
     const { currentUser, setCurrentUser } = useUserAuthStore()
 
     const hash = useRouterState({
@@ -103,7 +97,6 @@ const AccountSettings = () => {
                 throw errorMessage
             }
 
-            setIsEditing(false)
             setCurrentUser(response.data)
             toast.success('Changes saved')
             return response.data
@@ -115,32 +108,8 @@ const AccountSettings = () => {
     const firstError = Object.values(form.formState.errors)[0]?.message
 
     return (
-        <div className="">
-            <div className="flex items-center justify-between">
-                <p className="text-lg font-medium">Account Settings</p>
-                <ActionTooltip tooltipContent={isEditing ? 'Close' : 'Edit'}>
-                    <Button
-                        size="icon"
-                        className="size-fit rounded-full p-1"
-                        onClick={() =>
-                            isEditing
-                                ? onOpen({
-                                      title: 'Discard Changes',
-                                      description:
-                                          'Are you sure to discard changes? Any changes made will be discarded.',
-                                      onConfirm: () => {
-                                          setIsEditing(false)
-                                          handleReset()
-                                      },
-                                  })
-                                : setIsEditing((val) => !val)
-                        }
-                        variant={isEditing ? 'outline' : 'ghost'}
-                    >
-                        {isEditing ? <CloseIcon /> : <EditPencilIcon />}
-                    </Button>
-                </ActionTooltip>
-            </div>
+        <div>
+            <p className="text-lg font-medium">Account Settings</p>
             <p className="mt-1 text-xs text-foreground/60">
                 Update your account settings
             </p>
@@ -167,18 +136,14 @@ const AccountSettings = () => {
                                     >
                                         Firstname
                                     </FormLabel>
-                                    {isEditing ? (
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                placeholder="Firstname"
-                                                autoComplete="off"
-                                            />
-                                        </FormControl>
-                                    ) : (
-                                        <p className="py-1">{field.value}</p>
-                                    )}
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Firstname"
+                                            autoComplete="off"
+                                        />
+                                    </FormControl>
                                 </FormItem>
                             )}
                         />
@@ -193,18 +158,14 @@ const AccountSettings = () => {
                                     >
                                         Middlename
                                     </FormLabel>
-                                    {isEditing ? (
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                placeholder="Middlename"
-                                                autoComplete="off"
-                                            />
-                                        </FormControl>
-                                    ) : (
-                                        <p className="py-1">{field.value}</p>
-                                    )}
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Middlename"
+                                            autoComplete="off"
+                                        />
+                                    </FormControl>
                                 </FormItem>
                             )}
                         />{' '}
@@ -219,18 +180,14 @@ const AccountSettings = () => {
                                     >
                                         Lastname
                                     </FormLabel>
-                                    {isEditing ? (
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                placeholder="Lastname"
-                                                autoComplete="off"
-                                            />
-                                        </FormControl>
-                                    ) : (
-                                        <p className="pt-1">{field.value}</p>
-                                    )}
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Lastname"
+                                            autoComplete="off"
+                                        />
+                                    </FormControl>
                                 </FormItem>
                             )}
                         />
@@ -245,23 +202,17 @@ const AccountSettings = () => {
                                     >
                                         Birthdate
                                     </FormLabel>
-                                    {isEditing ? (
-                                        <FormControl>
-                                            <InputDatePicker
-                                                id={field.name}
-                                                value={field.value}
-                                                onChange={field.onChange}
-                                                captionLayout="dropdown-buttons"
-                                                disabled={(date) =>
-                                                    date > new Date()
-                                                }
-                                            />
-                                        </FormControl>
-                                    ) : (
-                                        <p className="pt-1">
-                                            {format(field.value, 'MMM dd yyyy')}
-                                        </p>
-                                    )}
+                                    <FormControl>
+                                        <InputDatePicker
+                                            id={field.name}
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            captionLayout="dropdown-buttons"
+                                            disabled={(date) =>
+                                                date > new Date()
+                                            }
+                                        />
+                                    </FormControl>
                                 </FormItem>
                             )}
                         />
@@ -276,18 +227,14 @@ const AccountSettings = () => {
                                     >
                                         Permanent Address
                                     </FormLabel>
-                                    {isEditing ? (
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                placeholder="Permanent Address"
-                                                autoComplete="off"
-                                            />
-                                        </FormControl>
-                                    ) : (
-                                        <p className="pt-1">{field.value}</p>
-                                    )}
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Permanent Address"
+                                            autoComplete="off"
+                                        />
+                                    </FormControl>
                                 </FormItem>
                             )}
                         />
@@ -302,34 +249,26 @@ const AccountSettings = () => {
                                     >
                                         Description
                                     </FormLabel>
-                                    {isEditing ? (
-                                        <FormControl>
-                                            <Textarea
-                                                placeholder="Write a short description about you"
-                                                className="resize-none"
-                                                {...field}
-                                            />
-                                        </FormControl>
-                                    ) : (
-                                        <p className="pt-1">{field.value}</p>
-                                    )}
+                                    <FormControl>
+                                        <Textarea
+                                            placeholder="Write a short description about you"
+                                            className="resize-none"
+                                            {...field}
+                                        />
+                                    </FormControl>
                                 </FormItem>
                             )}
                         />
                     </fieldset>
                     <FormErrorMessage errorMessage={firstError || error} />
-                    {isEditing && (
-                        <>
-                            <Separator className="my-2 sm:my-4" />
-                            <Button
-                                type="submit"
-                                disabled={isPending}
-                                className="w-full self-end px-8 sm:w-fit"
-                            >
-                                {isPending ? <LoadingSpinner /> : 'Save'}
-                            </Button>
-                        </>
-                    )}
+                    <Separator className="my-2 sm:my-4" />
+                    <Button
+                        type="submit"
+                        disabled={isPending}
+                        className="w-full self-end px-8 sm:w-fit"
+                    >
+                        {isPending ? <LoadingSpinner /> : 'Save'}
+                    </Button>
                 </form>
             </Form>
         </div>

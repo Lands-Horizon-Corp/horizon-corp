@@ -26,7 +26,7 @@ import { VerifiedPatchIcon } from '@/components/icons'
 import PasswordInput from '@/components/ui/password-input'
 import InputDatePicker from '@/components/input-date-picker'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-import FormErrorMessage from '@/modules/auth/components/form-error-message'
+import FormErrorMessage from '@/components/ui/form-error-message'
 
 import { cn, withCatchAsync } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
