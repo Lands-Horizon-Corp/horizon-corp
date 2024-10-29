@@ -8,8 +8,9 @@ const TestLayout = () => {
     return (
         <div className="mx-auto h-[100vh] w-[80%]">
             <MainMapContainer
-                defaultCenter={defaultCenter}
-                defaultZoom={defaultZoom}
+                center={defaultCenter}
+                zoom={defaultZoom}
+                // multiplePins={true}
             />
         </div>
     )
