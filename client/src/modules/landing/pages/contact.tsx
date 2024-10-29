@@ -18,8 +18,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import ContactService from '@/horizon-corp/server/common/ContactService'
-import { toast } from 'sonner'
+
 
 import {
     LoadingCircleIcon,
@@ -28,9 +27,15 @@ import {
     IoCallOutlineIcon,
     CgFacebookIcon,
 } from '@/components/icons'
+
 import { PhoneInput } from '@/components/contact-input/contact-input'
+import FormErrorMessage from '@/modules/auth/components/form-error-message'
+import ContactService from '@/horizon-corp/server/common/ContactService'
+import { toast } from 'sonner'
 
 type TContact = z.infer<typeof contactFormSchema>
+
+const contactInputClasses = "rounded-[10px] border border-[#4D4C4C]/20 bg-white/50 dark:bg-secondary/70 focus:border-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 placeholder:text-[#838383]"
 
 const ContactPage = () => {
     const defaultValues = {
@@ -78,9 +83,11 @@ const ContactPage = () => {
     const onSubmitContactForm = async (data: TContact) => {
         const parsedData = contactFormSchema.parse(data)
         sendContactMessage(parsedData)
-    }
+        }
 
     const showFieldError = Object.values(form.formState.errors)[0]?.message
+    
+
 
     return (
         <div className="flex justify-center px-6 py-5 font-inter sm:px-8 lg:px-[60px] lg:py-10 xl:px-[124px]">
@@ -116,9 +123,7 @@ const ContactPage = () => {
                                                     <div className="flex-1 space-y-2">
                                                         <Input
                                                             id={field.name}
-                                                            className={cn(
-                                                                'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
-                                                            )}
+                                                            className={cn(contactInputClasses)}
                                                             placeholder="First Name"
                                                             {...field}
                                                         />
@@ -144,9 +149,7 @@ const ContactPage = () => {
                                                     <div className="flex-1 space-y-2">
                                                         <Input
                                                             id={field.name}
-                                                            className={cn(
-                                                                'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
-                                                            )}
+                                                            className={cn(contactInputClasses)}
                                                             placeholder="Last Name"
                                                             {...field}
                                                         />
@@ -173,9 +176,7 @@ const ContactPage = () => {
                                                 <div className="flex-1 space-y-2">
                                                     <Input
                                                         id={field.name}
-                                                        className={cn(
-                                                            'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
-                                                        )}
+                                                        className={cn(contactInputClasses)}
                                                         placeholder="you@company.com"
                                                         {...field}
                                                         autoComplete="email"
@@ -202,7 +203,7 @@ const ContactPage = () => {
                                                 <div className="flex-1 space-y-2">
                                                     <PhoneInput
                                                         placeholder="Enter a phone number"
-                                                        className={cn('rounded-[10px] border border-[#4D4C4C] !bg-transparent placeholder:text-[#838383]')}
+                                                    
                                                         {...field}
                                                     />
                                                 </div>
@@ -228,9 +229,7 @@ const ContactPage = () => {
                                                 <div className="flex-1 space-y-2">
                                                     <Textarea
                                                         id={field.name}
-                                                        className={cn(
-                                                            'max-h-[122px] min-h-[122px] rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
-                                                        )}
+                                                        className={cn(contactInputClasses)}
                                                         placeholder="Leave us message..."
                                                         {...field}
                                                     />
@@ -241,9 +240,10 @@ const ContactPage = () => {
                                 )}
                             />
                             {showFieldError && (
-                                <span className="mt-2 rounded-md bg-destructive/10 py-2 text-center text-sm text-destructive">
-                                    {showFieldError}
-                                </span>
+                                 <FormErrorMessage
+                                 className="w-fit text-[12px]"
+                                 errorMessage={showFieldError}
+                             />
                             )}
                             <div className="bg- flex flex-col space-y-2">
                                 <Button
