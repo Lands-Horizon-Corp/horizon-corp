@@ -10,7 +10,7 @@ import (
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests"
-	"horizon/server/internal/requests/user_requests"
+	"horizon/server/internal/requests/profile_requests"
 	"horizon/server/internal/resources"
 
 	"github.com/gin-gonic/gin"
@@ -121,7 +121,7 @@ func (c *UserController) ProfilePicture(ctx *gin.Context) {
 
 // AccountSetting updates the user's account settings.
 func (c *UserController) AccountSetting(ctx *gin.Context) {
-	var req user_requests.AccountSettingRequest
+	var req profile_requests.AccountSettingRequest
 	if !c.handleRequest(ctx, &req) {
 		return
 	}
@@ -146,7 +146,7 @@ func (c *UserController) AccountSetting(ctx *gin.Context) {
 
 // ChangeEmail changes the user's email address.
 func (c *UserController) ChangeEmail(ctx *gin.Context) {
-	var req user_requests.ChangeEmailRequest
+	var req profile_requests.ChangeEmailRequest
 	if !c.handleRequest(ctx, &req) {
 		return
 	}
@@ -171,7 +171,7 @@ func (c *UserController) ChangeEmail(ctx *gin.Context) {
 
 // ChangeContactNumber changes the user's contact number.
 func (c *UserController) ChangeContactNumber(ctx *gin.Context) {
-	var req user_requests.ChangeContactNumberRequest
+	var req profile_requests.ChangeContactNumberRequest
 	if !c.handleRequest(ctx, &req) {
 		return
 	}
@@ -196,7 +196,7 @@ func (c *UserController) ChangeContactNumber(ctx *gin.Context) {
 
 // ChangeUsername changes the user's username.
 func (c *UserController) ChangeUsername(ctx *gin.Context) {
-	var req user_requests.ChangeUsernameRequest
+	var req profile_requests.ChangeUsernameRequest
 	if !c.handleRequest(ctx, &req) {
 		return
 	}
