@@ -71,9 +71,7 @@ const AccountProfileBanner = ({
                         </ActionTooltip>
                     </div>
                 </div>
-                <p className=" text-2xl font-medium">
-                    {currentUser.username}
-                </p>
+                <p className="text-2xl font-medium">{currentUser.username}</p>
                 <span className="text-sm text-foreground/80">
                     {currentUser.firstName} {currentUser.lastName}
                 </span>

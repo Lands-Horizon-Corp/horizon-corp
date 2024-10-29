@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/form'
 import { KeyIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import FormErrorMessage from '../form-error-message'
+import FormErrorMessage from '../../../../components/ui/form-error-message'
 import PasswordInput from '@/components/ui/password-input'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 

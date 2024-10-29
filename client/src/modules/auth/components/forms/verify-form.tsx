@@ -18,7 +18,7 @@ import {
     InputOTPSlot,
 } from '@/components/ui/input-otp'
 import { Button } from '@/components/ui/button'
-import FormErrorMessage from '../form-error-message'
+import FormErrorMessage from '../../../../components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib/utils'

@@ -36,7 +36,7 @@ const AccountProfileNavigation = () => {
     }, [router])
 
     return (
-        <div className="flex w-fit sm:w-full mx-auto sm:mx-0 max-w-full justify-center gap-x-1 overflow-x-scroll rounded-xl bg-secondary p-1 text-sm sm:justify-start">
+        <div className="mx-auto flex w-fit max-w-full justify-center gap-x-1 overflow-x-scroll rounded-xl bg-secondary p-1 text-sm sm:mx-0 sm:w-full sm:justify-start">
             {PATHS.map((hashPath) => (
                 <button
                     key={hashPath.hash}
