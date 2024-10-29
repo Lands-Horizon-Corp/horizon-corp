@@ -67,11 +67,11 @@ export interface NewPasswordRequest {
 }
 
 export interface AccountSettingRequest {
-  birthdate: Date
+  birthDate: Date
   firstName: string
-  middleName: string
+  middleName?: string
   lastName: string
-  description: string
+  description?: string
   permanentAddress: string
 }
 

@@ -14,7 +14,7 @@ const AccountProfile = ({ className }: IBaseCompNoChild) => {
     return (
         <div
             className={cn(
-                'flex w-full max-w-full flex-1 flex-col gap-y-4 sm:max-w-4xl',
+                'flex w-full max-w-full flex-1 flex-col gap-y-4 pb-6 sm:max-w-4xl',
                 className
             )}
         >
