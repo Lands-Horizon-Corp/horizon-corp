@@ -23,10 +23,3 @@ func (r *ChangePasswordSettingRequest) Validate() error {
 	}
 	return nil
 }
-
-// Verification if not verified (email)
-// Verification if not verified (contact number)
-// Change email
-// Change username
-// Chnage contact number
-// Previous password, New password, confirm password
