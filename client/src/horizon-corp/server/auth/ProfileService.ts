@@ -6,7 +6,8 @@ import {
   MediaRequest,
   NewPasswordRequest,
   ChangeContactNumberRequest,
-  ChangeEmailRequest
+  ChangeEmailRequest,
+  ChangeUsernameRequest
 } from '@/horizon-corp/types'
 import UserService from './UserService'
 
@@ -54,4 +55,15 @@ export default class ProfileService {
       data
     )
   }
+
+  public static async ChangeUsername(
+    data: ChangeUsernameRequest
+  ): Promise<AxiosResponse<UserData>> {
+    const endpoint = `${ProfileService.BASE_ENDPOINT}/change-username`
+    return await UseServer.post<ChangeUsernameRequest, UserData>(
+      endpoint,
+      data
+    )
+  }
+
 }
