@@ -7,9 +7,9 @@ import AuthGuard from '@/components/wrappers/auth-guard'
 const MemberLayout = () => {
     return (
         <AuthGuard allowedAccountTypes={['Member']}>
-            <div className="grid min-h-[100dvh] grid-cols-[auto_1fr]">
+            <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
                 <MemberSidebar />
-                <main className="">
+                <main className="max-h-screen overflow-y-scroll">
                     <UserNav />
                     <Outlet />
                 </main>
