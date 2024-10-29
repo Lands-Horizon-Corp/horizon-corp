@@ -1,4 +1,4 @@
-package user_requests
+package profile_requests
 
 import (
 	"time"
