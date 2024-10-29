@@ -14,7 +14,7 @@ type User struct {
 	MiddleName         string    `json:"middle_name"`
 	PermanentAddress   string    `json:"permanent_address"`
 	Description        string    `json:"description"`
-	Birthdate          time.Time `json:"birthDate"`
+	Birthdate          time.Time `json:"birth_date"`
 	Username           string    `json:"username"`
 	Email              string    `json:"email"`
 	Password           string    `json:"password"`
