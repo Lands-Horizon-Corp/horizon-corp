@@ -13,7 +13,7 @@ type UserResource struct {
 	MiddleName         string         `json:"middleName"`
 	PermanentAddress   string         `json:"permanentAddress"`
 	Description        string         `json:"description"`
-	Birthdate          time.Time      `json:"birthdate"`
+	Birthdate          time.Time      `json:"birthDate"`
 	Username           string         `json:"username"`
 	Email              string         `json:"email"`
 	IsEmailVerified    bool           `json:"isEmailVerified"`
