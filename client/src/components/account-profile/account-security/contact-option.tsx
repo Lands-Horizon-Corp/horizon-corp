@@ -5,6 +5,12 @@ import { useCallback, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
 import {
+    CheckIcon,
+    CloseIcon,
+    PatchCheckIcon,
+    PatchMinusIcon,
+} from '@/components/icons'
+import {
     Form,
     FormControl,
     FormDescription,
@@ -15,17 +21,20 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import PasswordInputModal from './password-input-modal'
-import { CheckIcon, CloseIcon } from '@/components/icons'
+import FormErrorMessage from '@/components/ui/form-error-message'
+import VerifyContactBar from '../verify-notice/verify-contact-bar'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
-import { contactNumberSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChangeContactNumberRequest, UserData } from '@/horizon-corp/types'
+import { contactNumberSchema } from '@/validations/common'
 import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import { ChangeContactNumberRequest, UserData } from '@/horizon-corp/types'
 
 interface Props {
     contact: string
+    verified: boolean
     onSave: (newUserData: UserData) => void
 }
 
@@ -33,7 +42,7 @@ const contactOptionSchema = z.object({
     contactNumber: contactNumberSchema,
 })
 
-const ContactOption = ({ contact, onSave }: Props) => {
+const ContactOption = ({ contact, verified, onSave }: Props) => {
     const [pwdModalState, setPwdModalState] = useState(false)
     const { isPending, mutate: saveContact } = useMutation<
         UserData,
@@ -52,7 +61,7 @@ const ContactOption = ({ contact, onSave }: Props) => {
                 throw errorMessage
             }
 
-            toast.success("Contact number has been saved.")
+            toast.success('Contact number has been saved.')
 
             onSave(response.data)
             return response.data
@@ -61,11 +70,13 @@ const ContactOption = ({ contact, onSave }: Props) => {
 
     const form = useForm<z.infer<typeof contactOptionSchema>>({
         resolver: zodResolver(contactOptionSchema),
-        mode: 'onChange',
-        defaultValues: { contactNumber : contact },
+        reValidateMode: 'onChange',
+        values: { contactNumber: contact },
     })
 
-    const hasChanges = form.watch('contactNumber') !== contact
+    const hasChanges = form.formState.isDirty
+
+    const firstError = Object.values(form.formState.errors)[0]?.message
 
     const handleReset = useCallback(() => {
         if (!contact) return
@@ -104,10 +115,25 @@ const ContactOption = ({ contact, onSave }: Props) => {
                                             htmlFor={field.name}
                                             className="text-right text-sm font-normal text-foreground/80"
                                         >
-                                            Contact Number
+                                            Contact Number{' '}
+                                            <span className="inline-flex items-center text-xs text-foreground/50">
+                                                {!verified ? (
+                                                    <>
+                                                        <PatchMinusIcon className="mr-1 inline-block text-orange-500" />{' '}
+                                                        Not verified
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <PatchCheckIcon className="mr-1 inline-block text-primary" />{' '}
+                                                        Verified
+                                                    </>
+                                                )}
+                                            </span>
                                         </FormLabel>
                                         <FormDescription className="text-xs">
-                                            Will be used to contact you
+                                            Will be used to contact you.
+                                            Verification is needed after
+                                            updating.
                                         </FormDescription>
                                     </div>
                                     <FormControl>
@@ -118,28 +144,46 @@ const ContactOption = ({ contact, onSave }: Props) => {
                                             autoComplete="off"
                                         />
                                     </FormControl>
-                                    {hasChanges && (
-                                        <div className="flex items-center gap-x-2">
-                                            <Button
-                                                size="sm"
-                                                type="reset"
-                                                variant="secondary"
-                                                onClick={(e) => {
-                                                    e.preventDefault()
-                                                    handleReset()
-                                                }}
-                                            >
-                                                <CloseIcon />
-                                            </Button>
-                                            <Button type="submit" size="sm">
-                                                <CheckIcon />
-                                            </Button>
-                                        </div>
-                                    )}
+                                    <FormErrorMessage
+                                        errorMessage={firstError}
+                                    />
+                                    <div className="flex items-center justify-end gap-x-1">
+                                        {hasChanges && !isPending && (
+                                            <>
+                                                <Button
+                                                    size="sm"
+                                                    type="reset"
+                                                    variant="secondary"
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        handleReset()
+                                                    }}
+                                                >
+                                                    <CloseIcon />
+                                                </Button>
+                                                <Button type="submit" size="sm">
+                                                    <CheckIcon />
+                                                </Button>
+                                            </>
+                                        )}
+                                        {isPending && (
+                                            <span className="text-xs text-foreground/70">
+                                                <LoadingSpinner className="mr-1 inline-block size-3" />{' '}
+                                                Saving...
+                                            </span>
+                                        )}
+                                    </div>
                                 </FormItem>
                             )}
                         />
                     </fieldset>
+                    {!verified && (
+                        <VerifyContactBar
+                            verifyMode="mobile"
+                            key="verify-bar-mobile"
+                            onSuccess={onSave}
+                        />
+                    )}
                 </form>
             </Form>
         </>

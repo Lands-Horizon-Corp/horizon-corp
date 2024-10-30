@@ -5,6 +5,12 @@ import { useCallback, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 
 import {
+    CheckIcon,
+    CloseIcon,
+    PatchCheckIcon,
+    PatchMinusIcon,
+} from '@/components/icons'
+import {
     Form,
     FormControl,
     FormDescription,
@@ -15,22 +21,16 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import PasswordInputModal from './password-input-modal'
-import {
-    CheckIcon,
-    CloseIcon,
-    PatchCheckIcon,
-    PatchMinusIcon,
-} from '@/components/icons'
+import FormErrorMessage from '@/components/ui/form-error-message'
+import VerifyContactBar from '../verify-notice/verify-contact-bar'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { withCatchAsync } from '@/lib'
-import { serverRequestErrExtractor } from '@/helpers'
 import { emailSchema } from '@/validations/common'
+import { serverRequestErrExtractor } from '@/helpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChangeEmailRequest, UserData } from '@/horizon-corp/types'
 import ProfileService from '@/horizon-corp/server/auth/ProfileService'
-import LoadingSpinner from '@/components/spinners/loading-spinner'
-import { VerifiedIcon } from 'lucide-react'
-import ActionTooltip from '@/components/action-tooltip'
 
 interface Props {
     email: string
@@ -70,11 +70,13 @@ const EmailOption = ({ email, verified, onSave }: Props) => {
 
     const form = useForm<z.infer<typeof emailOptionSchema>>({
         resolver: zodResolver(emailOptionSchema),
-        mode: 'onChange',
-        defaultValues: { email },
+        reValidateMode: 'onChange',
+        values: { email },
     })
 
-    const hasChanges = form.watch('email') !== email
+    const hasChanges = form.formState.isDirty
+
+    const firstError = Object.values(form.formState.errors)[0]?.message
 
     const handleReset = useCallback(() => {
         if (!email) return
@@ -114,6 +116,19 @@ const EmailOption = ({ email, verified, onSave }: Props) => {
                                             className="text-right text-sm font-normal text-foreground/80"
                                         >
                                             Email{' '}
+                                            <span className="inline-flex items-center text-xs text-foreground/50">
+                                                {!verified ? (
+                                                    <>
+                                                        <PatchMinusIcon className="mr-1 inline-block text-orange-500" />{' '}
+                                                        Not verified
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <PatchCheckIcon className="mr-1 inline-block text-primary" />{' '}
+                                                        Verified
+                                                    </>
+                                                )}
+                                            </span>
                                         </FormLabel>
                                         <FormDescription className="text-xs">
                                             Will be used to contact you.
@@ -129,17 +144,9 @@ const EmailOption = ({ email, verified, onSave }: Props) => {
                                             autoComplete="off"
                                         />
                                     </FormControl>
-                                    {!verified ? (
-                                        <span className="text-xs text-foreground/60">
-                                            <PatchMinusIcon className="inline-block text-orange-500" />{' '}
-                                            email not verified
-                                        </span>
-                                    ) : (
-                                        <span className="text-xs text-foreground/60">
-                                            <PatchCheckIcon className="inline-block text-primary" />{' '}
-                                            email verified
-                                        </span>
-                                    )}
+                                    <FormErrorMessage
+                                        errorMessage={firstError}
+                                    />
                                     <div className="flex items-center justify-end gap-x-1">
                                         {hasChanges && !isPending && (
                                             <>
@@ -170,6 +177,13 @@ const EmailOption = ({ email, verified, onSave }: Props) => {
                             )}
                         />
                     </fieldset>
+                    {!verified && (
+                        <VerifyContactBar
+                            verifyMode="email"
+                            key="verify-bar-email"
+                            onSuccess={onSave}
+                        />
+                    )}
                 </form>
             </Form>
         </>
