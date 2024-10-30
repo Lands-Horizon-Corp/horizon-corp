@@ -22,6 +22,7 @@ export interface TLatLngExpressionWithDesc {
 export interface TMainMapProps extends Partial<MapContainerProps>{
     disabledSearch?: boolean
     multiplePins?: boolean
+    viewOnly?: boolean
 }
 export interface TMapProps {
     handleMapCreated?: (map: L.Map) => void
