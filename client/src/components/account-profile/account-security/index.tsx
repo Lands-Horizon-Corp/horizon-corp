@@ -31,11 +31,14 @@ const AccountSecurity = () => {
                     username={currentUser.username}
                     onSave={(newUserData) => setCurrentUser(newUserData)}
                 />
+                <Separator className="" />
                 <EmailOption
                     email={currentUser.email}
+                    verified={currentUser.isEmailVerified}
                     onSave={(newUserData) => setCurrentUser(newUserData)}
                 />
-                <ContactOption 
+                <Separator className="" />
+                <ContactOption
                     contact={currentUser.contactNumber}
                     onSave={(newUserData) => setCurrentUser(newUserData)}
                 />

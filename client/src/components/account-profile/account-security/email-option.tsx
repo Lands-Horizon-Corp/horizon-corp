@@ -14,9 +14,13 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import PasswordInputModal from './password-input-modal'
-import { CheckIcon, CloseIcon } from '@/components/icons'
+import {
+    CheckIcon,
+    CloseIcon,
+    PatchCheckIcon,
+    PatchMinusIcon,
+} from '@/components/icons'
 
 import { withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
@@ -24,9 +28,13 @@ import { emailSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChangeEmailRequest, UserData } from '@/horizon-corp/types'
 import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
+import { VerifiedIcon } from 'lucide-react'
+import ActionTooltip from '@/components/action-tooltip'
 
 interface Props {
     email: string
+    verified: boolean
     onSave: (newUserData: UserData) => void
 }
 
@@ -34,7 +42,7 @@ const emailOptionSchema = z.object({
     email: emailSchema,
 })
 
-const EmailOption = ({ email, onSave }: Props) => {
+const EmailOption = ({ email, verified, onSave }: Props) => {
     const [pwdModalState, setPwdModalState] = useState(false)
     const { isPending, mutate: saveEmail } = useMutation<
         UserData,
@@ -53,7 +61,7 @@ const EmailOption = ({ email, onSave }: Props) => {
                 throw errorMessage
             }
 
-            toast.success("Email has been saved.")
+            toast.success('Email has been saved.')
 
             onSave(response.data)
             return response.data
@@ -105,10 +113,12 @@ const EmailOption = ({ email, onSave }: Props) => {
                                             htmlFor={field.name}
                                             className="text-right text-sm font-normal text-foreground/80"
                                         >
-                                            Email
+                                            Email{' '}
                                         </FormLabel>
                                         <FormDescription className="text-xs">
-                                            Will be used to contact you
+                                            Will be used to contact you.
+                                            Verification is needed after
+                                            updating.
                                         </FormDescription>
                                     </div>
                                     <FormControl>
@@ -119,31 +129,49 @@ const EmailOption = ({ email, onSave }: Props) => {
                                             autoComplete="off"
                                         />
                                     </FormControl>
-                                    {hasChanges && (
-                                        <div className="flex items-center gap-x-2">
-                                            <Button
-                                                size="sm"
-                                                type="reset"
-                                                variant="secondary"
-                                                onClick={(e) => {
-                                                    e.preventDefault()
-                                                    handleReset()
-                                                }}
-                                            >
-                                                <CloseIcon />
-                                            </Button>
-                                            <Button type="submit" size="sm">
-                                                <CheckIcon />
-                                            </Button>
-                                        </div>
+                                    {!verified ? (
+                                        <span className="text-xs text-foreground/60">
+                                            <PatchMinusIcon className="inline-block text-orange-500" />{' '}
+                                            email not verified
+                                        </span>
+                                    ) : (
+                                        <span className="text-xs text-foreground/60">
+                                            <PatchCheckIcon className="inline-block text-primary" />{' '}
+                                            email verified
+                                        </span>
                                     )}
+                                    <div className="flex items-center justify-end gap-x-1">
+                                        {hasChanges && !isPending && (
+                                            <>
+                                                <Button
+                                                    size="sm"
+                                                    type="reset"
+                                                    variant="secondary"
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        handleReset()
+                                                    }}
+                                                >
+                                                    <CloseIcon />
+                                                </Button>
+                                                <Button type="submit" size="sm">
+                                                    <CheckIcon />
+                                                </Button>
+                                            </>
+                                        )}
+                                        {isPending && (
+                                            <span className="text-xs text-foreground/70">
+                                                <LoadingSpinner className="mr-1 inline-block size-3" />{' '}
+                                                Saving...
+                                            </span>
+                                        )}
+                                    </div>
                                 </FormItem>
                             )}
                         />
                     </fieldset>
                 </form>
             </Form>
-            <Separator />
         </>
     )
 }

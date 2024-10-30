@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import PasswordInputModal from './password-input-modal'
 import { CheckIcon, CloseIcon } from '@/components/icons'
 
@@ -143,7 +142,6 @@ const ContactOption = ({ contact, onSave }: Props) => {
                     </fieldset>
                 </form>
             </Form>
-            <Separator />
         </>
     )
 }
