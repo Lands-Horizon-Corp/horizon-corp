@@ -14,6 +14,8 @@ import L, { LatLngExpression, latLng } from 'leaflet'
 
 import { Input } from '../ui/input'
 import LayerControl from './LayerControl'
+import { Button } from '../ui/button'
+
 import {
     TCustomSearchProps,
     TMainMapProps,
@@ -24,7 +26,8 @@ import {
 } from '@/types/custom-component'
 
 import { LoadingCircleIcon, VscLocationIcon } from '../icons'
-import { Button } from '../ui/button'
+
+import { useMapStore } from '@/store/map-store'
 
 const getLocationDescription = async (latlng: LatLngExpression) => {
     const { lat, lng } = latLng(latlng)
@@ -40,7 +43,7 @@ const getLocationDescription = async (latlng: LatLngExpression) => {
 
 const MapWithClick = ({ onLocationFound }: TMapWithClickProps) => {
     useMapEvent('click', async (e) => {
-        onLocationFound( e.latlng)
+        onLocationFound(e.latlng)
     })
     return null
 }
@@ -177,7 +180,7 @@ const MainMapContainer = ({
     center,
     zoom = 13,
     zoomControl = false,
-    className = '',
+    className,
     style,
     scrollWheelZoom = true,
     minZoom,
@@ -185,11 +188,25 @@ const MainMapContainer = ({
     whenReady,
     children,
     multiplePins = false,
+    viewOnly = false,
 }: TMainMapProps) => {
     const [_, setSearchedAddress] = useState('')
     const [selectedPins, setSelectedPins] = useState<Pin[]>([])
     const [map, setMap] = useState<L.Map | null>(null)
     const markerRefs = useRef<{ [key: string]: L.Marker }>({})
+
+    const setLatLng = useMapStore((state) => state.setMarkerPosition)
+    const setMarkers = useMapStore((state) => state.setMarkers)
+
+    const handleSetMarkers = useCallback(() => {
+        if (selectedPins && selectedPins.length > 0) {
+            setMarkers(selectedPins)
+        }
+    }, [setMarkers, selectedPins])
+
+    useEffect(() => {
+        handleSetMarkers()
+    }, [handleSetMarkers])
 
     const handleMapReady = (mapInstance: L.Map) => {
         setMap(mapInstance)
@@ -197,7 +214,6 @@ const MainMapContainer = ({
 
     const deletePin = useCallback(
         (id: number) => {
-            
             setSelectedPins((pins) => pins.filter((pin) => pin.id !== id))
             const pin = selectedPins.find((pin) => pin.id === id)
 
@@ -214,6 +230,7 @@ const MainMapContainer = ({
     const addMarker = useCallback(
         async (latLng: LatLngExpression) => {
             const { lat, lng } = latLng as L.LatLngLiteral
+            setLatLng({ x: lat, y: lng })
             const markerKey = `${lat},${lng}`
 
             if (markerRefs.current[markerKey])
@@ -229,28 +246,30 @@ const MainMapContainer = ({
 
     const handleLocationFound = useCallback(
         async (latLng: LatLngExpression) => {
-            const newPin: Pin = { id: Date.now(), position: latLng }
+            if (!viewOnly) {
+                const newPin: Pin = { id: Date.now(), position: latLng }
 
-            setSelectedPins((prevPins) =>
-                multiplePins ? [...prevPins, newPin] : [newPin]
-            )
+                setSelectedPins((prevPins) =>
+                    multiplePins ? [...prevPins, newPin] : [newPin]
+                )
 
-            if (!multiplePins && map) {
-                map.eachLayer((layer: any) => {
-                    if (layer instanceof L.Marker) {
-                        map.removeLayer(layer)
-                    }
-                })
+                if (!multiplePins && map) {
+                    map.eachLayer((layer: any) => {
+                        if (layer instanceof L.Marker) {
+                            map.removeLayer(layer)
+                        }
+                    })
+                }
+
+                addMarker(latLng)
             }
-
-            addMarker(latLng)
         },
         [addMarker, map, multiplePins]
     )
 
     return (
         <div className={`relative w-full p-5 pt-20 shadow-sm ${style ?? ''}`}>
-            {!disabledSearch && (
+            {!disabledSearch && !viewOnly && (
                 <CustomSearch
                     map={map}
                     setSearchedAddress={setSearchedAddress}
