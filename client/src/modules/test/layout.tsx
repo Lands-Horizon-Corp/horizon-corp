@@ -1,10 +1,18 @@
-import MainMapContainer from '@/components/map'
+import { Outlet } from '@tanstack/react-router'
+// import MainMapContainer from '@/components/map'
 import { ImagePreview, ImagePreviewContent } from '@/components/ui/image-preview'
 // import { useMapStore } from '@/store/map-store'
-import { LatLngExpression } from 'leaflet'
-
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { sampleMediaResourceList } from '@/components/image-preview/sampleImageData'
 const TestLayout = () => {
+    const [isOpen, setIsOpen] = useState(false)
+
     return (
+        <div className="grid min-h-[100dvh] bg-red-500 grid-cols-[auto_1fr]">
+            <main>
+                <Outlet />
+            </main>
 
         <div className="mx-auto h-[100vh] w-[80%]">
             {/* <MainMapContainer
@@ -13,9 +21,11 @@ const TestLayout = () => {
                 // multiplePins={true}
                 // viewOnly={true}
             /> */}
-            <ImagePreview open={true}>
-                <ImagePreviewContent>Hello</ImagePreviewContent>
+            <Button onClick={()=> setIsOpen(true)}></Button>
+            <ImagePreview open={isOpen} onOpenChange={()=> setIsOpen(false)}>
+                <ImagePreviewContent Images={sampleMediaResourceList} />
             </ImagePreview>
+        </div>
         </div>
     )
 }
