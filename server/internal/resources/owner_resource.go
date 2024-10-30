@@ -13,7 +13,7 @@ type OwnerResource struct {
 	MiddleName        string              `json:"middleName"`
 	PermanentAddress  string              `json:"permanentAddress"`
 	Description       string              `json:"description"`
-	Birthdate         time.Time           `json:"birthDate"`
+	BirthDate         time.Time           `json:"birthDate"`
 	Username          string              `json:"username"`
 	Email             string              `json:"email"`
 	ContactNumber     string              `json:"contactNumber"`
@@ -56,7 +56,7 @@ func ToResourceOwner(owner *models.Owner) *OwnerResource {
 		MiddleName:        owner.MiddleName,
 		PermanentAddress:  owner.PermanentAddress,
 		Description:       owner.Description,
-		Birthdate:         owner.Birthdate,
+		BirthDate:         owner.BirthDate,
 		Username:          owner.Username,
 		Email:             owner.Email,
 		ContactNumber:     owner.ContactNumber,

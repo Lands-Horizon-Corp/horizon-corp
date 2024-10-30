@@ -13,7 +13,7 @@ type MemberResource struct {
 	MiddleName        string              `json:"middleName"`
 	PermanentAddress  string              `json:"permanentAddress"`
 	Description       string              `json:"description"`
-	Birthdate         time.Time           `json:"birthDate"`
+	BirthDate         time.Time           `json:"birthDate"`
 	Username          string              `json:"username"`
 	Email             string              `json:"email"`
 	IsEmailVerified   bool                `json:"isEmailVerified"`
@@ -73,7 +73,7 @@ func ToResourceMember(member *models.Member) *MemberResource {
 		MiddleName:        member.MiddleName,
 		PermanentAddress:  member.PermanentAddress,
 		Description:       member.Description,
-		Birthdate:         member.Birthdate,
+		BirthDate:         member.BirthDate,
 		Username:          member.Username,
 		Email:             member.Email,
 		IsEmailVerified:   member.IsEmailVerified,

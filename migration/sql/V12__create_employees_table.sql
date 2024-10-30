@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `employees` (
     `middle_name` VARCHAR(255),
     `permanent_address` TEXT,
     `description` TEXT,
-    `birth_date` DATE NOT NULL,
+    `birth_date`  DATETIME(3),
     `username` VARCHAR(255) NOT NULL UNIQUE,
     `email` VARCHAR(255) NOT NULL UNIQUE,
     `password` VARCHAR(255) NOT NULL,

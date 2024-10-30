@@ -17,7 +17,7 @@ type SignUpRequest struct {
 	Email            string                 `json:"email" validate:"required,email,max=255"`
 	Password         string                 `json:"password" validate:"required,min=8,max=255"`
 	ConfirmPassword  string                 `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=Password"`
-	Birthdate        time.Time              `json:"birthDate" validate:"required"`
+	BirthDate        time.Time              `json:"birthDate" validate:"required"`
 	ContactNumber    string                 `json:"contactNumber" validate:"required,max=15"`
 	PermanentAddress string                 `json:"permanentAddress" validate:"required,max=500"`
 	Media            *requests.MediaRequest `json:"media" validate:"omitempty"`

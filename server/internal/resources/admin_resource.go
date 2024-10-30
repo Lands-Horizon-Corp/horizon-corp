@@ -13,7 +13,7 @@ type AdminResource struct {
 	MiddleName         string              `json:"middleName,omitempty"`
 	PermanentAddress   string              `json:"permanentAddress,omitempty"`
 	Description        string              `json:"description,omitempty"`
-	Birthdate          time.Time           `json:"birthDate"`
+	BirthDate          time.Time           `json:"birthDate"`
 	Username           string              `json:"username"`
 	Email              string              `json:"email"`
 	ContactNumber      string              `json:"contactNumber"`
@@ -60,7 +60,7 @@ func ToResourceAdmin(admin *models.Admin) *AdminResource {
 		MiddleName:         admin.MiddleName,
 		PermanentAddress:   admin.PermanentAddress,
 		Description:        admin.Description,
-		Birthdate:          admin.Birthdate,
+		BirthDate:          admin.BirthDate,
 		Username:           admin.Username,
 		Email:              admin.Email,
 		ContactNumber:      admin.ContactNumber,
