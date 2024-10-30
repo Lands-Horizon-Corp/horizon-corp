@@ -16,7 +16,6 @@ type ContactsController struct {
 
 func NewContactsController(db *gorm.DB) *ContactsController {
 	repo := repositories.NewRepository[models.Contact](db)
-
 	baseController := NewBaseController[models.Contact, *requests.ContactRequest, resources.ContactResource](
 		db,
 		ToContactModel,
