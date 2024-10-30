@@ -60,6 +60,7 @@ func (c *UserController) getUser(ctx *gin.Context) (*models.User, error) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "User not found."})
 		return nil, err
 	}
+	user.AccountType = userClaims.AccountType
 
 	return user, nil
 }
