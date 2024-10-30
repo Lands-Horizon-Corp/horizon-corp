@@ -7,8 +7,14 @@ import bg_element_3 from '@/assets/images/landing-page/bg_element_3.webp'
 import Footer from '@/components/footers/landing-footer'
 import { VersionAndFeedBack } from '@/components/version'
 import LandingNav from '@/components/nav/navs/landing-nav'
+import { Button } from '@/components/ui/button'
+import { ImagePreview, ImagePreviewContent } from '@/components/ui/image-preview'
+import { sampleMediaResourceList } from '@/components/image-preview/sampleImageData'
+import { useState } from 'react'
 
 const PublicLayout = () => {
+    const [isOpen, setIsOpen] = useState(false)
+
     return (
         <>
             <div className="relative overflow-hidden">
@@ -32,7 +38,10 @@ const PublicLayout = () => {
                     <Outlet />
                     <Footer />
                 </main>
-
+                <Button onClick={()=> setIsOpen(true)}></Button>
+            <ImagePreview open={isOpen} onOpenChange={()=> setIsOpen(false)}>
+                <ImagePreviewContent Images={sampleMediaResourceList} />
+            </ImagePreview>
                 <VersionAndFeedBack />
             </div>
         </>
