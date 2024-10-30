@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `admins` (
     `middle_name` VARCHAR(255),
     `permanent_address` TEXT,
     `description` TEXT,
-    `birth_date` DATE,
+    `birth_date` DATETIME(3),
     `created_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3),
     `updated_at` DATETIME(3) DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
     `deleted_at` DATETIME(3) DEFAULT NULL,

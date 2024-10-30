@@ -140,7 +140,7 @@ func (c *AuthController) SignUp(ctx *gin.Context) {
 		MiddleName:        req.MiddleName,
 		PermanentAddress:  req.PermanentAddress,
 		Description:       "",
-		Birthdate:         req.Birthdate,
+		BirthDate:         req.BirthDate,
 		Username:          req.Username,
 		Email:             req.Email,
 		Password:          req.Password,

@@ -13,7 +13,7 @@ type EmployeeResource struct {
 	MiddleName         string                `json:"middleName,omitempty"`
 	PermanentAddress   string                `json:"permanentAddress,omitempty"`
 	Description        string                `json:"description,omitempty"`
-	Birthdate          time.Time             `json:"birthDate"`
+	BirthDate          time.Time             `json:"birthDate"`
 	Username           string                `json:"username"`
 	Email              string                `json:"email"`
 	ContactNumber      string                `json:"contactNumber"`
@@ -73,7 +73,7 @@ func ToResourceEmployee(employee *models.Employee) *EmployeeResource {
 		MiddleName:         employee.MiddleName,
 		PermanentAddress:   employee.PermanentAddress,
 		Description:        employee.Description,
-		Birthdate:          employee.Birthdate,
+		BirthDate:          employee.BirthDate,
 		Username:           employee.Username,
 		Email:              employee.Email,
 		ContactNumber:      employee.ContactNumber,

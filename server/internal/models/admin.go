@@ -21,7 +21,7 @@ type Admin struct {
 	MiddleName         string      `gorm:"type:varchar(255)" json:"middle_name"`
 	PermanentAddress   string      `gorm:"type:text" json:"permanent_address"`
 	Description        string      `gorm:"type:text" json:"description"`
-	Birthdate          time.Time   `gorm:"type:date" json:"birth_date"`
+	BirthDate          time.Time   `gorm:"type:date" json:"birth_date"`
 	Username           string      `gorm:"type:varchar(255);unique;not null" json:"username"`
 	Email              string      `gorm:"type:varchar(255);unique;not null" json:"email"`
 	Password           string      `gorm:"type:varchar(255);not null" json:"password"`
