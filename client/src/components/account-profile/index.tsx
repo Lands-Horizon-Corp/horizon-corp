@@ -1,3 +1,4 @@
+import VerifyNotice from './verify-notice'
 import AccountSettings from './account-settings'
 import AccountSecurity from './account-security'
 import AccountTransactions from './account-transactions'
@@ -25,7 +26,13 @@ const AccountProfile = ({ className }: IBaseCompNoChild) => {
                 currentUser={currentUser}
                 updateUserData={setCurrentUser}
             />
+
             <AccountProfileNavigation />
+
+            <VerifyNotice
+                currentUser={currentUser}
+                onSuccess={(newUserData) => setCurrentUser(newUserData)}
+            />
 
             <AccountSettings />
             <AccountSecurity />
