@@ -1,7 +1,7 @@
-import z from 'zod'
-import { userAccountTypeSchema } from '@/validations/common'
+import z from "zod"
+import { userAccountTypeSchema } from "../common";
 
-export const signInFormSchema = z.object({
+export const signInSchema = z.object({
     key: z.string().min(1, 'email, username, or contact is required'),
     password: z
         .string({ required_error: 'Password is required' })
