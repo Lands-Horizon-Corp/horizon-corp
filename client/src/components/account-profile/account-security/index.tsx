@@ -1,7 +1,8 @@
 import { useRouterState } from '@tanstack/react-router'
 
-import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+
+import UsernameOption from './username-option'
 
 import { useUserAuthStore } from '@/store/user-auth-store'
 
@@ -23,11 +24,7 @@ const AccountSecurity = () => {
                 Manage or Update your account security
             </p>
             <Separator className="my-2 sm:my-4" />
-            <form className="flex w-full flex-col gap-y-4">
-                <Button type="submit" className="w-full self-end px-8 sm:w-fit">
-                    Save
-                </Button>
-            </form>
+            <UsernameOption />
         </div>
     )
 }

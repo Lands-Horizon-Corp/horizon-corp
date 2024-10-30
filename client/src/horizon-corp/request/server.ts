@@ -2,11 +2,9 @@ import { RequestParams } from '../types'
 import axios, {
   AxiosInstance,
   AxiosRequestConfig,
-  AxiosRequestTransformer,
   AxiosResponse,
   InternalAxiosRequestConfig,
 } from 'axios'
-import qs from 'qs';
 
 
 
@@ -20,26 +18,6 @@ export default class UseServer {
       'Content-Type': 'application/json',
     },
     withCredentials: true,
-    transformRequest: [
-      (data) => {
-        if (data && data.date instanceof Date) {
-          return {
-            ...data,
-            date: data.date.toISOString(),
-          };
-        }
-        return data;
-      },
-      ...(Array.isArray(axios.defaults.transformRequest)
-        ? axios.defaults.transformRequest
-        : [axios.defaults.transformRequest as AxiosRequestTransformer]),
-    ] as AxiosRequestTransformer[],
-    paramsSerializer: (params) => {
-      return qs.stringify(params, {
-        encodeValuesOnly: true,
-        serializeDate: (date: Date) => date.toISOString(),
-      });
-    },
   });
 
   /**
