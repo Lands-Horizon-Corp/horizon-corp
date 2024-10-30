@@ -67,7 +67,7 @@ func ProvideAPI(
 		})
 		controllers.AuthRoutes(v1, authMiddleware, authController)
 		controllers.TimesheetRoutes(v1, authMiddleware, timesheetController)
-
+		controllers.RoleRoutes(v1, roleController)
 		controllers.GenderRoutes(v1, genderController)
 		controllers.ErrorDetailRoutes(v1, errorDetailController)
 		controllers.ContactsRoutes(v1, contactController)
