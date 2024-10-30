@@ -4,7 +4,6 @@ import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 
-import { CheckIcon, CloseIcon } from '@/components/icons'
 import {
     Form,
     FormItem,
@@ -14,6 +13,7 @@ import {
     FormDescription,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+import { CheckIcon, CloseIcon } from '@/components/icons'
 import PasswordInput from '@/components/ui/password-input'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
@@ -46,7 +46,7 @@ const contactOptionSchema = z
 const PasswordOption = ({ onSave }: Props) => {
     const form = useForm<z.infer<typeof contactOptionSchema>>({
         resolver: zodResolver(contactOptionSchema),
-        reValidateMode : "onChange",
+        reValidateMode: 'onChange',
         defaultValues: {
             ConfirmPassword: '',
             NewPassword: '',
@@ -92,22 +92,24 @@ const PasswordOption = ({ onSave }: Props) => {
                     className="w-full space-y-2"
                     onSubmit={form.handleSubmit((data) => updatePassword(data))}
                 >
-                    <div className="space-y-2">
-                        <FormLabel>Password</FormLabel>
-                        <FormDescription>
+                    <div className="space-y-1">
+                        <FormLabel className="font-normal text-foreground/80">
+                            Password
+                        </FormLabel>
+                        <FormDescription className="text-xs">
                             Update or change your password. Your password is at
                             least 8 characters
                         </FormDescription>
                     </div>
                     <fieldset
                         disabled={isPending}
-                        className="grid grid-cols-3 gap-x-2 pt-4"
+                        className="grid gap-x-2 gap-y-4 pt-4 sm:grid-cols-3"
                     >
                         <FormField
                             control={form.control}
                             name="PreviousPassword"
                             render={({ field }) => (
-                                <FormItem className="grid w-full gap-y-2">
+                                <FormItem className="grid w-full gap-y-0 sm:gap-y-2">
                                     <FormLabel
                                         htmlFor={field.name}
                                         className="text-sm font-normal text-foreground/80"
@@ -118,7 +120,7 @@ const PasswordOption = ({ onSave }: Props) => {
                                         <PasswordInput
                                             {...field}
                                             id={field.name}
-                                            placeholder="Password"
+                                            placeholder="Old Password"
                                             autoComplete="new-password"
                                         />
                                     </FormControl>
@@ -129,7 +131,7 @@ const PasswordOption = ({ onSave }: Props) => {
                             control={form.control}
                             name="NewPassword"
                             render={({ field }) => (
-                                <FormItem className="grid w-full gap-y-2">
+                                <FormItem className="grid w-full gap-y-0 sm:gap-y-2">
                                     <FormLabel
                                         htmlFor={field.name}
                                         className="text-sm font-normal text-foreground/80"
@@ -151,7 +153,7 @@ const PasswordOption = ({ onSave }: Props) => {
                             control={form.control}
                             name="ConfirmPassword"
                             render={({ field }) => (
-                                <FormItem className="grid w-full gap-y-2">
+                                <FormItem className="grid w-full gap-y-0 sm:gap-y-2">
                                     <FormLabel
                                         htmlFor={field.name}
                                         className="text-sm font-normal text-foreground/80"
