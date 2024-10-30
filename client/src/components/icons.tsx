@@ -78,6 +78,7 @@ import {
     BsPatchExclamationFill as PatchExclamationIcon,
 } from 'react-icons/bs'
 import {
+    IoCheckmarkOutline as CheckIcon,
     IoRefresh as RefreshIcon,
     IoCloseOutline as CloseIcon,
     IoFootstepsOutline as FootstepsIcon,
@@ -180,6 +181,7 @@ export {
     ClockIcon,
     CloseIcon,
     ImageIcon,
+    CheckIcon,
     CookieIcon,
     CameraIcon,
     FaBoldIcon,
