@@ -1,8 +1,8 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { useCallback, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { useCallback, useEffect, useState } from 'react'
 
 import {
     Form,
@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import PasswordInputModal from './password-input-modal'
 import { CheckIcon, CloseIcon } from '@/components/icons'
 
@@ -24,6 +23,7 @@ import { userNameSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChangeUsernameRequest, UserData } from '@/horizon-corp/types'
 import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 interface Props {
     username: string
@@ -53,7 +53,7 @@ const UsernameOption = ({ username, onSave }: Props) => {
                 throw errorMessage
             }
 
-            toast.success("Username has been saved.")
+            toast.success('Username has been saved.')
 
             onSave(response.data)
             return response.data
@@ -63,7 +63,7 @@ const UsernameOption = ({ username, onSave }: Props) => {
     const form = useForm<z.infer<typeof userNameOptionSchema>>({
         resolver: zodResolver(userNameOptionSchema),
         mode: 'onChange',
-        defaultValues: { username: '' },
+        defaultValues: { username },
     })
 
     const hasChanges = form.watch('username') !== username
@@ -74,10 +74,6 @@ const UsernameOption = ({ username, onSave }: Props) => {
         form.reset()
         form.setValue('username', username)
     }, [username, form])
-
-    useEffect(() => {
-        handleReset()
-    }, [handleReset])
 
     return (
         <>
@@ -124,31 +120,38 @@ const UsernameOption = ({ username, onSave }: Props) => {
                                             hidden
                                         />
                                     </FormControl>
-                                    {hasChanges && (
-                                        <div className="flex items-center gap-x-2">
-                                            <Button
-                                                size="sm"
-                                                type="reset"
-                                                variant="secondary"
-                                                onClick={(e) => {
-                                                    e.preventDefault()
-                                                    handleReset()
-                                                }}
-                                            >
-                                                <CloseIcon />
-                                            </Button>
-                                            <Button type="submit" size="sm">
-                                                <CheckIcon />
-                                            </Button>
-                                        </div>
-                                    )}
+                                    <div className="flex items-center justify-end gap-x-1">
+                                        {hasChanges && !isPending && (
+                                            <>
+                                                <Button
+                                                    size="sm"
+                                                    type="reset"
+                                                    variant="secondary"
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        handleReset()
+                                                    }}
+                                                >
+                                                    <CloseIcon />
+                                                </Button>
+                                                <Button type="submit" size="sm">
+                                                    <CheckIcon />
+                                                </Button>
+                                            </>
+                                        )}
+                                        {isPending && (
+                                            <span className="text-xs text-foreground/70">
+                                                <LoadingSpinner className="mr-1 inline-block size-3" />{' '}
+                                                Saving...
+                                            </span>
+                                        )}
+                                    </div>
                                 </FormItem>
                             )}
                         />
                     </fieldset>
                 </form>
             </Form>
-            <Separator className="" />
         </>
     )
 }
