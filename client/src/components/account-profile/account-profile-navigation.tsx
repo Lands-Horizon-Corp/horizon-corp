@@ -9,19 +9,40 @@ import {
     ShieldIcon,
     TransactionListIcon,
 } from '@/components/icons'
+import { AccountType, UserData } from '@/horizon-corp/types'
 
-const PATHS: { hash: string; name: string; Icon: IconType }[] = [
+const PATHS: {
+    hash: string
+    name: string
+    Icon: IconType
+    visibleOn: AccountType[] | 'all'
+}[] = [
     {
         hash: 'account-settings',
         name: 'Account Settings',
         Icon: AccountSettingIcon,
+        visibleOn: 'all',
     },
-    { hash: 'security', name: 'Security', Icon: ShieldIcon },
-    { hash: 'mode-of-payments', name: 'Mode of Payments', Icon: PaymentsIcon },
-    { hash: 'transactions', name: 'Transactions', Icon: TransactionListIcon },
+    { hash: 'security', name: 'Security', Icon: ShieldIcon, visibleOn: 'all' },
+    {
+        hash: 'mode-of-payments',
+        name: 'Mode of Payments',
+        Icon: PaymentsIcon,
+        visibleOn: ['Member'],
+    },
+    {
+        hash: 'transactions',
+        name: 'Transactions',
+        Icon: TransactionListIcon,
+        visibleOn: ['Member'],
+    },
 ]
 
-const AccountProfileNavigation = () => {
+const AccountProfileNavigation = ({
+    currentUser,
+}: {
+    currentUser: UserData
+}) => {
     const router = useRouter()
 
     const routeHash = useRouterState({
@@ -37,7 +58,10 @@ const AccountProfileNavigation = () => {
 
     return (
         <div className="mx-auto flex w-fit max-w-full justify-center gap-x-1 overflow-x-scroll rounded-xl bg-secondary p-1 text-sm sm:mx-0 sm:w-full sm:justify-start">
-            {PATHS.map((hashPath) => (
+            {PATHS.filter((hashPath) => {
+                if (hashPath.visibleOn === 'all') return true
+                return hashPath.visibleOn.includes(currentUser.accountType)
+            }).map((hashPath) => (
                 <button
                     key={hashPath.hash}
                     className={cn(

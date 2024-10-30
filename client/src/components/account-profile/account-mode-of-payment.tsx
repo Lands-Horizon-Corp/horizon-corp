@@ -6,13 +6,18 @@ import { Separator } from '@/components/ui/separator'
 import { useUserAuthStore } from '@/store/user-auth-store'
 
 const AccountModeOfPayment = () => {
-    const {} = useUserAuthStore()
+    const { currentUser } = useUserAuthStore()
 
     const hash = useRouterState({
         select: ({ location }) => location.hash,
     })
 
-    if (hash !== 'mode-of-payments') return null
+    if (
+        hash !== 'mode-of-payments' ||
+        !currentUser ||
+        currentUser.accountType !== 'Member'
+    )
+        return null
 
     return (
         <div>
