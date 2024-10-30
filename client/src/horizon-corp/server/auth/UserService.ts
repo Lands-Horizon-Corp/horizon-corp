@@ -10,6 +10,7 @@ import type {
   VerifyContactNumberRequest,
   VerifyEmailRequest,
   NewPasswordRequest,
+  ChangePasswordRequest,
 } from '@/horizon-corp/types'
 import { getSMSContent, getEmailContent } from '@/lib'
 
@@ -56,6 +57,15 @@ export default class UserService {
     const endpoint = `${UserService.BASE_ENDPOINT}/forgot-password`
     await UseServer.post<ForgotPasswordRequest, void>(endpoint, data)
   }
+
+  // POST - /auth/change-password
+  public static async ChangePassword(
+    data: ChangePasswordRequest
+  ): Promise<void> {
+    const endpoint = `${UserService.BASE_ENDPOINT}/change-password`
+    await UseServer.post<ChangePasswordRequest, void>(endpoint, data)
+  }
+
 
   // GET - /auth/verify-reset-link/${resetId} ex: /auth/verify-reset-link/ba88ffCdD
   // - check if the resetId is valid
