@@ -7,6 +7,7 @@ import UsernameOption from './username-option'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import EmailOption from './email-option'
 import ContactOption from './contact-option'
+import PasswordOption from './password-option'
 
 const AccountSecurity = () => {
     const { currentUser, setCurrentUser } = useUserAuthStore()
@@ -31,17 +32,20 @@ const AccountSecurity = () => {
                     username={currentUser.username}
                     onSave={(newUserData) => setCurrentUser(newUserData)}
                 />
-                <Separator className="" />
+                <Separator />
                 <EmailOption
                     email={currentUser.email}
                     verified={currentUser.isEmailVerified}
                     onSave={(newUserData) => setCurrentUser(newUserData)}
                 />
-                <Separator className="" />
+                <Separator />
                 <ContactOption
                     contact={currentUser.contactNumber}
+                    verified={currentUser.isContactVerified}
                     onSave={(newUserData) => setCurrentUser(newUserData)}
                 />
+                <Separator className="" />
+                <PasswordOption />
             </div>
         </div>
     )
