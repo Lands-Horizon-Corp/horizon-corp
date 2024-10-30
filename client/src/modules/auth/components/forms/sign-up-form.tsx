@@ -32,12 +32,12 @@ import { cn, withCatchAsync } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
-import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
+import { signUpSchema } from '@/validations/form-validation/sign-up-schema'
 
 import { IAuthForm } from '@/types/auth/form-interface'
 import { useUserAuthStore } from '@/store/user-auth-store'
 
-type TSignUpForm = z.infer<typeof signUpFormSchema>
+type TSignUpForm = z.infer<typeof signUpSchema>
 
 const defaultValue: TSignUpForm = {
     acceptTerms: false,
@@ -66,7 +66,7 @@ const SignUpForm = ({
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TSignUpForm>({
-        resolver: zodResolver(signUpFormSchema),
+        resolver: zodResolver(signUpSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
         defaultValues,

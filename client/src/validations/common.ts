@@ -1,5 +1,5 @@
 import z from 'zod'
-import { LETTERS_REGEX, PASSWORD_MIN_LENGTH } from '@/constants'
+import { LETTERS_REGEX, NUMBER_LETTER_REGEX, PASSWORD_MIN_LENGTH } from '@/constants'
 
 const AccountTypes = ['Member', 'Owner', 'Admin', 'Employee'] as const
 
@@ -60,3 +60,15 @@ export const birthDateSchema = z.date().refine(
     },
     { message: 'BirthDate cannot be today or in the future' }
 )
+
+export const otpCodeSchema = z
+    .string()
+    .min(6, 'OTP must be 6 alphanumeric characters')
+    .max(6, 'OTP must be 6 alphanumeric characters')
+    .regex(NUMBER_LETTER_REGEX, 'OTP must be valid alphanumeric characters')
+
+export const contactNumberSchema = z
+    .string()
+    .min(1, 'Invalid contact')
+    .max(11)
+    .regex(/^\d+$/, 'Contact number must contain only numbers')
