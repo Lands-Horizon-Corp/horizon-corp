@@ -1,8 +1,8 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { useCallback, useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { useCallback, useEffect, useState } from 'react'
 
 import {
     Form,
@@ -20,31 +20,31 @@ import { CheckIcon, CloseIcon } from '@/components/icons'
 
 import { withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
-import { userNameSchema } from '@/validations/common'
+import { contactNumberSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChangeUsernameRequest, UserData } from '@/horizon-corp/types'
+import { ChangeContactNumberRequest, UserData } from '@/horizon-corp/types'
 import ProfileService from '@/horizon-corp/server/auth/ProfileService'
 
 interface Props {
-    username: string
+    contact: string
     onSave: (newUserData: UserData) => void
 }
 
-const userNameOptionSchema = z.object({
-    username: userNameSchema,
+const contactOptionSchema = z.object({
+    contactNumber: contactNumberSchema,
 })
 
-const UsernameOption = ({ username, onSave }: Props) => {
+const ContactOption = ({ contact, onSave }: Props) => {
     const [pwdModalState, setPwdModalState] = useState(false)
-    const { isPending, mutate: saveUsername } = useMutation<
+    const { isPending, mutate: saveContact } = useMutation<
         UserData,
         string,
-        ChangeUsernameRequest
+        ChangeContactNumberRequest
     >({
-        mutationKey: ['account-security-username'],
+        mutationKey: ['account-security-contact'],
         mutationFn: async (data) => {
             const [error, response] = await withCatchAsync(
-                ProfileService.ChangeUsername(data)
+                ProfileService.ChangeContactNumber(data)
             )
 
             if (error) {
@@ -53,31 +53,27 @@ const UsernameOption = ({ username, onSave }: Props) => {
                 throw errorMessage
             }
 
-            toast.success("Username has been saved.")
+            toast.success("Contact number has been saved.")
 
             onSave(response.data)
             return response.data
         },
     })
 
-    const form = useForm<z.infer<typeof userNameOptionSchema>>({
-        resolver: zodResolver(userNameOptionSchema),
+    const form = useForm<z.infer<typeof contactOptionSchema>>({
+        resolver: zodResolver(contactOptionSchema),
         mode: 'onChange',
-        defaultValues: { username: '' },
+        defaultValues: { contactNumber : contact },
     })
 
-    const hasChanges = form.watch('username') !== username
+    const hasChanges = form.watch('contactNumber') !== contact
 
     const handleReset = useCallback(() => {
-        if (!username) return
+        if (!contact) return
 
         form.reset()
-        form.setValue('username', username)
-    }, [username, form])
-
-    useEffect(() => {
-        handleReset()
-    }, [handleReset])
+        form.setValue('contactNumber', contact)
+    }, [contact, form])
 
     return (
         <>
@@ -87,7 +83,7 @@ const UsernameOption = ({ username, onSave }: Props) => {
                 onClose={(state) => setPwdModalState(state)}
                 onSubmit={(newPayload) => {
                     setPwdModalState(false)
-                    saveUsername(newPayload)
+                    saveContact(newPayload)
                 }}
             />
             <Form {...form}>
@@ -101,7 +97,7 @@ const UsernameOption = ({ username, onSave }: Props) => {
                     <fieldset disabled={isPending}>
                         <FormField
                             control={form.control}
-                            name="username"
+                            name="contactNumber"
                             render={({ field }) => (
                                 <FormItem className="grid w-full gap-y-2">
                                     <div>
@@ -109,19 +105,18 @@ const UsernameOption = ({ username, onSave }: Props) => {
                                             htmlFor={field.name}
                                             className="text-right text-sm font-normal text-foreground/80"
                                         >
-                                            Username
+                                            Contact Number
                                         </FormLabel>
                                         <FormDescription className="text-xs">
-                                            Will be displayed in your profile
+                                            Will be used to contact you
                                         </FormDescription>
                                     </div>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             id={field.name}
-                                            placeholder="Username"
+                                            placeholder="Contact Number"
                                             autoComplete="off"
-                                            hidden
                                         />
                                     </FormControl>
                                     {hasChanges && (
@@ -148,9 +143,9 @@ const UsernameOption = ({ username, onSave }: Props) => {
                     </fieldset>
                 </form>
             </Form>
-            <Separator className="" />
+            <Separator />
         </>
     )
 }
 
-export default UsernameOption
+export default ContactOption

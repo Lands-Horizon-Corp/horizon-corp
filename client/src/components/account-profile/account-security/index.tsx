@@ -5,15 +5,17 @@ import { Separator } from '@/components/ui/separator'
 import UsernameOption from './username-option'
 
 import { useUserAuthStore } from '@/store/user-auth-store'
+import EmailOption from './email-option'
+import ContactOption from './contact-option'
 
 const AccountSecurity = () => {
-    const {} = useUserAuthStore()
+    const { currentUser, setCurrentUser } = useUserAuthStore()
 
     const hash = useRouterState({
         select: ({ location }) => location.hash,
     })
 
-    if (hash !== 'security') return null
+    if (hash !== 'security' || !currentUser) return null
 
     return (
         <div>
@@ -24,7 +26,20 @@ const AccountSecurity = () => {
                 Manage or Update your account security
             </p>
             <Separator className="my-2 sm:my-4" />
-            <UsernameOption />
+            <div className="space-y-4">
+                <UsernameOption
+                    username={currentUser.username}
+                    onSave={(newUserData) => setCurrentUser(newUserData)}
+                />
+                <EmailOption
+                    email={currentUser.email}
+                    onSave={(newUserData) => setCurrentUser(newUserData)}
+                />
+                <ContactOption 
+                    contact={currentUser.contactNumber}
+                    onSave={(newUserData) => setCurrentUser(newUserData)}
+                />
+            </div>
         </div>
     )
 }
