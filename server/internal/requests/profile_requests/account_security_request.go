@@ -35,7 +35,7 @@ func (r *ChangeContactNumberRequest) Validate() error {
 
 type ChangeUsernameRequest struct {
 	Password string `json:"password" validate:"required,min=8,max=255"`
-	Username string `json:"username" validate:"required,min=10,max=255"`
+	Username string `json:"username" validate:"required,min=5,max=255"`
 }
 
 func (r *ChangeUsernameRequest) Validate() error {
