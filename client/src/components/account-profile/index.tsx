@@ -27,7 +27,7 @@ const AccountProfile = ({ className }: IBaseCompNoChild) => {
                 updateUserData={setCurrentUser}
             />
 
-            <AccountProfileNavigation />
+            <AccountProfileNavigation currentUser={currentUser} />
 
             <VerifyNotice
                 currentUser={currentUser}
