@@ -219,6 +219,29 @@ func (c *UserController) ChangeUsername(ctx *gin.Context) {
 	c.updateUser(ctx, userUpdate)
 }
 
+func (c *UserController) ChangePassword(ctx *gin.Context) {
+	var req profile_requests.ChangePasswordSettingRequest
+	if !c.handleRequest(ctx, &req) {
+		return
+	}
+
+	user, err := c.getUser(ctx)
+	if err != nil {
+		return
+	}
+
+	if !c.verifyPassword(ctx, user, req.OldPassword) {
+		return
+	}
+
+	userUpdate := &models.User{
+		AccountType: user.AccountType,
+		Username:    req.NewPassword,
+	}
+
+	c.updateUser(ctx, userUpdate)
+}
+
 // UserRoutes sets up the user-related routes.
 func UserRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controller *UserController) {
 	authGroup := router.Group("/profile")
@@ -229,5 +252,6 @@ func UserRoutes(router *gin.RouterGroup, mw *middleware.AuthMiddleware, controll
 		authGroup.POST("/change-email", controller.ChangeEmail)
 		authGroup.POST("/change-contact-number", controller.ChangeContactNumber)
 		authGroup.POST("/change-username", controller.ChangeUsername)
+		authGroup.POST("/change-password", controller.ChangePassword)
 	}
 }
