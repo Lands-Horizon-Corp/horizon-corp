@@ -6,141 +6,70 @@ import (
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests"
 	"horizon/server/internal/resources"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 type ErrorDetailController struct {
-	repo *repositories.ErrorDetailRepository
+	*BaseController[models.ErrorDetail, *requests.ErrorDetailRequest, resources.ErrorDetailResource]
 }
 
-func NewErrorDetailController(repo *repositories.ErrorDetailRepository) *ErrorDetailController {
-	return &ErrorDetailController{repo: repo}
+func NewErrorDetailController(db *gorm.DB) *ErrorDetailController {
+	repo := repositories.NewRepository[models.ErrorDetail](db)
+
+	baseController := NewBaseController[models.ErrorDetail, *requests.ErrorDetailRequest, resources.ErrorDetailResource](
+		db,
+		ToErrorDetailModel,
+		resources.ToResourceErrorDetail,
+		resources.ToResourceListErrorDetail,
+		UpdateErrorDetailModel,
+	)
+
+	// Set the repository
+	baseController.Repo = repo
+
+	return &ErrorDetailController{
+		BaseController: baseController,
+	}
 }
 
-func (c *ErrorDetailController) Create(ctx *gin.Context) {
-	var req requests.ErrorDetailRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Validate the request
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Convert Stack and Response to JSON string if present
+func ToErrorDetailModel(req *requests.ErrorDetailRequest) *models.ErrorDetail {
 	var stackJSON, responseJSON string
+
 	if req.Stack != "" {
-		stack := helpers.JSONStringify(req.Stack)
-		stackJSON = stack
+		stackJSON = helpers.JSONStringify(req.Stack)
 	}
 	if req.Response != "" {
-		response := helpers.JSONStringify(req.Response)
-		responseJSON = response
+		responseJSON = helpers.JSONStringify(req.Response)
 	}
 
-	// Create ErrorDetail instance
-	errorDetails := models.ErrorDetail{
+	return &models.ErrorDetail{
+		Model:    gorm.Model{ID: req.ID},
 		Message:  req.Message,
 		Name:     req.Name,
 		Stack:    stackJSON,
 		Response: responseJSON,
 		Status:   req.Status,
 	}
-
-	// Save to the repository
-	if err := c.repo.Create(&errorDetails); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Return the created error details as a resource
-	ctx.JSON(http.StatusCreated, resources.ToResourceErrorDetail(&errorDetails))
-}
-func (c *ErrorDetailController) GetAll(ctx *gin.Context) {
-	errorDetail, err := c.repo.GetAll([]string{})
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, resources.ToResourceListErrorDetail(errorDetail))
 }
 
-func (c *ErrorDetailController) GetByID(ctx *gin.Context) {
-	uid, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-
-	errorDetails, err := c.repo.GetByID(uid, []string{})
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "ErrorDetail not found"})
-		return
-	}
-	ctx.JSON(http.StatusOK, resources.ToResourceErrorDetail(errorDetails))
-}
-
-func (c *ErrorDetailController) Update(ctx *gin.Context) {
-	id, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-
-	var req requests.ErrorDetailRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
+// UpdateErrorDetailModel updates an ErrorDetail model with data from an ErrorDetailRequest
+func UpdateErrorDetailModel(model *models.ErrorDetail, req *requests.ErrorDetailRequest) {
 	var stackJSON, responseJSON string
+
 	if req.Stack != "" {
-		stack := helpers.JSONStringify(req.Stack)
-		stackJSON = stack
+		stackJSON = helpers.JSONStringify(req.Stack)
 	}
 	if req.Response != "" {
-		response := helpers.JSONStringify(req.Response)
-		responseJSON = response
+		responseJSON = helpers.JSONStringify(req.Response)
 	}
 
-	// Create ErrorDetail instance
-	errorDetail := &models.ErrorDetail{
-		Model:    gorm.Model{ID: id},
-		Message:  req.Message,
-		Name:     req.Name,
-		Stack:    stackJSON,
-		Response: responseJSON,
-		Status:   req.Status,
-	}
-
-	if err := c.repo.Update(errorDetail, []string{}); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resources.ToResourceErrorDetail(errorDetail))
-}
-
-func (c *ErrorDetailController) Delete(ctx *gin.Context) {
-	id, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-	if err := c.repo.Delete(id); err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "ErrorDetail not found"})
-		return
-	}
-
-	ctx.JSON(http.StatusNoContent, nil)
+	model.Message = req.Message
+	model.Name = req.Name
+	model.Stack = stackJSON
+	model.Response = responseJSON
+	model.Status = req.Status
 }
 
 func ErrorDetailRoutes(router *gin.RouterGroup, controller *ErrorDetailController) {
