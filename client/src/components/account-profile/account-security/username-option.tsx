@@ -16,6 +16,8 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import PasswordInputModal from './password-input-modal'
 import { CheckIcon, CloseIcon } from '@/components/icons'
+import FormErrorMessage from '@/components/ui/form-error-message'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
@@ -23,7 +25,6 @@ import { userNameSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChangeUsernameRequest, UserData } from '@/horizon-corp/types'
 import ProfileService from '@/horizon-corp/server/auth/ProfileService'
-import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 interface Props {
     username: string
@@ -36,6 +37,24 @@ const userNameOptionSchema = z.object({
 
 const UsernameOption = ({ username, onSave }: Props) => {
     const [pwdModalState, setPwdModalState] = useState(false)
+
+    const form = useForm<z.infer<typeof userNameOptionSchema>>({
+        resolver: zodResolver(userNameOptionSchema),
+        mode: 'onChange',
+        values: { username },
+    })
+
+    const hasChanges = form.formState.isDirty
+
+    const firstError = Object.values(form.formState.errors)[0]?.message
+
+    const handleReset = useCallback(() => {
+        if (!username) return
+
+        form.reset()
+        form.setValue('username', username)
+    }, [username, form])
+
     const { isPending, mutate: saveUsername } = useMutation<
         UserData,
         string,
@@ -56,24 +75,11 @@ const UsernameOption = ({ username, onSave }: Props) => {
             toast.success('Username has been saved.')
 
             onSave(response.data)
+
+            handleReset()
             return response.data
         },
     })
-
-    const form = useForm<z.infer<typeof userNameOptionSchema>>({
-        resolver: zodResolver(userNameOptionSchema),
-        mode: 'onChange',
-        defaultValues: { username },
-    })
-
-    const hasChanges = form.watch('username') !== username
-
-    const handleReset = useCallback(() => {
-        if (!username) return
-
-        form.reset()
-        form.setValue('username', username)
-    }, [username, form])
 
     return (
         <>
@@ -120,6 +126,9 @@ const UsernameOption = ({ username, onSave }: Props) => {
                                             hidden
                                         />
                                     </FormControl>
+                                    <FormErrorMessage
+                                        errorMessage={firstError}
+                                    />
                                     <div className="flex items-center justify-end gap-x-1">
                                         {hasChanges && !isPending && (
                                             <>

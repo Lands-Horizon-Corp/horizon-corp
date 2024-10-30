@@ -88,7 +88,7 @@ Security
                 <p className="text-sm font-medium capitalize">
                     Verify {verifyMode}
                 </p>
-                <p className="text-foreground/50">
+                <p className="text-foreground/50 text-sm">
                     Please verify {verifyMode} to enable other features/actions.{' '}
                     <ResendCode
                         verifyMode={verifyMode}
