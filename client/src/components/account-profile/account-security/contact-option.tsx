@@ -39,7 +39,7 @@ interface Props {
 }
 
 const contactOptionSchema = z.object({
-    contactNumber: contactNumberSchema
+    contactNumber: contactNumberSchema,
 })
 
 const ContactOption = ({ contact, verified, onSave }: Props) => {
@@ -137,7 +137,10 @@ const ContactOption = ({ contact, verified, onSave }: Props) => {
                                         </FormDescription>
                                     </div>
                                     <FormControl>
-                                        <PhoneInput {...field} />
+                                        <PhoneInput
+                                            {...field}
+                                            defaultCountry="PH"
+                                        />
                                     </FormControl>
                                     <FormErrorMessage
                                         errorMessage={firstError}
