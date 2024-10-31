@@ -18,12 +18,12 @@ import {
     FormItem,
     FormLabel,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import PasswordInputModal from './password-input-modal'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import VerifyContactBar from '../verify-notice/verify-contact-bar'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import { PhoneInput } from '@/components/contact-input/contact-input'
 
 import { withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
@@ -39,7 +39,7 @@ interface Props {
 }
 
 const contactOptionSchema = z.object({
-    contactNumber: contactNumberSchema,
+    contactNumber: contactNumberSchema
 })
 
 const ContactOption = ({ contact, verified, onSave }: Props) => {
@@ -137,12 +137,7 @@ const ContactOption = ({ contact, verified, onSave }: Props) => {
                                         </FormDescription>
                                     </div>
                                     <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            placeholder="Contact Number"
-                                            autoComplete="off"
-                                        />
+                                        <PhoneInput {...field} />
                                     </FormControl>
                                     <FormErrorMessage
                                         errorMessage={firstError}

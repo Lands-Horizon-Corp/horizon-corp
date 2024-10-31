@@ -36,6 +36,7 @@ import { signUpSchema } from '@/validations/form-validation/sign-up-schema'
 
 import { IAuthForm } from '@/types/auth/form-interface'
 import { useUserAuthStore } from '@/store/user-auth-store'
+import { PhoneInput } from '@/components/contact-input/contact-input'
 
 type TSignUpForm = z.infer<typeof signUpSchema>
 
@@ -69,7 +70,7 @@ const SignUpForm = ({
         resolver: zodResolver(signUpSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
-        defaultValues,
+        values: defaultValues,
     })
 
     const onFormSubmit = async (data: TSignUpForm) => {
@@ -274,12 +275,7 @@ const SignUpForm = ({
                                     </FormLabel>
                                     <FormControl>
                                         <div className="flex flex-1 items-center gap-x-2">
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                autoComplete="tel-country-code"
-                                                placeholder="Contact Number"
-                                            />
+                                            <PhoneInput {...field} />
                                             <VerifiedPatchIcon
                                                 className={cn(
                                                     'size-8 text-primary delay-300 duration-300 ease-in-out',
