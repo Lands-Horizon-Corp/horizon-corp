@@ -340,6 +340,7 @@ func ConvertUserToMember(user *models.User) *models.Member {
 
 func ConvertAdminToUser(admin *models.Admin) *models.User {
 	return &models.User{
+		AccountType:        "Admin",
 		Model:              admin.Model,
 		FirstName:          admin.FirstName,
 		LastName:           admin.LastName,
@@ -361,6 +362,7 @@ func ConvertAdminToUser(admin *models.Admin) *models.User {
 }
 func ConvertOwnerToUser(owner *models.Owner) *models.User {
 	return &models.User{
+		AccountType:        "Owner",
 		Model:              owner.Model,
 		FirstName:          owner.FirstName,
 		LastName:           owner.LastName,
@@ -383,6 +385,7 @@ func ConvertOwnerToUser(owner *models.Owner) *models.User {
 
 func ConvertEmployeeToUser(employee *models.Employee) *models.User {
 	return &models.User{
+		AccountType:        "Employee",
 		Model:              employee.Model,
 		FirstName:          employee.FirstName,
 		LastName:           employee.LastName,
@@ -405,6 +408,7 @@ func ConvertEmployeeToUser(employee *models.Employee) *models.User {
 
 func ConvertMemberToUser(member *models.Member) *models.User {
 	return &models.User{
+		AccountType:        "Member",
 		Model:              member.Model,
 		FirstName:          member.FirstName,
 		LastName:           member.LastName,
