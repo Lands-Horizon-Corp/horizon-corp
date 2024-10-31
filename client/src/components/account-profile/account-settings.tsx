@@ -1,22 +1,21 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useCallback, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouterState } from '@tanstack/react-router'
-import { useUserAuthStore } from '@/store/user-auth-store'
 
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '@/components/ui/textarea'
+import TextEditor from '@/components/text-editor'
 import { Separator } from '@/components/ui/separator'
 import InputDatePicker from '@/components/input-date-picker'
 import FormErrorMessage from '@/components/ui/form-error-message'
@@ -46,8 +45,20 @@ const AccountSettingsFormSchema = z.object({
 
 type TAccountSettings = z.infer<typeof AccountSettingsFormSchema>
 
-const AccountSettings = () => {
-    const { currentUser, setCurrentUser } = useUserAuthStore()
+interface Props {
+    currentUser: UserData
+    onSave: (newUserData: UserData) => void
+}
+
+const AccountSettings = ({ currentUser, onSave }: Props) => {
+    const {
+        lastName,
+        firstName,
+        birthDate,
+        middleName,
+        description,
+        permanentAddress,
+    } = currentUser
 
     const hash = useRouterState({
         select: ({ location }) => location.hash,
@@ -55,30 +66,15 @@ const AccountSettings = () => {
 
     const form = useForm<TAccountSettings>({
         resolver: zodResolver(AccountSettingsFormSchema),
-        defaultValues: {
-            birthDate: new Date('10-10-1900'),
-            description: '',
-            firstName: '',
-            lastName: '',
-            middleName: '',
-            permanentAddress: '',
+        values: {
+            firstName,
+            lastName,
+            middleName,
+            description,
+            permanentAddress,
+            birthDate: new Date(birthDate),
         },
     })
-
-    const handleReset = useCallback(() => {
-        form.reset()
-        if (!currentUser) return
-        form.setValue('lastName', currentUser.lastName)
-        form.setValue('firstName', currentUser.firstName)
-        form.setValue('middleName', currentUser.middleName)
-        form.setValue('description', currentUser.description)
-        form.setValue('birthDate', new Date(currentUser.birthDate))
-        form.setValue('permanentAddress', currentUser.permanentAddress)
-    }, [form, currentUser])
-
-    useEffect(() => {
-        handleReset()
-    }, [handleReset])
 
     const {
         error,
@@ -97,13 +93,15 @@ const AccountSettings = () => {
                 throw errorMessage
             }
 
-            setCurrentUser(response.data)
+            onSave(response.data)
             toast.success('Changes saved')
             return response.data
         },
     })
 
     if (hash !== 'account-settings') return null
+
+    const hasChanges = form.formState.isDirty
 
     const firstError = Object.values(form.formState.errors)[0]?.message
 
@@ -242,18 +240,24 @@ const AccountSettings = () => {
                             control={form.control}
                             name="description"
                             render={({ field }) => (
-                                <FormItem className="space-y-0 sm:col-span-2">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="text-right text-sm font-normal text-foreground/60"
-                                    >
-                                        Description
-                                    </FormLabel>
+                                <FormItem className="space-y-1 sm:col-span-2">
+                                    <div>
+                                        <FormLabel
+                                            htmlFor={field.name}
+                                            className="text-right text-sm font-normal text-foreground/60"
+                                        >
+                                            Description
+                                        </FormLabel>
+                                        <FormDescription className="text-xs">
+                                            Write a short description about
+                                            yourself
+                                        </FormDescription>
+                                    </div>
                                     <FormControl>
-                                        <Textarea
-                                            placeholder="Write a short description about you"
-                                            className="resize-none"
-                                            {...field}
+                                        <TextEditor
+                                            content={field.value}
+                                            onChange={field.onChange}
+                                            className="!max-w-none"
                                         />
                                     </FormControl>
                                 </FormItem>
@@ -261,14 +265,28 @@ const AccountSettings = () => {
                         />
                     </fieldset>
                     <FormErrorMessage errorMessage={firstError || error} />
-                    <Separator className="my-2 sm:my-4" />
-                    <Button
-                        type="submit"
-                        disabled={isPending}
-                        className="w-full self-end px-8 sm:w-fit"
-                    >
-                        {isPending ? <LoadingSpinner /> : 'Save'}
-                    </Button>
+                    {hasChanges && (
+                        <>
+                            <Separator className="my-2 sm:my-4" />
+                            <div className="flex items-center justify-end gap-x-2">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => form.reset()}
+                                    className="w-full self-end px-8 sm:w-fit"
+                                >
+                                    Reset
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    disabled={isPending}
+                                    className="w-full self-end px-8 sm:w-fit"
+                                >
+                                    {isPending ? <LoadingSpinner /> : 'Save'}
+                                </Button>
+                            </div>
+                        </>
+                    )}
                 </form>
             </Form>
         </div>

@@ -34,7 +34,10 @@ const AccountProfile = ({ className }: IBaseCompNoChild) => {
                 onSuccess={(newUserData) => setCurrentUser(newUserData)}
             />
 
-            <AccountSettings />
+            <AccountSettings
+                currentUser={currentUser}
+                onSave={(newUserData) => setCurrentUser(newUserData)}
+            />
             <AccountSecurity />
             <AccountTransactions />
             <AccountModeOfPayment />
