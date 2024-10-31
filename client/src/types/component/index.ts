@@ -7,4 +7,6 @@ export interface IBaseComp {
     children?: ReactNode
 }
 
+export interface IBaseCompChildOnly extends Omit<IBaseComp, 'className'> {}
+
 export interface IBaseCompNoChild extends Omit<IBaseComp, 'children'> {}
