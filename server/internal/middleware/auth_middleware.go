@@ -54,9 +54,7 @@ func (m *AuthMiddleware) Middleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
 		user, err := m.useRepo.GetByID(claims.AccountType, claims.ID)
-		user.AccountType = claims.AccountType
 		if err != nil {
 			m.tokenService.ClearTokenCookie(ctx)
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized: user not found"})

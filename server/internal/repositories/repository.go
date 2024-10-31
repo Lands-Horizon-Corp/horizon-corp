@@ -3,6 +3,7 @@ package repositories
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"regexp"
 
 	"github.com/go-sql-driver/mysql"
@@ -30,9 +31,11 @@ func (r *Repository[T]) GetByID(id uint, preloads []string) (*T, error) {
 			db = db.Preload(preload)
 		}
 	}
-
 	err := db.First(entity, id).Error
-	return entity, handleDBError(err)
+	if err != nil {
+		return nil, handleDBError(err)
+	}
+	return entity, nil
 }
 
 func (r *Repository[T]) GetAll(preloads []string) ([]*T, error) {
@@ -69,21 +72,33 @@ func (r *Repository[T]) Delete(id uint) error {
 
 func (r *Repository[T]) UpdateColumns(id uint, updates T, preloads []string) (*T, error) {
 	entity := new(T)
-
-	// Preload relationships if provided
 	db := r.DB
-	if len(preloads) > 0 {
-		for _, preload := range preloads {
-			db = db.Preload(preload)
-		}
+	for _, preload := range preloads {
+		db = db.Preload(preload)
 	}
-
-	// Update the specified columns
-	if err := db.Model(entity).Where("id = ?", id).Updates(updates).Error; err != nil {
+	if err := db.First(entity, id).Error; err != nil {
 		return nil, handleDBError(err)
 	}
+	updatesValue := reflect.ValueOf(updates)
+	entityValue := reflect.ValueOf(entity).Elem()
+	updatesType := updatesValue.Type()
 
-	// Retrieve the updated entity with preloads
+	for i := 0; i < updatesValue.NumField(); i++ {
+		field := updatesType.Field(i)
+		updateField := updatesValue.Field(i)
+		entityField := entityValue.FieldByName(field.Name)
+		if updateField.Kind() == reflect.Bool {
+			entityField.Set(updateField)
+		} else if updateField.IsValid() && !updateField.IsZero() {
+			entityField.Set(updateField)
+		}
+	}
+	if err := db.Save(entity).Error; err != nil {
+		return nil, handleDBError(err)
+	}
+	for _, preload := range preloads {
+		db = db.Preload(preload)
+	}
 	if err := db.First(entity, id).Error; err != nil {
 		return nil, handleDBError(err)
 	}
