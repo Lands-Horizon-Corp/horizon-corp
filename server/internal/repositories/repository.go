@@ -31,9 +31,11 @@ func (r *Repository[T]) GetByID(id uint, preloads []string) (*T, error) {
 			db = db.Preload(preload)
 		}
 	}
-
 	err := db.First(entity, id).Error
-	return entity, handleDBError(err)
+	if err != nil {
+		return nil, handleDBError(err)
+	}
+	return entity, nil
 }
 
 func (r *Repository[T]) GetAll(preloads []string) ([]*T, error) {
