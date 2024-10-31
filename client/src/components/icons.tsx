@@ -239,7 +239,6 @@ export {
     PiCodeBlockIcon,
     SidebarLeftIcon,
     PhoneOutlineIcon,
-    PhoneOutlineIcon,
     FlipVerticalIcon,
     TbBlockquoteIcon,
     ChevronRightIcon,
