@@ -15,5 +15,9 @@ type ContactRequest struct {
 
 func (r *ContactRequest) Validate() error {
 	validate := validator.New()
-	return validate.Struct(r)
+	err := validate.Struct(r)
+	if err != nil {
+		return FormatValidationError(err)
+	}
+	return nil
 }
