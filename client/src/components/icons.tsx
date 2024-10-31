@@ -77,6 +77,7 @@ import {
     BsPatchCheck as VerifiedPatchIcon,
     BsFillPatchMinusFill as PatchMinusIcon,
     BsFillPatchCheckFill as PatchCheckIcon,
+    BsLayoutSidebarInset as SidebarLeftIcon,
     BsPatchExclamationFill as PatchExclamationIcon,
 } from 'react-icons/bs'
 import {
@@ -236,6 +237,7 @@ export {
     RotateRightIcon,
     BuildingCogIcon,
     PiCodeBlockIcon,
+    SidebarLeftIcon,
     PhoneOutlineIcon,
     FlipVerticalIcon,
     TbBlockquoteIcon,

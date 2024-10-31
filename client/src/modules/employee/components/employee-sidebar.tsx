@@ -64,9 +64,7 @@ export const employeeSidebarItems: TSidebarItem[] = [
     },
 ]
 
-interface Props extends IBaseComp {}
-
-const EmployeeSidebar = ({ className }: Props) => {
+const EmployeeSidebar = ({ className }: IBaseComp) => {
     return (
         <div className="hidden sm:block">
             <Sidebar

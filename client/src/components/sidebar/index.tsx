@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 
 import { GoChevronLeft } from 'react-icons/go'
@@ -10,8 +9,8 @@ import SidebarUserBar from '@/components/sidebar/sidebar-user-bar'
 
 import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component'
+import { useSidebarContext } from './sidebar-context'
 import type { TSidebarItem } from '@/types/component/sidebar'
-import { ExpandContext } from './sidebar-expand-context'
 
 export interface ISidebarProps extends IBaseComp {
     items: TSidebarItem[]
@@ -25,11 +24,10 @@ const Sidebar = ({
     items,
     className,
     logoRedirectUrl = '/',
-    defaultExpanded = true,
     enableCollapse = false,
     enableFocusBlur = false,
 }: ISidebarProps) => {
-    const [isExpanded, setIsExpanded] = useState(defaultExpanded)
+    const { isExpanded, toggleExpanded } = useSidebarContext()
 
     return (
         <div
@@ -57,7 +55,7 @@ const Sidebar = ({
                     <Button
                         size="icon"
                         variant="secondary"
-                        onClick={() => setIsExpanded((val) => !val)}
+                        onClick={() => toggleExpanded(!isExpanded)}
                         className={cn(
                             'absolute -right-2 z-50 size-fit p-1',
                             isExpanded && '-right-3'
@@ -72,23 +70,21 @@ const Sidebar = ({
                     </Button>
                 )}
             </div>
-            <ExpandContext.Provider value={isExpanded}>
-                <div className="relative max-h-full flex-1 overflow-y-hidden">
-                    <div className="pointer-events-none absolute left-0 top-0 z-10 h-5 w-full bg-gradient-to-b from-background to-transparent" />
-                    <div
-                        className={cn(
-                            'ecoop-scroll z-0 flex max-h-full flex-col gap-y-2 overflow-y-scroll px-4 py-4',
-                            isExpanded && 'gap-y-1',
-                            enableFocusBlur && 'group'
-                        )}
-                    >
-                        {items.map((prop, key) => (
-                            <SidebarItem key={key} {...prop} />
-                        ))}
-                    </div>
-                    <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-5 w-full bg-gradient-to-t from-background to-transparent" />
+            <div className="relative max-h-full flex-1 overflow-y-hidden">
+                <div className="pointer-events-none absolute left-0 top-0 z-10 h-5 w-full bg-gradient-to-b from-background to-transparent" />
+                <div
+                    className={cn(
+                        'ecoop-scroll z-0 flex max-h-full flex-col gap-y-2 overflow-y-scroll px-4 py-4',
+                        isExpanded && 'gap-y-1',
+                        enableFocusBlur && 'group'
+                    )}
+                >
+                    {items.map((prop, key) => (
+                        <SidebarItem key={key} {...prop} />
+                    ))}
                 </div>
-            </ExpandContext.Provider>
+                <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-5 w-full bg-gradient-to-t from-background to-transparent" />
+            </div>
             <div className="px-4 pb-4">
                 <SidebarUserBar isExpanded={isExpanded} />
             </div>
