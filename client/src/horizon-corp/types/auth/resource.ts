@@ -12,6 +12,7 @@ export interface UserData {
     description: string
     birthDate: Date
     createdAt: Date
+    updatedAt: Date
     email: string
     contactNumber: string
     accountType: AccountType

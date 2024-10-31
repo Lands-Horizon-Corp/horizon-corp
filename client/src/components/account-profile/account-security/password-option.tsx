@@ -71,9 +71,9 @@ const PasswordOption = ({ onSave }: Props) => {
                 throw errorMessage
             }
 
-            toast.success('Contact number has been saved.')
-
+            toast.success('New password has been set.')
             onSave?.()
+            form.reset()
         },
     })
 
@@ -114,13 +114,13 @@ const PasswordOption = ({ onSave }: Props) => {
                                         htmlFor={field.name}
                                         className="text-sm font-normal text-foreground/80"
                                     >
-                                        Old Password
+                                        Previous Password
                                     </FormLabel>
                                     <FormControl>
                                         <PasswordInput
                                             {...field}
                                             id={field.name}
-                                            placeholder="Old Password"
+                                            placeholder="Previous Password"
                                             autoComplete="new-password"
                                         />
                                     </FormControl>
