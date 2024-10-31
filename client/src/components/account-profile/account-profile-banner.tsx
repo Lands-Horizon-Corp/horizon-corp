@@ -1,17 +1,25 @@
 import { useState } from 'react'
+import { format } from 'date-fns'
 
 import {
     Dialog,
+    DialogTitle,
+    DialogHeader,
     DialogContent,
     DialogDescription,
-    DialogHeader,
-    DialogTitle,
 } from '@/components/ui/dialog'
 import ProfileUpload from './profile-upload'
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
-import { CameraFillIcon } from '@/components/icons'
 import ActionTooltip from '@/components/action-tooltip'
+import {
+    EmailIcon,
+    CalendarIcon,
+    DotMediumIcon,
+    CameraFillIcon,
+    PhoneOutlineIcon,
+    CalendarCheckIcon,
+} from '@/components/icons'
 
 import { UserData } from '@/horizon-corp/types'
 
@@ -75,6 +83,26 @@ const AccountProfileBanner = ({
                 <span className="text-sm text-foreground/80">
                     {currentUser.firstName} {currentUser.lastName}
                 </span>
+                <div className="flex flex-row gap-y-1 mt-2 sm:items-center flex-wrap gap-x-2 text-xs text-foreground/60">
+                    <span>
+                        <EmailIcon className="inline" /> {currentUser.email}
+                    </span>
+                    <DotMediumIcon className="hidden lg:block" />
+                    <span>
+                        <PhoneOutlineIcon className="inline" />{' '}
+                        {currentUser.contactNumber}
+                    </span>
+                    <DotMediumIcon className="hidden lg:block" />
+                    <span>
+                        <CalendarIcon className="inline" /> Joined Since{' '}
+                        {format(currentUser.createdAt, 'MMM dd yyyy')}
+                    </span>
+                    <DotMediumIcon className="hidden lg:block" />
+                    <span>
+                        <CalendarCheckIcon className="inline" /> Update at{' '}
+                        {format(currentUser.updatedAt, 'MMM dd yyyy')}
+                    </span>
+                </div>
             </div>
         </div>
     )

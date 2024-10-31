@@ -10,7 +10,8 @@ import {
     LuListOrdered as LuListOrderedIcon,
     LuUndo2 as LuUndo2Icon,
     LuRedo2 as LuRedo2Icon,
-    LuPenLine as EditLineIcon,
+    LuCalendar as CalendarIcon,
+    LuCalendarCheck as CalendarCheckIcon,
 } from 'react-icons/lu'
 import {
     BsBuildingGear as BuildingCogIcon,
@@ -57,14 +58,15 @@ import {
     AiOutlineLoading3Quarters as LoadingSpinnerIcon,
     AiOutlineMessage as AiOutlineMessageIcon,
 } from 'react-icons/ai'
-import { GoArrowLeft as ArrowLeftIcon } from 'react-icons/go'
 import {
-    MdCameraEnhance as CameraSelectIcon,
-    MdFlipCameraAndroid as CameraFlipIcon,
+    MdOutlineEmail as EmailIcon,
     MdMarkEmailRead as EmailCheckIcon,
     MdOutlinePayments as PaymentsIcon,
+    MdCameraEnhance as CameraSelectIcon,
     MdOutlineEmail as MdOutlineEmailIcon,
+    MdFlipCameraAndroid as CameraFlipIcon,
     MdManageAccounts as AccountSettingIcon,
+    MdOutlineLocalPhone as PhoneOutlineIcon,
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
 } from 'react-icons/md'
@@ -89,6 +91,7 @@ import { RxFontItalic as ToolbarItalicIcon } from 'react-icons/rx'
 import {
     FaBold as FaBoldIcon,
     FaImage as ImageIcon,
+    FaPhoneAlt as PhoneIcon,
     FaRulerHorizontal as FaRulerHorizontalIcon,
 } from 'react-icons/fa'
 import {
@@ -98,7 +101,8 @@ import {
     RiFlipHorizontalFill as FlipHorizontalIcon,
     RiFlipHorizontalLine as FlipHorizontalLineIcon,
 } from 'react-icons/ri'
-
+import { RxDotFilled as DotMediumIcon } from "react-icons/rx";
+import { GoArrowLeft as ArrowLeftIcon,GoDotFill as DotBigIcon  } from 'react-icons/go'
 import { IoIosCode as IoIosCodeIcon } from 'react-icons/io'
 import {
     TbClearFormatting as TbClearFormattingIcon,
@@ -180,9 +184,12 @@ export {
     MoonIcon,
     ClockIcon,
     CloseIcon,
+    EmailIcon,
     ImageIcon,
     CheckIcon,
+    PhoneIcon,
     CookieIcon,
+    DotBigIcon,
     CameraIcon,
     FaBoldIcon,
     ShieldIcon,
@@ -204,8 +211,10 @@ export {
     MessagesIcon,
     FeedbackIcon,
     BuildingIcon,
+    CalendarIcon,
     ArrowLeftIcon,
     CameraOffIcon,
+    DotMediumIcon,
     FootstepsIcon,
     UserClockIcon,
     DashboardIcon,
@@ -227,6 +236,7 @@ export {
     RotateRightIcon,
     BuildingCogIcon,
     PiCodeBlockIcon,
+    PhoneOutlineIcon,
     FlipVerticalIcon,
     TbBlockquoteIcon,
     ChevronRightIcon,
@@ -234,6 +244,7 @@ export {
     NotificationIcon,
     ToolbarItalicIcon,
     LuListOrderedIcon,
+    CalendarCheckIcon,
     WarningCircleIcon,
     VerifiedPatchIcon,
     LoadingCircleIcon,

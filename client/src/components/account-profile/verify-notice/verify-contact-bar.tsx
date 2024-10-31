@@ -30,11 +30,16 @@ import UserService from '@/horizon-corp/server/auth/UserService'
 type TVerifyMode = 'email' | 'mobile'
 
 interface Props {
+    autoFocus?: boolean
     verifyMode: TVerifyMode
     onSuccess?: (newUserData: UserData) => void
 }
 
-const VerifyContactBar = ({ verifyMode, onSuccess }: Props) => {
+const VerifyContactBar = ({
+    autoFocus = false,
+    verifyMode,
+    onSuccess,
+}: Props) => {
     const form = useForm<z.infer<typeof otpSchema>>({
         resolver: zodResolver(otpSchema),
         reValidateMode: 'onChange',
@@ -88,7 +93,7 @@ Security
                 <p className="text-sm font-medium capitalize">
                     Verify {verifyMode}
                 </p>
-                <p className="text-foreground/50 text-sm">
+                <p className="text-sm text-foreground/50">
                     Please verify {verifyMode} to enable other features/actions.{' '}
                     <ResendCode
                         verifyMode={verifyMode}
@@ -112,18 +117,18 @@ Security
                                 <FormItem className="flex flex-col items-center">
                                     <FormControl>
                                         <InputOTP
-                                            autoFocus
+                                            {...field}
                                             maxLength={6}
+                                            autoFocus={autoFocus}
+                                            pattern={
+                                                REGEXP_ONLY_DIGITS_AND_CHARS
+                                            }
+                                            containerClassName="mx-auto capitalize w-fit"
                                             onComplete={() =>
                                                 form.handleSubmit((data) =>
                                                     handleVerify(data)
                                                 )()
                                             }
-                                            pattern={
-                                                REGEXP_ONLY_DIGITS_AND_CHARS
-                                            }
-                                            containerClassName="mx-auto capitalize w-fit"
-                                            {...field}
                                         >
                                             <InputOTPGroup>
                                                 <InputOTPSlot
@@ -173,7 +178,7 @@ const ResendCode = ({
     duration,
     interval,
 }: {
-    disabled? : boolean
+    disabled?: boolean
     verifyMode: TVerifyMode
     duration: number
     interval: number
@@ -216,13 +221,13 @@ const ResendCode = ({
                 disabled && 'cursor-not-allowed opacity-30'
             )}
             onClick={(e) => {
-                if(disabled) return;
+                if (disabled) return
 
                 e.preventDefault()
                 resendOtpVerification()
             }}
         >
-            {isResending && <LoadingSpinner className="size-3 inline-block" />}
+            {isResending && <LoadingSpinner className="inline-block size-3" />}
             {!isResending && cooldownCount <= 0 && "Didn't get the code?"}
             {cooldownCount > 0 && `Resend again in ${cooldownCount}s`}
         </span>
