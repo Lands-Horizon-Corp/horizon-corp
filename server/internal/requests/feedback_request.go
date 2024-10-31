@@ -12,5 +12,9 @@ type FeedbackRequest struct {
 // Validate validates the GenderRequest fields.
 func (r *FeedbackRequest) Validate() error {
 	validate := validator.New()
-	return validate.Struct(r)
+	err := validate.Struct(r)
+	if err != nil {
+		return FormatValidationError(err)
+	}
+	return nil
 }

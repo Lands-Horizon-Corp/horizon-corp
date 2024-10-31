@@ -1,7 +1,8 @@
 package auth_requests
 
 import (
-	"errors"
+	"fmt"
+	"horizon/server/internal/requests"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -15,14 +16,18 @@ type ForgotPasswordRequest struct {
 
 func (r *ForgotPasswordRequest) Validate() error {
 	validate := validator.New()
-	if err := validate.Struct(r); err != nil {
-		return err
-	}
+
 	if err := validate.RegisterValidation("accountType", AccountTypeValidator); err != nil {
-		return errors.New("account type is not valid")
+		return fmt.Errorf("failed to register account type validator: %v", err)
 	}
+
+	if err := validate.Struct(r); err != nil {
+		return requests.FormatValidationError(err)
+	}
+
 	if r.EmailTemplate == "" && r.ContactTemplate == "" {
-		return errors.New("either email or username is required")
+		return fmt.Errorf("either emailTemplate or contactTemplate must be provided")
 	}
+
 	return nil
 }

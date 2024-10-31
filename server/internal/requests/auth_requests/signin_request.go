@@ -1,6 +1,9 @@
 package auth_requests
 
 import (
+	"fmt"
+	"horizon/server/internal/requests"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -12,8 +15,13 @@ type SignInRequest struct {
 
 func (r *SignInRequest) Validate() error {
 	validate := validator.New()
-	if err := validate.Struct(r); err != nil {
-		return err
+	err := validate.Struct(r)
+	if err := validate.RegisterValidation("accountType", AccountTypeValidator); err != nil {
+		return fmt.Errorf("failed to register account type validator: %v", err)
+	}
+
+	if err != nil {
+		return requests.FormatValidationError(err)
 	}
 	return nil
 }

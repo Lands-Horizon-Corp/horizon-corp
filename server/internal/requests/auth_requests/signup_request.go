@@ -1,7 +1,7 @@
 package auth_requests
 
 import (
-	"errors"
+	"fmt"
 	"horizon/server/internal/requests"
 	"time"
 
@@ -38,8 +38,13 @@ func AccountTypeValidator(fl validator.FieldLevel) bool {
 
 func (r *SignUpRequest) Validate() error {
 	validate := validator.New()
+	err := validate.Struct(r)
 	if err := validate.RegisterValidation("accountType", AccountTypeValidator); err != nil {
-		return errors.New("account type is not valid")
+		return fmt.Errorf("failed to register account type validator: %v", err)
 	}
-	return validate.Struct(r)
+
+	if err != nil {
+		return requests.FormatValidationError(err)
+	}
+	return nil
 }

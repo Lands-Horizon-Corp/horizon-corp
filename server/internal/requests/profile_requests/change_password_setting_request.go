@@ -1,7 +1,8 @@
 package profile_requests
 
 import (
-	"errors"
+	"fmt"
+	"horizon/server/internal/requests"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -16,10 +17,10 @@ func (r *ChangePasswordSettingRequest) Validate() error {
 	validate := validator.New()
 	err := validate.Struct(r)
 	if err != nil {
-		return err
+		return requests.FormatValidationError(err)
 	}
 	if r.NewPassword != r.ConfirmPassword {
-		return errors.New("new password and confirm password do not match")
+		return fmt.Errorf("new password and confirm password do not match")
 	}
 	return nil
 }

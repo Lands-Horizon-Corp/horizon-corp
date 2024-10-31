@@ -25,5 +25,9 @@ type RoleRequest struct {
 
 func (r *RoleRequest) Validate() error {
 	validate := validator.New()
-	return validate.Struct(r)
+	err := validate.Struct(r)
+	if err != nil {
+		return FormatValidationError(err)
+	}
+	return nil
 }

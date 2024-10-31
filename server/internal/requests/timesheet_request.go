@@ -18,10 +18,19 @@ type TimeOutRequest struct {
 
 func (r *TimeInRequest) Validate() error {
 	validate := validator.New()
-	return validate.Struct(r)
+	err := validate.Struct(r)
+	if err != nil {
+		return FormatValidationError(err)
+	}
+	return nil
+
 }
 
 func (r *TimeOutRequest) Validate() error {
 	validate := validator.New()
-	return validate.Struct(r)
+	err := validate.Struct(r)
+	if err != nil {
+		return FormatValidationError(err)
+	}
+	return nil
 }

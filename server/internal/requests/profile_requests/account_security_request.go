@@ -1,6 +1,8 @@
 package profile_requests
 
 import (
+	"horizon/server/internal/requests"
+
 	"github.com/go-playground/validator/v10"
 )
 
@@ -28,7 +30,7 @@ func (r *ChangeContactNumberRequest) Validate() error {
 	validate := validator.New()
 	err := validate.Struct(r)
 	if err != nil {
-		return err
+		return requests.FormatValidationError(err)
 	}
 	return nil
 }
@@ -42,7 +44,7 @@ func (r *ChangeUsernameRequest) Validate() error {
 	validate := validator.New()
 	err := validate.Struct(r)
 	if err != nil {
-		return err
+		return requests.FormatValidationError(err)
 	}
 	return nil
 }
