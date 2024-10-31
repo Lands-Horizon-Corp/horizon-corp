@@ -86,7 +86,7 @@ const ContactOption = ({ contact, verified, onSave }: Props) => {
     }, [contact, form])
 
     return (
-        <>
+        <div className="space-y-0">
             <PasswordInputModal
                 state={pwdModalState}
                 payloadData={form.getValues()}
@@ -175,16 +175,16 @@ const ContactOption = ({ contact, verified, onSave }: Props) => {
                             )}
                         />
                     </fieldset>
-                    {!verified && (
-                        <VerifyContactBar
-                            verifyMode="mobile"
-                            key="verify-bar-mobile"
-                            onSuccess={onSave}
-                        />
-                    )}
                 </form>
             </Form>
-        </>
+            {!verified && (
+                <VerifyContactBar
+                    verifyMode="mobile"
+                    key="verify-bar-mobile"
+                    onSuccess={onSave}
+                />
+            )}
+        </div>
     )
 }
 
