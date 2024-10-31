@@ -7,9 +7,9 @@ import AuthGuard from '@/components/wrappers/auth-guard'
 const AdminLayout = () => {
     return (
         <AuthGuard allowedAccountTypes={['Admin']}>
-            <div className="grid min-h-[100dvh] grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
+            <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
                 <AdminSidebar />
-                <main className="">
+                <main className="max-h-screen overflow-y-scroll">
                     <UserNav />
                     <Outlet />
                 </main>
