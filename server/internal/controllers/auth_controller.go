@@ -106,12 +106,14 @@ func (c *AuthController) setAuthTokenCookie(ctx *gin.Context, token string) {
 func (c *AuthController) CurrentUser(ctx *gin.Context) {
 	currentUser, err := c.getCurrentUser(ctx)
 	if err != nil {
+		c.tokenService.ClearTokenCookie(ctx)
 		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "Authentication required.")
 		return
 	}
 
 	userClaims, err := c.getUserClaims(ctx)
 	if err != nil {
+		c.tokenService.ClearTokenCookie(ctx)
 		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
 		return
 	}
