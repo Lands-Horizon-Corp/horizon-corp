@@ -57,7 +57,7 @@ const AccountProfileNavigation = ({
     }, [router])
 
     return (
-        <div className="mx-auto flex w-fit max-w-full justify-center gap-x-1 overflow-x-scroll rounded-xl bg-secondary p-1 text-sm sm:mx-0 sm:w-full sm:justify-start">
+        <div className="ecoop-scroll mx-auto flex w-fit max-w-full justify-center gap-x-1 overflow-x-scroll rounded-xl bg-secondary p-1 text-sm sm:mx-0 sm:w-full sm:justify-start [&::-webkit-scrollbar]:h-[2px]">
             {PATHS.filter((hashPath) => {
                 if (hashPath.visibleOn === 'all') return true
                 return hashPath.visibleOn.includes(currentUser.accountType)

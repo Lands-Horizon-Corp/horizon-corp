@@ -85,7 +85,7 @@
 }
 
 .ecoop-scroll::-webkit-scrollbar {
-    @apply w-[.4vw];
+    @apply w-[.4vw] h-[.4vw];
 }
 
 .ecoop-scroll::-webkit-scrollbar-track {
