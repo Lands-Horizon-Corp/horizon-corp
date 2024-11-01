@@ -12,7 +12,7 @@ const UserNav = () => {
     return (
         <RootNav className="pointer-events-none relative justify-between lg:px-4">
             <NavContainer className="pointer-events-auto">
-                <SidebarMobileToggle />
+                <SidebarMobileToggle className="md:hidden" />
             </NavContainer>
             <NavContainer className="pointer-events-auto">
                 {currentUser &&

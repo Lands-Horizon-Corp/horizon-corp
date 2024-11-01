@@ -9,11 +9,13 @@ const OwnerLayout = () => {
     return (
         <AuthGuard allowedAccountTypes={['Employee']}>
             <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
-                <EmployeeSidebar />
-                <main className="max-h-screen overflow-y-scroll ecoop-scroll">
-                    <UserNav />
-                    <Outlet />
-                </main>
+                <SidebarProvider>
+                    <EmployeeSidebar />
+                    <main className="ecoop-scroll max-h-screen overflow-y-scroll">
+                        <UserNav />
+                        <Outlet />
+                    </main>
+                </SidebarProvider>
             </div>
         </AuthGuard>
     )

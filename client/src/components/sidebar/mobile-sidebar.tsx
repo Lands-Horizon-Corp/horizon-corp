@@ -5,7 +5,7 @@ import {
     SheetTitle,
     SheetDescription,
 } from '@/components/ui/sheet'
-import Sidebar, { ISidebarProps } from '@/components/sidebar'
+import SidebarContent, { ISidebarProps } from './sidebar-content'
 
 import { useSidebarContext } from './sidebar-context'
 
@@ -17,12 +17,16 @@ const MobileSidebar = (props: ISidebarProps) => {
             open={isMobileSidebarVisible}
             onOpenChange={(newState) => toggleMobileSidebar(newState)}
         >
-            <SheetContent side="left" className="h-fit w-fit p-0">
+            <SheetContent
+                hideCloseButton
+                side="left"
+                className="h-fit w-fit p-0"
+            >
                 <SheetHeader className="hidden">
                     <SheetTitle>Sidebar</SheetTitle>
                     <SheetDescription>Mobile sidebar</SheetDescription>
                 </SheetHeader>
-                <Sidebar {...props} />
+                <SidebarContent {...props} />
             </SheetContent>
         </Sheet>
     )

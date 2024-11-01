@@ -1,7 +1,7 @@
 import { FC, useState } from 'react'
 import { useLocation, useRouter } from '@tanstack/react-router'
 
-import type { TSidebarItem } from '@/types/component/sidebar'
+import type { TSidebarItem } from '@/components/sidebar/sidebar-types'
 import SidebarItemContent from '@/components/sidebar/sidebar-item-content'
 import SidebarItemWithTooltip from '@/components/sidebar/sidebar-with-tooltip-wrapper'
 

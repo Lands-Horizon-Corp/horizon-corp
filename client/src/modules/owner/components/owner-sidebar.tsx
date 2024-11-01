@@ -14,10 +14,10 @@ import {
     NotificationIcon,
     BuildingBranchIcon,
 } from '@/components/icons'
-import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
+import Sidebar from '@/components/sidebar'
 
 import { IBaseComp } from '@/types/component'
-import { TSidebarItem } from '@/types/component/sidebar'
+import type { TSidebarItem } from '@/components/sidebar/sidebar-types'
 
 const ownerSidebarItem: TSidebarItem[] = [
     {
@@ -115,11 +115,15 @@ const ownerSidebarItem: TSidebarItem[] = [
     },
 ]
 
-interface Props extends IBaseComp {}
-
-const OwnerSidebar = ({ className }: Props) => {
+const OwnerSidebar = ({ className }: IBaseComp) => {
     return (
-        <DynamicSidebar sidebarItems={ownerSidebarItem} className={className} />
+        <Sidebar
+            enableCollapse
+            enableFocusBlur
+            className={className}
+            items={ownerSidebarItem}
+            logoRedirectUrl="/owner"
+        />
     )
 }
 

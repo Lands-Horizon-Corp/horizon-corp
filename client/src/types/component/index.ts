@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-export * from './sidebar'
+export * from '../../components/sidebar'
 
 export interface IBaseComp {
     className?: string

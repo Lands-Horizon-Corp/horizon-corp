@@ -6,13 +6,13 @@ import { IBaseCompNoChild } from '@/types'
 import { useSidebarContext } from './sidebar-context'
 
 const SidebarMobileToggle = ({ className }: IBaseCompNoChild) => {
-    const { isExpanded, toggleMobileSidebar } = useSidebarContext()
+    const { isMobileSidebarVisible, toggleMobileSidebar } = useSidebarContext()
 
     return (
         <Button
             variant="secondary"
             className={cn('size-fit p-2', className)}
-            onClick={() => toggleMobileSidebar(!isExpanded)}
+            onClick={() => toggleMobileSidebar(!isMobileSidebarVisible)}
         >
             <SidebarLeftIcon />
         </Button>
