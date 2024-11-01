@@ -133,30 +133,30 @@ Security
                                             <InputOTPGroup>
                                                 <InputOTPSlot
                                                     index={0}
-                                                    className="size-7 sm:size-8"
+                                                    className="sm:size-8"
                                                 />
                                                 <InputOTPSlot
                                                     index={1}
-                                                    className="size-7 sm:size-8"
+                                                    className="sm:size-8"
                                                 />
                                                 <InputOTPSlot
                                                     index={2}
-                                                    className="size-7 sm:size-8"
+                                                    className="sm:size-8"
                                                 />
                                             </InputOTPGroup>
                                             <InputOTPSeparator />
                                             <InputOTPGroup>
                                                 <InputOTPSlot
                                                     index={3}
-                                                    className="size-7 sm:size-8"
+                                                    className="sm:size-8"
                                                 />
                                                 <InputOTPSlot
                                                     index={4}
-                                                    className="size-7 sm:size-8"
+                                                    className="sm:size-8"
                                                 />
                                                 <InputOTPSlot
                                                     index={5}
-                                                    className="size-7 sm:size-8"
+                                                    className="sm:size-8"
                                                 />
                                             </InputOTPGroup>
                                         </InputOTP>
