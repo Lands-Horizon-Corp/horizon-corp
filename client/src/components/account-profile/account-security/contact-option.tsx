@@ -25,7 +25,7 @@ import VerifyContactBar from '../verify-notice/verify-contact-bar'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { PhoneInput } from '@/components/contact-input/contact-input'
 
-import { withCatchAsync } from '@/lib'
+import { cn, withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { contactNumberSchema } from '@/validations/common'
@@ -86,7 +86,7 @@ const ContactOption = ({ contact, verified, onSave }: Props) => {
     }, [contact, form])
 
     return (
-        <div className="space-y-0">
+        <div className={cn('space-y-0', hasChanges && 'space-y-2')}>
             <PasswordInputModal
                 state={pwdModalState}
                 payloadData={form.getValues()}
@@ -112,7 +112,7 @@ const ContactOption = ({ contact, verified, onSave }: Props) => {
                                 <FormItem className="grid w-full gap-y-2">
                                     <div>
                                         <FormLabel
-                                            htmlFor={field.name}
+                                            htmlFor="contact-input"
                                             className="text-right text-sm font-normal text-foreground/80"
                                         >
                                             Contact Number{' '}
@@ -139,6 +139,8 @@ const ContactOption = ({ contact, verified, onSave }: Props) => {
                                     <FormControl>
                                         <PhoneInput
                                             {...field}
+                                            id="contact-input"
+                                            name="contact-input"
                                             defaultCountry="PH"
                                         />
                                     </FormControl>

@@ -25,7 +25,7 @@ import FormErrorMessage from '@/components/ui/form-error-message'
 import VerifyContactBar from '../verify-notice/verify-contact-bar'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { withCatchAsync } from '@/lib'
+import { cn, withCatchAsync } from '@/lib'
 import { emailSchema } from '@/validations/common'
 import { serverRequestErrExtractor } from '@/helpers'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -86,7 +86,7 @@ const EmailOption = ({ email, verified, onSave }: Props) => {
     }, [email, form])
 
     return (
-        <div className="space-y-0">
+        <div className={cn("space-y-0", hasChanges && "space-y-2")}>
             <PasswordInputModal
                 state={pwdModalState}
                 payloadData={form.getValues()}

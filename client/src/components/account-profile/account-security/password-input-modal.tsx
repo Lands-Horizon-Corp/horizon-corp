@@ -1,15 +1,21 @@
-import { useState } from 'react'
+import z from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
+import { Form, FormItem, FormField } from '@/components/ui/form'
 import {
     Dialog,
+    DialogTitle,
+    DialogHeader,
     DialogContent,
     DialogDescription,
-    DialogHeader,
-    DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import PasswordInput from '@/components/ui/password-input'
+
+import { passwordSchema } from '@/validations/common'
+import FormErrorMessage from '@/components/ui/form-error-message'
 
 type Props<T> = {
     state: boolean
@@ -18,13 +24,23 @@ type Props<T> = {
     onSubmit: (updatedData: T & { password: string }) => void
 }
 
+const schema = z.object({
+    password: passwordSchema,
+})
+
 const PasswordInputModal = <T extends object>({
     state,
     onClose,
     onSubmit,
     payloadData,
 }: Props<T>) => {
-    const [password, setPassword] = useState('')
+    const form = useForm<z.infer<typeof schema>>({
+        resolver: zodResolver(schema),
+        reValidateMode: 'onChange',
+        values: { password: '' },
+    })
+
+    const firstError = Object.values(form.formState.errors)[0]?.message
 
     return (
         <Dialog open={state} onOpenChange={onClose}>
@@ -33,36 +49,45 @@ const PasswordInputModal = <T extends object>({
                 className="shadow-2 !rounded-2xl border font-inter"
             >
                 <DialogHeader>
-                    <DialogTitle className="font-medium">Password Confirm</DialogTitle>
+                    <DialogTitle className="font-medium">
+                        Password Confirm
+                    </DialogTitle>
                 </DialogHeader>
                 <DialogDescription className="mb-4">
                     Please enter password to proceed
                 </DialogDescription>
-                <PasswordInput
-                    hidden
-                    value={password}
-                    autoComplete="new-password"
-                    placeholder="Enter Password"
-                    onChange={(e) => setPassword(e.target.value)}
-                />
+                <Form {...form}>
+                    <form
+                        className="w-full space-y-4"
+                        onSubmit={form.handleSubmit((data) => {
+                            onSubmit({ ...payloadData, ...data })
+                            form.reset()
+                        })}
+                        autoComplete='off'
+                    >
+                        <FormField
+                            control={form.control}
+                            name="password"
+                            render={({ field }) => (
+                                <FormItem className="grid w-full gap-y-2">
+                                    <PasswordInput
+                                        hidden
+                                        {...field}
+                                        data-1p-ignore
+                                        autoComplete="off"
+                                        data-lpignore="true"
+                                        placeholder="Enter Password"
+                                    />
+                                </FormItem>
+                            )}
+                        />
+                        <FormErrorMessage errorMessage={firstError} />
+                        <div className="flex justify-end gap-x-2">
+                            <Button type="submit" className="px-8">Okay</Button>
+                        </div>
+                    </form>
+                </Form>
                 <Separator className="bg-muted/70" />
-                <div className="flex justify-end gap-x-2">
-                    <Button
-                        onClick={() => onClose(false)}
-                        variant={'ghost'}
-                        className="bg-muted/60 hover:bg-muted"
-                    >
-                        Back
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            onSubmit({ ...payloadData, password })
-                            setPassword('')
-                        }}
-                    >
-                        Okay
-                    </Button>
-                </div>
             </DialogContent>
         </Dialog>
     )
