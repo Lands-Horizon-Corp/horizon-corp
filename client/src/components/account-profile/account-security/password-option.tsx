@@ -93,7 +93,10 @@ const PasswordOption = ({ onSave }: Props) => {
                     onSubmit={form.handleSubmit((data) => updatePassword(data))}
                 >
                     <div className="space-y-1">
-                        <FormLabel className="font-normal text-foreground/80">
+                        <FormLabel
+                            htmlFor="PreviousPassword"
+                            className="font-normal text-foreground/80"
+                        >
                             Password
                         </FormLabel>
                         <FormDescription className="text-xs">
@@ -119,9 +122,11 @@ const PasswordOption = ({ onSave }: Props) => {
                                     <FormControl>
                                         <PasswordInput
                                             {...field}
+                                            data-1p-ignore
                                             id={field.name}
+                                            autoComplete="off"
+                                            data-lpignore="true"
                                             placeholder="Previous Password"
-                                            autoComplete="new-password"
                                         />
                                     </FormControl>
                                 </FormItem>
