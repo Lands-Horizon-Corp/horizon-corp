@@ -10,9 +10,8 @@ import {
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
-import { cn } from '@/lib/utils'
 import { IBaseComp } from '@/types/component'
-import { TSidebarItem } from '@/types/component/sidebar'
+import { TSidebarItem } from '@/components/sidebar/sidebar-types'
 
 export const employeeSidebarItems: TSidebarItem[] = [
     {
@@ -66,15 +65,13 @@ export const employeeSidebarItems: TSidebarItem[] = [
 
 const EmployeeSidebar = ({ className }: IBaseComp) => {
     return (
-        <div className="hidden sm:block">
-            <Sidebar
-                enableCollapse
-                enableFocusBlur
-                logoRedirectUrl="/employee"
-                items={employeeSidebarItems}
-                className={cn('', className)}
-            />
-        </div>
+        <Sidebar
+            enableCollapse
+            enableFocusBlur
+            className={className}
+            logoRedirectUrl="/employee"
+            items={employeeSidebarItems}
+        />
     )
 }
 

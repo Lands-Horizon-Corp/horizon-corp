@@ -1,6 +1,6 @@
 import { ReactNode } from '@tanstack/react-router'
 
-import { IBaseCompNoChild } from '..'
+import { IBaseCompNoChild } from '../../types/component'
 import { IconType } from 'react-icons/lib'
 
 export interface ISidebarItemBase extends IBaseCompNoChild {
