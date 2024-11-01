@@ -51,7 +51,7 @@ const SidebarContent = ({
                 <div className="relative z-0 flex w-fit items-center justify-center">
                     <Link to={logoRedirectUrl}>
                         <EcoopLogo
-                            className={cn('size-10', isExpanded && 'size-24')}
+                            className={cn('size-8', isExpanded && 'size-24')}
                         />
                     </Link>
                 </div>
