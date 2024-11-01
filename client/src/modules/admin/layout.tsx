@@ -8,7 +8,7 @@ import { SidebarProvider } from '@/components/sidebar/sidebar-provider'
 const AdminLayout = () => {
     return (
         <AuthGuard allowedAccountTypes={['Admin']}>
-            <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] sm:grid-cols-[auto_1fr]">
+            <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] md:grid-cols-[auto_1fr]">
                 <SidebarProvider>
                     <AdminSidebar />
                     <main className="ecoop-scroll max-h-screen overflow-y-scroll">
