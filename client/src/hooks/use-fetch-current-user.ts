@@ -28,9 +28,16 @@ const useFetchCurrentUser = (options?: {
                 if (error instanceof AxiosError && error.status === 401) {
                     options?.onUnauthorized?.()
                     setCurrentUser(null)
-                    setAuthStatus('unauthorized')
+                    setAuthStatus('authorized')
                     return null
                 }
+
+                if (error instanceof AxiosError && error.status === 500) {
+                    options?.onError?.(error)
+                    setAuthStatus('error')
+                    return null
+                }
+
                 options?.onError?.(error)
                 throw error
             }

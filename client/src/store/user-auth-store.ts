@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { UserData } from '@/horizon-corp/types'
 
-type TAuthStoreStatus = 'loading' | 'authorized' | 'unauthorized'
+type TAuthStoreStatus = 'loading' | 'authorized' | 'unauthorized' | 'error'
 
 interface UserAuthStore {
     currentUser: UserData | null
