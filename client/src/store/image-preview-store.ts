@@ -8,24 +8,25 @@ interface ImagePreviewState {
 }
 
 interface ImagePreviewActions {
-    setIsOpen?: (isOpen: boolean) => void
+    setIsOpen: (isOpen: boolean) => void
     setFocusIndex: (index:number) => void
-    onClose?: () => void
+    onClose: () => void
 }
 
 interface ImagePreviewProps extends ImagePreviewState, ImagePreviewActions {}
 
-const useImagePreview = create<ImagePreviewProps>()((set)=>({
-    focusIndex:9,
-    isOpen:false,
+export const useImagePreview = create<ImagePreviewProps>()((set)=>({
+    focusIndex: 0,
+    isOpen: false,
     setFocusIndex: (index) =>
     set((state) => ({
         ...state,
         focusIndex: index,
     })),
-    onClose:()=>
+    onClose:() =>
     set((state)=>({
-          ...state, isOpen: false 
+          ...state,
+          isOpen:false
     })),
     setIsOpen:(isOpen) =>
     set((state)=>({
