@@ -1,6 +1,7 @@
 import { createContext, useContext } from 'react'
 
 interface ISidebarContext {
+    isMobile : boolean,
     isMobileSidebarVisible: boolean
     toggleMobileSidebar: (newState: boolean) => void
     isExpanded: boolean

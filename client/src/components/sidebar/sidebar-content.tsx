@@ -12,8 +12,6 @@ import { IBaseComp } from '@/types/component'
 import { useSidebarContext } from './sidebar-context'
 import type { TSidebarItem } from '@/components/sidebar/sidebar-types'
 
-
-
 export interface ISidebarProps extends IBaseComp {
     items: TSidebarItem[]
     enableCollapse?: boolean
@@ -28,10 +26,8 @@ const SidebarContent = ({
     enableCollapse = false,
     enableFocusBlur = false,
 }: ISidebarProps) => {
-
-    const { isExpanded, toggleExpanded, isMobileSidebarVisible } =
+    const { isExpanded, isMobile, toggleExpanded, isMobileSidebarVisible } =
         useSidebarContext()
-
 
     return (
         <div
@@ -41,6 +37,8 @@ const SidebarContent = ({
                 !isExpanded && 'min-w-fit',
                 enableCollapse && 'border-r'
             )}
+            onMouseEnter={!isMobile ? () => toggleExpanded(true) : undefined}
+            onMouseLeave={!isMobile ? () => toggleExpanded(false) : undefined}
         >
             <div
                 className={cn(
@@ -55,7 +53,7 @@ const SidebarContent = ({
                         />
                     </Link>
                 </div>
-                {enableCollapse && !isMobileSidebarVisible && (
+                {enableCollapse && !isMobile && (
                     <Button
                         size="icon"
                         variant="secondary"
@@ -79,7 +77,7 @@ const SidebarContent = ({
                 <div
                     className={cn(
                         'ecoop-scroll z-0 flex max-h-full flex-col gap-y-2 overflow-y-scroll px-4 py-4',
-                        isExpanded && 'gap-y-1',
+                        isExpanded && !isMobileSidebarVisible && 'gap-y-1',
                         enableFocusBlur && 'group'
                     )}
                 >
@@ -90,7 +88,9 @@ const SidebarContent = ({
                 <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-5 w-full bg-gradient-to-t from-background to-transparent" />
             </div>
             <div className="px-4 pb-4">
-                <SidebarUserBar isExpanded={isExpanded} />
+                <SidebarUserBar
+                    isExpanded={isExpanded && !isMobileSidebarVisible}
+                />
             </div>
         </div>
     )

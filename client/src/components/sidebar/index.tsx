@@ -1,10 +1,10 @@
 import MobileSidebar from './mobile-sidebar'
 import SidebarContent, { ISidebarProps } from './sidebar-content'
 
-import { useIsMobile } from '@/hooks/use-mobile'
+import { useSidebarContext } from './sidebar-context'
 
 const Sidebar = (props: ISidebarProps) => {
-    const isMobile = useIsMobile()
+    const { isMobile } = useSidebarContext()
 
     if (isMobile) return <MobileSidebar {...props} />
 
