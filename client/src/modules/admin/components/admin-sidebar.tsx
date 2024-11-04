@@ -11,7 +11,7 @@ import {
 import Sidebar from '@/components/sidebar'
 
 import { IBaseComp } from '@/types/component'
-import { TSidebarItem } from '@/types/component/sidebar'
+import { TSidebarItem } from '@/components/sidebar/sidebar-types'
 
 export const adminSidebarItems: TSidebarItem[] = [
     {
@@ -75,19 +75,15 @@ export const adminSidebarItems: TSidebarItem[] = [
     },
 ]
 
-interface Props extends IBaseComp {}
-
-const AdminSidebar = ({ className }: Props) => {
+const AdminSidebar = ({ className }: IBaseComp) => {
     return (
-        <div className="hidden sm:block">
-            <Sidebar
-                enableCollapse
-                enableFocusBlur
-                logoRedirectUrl="/admin"
-                items={adminSidebarItems}
-                className={className}
-            />
-        </div>
+        <Sidebar
+            enableCollapse
+            enableFocusBlur
+            className={className}
+            logoRedirectUrl="/admin"
+            items={adminSidebarItems}
+        />
     )
 }
 
