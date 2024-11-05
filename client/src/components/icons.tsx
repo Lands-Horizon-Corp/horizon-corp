@@ -27,6 +27,7 @@ import {
     PiBuilding as BuildingIcon,
     PiNewspaper as ReportsIcon,
     PiUsersThree as Users3Icon,
+    PiMicrosoftExcelLogoFill as ExcelIcon,
     PiBuildingOffice as BuildingBranchIcon,
     PiWarningCircleFill as WarningCircleIcon,
     PiCodeBlock as PiCodeBlockIcon,
@@ -46,6 +47,9 @@ import {
     HiOutlineArrowRightEndOnRectangle as LogoutIcon,
     HiOutlineChatBubbleBottomCenterText as FeedbackIcon,
     HiOutlineCamera as CameraIcon,
+    HiOutlineArrowUp as ArrowUpIcon,
+    HiOutlineArrowDown as ArrowDownIcon,
+    HiOutlineArrowsUpDown as ArrowUpDownIcon,
 } from 'react-icons/hi2'
 import {
     AiOutlineKey as KeyIcon,
@@ -72,9 +76,14 @@ import {
     IoCallOutline as IoCallOutlineIcon,
     IoLocationSharp as IoLocationSharpIcon,
 } from 'react-icons/io5'
-import { RxFontItalic as ToolbarItalicIcon } from 'react-icons/rx'
+import {
+    RxEyeNone as EyeNoneIcon,
+    RxFontItalic as ToolbarItalicIcon,
+    RxMixerHorizontal as MixerHorizontalIcon,
+} from 'react-icons/rx'
 import {
     FaBold as FaBoldIcon,
+    FaFileCsv as CsvIcon,
     FaRulerHorizontal as FaRulerHorizontalIcon,
 } from 'react-icons/fa'
 import { IoIosCode as IoIosCodeIcon } from 'react-icons/io'
@@ -87,6 +96,7 @@ import {
 import { CgFacebook as CgFacebookIcon } from 'react-icons/cg'
 
 import { IBaseCompNoChild } from '@/types/component'
+import { CiExport as ExportIcon } from 'react-icons/ci'
 import { SiGooglemaps as SiGooglemapsIcon } from 'react-icons/si'
 import { VscLocation as VscLocationIcon } from 'react-icons/vsc'
 
@@ -153,24 +163,29 @@ const CookieIcon: React.FC<IBaseCompNoChild> = (props) => {
 }
 
 export {
+    CsvIcon,
     SunIcon,
     KeyIcon,
     DevIcon,
     UserIcon,
     MoonIcon,
     ClockIcon,
+    ExcelIcon,
     CookieIcon,
     CameraIcon,
     FaBoldIcon,
     ShieldIcon,
     Users3Icon,
     LogoutIcon,
+    ExportIcon,
     RefreshIcon,
     LuUndo2Icon,
     LuRedo2Icon,
+    ArrowUpIcon,
     SidebarIcon,
     ReportsIcon,
     SunMoonIcon,
+    EyeNoneIcon,
     QuestionIcon,
     SettingsIcon,
     UserListIcon,
@@ -178,6 +193,7 @@ export {
     FeedbackIcon,
     BuildingIcon,
     ArrowLeftIcon,
+    ArrowDownIcon,
     CameraOffIcon,
     FootstepsIcon,
     UserClockIcon,
@@ -196,6 +212,7 @@ export {
     UserShieldIcon,
     BuildingCogIcon,
     PiCodeBlockIcon,
+    ArrowUpDownIcon,
     TbBlockquoteIcon,
     ChevronRightIcon,
     CameraSelectIcon,
@@ -207,6 +224,7 @@ export {
     LoadingCircleIcon,
     BuildingBranchIcon,
     LoadingSpinnerIcon,
+    MixerHorizontalIcon,
     BsTextParagraphIcon,
     PatchExclamationIcon,
     FaRulerHorizontalIcon,
