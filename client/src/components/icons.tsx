@@ -59,6 +59,8 @@ import {
     MdFlipCameraAndroid as CameraFlipIcon,
     MdMarkEmailRead as EmailCheckIcon,
     MdOutlineEmail as MdOutlineEmailIcon,
+    MdRotateLeft as MdRotateLeftIcon,
+    MdRotateRight as MdRotateRightIcon,
 } from 'react-icons/md'
 import {
     BsPatchCheck as VerifiedPatchIcon,
@@ -86,6 +88,9 @@ import {
 import { CgFacebook as CgFacebookIcon } from 'react-icons/cg'
 
 import { IBaseCompNoChild } from '@/types/component'
+
+import { GrPowerReset as GrPowerResetIcon } from "react-icons/gr";
+
 
 const CookieIcon: React.FC<IBaseCompNoChild> = (props) => {
     return (
@@ -214,4 +219,7 @@ export {
     AiOutlineMessageIcon,
     MdOutlineEmailIcon,
     IoCallOutlineIcon,
+    GrPowerResetIcon,
+    MdRotateRightIcon,
+    MdRotateLeftIcon,
 }
