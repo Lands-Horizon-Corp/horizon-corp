@@ -59,6 +59,8 @@ import {
     MdFlipCameraAndroid as CameraFlipIcon,
     MdMarkEmailRead as EmailCheckIcon,
     MdOutlineEmail as MdOutlineEmailIcon,
+    MdRotateLeft as MdRotateLeftIcon,
+    MdRotateRight as MdRotateRightIcon,
 } from 'react-icons/md'
 import {
     BsPatchCheck as VerifiedPatchIcon,
@@ -87,6 +89,9 @@ import {
 import { CgFacebook as CgFacebookIcon } from 'react-icons/cg'
 
 import { IBaseCompNoChild } from '@/types/component'
+
+import { GrPowerReset as GrPowerResetIcon } from "react-icons/gr";
+
 import { SiGooglemaps as SiGooglemapsIcon } from 'react-icons/si'
 import { VscLocation as VscLocationIcon } from 'react-icons/vsc'
 
@@ -220,4 +225,7 @@ export {
     IoLocationSharpIcon,
     SiGooglemapsIcon,
     VscLocationIcon,
+    GrPowerResetIcon,
+    MdRotateRightIcon,
+    MdRotateLeftIcon,
 }
