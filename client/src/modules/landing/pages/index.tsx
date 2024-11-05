@@ -8,23 +8,10 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
 
-import { ImagePreview, ImagePreviewContent } from '@/components/ui/image-preview'
-import { sampleMediaResourceList } from '@/components/image-preview/sampleImageData'
-import { useImagePreview } from '@/store/image-preview-store'
-
 const LandingPage = () => {
-
-    const { isOpen, setIsOpen, setFocusIndex } = useImagePreview()
 
     return (
         <div className="flex h-fit justify-center px-6 font-inter sm:px-8 lg:px-[60px] xl:px-[124px]">
-             <Button onClick={()=>{
-                setFocusIndex(0);
-                setIsOpen(true)
-             }}>open Image</Button>
-            <ImagePreview open={isOpen} onOpenChange={()=> setIsOpen(false)}>
-                <ImagePreviewContent Images={sampleMediaResourceList} />
-            </ImagePreview>
             <div className="h-fit w-full max-w-[1240px]">
                 <h1 className="w-[80%] pt-2 text-[min(64px,5.5vw)] font-black capitalize md:pt-20 lg:leading-[4.8rem]">
                     Empowering Communities Through Cooperative Ownership

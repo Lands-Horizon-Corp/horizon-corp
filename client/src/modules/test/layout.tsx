@@ -1,27 +1,19 @@
 import { Outlet } from '@tanstack/react-router'
-// import MainMapContainer from '@/components/map'
 import { ImagePreview, ImagePreviewContent } from '@/components/ui/image-preview'
-// import { useMapStore } from '@/store/map-store'
-import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { sampleMediaResourceList } from '@/components/image-preview/sampleImageData'
+import { sampleMediaResourceList } from './testSampleData'
+import { useImagePreview } from '@/store/image-preview-store'
 const TestLayout = () => {
-    const [isOpen, setIsOpen] = useState(false)
+    const { isOpen, setIsOpen } = useImagePreview()
 
     return (
-        <div className="grid min-h-[100dvh] bg-red-500 grid-cols-[auto_1fr]">
+        <div className="grid min-h-[100dvh] grid-cols-[auto_1fr]">
             <main>
                 <Outlet />
             </main>
 
         <div className="mx-auto h-[100vh] w-[80%]">
-            {/* <MainMapContainer
-                center={defaultCenter}
-                zoom={defaultZoom}
-                // multiplePins={true}
-                // viewOnly={true}
-            /> */}
-            <Button onClick={()=> setIsOpen(true)}></Button>
+            <Button onClick={()=> setIsOpen(true)}>view</Button>
             <ImagePreview open={isOpen} onOpenChange={()=> setIsOpen(false)}>
                 <ImagePreviewContent Images={sampleMediaResourceList} />
             </ImagePreview>
