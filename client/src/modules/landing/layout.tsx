@@ -8,7 +8,9 @@ import Footer from '@/components/footers/landing-footer'
 import { VersionAndFeedBack } from '@/components/version'
 import LandingNav from '@/components/nav/navs/landing-nav'
 
+
 const PublicLayout = () => {
+
     return (
         <>
             <div className="relative overflow-hidden">
@@ -32,7 +34,7 @@ const PublicLayout = () => {
                     <Outlet />
                     <Footer />
                 </main>
-
+               
                 <VersionAndFeedBack />
             </div>
         </>
