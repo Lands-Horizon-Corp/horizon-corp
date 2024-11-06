@@ -77,11 +77,11 @@ const DataTableExportButton = <TData,>({ table }: Props<TData>) => {
                     disabled={selectedData.length === 0}
                 >
                     <ExportIcon className="size-4" />
-                    Export Selected
+                    Export
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="min-w-44">
-                <DropdownMenuLabel>Select Export Format</DropdownMenuLabel>
+                <DropdownMenuLabel>Export Format</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                     <DropdownMenuItem onClick={() => exportData('xlsx')}>
