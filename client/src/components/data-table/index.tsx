@@ -31,7 +31,13 @@ const DataTable = <TData = unknown,>({
     if (!table || !table.getRowModel) return null
 
     return (
-        <UITable {...other} className={className}>
+        <UITable
+            {...other}
+            className={className}
+            // style={{
+            // width: table.getCenterTotalSize(),
+            // }}
+        >
             <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow
@@ -45,7 +51,9 @@ const DataTable = <TData = unknown,>({
                             return (
                                 <TableHead
                                     key={header.id}
-                                    className={headerClassName}
+                                    colSpan={header.colSpan}
+                                    style={{ width: header.getSize() }}
+                                    className={cn('relative', headerClassName)}
                                 >
                                     {header.isPlaceholder
                                         ? null
@@ -60,17 +68,23 @@ const DataTable = <TData = unknown,>({
                 ))}
             </TableHeader>
             <TableBody>
-                {table.getRowModel().rows.length ? ( // THIS NEEDS INVESTIGATION LOL, PRODUCING WARNING ON MOUNT WHEN IN DEV MODE ONLY
+                {
+                    // THIS NEEDS INVESTIGATION LOL, PRODUCING WARNING ON MOUNT WHEN IN DEV MODE ONLY
                     table.getRowModel().rows.map((row) => {
                         return (
                             <TableRow
                                 key={row.id}
-                                className={rowClassName}
+                                className={cn('w-fit', rowClassName)}
                                 data-state={row.getIsSelected() && 'selected'}
                             >
                                 {row.getVisibleCells().map((cell) => {
                                     return (
-                                        <TableCell key={cell.id}>
+                                        <TableCell
+                                            key={cell.id}
+                                            style={{
+                                                width: cell.column.getSize(),
+                                            }}
+                                        >
                                             {flexRender(
                                                 cell.column.columnDef.cell,
                                                 cell.getContext()
@@ -81,7 +95,9 @@ const DataTable = <TData = unknown,>({
                             </TableRow>
                         )
                     })
-                ) : (
+                }
+
+                {table.getRowModel().rows.length === 0 && (
                     <TableRow>
                         <TableCell
                             colSpan={table.getAllColumns().length}
