@@ -4,6 +4,7 @@ import {
     ColumnDef,
     getCoreRowModel,
     getSortedRowModel,
+    PaginationState,
     SortingState,
     useReactTable,
 } from '@tanstack/react-table'
@@ -13,11 +14,13 @@ import DataTableExportButton from '@/components/data-table/data-table-export-but
 import { DataTableViewOptions } from '@/components/data-table/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 
-
 type TData = {
     name: string
     age: number
     bday: Date
+    name1: string
+    age1: number
+    bday1: Date
 }
 
 const generateRandomDate = (start: Date, end: Date): Date => {
@@ -42,7 +45,7 @@ const data = () => {
         'Jack',
     ]
 
-    const mockData: TData[] = Array.from({ length: 50 }).map(() => {
+    const mockData: TData[] = Array.from({ length: 3 }).map(() => {
         const age = Math.floor(Math.random() * (65 - 18 + 1)) + 18
         const name = names[Math.floor(Math.random() * names.length)]
         const bday = generateRandomDate(
@@ -54,6 +57,9 @@ const data = () => {
             name,
             age,
             bday,
+            name1: name,
+            age1: age,
+            bday1: bday,
         }
     })
 
@@ -79,14 +85,15 @@ const columns: ColumnDef<TData>[] = [
                 aria-label="Select row"
             />
         ),
+        size: 40,
         enableSorting: false,
         enableHiding: false,
     },
     {
         id: 'Name',
         accessorKey: 'name',
-        header: ({ column }) => (
-            <DataTableColumnHeader title="Name" column={column} />
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="Name" {...props} />
         ),
         cell: ({
             row: {
@@ -97,8 +104,8 @@ const columns: ColumnDef<TData>[] = [
     {
         id: 'Age',
         accessorKey: 'age',
-        header: ({ column }) => (
-            <DataTableColumnHeader title="Age" column={column} />
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="Age" {...props} />
         ),
         cell: ({
             row: {
@@ -109,14 +116,50 @@ const columns: ColumnDef<TData>[] = [
     {
         id: 'Birth Date',
         accessorKey: 'bday',
-        header: ({ column }) => (
-            <DataTableColumnHeader title="Birth Date" column={column} />
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="Birth Date" {...props} />
         ),
         cell: ({
             row: {
                 original: { bday },
             },
-        }) => <div>{bday.toLocaleString()}</div>,
+        }) => <div className="text-nowrap">{bday.toLocaleString()}</div>,
+    },
+    {
+        id: 'Name1',
+        accessorKey: 'name1',
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="Name1" {...props} />
+        ),
+        cell: ({
+            row: {
+                original: { name1 },
+            },
+        }) => <div>{name1}</div>,
+    },
+    {
+        id: 'Age1',
+        accessorKey: 'age1',
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="Age1" {...props} />
+        ),
+        cell: ({
+            row: {
+                original: { age1 },
+            },
+        }) => <div>{age1}</div>,
+    },
+    {
+        id: 'Birth Date 1',
+        accessorKey: 'bday1',
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="Birth Date" {...props} />
+        ),
+        cell: ({
+            row: {
+                original: { bday1 },
+            },
+        }) => <div className="text-nowrap">{bday1.toLocaleString()}</div>,
     },
 ]
 
@@ -124,6 +167,10 @@ const Tbl = () => {
     const [rowSelection, setRowSelection] = useState({})
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnVisibility, setColumnVisibility] = useState({})
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    })
 
     const memoizedData = useMemo(() => data(), [])
 
@@ -134,8 +181,13 @@ const Tbl = () => {
             sorting,
             rowSelection,
             columnVisibility,
+            pagination,
         },
+        debugTable: true,
+        manualPagination: true,
         onSortingChange: setSorting,
+        columnResizeMode: 'onChange',
+        onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onRowSelectionChange: setRowSelection,
         getSortedRowModel: getSortedRowModel(),

@@ -15,6 +15,7 @@ import {
     BsBuildingGear as BuildingCogIcon,
     BsLayoutSidebarInset as SidebarIcon,
     BsTextParagraph as BsTextParagraphIcon,
+    BsLayoutSidebarInsetReverse as SidebarRightIcon,
 } from 'react-icons/bs'
 import {
     LiaUser as UserIcon,
@@ -23,10 +24,12 @@ import {
     LiaUserShieldSolid as UserShieldIcon,
 } from 'react-icons/lia'
 import {
+    PiPushPin as PushPinIcon,
     PiUserList as UserListIcon,
     PiBuilding as BuildingIcon,
     PiNewspaper as ReportsIcon,
     PiUsersThree as Users3Icon,
+    PiPushPinSlash as PushPinSlashIcon,
     PiMicrosoftExcelLogoFill as ExcelIcon,
     PiBuildingOffice as BuildingBranchIcon,
     PiWarningCircleFill as WarningCircleIcon,
@@ -77,8 +80,10 @@ import {
     IoLocationSharp as IoLocationSharpIcon,
 } from 'react-icons/io5'
 import {
+    RxReset as  ResetIcon,
     RxEyeNone as EyeNoneIcon,
     RxFontItalic as ToolbarItalicIcon,
+    RxDragHandleDots2 as DragHandleIcon,
     RxMixerHorizontal as MixerHorizontalIcon,
 } from 'react-icons/rx'
 import {
@@ -171,6 +176,7 @@ export {
     MoonIcon,
     ClockIcon,
     ExcelIcon,
+    ResetIcon,
     CookieIcon,
     CameraIcon,
     FaBoldIcon,
@@ -185,6 +191,7 @@ export {
     SidebarIcon,
     ReportsIcon,
     SunMoonIcon,
+    PushPinIcon,
     EyeNoneIcon,
     QuestionIcon,
     SettingsIcon,
@@ -199,6 +206,7 @@ export {
     UserClockIcon,
     DashboardIcon,
     IoIosCodeIcon,
+    DragHandleIcon,
     PatchMinusIcon,
     PatchCheckIcon,
     LuHeading1Icon,
@@ -214,8 +222,10 @@ export {
     PiCodeBlockIcon,
     ArrowUpDownIcon,
     TbBlockquoteIcon,
+    PushPinSlashIcon,
     ChevronRightIcon,
     CameraSelectIcon,
+    SidebarRightIcon,
     NotificationIcon,
     ToolbarItalicIcon,
     LuListOrderedIcon,
