@@ -1,4 +1,4 @@
-import { Table, flexRender } from '@tanstack/react-table'
+import { Column, Table, flexRender } from '@tanstack/react-table'
 
 import {
     Table as UITable,
@@ -12,6 +12,7 @@ import {
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
+import { CSSProperties } from 'react'
 
 interface Props<TData> extends IBaseCompNoChild, ITableExtraProps {
     table: Table<TData>
@@ -20,7 +21,49 @@ interface Props<TData> extends IBaseCompNoChild, ITableExtraProps {
     isStickyHeader?: boolean
 }
 
-const DataTable = <TData = unknown,>({
+const getCommonPinningStyles = <TData,>(
+    column: Column<TData>
+): CSSProperties => {
+    const isPinned = column.getIsPinned()
+    const isLastLeftPinnedColumn =
+        isPinned === 'left' && column.getIsLastColumn('left')
+    const isFirstRightPinnedColumn =
+        isPinned === 'right' && column.getIsFirstColumn('right')
+
+    return {
+        boxShadow: isLastLeftPinnedColumn
+            ? '-4px 0 4px -4px gray inset'
+            : isFirstRightPinnedColumn
+              ? '4px 0 4px -4px gray inset'
+              : undefined,
+        left: isPinned === 'left' ? `${column.getStart('left')}px` : undefined,
+        right:
+            isPinned === 'right' ? `${column.getAfter('right')}px` : undefined,
+        opacity: isPinned ? 0.95 : 1,
+        position: isPinned ? 'sticky' : 'relative',
+        width: column.getSize(),
+        zIndex: isPinned ? 1 : 0,
+    }
+}
+
+const getCommonPinningClasses = <TData,>(column: Column<TData>): string => {
+    const isPinned = column.getIsPinned()
+    const isLastLeftPinnedColumn =
+        isPinned === 'left' && column.getIsLastColumn('left')
+    const isFirstRightPinnedColumn =
+        isPinned === 'right' && column.getIsFirstColumn('right')
+
+    return cn(
+        isPinned ? 'sticky opacity-95 z-10' : 'relative z-0',
+        isPinned === 'left' && `left-[${column.getStart('left')}px]`,
+        isPinned === 'right' && `right-[${column.getAfter('right')}px]`,
+        isLastLeftPinnedColumn && 'shadow-lg shadow-gray-500 inset-l-4',
+        isFirstRightPinnedColumn && 'shadow-lg shadow-gray-500 inset-r-4',
+        `w-[${column.getSize()}px]`
+    )
+}
+
+const DataTable = <TData,>({
     table,
     className,
     rowClassName,
@@ -52,8 +95,15 @@ const DataTable = <TData = unknown,>({
                                 <TableHead
                                     key={header.id}
                                     colSpan={header.colSpan}
-                                    style={{ width: header.getSize() }}
-                                    className={cn('relative', headerClassName)}
+                                    style={{
+                                        width: header.getSize(),
+                                        ...getCommonPinningStyles(header.column)
+                                    }}
+                                    className={cn(
+                                        'relative',
+                                        headerClassName,
+                                        // getCommonPinningClasses(header.column)
+                                    )}
                                 >
                                     {header.isPlaceholder
                                         ? null
@@ -83,7 +133,11 @@ const DataTable = <TData = unknown,>({
                                             key={cell.id}
                                             style={{
                                                 width: cell.column.getSize(),
+                                        ...getCommonPinningStyles(cell.column)
                                             }}
+                                            // className={getCommonPinningClasses(
+                                            //     cell.column
+                                            // )}
                                         >
                                             {flexRender(
                                                 cell.column.columnDef.cell,
