@@ -3,7 +3,6 @@ import { Header, Table } from '@tanstack/react-table'
 import { DragHandleIcon } from '@/components/icons'
 
 import { cn } from '@/lib'
-import ActionTooltip from '../action-tooltip'
 
 interface Props<TData, TValue> {
     table: Table<TData>
@@ -14,10 +13,12 @@ const DataTableColumnDragResize = <TData, TValue>({
     table,
     header,
 }: Props<TData, TValue>) => {
+    if (header.column.getIsPinned()) return null
+
     return (
         <div
             {...{
-                className: `absolute top-0 right-2 flex items-center justify-center w-[1px] h-full bg-border/40 ${
+                className: `absolute duration-100 ease-in-out top-0 right-2 flex items-center justify-center w-[1px] h-full hover:bg-border/40  hover:bg-border/80 ${
                     header.column.getIsResizing() ? 'bg-foreground/80' : ''
                 }`,
                 style: {
@@ -35,20 +36,18 @@ const DataTableColumnDragResize = <TData, TValue>({
                 },
             }}
         >
-            <ActionTooltip tooltipContent="Drag to resize / Double click to reset">
-                <span
-                    className={cn(
-                        'p-.5 cursor-col-resize touch-none select-none rounded-sm bg-secondary/30 text-foreground/60 hover:bg-secondary/80',
-                        header.column.getIsResizing() &&
-                            'bg-background text-foreground/80 hover:bg-background'
-                    )}
-                    onMouseDown={header.getResizeHandler()}
-                    onTouchStart={header.getResizeHandler()}
-                    onDoubleClick={() => header.column.resetSize()}
-                >
-                    <DragHandleIcon className="size-3" />
-                </span>
-            </ActionTooltip>
+            <span
+                className={cn(
+                    'p-.5 cursor-col-resize touch-none select-none rounded-sm bg-secondary/30 text-foreground/60 hover:bg-secondary/80',
+                    header.column.getIsResizing() &&
+                        'bg-background text-foreground/80 hover:bg-background'
+                )}
+                onMouseDown={header.getResizeHandler()}
+                onTouchStart={header.getResizeHandler()}
+                onDoubleClick={() => header.column.resetSize()}
+            >
+                <DragHandleIcon className="size-3" />
+            </span>
         </div>
     )
 }

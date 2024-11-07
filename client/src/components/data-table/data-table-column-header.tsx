@@ -43,7 +43,7 @@ export function DataTableColumnHeader<TData, TValue>({
     return (
         <div
             className={cn(
-                'flex items-center gap-x-2',
+                'flex w-fit items-center gap-x-2',
                 className,
                 isResizable && 'pr-1'
             )}
@@ -70,10 +70,12 @@ export function DataTableColumnHeader<TData, TValue>({
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                    className="min-w-40 border-none shadow-xl"
+                    className="ecoop-scroll max-h-[60vh] min-w-40 overflow-y-scroll border-none shadow-xl"
                     align="start"
                 >
-                    {column.getCanPin() && (
+                    {(column.getIsPinned() ||
+                        (column.getCanPin() &&
+                            !table.getIsSomeColumnsPinned())) && (
                         <>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>

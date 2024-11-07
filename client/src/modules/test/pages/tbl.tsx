@@ -70,13 +70,15 @@ const columns: ColumnDef<TData>[] = [
     {
         id: 'select',
         header: ({ table }) => (
-            <Checkbox
-                checked={table.getIsAllPageRowsSelected()}
-                onCheckedChange={(value) =>
-                    table.toggleAllPageRowsSelected(!!value)
-                }
-                aria-label="Select all"
-            />
+            <div className={'w-fit items-center gap-x-2'}>
+                <Checkbox
+                    checked={table.getIsAllPageRowsSelected()}
+                    onCheckedChange={(value) =>
+                        table.toggleAllPageRowsSelected(!!value)
+                    }
+                    aria-label="Select all"
+                />
+            </div>
         ),
         cell: ({ row }) => (
             <Checkbox
@@ -85,7 +87,6 @@ const columns: ColumnDef<TData>[] = [
                 aria-label="Select row"
             />
         ),
-        size: 40,
         enableSorting: false,
         enableHiding: false,
     },
@@ -183,7 +184,8 @@ const Tbl = () => {
             columnVisibility,
             pagination,
         },
-        debugTable: true,
+        debugColumns: true,
+        debugCells: true,
         manualPagination: true,
         onSortingChange: setSorting,
         columnResizeMode: 'onChange',

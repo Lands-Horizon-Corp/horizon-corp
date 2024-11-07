@@ -1,3 +1,4 @@
+import { CSSProperties } from 'react'
 import { Column, Table, flexRender } from '@tanstack/react-table'
 
 import {
@@ -12,18 +13,20 @@ import {
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { CSSProperties } from 'react'
 
 interface Props<TData> extends IBaseCompNoChild, ITableExtraProps {
     table: Table<TData>
     rowClassName?: string
     headerClassName?: string
     isStickyHeader?: boolean
+    cellClassName?: string
 }
 
 const getCommonPinningStyles = <TData,>(
     column: Column<TData>
 ): CSSProperties => {
+    console.log(column.id, column.getSize())
+
     const isPinned = column.getIsPinned()
     const isLastLeftPinnedColumn =
         isPinned === 'left' && column.getIsLastColumn('left')
@@ -42,31 +45,15 @@ const getCommonPinningStyles = <TData,>(
         opacity: isPinned ? 0.95 : 1,
         position: isPinned ? 'sticky' : 'relative',
         width: column.getSize(),
-        zIndex: isPinned ? 1 : 0,
+        zIndex: isPinned ? 1 : undefined,
     }
-}
-
-const getCommonPinningClasses = <TData,>(column: Column<TData>): string => {
-    const isPinned = column.getIsPinned()
-    const isLastLeftPinnedColumn =
-        isPinned === 'left' && column.getIsLastColumn('left')
-    const isFirstRightPinnedColumn =
-        isPinned === 'right' && column.getIsFirstColumn('right')
-
-    return cn(
-        isPinned ? 'sticky opacity-95 z-10' : 'relative z-0',
-        isPinned === 'left' && `left-[${column.getStart('left')}px]`,
-        isPinned === 'right' && `right-[${column.getAfter('right')}px]`,
-        isLastLeftPinnedColumn && 'shadow-lg shadow-gray-500 inset-l-4',
-        isFirstRightPinnedColumn && 'shadow-lg shadow-gray-500 inset-r-4',
-        `w-[${column.getSize()}px]`
-    )
 }
 
 const DataTable = <TData,>({
     table,
     className,
     rowClassName,
+    cellClassName,
     isStickyHeader,
     headerClassName,
     ...other
@@ -76,19 +63,16 @@ const DataTable = <TData,>({
     return (
         <UITable
             {...other}
+            // style={{ width: table.getTotalSize() }}
             className={className}
-            // style={{
-            // width: table.getCenterTotalSize(),
-            // }}
         >
-            <TableHeader>
+            <TableHeader
+                className={cn('', isStickyHeader && 'sticky top-0 z-50')}
+            >
                 {table.getHeaderGroups().map((headerGroup) => (
                     <TableRow
                         key={headerGroup.id}
-                        className={cn(
-                            'bg-popover hover:bg-popover/95',
-                            isStickyHeader && 'sticky top-0'
-                        )}
+                        className="bg-popover hover:bg-popover"
                     >
                         {headerGroup.headers.map((header) => {
                             return (
@@ -96,13 +80,14 @@ const DataTable = <TData,>({
                                     key={header.id}
                                     colSpan={header.colSpan}
                                     style={{
-                                        width: header.getSize(),
-                                        ...getCommonPinningStyles(header.column)
+                                        // width: header.getSize(),
+                                        ...getCommonPinningStyles(
+                                            header.column
+                                        ),
                                     }}
                                     className={cn(
-                                        'relative',
-                                        headerClassName,
-                                        // getCommonPinningClasses(header.column)
+                                        'relative w-full bg-popover',
+                                        headerClassName
                                     )}
                                 >
                                     {header.isPlaceholder
@@ -124,7 +109,7 @@ const DataTable = <TData,>({
                         return (
                             <TableRow
                                 key={row.id}
-                                className={cn('w-fit', rowClassName)}
+                                className={cn('!w-fit', rowClassName)}
                                 data-state={row.getIsSelected() && 'selected'}
                             >
                                 {row.getVisibleCells().map((cell) => {
@@ -132,9 +117,12 @@ const DataTable = <TData,>({
                                         <TableCell
                                             key={cell.id}
                                             style={{
-                                                width: cell.column.getSize(),
-                                        ...getCommonPinningStyles(cell.column)
+                                                // width: cell.column.getSize(),
+                                                ...getCommonPinningStyles(
+                                                    cell.column
+                                                ),
                                             }}
+                                            className={cn("backdrop-blur bg-background w-full",cellClassName)}
                                             // className={getCommonPinningClasses(
                                             //     cell.column
                                             // )}
