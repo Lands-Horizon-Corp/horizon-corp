@@ -8,11 +8,11 @@ import {
     SortingState,
     useReactTable,
 } from '@tanstack/react-table'
-import DataTable from '@/components/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import DataTableExportButton from '@/components/data-table/data-table-export-button'
 import { DataTableViewOptions } from '@/components/data-table/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
+import DataTableVirtualize from '@/components/data-table/data-table-virtualize'
 
 type TData = {
     name: string
@@ -45,7 +45,7 @@ const data = () => {
         'Jack',
     ]
 
-    const mockData: TData[] = Array.from({ length: 3 }).map(() => {
+    const mockData: TData[] = Array.from({ length: 500_000 }).map(() => {
         const age = Math.floor(Math.random() * (65 - 18 + 1)) + 18
         const name = names[Math.floor(Math.random() * names.length)]
         const bday = generateRandomDate(
@@ -66,11 +66,11 @@ const data = () => {
     return mockData
 }
 
-const columns: ColumnDef<TData>[] = [
+const defaultColumns: ColumnDef<TData>[] = [
     {
         id: 'select',
         header: ({ table }) => (
-            <div className={'w-fit items-center px-2'}>
+            <div className={'flex w-fit items-center px-2'}>
                 <Checkbox
                     checked={table.getIsAllPageRowsSelected()}
                     onCheckedChange={(value) =>
@@ -141,36 +141,13 @@ const columns: ColumnDef<TData>[] = [
             },
         }) => <div>{name1}</div>,
     },
-    {
-        id: 'Age1',
-        accessorKey: 'age1',
-        header: (props) => (
-            <DataTableColumnHeader isResizable title="Age1" {...props} />
-        ),
-        cell: ({
-            row: {
-                original: { age1 },
-            },
-        }) => <div>{age1}</div>,
-    },
-    {
-        id: 'Birth Date 1',
-        accessorKey: 'bday1',
-        header: (props) => (
-            <DataTableColumnHeader isResizable title="Birth Date" {...props} />
-        ),
-        cell: ({
-            row: {
-                original: { bday1 },
-            },
-        }) => <div className="text-nowrap">{bday1.toLocaleString()}</div>,
-    },
 ]
 
 const Tbl = () => {
     const [rowSelection, setRowSelection] = useState({})
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnVisibility, setColumnVisibility] = useState({})
+    const [columns] = useState<typeof defaultColumns>(() => [...defaultColumns])
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: 0,
         pageSize: 10,
@@ -187,8 +164,6 @@ const Tbl = () => {
             columnVisibility,
             pagination,
         },
-        debugColumns: true,
-        debugCells: true,
         manualPagination: true,
         onSortingChange: setSorting,
         columnResizeMode: 'onChange',
@@ -206,10 +181,18 @@ const Tbl = () => {
                 <DataTableExportButton table={table} />
                 <DataTableViewOptions table={table} />
             </div>
-            <DataTable
+            <p>table showing {memoizedData.length} rows</p>
+            {
+                // <DataTable
+                //     table={table}
+                //     isStickyHeader
+                //     wrapperClassName="flex-1 mb-2"
+                // />
+            }
+            <DataTableVirtualize
                 table={table}
                 isStickyHeader
-                wrapperClassName="flex-1 mb-2 rounded-lg"
+                wrapperClassName="flex-1 mb-2"
             />
         </div>
     )

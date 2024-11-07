@@ -73,9 +73,7 @@ export function DataTableColumnHeader<TData, TValue>({
                     className="ecoop-scroll max-h-[60vh] min-w-40 overflow-y-scroll border-none shadow-xl"
                     align="start"
                 >
-                    {(column.getIsPinned() ||
-                        (column.getCanPin() &&
-                            !table.getIsSomeColumnsPinned())) && (
+                    {column.getCanPin() && (
                         <>
                             <DropdownMenuSeparator />
                             <DropdownMenuGroup>
@@ -84,6 +82,7 @@ export function DataTableColumnHeader<TData, TValue>({
                                 </DropdownMenuLabel>
                                 <DropdownMenuItem
                                     className="gap-x-2 px-2"
+                                    disabled={column.getIsPinned() === 'left'}
                                     onClick={() => column.pin('left')}
                                 >
                                     <PushPinIcon className="mr-2 size-3.5 text-muted-foreground/70" />
@@ -91,6 +90,7 @@ export function DataTableColumnHeader<TData, TValue>({
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     className="gap-x-2 px-2"
+                                    disabled={column.getIsPinned() === 'right'}
                                     onClick={() => column.pin('right')}
                                 >
                                     <PushPinIcon className="mr-2 size-3.5 text-muted-foreground/70" />
