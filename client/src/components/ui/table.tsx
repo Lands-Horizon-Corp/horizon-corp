@@ -2,34 +2,16 @@ import * as React from 'react'
 
 import { cn } from '@/lib/utils'
 
-export interface ITableExtraProps {
-    noWrapper?: boolean
-    wrapperClassName?: string
-}
-
 const Table = React.forwardRef<
     HTMLTableElement,
-    React.HTMLAttributes<HTMLTableElement> & ITableExtraProps
->(({ className, wrapperClassName, noWrapper = false, ...props }, ref) => {
-    const Table = (
+    React.HTMLAttributes<HTMLTableElement>
+>(({ className, ...props }, ref) => {
+    return (
         <table
             ref={ref}
             className={cn('w-full caption-bottom text-sm', className)}
             {...props}
         />
-    )
-
-    if (noWrapper) return Table
-
-    return (
-        <div
-            className={cn(
-                'ecoop-scroll relative w-full overflow-auto',
-                wrapperClassName
-            )}
-        >
-            {Table}
-        </div>
     )
 })
 Table.displayName = 'Table'
