@@ -80,13 +80,12 @@ const DataTable = <TData,>({
                                     key={header.id}
                                     colSpan={header.colSpan}
                                     style={{
-                                        // width: header.getSize(),
                                         ...getCommonPinningStyles(
                                             header.column
                                         ),
                                     }}
                                     className={cn(
-                                        'relative w-full bg-popover',
+                                        'relative bg-popover',
                                         headerClassName
                                     )}
                                 >
@@ -109,7 +108,7 @@ const DataTable = <TData,>({
                         return (
                             <TableRow
                                 key={row.id}
-                                className={cn('!w-fit', rowClassName)}
+                                className={cn('w-fit h-14', rowClassName)}
                                 data-state={row.getIsSelected() && 'selected'}
                             >
                                 {row.getVisibleCells().map((cell) => {
@@ -117,15 +116,11 @@ const DataTable = <TData,>({
                                         <TableCell
                                             key={cell.id}
                                             style={{
-                                                // width: cell.column.getSize(),
                                                 ...getCommonPinningStyles(
                                                     cell.column
                                                 ),
                                             }}
-                                            className={cn("backdrop-blur bg-background w-full",cellClassName)}
-                                            // className={getCommonPinningClasses(
-                                            //     cell.column
-                                            // )}
+                                            className={cn("backdrop-blur size-fit",cellClassName)}
                                         >
                                             {flexRender(
                                                 cell.column.columnDef.cell,
