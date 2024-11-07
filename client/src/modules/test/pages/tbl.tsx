@@ -70,7 +70,7 @@ const columns: ColumnDef<TData>[] = [
     {
         id: 'select',
         header: ({ table }) => (
-            <div className={'w-fit items-center gap-x-2'}>
+            <div className={'w-fit items-center px-2'}>
                 <Checkbox
                     checked={table.getIsAllPageRowsSelected()}
                     onCheckedChange={(value) =>
@@ -81,14 +81,17 @@ const columns: ColumnDef<TData>[] = [
             </div>
         ),
         cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
+            <div className={'w-fit items-center px-2'}>
+                <Checkbox
+                    checked={row.getIsSelected()}
+                    onCheckedChange={(value) => row.toggleSelected(!!value)}
+                    aria-label="Select row"
+                />
+            </div>
         ),
         enableSorting: false,
         enableHiding: false,
+        maxSize: 80,
     },
     {
         id: 'Name',
