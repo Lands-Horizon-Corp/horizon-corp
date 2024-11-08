@@ -20,51 +20,49 @@ const DataTable = <TData,>({
     return (
         <div
             className={cn(
-                'ecoop-scroll rounded-xl relative max-h-full overflow-scroll bg-secondary',
+                'ecoop-scroll relative flex max-h-full overflow-y-scroll rounded-xl bg-secondary',
                 className
             )}
         >
-            <div className="flex h-fit">
-                {table.getLeftHeaderGroups().length > 0 && (
-                    <div className="ecoop-scroll sticky left-0 z-50 w-fit border-r shadow-xl border-popover">
-                        <UITable className="h-fit !w-fit">
-                            <DataTableHeaderGroup
-                                isStickyHeader={isStickyHeader}
-                                headerGroups={table.getLeftHeaderGroups()}
-                            />
-                            <DataTableBody
-                                targetGroup="left"
-                                rows={table.getRowModel().rows}
-                            />
-                        </UITable>
-                    </div>
-                )}
-                {table.getCenterHeaderGroups().length > 0 && (
-                    <div className="z-0 flex flex-1">
-                        <UITable className="h-fit flex-1">
-                            <DataTableHeaderGroup
-                                isStickyHeader={isStickyHeader}
-                                headerGroups={table.getCenterHeaderGroups()}
-                            />
-                            <DataTableBody rows={table.getRowModel().rows} />
-                        </UITable>
-                    </div>
-                )}
-                {table.getRightHeaderGroups().length > 0 && (
-                    <div className="ecoop-scroll sticky right-0 z-10 w-fit shadow-xl border-l border-popover">
-                        <UITable className="!w-fit">
-                            <DataTableHeaderGroup
-                                isStickyHeader={isStickyHeader}
-                                headerGroups={table.getRightHeaderGroups()}
-                            />
-                            <DataTableBody
-                                targetGroup="right"
-                                rows={table.getRowModel().rows}
-                            />
-                        </UITable>
-                    </div>
-                )}
-            </div>
+            {table.getLeftHeaderGroups().length > 0 && (
+                <div className="ecoop-scroll sticky border-r h-fit border-popover shadow-xl left-[0%] z-50 w-fit">
+                    <UITable className="h-fit !w-fit">
+                        <DataTableHeaderGroup
+                            isStickyHeader={isStickyHeader}
+                            headerGroups={table.getLeftHeaderGroups()}
+                        />
+                        <DataTableBody
+                            targetGroup="left"
+                            rows={table.getRowModel().rows}
+                        />
+                    </UITable>
+                </div>
+            )}
+            {table.getCenterHeaderGroups().length > 0 && (
+                <div className="z-0 flex h-fit flex-1">
+                    <UITable className="h-fit flex-1">
+                        <DataTableHeaderGroup
+                            isStickyHeader={isStickyHeader}
+                            headerGroups={table.getCenterHeaderGroups()}
+                        />
+                        <DataTableBody rows={table.getRowModel().rows} />
+                    </UITable>
+                </div>
+            )}
+            {table.getRightHeaderGroups().length > 0 && (
+                <div className="ecoop-scroll sticky right-0 h-fit z-10 w-fit border-l border-popover shadow-xl">
+                    <UITable className="!w-fit">
+                        <DataTableHeaderGroup
+                            isStickyHeader={isStickyHeader}
+                            headerGroups={table.getRightHeaderGroups()}
+                        />
+                        <DataTableBody
+                            targetGroup="right"
+                            rows={table.getRowModel().rows}
+                        />
+                    </UITable>
+                </div>
+            )}
         </div>
     )
 }
