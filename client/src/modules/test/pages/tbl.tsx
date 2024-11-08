@@ -12,7 +12,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import DataTableExportButton from '@/components/data-table/data-table-export-button'
 import { DataTableViewOptions } from '@/components/data-table/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
-import DataTableVirtualize from '@/components/data-table/data-table-virtualize'
+import DataTable from '@/components/data-table'
 
 type TData = {
     name: string
@@ -45,7 +45,7 @@ const data = () => {
         'Jack',
     ]
 
-    const mockData: TData[] = Array.from({ length: 500_000 }).map(() => {
+    const mockData: TData[] = Array.from({ length: 100 }).map(() => {
         const age = Math.floor(Math.random() * (65 - 18 + 1)) + 18
         const name = names[Math.floor(Math.random() * names.length)]
         const bday = generateRandomDate(
@@ -107,39 +107,101 @@ const defaultColumns: ColumnDef<TData>[] = [
     },
     {
         id: 'Age',
-        accessorKey: 'age',
+        accessorKey: 'age1',
         header: (props) => (
-            <DataTableColumnHeader isResizable title="Age" {...props} />
+            <DataTableColumnHeader isResizable title="Age1" {...props} />
         ),
         cell: ({
             row: {
-                original: { age },
+                original: { age1 },
             },
-        }) => <div>{age}</div>,
+        }) => <div>{age1}</div>,
     },
     {
-        id: 'Birth Date',
+        id: 'Bday',
         accessorKey: 'bday',
         header: (props) => (
-            <DataTableColumnHeader isResizable title="Birth Date" {...props} />
+            <DataTableColumnHeader isResizable title="bday" {...props} />
         ),
         cell: ({
             row: {
                 original: { bday },
             },
-        }) => <div className="text-nowrap">{bday.toLocaleString()}</div>,
+        }) => <div>{bday.toDateString()}</div>,
     },
+
     {
-        id: 'Name1',
-        accessorKey: 'name1',
+        id: 'Name2',
+        accessorKey: 'name',
         header: (props) => (
-            <DataTableColumnHeader isResizable title="Name1" {...props} />
+            <DataTableColumnHeader isResizable title="Name2" {...props} />
         ),
         cell: ({
             row: {
-                original: { name1 },
+                original: { name },
             },
-        }) => <div>{name1}</div>,
+        }) => <div>{name}</div>,
+    },
+    {
+        id: 'Age2',
+        accessorKey: 'age1',
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="Age2" {...props} />
+        ),
+        cell: ({
+            row: {
+                original: { age1 },
+            },
+        }) => <div>{age1}</div>,
+    },
+    {
+        id: 'Bday1',
+        accessorKey: 'bday',
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="bday1" {...props} />
+        ),
+        cell: ({
+            row: {
+                original: { bday },
+            },
+        }) => <div>{bday.toDateString()}</div>,
+    },
+
+    {
+        id: 'Name3',
+        accessorKey: 'name',
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="Name3" {...props} />
+        ),
+        cell: ({
+            row: {
+                original: { name },
+            },
+        }) => <div>{name}</div>,
+    },
+    {
+        id: 'Age3',
+        accessorKey: 'age1',
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="Age3" {...props} />
+        ),
+        cell: ({
+            row: {
+                original: { age1 },
+            },
+        }) => <div>{age1}</div>,
+    },
+    {
+        id: 'Bday2',
+        accessorKey: 'bday',
+        header: (props) => (
+            <DataTableColumnHeader isResizable title="bday2" {...props} />
+        ),
+        cell: ({
+            row: {
+                original: { bday },
+            },
+        }) => <div>{bday.toDateString()}</div>,
     },
 ]
 
@@ -181,18 +243,10 @@ const Tbl = () => {
                 <DataTableExportButton table={table} />
                 <DataTableViewOptions table={table} />
             </div>
-            <p>table showing {memoizedData.length} rows</p>
-            {
-                // <DataTable
-                //     table={table}
-                //     isStickyHeader
-                //     wrapperClassName="flex-1 mb-2"
-                // />
-            }
-            <DataTableVirtualize
+            <DataTable
                 table={table}
                 isStickyHeader
-                wrapperClassName="flex-1 mb-2"
+                className="flex-1 mb-2"
             />
         </div>
     )
