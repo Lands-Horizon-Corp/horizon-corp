@@ -228,7 +228,6 @@ const Tbl = () => {
         },
         manualPagination: true,
         onSortingChange: setSorting,
-        columnResizeMode: 'onChange',
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onRowSelectionChange: setRowSelection,

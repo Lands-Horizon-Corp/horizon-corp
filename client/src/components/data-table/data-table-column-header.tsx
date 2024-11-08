@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button'
 
 import { cn } from '@/lib/utils'
+import DataTableColumnDragResize from './data-table-column-drag-resize'
 
 interface DataTableColumnHeaderProps<TData, TValue>
     extends React.HTMLAttributes<HTMLDivElement> {
@@ -35,6 +36,7 @@ export function DataTableColumnHeader<TData, TValue>({
     title,
     table,
     column,
+    header,
     className,
     isResizable,
 }: DataTableColumnHeaderProps<TData, TValue>) {
@@ -163,6 +165,10 @@ export function DataTableColumnHeader<TData, TValue>({
                     )}
                 </DropdownMenuContent>
             </DropdownMenu>
+
+            {isResizable && (
+                <DataTableColumnDragResize table={table} header={header} />
+            )}
         </div>
     )
 }

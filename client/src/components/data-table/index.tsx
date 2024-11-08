@@ -25,8 +25,16 @@ const DataTable = <TData,>({
             )}
         >
             {table.getLeftHeaderGroups().length > 0 && (
-                <div className="ecoop-scroll sticky border-r h-fit border-popover shadow-xl left-[0%] z-50 w-fit">
-                    <UITable className="h-fit !w-fit">
+                <div className="ecoop-scroll sticky left-[0%] z-50 h-fit w-fit border-r border-popover shadow-xl">
+                    <UITable
+                        className="h-fit w-auto"
+                        style={{
+                            width:
+                                table.getLeftHeaderGroups().length > 0
+                                    ? table.getLeftTotalSize()
+                                    : 'fit-content',
+                        }}
+                    >
                         <DataTableHeaderGroup
                             isStickyHeader={isStickyHeader}
                             headerGroups={table.getLeftHeaderGroups()}
@@ -50,8 +58,16 @@ const DataTable = <TData,>({
                 </div>
             )}
             {table.getRightHeaderGroups().length > 0 && (
-                <div className="ecoop-scroll sticky right-0 h-fit z-10 w-fit border-l border-popover shadow-xl">
-                    <UITable className="!w-fit">
+                <div className="ecoop-scroll sticky right-0 z-10 h-fit w-fit border-l border-popover shadow-xl">
+                    <UITable
+                        className="w-auto"
+                        style={{
+                            width:
+                                table.getRightHeaderGroups().length > 0
+                                    ? table.getRightTotalSize()
+                                    : 'fit-content',
+                        }}
+                    >
                         <DataTableHeaderGroup
                             isStickyHeader={isStickyHeader}
                             headerGroups={table.getRightHeaderGroups()}

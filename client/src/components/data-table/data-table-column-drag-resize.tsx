@@ -13,7 +13,7 @@ const DataTableColumnDragResize = <TData, TValue>({
     table,
     header,
 }: Props<TData, TValue>) => {
-    // if (header.column.getIsPinned()) return null
+    if (!header.column.getIsPinned()) return null
 
     return (
         <div
