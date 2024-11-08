@@ -19,7 +19,6 @@ import {
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import DataTableColumnDragResize from './data-table-column-drag-resize'
 
 import { cn } from '@/lib/utils'
 
@@ -36,7 +35,6 @@ export function DataTableColumnHeader<TData, TValue>({
     title,
     table,
     column,
-    header,
     className,
     isResizable,
 }: DataTableColumnHeaderProps<TData, TValue>) {
@@ -53,17 +51,17 @@ export function DataTableColumnHeader<TData, TValue>({
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="-ml-3 h-8 data-[state=open]:bg-accent"
+                        className="-ml-3 h-8 gap-x-2 data-[state=open]:bg-accent"
                     >
                         <span className="font-bold">{title}</span>
                         {column.getCanSort() && (
                             <>
                                 {column.getIsSorted() === 'desc' ? (
-                                    <ArrowUpIcon className="ml-2 size-4" />
+                                    <ArrowUpIcon className="ml-2 size-3" />
                                 ) : column.getIsSorted() === 'asc' ? (
-                                    <ArrowDownIcon className="ml-2 size-4" />
+                                    <ArrowDownIcon className="ml-2 size-3" />
                                 ) : (
-                                    <ArrowUpDownIcon className="ml-2 size-4" />
+                                    <ArrowUpDownIcon className="ml-2 size-3" />
                                 )}
                             </>
                         )}
@@ -85,7 +83,7 @@ export function DataTableColumnHeader<TData, TValue>({
                                     disabled={column.getIsPinned() === 'left'}
                                     onClick={() => column.pin('left')}
                                 >
-                                    <PushPinIcon className="mr-2 size-3.5 text-muted-foreground/70" />
+                                    <PushPinIcon className="mr-2 size-3.5" />
                                     Pin Left
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
@@ -93,15 +91,22 @@ export function DataTableColumnHeader<TData, TValue>({
                                     disabled={column.getIsPinned() === 'right'}
                                     onClick={() => column.pin('right')}
                                 >
-                                    <PushPinIcon className="mr-2 size-3.5 text-muted-foreground/70" />
+                                    <PushPinIcon className="mr-2 size-3.5" />
                                     Pin Right
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     className="gap-x-2 px-2"
                                     onClick={() => column.pin(false)}
                                 >
-                                    <PushPinSlashIcon className="mr-2 size-3.5 text-muted-foreground/70" />
+                                    <PushPinSlashIcon className="mr-2 size-3.5" />
                                     Unpin
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    className="gap-x-2 px-2"
+                                    onClick={() => table.resetColumnPinning()}
+                                >
+                                    <PushPinSlashIcon className="mr-2 size-3.5" />
+                                    Unpin All
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
                         </>
@@ -149,10 +154,6 @@ export function DataTableColumnHeader<TData, TValue>({
                     )}
                 </DropdownMenuContent>
             </DropdownMenu>
-
-            {isResizable && (
-                <DataTableColumnDragResize table={table} header={header} />
-            )}
         </div>
     )
 }
