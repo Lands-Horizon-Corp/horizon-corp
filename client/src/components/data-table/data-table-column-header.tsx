@@ -51,17 +51,17 @@ export function DataTableColumnHeader<TData, TValue>({
                     <Button
                         variant="ghost"
                         size="sm"
-                        className="-ml-3 h-8 gap-x-2 data-[state=open]:bg-accent"
+                        className="group-hover -ml-3 h-8 gap-x-2 data-[state=open]:bg-accent"
                     >
                         <span className="font-bold">{title}</span>
                         {column.getCanSort() && (
                             <>
                                 {column.getIsSorted() === 'desc' ? (
-                                    <ArrowUpIcon className="ml-2 size-3" />
+                                    <ArrowUpIcon className="size-3 opacity-55 group-hover:opacity-100" />
                                 ) : column.getIsSorted() === 'asc' ? (
-                                    <ArrowDownIcon className="ml-2 size-3" />
+                                    <ArrowDownIcon className="size-3 opacity-55 group-hover:opacity-100" />
                                 ) : (
-                                    <ArrowUpDownIcon className="ml-2 size-3" />
+                                    <ArrowUpDownIcon className="size-3 opacity-55 group-hover:opacity-100" />
                                 )}
                             </>
                         )}
@@ -78,36 +78,45 @@ export function DataTableColumnHeader<TData, TValue>({
                                 <DropdownMenuLabel>
                                     Pin Column
                                 </DropdownMenuLabel>
-                                <DropdownMenuItem
-                                    className="gap-x-2 px-2"
-                                    disabled={column.getIsPinned() === 'left'}
-                                    onClick={() => column.pin('left')}
-                                >
-                                    <PushPinIcon className="mr-2 size-3.5" />
-                                    Pin Left
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    className="gap-x-2 px-2"
-                                    disabled={column.getIsPinned() === 'right'}
-                                    onClick={() => column.pin('right')}
-                                >
-                                    <PushPinIcon className="mr-2 size-3.5" />
-                                    Pin Right
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    className="gap-x-2 px-2"
-                                    onClick={() => column.pin(false)}
-                                >
-                                    <PushPinSlashIcon className="mr-2 size-3.5" />
-                                    Unpin
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    className="gap-x-2 px-2"
-                                    onClick={() => table.resetColumnPinning()}
-                                >
-                                    <PushPinSlashIcon className="mr-2 size-3.5" />
-                                    Unpin All
-                                </DropdownMenuItem>
+                                {column.getIsPinned() !== 'left' && (
+                                    <DropdownMenuItem
+                                        className="gap-x-2 px-2"
+                                        onClick={() => column.pin('left')}
+                                    >
+                                        <PushPinIcon className="mr-2 size-3.5" />
+                                        Pin Left
+                                    </DropdownMenuItem>
+                                )}
+
+                                {column.getIsPinned() !== 'right' && (
+                                    <DropdownMenuItem
+                                        className="gap-x-2 px-2"
+                                        onClick={() => column.pin('right')}
+                                    >
+                                        <PushPinIcon className="mr-2 size-3.5" />
+                                        Pin Right
+                                    </DropdownMenuItem>
+                                )}
+                                {column.getIsPinned() && (
+                                    <DropdownMenuItem
+                                        className="gap-x-2 px-2"
+                                        onClick={() => column.pin(false)}
+                                    >
+                                        <PushPinSlashIcon className="mr-2 size-3.5" />
+                                        Unpin
+                                    </DropdownMenuItem>
+                                )}
+                                {table.getIsSomeColumnsPinned() && (
+                                    <DropdownMenuItem
+                                        className="gap-x-2 px-2"
+                                        onClick={() =>
+                                            table.resetColumnPinning()
+                                        }
+                                    >
+                                        <PushPinSlashIcon className="mr-2 size-3.5" />
+                                        Unpin All
+                                    </DropdownMenuItem>
+                                )}
                             </DropdownMenuGroup>
                         </>
                     )}
@@ -120,21 +129,21 @@ export function DataTableColumnHeader<TData, TValue>({
                                     className="gap-x-2 px-2"
                                     onClick={() => column.toggleSorting(false)}
                                 >
-                                    <ArrowUpIcon className="mr-2 size-3.5 text-muted-foreground/70" />
+                                    <ArrowUpIcon className="mr-2 size-3.5" />
                                     Ascending
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     className="gap-x-2 px-2"
                                     onClick={() => column.toggleSorting(true)}
                                 >
-                                    <ArrowDownIcon className="mr-2 size-3.5 text-muted-foreground/70" />
+                                    <ArrowDownIcon className="mr-2 size-3.5" />
                                     Descending
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
                                     className="gap-x-2 px-2"
                                     onClick={() => column.clearSorting()}
                                 >
-                                    <ResetIcon className="mr-2 size-3.5 text-muted-foreground/70" />
+                                    <ResetIcon className="mr-2 size-3.5" />
                                     Reset
                                 </DropdownMenuItem>
                             </DropdownMenuGroup>
@@ -147,7 +156,7 @@ export function DataTableColumnHeader<TData, TValue>({
                                 className="gap-x-2 px-2"
                                 onClick={() => column.toggleVisibility(false)}
                             >
-                                <EyeNoneIcon className="mr-2 h-3.5 w-3.5 text-muted-foreground/70" />
+                                <EyeNoneIcon className="mr-2 size-3.5" />
                                 Hide
                             </DropdownMenuItem>
                         </>

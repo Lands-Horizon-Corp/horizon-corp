@@ -20,13 +20,13 @@ const DataTable = <TData,>({
     return (
         <div
             className={cn(
-                'ecoop-scroll rounded-xl relative max-h-full overflow-y-scroll bg-secondary',
+                'ecoop-scroll rounded-xl relative max-h-full overflow-scroll bg-secondary',
                 className
             )}
         >
             <div className="flex h-fit">
                 {table.getLeftHeaderGroups().length > 0 && (
-                    <div className="ecoop-scroll sticky left-0 z-10 w-fit border-r border-popover">
+                    <div className="ecoop-scroll sticky left-0 z-50 w-fit border-r shadow-xl border-popover">
                         <UITable className="h-fit !w-fit">
                             <DataTableHeaderGroup
                                 isStickyHeader={isStickyHeader}
@@ -51,7 +51,7 @@ const DataTable = <TData,>({
                     </div>
                 )}
                 {table.getRightHeaderGroups().length > 0 && (
-                    <div className="ecoop-scroll sticky right-0 z-10 w-fit border-l border-popover">
+                    <div className="ecoop-scroll sticky right-0 z-10 w-fit shadow-xl border-l border-popover">
                         <UITable className="!w-fit">
                             <DataTableHeaderGroup
                                 isStickyHeader={isStickyHeader}

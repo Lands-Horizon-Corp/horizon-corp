@@ -12,7 +12,7 @@ const DataTableBody = <TData,>({
         {rows.map((row) => (
             <TableRow
                 key={row.id}
-                className="h-14 w-fit bg-secondary align-middle hover:bg-popover"
+                className="h-14 w-fit bg-secondary/80 align-middle hover:bg-popover/80 data-[state=selected]:bg-popover"
                 data-state={row.getIsSelected() && 'selected'}
             >
                 {(targetGroup === undefined
