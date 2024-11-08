@@ -8,11 +8,12 @@ import {
     SortingState,
     useReactTable,
 } from '@tanstack/react-table'
+
+import DataTable from '@/components/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import DataTableExportButton from '@/components/data-table/data-table-export-button'
 import { DataTableViewOptions } from '@/components/data-table/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
-import DataTable from '@/components/data-table'
 
 type TData = {
     name: string
@@ -215,6 +216,10 @@ const Tbl = () => {
         pageSize: 10,
     })
 
+    const [columnOrder, setColumnOrder] = useState<string[]>(() =>
+        columns.map((c) => c.id!)
+    )
+
     const memoizedData = useMemo(() => data(), [])
 
     const table = useReactTable({
@@ -222,6 +227,7 @@ const Tbl = () => {
         data: memoizedData,
         state: {
             sorting,
+            columnOrder,
             rowSelection,
             columnVisibility,
             pagination,
@@ -230,6 +236,7 @@ const Tbl = () => {
         onSortingChange: setSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
+        onColumnOrderChange: setColumnOrder,
         onRowSelectionChange: setRowSelection,
         getSortedRowModel: getSortedRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
@@ -244,8 +251,9 @@ const Tbl = () => {
             </div>
             <DataTable
                 table={table}
+                setColumnOrder={setColumnOrder}
                 isStickyHeader
-                className="flex-1 mb-2"
+                className="mb-2 flex-1"
             />
         </div>
     )

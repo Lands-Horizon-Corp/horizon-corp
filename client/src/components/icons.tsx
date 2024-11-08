@@ -8,6 +8,7 @@ import {
     LuHeading5 as LuHeading5Icon,
     LuHeading6 as LuHeading6Icon,
     LuListOrdered as LuListOrderedIcon,
+    LuMoveHorizontal as MoveLeftRightIcon,
     LuUndo2 as LuUndo2Icon,
     LuRedo2 as LuRedo2Icon,
 } from 'react-icons/lu'
@@ -229,6 +230,7 @@ export {
     NotificationIcon,
     ToolbarItalicIcon,
     LuListOrderedIcon,
+    MoveLeftRightIcon,
     WarningCircleIcon,
     VerifiedPatchIcon,
     LoadingCircleIcon,

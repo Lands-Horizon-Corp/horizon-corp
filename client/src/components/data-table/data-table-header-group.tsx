@@ -1,15 +1,23 @@
+import {
+    SortableContext,
+    horizontalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { flexRender, HeaderGroup } from '@tanstack/react-table'
+
 import { TableHead, TableHeader, TableRow } from '@/components/ui/table'
+
 import { cn } from '@/lib'
 
 const DataTableHeaderGroup = <TData,>({
+    columnOrder,
     headerGroups,
     headerClassName,
     isStickyHeader = true,
 }: {
-    headerGroups: HeaderGroup<TData>[]
+    columnOrder: string[]
     headerClassName?: string
     isStickyHeader?: boolean
+    headerGroups: HeaderGroup<TData>[]
 }) => (
     <TableHeader className={isStickyHeader ? 'sticky top-0 z-50' : ''}>
         {headerGroups.map((headerGroup) => (
@@ -17,20 +25,28 @@ const DataTableHeaderGroup = <TData,>({
                 key={headerGroup.id}
                 className="text-nowrap bg-popover hover:bg-popover"
             >
-                {headerGroup.headers.map((header) => (
-                    <TableHead
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        className={cn('relative bg-popover', headerClassName)}
-                    >
-                        {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                  header.column.columnDef.header,
-                                  header.getContext()
-                              )}
-                    </TableHead>
-                ))}
+                <SortableContext
+                    items={columnOrder}
+                    strategy={horizontalListSortingStrategy}
+                >
+                    {headerGroup.headers.map((header) => (
+                        <TableHead
+                            key={header.id}
+                            colSpan={header.colSpan}
+                            className={cn(
+                                'relative bg-popover',
+                                headerClassName
+                            )}
+                        >
+                            {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                      header.column.columnDef.header,
+                                      header.getContext()
+                                  )}
+                        </TableHead>
+                    ))}
+                </SortableContext>
             </TableRow>
         ))}
     </TableHeader>
