@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react'
+import { CSSProperties, useState } from 'react'
 import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import { Column, Header, Table } from '@tanstack/react-table'
@@ -43,6 +43,8 @@ export function DataTableColumnHeader<TData, TValue>({
     className,
     isResizable,
 }: DataTableColumnHeaderProps<TData, TValue>) {
+    const [disableDrag, setDisableDrag] = useState(false)
+
     const { attributes, isDragging, listeners, setNodeRef, transform } =
         useSortable({
             id: header.column.id,
@@ -67,10 +69,15 @@ export function DataTableColumnHeader<TData, TValue>({
                     isResizable && 'pr-1'
                 )}
                 {...attributes}
-                {...listeners}
+                {...(disableDrag ? {} : listeners)}
             >
-                <span className="relative font-bold">{title}</span>
-                <DropdownMenu>
+                <span
+                    className="relative font-bold"
+                    onClick={() => alert('ha')}
+                >
+                    {title}
+                </span>
+                <DropdownMenu onOpenChange={(state) => setDisableDrag(state)}>
                     <DropdownMenuTrigger asChild>
                         <Button
                             variant="ghost"
@@ -93,6 +100,7 @@ export function DataTableColumnHeader<TData, TValue>({
                     <DropdownMenuContent
                         className="ecoop-scroll max-h-[60vh] min-w-40 overflow-y-scroll border-none shadow-xl"
                         align="start"
+                        onClick={(e) => e.stopPropagation()}
                     >
                         {column.getCanPin() && (
                             <>
