@@ -6,7 +6,6 @@ import {
 import { Button } from '@/components/ui/button'
 import { sampleMediaResourceList } from './testSampleData'
 import { useImagePreview } from '@/store/image-preview-store'
-import FileUploader from '@/components/ui/file-uploader'
 import Signature from '@/components/signature'
 const TestLayout = () => {
     const { isOpen, setIsOpen } = useImagePreview()
