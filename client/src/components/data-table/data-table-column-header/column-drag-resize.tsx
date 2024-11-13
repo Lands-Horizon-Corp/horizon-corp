@@ -9,7 +9,7 @@ interface Props<TData, TValue> {
     header: Header<TData, TValue>
 }
 
-const DataTableColumnDragResize = <TData, TValue>({
+const ColumnResizeHandle = <TData, TValue>({
     table,
     header,
 }: Props<TData, TValue>) => {
@@ -52,4 +52,4 @@ const DataTableColumnDragResize = <TData, TValue>({
     )
 }
 
-export default DataTableColumnDragResize
+export default ColumnResizeHandle

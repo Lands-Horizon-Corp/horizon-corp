@@ -9,11 +9,11 @@ import {
 
 import DataTable from '@/components/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
+import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 import DataTableExportButton from '@/components/data-table/data-table-export-button'
-import DataTableFilterContext from '@/components/data-table/data-table-filter-context'
 import { DataTableViewOptions } from '@/components/data-table/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
-import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
+import { DataTableFilterProvider } from '@/components/data-table/data-table-filter-context'
 
 type TData = {
     name: string
@@ -98,7 +98,12 @@ const defaultColumns: ColumnDef<TData>[] = [
         id: 'Name',
         accessorKey: 'name',
         header: (props) => (
-            <DataTableColumnHeader isResizable title="Name" {...props} />
+            <DataTableColumnHeader
+                dataType="string"
+                isResizable
+                title="Name"
+                {...props}
+            />
         ),
         cell: ({
             row: {
@@ -106,12 +111,16 @@ const defaultColumns: ColumnDef<TData>[] = [
             },
         }) => <div>{name}</div>,
     },
-
     {
         id: 'Bday',
         accessorKey: 'bday',
         header: (props) => (
-            <DataTableColumnHeader isResizable title="bday" {...props} />
+            <DataTableColumnHeader
+                isResizable
+                dataType="Date"
+                title="bday"
+                {...props}
+            />
         ),
         cell: ({
             row: {
@@ -119,12 +128,16 @@ const defaultColumns: ColumnDef<TData>[] = [
             },
         }) => <div>{bday.toDateString()}</div>,
     },
-
     {
         id: 'Age',
         accessorKey: 'age',
         header: (props) => (
-            <DataTableColumnHeader isResizable title="Age" {...props} />
+            <DataTableColumnHeader
+                isResizable
+                dataType="number"
+                title="Age"
+                {...props}
+            />
         ),
         cell: ({
             row: {
@@ -181,16 +194,14 @@ const Tbl = () => {
                 <DataTableExportButton table={table} />
                 <DataTableViewOptions table={table} />
             </div>
-            <DataTableFilterContext.Provider
-                value={{ filters: { range: [], search: [] } }}
-            >
+            <DataTableFilterProvider>
                 <DataTable
                     table={table}
                     isStickyHeader
                     className="mb-2 flex-1"
                     setColumnOrder={setColumnOrder}
                 />
-            </DataTableFilterContext.Provider>
+            </DataTableFilterProvider>
         </div>
     )
 }
