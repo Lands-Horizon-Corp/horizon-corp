@@ -2,6 +2,7 @@ import {
     forwardRef,
     MutableRefObject,
     useCallback,
+    useEffect,
     useRef,
     useState,
 } from 'react'
@@ -35,6 +36,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { Separator } from '../ui/separator'
 
 interface UploadSignatureProps {
     /**
@@ -58,6 +60,7 @@ interface DrawSignatureProps {
      * Used to access the canvas instance methods.
      */
     signatureRef: MutableRefObject<ReactSignatureCanvas | null>
+    isFullScreenMode: boolean
 }
 
 interface SignatureProps {
@@ -72,18 +75,34 @@ const CaptureSignature = ({ camRef }: CaptureSignatureProps) => {
     )
 }
 
-const DrawSignature = ({ signatureRef }: DrawSignatureProps) => {
+const DrawSignature = ({
+    signatureRef,
+    isFullScreenMode,
+}: DrawSignatureProps) => {
     const { resolvedTheme: theme } = useTheme()
+    const SignaturePadParent = useRef<HTMLDivElement | null>(null)
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
+    useEffect(() => {
+        if (SignaturePadParent.current) {
+            const { width, height } =
+                SignaturePadParent.current.getBoundingClientRect()
+            setDimensions({ width, height })
+        }
+    }, [isFullScreenMode])
     return (
         <>
-            <div className="w-full">
+            <div ref={SignaturePadParent} className={cn(
+                'w-full bg-red-500 h-fit',
+            )}>
                 <SignaturePad
                     penColor={`${theme === 'dark' ? 'white' : 'black'}`}
                     ref={signatureRef}
                     canvasProps={{
                         className:
                             'sigCanvas w-full h-[200px] rounded-lg border shadow-md dark:bg-secondary',
+                        width: dimensions.width,
+                        height: isFullScreenMode ? '100%' : '',
                     }}
                 />
             </div>
@@ -94,7 +113,7 @@ const DrawSignature = ({ signatureRef }: DrawSignatureProps) => {
 const UploadSignature = ({ onFileChange }: UploadSignatureProps) => {
     return (
         <FileUploader
-            className="!mx-0 w-full"
+            className="!mx-0 w-full h-fit"
             maxFiles={1}
             accept={{
                 'image/png': ['.png'],
@@ -210,63 +229,114 @@ const Signature = ({ className }: SignatureProps) => {
     }
 
     const handleIsFullScreenMode = () => {
+        if (!isFullScreenMode) {
+            document.body.setAttribute('data-scroll-locked', '1')
+        } else {
+            document.body.removeAttribute('data-scroll-locked')
+        }
         setIsFullScreenMode((prev) => !prev)
     }
 
+    useEffect(() => {
+        const body = document.body
+
+        // Helper function to apply or remove styles
+        const applyScrollLock = () => {
+            body.classList.add(
+                'with-scroll-bars-hidden',
+                'right-scroll-bar-position',
+                'width-before-scroll-bar'
+            )
+            body.setAttribute('data-scroll-locked', '')
+        }
+
+        const removeScrollLock = () => {
+            body.classList.remove(
+                'with-scroll-bars-hidden',
+                'right-scroll-bar-position',
+                'width-before-scroll-bar'
+            )
+            body.removeAttribute('data-scroll-locked')
+        }
+
+        // Apply or remove based on the state
+        if (isFullScreenMode) {
+            applyScrollLock()
+        } else {
+            removeScrollLock()
+        }
+
+        // Clean up when the component unmounts
+        return removeScrollLock
+    }, [isFullScreenMode])
+
     return (
         <div
-        
             className={cn(
                 'h-fit max-w-xl rounded-lg border p-4 text-xs',
-                isFullScreenMode ? 'w-screen fixed inset-0 left-0 top-0 max-w-none backdrop-blur-sm bg-background/90 z-50 h-[100vh]' : '',
+                isFullScreenMode
+                    ? 'fixed inset-0 left-0 top-0 z-50 h-[100vh] w-screen max-w-none bg-background/90 backdrop-blur-sm'
+                    : '',
                 className
             )}
         >
-            <div className="flex h-14 min-h-[50px] w-full justify-start gap-2 py-2">
-                <Button
-                    variant={'outline'}
-                    className="text-xs"
-                    onClick={() =>
-                        handleSignaturePicking(SignatureModes.CAPTURE)
-                    }
-                >
-                    <FiCameraIcon className="mr-2 size-4" />
-                    Capture Signature
-                </Button>
-                <Button
-                    variant={'outline'}
-                    className="text-xs"
-                    onClick={() =>
-                        handleSignaturePicking(SignatureModes.UPLOAD)
-                    }
-                >
-                    <LuHardDriveUploadIcon className="mr-2 size-4" />
-                    Upload Signature
-                </Button>
-                <Button
-                    variant={'outline'}
-                    className="text-xs"
-                    onClick={() => handleSignaturePicking(SignatureModes.DRAW)}
-                >
-                    <MdOutlineDrawIcon className="mr-2 size-4" />
-                    Draw Signature
-                </Button>
-                <div className="flex h-full w-full items-center justify-center">
+            <div
+                className={cn(
+                    'flex h-14 min-h-[50px] w-full gap-2 py-2',
+                    isFullScreenMode ? 'justify-between' : 'justify-start'
+                )}
+            >
+                <div className="flex">
+                    <Button
+                        variant={'outline'}
+                        className="text-xs"
+                        onClick={() =>
+                            handleSignaturePicking(SignatureModes.CAPTURE)
+                        }
+                    >
+                        <FiCameraIcon className="mr-2 size-4" />
+                        Capture Signature
+                    </Button>
+                    <Button
+                        variant={'outline'}
+                        className="text-xs"
+                        onClick={() =>
+                            handleSignaturePicking(SignatureModes.UPLOAD)
+                        }
+                    >
+                        <LuHardDriveUploadIcon className="mr-2 size-4" />
+                        Upload Signature
+                    </Button>
+                    <Button
+                        variant={'outline'}
+                        className="text-xs"
+                        onClick={() =>
+                            handleSignaturePicking(SignatureModes.DRAW)
+                        }
+                    >
+                        <MdOutlineDrawIcon className="mr-2 size-4" />
+                        Draw Signature
+                    </Button>
+                </div>
+                <div className="flex h-full w-fit items-center justify-center border">
                     {isFullScreenMode ? (
                         <>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button size={'sm'} variant={'ghost'}>
+                                        <Button
+                                            onClick={handleIsFullScreenMode}
+                                            size={'sm'}
+                                            variant={'ghost'}
+                                        >
                                             <AiOutlineFullscreenIcon
-                                                onClick={handleIsFullScreenMode}
                                                 size={24}
                                                 className="ease-in-out hover:scale-105 hover:cursor-pointer"
                                             />
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <p>Enter Full Screen Mode</p>
+                                        <p>Exit Full Screen Mode</p>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
@@ -285,7 +355,7 @@ const Signature = ({ className }: SignatureProps) => {
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <p>Exit fullscreen mode</p>
+                                        <p>Enter fullscreen mode</p>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
@@ -293,9 +363,17 @@ const Signature = ({ className }: SignatureProps) => {
                     )}
                 </div>
             </div>
-            <div className="flex h-fit items-center justify-center">
+            <div
+                className={cn(
+                    'mb-4 flex justify-center',
+                    isFullScreenMode ? 'h-full' : 'h-fit'
+                )}
+            >
                 {currentMode === SignatureModes.DRAW && (
-                    <DrawSignature signatureRef={signatureRef} />
+                    <DrawSignature
+                        isFullScreenMode={isFullScreenMode}
+                        signatureRef={signatureRef}
+                    />
                 )}
                 {currentMode === SignatureModes.UPLOAD && (
                     <UploadSignature
@@ -306,6 +384,7 @@ const Signature = ({ className }: SignatureProps) => {
                     <CaptureSignature camRef={camRef} />
                 )}
             </div>
+            <Separator className="" />
             {trimmedData && (
                 <div className="my-2 w-fit rounded-lg border-[3px] border-primary p-2">
                     <img
