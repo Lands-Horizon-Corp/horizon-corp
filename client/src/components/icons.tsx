@@ -93,7 +93,7 @@ import {
     FaFileCsv as CsvIcon,
     FaRulerHorizontal as FaRulerHorizontalIcon,
 } from 'react-icons/fa'
-import { IoIosCode as IoIosCodeIcon } from 'react-icons/io'
+import { IoIosCode as IoIosCodeIcon, IoIosFunnel as FunnelFilledIcon } from 'react-icons/io'
 import {
     TbClearFormatting as TbClearFormattingIcon,
     TbBlockquote as TbBlockquoteIcon,
@@ -224,6 +224,7 @@ export {
     PiCodeBlockIcon,
     ArrowUpDownIcon,
     TbBlockquoteIcon,
+    FunnelFilledIcon,
     PushPinSlashIcon,
     DotsVerticalIcon,
     ChevronRightIcon,

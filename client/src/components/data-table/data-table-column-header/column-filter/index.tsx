@@ -15,15 +15,17 @@ import {
 } from '@/components/ui/popover'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { FunnelOutlineIcon } from '@/components/icons'
-import { filterModeMap, TColumnDataTypes } from '../../data-table-filter-context'
+import { FunnelFilledIcon } from '@/components/icons'
 
+import {
+    filterModeMap,
+    TColumnDataTypes,
+} from '../../data-table-filter-context'
 
 interface Props<TData, TValue> {
     dataType: TColumnDataTypes
     column: Column<TData, TValue>
 }
-
 
 const ColumnFilter = <TData, TValue>({
     column,
@@ -46,7 +48,7 @@ const ColumnFilter = <TData, TValue>({
                     size="sm"
                     className="group-hover size-fit gap-x-2 p-1 data-[state=open]:bg-accent"
                 >
-                    <FunnelOutlineIcon className="size-3 opacity-55 group-hover:opacity-100" />
+                    <FunnelFilledIcon className="size-3 opacity-55 group-hover:opacity-100" />
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="space-y-2 rounded-2xl border bg-popover/85 shadow-lg backdrop-blur">
@@ -69,12 +71,13 @@ const ColumnFilter = <TData, TValue>({
                         ))}
                     </SelectContent>
                 </Select>
-                {filterMode !== 'range' && (
+                {filterMode !== 'range' && dataType !== 'date' && (
                     <Input
                         className="w-full"
                         value={value}
+                        type={dataType}
                         onChange={(inpt) => setValue(inpt.target.value)}
-                        placeholder={`search ${column.getFlatColumns.name}`}
+                        placeholder={`value`}
                     />
                 )}
                 {filterMode === 'range' && dataType === 'number' && (
