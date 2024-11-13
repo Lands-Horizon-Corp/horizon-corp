@@ -60,7 +60,7 @@ type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 
 type CarouselOptions = UseCarouselParameters[0]
 
-const DownloadButton = React.forwardRef<HTMLButtonElement, DownloadProps>(
+export const DownloadButton = React.forwardRef<HTMLButtonElement, DownloadProps>(
     ({ fileName, fileType, imageRef, fileUrl, className, name }, ref) => {
         const handleDownload = () => {
             let downloadImage = imageRef?.current
@@ -127,7 +127,7 @@ const DownloadButton = React.forwardRef<HTMLButtonElement, DownloadProps>(
         return (
             <ImagePreviewButtonAction
                 Icon={
-                    <DownloadIcon className="size-full cursor-pointer dark:text-white" />
+                    <DownloadIcon className="size-full cursor-pointer  dark:text-white" />
                 }
                 name={name}
                 ref={ref}
