@@ -44,6 +44,7 @@ interface UploadSignatureProps {
      * Receives an array of File objects.
      */
     onFileChange: (files: File[]) => void
+    isFullScreenMode: boolean
 }
 
 interface CaptureSignatureProps {
@@ -90,19 +91,27 @@ const DrawSignature = ({
             setDimensions({ width, height })
         }
     }, [isFullScreenMode])
+
+    console.log(dimensions)
     return (
         <>
-            <div ref={SignaturePadParent} className={cn(
-                'w-full bg-red-500 h-fit',
-            )}>
+            <div
+                ref={SignaturePadParent}
+                className={cn(
+                    'w-full',
+                    isFullScreenMode ? 'h-full' : 'h-[300px]'
+                )}
+            >
                 <SignaturePad
                     penColor={`${theme === 'dark' ? 'white' : 'black'}`}
                     ref={signatureRef}
+                    clearOnResize={true}
+                    velocityFilterWeight={isFullScreenMode ? 0 : 0.9}
                     canvasProps={{
                         className:
-                            'sigCanvas w-full h-[200px] rounded-lg border shadow-md dark:bg-secondary',
+                            'sigCanvas w-full h-full rounded-lg border dark:bg-secondary',
                         width: dimensions.width,
-                        height: isFullScreenMode ? '100%' : '',
+                        height: dimensions.height,
                     }}
                 />
             </div>
@@ -110,10 +119,16 @@ const DrawSignature = ({
     )
 }
 
-const UploadSignature = ({ onFileChange }: UploadSignatureProps) => {
+const UploadSignature = ({
+    onFileChange,
+    isFullScreenMode,
+}: UploadSignatureProps) => {
     return (
         <FileUploader
-            className="!mx-0 w-full h-fit"
+            className={cn(
+                '!mx-0 w-full',
+                isFullScreenMode ? 'h-full' : 'h-[300px]'
+            )}
             maxFiles={1}
             accept={{
                 'image/png': ['.png'],
@@ -273,9 +288,9 @@ const Signature = ({ className }: SignatureProps) => {
     return (
         <div
             className={cn(
-                'h-fit max-w-xl rounded-lg border p-4 text-xs',
+                'h-fit max-w-xl rounded-lg border bg-background/90 p-4 text-xs backdrop-blur-sm',
                 isFullScreenMode
-                    ? 'fixed inset-0 left-0 top-0 z-50 h-[100vh] w-screen max-w-none bg-background/90 backdrop-blur-sm'
+                    ? 'fixed inset-0 left-0 top-0 z-[9999] h-screen w-screen max-w-none bg-background/90 backdrop-blur-sm'
                     : '',
                 className
             )}
@@ -286,7 +301,12 @@ const Signature = ({ className }: SignatureProps) => {
                     isFullScreenMode ? 'justify-between' : 'justify-start'
                 )}
             >
-                <div className="flex">
+                <div
+                    className={cn(
+                        'flex',
+                        isFullScreenMode ? 'space-x-2' : 'space-x-1'
+                    )}
+                >
                     <Button
                         variant={'outline'}
                         className="text-xs"
@@ -318,7 +338,7 @@ const Signature = ({ className }: SignatureProps) => {
                         Draw Signature
                     </Button>
                 </div>
-                <div className="flex h-full w-fit items-center justify-center border">
+                <div className="flex w-fit items-center justify-center">
                     {isFullScreenMode ? (
                         <>
                             <TooltipProvider>
@@ -336,7 +356,9 @@ const Signature = ({ className }: SignatureProps) => {
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <p>Exit Full Screen Mode</p>
+                                        <p className="text-xs">
+                                            Exit Full Screen Mode
+                                        </p>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
@@ -355,7 +377,9 @@ const Signature = ({ className }: SignatureProps) => {
                                         </Button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                        <p>Enter fullscreen mode</p>
+                                        <p className="text-xs">
+                                            Enter fullscreen mode
+                                        </p>
                                     </TooltipContent>
                                 </Tooltip>
                             </TooltipProvider>
@@ -366,7 +390,7 @@ const Signature = ({ className }: SignatureProps) => {
             <div
                 className={cn(
                     'mb-4 flex justify-center',
-                    isFullScreenMode ? 'h-full' : 'h-fit'
+                    isFullScreenMode ? 'h-[70%]' : 'h-fit'
                 )}
             >
                 {currentMode === SignatureModes.DRAW && (
@@ -377,6 +401,7 @@ const Signature = ({ className }: SignatureProps) => {
                 )}
                 {currentMode === SignatureModes.UPLOAD && (
                     <UploadSignature
+                        isFullScreenMode={isFullScreenMode}
                         onFileChange={handleOnUploadSignatureFileChange}
                     />
                 )}
@@ -416,16 +441,6 @@ const Signature = ({ className }: SignatureProps) => {
                         >
                             render
                         </Button>
-                        {trimmedData && (
-                            <Button
-                                className="text-xs"
-                                size={'sm'}
-                                onClick={handleDownloadDrawSignature}
-                            >
-                                <MdOutlineFileDownload className="mr-2 size-4" />
-                                download
-                            </Button>
-                        )}
                     </>
                 )}
                 {currentMode === SignatureModes.CAPTURE && (
@@ -436,6 +451,19 @@ const Signature = ({ className }: SignatureProps) => {
                     >
                         capture
                     </Button>
+                )}
+                 { currentMode !== SignatureModes.UPLOAD  && (
+                            <Button
+                                className={cn(
+                                    'text-xs',
+                                     trimmedData ? '': 'hidden'
+                                )}
+                                size={'sm'}
+                                onClick={handleDownloadDrawSignature}
+                            >
+                                <MdOutlineFileDownload className="mr-2 size-4" />
+                                download
+                            </Button>
                 )}
             </div>
         </div>
