@@ -99,7 +99,7 @@ const defaultColumns: ColumnDef<TData>[] = [
         accessorKey: 'name',
         header: (props) => (
             <DataTableColumnHeader
-                dataType="string"
+                dataType="text"
                 isResizable
                 title="Name"
                 {...props}
@@ -117,7 +117,7 @@ const defaultColumns: ColumnDef<TData>[] = [
         header: (props) => (
             <DataTableColumnHeader
                 isResizable
-                dataType="Date"
+                dataType="date"
                 title="bday"
                 {...props}
             />

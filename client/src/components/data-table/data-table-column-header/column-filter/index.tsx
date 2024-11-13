@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Column } from '@tanstack/react-table'
 
 import {
@@ -16,35 +16,27 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { FunnelOutlineIcon } from '@/components/icons'
-import { useDataTableFilter } from '../../data-table-filter-context'
+import { filterModeMap, TColumnDataTypes } from '../../data-table-filter-context'
 
-export type ColumnDataTypes = 'number' | 'string' | 'Date'
 
 interface Props<TData, TValue> {
-    dataType: ColumnDataTypes
+    dataType: TColumnDataTypes
     column: Column<TData, TValue>
 }
+
 
 const ColumnFilter = <TData, TValue>({
     column,
     dataType,
 }: Props<TData, TValue>) => {
-    const { filters, setFilter } = useDataTableFilter()
+    const filterModeOptions = useMemo(() => filterModeMap[dataType], [dataType])
+    const [filterMode, setFilterMode] = useState<string | undefined>('equal')
 
-    const filterMode = useMemo(() => {
-        switch (dataType) {
-            case 'string':
-                return ['equals', 'include', 'starts with', 'ends with']
-            case 'Date':
-                return ['equals', 'range']
-            case 'number':
-                return ['equals', 'less than', 'greater than', 'range']
-            default:
-                return []
-        }
-    }, [dataType])
-
-    console.log(filters)
+    const [value, setValue] = useState('')
+    const [rangeValue, setRangeValue] = useState<{ from: any; to: any }>({
+        from: undefined,
+        to: undefined,
+    })
 
     return (
         <Popover>
@@ -57,13 +49,11 @@ const ColumnFilter = <TData, TValue>({
                     <FunnelOutlineIcon className="size-3 opacity-55 group-hover:opacity-100" />
                 </Button>
             </PopoverTrigger>
-            <PopoverContent className="space-y-2">
+            <PopoverContent className="space-y-2 rounded-2xl border bg-popover/85 shadow-lg backdrop-blur">
+                <p className="text-sm font-medium opacity-70">Filter Mode</p>
                 <Select
-                    value={filters[column.id]?.value}
-                    defaultValue={
-                        filterMode.length === 0 ? undefined : filterMode[0]
-                    }
-                    onValueChange={(val) => setFilter(column.id, { mode : val, type : dataType })}
+                    value={filterMode}
+                    onValueChange={(val) => setFilterMode(val)}
                 >
                     <SelectTrigger className="">
                         <SelectValue placeholder="Select Filter" />
@@ -72,17 +62,49 @@ const ColumnFilter = <TData, TValue>({
                         onClick={(e) => e.stopPropagation()}
                         className="ecoop-scroll max-h-[60vh] min-w-40 overflow-y-scroll shadow-md"
                     >
-                        {filterMode.map((mode, i) => (
-                            <SelectItem key={i} value={mode}>
-                                {mode}
+                        {filterModeOptions.map((mode, i) => (
+                            <SelectItem key={i} value={mode.value}>
+                                {mode.label}
                             </SelectItem>
                         ))}
                     </SelectContent>
                 </Select>
-                <Input
-                    className="w-full"
-                    placeholder={`search ${column.getFlatColumns.name}`}
-                />
+                {filterMode !== 'range' && (
+                    <Input
+                        className="w-full"
+                        value={value}
+                        onChange={(inpt) => setValue(inpt.target.value)}
+                        placeholder={`search ${column.getFlatColumns.name}`}
+                    />
+                )}
+                {filterMode === 'range' && dataType === 'number' && (
+                    <div className="flex items-center gap-x-1">
+                        <Input
+                            type={dataType}
+                            className="w-full"
+                            value={rangeValue.from}
+                            onChange={(inpt) =>
+                                setRangeValue((prev) => ({
+                                    ...prev,
+                                    from: inpt.target.value,
+                                }))
+                            }
+                            placeholder={`Min ${column.getFlatColumns.name}`}
+                        />
+                        <Input
+                            type={dataType}
+                            className="w-full"
+                            value={rangeValue.to}
+                            onChange={(inpt) =>
+                                setRangeValue((prev) => ({
+                                    ...prev,
+                                    to: inpt.target.value,
+                                }))
+                            }
+                            placeholder={`Max`}
+                        />
+                    </div>
+                )}
             </PopoverContent>
         </Popover>
     )

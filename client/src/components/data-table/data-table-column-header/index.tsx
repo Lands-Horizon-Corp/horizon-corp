@@ -9,7 +9,8 @@ import ColumnResizeHandle from './column-drag-resize'
 import { MoveLeftRightIcon } from '@/components/icons'
 
 import { cn } from '@/lib/utils'
-import ColumnFilter, { ColumnDataTypes } from './column-filter'
+import ColumnFilter from './column-filter'
+import { TColumnDataTypes } from '../data-table-filter-context'
 
 interface DataTableColumnHeaderProps<TData, TValue>
     extends React.HTMLAttributes<HTMLDivElement> {
@@ -18,7 +19,7 @@ interface DataTableColumnHeaderProps<TData, TValue>
     isResizable?: boolean
     column: Column<TData, TValue>
     header: Header<TData, TValue>
-    dataType?: ColumnDataTypes
+    dataType?: TColumnDataTypes
 }
 
 export function DataTableColumnHeader<TData, TValue>({
