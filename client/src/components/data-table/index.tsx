@@ -46,7 +46,7 @@ const DataTable = <TData,>({
     }
 
     const sensors = useSensors(
-        useSensor(MouseSensor, {}),
+        useSensor(MouseSensor, { }),
         useSensor(TouchSensor, {}),
         useSensor(KeyboardSensor, {})
     )

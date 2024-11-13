@@ -1,5 +1,4 @@
 import { Table } from '@tanstack/react-table'
-import { DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 
 import {
     DropdownMenu,
@@ -7,6 +6,7 @@ import {
     DropdownMenuContent,
     DropdownMenuLabel,
     DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { MixerHorizontalIcon } from '@/components/icons'

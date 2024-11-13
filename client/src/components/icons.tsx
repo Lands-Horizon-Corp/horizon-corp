@@ -83,6 +83,7 @@ import {
 import {
     RxReset as  ResetIcon,
     RxEyeNone as EyeNoneIcon,
+    RxDotsVertical as DotsVerticalIcon,
     RxFontItalic as ToolbarItalicIcon,
     RxDragHandleDots2 as DragHandleIcon,
     RxMixerHorizontal as MixerHorizontalIcon,
@@ -102,7 +103,7 @@ import {
 import { CgFacebook as CgFacebookIcon } from 'react-icons/cg'
 
 import { IBaseCompNoChild } from '@/types/component'
-import { CiExport as ExportIcon } from 'react-icons/ci'
+import { CiExport as ExportIcon, CiFilter as FunnelOutlineIcon } from 'react-icons/ci'
 import { SiGooglemaps as SiGooglemapsIcon } from 'react-icons/si'
 import { VscLocation as VscLocationIcon } from 'react-icons/vsc'
 
@@ -224,12 +225,14 @@ export {
     ArrowUpDownIcon,
     TbBlockquoteIcon,
     PushPinSlashIcon,
+    DotsVerticalIcon,
     ChevronRightIcon,
     CameraSelectIcon,
     SidebarRightIcon,
     NotificationIcon,
     ToolbarItalicIcon,
     LuListOrderedIcon,
+    FunnelOutlineIcon,
     MoveLeftRightIcon,
     WarningCircleIcon,
     VerifiedPatchIcon,

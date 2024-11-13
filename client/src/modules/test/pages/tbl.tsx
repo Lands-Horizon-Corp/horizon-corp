@@ -4,16 +4,16 @@ import {
     ColumnDef,
     getCoreRowModel,
     getSortedRowModel,
-    PaginationState,
-    SortingState,
     useReactTable,
 } from '@tanstack/react-table'
 
 import DataTable from '@/components/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import DataTableExportButton from '@/components/data-table/data-table-export-button'
+import DataTableFilterContext from '@/components/data-table/data-table-filter-context'
 import { DataTableViewOptions } from '@/components/data-table/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
+import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 
 type TData = {
     name: string
@@ -106,18 +106,7 @@ const defaultColumns: ColumnDef<TData>[] = [
             },
         }) => <div>{name}</div>,
     },
-    {
-        id: 'Age',
-        accessorKey: 'age1',
-        header: (props) => (
-            <DataTableColumnHeader isResizable title="Age1" {...props} />
-        ),
-        cell: ({
-            row: {
-                original: { age1 },
-            },
-        }) => <div>{age1}</div>,
-    },
+
     {
         id: 'Bday',
         accessorKey: 'bday',
@@ -132,94 +121,35 @@ const defaultColumns: ColumnDef<TData>[] = [
     },
 
     {
-        id: 'Name2',
-        accessorKey: 'name',
+        id: 'Age',
+        accessorKey: 'age',
         header: (props) => (
-            <DataTableColumnHeader isResizable title="Name2" {...props} />
-        ),
-        cell: ({
-            row: {
-                original: { name },
-            },
-        }) => <div>{name}</div>,
-    },
-    {
-        id: 'Age2',
-        accessorKey: 'age1',
-        header: (props) => (
-            <DataTableColumnHeader isResizable title="Age2" {...props} />
+            <DataTableColumnHeader isResizable title="Age" {...props} />
         ),
         cell: ({
             row: {
                 original: { age1 },
             },
         }) => <div>{age1}</div>,
-    },
-    {
-        id: 'Bday1',
-        accessorKey: 'bday',
-        header: (props) => (
-            <DataTableColumnHeader isResizable title="bday1" {...props} />
-        ),
-        cell: ({
-            row: {
-                original: { bday },
-            },
-        }) => <div>{bday.toDateString()}</div>,
-    },
-
-    {
-        id: 'Name3',
-        accessorKey: 'name',
-        header: (props) => (
-            <DataTableColumnHeader isResizable title="Name3" {...props} />
-        ),
-        cell: ({
-            row: {
-                original: { name },
-            },
-        }) => <div>{name}</div>,
-    },
-    {
-        id: 'Age3',
-        accessorKey: 'age1',
-        header: (props) => (
-            <DataTableColumnHeader isResizable title="Age3" {...props} />
-        ),
-        cell: ({
-            row: {
-                original: { age1 },
-            },
-        }) => <div>{age1}</div>,
-    },
-    {
-        id: 'Bday2',
-        accessorKey: 'bday',
-        header: (props) => (
-            <DataTableColumnHeader isResizable title="bday2" {...props} />
-        ),
-        cell: ({
-            row: {
-                original: { bday },
-            },
-        }) => <div>{bday.toDateString()}</div>,
     },
 ]
 
 const Tbl = () => {
-    const [rowSelection, setRowSelection] = useState({})
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [columnVisibility, setColumnVisibility] = useState({})
-    const [columns] = useState<typeof defaultColumns>(() => [...defaultColumns])
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 10,
-    })
+    const {
+        sorting,
+        setSorting,
+        pagination,
+        setPagination,
+        columnVisibility,
+        setColumnVisibility,
+        rowSelection,
+        setRowSelection,
+    } = useDataTableState()
 
+    const [columns] = useState<typeof defaultColumns>(() => [...defaultColumns])
     const [columnOrder, setColumnOrder] = useState<string[]>(() =>
         columns.map((c) => c.id!)
     )
-
     const memoizedData = useMemo(() => data(), [])
 
     const table = useReactTable({
@@ -232,6 +162,8 @@ const Tbl = () => {
             columnVisibility,
             pagination,
         },
+        manualSorting: true,
+        manualFiltering: true,
         manualPagination: true,
         onSortingChange: setSorting,
         onPaginationChange: setPagination,
@@ -249,12 +181,16 @@ const Tbl = () => {
                 <DataTableExportButton table={table} />
                 <DataTableViewOptions table={table} />
             </div>
-            <DataTable
-                table={table}
-                setColumnOrder={setColumnOrder}
-                isStickyHeader
-                className="mb-2 flex-1"
-            />
+            <DataTableFilterContext.Provider
+                value={{ filters: { range: [], search: [] } }}
+            >
+                <DataTable
+                    table={table}
+                    isStickyHeader
+                    className="mb-2 flex-1"
+                    setColumnOrder={setColumnOrder}
+                />
+            </DataTableFilterContext.Provider>
         </div>
     )
 }
