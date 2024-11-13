@@ -155,20 +155,3 @@
 .toolbar-custom pre code {
     @apply bg-transparent text-[0.9em] text-inherit;
 }
-
-
-#scroll-locked-container[data-scroll-locked] {
-    overflow: hidden !important;
-    overscroll-behavior: contain;
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 0 !important;
-    margin: 0 !important;
-    width: 100vw;
-    height: 100vh;
-    z-index: 9999; /* Ensure it's on top */
-    background: white; /* Optional: set background */
-}
