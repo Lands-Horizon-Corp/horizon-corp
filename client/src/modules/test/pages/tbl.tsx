@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 
 import {
     ColumnDef,
+    ColumnPinningState,
     getCoreRowModel,
     getSortedRowModel,
     useReactTable,
@@ -11,18 +12,27 @@ import DataTable from '@/components/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 import DataTableExportButton from '@/components/data-table/data-table-export-button'
+import DataTableFilterContext from '@/components/data-table/data-table-filter-context'
 import { DataTableViewOptions } from '@/components/data-table/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
-import DataTableFilterContext from '@/components/data-table/data-table-filter-context'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
+import { Button } from '@/components/ui/button'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { DotsVerticalIcon, PushPinSlashIcon } from '@/components/icons'
+import DataTablePagination from '@/components/data-table/data-table-pagination'
+import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
 
 type TData = {
     name: string
     age: number
     bday: Date
-    name1: string
-    age1: number
-    bday1: Date
 }
 
 const generateRandomDate = (start: Date, end: Date): Date => {
@@ -32,8 +42,6 @@ const generateRandomDate = (start: Date, end: Date): Date => {
 }
 
 const data = () => {
-    // return []
-
     const names = [
         'Alice',
         'Bob',
@@ -59,9 +67,6 @@ const data = () => {
             name,
             age,
             bday,
-            name1: name,
-            age1: age,
-            bday1: bday,
         }
     })
 
@@ -71,8 +76,8 @@ const data = () => {
 const defaultColumns: ColumnDef<TData>[] = [
     {
         id: 'select',
-        header: ({ table }) => (
-            <div className={'flex w-fit items-center px-2'}>
+        header: ({ table, column }) => (
+            <div className={'flex w-fit items-center gap-x-1 px-2'}>
                 <Checkbox
                     checked={table.getIsAllPageRowsSelected()}
                     onCheckedChange={(value) =>
@@ -80,10 +85,30 @@ const defaultColumns: ColumnDef<TData>[] = [
                     }
                     aria-label="Select all"
                 />
+                {!column.getIsPinned() && (
+                    <PushPinSlashIcon
+                        onClick={() => column.pin('left')}
+                        className="mr-2 size-3.5 cursor-pointer"
+                    />
+                )}
             </div>
         ),
         cell: ({ row }) => (
-            <div className={'w-fit items-center px-2'}>
+            <div className={'flex w-fit items-center gap-x-1 px-0'}>
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <Button className="size-fit p-1" variant="ghost">
+                            <DotsVerticalIcon />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem>Profile</DropdownMenuItem>
+                        <DropdownMenuItem>Team</DropdownMenuItem>
+                        <DropdownMenuItem>Subscription</DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
                 <Checkbox
                     checked={row.getIsSelected()}
                     onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -142,9 +167,9 @@ const defaultColumns: ColumnDef<TData>[] = [
         ),
         cell: ({
             row: {
-                original: { age1 },
+                original: { age },
             },
-        }) => <div>{age1}</div>,
+        }) => <div>{age}</div>,
     },
 ]
 
@@ -154,10 +179,10 @@ const Tbl = () => {
         setSorting,
         pagination,
         setPagination,
-        columnVisibility,
-        setColumnVisibility,
         rowSelection,
         setRowSelection,
+        columnVisibility,
+        setColumnVisibility,
     } = useDataTableState()
 
     const dataTableFilterState = useDatableFilterState()
@@ -171,6 +196,9 @@ const Tbl = () => {
     const table = useReactTable({
         columns,
         data: memoizedData,
+        initialState: {
+            columnPinning: { left: ['select'] },
+        },
         state: {
             sorting,
             columnOrder,
@@ -190,11 +218,39 @@ const Tbl = () => {
         onColumnVisibilityChange: setColumnVisibility,
     })
 
+    /*
+
+    - Add Row Action (with icons)
+        - Delete (permission for this action)
+        - View (permission for this action)
+        - Edit (permission for this action)
+    - Refresh Button
+    - Delete Selected (left side nalangs)
+    - Toggle Column Visibility add show all option
+   x - remove delay on filter change 500 
+
+    - Add reset all filter button
+        - Filter as Chips with close
+    
+    - Pin default the action column to left 
+    
+    - Tooltip per column
+
+    - Pagination
+        - page size
+        - total selected / total Data
+
+    - On export, send Add id's, if all, pass no id's
+
+    */
+
     return (
         <DataTableFilterContext.Provider value={dataTableFilterState}>
             <div className="flex h-full max-h-screen flex-col gap-y-2">
                 <p>Table Desu</p>
-                <pre>{JSON.stringify(dataTableFilterState.filters, null, 4)}</pre>
+                {/* <pre>
+                    {JSON.stringify(dataTableFilterState.filters, null, 4)}
+                </pre> */}
                 <div className="flex items-center justify-end gap-x-2">
                     <DataTableExportButton table={table} />
                     <DataTableViewOptions table={table} />
@@ -205,6 +261,7 @@ const Tbl = () => {
                     className="mb-2 flex-1"
                     setColumnOrder={setColumnOrder}
                 />
+                <DataTablePagination table={table} />
             </div>
         </DataTableFilterContext.Provider>
     )

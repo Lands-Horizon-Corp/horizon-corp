@@ -6,13 +6,10 @@ import {
     DropdownMenuContent,
     DropdownMenuGroup,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuShortcut,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { ExcelIcon, ExportIcon, CsvIcon } from '@/components/icons'
+import { ExportIcon, CsvIcon } from '@/components/icons'
 import { useCallback, useEffect } from 'react'
 
 type TExportFileType = 'xlsx' | 'csv'
@@ -74,25 +71,35 @@ const DataTableExportButton = <TData,>({ table }: Props<TData>) => {
                     size="sm"
                     variant={'secondary'}
                     className="gap-x-1 rounded-md"
-                    disabled={selectedData.length === 0}
                 >
                     <ExportIcon className="size-4" />
                     Export
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="min-w-44">
-                <DropdownMenuLabel>Export Format</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+                {/* <DropdownMenuLabel>Export Format</DropdownMenuLabel> */}
+                {/* <DropdownMenuSeparator /> */}
                 <DropdownMenuGroup>
-                    <DropdownMenuItem onClick={() => exportData('xlsx')}>
-                        <ExcelIcon className="mr-2 size-4 text-emerald-600" />
-                        <span>Excel</span>
-                        <DropdownMenuShortcut>⌘ + x</DropdownMenuShortcut>
+                    {selectedData.length > 0 && (
+                        <DropdownMenuItem onClick={() => exportData('csv')}>
+                            <CsvIcon className="mr-2 size-4 text-emerald-600" />
+                            <span>Export Selected</span>
+                        </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem onClick={() => exportData('csv')}>
+                        <CsvIcon className="mr-2 size-4 text-emerald-600" />
+                        <span>Export All Filtered</span> 
+                        {/* No ID */}
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => exportData('csv')}>
                         <CsvIcon className="mr-2 size-4 text-emerald-600" />
-                        <span>CSV</span>
-                        <DropdownMenuShortcut>⌘ + c</DropdownMenuShortcut>
+                        <span>Export All</span>
+                        {/* No ID, no filters */}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => exportData('csv')}>
+                        <CsvIcon className="mr-2 size-4 text-emerald-600" />
+                        <span>Export Current Page</span>
+                        {/* With ID's */}
                     </DropdownMenuItem>
                 </DropdownMenuGroup>
             </DropdownMenuContent>

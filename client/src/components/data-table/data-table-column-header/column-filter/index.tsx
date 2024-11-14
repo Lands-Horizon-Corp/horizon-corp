@@ -67,7 +67,7 @@ const ColumnFilter = <TData, TValue>({
         [filterMode, value, rangeValue]
     )
 
-    const finalFilterValue = useDebounce(filterInput, 2000)
+    const finalFilterValue = useDebounce(filterInput, 500)
 
     useEffect(() => {
         if (

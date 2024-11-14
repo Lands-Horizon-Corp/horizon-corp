@@ -6,7 +6,6 @@ import { Column, Header, Table } from '@tanstack/react-table'
 import ColumnActions from './column-actions'
 import { Button } from '@/components/ui/button'
 import ColumnResizeHandle from './column-drag-resize'
-import { MoveLeftRightIcon } from '@/components/icons'
 
 import { cn } from '@/lib/utils'
 import ColumnFilter from './column-filter'
@@ -55,7 +54,6 @@ export function DataTableColumnHeader<TData, TValue>({
                     isResizable && 'pr-1'
                 )}
             >
-                <span className="relative font-bold">{title}</span>
                 <div className="inline-flex items-center gap-x-0.5">
                     <Button
                         size="sm"
@@ -66,10 +64,7 @@ export function DataTableColumnHeader<TData, TValue>({
                         ref={setNodeRef}
                         className="!size-fit cursor-ew-resize gap-x-2 p-1 data-[state=open]:bg-accent"
                     >
-                        {isDragging && (
-                            <span className="relative font-bold">{title}</span>
-                        )}
-                        <MoveLeftRightIcon className="size-3 opacity-55 group-hover:opacity-100" />
+                        <span className="relative font-bold">{title}</span>
                     </Button>
 
                     <ColumnActions table={table} column={column} />

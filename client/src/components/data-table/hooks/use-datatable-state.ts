@@ -1,5 +1,8 @@
-import { PaginationState, SortingState } from '@tanstack/react-table'
 import { useState } from 'react'
+import {
+    SortingState,
+    PaginationState,
+} from '@tanstack/react-table'
 
 const useDataTableState = () => {
     const [rowSelection, setRowSelection] = useState({})
