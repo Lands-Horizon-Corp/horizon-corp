@@ -314,7 +314,7 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
                     <a
                         target="_blank"
                         href={media.url}
-                        className="py-1 text-xs"
+                        className="py-1 text-xs text-black dark:text-white"
                     >
                         Open in Browser
                     </a>
@@ -335,7 +335,7 @@ const ImagePreviewButtonAction = React.forwardRef<
     HTMLButtonElement,
     ImagePreviewButtonActionProps
 >(({ onClick, Icon, name, className, iconClassName, ...props }, ref) => {
-    const defaultIconStyles = '!size-4 text-white'
+    const defaultIconStyles = '!size-4 dark:text-white'
 
     return (
         <Button
