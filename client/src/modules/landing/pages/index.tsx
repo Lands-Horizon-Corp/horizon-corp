@@ -7,13 +7,8 @@ import { Button } from '@/components/ui/button'
 
 import { cn } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
-import Signature from '@/components/signature'
-import { ImagePreview, ImagePreviewContent } from '@/components/ui/image-preview'
-import { sampleMediaResourceList } from '@/modules/test/testSampleData'
-import { useImagePreview } from '@/store/image-preview-store'
 
 const LandingPage = () => {
-    const { isOpen, setIsOpen } = useImagePreview()
 
     return (
         <div className="flex h-fit justify-center px-6 font-inter sm:px-8 lg:px-[60px] xl:px-[124px]">
@@ -21,14 +16,6 @@ const LandingPage = () => {
                 <h1 className="w-[80%] pt-2 text-[min(64px,5.5vw)] font-black capitalize md:pt-20 lg:leading-[4.8rem]">
                     Empowering Communities Through Cooperative Ownership
                 </h1>
-                <Button onClick={() => setIsOpen(true)}>view</Button>
-                <ImagePreview
-                    open={isOpen}
-                    onOpenChange={() => setIsOpen(false)}
-                >
-                    <ImagePreviewContent Images={sampleMediaResourceList} />
-                </ImagePreview>
-                <Signature/>
                 <div className="flex w-full">
                     <div className="grow" />
                     <div>

@@ -200,6 +200,9 @@ const Signature = ({ className }: SignatureProps) => {
         }
     }, [])
 
+    const isCurrentMode = (mode: SignatureModeType) =>{
+        return mode === currentMode ? 'bg-secondary' : ''
+    }
     
     return (
         <div
@@ -213,7 +216,7 @@ const Signature = ({ className }: SignatureProps) => {
         >
             <div
                 className={cn(
-                    'flex justify-between h-14 min-h-[50px] w-full gap-2 py-2',
+                    'flex h-14 min-h-[50px] w-full justify-between gap-2 py-2'
                 )}
             >
                 <div
@@ -224,33 +227,46 @@ const Signature = ({ className }: SignatureProps) => {
                 >
                     <Button
                         variant={'outline'}
-                        className="text-xs"
-                        onClick={() =>
-                            handleSignaturePicking(SignatureModes.CAPTURE)
-                        }
-                    >
-                        <FiCameraIcon className="lg:mr-2 size-4" />
-                        <span className='hidden lg:block'>Capture Signature</span>
-                    </Button>
-                    <Button
-                        variant={'outline'}
-                        className="text-xs"
-                        onClick={() =>
-                            handleSignaturePicking(SignatureModes.UPLOAD)
-                        }
-                    >
-                        <LuHardDriveUploadIcon className="lg:mr-2 size-4" />
-                        <span className='hidden lg:block'>Upload Signature</span>
-                    </Button>
-                    <Button
-                        variant={'outline'}
-                        className="text-xs"
+                        className={cn(
+                            'text-xs',
+                            isCurrentMode(SignatureModes.DRAW)
+                        )}
                         onClick={() =>
                             handleSignaturePicking(SignatureModes.DRAW)
                         }
                     >
-                        <MdOutlineDrawIcon className="lg:mr-2 size-4" />
-                        <span className='hidden lg:block'>Draw Signature</span>
+                        <MdOutlineDrawIcon className="size-4 lg:mr-2" />
+                        <span className="hidden lg:block">Draw Signature</span>
+                    </Button>
+                    <Button
+                        variant={'outline'}
+                        className={cn(
+                            'text-xs',
+                            isCurrentMode(SignatureModes.CAPTURE)
+                        )}
+                        onClick={() =>
+                            handleSignaturePicking(SignatureModes.CAPTURE)
+                        }
+                    >
+                        <FiCameraIcon className="size-4 lg:mr-2" />
+                        <span className="hidden lg:block">
+                            Capture Signature
+                        </span>
+                    </Button>
+                    <Button
+                        variant={'outline'}
+                        className={cn(
+                            'text-xs',
+                            isCurrentMode(SignatureModes.UPLOAD)
+                        )}
+                        onClick={() =>
+                            handleSignaturePicking(SignatureModes.UPLOAD)
+                        }
+                    >
+                        <LuHardDriveUploadIcon className="size-4 lg:mr-2" />
+                        <span className="hidden lg:block">
+                            Upload Signature
+                        </span>
                     </Button>
                 </div>
                 <div className="flex w-fit items-center justify-center">
@@ -364,16 +380,17 @@ const Signature = ({ className }: SignatureProps) => {
                     <Button
                         className="text-xs"
                         size={'sm'}
-                        onClick={()=>{
-                            if(trimmedData){
+                        onClick={() => {
+                            if (trimmedData) {
                                 onOpen({
                                     title: 'Replace Captured Image',
-                                    description: 'Do you want to replace the current captured image with the new one?',
+                                    description:
+                                        'Do you want to replace the current captured image with the new one?',
                                     onConfirm: () => handleCaptureImage(),
                                 })
-                                return;
-                            }else{
-                                handleCaptureImage();
+                                return
+                            } else {
+                                handleCaptureImage()
                             }
                         }}
                     >
