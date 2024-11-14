@@ -33,12 +33,11 @@ export const dataUrlToFile = (dataUrl: string, filename: string): File | undefin
     return new File([byteNumbers], filename, { type: mime });
 };
 
-// Define a type for the possible file categories
 type FileCategory = 'audio' | 'video' | 'doc' | 'pdf' | 'sheet' | 'text' | 'image' | 'unknown';
 
 export const getFileType = (file: File): FileCategory => {
-    const fileExtension = file.name.split('.').pop()?.toLowerCase(); // Get file extension
-    const mimeType = file.type; // Get MIME type
+    const fileExtension = file.name.split('.').pop()?.toLowerCase(); 
+    const mimeType = file.type; 
   
     const fileTypes: Partial<Record<FileCategory, string[]>> = {
       audio: ['mp3', 'wav', 'ogg', 'aac', 'flac', 'm4a'],
@@ -48,13 +47,13 @@ export const getFileType = (file: File): FileCategory => {
       sheet: ['xls', 'xlsx', 'csv', 'ods'],
       text: ['txt', 'log', 'md'],
       image: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'],
-      // Note: 'unknown' does not need to be included here as it has no extensions
+     
     };
   
     // Check each category
     for (const [category, extensions] of Object.entries(fileTypes)) {
       if (fileExtension && extensions?.includes(fileExtension)) {
-        return category as FileCategory; // Return category if extension matches
+        return category as FileCategory; 
       }
     }
   
@@ -63,8 +62,7 @@ export const getFileType = (file: File): FileCategory => {
     if (mimeType.startsWith('video/')) return 'video';
     if (mimeType === 'application/pdf') return 'pdf';
     if (mimeType.startsWith('text/')) return 'text';
-    if (mimeType.startsWith('image/')) return 'image'; // Check for image MIME types
+    if (mimeType.startsWith('image/')) return 'image'; 
     
-    // Return 'unknown' if no match found
     return 'unknown';
 };
