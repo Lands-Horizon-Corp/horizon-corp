@@ -122,7 +122,6 @@ interface UploadedFileItemProps {
                  onClick={onDelete}
                  size={18}
                  className="text-destructive hover:scale-105 cursor-pointer"
-               //   aria-label={`Delete ${file.name}`}
              />
          </div>
      );
