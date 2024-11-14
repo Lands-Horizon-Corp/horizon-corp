@@ -33,7 +33,6 @@ import { cn } from '@/lib'
 import UploadSignature from './upload-signature'
 import DrawSignature from './draw-signature'
 import CaptureSignature from './capture-signature'
-import ConfirmModal from '../modals/confirm-modal'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 
 interface SignatureProps {
