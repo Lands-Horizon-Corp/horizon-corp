@@ -10,6 +10,9 @@ import {
     LuListOrdered as LuListOrderedIcon,
     LuUndo2 as LuUndo2Icon,
     LuRedo2 as LuRedo2Icon,
+    LuImage as LuImageIcon,
+    LuFileX as  LuFileXIcon,
+    LuHardDriveUpload as LuHardDriveUploadIcon
 } from 'react-icons/lu'
 import {
     BsBuildingGear as BuildingCogIcon,
@@ -52,6 +55,9 @@ import {
     AiOutlineLoading as LoadingCircleIcon,
     AiOutlineLoading3Quarters as LoadingSpinnerIcon,
     AiOutlineMessage as AiOutlineMessageIcon,
+    AiOutlineClear as AiOutlineClearIcon,
+    AiOutlineFullscreen as AiOutlineFullscreenIcon,
+    AiOutlineFullscreenExit as AiOutlineFullscreenExitIcon
 } from 'react-icons/ai'
 import { GoArrowLeft as ArrowLeftIcon } from 'react-icons/go'
 import {
@@ -61,6 +67,8 @@ import {
     MdOutlineEmail as MdOutlineEmailIcon,
     MdRotateLeft as MdRotateLeftIcon,
     MdRotateRight as MdRotateRightIcon,
+    MdOutlineFileDownload as MdOutlineFileDownloadIcon,
+    MdOutlineDraw as MdOutlineDrawIcon,
 } from 'react-icons/md'
 import {
     BsPatchCheck as VerifiedPatchIcon,
@@ -74,7 +82,7 @@ import {
     IoCallOutline as IoCallOutlineIcon,
     IoLocationSharp as IoLocationSharpIcon,
 } from 'react-icons/io5'
-import { RxFontItalic as ToolbarItalicIcon } from 'react-icons/rx'
+import { RxFontItalic as ToolbarItalicIcon, RxTrash as RxTrashIcon } from 'react-icons/rx'
 import {
     FaBold as FaBoldIcon,
     FaRulerHorizontal as FaRulerHorizontalIcon,
@@ -94,6 +102,8 @@ import { GrPowerReset as GrPowerResetIcon } from "react-icons/gr";
 
 import { SiGooglemaps as SiGooglemapsIcon } from 'react-icons/si'
 import { VscLocation as VscLocationIcon } from 'react-icons/vsc'
+import { FiCamera as FiCameraIcon } from "react-icons/fi";
+
 
 const CookieIcon: React.FC<IBaseCompNoChild> = (props) => {
     return (
@@ -228,4 +238,15 @@ export {
     GrPowerResetIcon,
     MdRotateRightIcon,
     MdRotateLeftIcon,
+    RxTrashIcon,
+    LuImageIcon,
+    LuFileXIcon,
+    MdOutlineFileDownloadIcon,
+    FiCameraIcon,
+    LuHardDriveUploadIcon,
+    MdOutlineDrawIcon,
+    AiOutlineClearIcon,
+    AiOutlineFullscreenIcon,
+    AiOutlineFullscreenExitIcon,
+    
 }

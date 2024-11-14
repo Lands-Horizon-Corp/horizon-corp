@@ -6,6 +6,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { sampleMediaResourceList } from './testSampleData'
 import { useImagePreview } from '@/store/image-preview-store'
+import Signature from '@/components/signature'
 const TestLayout = () => {
     const { isOpen, setIsOpen } = useImagePreview()
 
@@ -14,7 +15,7 @@ const TestLayout = () => {
             <main>
                 <Outlet />
             </main>
-
+            <Signature/>
             <div className="mx-auto h-[100vh] w-[80%]">
                 <Button onClick={() => setIsOpen(true)}>view</Button>
                 <ImagePreview
