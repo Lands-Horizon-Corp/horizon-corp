@@ -53,12 +53,12 @@ export const filterModeMap: {
 }
 
 type TSearchFilter = {
-    type: 'string' | 'number' | 'date'
-    value: string | number | Date
+    dataType: TColumnDataTypes
+    value: any
     mode: TFilterModes // here will the filterModes comes
     // if mode is range, there will be fromValue and toValue
-    from: any
-    to: any
+    from?: any
+    to?: any
 }
 
 // Define a type for filters where any string key is allowed
@@ -102,11 +102,15 @@ export const DataTableFilterProvider = ({
     }
 
     const removeFilter = (field: string) => {
+        const targetFilter = filters[field]
+
         setFilters((prev) => {
             const newFilters = { ...prev }
             delete newFilters[field]
             return newFilters
         })
+
+        return targetFilter
     }
 
     const resetFilter = () => {

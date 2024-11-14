@@ -1,5 +1,5 @@
-import { useMemo, useState } from 'react'
 import { Column } from '@tanstack/react-table'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
     Select,
@@ -20,7 +20,11 @@ import { FunnelFilledIcon } from '@/components/icons'
 import {
     filterModeMap,
     TColumnDataTypes,
+    TFilterModes,
+    useDataTableFilter,
 } from '../../data-table-filter-context'
+import NumberRange from './number-range'
+import useDebounce from '@/hooks/use-debounce'
 
 interface Props<TData, TValue> {
     dataType: TColumnDataTypes
@@ -31,14 +35,47 @@ const ColumnFilter = <TData, TValue>({
     column,
     dataType,
 }: Props<TData, TValue>) => {
+    const { setFilter, removeFilter } = useDataTableFilter()
     const filterModeOptions = useMemo(() => filterModeMap[dataType], [dataType])
-    const [filterMode, setFilterMode] = useState<string | undefined>('equal')
+    const [filterMode, setFilterMode] = useState<TFilterModes | undefined>(
+        'equal'
+    )
 
     const [value, setValue] = useState('')
-    const [rangeValue, setRangeValue] = useState<{ from: any; to: any }>({
+    const [rangeValue, setRangeValue] = useState<{ from?: any; to?: any }>({
         from: undefined,
         to: undefined,
     })
+
+    const filterInput = useMemo(
+        () => ({
+            mode: filterMode,
+            value,
+            rangeValue:
+                filterMode === 'range'
+                    ? rangeValue
+                    : { from: undefined, to: undefined },
+        }),
+        [filterMode, value, rangeValue]
+    )
+
+    const finalFilterValue = useDebounce(filterInput, 2000)
+
+    useEffect(() => {
+        if (finalFilterValue.mode === undefined || !finalFilterValue.value) {
+            removeFilter(column.id)
+            return
+        }
+
+        const newFilter = {
+            mode: finalFilterValue.mode,
+            dataType,
+            value,
+            ...finalFilterValue.rangeValue,
+        }
+
+        setFilter(column.id, newFilter)
+    }, [finalFilterValue])
 
     return (
         <Popover>
@@ -55,7 +92,11 @@ const ColumnFilter = <TData, TValue>({
                 <p className="text-sm font-medium opacity-70">Filter Mode</p>
                 <Select
                     value={filterMode}
-                    onValueChange={(val) => setFilterMode(val)}
+                    onValueChange={(val) => {
+                        const newFilterMode = val as TFilterModes
+                        if (newFilterMode === 'range') setValue('')
+                        setFilterMode(newFilterMode)
+                    }}
                 >
                     <SelectTrigger className="">
                         <SelectValue placeholder="Select Filter" />
@@ -81,32 +122,10 @@ const ColumnFilter = <TData, TValue>({
                     />
                 )}
                 {filterMode === 'range' && dataType === 'number' && (
-                    <div className="flex items-center gap-x-1">
-                        <Input
-                            type={dataType}
-                            className="w-full"
-                            value={rangeValue.from}
-                            onChange={(inpt) =>
-                                setRangeValue((prev) => ({
-                                    ...prev,
-                                    from: inpt.target.value,
-                                }))
-                            }
-                            placeholder={`Min ${column.getFlatColumns.name}`}
-                        />
-                        <Input
-                            type={dataType}
-                            className="w-full"
-                            value={rangeValue.to}
-                            onChange={(inpt) =>
-                                setRangeValue((prev) => ({
-                                    ...prev,
-                                    to: inpt.target.value,
-                                }))
-                            }
-                            placeholder={`Max`}
-                        />
-                    </div>
+                    <NumberRange
+                        value={rangeValue}
+                        onChange={(val) => setRangeValue(val)}
+                    />
                 )}
             </PopoverContent>
         </Popover>
