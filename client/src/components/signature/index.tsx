@@ -1,24 +1,14 @@
-import {
-    forwardRef,
-    MutableRefObject,
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
-import ReactSignatureCanvas from 'react-signature-canvas'
 import SignaturePad from 'react-signature-canvas'
 import Webcam from 'react-webcam'
 
 import { Button } from '../ui/button'
-import WebCam from '../webcam'
 
 import { dataUrlToFile } from '@/helpers'
-import { useTheme } from '@/providers/theme-provider'
-import FileUploader from '../ui/file-uploader'
 import { FileWithPath } from 'react-dropzone'
 import { useSignature } from '@/store/signature-store'
+
 import {
     AiOutlineClearIcon,
     AiOutlineFullscreenExitIcon,
@@ -27,116 +17,27 @@ import {
     LuHardDriveUploadIcon,
     MdOutlineDrawIcon,
 } from '../icons'
-import { cn } from '@/lib'
 import { MdOutlineFileDownload } from 'react-icons/md'
+
 import { toast } from 'sonner'
+
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from '@/components/ui/tooltip'
+
 import { Separator } from '../ui/separator'
-
-interface UploadSignatureProps {
-    /**
-     * Callback function triggered when files are added or changed.
-     * Receives an array of File objects.
-     */
-    onFileChange: (files: File[]) => void
-    isFullScreenMode: boolean
-}
-
-interface CaptureSignatureProps {
-    /**
-     * Reference to the Webcam component for capturing signatures.
-     * Used to access the webcam instance methods.
-     */
-    camRef: MutableRefObject<Webcam | null>
-}
-
-interface DrawSignatureProps {
-    /**
-     * Reference to the SignatureCanvas component for drawing signatures.
-     * Used to access the canvas instance methods.
-     */
-    signatureRef: MutableRefObject<ReactSignatureCanvas | null>
-    isFullScreenMode: boolean
-}
+import { cn } from '@/lib'
+import UploadSignature from './upload-signature'
+import DrawSignature from './draw-signature'
+import CaptureSignature from './capture-signature'
+import ConfirmModal from '../modals/confirm-modal'
+import useConfirmModalStore from '@/store/confirm-modal-store'
 
 interface SignatureProps {
     className?: string
-}
-
-const CaptureSignature = ({ camRef }: CaptureSignatureProps) => {
-    return (
-        <>
-            <WebCam className="!mx-0 rounded-lg" ref={camRef} />
-        </>
-    )
-}
-
-const DrawSignature = ({
-    signatureRef,
-    isFullScreenMode,
-}: DrawSignatureProps) => {
-    const { resolvedTheme: theme } = useTheme()
-    const SignaturePadParent = useRef<HTMLDivElement | null>(null)
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
-
-    useEffect(() => {
-        if (SignaturePadParent.current) {
-            const { width, height } =
-                SignaturePadParent.current.getBoundingClientRect()
-            setDimensions({ width, height })
-        }
-    }, [isFullScreenMode])
-
-    console.log(dimensions)
-    return (
-        <>
-            <div
-                ref={SignaturePadParent}
-                className={cn(
-                    'w-full',
-                    isFullScreenMode ? 'h-full' : 'h-[300px]'
-                )}
-            >
-                <SignaturePad
-                    penColor={`${theme === 'dark' ? 'white' : 'black'}`}
-                    ref={signatureRef}
-                    clearOnResize={true}
-                    velocityFilterWeight={isFullScreenMode ? 0 : 0.9}
-                    canvasProps={{
-                        className:
-                            'sigCanvas w-full h-full rounded-lg border dark:bg-secondary',
-                        width: dimensions.width,
-                        height: dimensions.height,
-                    }}
-                />
-            </div>
-        </>
-    )
-}
-
-const UploadSignature = ({
-    onFileChange,
-    isFullScreenMode,
-}: UploadSignatureProps) => {
-    return (
-        <FileUploader
-            className={cn(
-                '!mx-0 w-full',
-                isFullScreenMode ? 'h-full' : 'h-[300px]'
-            )}
-            maxFiles={1}
-            accept={{
-                'image/png': ['.png'],
-                'image/jpeg': ['.jpg', '.jpeg'],
-            }}
-            onFileChange={onFileChange}
-        />
-    )
 }
 
 enum SignatureModes {
@@ -148,17 +49,18 @@ enum SignatureModes {
 type SignatureModeType = SignatureModes
 
 const Signature = ({ className }: SignatureProps) => {
-    const [currentMode, setCurrentMode] = useState<SignatureModeType | null>(
-        SignatureModes.DRAW
-    )
+
+    const [currentMode, setCurrentMode] = useState<SignatureModeType | null>(SignatureModes.DRAW)
     const signatureRef = useRef<SignaturePad | null>(null)
     const [_, setCurrentFile] = useState<FileWithPath | null>()
     const [trimmedData, setTrimmedData] = useState<string | null>('')
     const [isFullScreenMode, setIsFullScreenMode] = useState(false)
+    
     const imageRef = useRef<HTMLImageElement | null>(null)
-
-    const { file, setFile } = useSignature()
     const camRef = useRef<Webcam>(null)
+    
+    const { setFile } = useSignature()
+    const { onOpen } = useConfirmModalStore()
 
     const handleSignaturePicking = (mode: SignatureModeType) => {
         setCurrentMode(mode)
@@ -213,6 +115,9 @@ const Signature = ({ className }: SignatureProps) => {
             'capture-signature'
         )
         setFile(convertedImageToData)
+        if(imageSrc){
+            toast.success('Capture Image')
+        }
     }
 
     const handleDownloadDrawSignature = () => {
@@ -252,53 +157,64 @@ const Signature = ({ className }: SignatureProps) => {
         setIsFullScreenMode((prev) => !prev)
     }
 
+    const applyScrollLock = (body: HTMLElement) => {
+        body.classList.add(
+            'with-scroll-bars-hidden',
+            'right-scroll-bar-position',
+            'width-before-scroll-bar'
+        )
+        body.setAttribute('data-scroll-locked', '')
+    }
+
+    const removeScrollLock = (body: HTMLElement) => {
+        body.classList.remove(
+            'with-scroll-bars-hidden',
+            'right-scroll-bar-position',
+            'width-before-scroll-bar'
+        )
+        body.removeAttribute('data-scroll-locked')
+    }
+
     useEffect(() => {
         const body = document.body
 
-        // Helper function to apply or remove styles
-        const applyScrollLock = () => {
-            body.classList.add(
-                'with-scroll-bars-hidden',
-                'right-scroll-bar-position',
-                'width-before-scroll-bar'
-            )
-            body.setAttribute('data-scroll-locked', '')
-        }
-
-        const removeScrollLock = () => {
-            body.classList.remove(
-                'with-scroll-bars-hidden',
-                'right-scroll-bar-position',
-                'width-before-scroll-bar'
-            )
-            body.removeAttribute('data-scroll-locked')
-        }
-
-        // Apply or remove based on the state
         if (isFullScreenMode) {
-            applyScrollLock()
+            applyScrollLock(body)
         } else {
-            removeScrollLock()
+            removeScrollLock(body)
         }
 
-        // Clean up when the component unmounts
-        return removeScrollLock
+        return () => removeScrollLock(body)
     }, [isFullScreenMode])
 
+    const onKeyPress = (event: KeyboardEvent) => {
+        if (event.key === 'Escape') {
+            setIsFullScreenMode(false)
+        }
+    }
+
+    useEffect(() => {
+        document.addEventListener('keydown', onKeyPress)
+
+        return () => {
+            document.removeEventListener('keydown', onKeyPress)
+        }
+    }, [])
+
+    
     return (
         <div
             className={cn(
                 'h-fit max-w-xl rounded-lg border bg-background/90 p-4 text-xs backdrop-blur-sm',
                 isFullScreenMode
-                    ? 'fixed inset-0 left-0 top-0 z-[9999] h-screen w-screen max-w-none bg-background/90 backdrop-blur-sm'
+                    ? 'fixed inset-0 left-0 top-0 z-50 h-screen w-screen max-w-none bg-background/90 backdrop-blur-sm'
                     : '',
                 className
             )}
         >
             <div
                 className={cn(
-                    'flex h-14 min-h-[50px] w-full gap-2 py-2',
-                    isFullScreenMode ? 'justify-between' : 'justify-start'
+                    'flex justify-between h-14 min-h-[50px] w-full gap-2 py-2',
                 )}
             >
                 <div
@@ -314,8 +230,8 @@ const Signature = ({ className }: SignatureProps) => {
                             handleSignaturePicking(SignatureModes.CAPTURE)
                         }
                     >
-                        <FiCameraIcon className="mr-2 size-4" />
-                        Capture Signature
+                        <FiCameraIcon className="lg:mr-2 size-4" />
+                        <span className='hidden lg:block'>Capture Signature</span>
                     </Button>
                     <Button
                         variant={'outline'}
@@ -324,8 +240,8 @@ const Signature = ({ className }: SignatureProps) => {
                             handleSignaturePicking(SignatureModes.UPLOAD)
                         }
                     >
-                        <LuHardDriveUploadIcon className="mr-2 size-4" />
-                        Upload Signature
+                        <LuHardDriveUploadIcon className="lg:mr-2 size-4" />
+                        <span className='hidden lg:block'>Upload Signature</span>
                     </Button>
                     <Button
                         variant={'outline'}
@@ -334,8 +250,8 @@ const Signature = ({ className }: SignatureProps) => {
                             handleSignaturePicking(SignatureModes.DRAW)
                         }
                     >
-                        <MdOutlineDrawIcon className="mr-2 size-4" />
-                        Draw Signature
+                        <MdOutlineDrawIcon className="lg:mr-2 size-4" />
+                        <span className='hidden lg:block'>Draw Signature</span>
                     </Button>
                 </div>
                 <div className="flex w-fit items-center justify-center">
@@ -368,9 +284,11 @@ const Signature = ({ className }: SignatureProps) => {
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger asChild>
-                                        <Button variant={'ghost'}>
+                                        <Button
+                                            onClick={handleIsFullScreenMode}
+                                            variant={'ghost'}
+                                        >
                                             <AiOutlineFullscreenExitIcon
-                                                onClick={handleIsFullScreenMode}
                                                 size={24}
                                                 className="ease-in-out hover:scale-105 hover:cursor-pointer"
                                             />
@@ -447,23 +365,31 @@ const Signature = ({ className }: SignatureProps) => {
                     <Button
                         className="text-xs"
                         size={'sm'}
-                        onClick={handleCaptureImage}
+                        onClick={()=>{
+                            if(trimmedData){
+                                onOpen({
+                                    title: 'Replace Captured Image',
+                                    description: 'Do you want to replace the current captured image with the new one?',
+                                    onConfirm: () => handleCaptureImage(),
+                                })
+                                return;
+                            }else{
+                                handleCaptureImage();
+                            }
+                        }}
                     >
                         capture
                     </Button>
                 )}
-                 { currentMode !== SignatureModes.UPLOAD  && (
-                            <Button
-                                className={cn(
-                                    'text-xs',
-                                     trimmedData ? '': 'hidden'
-                                )}
-                                size={'sm'}
-                                onClick={handleDownloadDrawSignature}
-                            >
-                                <MdOutlineFileDownload className="mr-2 size-4" />
-                                download
-                            </Button>
+                {currentMode !== SignatureModes.UPLOAD && (
+                    <Button
+                        className={cn('text-xs', trimmedData ? '' : 'hidden')}
+                        size={'sm'}
+                        onClick={handleDownloadDrawSignature}
+                    >
+                        <MdOutlineFileDownload className="mr-2 size-4" />
+                        download
+                    </Button>
                 )}
             </div>
         </div>
