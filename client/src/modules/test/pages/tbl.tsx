@@ -13,7 +13,8 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import DataTableExportButton from '@/components/data-table/data-table-export-button'
 import { DataTableViewOptions } from '@/components/data-table/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
-import { DataTableFilterProvider } from '@/components/data-table/data-table-filter-context'
+import DataTableFilterContext from '@/components/data-table/data-table-filter-context'
+import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 
 type TData = {
     name: string
@@ -159,6 +160,8 @@ const Tbl = () => {
         setRowSelection,
     } = useDataTableState()
 
+    const dataTableFilterState = useDatableFilterState()
+
     const [columns] = useState<typeof defaultColumns>(() => [...defaultColumns])
     const [columnOrder, setColumnOrder] = useState<string[]>(() =>
         columns.map((c) => c.id!)
@@ -188,21 +191,22 @@ const Tbl = () => {
     })
 
     return (
-        <div className="flex h-full max-h-screen flex-col gap-y-2">
-            <p>Table Desu</p>
-            <div className="flex items-center justify-end gap-x-2">
-                <DataTableExportButton table={table} />
-                <DataTableViewOptions table={table} />
-            </div>
-            <DataTableFilterProvider>
+        <DataTableFilterContext.Provider value={dataTableFilterState}>
+            <div className="flex h-full max-h-screen flex-col gap-y-2">
+                <p>Table Desu</p>
+                <pre>{JSON.stringify(dataTableFilterState.filters, null, 4)}</pre>
+                <div className="flex items-center justify-end gap-x-2">
+                    <DataTableExportButton table={table} />
+                    <DataTableViewOptions table={table} />
+                </div>
                 <DataTable
                     table={table}
                     isStickyHeader
                     className="mb-2 flex-1"
                     setColumnOrder={setColumnOrder}
                 />
-            </DataTableFilterProvider>
-        </div>
+            </div>
+        </DataTableFilterContext.Provider>
     )
 }
 

@@ -10,7 +10,7 @@ const NumberRange = ({ value, onChange }: Props) => {
         <div className="flex items-center gap-x-1">
             <Input
                 type="number"
-                className="w-full"
+                className="min-w-40"
                 value={value.from ?? ''}
                 onChange={(inpt) =>
                     onChange({ ...value, from: inpt.target.value as any })
@@ -19,7 +19,7 @@ const NumberRange = ({ value, onChange }: Props) => {
             />
             <Input
                 type="number"
-                className="w-full"
+                className="min-w-40"
                 value={value.to ?? ''}
                 onChange={(inpt) =>
                     onChange({ ...value, to: inpt.target.value as any })

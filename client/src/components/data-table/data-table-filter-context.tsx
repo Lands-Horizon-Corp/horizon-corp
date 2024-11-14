@@ -52,7 +52,7 @@ export const filterModeMap: {
     ],
 }
 
-type TSearchFilter = {
+export type TSearchFilter = {
     dataType: TColumnDataTypes
     value: any
     mode: TFilterModes // here will the filterModes comes
@@ -62,7 +62,7 @@ type TSearchFilter = {
 }
 
 // Define a type for filters where any string key is allowed
-type FilterObject = {
+export type FilterObject = {
     [key: string]: TSearchFilter | undefined
 }
 
@@ -89,39 +89,4 @@ export const useDataTableFilter = () => {
     return context
 }
 
-// Example Provider
-export const DataTableFilterProvider = ({
-    children,
-}: {
-    children: ReactNode
-}) => {
-    const [filters, setFilters] = useState<FilterObject>({})
-
-    const setFilter = (field: string, filter: TSearchFilter) => {
-        setFilters((prev) => ({ ...prev, [field]: filter }))
-    }
-
-    const removeFilter = (field: string) => {
-        const targetFilter = filters[field]
-
-        setFilters((prev) => {
-            const newFilters = { ...prev }
-            delete newFilters[field]
-            return newFilters
-        })
-
-        return targetFilter
-    }
-
-    const resetFilter = () => {
-        setFilters({})
-    }
-
-    return (
-        <DataTableFilterContext.Provider
-            value={{ filters, setFilter, removeFilter, resetFilter }}
-        >
-            {children}
-        </DataTableFilterContext.Provider>
-    )
-}
+export default DataTableFilterContext
