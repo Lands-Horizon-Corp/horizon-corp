@@ -2,7 +2,7 @@ import { MediaResource } from "@/horizon-corp/types";
 
 export const sampleMediaResourceList: MediaResource[] = [
     {
-      id: 2,
+      id: 1,
       fileName: "sample-image.png",
       fileSize: 5242880, // 5 MB in bytes
       fileType: "image/jpeg",
@@ -14,7 +14,7 @@ export const sampleMediaResourceList: MediaResource[] = [
       downloadURL: "https://cdn.example.com/media/resources/sample-image.jpg"
     },
     {
-      id: 3,
+      id: 2,
       fileName: "sample-image2.png",
       fileSize: 7340032, // 7 MB in bytes
       fileType: "audio/mpeg",
@@ -26,7 +26,7 @@ export const sampleMediaResourceList: MediaResource[] = [
       downloadURL: "https://cdn.example.com/media/resources/music-track.mp3"
     },
     {
-      id: 4,
+      id: 3,
       fileName: "sample-image3.png",
       fileSize: 2097152, // 2 MB in bytes
       fileType: "application/pdf",

@@ -1,12 +1,7 @@
 // External Libraries
 import * as React from 'react'
 import * as ImagePreviewPrimitive from '@radix-ui/react-dialog'
-import {
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import {
     X,
@@ -51,6 +46,8 @@ import {
     ImagePreviewPanelProps,
     ImagePreviewProps,
 } from '@/types/component/image-preview'
+
+import { useMatch, useNavigate } from '@tanstack/react-location';
 
 const ImagePreview = ImagePreviewPrimitive.Root
 
@@ -225,6 +222,11 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
     const [isDragging, setIsDragging] = useState(false)
     const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 })
     const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
+    const animationFrameId = useRef<number | null>(null);
+
+    console.log('startPosition', startPosition)
+    // console.log('isDragging', isDragging)
+    //  console.log('previewPosition', previewPosition)
 
     const onMouseDown = (e: React.MouseEvent<HTMLImageElement>) => {
         if (e.button !== 0 || scale <= 1) return
@@ -258,7 +260,15 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
             const newX = e.clientX - startPosition.x
             const newY = e.clientY - startPosition.y
 
-            setPreviewPosition({ x: newX, y: newY })
+            // Cancel previous animation frame request
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current)
+            }
+
+            // Use requestAnimationFrame to set state
+            animationFrameId.current = requestAnimationFrame(() => {
+                setPreviewPosition({ x: newX, y: newY })
+            })
 
             e.stopPropagation()
             e.preventDefault()
@@ -276,6 +286,11 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
         return () => {
             document.removeEventListener('mousemove', handleMouseMove)
             document.removeEventListener('mouseup', handleMouseUp)
+
+            // Clean up the animation frame request
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current)
+            }
         }
     }, [isDragging, startPosition])
 
@@ -298,7 +313,7 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
                     width: '100vw',
                     height: 'auto',
                     transform: `scale(${scale}) translate(${previewPosition.x}px, ${previewPosition.y}px) rotate(${rotateDegree}deg) ${flipScale}`,
-                    transition: 'transform 0.2s ease-in-out',
+                    transition: 'transform 0.1s ease-in-out',
                     cursor: isDragging ? 'grabbing' : 'move',
                 }}
                 onMouseDown={onMouseDown}
@@ -449,17 +464,16 @@ const ImagePreviewPanel = ({
     focusIndex,
     scrollToIndex,
 }: ImagePreviewPanelProps) => {
-
     if (!Images.length) {
         return (
             <div className="flex h-fit w-full items-center justify-center p-5 text-gray-500">
                 No images available
             </div>
-        );
+        )
     }
 
     if (Images.length === 1) {
-        return null; 
+        return null
     }
 
     return (
@@ -506,12 +520,16 @@ const ImagePreviewContent = React.forwardRef<
         const [rotateDegree, setRotateDegree] = useState(0)
         const [flipScale, setFlipScale] = useState('')
         const imageRef = useRef<HTMLImageElement | null>(null)
+        const match = useMatch();
+        const { id } = match?.params || {}; // Safely access `id` with default
+        console.log(id)
+        // /const navigate = useNavigate();
 
         const [downloadImage, setDownloadImage] = useState<DownloadProps>({
             fileName: Images[0]?.fileName || '',
             fileUrl: Images[0]?.url || '',
             fileType: Images[0]?.fileType || '',
-        });
+        })
 
         const options: CarouselOptions = {
             align: 'center',
@@ -560,56 +578,61 @@ const ImagePreviewContent = React.forwardRef<
         )
 
         const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-            if ((e.target as HTMLDivElement).id === 'overlay') onClose();
-        };
+            if ((e.target as HTMLDivElement).id === 'overlay') onClose()
+        }
 
         const handleZoomIn = () => {
-            if (scale < 4) setScale(prevScale => prevScale + scaleInterval);
-        };
+            if (scale < 3) setScale((prevScale) => prevScale + scaleInterval)
+        }
 
         const handleZoomOut = () => {
-            setScale(prevScale => Math.max(prevScale - scaleInterval, 1));
-        };
+            setScale((prevScale) => Math.max(prevScale - scaleInterval, 1))
+        }
 
         const handleRotateLeft = () => {
-            setRotateDegree(prev => prev + 10);
-        };
+            setRotateDegree((prev) => prev + 10)
+        }
 
         const handleRotateRight = () => {
-            setRotateDegree(prev => prev - 10);
-        };
+            setRotateDegree((prev) => prev - 10)
+        }
 
         const handleFlipHorizontal = () => {
-            setFlipScale(prev => (prev === 'scaleX(-1)' ? 'scaleX(1)' : 'scaleX(-1)'));
-        };
+            setFlipScale((prev) =>
+                prev === 'scaleX(-1)' ? 'scaleX(1)' : 'scaleX(-1)'
+            )
+        }
 
         const handleFlipVertical = () => {
-            setFlipScale(prev => (prev === 'scaleY(-1)' ? 'scaleY(1)' : 'scaleY(-1)'));
-        };
+            setFlipScale((prev) =>
+                prev === 'scaleY(-1)' ? 'scaleY(1)' : 'scaleY(-1)'
+            )
+        }
 
         const handleResetActionState = () => {
-            setRotateDegree(0);
-            setScale(1);
-            setFlipScale('');
-        };
+            setRotateDegree(0)
+            setScale(1)
+            setFlipScale('')
+        }
 
         useEffect(() => {
             const handleKeyDown = (event: KeyboardEvent) => {
                 if (event.key === 'Escape') {
-                    onClose(); 
+                    onClose()
                 }
-            };
-            window.addEventListener('keydown', handleKeyDown); 
+            }
+            window.addEventListener('keydown', handleKeyDown)
             return () => {
-                window.removeEventListener('keydown', handleKeyDown); 
-            };
-        }, [onClose]);
+                window.removeEventListener('keydown', handleKeyDown)
+            }
+        }, [onClose])
 
-        const isMultipleImage = Images.length > 1;
+        const isMultipleImage = Images.length > 1
 
         return (
-            <div>
-                <ImagePreviewPortal>
+            <div className='h-full w-full'>
+                <h1 className=''>Hello world</h1>
+                {/* <ImagePreviewPortal>
                     <ImagePreviewOverlay
                         className={cn(
                             'bg-black/30 dark:bg-background/70',
@@ -688,7 +711,7 @@ const ImagePreviewContent = React.forwardRef<
                             </ImagePreviewPrimitive.Close>
                         )}
                     </div>
-                </ImagePreviewPortal>
+                </ImagePreviewPortal> */}
             </div>
         )
     }

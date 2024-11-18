@@ -1,4 +1,4 @@
-import { Outlet } from '@tanstack/react-router'
+import { Link, Outlet } from '@tanstack/react-router'
 import {
     ImagePreview,
     ImagePreviewContent,
@@ -6,6 +6,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { sampleMediaResourceList } from './testSampleData'
 import { useImagePreview } from '@/store/image-preview-store'
+import GalleryContainer from '@/components/image-preview/gallery'
+
 const TestLayout = () => {
     const { isOpen, setIsOpen } = useImagePreview()
 
@@ -14,7 +16,7 @@ const TestLayout = () => {
             <main>
                 <Outlet />
             </main>
-
+           <GalleryContainer/>
             <div className="mx-auto h-[100vh] w-[80%]">
                 <Button onClick={() => setIsOpen(true)}>view</Button>
                 <ImagePreview

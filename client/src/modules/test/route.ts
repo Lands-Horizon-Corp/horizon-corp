@@ -1,4 +1,4 @@
-import { createRoute } from '@tanstack/react-router'
+import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
 import React from 'react'
@@ -15,6 +15,14 @@ const testLandingRoute = createRoute({
     component: React.lazy(() => import('./pages/upload')),
 })
 
-const TestRoute = testRoute.addChildren([testLandingRoute])
+const imageDetailRoute = createRoute({
+    getParentRoute: () => testRoute, // Sets `landingRoute` as the parent route
+    path: `image/$imageId`, // Dynamic path with `id` parameter
+    component: lazyRouteComponent(
+        () => import('@/components/image-preview/image-details')
+    ),
+});
+
+const TestRoute = testRoute.addChildren([testLandingRoute, imageDetailRoute])
 
 export default TestRoute
