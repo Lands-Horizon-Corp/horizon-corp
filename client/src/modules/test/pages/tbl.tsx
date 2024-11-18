@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 
 import {
     ColumnDef,
-    ColumnPinningState,
     getCoreRowModel,
     getSortedRowModel,
     useReactTable,
@@ -11,9 +10,9 @@ import {
 import DataTable from '@/components/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
-import DataTableExportButton from '@/components/data-table/data-table-export-button'
+import DataTableExportButton from '@/components/data-table/data-table-actions/data-table-export-button'
 import DataTableFilterContext from '@/components/data-table/data-table-filter-context'
-import { DataTableViewOptions } from '@/components/data-table/data-table-column-toggle'
+import { DataTableViewOptions } from '@/components/data-table/data-table-actions/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import { Button } from '@/components/ui/button'
@@ -27,7 +26,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { DotsVerticalIcon, PushPinSlashIcon } from '@/components/icons'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
-import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
+import RowActionsGroup from '@/components/data-table/data-table-row/row-actions'
+import DataTableRefreshButton from '@/components/data-table/data-table-actions/data-table-refresh-button'
 
 type TData = {
     name: string
@@ -94,21 +94,27 @@ const defaultColumns: ColumnDef<TData>[] = [
             </div>
         ),
         cell: ({ row }) => (
-            <div className={'flex w-fit items-center gap-x-1 px-0'}>
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <Button className="size-fit p-1" variant="ghost">
-                            <DotsVerticalIcon />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Team</DropdownMenuItem>
-                        <DropdownMenuItem>Subscription</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+            <div className="flex w-fit items-center gap-x-1 px-0">
+                <RowActionsGroup
+                    onDelete={{
+                        text: 'Delete',
+                        onClick: () => {
+                            console.log('delete')
+                        },
+                    }}
+                    onEdit={{
+                        text: 'Edit',
+                        onClick: () => {
+                            console.log('edit')
+                        },
+                    }}
+                    onView={{
+                        text: 'View',
+                        onClick: () => {
+                            console.log('view')
+                        },
+                    }}
+                />
                 <Checkbox
                     checked={row.getIsSelected()}
                     onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -224,7 +230,7 @@ const Tbl = () => {
         - Delete (permission for this action)
         - View (permission for this action)
         - Edit (permission for this action)
-    - Refresh Button
+    x - Refresh Button
     - Delete Selected (left side nalangs)
     - Toggle Column Visibility add show all option
    x - remove delay on filter change 500 
@@ -233,6 +239,7 @@ const Tbl = () => {
         - Filter as Chips with close
     
     - Pin default the action column to left 
+   x - remove delay on filter change 500 
     
     - Tooltip per column
 
@@ -252,6 +259,10 @@ const Tbl = () => {
                     {JSON.stringify(dataTableFilterState.filters, null, 4)}
                 </pre> */}
                 <div className="flex items-center justify-end gap-x-2">
+                    <DataTableRefreshButton
+                        onClick={() => {}}
+                        isLoading={false}
+                    />
                     <DataTableExportButton table={table} />
                     <DataTableViewOptions table={table} />
                 </div>

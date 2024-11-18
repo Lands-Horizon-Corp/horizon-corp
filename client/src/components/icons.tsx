@@ -39,11 +39,13 @@ import {
     PiListBulletsBold as PiListBulletsBoldIcon,
 } from 'react-icons/pi'
 import {
+    HiTrash as TrashIcon,
     HiOutlineSun as SunIcon,
     HiOutlineMoon as MoonIcon,
     HiOutlineCog as SettingsIcon,
     HiOutlineCodeBracket as DevIcon,
     HiOutlineBell as NotificationIcon,
+    HiOutlinePencil as PencilOutlineIcon,
     HiOutlineSquaresPlus as DashboardIcon,
     HiOutlineChevronRight as ChevronRightIcon,
     HiOutlineChevronLeft as ChevronLeftIcon,
@@ -76,6 +78,7 @@ import {
     BsPatchExclamationFill as PatchExclamationIcon,
 } from 'react-icons/bs'
 import {
+    IoReload as ReloadIcon,
     IoRefresh as RefreshIcon,
     IoFootstepsOutline as FootstepsIcon,
     IoCallOutline as IoCallOutlineIcon,
@@ -177,10 +180,12 @@ export {
     DevIcon,
     UserIcon,
     MoonIcon,
+    TrashIcon,
     ClockIcon,
     ExcelIcon,
     ResetIcon,
     CookieIcon,
+    ReloadIcon,
     CameraIcon,
     FaBoldIcon,
     ShieldIcon,
@@ -240,6 +245,7 @@ export {
     WarningCircleIcon,
     VerifiedPatchIcon,
     LoadingCircleIcon,
+    PencilOutlineIcon,
     BuildingBranchIcon,
     LoadingSpinnerIcon,
     MixerHorizontalIcon,
