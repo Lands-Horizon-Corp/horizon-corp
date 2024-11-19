@@ -20,6 +20,7 @@ import DataTablePagination from '@/components/data-table/data-table-pagination'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import DataTableRefreshButton from '@/components/data-table/data-table-actions/data-table-refresh-button'
 import DataTableActiveFilters from '@/components/data-table/data-table-actions/data-table-active-filters'
+import DataTableDeleteSelected from '@/components/data-table/data-table-actions/data-table-delete-selected'
 
 type TData = {
     name: string
@@ -229,7 +230,7 @@ const Tbl = () => {
         ✅ - View (permission for this action)
         ✅ - Edit (permission for this action)
     ✅ - Refresh Button
-    - Delete Selected (left side nalangs)
+    ✅ - Delete Selected (left side nalangs)
    ✅ - Toggle Column Visibility add show all option
    ✅ - remove delay on filter change 500 
         - (Optional) Transfer debounce to the input itself?
@@ -246,7 +247,7 @@ const Tbl = () => {
         ✅ - page size
         ✅ - total selected / total Data
 
-    - On export, send Add id's, if all, pass no id's
+   ✅ - On export, send Add id's, if all, pass no id's
     */
 
     return (
@@ -254,17 +255,24 @@ const Tbl = () => {
             <div className="flex w-full flex-col gap-y-4 py-8">
                 <div className="flex h-full flex-col gap-y-2">
                     <div className="flex w-full max-w-full items-center justify-between gap-x-2">
-                        <div className="flex w-1/2 items-center gap-x-2">
+                        <div className="flex items-center gap-x-2">
                             <DataTableActiveFilters />
                         </div>
                         <div className="flex items-center gap-x-2">
+                            <DataTableDeleteSelected
+                                table={table}
+                                canDelete={true}
+                                onClick={(rows) => {
+                                    console.log('Deleting these -> ', rows)
+                                }}
+                            />
                             <DataTableRefreshButton
                                 onClick={() => {}}
                                 isLoading={false}
                             />
                             <DataTableExportButton
                                 table={table}
-                                fileName='sampletable'
+                                fileName="sampletable"
                                 columnsToExport={['name', 'age', 'bday']}
                             />
                             <DataTableViewOptions table={table} />
