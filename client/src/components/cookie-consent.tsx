@@ -3,10 +3,10 @@ import { addYears } from 'date-fns'
 import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
-import { CookieIcon } from '@/components/icons'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
 import { cn } from '@/lib/utils'
+import CookieSvg from '@/assets/cookie-icon.svg'
 
 const CookieConsent = () => {
     const [accepted, setAccepted] = useState(true)
@@ -36,12 +36,12 @@ const CookieConsent = () => {
     return (
         <Alert
             className={cn(
-                'fixed bottom-0 left-1/2 mb-3 flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-x-4 gap-y-4 rounded-xl bg-popover/95 text-center shadow-center-md backdrop-blur delay-150 duration-500 ease-in-out md:mb-6 lg:w-fit lg:max-w-none lg:flex-row lg:text-left',
+                'fixed bottom-0 left-1/2 mb-3 z-50 flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-x-4 gap-y-4 rounded-xl bg-popover/95 text-center shadow-center-md backdrop-blur delay-150 duration-500 ease-in-out md:mb-6 lg:w-fit lg:max-w-none lg:flex-row lg:text-left',
                 accepted && 'pointer-events-none opacity-0'
             )}
         >
             <span className="absolute -top-6 block size-fit rounded-full bg-secondary p-1 lg:static">
-                <CookieIcon className="size-9 text-[#f3cc83] lg:size-6" />
+                <img className="size-9 lg:size-6" src={CookieSvg} />
             </span>
             <AlertDescription className="pt-4 lg:pt-0">
                 ECoop uses cookies to enhance the user experience.
