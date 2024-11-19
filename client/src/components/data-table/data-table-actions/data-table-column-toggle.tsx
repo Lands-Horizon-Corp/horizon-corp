@@ -4,12 +4,13 @@ import {
     DropdownMenu,
     DropdownMenuCheckboxItem,
     DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
-import { MixerHorizontalIcon } from '@/components/icons'
+import { EyeIcon, MixerHorizontalIcon } from '@/components/icons'
 
 interface DataTableViewOptionsProps<TData> {
     table: Table<TData>
@@ -28,6 +29,19 @@ export function DataTableViewOptions<TData>({
             <DropdownMenuContent align="end" className="w-[150px]">
                 <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {table.getAllColumns().filter((col) => !col.getIsVisible())
+                    .length > 0 && (
+                    <DropdownMenuItem
+                        onClick={() =>
+                            table
+                                .getAllColumns()
+                                .forEach((col) => col.toggleVisibility(true))
+                        }
+                    >
+                        <EyeIcon className="mr-2" />
+                        Show All
+                    </DropdownMenuItem>
+                )}
                 {table
                     .getAllColumns()
                     .filter(

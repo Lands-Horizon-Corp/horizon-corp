@@ -10,10 +10,12 @@ import ColumnResizeHandle from './column-drag-resize'
 import { cn } from '@/lib/utils'
 import ColumnFilter from './column-filter'
 import { TColumnDataTypes } from '../data-table-filter-context'
+import ActionTooltip from '@/components/action-tooltip'
 
 interface DataTableColumnHeaderProps<TData, TValue>
     extends React.HTMLAttributes<HTMLDivElement> {
     title: string
+    tooltipDescription?: string
     table: Table<TData>
     isResizable?: boolean
     column: Column<TData, TValue>
@@ -29,6 +31,7 @@ export function DataTableColumnHeader<TData, TValue>({
     dataType,
     className,
     isResizable,
+    tooltipDescription,
 }: DataTableColumnHeaderProps<TData, TValue>) {
     const { attributes, isDragging, listeners, setNodeRef, transform } =
         useSortable({
@@ -45,7 +48,7 @@ export function DataTableColumnHeader<TData, TValue>({
         zIndex: isDragging ? 1 : 0,
     }
 
-    return (
+    const content = (
         <div className="inline-block flex-1 space-y-1 py-2">
             <div
                 className={cn(
@@ -79,4 +82,13 @@ export function DataTableColumnHeader<TData, TValue>({
             </div>
         </div>
     )
+
+    if (tooltipDescription)
+        return (
+            <ActionTooltip tooltipContent={tooltipDescription}>
+                {content}
+            </ActionTooltip>
+        )
+
+    return content
 }

@@ -131,10 +131,11 @@ const defaultColumns: ColumnDef<TData>[] = [
         accessorKey: 'name',
         header: (props) => (
             <DataTableColumnHeader
-                dataType="text"
+                {...props}
                 isResizable
                 title="Name"
-                {...props}
+                dataType="text"
+                tooltipDescription="Name of the member"
             />
         ),
         cell: ({
@@ -151,6 +152,7 @@ const defaultColumns: ColumnDef<TData>[] = [
                 isResizable
                 dataType="date"
                 title="bday"
+                tooltipDescription="Birth Date of the member"
                 {...props}
             />
         ),
@@ -168,6 +170,7 @@ const defaultColumns: ColumnDef<TData>[] = [
                 isResizable
                 dataType="number"
                 title="Age"
+                tooltipDescription="Age of the member"
                 {...props}
             />
         ),
@@ -215,6 +218,7 @@ const Tbl = () => {
         manualSorting: true,
         manualFiltering: true,
         manualPagination: true,
+        rowCount: 0, // dito papasok ang total rows result galing sa paginated response
         onSortingChange: setSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
@@ -230,22 +234,23 @@ const Tbl = () => {
         - Delete (permission for this action)
         - View (permission for this action)
         - Edit (permission for this action)
-    x - Refresh Button
+    ✅ - Refresh Button
     - Delete Selected (left side nalangs)
-    - Toggle Column Visibility add show all option
-   x - remove delay on filter change 500 
+   ✅ - Toggle Column Visibility add show all option
+   ✅ - remove delay on filter change 500 
+        - (Optional) Transfer debounce to the input itself?
 
     - Add reset all filter button
         - Filter as Chips with close
     
-    - Pin default the action column to left 
-   x - remove delay on filter change 500 
+   ✅ - Pin default the action column to left 
+   ✅ - remove delay on filter change 500 
     
-    - Tooltip per column
+    ✅ - Tooltip per column
 
-    - Pagination
-        - page size
-        - total selected / total Data
+    ✅ - Pagination
+        ✅ - page size
+        ✅ - total selected / total Data
 
     - On export, send Add id's, if all, pass no id's
 
@@ -253,25 +258,23 @@ const Tbl = () => {
 
     return (
         <DataTableFilterContext.Provider value={dataTableFilterState}>
-            <div className="flex h-full max-h-screen flex-col gap-y-2">
-                <p>Table Desu</p>
-                {/* <pre>
-                    {JSON.stringify(dataTableFilterState.filters, null, 4)}
-                </pre> */}
-                <div className="flex items-center justify-end gap-x-2">
-                    <DataTableRefreshButton
-                        onClick={() => {}}
-                        isLoading={false}
+            <div className="flex w-full flex-col gap-y-4 py-8">
+                <div className="flex h-full max-h-screen flex-col gap-y-2">
+                    <div className="flex items-center justify-end gap-x-2">
+                        <DataTableRefreshButton
+                            onClick={() => {}}
+                            isLoading={false}
+                        />
+                        <DataTableExportButton table={table} />
+                        <DataTableViewOptions table={table} />
+                    </div>
+                    <DataTable
+                        table={table}
+                        isStickyHeader
+                        className="mb-2 flex-1"
+                        setColumnOrder={setColumnOrder}
                     />
-                    <DataTableExportButton table={table} />
-                    <DataTableViewOptions table={table} />
                 </div>
-                <DataTable
-                    table={table}
-                    isStickyHeader
-                    className="mb-2 flex-1"
-                    setColumnOrder={setColumnOrder}
-                />
                 <DataTablePagination table={table} />
             </div>
         </DataTableFilterContext.Provider>
