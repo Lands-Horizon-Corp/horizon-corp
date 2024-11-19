@@ -15,6 +15,7 @@ import {
     ChevronsLeftIcon,
     ChevronsRightIcon,
 } from '@/components/icons'
+import { PAGE_SIZES_DENSE } from '@/constants'
 
 interface DataTablePaginationProps<TData> {
     table: Table<TData>
@@ -26,7 +27,7 @@ interface DataTablePaginationProps<TData> {
 export default function DataTablePagination<TData>({
     table,
     className,
-    pageSizes = [10, 20, 30, 40, 50],
+    pageSizes = PAGE_SIZES_DENSE,
     hideSelectedIndicator = false,
 }: DataTablePaginationProps<TData>) {
     return (
