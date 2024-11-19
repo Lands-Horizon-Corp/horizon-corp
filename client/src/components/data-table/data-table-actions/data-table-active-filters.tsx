@@ -23,7 +23,7 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
 
     return (
         <div className={cn('flex max-w-full items-center gap-x-2', className)}>
-            <span className="inline-flex">
+            <span className="inline-flex items-center">
                 Filters
                 <Badge variant="secondary" className="ml-1 size-fit text-xs">
                     {mappedFilters.length}
