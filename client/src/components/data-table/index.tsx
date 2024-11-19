@@ -60,7 +60,7 @@ const DataTable = <TData,>({
         >
             <div
                 className={cn(
-                    'ecoop-scroll relative flex max-h-full overflow-y-scroll rounded-xl bg-secondary',
+                    'ecoop-scroll relative z-10 flex max-h-full overflow-y-scroll rounded-xl bg-secondary',
                     className
                 )}
             >

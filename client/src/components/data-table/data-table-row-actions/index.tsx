@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import {
     DotsVerticalIcon,
     EyeNoneIcon,
@@ -13,10 +15,10 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ReactNode } from '@tanstack/react-router'
 
 export interface IRowActionOption {
     text: string
+    isAllowed?: boolean
     onClick: () => void
 }
 
@@ -24,7 +26,10 @@ interface Props {
     onDelete?: IRowActionOption
     onView?: IRowActionOption
     onEdit?: IRowActionOption
-    otherActions? : ReactNode
+    canEdit?: boolean
+    canView?: boolean
+    canDelete?: boolean
+    otherActions?: ReactNode
 }
 
 const RowActionsGroup = ({ onDelete, onView, onEdit, otherActions }: Props) => {
@@ -41,25 +46,33 @@ const RowActionsGroup = ({ onDelete, onView, onEdit, otherActions }: Props) => {
                 <DropdownMenuLabel>Action</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {onView && (
-                    <DropdownMenuItem onClick={onView.onClick}>
+                    <DropdownMenuItem
+                        disabled={!onView.isAllowed}
+                        onClick={onView.onClick}
+                    >
                         <EyeNoneIcon className="mr-2" />
                         {onView.text}
                     </DropdownMenuItem>
                 )}
                 {onEdit && (
-                    <DropdownMenuItem onClick={onEdit.onClick}>
+                    <DropdownMenuItem
+                        disabled={!onEdit.isAllowed}
+                        onClick={onEdit.onClick}
+                    >
                         <PencilOutlineIcon className="mr-2" />
                         {onEdit.text}
                     </DropdownMenuItem>
                 )}
                 {onDelete && (
-                    <DropdownMenuItem className="text-rose-400 focus:bg-destructive" onClick={onDelete.onClick}>
+                    <DropdownMenuItem
+                        disabled={!onDelete.isAllowed}
+                        className="text-rose-400 focus:bg-destructive"
+                        onClick={onDelete.onClick}
+                    >
                         <TrashIcon className="mr-2" /> {onDelete.text}
                     </DropdownMenuItem>
                 )}
-                {
-                    otherActions
-                }
+                {otherActions}
             </DropdownMenuContent>
         </DropdownMenu>
     )

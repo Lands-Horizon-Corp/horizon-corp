@@ -15,19 +15,11 @@ import DataTableFilterContext from '@/components/data-table/data-table-filter-co
 import { DataTableViewOptions } from '@/components/data-table/data-table-actions/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
-import { Button } from '@/components/ui/button'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { DotsVerticalIcon, PushPinSlashIcon } from '@/components/icons'
+import { PushPinSlashIcon } from '@/components/icons'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
-import RowActionsGroup from '@/components/data-table/data-table-row/row-actions'
+import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import DataTableRefreshButton from '@/components/data-table/data-table-actions/data-table-refresh-button'
+import DataTableActiveFilters from '@/components/data-table/data-table-actions/data-table-active-filters'
 
 type TData = {
     name: string
@@ -98,18 +90,21 @@ const defaultColumns: ColumnDef<TData>[] = [
                 <RowActionsGroup
                     onDelete={{
                         text: 'Delete',
+                        isAllowed: true,
                         onClick: () => {
                             console.log('delete')
                         },
                     }}
                     onEdit={{
                         text: 'Edit',
+                        isAllowed: false,
                         onClick: () => {
                             console.log('edit')
                         },
                     }}
                     onView={{
                         text: 'View',
+                        isAllowed: true,
                         onClick: () => {
                             console.log('view')
                         },
@@ -135,7 +130,6 @@ const defaultColumns: ColumnDef<TData>[] = [
                 isResizable
                 title="Name"
                 dataType="text"
-                tooltipDescription="Name of the member"
             />
         ),
         cell: ({
@@ -218,7 +212,7 @@ const Tbl = () => {
         manualSorting: true,
         manualFiltering: true,
         manualPagination: true,
-        rowCount: 0, // dito papasok ang total rows result galing sa paginated response
+        rowCount: 1000, // dito papasok ang total rows result galing sa paginated response
         onSortingChange: setSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
@@ -230,10 +224,10 @@ const Tbl = () => {
 
     /*
 
-    - Add Row Action (with icons)
-        - Delete (permission for this action)
-        - View (permission for this action)
-        - Edit (permission for this action)
+    ✅ - Add Row Action (with icons)
+        ✅ - Delete (permission for this action)
+        ✅ - View (permission for this action)
+        ✅ - Edit (permission for this action)
     ✅ - Refresh Button
     - Delete Selected (left side nalangs)
    ✅ - Toggle Column Visibility add show all option
@@ -259,19 +253,24 @@ const Tbl = () => {
     return (
         <DataTableFilterContext.Provider value={dataTableFilterState}>
             <div className="flex w-full flex-col gap-y-4 py-8">
-                <div className="flex h-full max-h-screen flex-col gap-y-2">
-                    <div className="flex items-center justify-end gap-x-2">
-                        <DataTableRefreshButton
-                            onClick={() => {}}
-                            isLoading={false}
-                        />
-                        <DataTableExportButton table={table} />
-                        <DataTableViewOptions table={table} />
+                <div className="flex h-full flex-col gap-y-2">
+                    <div className="flex w-full max-w-full items-center justify-between gap-x-2">
+                        <div className="flex items-center w-1/2 gap-x-2">
+                            <DataTableActiveFilters />
+                        </div>
+                        <div className="flex items-center gap-x-2">
+                            <DataTableRefreshButton
+                                onClick={() => {}}
+                                isLoading={false}
+                            />
+                            <DataTableExportButton table={table} />
+                            <DataTableViewOptions table={table} />
+                        </div>
                     </div>
                     <DataTable
                         table={table}
                         isStickyHeader
-                        className="mb-2 flex-1"
+                        className="mb-2 flex-1 max-h-96"
                         setColumnOrder={setColumnOrder}
                     />
                 </div>

@@ -101,6 +101,7 @@ import {
     FaRulerHorizontal as FaRulerHorizontalIcon,
 } from 'react-icons/fa'
 import {
+    IoIosClose as XIcon,
     IoIosCode as IoIosCodeIcon,
     IoIosFunnel as FunnelFilledIcon,
 } from 'react-icons/io'
@@ -120,6 +121,7 @@ import { SiGooglemaps as SiGooglemapsIcon } from 'react-icons/si'
 import { VscLocation as VscLocationIcon } from 'react-icons/vsc'
 
 export {
+    XIcon,
     CsvIcon,
     SunIcon,
     KeyIcon,
