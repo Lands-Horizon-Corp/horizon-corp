@@ -234,8 +234,8 @@ const Tbl = () => {
    ✅ - remove delay on filter change 500 
         - (Optional) Transfer debounce to the input itself?
 
-    - Add reset all filter button
-        - Filter as Chips with close
+    ✅ - Add reset all filter button
+      ✅ - Filter as Chips with close
     
    ✅ - Pin default the action column to left 
    ✅ - remove delay on filter change 500 
@@ -247,7 +247,6 @@ const Tbl = () => {
         ✅ - total selected / total Data
 
     - On export, send Add id's, if all, pass no id's
-
     */
 
     return (
@@ -255,7 +254,7 @@ const Tbl = () => {
             <div className="flex w-full flex-col gap-y-4 py-8">
                 <div className="flex h-full flex-col gap-y-2">
                     <div className="flex w-full max-w-full items-center justify-between gap-x-2">
-                        <div className="flex items-center w-1/2 gap-x-2">
+                        <div className="flex w-1/2 items-center gap-x-2">
                             <DataTableActiveFilters />
                         </div>
                         <div className="flex items-center gap-x-2">
@@ -263,14 +262,18 @@ const Tbl = () => {
                                 onClick={() => {}}
                                 isLoading={false}
                             />
-                            <DataTableExportButton table={table} />
+                            <DataTableExportButton
+                                table={table}
+                                fileName='sampletable'
+                                columnsToExport={['name', 'age', 'bday']}
+                            />
                             <DataTableViewOptions table={table} />
                         </div>
                     </div>
                     <DataTable
                         table={table}
                         isStickyHeader
-                        className="mb-2 flex-1 max-h-96"
+                        className="mb-2 max-h-96 flex-1"
                         setColumnOrder={setColumnOrder}
                     />
                 </div>
