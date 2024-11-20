@@ -6,8 +6,8 @@ import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { useDataTableFilter } from '../data-table-filter-context'
 import { TrashIcon, XIcon } from '@/components/icons'
+import { useDataTableFilter } from '../data-table-filter-context'
 
 const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
     const { filters, resetFilter, removeFilter } = useDataTableFilter()
