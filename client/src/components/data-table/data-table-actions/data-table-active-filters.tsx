@@ -13,10 +13,12 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
     const { filters, resetFilter, removeFilter } = useDataTableFilter()
 
     const mappedFilters = useMemo(() => {
-        return Object.entries(filters).map(([key, value]) => ({
-            field: key,
-            ...value,
-        }))
+        return Object.entries(filters)
+            .map(([key, value]) => ({
+                field: key,
+                ...value,
+            }))
+            .filter((filter) => filter.value || (filter.from && filter.to))
     }, [filters])
 
     if (mappedFilters.length <= 0) return null

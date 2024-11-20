@@ -1,5 +1,5 @@
-import { useState } from "react"
-import { FilterObject, TSearchFilter } from "../data-table-filter-context"
+import { useState } from 'react'
+import { FilterObject, TSearchFilter } from '../data-table-filter-context'
 
 const useDatableFilterState = () => {
     const [filters, setFilters] = useState<FilterObject>({})
@@ -23,6 +23,8 @@ const useDatableFilterState = () => {
     const resetFilter = () => {
         setFilters({})
     }
+
+    console.log(filters)
 
     return { filters, setFilter, removeFilter, resetFilter }
 }

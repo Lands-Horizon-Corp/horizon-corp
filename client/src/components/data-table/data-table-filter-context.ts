@@ -1,6 +1,6 @@
 import { createContext, useContext } from 'react'
 
-export type TColumnDataTypes = 'number' | 'text' | 'date'
+export type TColumnDataTypes = 'number' | 'text' | 'date' | 'enum'
 
 export type TFilterModes =
     | 'equal'

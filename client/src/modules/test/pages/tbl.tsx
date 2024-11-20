@@ -21,11 +21,18 @@ import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import DataTableRefreshButton from '@/components/data-table/data-table-actions/data-table-refresh-button'
 import DataTableActiveFilters from '@/components/data-table/data-table-actions/data-table-active-filters'
 import DataTableDeleteSelected from '@/components/data-table/data-table-actions/data-table-delete-selected'
+import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
+import { ColumnFilterProvider } from '@/components/data-table/data-table-column-header/column-filters/column-filter-state-context'
+import TextFilter from '@/components/data-table/data-table-column-header/column-filters/text-filter'
+import NumberFilter from '@/components/data-table/data-table-column-header/column-filters/number-filter'
+import DateFilter from '@/components/data-table/data-table-column-header/column-filters/date-filter'
+import MultiSelectFilter from '@/components/data-table/data-table-column-header/column-filters/multi-select-filter'
 
 type TData = {
     name: string
     age: number
     bday: Date
+    gender: 'Male' | 'Female' | 'Other'
 }
 
 const generateRandomDate = (start: Date, end: Date): Date => {
@@ -48,6 +55,8 @@ const data = () => {
         'Jack',
     ]
 
+    const genders: TData['gender'][] = ['Male', 'Female', 'Other'] // Gender options
+
     const mockData: TData[] = Array.from({ length: 100 }).map(() => {
         const age = Math.floor(Math.random() * (65 - 18 + 1)) + 18
         const name = names[Math.floor(Math.random() * names.length)]
@@ -55,11 +64,13 @@ const data = () => {
             new Date(1959, 0, 1),
             new Date(2006, 0, 1)
         )
+        const gender = genders[Math.floor(Math.random() * genders.length)] // Randomly select gender
 
         return {
             name,
             age,
             bday,
+            gender,
         }
     })
 
@@ -131,7 +142,13 @@ const defaultColumns: ColumnDef<TData>[] = [
                 isResizable
                 title="Name"
                 dataType="text"
-            />
+            >
+                <ColumnFilterProvider dataType="text" fieldName="name">
+                    <ColumnActions {...props}>
+                        <TextFilter />
+                    </ColumnActions>
+                </ColumnFilterProvider>
+            </DataTableColumnHeader>
         ),
         cell: ({
             row: {
@@ -145,11 +162,16 @@ const defaultColumns: ColumnDef<TData>[] = [
         header: (props) => (
             <DataTableColumnHeader
                 isResizable
-                dataType="date"
                 title="bday"
                 tooltipDescription="Birth Date of the member"
                 {...props}
-            />
+            >
+                <ColumnFilterProvider dataType="date" fieldName="bday">
+                    <ColumnActions {...props}>
+                        <DateFilter />
+                    </ColumnActions>
+                </ColumnFilterProvider>
+            </DataTableColumnHeader>
         ),
         cell: ({
             row: {
@@ -163,17 +185,60 @@ const defaultColumns: ColumnDef<TData>[] = [
         header: (props) => (
             <DataTableColumnHeader
                 isResizable
-                dataType="number"
                 title="Age"
                 tooltipDescription="Age of the member"
                 {...props}
-            />
+            >
+                <ColumnFilterProvider dataType="number" fieldName="age">
+                    <ColumnActions {...props}>
+                        <NumberFilter />
+                    </ColumnActions>
+                </ColumnFilterProvider>
+            </DataTableColumnHeader>
         ),
         cell: ({
             row: {
                 original: { age },
             },
         }) => <div>{age}</div>,
+    },
+    {
+        id: 'Gender',
+        accessorKey: 'gender',
+        header: (props) => (
+            <DataTableColumnHeader
+                isResizable
+                title="Gender"
+                tooltipDescription="Gender of the user"
+                {...props}
+            >
+                <ColumnFilterProvider dataType="enum" fieldName="gender">
+                    <ColumnActions {...props}>
+                        <MultiSelectFilter
+                            multiSelectOptions={[
+                                {
+                                    label: 'Male',
+                                    value: 'male',
+                                },
+                                {
+                                    label: 'Femal',
+                                    value: 'female',
+                                },
+                                {
+                                    label: 'Other',
+                                    value: 'other',
+                                },
+                            ]}
+                        />
+                    </ColumnActions>
+                </ColumnFilterProvider>
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { gender },
+            },
+        }) => <div>{gender}</div>,
     },
 ]
 
@@ -195,6 +260,7 @@ const Tbl = () => {
     const [columnOrder, setColumnOrder] = useState<string[]>(() =>
         columns.map((c) => c.id!)
     )
+
     const memoizedData = useMemo(() => data(), [])
 
     const table = useReactTable({
@@ -213,7 +279,7 @@ const Tbl = () => {
         manualSorting: true,
         manualFiltering: true,
         manualPagination: true,
-        rowCount: 1000, // dito papasok ang total rows result galing sa paginated response
+        rowCount: 1000,
         onSortingChange: setSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
@@ -224,7 +290,6 @@ const Tbl = () => {
     })
 
     /*
-
     ✅ - Add Row Action (with icons)
         ✅ - Delete (permission for this action)
         ✅ - View (permission for this action)
@@ -233,20 +298,14 @@ const Tbl = () => {
     ✅ - Delete Selected (left side nalangs)
    ✅ - Toggle Column Visibility add show all option
    ✅ - remove delay on filter change 500 
-        - (Optional) Transfer debounce to the input itself?
-
     ✅ - Add reset all filter button
       ✅ - Filter as Chips with close
-    
    ✅ - Pin default the action column to left 
    ✅ - remove delay on filter change 500 
-    
     ✅ - Tooltip per column
-
     ✅ - Pagination
         ✅ - page size
         ✅ - total selected / total Data
-
    ✅ - On export, send Add id's, if all, pass no id's
     */
 
@@ -286,6 +345,7 @@ const Tbl = () => {
                     />
                 </div>
                 <DataTablePagination table={table} />
+                <pre>{JSON.stringify(dataTableFilterState, null, 2)}</pre>
             </div>
         </DataTableFilterContext.Provider>
     )

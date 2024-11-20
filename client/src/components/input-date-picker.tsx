@@ -19,6 +19,7 @@ type InputDatePickerProps = {
     fromYear?: number
     toYear?: number
     onChange: (date: Date | undefined) => void
+    className?: string
 }
 
 const InputDatePicker = ({

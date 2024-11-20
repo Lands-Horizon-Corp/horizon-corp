@@ -19,15 +19,17 @@ import {
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
+import { IBaseComp } from '@/types'
 
-interface Props<TData, TValue> {
+interface Props<TData, TValue> extends IBaseComp {
     table: Table<TData>
     column: Column<TData, TValue>
 }
 
 const ColumnActions = <TData, TValue>({
-    column,
     table,
+    column,
+    children,
 }: Props<TData, TValue>) => {
     return (
         <DropdownMenu>
@@ -55,6 +57,12 @@ const ColumnActions = <TData, TValue>({
                 align="start"
                 onClick={(e) => e.stopPropagation()}
             >
+                {children && (
+                    <>
+                        {' '}
+                        {children} <DropdownMenuSeparator />
+                    </>
+                )}
                 {column.getCanPin() && (
                     <>
                         <DropdownMenuGroup>

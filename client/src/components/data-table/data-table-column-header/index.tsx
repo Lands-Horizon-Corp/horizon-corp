@@ -3,12 +3,12 @@ import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import { Column, Header, Table } from '@tanstack/react-table'
 
-import ColumnActions from './column-actions'
+// import ColumnActions from './column-actions'
 import { Button } from '@/components/ui/button'
 import ColumnResizeHandle from './column-drag-resize'
 
 import { cn } from '@/lib/utils'
-import ColumnFilter from './column-filter'
+// import ColumnFilter from './column-filter'
 import { TColumnDataTypes } from '../data-table-filter-context'
 import ActionTooltip from '@/components/action-tooltip'
 
@@ -26,9 +26,8 @@ interface DataTableColumnHeaderProps<TData, TValue>
 export function DataTableColumnHeader<TData, TValue>({
     title,
     table,
-    column,
     header,
-    dataType,
+    children,
     className,
     isResizable,
     tooltipDescription,
@@ -48,7 +47,15 @@ export function DataTableColumnHeader<TData, TValue>({
         zIndex: isDragging ? 1 : 0,
     }
 
-    const content = (
+    const finalTitle = tooltipDescription ? (
+        <ActionTooltip tooltipContent={tooltipDescription ?? ''}>
+            <span className="relative font-bold">{title}</span>
+        </ActionTooltip>
+    ) : (
+        <span className="relative font-bold">{title}</span>
+    )
+
+    return (
         <div className="inline-block flex-1 space-y-1 py-2">
             <div
                 className={cn(
@@ -67,14 +74,15 @@ export function DataTableColumnHeader<TData, TValue>({
                         ref={setNodeRef}
                         className="!size-fit cursor-ew-resize gap-x-2 p-1 data-[state=open]:bg-accent"
                     >
-                        <span className="relative font-bold">{title}</span>
+                        {finalTitle}
                     </Button>
 
-                    <ColumnActions table={table} column={column} />
-                    {dataType && (
+                    {/* <ColumnActions table={table} column={column} /> */}
+                    {/* {dataType && (
                         <ColumnFilter dataType={dataType} column={column} />
-                    )}
+                    )} */}
 
+                    {children}
                     {isResizable && (
                         <ColumnResizeHandle table={table} header={header} />
                     )}
@@ -82,13 +90,4 @@ export function DataTableColumnHeader<TData, TValue>({
             </div>
         </div>
     )
-
-    if (tooltipDescription)
-        return (
-            <ActionTooltip tooltipContent={tooltipDescription}>
-                {content}
-            </ActionTooltip>
-        )
-
-    return content
 }
