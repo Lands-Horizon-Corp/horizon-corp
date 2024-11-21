@@ -2,61 +2,82 @@ package resources
 
 import (
 	"horizon/server/internal/models"
+	"time"
 )
 
-type RolesResource struct {
+type RoleResource struct {
 	ID          uint   `json:"id"`
 	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
+	Description string `json:"description"`
+	ApiKey      string `json:"apiKey"`
 	Color       string `json:"color"`
 
-	ApiKey    string `json:"apiKey,omitempty"`
+	// Permissions
+	ReadRole   bool `json:"readRole"`
+	WriteRole  bool `json:"writeRole"`
+	UpdateRole bool `json:"updateRole"`
+	DeleteRole bool `json:"deleteRole"`
+
+	ReadErrorDetails   bool `json:"readErrorDetails"`
+	WriteErrorDetails  bool `json:"writeErrorDetails"`
+	UpdateErrorDetails bool `json:"updateErrorDetails"`
+	DeleteErrorDetails bool `json:"deleteErrorDetails"`
+
+	ReadGender   bool `json:"readGender"`
+	WriteGender  bool `json:"writeGender"`
+	UpdateGender bool `json:"updateGender"`
+	DeleteGender bool `json:"deleteGender"`
+
+	Admins    []*AdminResource    `json:"admins,omitempty"`    // Updated to slice of pointers
+	Employees []*EmployeeResource `json:"employees,omitempty"` // Updated to slice of pointers
+	Members   []*MemberResource   `json:"members,omitempty"`   // Updated to slice of pointers
+
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
-
-	ReadRole           bool `json:"readRole,omitempty"`
-	WriteRole          bool `json:"writeRole,omitempty"`
-	UpdateRole         bool `json:"updateRole,omitempty"`
-	DeleteRole         bool `json:"deleteRole,omitempty"`
-	ReadErrorDetails   bool `json:"readErrorDetails,omitempty"`
-	WriteErrorDetails  bool `json:"writeErrorDetails,omitempty"`
-	UpdateErrorDetails bool `json:"updateErrorDetails,omitempty"`
-	DeleteErrorDetails bool `json:"deleteErrorDetails,omitempty"`
-	ReadGender         bool `json:"readGender,omitempty"`
-	WriteGender        bool `json:"writeGender,omitempty"`
-	UpdateGender       bool `json:"updateGender,omitempty"`
-	DeleteGender       bool `json:"deleteGender,omitempty"`
 }
 
-func ToResourceRoles(roles models.Roles) RolesResource {
-	return RolesResource{
-		ID:          roles.ID,
-		Name:        roles.Name,
-		Description: roles.Description,
-		Color:       roles.Color,
+// Convert models.Role to *RoleResource
+func ToResourceRole(role *models.Role) *RoleResource {
+	if role == nil {
+		return nil
+	}
 
-		ApiKey:             roles.ApiKey,
-		ReadRole:           roles.ReadRole,
-		WriteRole:          roles.WriteRole,
-		UpdateRole:         roles.UpdateRole,
-		DeleteRole:         roles.DeleteRole,
-		ReadErrorDetails:   roles.ReadErrorDetails,
-		WriteErrorDetails:  roles.WriteErrorDetails,
-		UpdateErrorDetails: roles.UpdateErrorDetails,
-		DeleteErrorDetails: roles.DeleteErrorDetails,
-		ReadGender:         roles.ReadGender,
-		WriteGender:        roles.WriteGender,
-		UpdateGender:       roles.UpdateGender,
-		DeleteGender:       roles.DeleteGender,
-		CreatedAt:          roles.CreatedAt.Format("2006-01-02 15:04:05"),
-		UpdatedAt:          roles.UpdatedAt.Format("2006-01-02 15:04:05"),
+	return &RoleResource{
+		ID:          role.ID,
+		Name:        role.Name,
+		Description: role.Description,
+		ApiKey:      role.ApiKey,
+		Color:       role.Color,
+
+		ReadRole:   role.ReadRole,
+		WriteRole:  role.WriteRole,
+		UpdateRole: role.UpdateRole,
+		DeleteRole: role.DeleteRole,
+
+		ReadErrorDetails:   role.ReadErrorDetails,
+		WriteErrorDetails:  role.WriteErrorDetails,
+		UpdateErrorDetails: role.UpdateErrorDetails,
+		DeleteErrorDetails: role.DeleteErrorDetails,
+
+		ReadGender:   role.ReadGender,
+		WriteGender:  role.WriteGender,
+		UpdateGender: role.UpdateGender,
+		DeleteGender: role.DeleteGender,
+
+		Admins:    ToResourceListAdmins(role.Admins),
+		Employees: ToResourceListEmployees(role.Employees),
+		Members:   ToResourceListMembers(role.Members),
+
+		CreatedAt: role.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: role.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
-func ToResourceListRoles(rolesList []models.Roles) []RolesResource {
-	var resources []RolesResource
-	for _, roles := range rolesList {
-		resources = append(resources, ToResourceRoles(roles))
+// Convert []*models.Role to []*RoleResource
+func ToResourceListRoles(roles []*models.Role) []*RoleResource {
+	resourceList := make([]*RoleResource, len(roles))
+	for i, role := range roles {
+		resourceList[i] = ToResourceRole(role)
 	}
-	return resources
+	return resourceList
 }

@@ -1,120 +1,52 @@
 package controllers
 
 import (
-	"horizon/server/helpers"
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests"
 	"horizon/server/internal/resources"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type ContactsController struct {
-	repo *repositories.ContactsRepository
+	*BaseController[models.Contact, *requests.ContactRequest, resources.ContactResource]
 }
 
-func NewContactsController(repo *repositories.ContactsRepository) *ContactsController {
-	return &ContactsController{repo: repo}
+func NewContactsController(db *gorm.DB) *ContactsController {
+	repo := repositories.NewRepository[models.Contact](db)
+	baseController := NewBaseController[models.Contact, *requests.ContactRequest, resources.ContactResource](
+		db,
+		ToContactModel,
+		resources.ToResourceContact,
+		resources.ToResourceListContacts,
+		UpdateContactModel,
+	)
+
+	baseController.Repo = repo
+	return &ContactsController{
+		BaseController: baseController,
+	}
 }
 
-func (c *ContactsController) Create(ctx *gin.Context) {
-	var req requests.ContactRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	contacts := models.Contact{
+func ToContactModel(req *requests.ContactRequest) *models.Contact {
+	return &models.Contact{
+		Model:         gorm.Model{ID: req.ID},
 		FirstName:     req.FirstName,
 		LastName:      req.LastName,
 		Email:         req.Email,
 		Description:   req.Description,
 		ContactNumber: req.ContactNumber,
 	}
-
-	if err := c.repo.Create(&contacts); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resources.ToResourceContact(contacts))
 }
 
-func (c *ContactsController) GetAll(ctx *gin.Context) {
-	contact, err := c.repo.GetAll()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, resources.ToResourceListContacts(contact))
-}
-
-func (c *ContactsController) GetByID(ctx *gin.Context) {
-	uid, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-
-	contacts, err := c.repo.GetByID(uid)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Contacts not found"})
-		return
-	}
-	ctx.JSON(http.StatusOK, resources.ToResourceContact(contacts))
-}
-
-func (c *ContactsController) Update(ctx *gin.Context) {
-
-	id, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-
-	var req requests.ContactRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	contacts := models.Contact{
-		FirstName:     req.FirstName,
-		LastName:      req.LastName,
-		Email:         req.Email,
-		Description:   req.Description,
-		ContactNumber: req.ContactNumber,
-	}
-
-	if err := c.repo.Update(id, &contacts); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resources.ToResourceContact(contacts))
-}
-
-func (c *ContactsController) Delete(ctx *gin.Context) {
-	id, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-	if err := c.repo.Delete(id); err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Contacts not found"})
-		return
-	}
-
-	ctx.JSON(http.StatusNoContent, nil)
+func UpdateContactModel(model *models.Contact, req *requests.ContactRequest) {
+	model.FirstName = req.FirstName
+	model.LastName = req.LastName
+	model.Email = req.Email
+	model.Description = req.Description
+	model.ContactNumber = req.ContactNumber
 }
 
 func ContactsRoutes(router *gin.RouterGroup, controller *ContactsController) {

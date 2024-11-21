@@ -1,29 +1,32 @@
-import { ReactNode } from 'react'
-
 import {
     Sheet,
-    SheetTrigger,
     SheetContent,
     SheetHeader,
     SheetTitle,
     SheetDescription,
 } from '@/components/ui/sheet'
-import Sidebar, { ISidebarProps } from '@/components/sidebar'
+import SidebarContent, { ISidebarProps } from './sidebar-content'
 
-interface Props extends ISidebarProps {
-    triggerComponent: ReactNode
-}
+import { useSidebarContext } from './sidebar-context'
 
-const MobileSidebar = ({ triggerComponent, ...props }: Props) => {
+const MobileSidebar = (props: ISidebarProps) => {
+    const { isMobileSidebarVisible, toggleMobileSidebar } = useSidebarContext()
+
     return (
-        <Sheet>
-            <SheetTrigger asChild>{triggerComponent}</SheetTrigger>
-            <SheetContent side="left" className="h-fit w-fit p-0">
+        <Sheet
+            open={isMobileSidebarVisible}
+            onOpenChange={(newState) => toggleMobileSidebar(newState)}
+        >
+            <SheetContent
+                hideCloseButton
+                side="left"
+                className="h-fit w-fit p-0"
+            >
                 <SheetHeader className="hidden">
                     <SheetTitle>Sidebar</SheetTitle>
                     <SheetDescription>Mobile sidebar</SheetDescription>
                 </SheetHeader>
-                <Sidebar {...props} />
+                <SidebarContent {...props} />
             </SheetContent>
         </Sheet>
     )

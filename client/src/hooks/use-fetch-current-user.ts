@@ -11,6 +11,7 @@ const useFetchCurrentUser = (options?: {
     onError?: (error: unknown) => void
     onSuccess?: (userData: UserData) => void
     retry?: number
+    refetchOnWindowFocus?: boolean
 }) => {
     const { currentUser, setAuthStatus, setCurrentUser } = useUserAuthStore()
 
@@ -30,6 +31,13 @@ const useFetchCurrentUser = (options?: {
                     setAuthStatus('unauthorized')
                     return null
                 }
+
+                if (error instanceof AxiosError && error.status === 500) {
+                    options?.onError?.(error)
+                    setAuthStatus('error')
+                    return null
+                }
+
                 options?.onError?.(error)
                 throw error
             }
@@ -40,6 +48,7 @@ const useFetchCurrentUser = (options?: {
             options?.onSuccess?.(userData)
             return userData
         },
+        refetchOnWindowFocus: options?.refetchOnWindowFocus,
         retry: options?.retry ?? 0,
     })
 

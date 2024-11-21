@@ -47,7 +47,11 @@ const Verify = () => {
     )
 
     useEffect(() => {
-        if (!currentUser || authStatus === 'loading') return
+        if (
+            !currentUser ||
+            ['loading', 'error', 'unauthorized'].includes(authStatus)
+        )
+            return
         else if (
             isUserHasUnverified(currentUser) &&
             !currentUser.isSkipVerification
@@ -99,8 +103,11 @@ const Verify = () => {
                         )}
                     </>
                 )}
-                {authStatus === 'unauthorized' && (
-                    <p>Couldn&apos;t load your info, please please try again</p>
+                {['unauthorized', 'error'].includes(authStatus) && (
+                    <p>
+                        Couldn&apos;t load your profile info, please please try
+                        again
+                    </p>
                 )}
             </AuthPageWrapper>
         </div>

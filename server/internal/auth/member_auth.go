@@ -19,14 +19,14 @@ func NewMemberAuthService(tokenService TokenService, logger *zap.Logger) *Member
 	}
 }
 
-func (s *MemberAuthService) GenerateMemberToken(member models.Member, expiration time.Duration) (string, error) {
+func (s *MemberAuthService) GenerateMemberToken(member *models.Member, expiration time.Duration) (string, error) {
 
 	claims := &UserClaims{
 		ID:          member.ID,
 		AccountType: "Member",
 	}
 
-	token, err := s.tokenService.GenerateToken(claims, 0)
+	token, err := s.tokenService.GenerateToken(claims, expiration)
 	if err != nil {
 		s.logger.Error("Failed to generate member token", zap.Error(err))
 		return "", err

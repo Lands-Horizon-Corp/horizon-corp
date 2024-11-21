@@ -23,13 +23,13 @@ func NewAdminAuthService(
 	}
 }
 
-func (s *AdminAuthService) GenerateAdminToken(admin models.Admin, expiration time.Duration) (string, error) {
+func (s *AdminAuthService) GenerateAdminToken(admin *models.Admin, expiration time.Duration) (string, error) {
 	claims := &UserClaims{
 		ID:          admin.ID,
 		AccountType: "Admin",
 	}
 
-	token, err := s.tokenService.GenerateToken(claims, 0)
+	token, err := s.tokenService.GenerateToken(claims, expiration)
 	if err != nil {
 		s.logger.Error("Failed to generate admin token", zap.Error(err))
 		return "", err

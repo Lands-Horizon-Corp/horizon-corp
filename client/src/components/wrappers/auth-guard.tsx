@@ -1,16 +1,16 @@
 import { ReactNode } from 'react'
 import { Navigate, useRouter } from '@tanstack/react-router'
 
-import UserAvatar from '../user-avatar'
 import { Button } from '@/components/ui/button'
+import UserAvatar from '@/components/user-avatar'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import { PatchCheckIcon, PatchExclamationIcon, PatchMinusIcon } from '@/components/icons'
 
 import { cn } from '@/lib'
 import { UserData } from '@/horizon-corp/types'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import { IBaseComp, TAccountType, TPageType } from '@/types'
 import { isUserHasUnverified, isUserUnverified } from '@/helpers'
-import { PatchCheckIcon, PatchExclamationIcon, PatchMinusIcon } from '../icons'
 
 interface Props extends IBaseComp {
     pageType?: TPageType
@@ -30,6 +30,13 @@ const AuthGuard = ({
             return (
                 <div className="relative flex h-screen w-full items-center justify-center">
                     <LoadingSpinner />
+                </div>
+            )
+
+        if (authStatus === 'error' && !currentUser)
+            return (
+                <div className="relative flex h-screen w-full items-center justify-center">
+                    <p>Sorry, There&apos;s an unexpected problem, try refreshing the page.</p>
                 </div>
             )
 
