@@ -13,6 +13,9 @@ import {
     LuRedo2 as LuRedo2Icon,
     LuCalendar as CalendarIcon,
     LuCalendarCheck as CalendarCheckIcon,
+    LuImage as LuImageIcon,
+    LuFileX as LuFileXIcon,
+    LuHardDriveUpload as LuHardDriveUploadIcon,
 } from 'react-icons/lu'
 import {
     BsBuildingGear as BuildingCogIcon,
@@ -70,6 +73,9 @@ import {
     AiOutlineRotateLeft as RotateLeftIcon,
     AiOutlineLoading3Quarters as LoadingSpinnerIcon,
     AiOutlineMessage as AiOutlineMessageIcon,
+    AiOutlineClear as AiOutlineClearIcon,
+    AiOutlineFullscreen as AiOutlineFullscreenIcon,
+    AiOutlineFullscreenExit as AiOutlineFullscreenExitIcon,
 } from 'react-icons/ai'
 import {
     MdOutlineEmail as EmailIcon,
@@ -82,6 +88,10 @@ import {
     MdOutlineLocalPhone as PhoneOutlineIcon,
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
+    MdRotateLeft as MdRotateLeftIcon,
+    MdRotateRight as MdRotateRightIcon,
+    MdOutlineFileDownload as MdOutlineFileDownloadIcon,
+    MdOutlineDraw as MdOutlineDrawIcon,
 } from 'react-icons/md'
 import {
     BsZoomIn as ZoomInIcon,
@@ -108,6 +118,7 @@ import {
     RxEyeNone as EyeNoneIcon,
     RxDotsVertical as DotsVerticalIcon,
     RxFontItalic as ToolbarItalicIcon,
+    RxTrash as RxTrashIcon,
     RxDragHandleDots2 as DragHandleIcon,
     RxMixerHorizontal as MixerHorizontalIcon,
 } from 'react-icons/rx'
@@ -126,8 +137,11 @@ import {
     RiFlipHorizontalFill as FlipHorizontalIcon,
     RiFlipHorizontalLine as FlipHorizontalLineIcon,
 } from 'react-icons/ri'
-import { RxDotFilled as DotMediumIcon } from "react-icons/rx";
-import { GoArrowLeft as ArrowLeftIcon,GoDotFill as DotBigIcon  } from 'react-icons/go'
+import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
+import {
+    GoArrowLeft as ArrowLeftIcon,
+    GoDotFill as DotBigIcon,
+} from 'react-icons/go'
 import {
     IoIosClose as XIcon,
     IoIosCode as IoIosCodeIcon,
@@ -145,8 +159,12 @@ import {
     CiExport as ExportIcon,
     CiFilter as FunnelOutlineIcon,
 } from 'react-icons/ci'
+
+import { GrPowerReset as GrPowerResetIcon } from 'react-icons/gr'
+
 import { SiGooglemaps as SiGooglemapsIcon } from 'react-icons/si'
 import { VscLocation as VscLocationIcon } from 'react-icons/vsc'
+import { FiCamera as FiCameraIcon } from 'react-icons/fi'
 
 export {
     XIcon,
@@ -267,4 +285,17 @@ export {
     IoLocationSharpIcon,
     SiGooglemapsIcon,
     VscLocationIcon,
+    GrPowerResetIcon,
+    MdRotateRightIcon,
+    MdRotateLeftIcon,
+    RxTrashIcon,
+    LuImageIcon,
+    LuFileXIcon,
+    MdOutlineFileDownloadIcon,
+    FiCameraIcon,
+    LuHardDriveUploadIcon,
+    MdOutlineDrawIcon,
+    AiOutlineClearIcon,
+    AiOutlineFullscreenIcon,
+    AiOutlineFullscreenExitIcon,
 }
