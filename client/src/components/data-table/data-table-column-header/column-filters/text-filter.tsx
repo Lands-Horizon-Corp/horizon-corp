@@ -6,14 +6,17 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+
 import { useColumnFilterState } from './column-filter-state-context'
 import { filterModeMap, TFilterModes } from '../../data-table-filter-context'
 
 const TextFilter = () => {
     const {
         filterState: { filterMode, value },
-        setFilterMode,
         setValue,
+        clearFilter,
+        setFilterMode,
     } = useColumnFilterState()
 
     const filterModeOptions = filterModeMap['text']
@@ -49,6 +52,9 @@ const TextFilter = () => {
                 onChange={(inpt) => setValue(inpt.target.value)}
                 placeholder={`value`}
             />
+            <Button size="sm" variant="secondary" className="w-full" onClick={() => clearFilter()}>
+                Clear Filter
+            </Button>
         </div>
     )
 }

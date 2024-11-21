@@ -1,4 +1,4 @@
-import { CheckIcon } from 'lucide-react'; 
+import { CheckIcon } from 'lucide-react'
 
 import {
     Command,
@@ -8,27 +8,30 @@ import {
     CommandItem,
     CommandList,
     CommandSeparator,
-} from '@/components/ui/command';
-import { useColumnFilterState } from './column-filter-state-context';
+} from '@/components/ui/command'
 
-import { cn } from '@/lib/utils'; 
+import { useColumnFilterState } from './column-filter-state-context'
+
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 interface IMultiSelectOption {
-    label: string;
-    value: string;
+    label: string
+    value: string
 }
 
 const MultiSelectFilter = ({
     multiSelectOptions,
 }: {
-    multiSelectOptions: IMultiSelectOption[];
+    multiSelectOptions: IMultiSelectOption[]
 }) => {
     const {
         filterState: { value },
         setValue,
-    } = useColumnFilterState();
+        clearFilter,
+    } = useColumnFilterState()
 
-    const selectedValues = new Set(value);
+    const selectedValues = new Set(value)
 
     return (
         <div onKeyDown={(e) => e.stopPropagation()} className="space-y-2 p-1">
@@ -36,29 +39,28 @@ const MultiSelectFilter = ({
             <Command className="w-fit bg-transparent">
                 <CommandInput placeholder="Search filters..." />
                 <CommandList>
-                    <CommandEmpty className="px-8 py-6 text-xs text-center">
+                    <CommandEmpty className="px-8 py-6 text-center text-xs">
                         No results found.
                     </CommandEmpty>
                     <CommandGroup>
                         {multiSelectOptions.map((option) => {
-                            const isSelected = selectedValues.has(option.value);
+                            const isSelected = selectedValues.has(option.value)
                             return (
                                 <CommandItem
                                     key={option.value}
                                     onSelect={() => {
                                         if (isSelected) {
-                                            selectedValues.delete(option.value);
+                                            selectedValues.delete(option.value)
                                         } else {
-                                            selectedValues.add(option.value);
+                                            selectedValues.add(option.value)
                                         }
-                                        const filterValues = Array.from(
-                                            selectedValues
-                                        );
+                                        const filterValues =
+                                            Array.from(selectedValues)
                                         setValue(
                                             filterValues.length
                                                 ? filterValues
                                                 : []
-                                        );
+                                        )
                                     }}
                                 >
                                     <div
@@ -69,16 +71,14 @@ const MultiSelectFilter = ({
                                                 : 'opacity-50 [&_svg]:invisible'
                                         )}
                                     >
-                                        <CheckIcon
-                                            className={cn('h-4 w-4')}
-                                        />
+                                        <CheckIcon className={cn('h-4 w-4')} />
                                     </div>
                                     <span>{option.label}</span>
                                 </CommandItem>
-                            );
+                            )
                         })}
                     </CommandGroup>
-                    {selectedValues.size > 0 && (
+                    {/* {selectedValues.size > 0 && (
                         <>
                             <CommandSeparator />
                             <CommandGroup>
@@ -90,12 +90,19 @@ const MultiSelectFilter = ({
                                 </CommandItem>
                             </CommandGroup>
                         </>
-                    )}
+                    )} */}
                 </CommandList>
             </Command>
+            <Button
+                size="sm"
+                variant="secondary"
+                className="w-full"
+                onClick={() => clearFilter()}
+            >
+                Clear Filter
+            </Button>
         </div>
-    );
-};
+    )
+}
 
-export default MultiSelectFilter;
-
+export default MultiSelectFilter

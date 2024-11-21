@@ -24,8 +24,9 @@ interface ColumnFilterContextType {
     fieldName: string
     dataType: TColumnDataTypes
     filterState: ColumnFilterState
-    setFilterMode: (mode: TFilterModes | undefined) => void
+    clearFilter: () => void
     setValue: (value: any) => void
+    setFilterMode: (mode: TFilterModes | undefined) => void
     setRangeValue: (range: { from?: any; to?: any }) => void
 }
 
@@ -50,6 +51,14 @@ export const ColumnFilterProvider: React.FC<{
         from: undefined,
         to: undefined,
     })
+
+    const clearFilter = () => {
+        setValue('')
+        setRangeValue({
+            from: undefined,
+            to: undefined,
+        })
+    }
 
     useEffect(() => {
         /*let*/ const colFilterVal = columnFilterValue
@@ -88,9 +97,10 @@ export const ColumnFilterProvider: React.FC<{
                 dataType,
                 fieldName,
                 filterState: { filterMode, value, rangeValue },
-                setFilterMode,
                 setValue,
+                clearFilter,
                 setRangeValue,
+                setFilterMode,
             }}
         >
             {children}

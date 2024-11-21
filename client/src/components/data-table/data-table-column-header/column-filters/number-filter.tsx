@@ -6,15 +6,18 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+
+import NumberRange from './number-range'
 import { useColumnFilterState } from './column-filter-state-context'
 import { filterModeMap, TFilterModes } from '../../data-table-filter-context'
-import NumberRange from './number-range'
 
 const NumberFilter = () => {
     const {
         filterState: { filterMode, value, rangeValue },
-        setFilterMode,
         setValue,
+        clearFilter,
+        setFilterMode,
         setRangeValue,
     } = useColumnFilterState()
 
@@ -58,6 +61,15 @@ const NumberFilter = () => {
                     onChange={(val) => setRangeValue(val)}
                 />
             )}
+
+            <Button
+                size="sm"
+                className="w-full"
+                variant="secondary"
+                onClick={() => clearFilter()}
+            >
+                Clear Filter
+            </Button>
         </div>
     )
 }
