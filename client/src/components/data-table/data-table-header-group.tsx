@@ -19,7 +19,7 @@ const DataTableHeaderGroup = <TData,>({
     isStickyHeader?: boolean
     headerGroups: HeaderGroup<TData>[]
 }) => (
-    <TableHeader className={isStickyHeader ? 'sticky bottom-0 z-50' : ''}>
+    <TableHeader className={isStickyHeader ? 'sticky top-0 z-50' : ''}>
         {headerGroups.map((headerGroup) => (
             <TableRow
                 key={headerGroup.id}
