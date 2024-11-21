@@ -18,6 +18,7 @@ import DataTableHeaderGroup from './data-table-header-group'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
+import { useCallback, useEffect, useRef } from 'react'
 
 interface Props<TData> extends IBaseCompNoChild {
     table: Table<TData>
@@ -45,8 +46,67 @@ const DataTable = <TData,>({
         }
     }
 
+    const leftTableRef = useRef<HTMLTableElement>(null)
+    const centerTableRef = useRef<HTMLTableElement>(null)
+    const rightTableRef = useRef<HTMLTableElement>(null)
+
+    const syncRowHeights = useCallback(() => {
+        const leftRows = leftTableRef.current?.querySelectorAll('[data-row-id]')
+        const centerRows =
+            centerTableRef.current?.querySelectorAll('[data-row-id]')
+        const rightRows =
+            rightTableRef.current?.querySelectorAll('[data-row-id]')
+
+        const rowIds = new Set<string>()
+        if (leftRows)
+            leftRows.forEach((row) =>
+                rowIds.add((row as HTMLElement).dataset.rowId!)
+            )
+        if (centerRows)
+            centerRows.forEach((row) =>
+                rowIds.add((row as HTMLElement).dataset.rowId!)
+            )
+        if (rightRows)
+            rightRows.forEach((row) =>
+                rowIds.add((row as HTMLElement).dataset.rowId!)
+            )
+
+        rowIds.forEach((rowId) => {
+            const rows = [
+                leftTableRef.current?.querySelector(`[data-row-id="${rowId}"]`),
+                centerTableRef.current?.querySelector(
+                    `[data-row-id="${rowId}"]`
+                ),
+                rightTableRef.current?.querySelector(
+                    `[data-row-id="${rowId}"]`
+                ),
+            ].filter(Boolean) as HTMLElement[]
+
+            let maxHeight = 0
+            rows.forEach((row) => {
+                row.style.height = 'auto'
+                maxHeight = Math.max(maxHeight, row.offsetHeight)
+            })
+
+            rows.forEach((row) => {
+                row.style.height = `${maxHeight}px`
+            })
+        })
+    }, [])
+
+    useEffect(() => {
+        syncRowHeights()
+
+        const handleResize = () => syncRowHeights()
+        window.addEventListener('resize', handleResize)
+
+        return () => {
+            window.removeEventListener('resize', handleResize)
+        }
+    }, [syncRowHeights])
+
     const sensors = useSensors(
-        useSensor(MouseSensor, { }),
+        useSensor(MouseSensor, {}),
         useSensor(TouchSensor, {}),
         useSensor(KeyboardSensor, {})
     )
@@ -67,6 +127,7 @@ const DataTable = <TData,>({
                 {table.getLeftHeaderGroups().length > 0 && (
                     <div className="ecoop-scroll sticky left-[0%] z-50 h-fit w-fit border-r border-popover shadow-xl">
                         <UITable
+                            ref={leftTableRef}
                             className="h-fit w-auto"
                             style={{
                                 width:
@@ -89,7 +150,7 @@ const DataTable = <TData,>({
                 )}
                 {table.getCenterHeaderGroups().length > 0 && (
                     <div className="z-0 flex h-fit flex-1">
-                        <UITable className="h-fit flex-1">
+                        <UITable ref={centerTableRef} className="h-fit flex-1">
                             <DataTableHeaderGroup
                                 isStickyHeader={isStickyHeader}
                                 columnOrder={table.getState().columnOrder}
@@ -102,6 +163,7 @@ const DataTable = <TData,>({
                 {table.getRightHeaderGroups().length > 0 && (
                     <div className="ecoop-scroll sticky right-0 z-10 h-fit w-fit border-l border-popover shadow-xl">
                         <UITable
+                            ref={rightTableRef}
                             className="w-auto"
                             style={{
                                 width:

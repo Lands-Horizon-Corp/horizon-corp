@@ -14,6 +14,7 @@ const DataTableBody = <TData,>({
             {rows.map((row) => (
                 <TableRow
                     key={row.id}
+                    data-row-id={row.id}
                     className="h-14 w-fit bg-secondary/90 align-middle hover:bg-popover/80 data-[state=selected]:bg-popover"
                     data-state={row.getIsSelected() && 'selected'}
                 >
