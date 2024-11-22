@@ -24,8 +24,6 @@ const useDatableFilterState = () => {
         setFilters({})
     }
 
-    console.log(filters)
-
     return { filters, setFilter, removeFilter, resetFilter }
 }
 

@@ -1,10 +1,12 @@
 import { Table } from '@tanstack/react-table'
 
+import { Badge } from '@/components/ui/badge'
 import { TrashIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+
+import { cn } from '@/lib'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import { Badge } from '@/components/ui/badge'
 
 interface Props<T> {
     table: Table<T>
@@ -38,7 +40,7 @@ const DataTableDeleteSelected = <T,>({
             }
             size="icon"
             variant="secondary"
-            className="relative"
+            className={cn("relative", !(isLoading || !canDelete || selectedRows.length === 0 ) && "text-rose-400/80 hover:text-rose-400")}
         >
             {isLoading ? (
                 <LoadingSpinner />

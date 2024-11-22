@@ -12,7 +12,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 import DataTableExportButton from '@/components/data-table/data-table-actions/data-table-export-button'
 import DataTableFilterContext from '@/components/data-table/data-table-filter-context'
-import { DataTableViewOptions } from '@/components/data-table/data-table-actions/data-table-column-toggle'
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import { PushPinSlashIcon } from '@/components/icons'
@@ -27,6 +26,8 @@ import TextFilter from '@/components/data-table/data-table-column-header/column-
 import NumberFilter from '@/components/data-table/data-table-column-header/column-filters/number-filter'
 import DateFilter from '@/components/data-table/data-table-column-header/column-filters/date-filter'
 import MultiSelectFilter from '@/components/data-table/data-table-column-header/column-filters/multi-select-filter'
+import DataTableOptionsMenu from '@/components/data-table/data-table-actions/data-table-options-menu'
+import { Separator } from '@/components/ui/separator'
 
 type TData = {
     name: string
@@ -246,6 +247,8 @@ const Tbl = () => {
     const {
         sorting,
         setSorting,
+        isScrollable,
+        setIsScrollable,
         pagination,
         setPagination,
         rowSelection,
@@ -271,15 +274,15 @@ const Tbl = () => {
         },
         state: {
             sorting,
+            pagination,
             columnOrder,
             rowSelection,
             columnVisibility,
-            pagination,
         },
+        rowCount: 1000,
         manualSorting: true,
         manualFiltering: true,
         manualPagination: true,
-        rowCount: 1000,
         onSortingChange: setSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
@@ -288,26 +291,6 @@ const Tbl = () => {
         getSortedRowModel: getSortedRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
     })
-
-    /*
-    ✅ - Add Row Action (with icons)
-        ✅ - Delete (permission for this action)
-        ✅ - View (permission for this action)
-        ✅ - Edit (permission for this action)
-    ✅ - Refresh Button
-    ✅ - Delete Selected (left side nalangs)
-   ✅ - Toggle Column Visibility add show all option
-   ✅ - remove delay on filter change 500 
-    ✅ - Add reset all filter button
-      ✅ - Filter as Chips with close
-   ✅ - Pin default the action column to left 
-   ✅ - remove delay on filter change 500 
-    ✅ - Tooltip per column
-    ✅ - Pagination
-        ✅ - page size
-        ✅ - total selected / total Data
-   ✅ - On export, send Add id's, if all, pass no id's
-    */
 
     return (
         <DataTableFilterContext.Provider value={dataTableFilterState}>
@@ -329,17 +312,28 @@ const Tbl = () => {
                                 onClick={() => {}}
                                 isLoading={false}
                             />
+                            <DataTableOptionsMenu
+                                table={table}
+                                scrollOption={{
+                                    isScrollable,
+                                    setIsScrollable,
+                                }}
+                            />
+                            <Separator
+                                orientation="vertical"
+                                className="h-full min-h-7"
+                            />
                             <DataTableExportButton
                                 table={table}
                                 fileName="sampletable"
                                 columnsToExport={['name', 'age', 'bday']}
                             />
-                            <DataTableViewOptions table={table} />
                         </div>
                     </div>
                     <DataTable
                         table={table}
                         isStickyHeader
+                        isScrollable={isScrollable}
                         className="mb-2 max-h-96 flex-1"
                         setColumnOrder={setColumnOrder}
                     />

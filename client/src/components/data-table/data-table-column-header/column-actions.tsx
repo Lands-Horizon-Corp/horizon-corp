@@ -53,7 +53,7 @@ const ColumnActions = <TData, TValue>({
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
-                className="ecoop-scroll max-h-[60vh] min-w-40 overflow-y-scroll shadow-md"
+                className="ecoop-scroll max-h-[70vh] min-w-40 overflow-y-scroll shadow-md"
                 align="start"
                 onClick={(e) => e.stopPropagation()}
             >

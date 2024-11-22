@@ -22,6 +22,7 @@ import { useCallback, useEffect, useRef } from 'react'
 
 interface Props<TData> extends IBaseCompNoChild {
     table: Table<TData>
+    isScrollable?: boolean
     isStickyHeader?: boolean
     setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>
 }
@@ -29,6 +30,7 @@ interface Props<TData> extends IBaseCompNoChild {
 const DataTable = <TData,>({
     table,
     className,
+    isScrollable,
     isStickyHeader,
     setColumnOrder,
 }: Props<TData>) => {
@@ -120,7 +122,10 @@ const DataTable = <TData,>({
         >
             <div
                 className={cn(
-                    'ecoop-scroll relative z-10 flex max-h-full overflow-y-scroll rounded-xl bg-secondary',
+                    'relative z-10 flex rounded-xl border dark:bg-secondary',
+                    isScrollable
+                        ? 'ecoop-scroll max-h-full overflow-y-scroll'
+                        : 'h-fit max-h-none',
                     className
                 )}
             >
@@ -137,7 +142,7 @@ const DataTable = <TData,>({
                             }}
                         >
                             <DataTableHeaderGroup
-                                isStickyHeader={isStickyHeader}
+                                isStickyHeader={isStickyHeader && isScrollable}
                                 columnOrder={table.getState().columnOrder}
                                 headerGroups={table.getLeftHeaderGroups()}
                             />
@@ -152,7 +157,7 @@ const DataTable = <TData,>({
                     <div className="z-0 flex h-fit flex-1">
                         <UITable ref={centerTableRef} className="h-fit flex-1">
                             <DataTableHeaderGroup
-                                isStickyHeader={isStickyHeader}
+                                isStickyHeader={isStickyHeader && isScrollable}
                                 columnOrder={table.getState().columnOrder}
                                 headerGroups={table.getCenterHeaderGroups()}
                             />
@@ -174,7 +179,7 @@ const DataTable = <TData,>({
                         >
                             <DataTableHeaderGroup
                                 columnOrder={table.getState().columnOrder}
-                                isStickyHeader={isStickyHeader}
+                                isStickyHeader={isStickyHeader && isScrollable}
                                 headerGroups={table.getRightHeaderGroups()}
                             />
                             <DataTableBody
