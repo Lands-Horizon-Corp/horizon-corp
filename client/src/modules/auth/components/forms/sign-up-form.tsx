@@ -275,7 +275,10 @@ const SignUpForm = ({
                                     </FormLabel>
                                     <FormControl>
                                         <div className="flex flex-1 items-center gap-x-2">
-                                            <PhoneInput {...field} defaultCountry='PH'/>
+                                            <PhoneInput
+                                                {...field}
+                                                defaultCountry="PH"
+                                            />
                                             <VerifiedPatchIcon
                                                 className={cn(
                                                     'size-8 text-primary delay-300 duration-300 ease-in-out',

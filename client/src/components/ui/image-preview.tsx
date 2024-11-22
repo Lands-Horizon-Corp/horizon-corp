@@ -1,12 +1,7 @@
 // External Libraries
 import * as React from 'react'
 import * as ImagePreviewPrimitive from '@radix-ui/react-dialog'
-import {
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-} from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import useEmblaCarousel from 'embla-carousel-react'
 import {
     X,
@@ -60,83 +55,84 @@ type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 
 type CarouselOptions = UseCarouselParameters[0]
 
-export const DownloadButton = React.forwardRef<HTMLButtonElement, DownloadProps>(
-    ({ fileName, fileType, imageRef, fileUrl, className, name }, ref) => {
-        const handleDownload = () => {
-            let downloadImage = imageRef?.current
+export const DownloadButton = React.forwardRef<
+    HTMLButtonElement,
+    DownloadProps
+>(({ fileName, fileType, imageRef, fileUrl, className, name }, ref) => {
+    const handleDownload = () => {
+        let downloadImage = imageRef?.current
 
-            // If imageRef is not provided, use the fileUrl directly
-            if (!downloadImage && fileUrl) {
-                const img = document.createElement('img')
-                img.src = fileUrl
-                img.crossOrigin = 'anonymous'
+        // If imageRef is not provided, use the fileUrl directly
+        if (!downloadImage && fileUrl) {
+            const img = document.createElement('img')
+            img.src = fileUrl
+            img.crossOrigin = 'anonymous'
 
-                img.onload = () => {
-                    const canvas = document.createElement('canvas')
-                    const context = canvas.getContext('2d')
-                    if (!context) return
+            img.onload = () => {
+                const canvas = document.createElement('canvas')
+                const context = canvas.getContext('2d')
+                if (!context) return
 
-                    canvas.width = img.naturalWidth
-                    canvas.height = img.naturalHeight
+                canvas.width = img.naturalWidth
+                canvas.height = img.naturalHeight
 
-                    context.drawImage(img, 0, 0)
+                context.drawImage(img, 0, 0)
 
-                    canvas.toBlob((blob) => {
-                        if (blob) {
-                            const url = URL.createObjectURL(blob)
-                            const link = document.createElement('a')
-                            link.href = url
-                            link.download = fileName
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const url = URL.createObjectURL(blob)
+                        const link = document.createElement('a')
+                        link.href = url
+                        link.download = fileName
 
-                            document.body.appendChild(link)
-                            link.click()
-                            document.body.removeChild(link)
-                            URL.revokeObjectURL(url)
-                        }
-                    }, fileType)
-                }
-                return
+                        document.body.appendChild(link)
+                        link.click()
+                        document.body.removeChild(link)
+                        URL.revokeObjectURL(url)
+                    }
+                }, fileType)
             }
-
-            if (!downloadImage) return
-
-            const canvas = document.createElement('canvas')
-            const context = canvas.getContext('2d')
-            if (!context) return
-
-            canvas.width = downloadImage.naturalWidth
-            canvas.height = downloadImage.naturalHeight
-
-            context.drawImage(downloadImage, 0, 0)
-
-            canvas.toBlob((blob) => {
-                if (blob) {
-                    const url = URL.createObjectURL(blob)
-                    const link = document.createElement('a')
-                    link.href = url
-                    link.download = fileName
-
-                    document.body.appendChild(link)
-                    link.click()
-                    document.body.removeChild(link)
-                    URL.revokeObjectURL(url)
-                }
-            }, fileType)
+            return
         }
 
-        return (
-            <ImagePreviewButtonAction
-                Icon={
-                    <DownloadIcon className="size-full cursor-pointer  dark:text-white" />
-                }
-                name={name}
-                ref={ref}
-                className={className}
-                onClick={handleDownload}
-            />
-        )
+        if (!downloadImage) return
+
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d')
+        if (!context) return
+
+        canvas.width = downloadImage.naturalWidth
+        canvas.height = downloadImage.naturalHeight
+
+        context.drawImage(downloadImage, 0, 0)
+
+        canvas.toBlob((blob) => {
+            if (blob) {
+                const url = URL.createObjectURL(blob)
+                const link = document.createElement('a')
+                link.href = url
+                link.download = fileName
+
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                URL.revokeObjectURL(url)
+            }
+        }, fileType)
     }
-)
+
+    return (
+        <ImagePreviewButtonAction
+            Icon={
+                <DownloadIcon className="size-full cursor-pointer dark:text-white" />
+            }
+            name={name}
+            ref={ref}
+            className={className}
+            onClick={handleDownload}
+        />
+    )
+})
 
 DownloadButton.displayName = 'DownloadButton'
 
@@ -449,17 +445,16 @@ const ImagePreviewPanel = ({
     focusIndex,
     scrollToIndex,
 }: ImagePreviewPanelProps) => {
-
     if (!Images.length) {
         return (
             <div className="flex h-fit w-full items-center justify-center p-5 text-gray-500">
                 No images available
             </div>
-        );
+        )
     }
 
     if (Images.length === 1) {
-        return null; 
+        return null
     }
 
     return (
@@ -511,7 +506,7 @@ const ImagePreviewContent = React.forwardRef<
             fileName: Images[0]?.fileName || '',
             fileUrl: Images[0]?.url || '',
             fileType: Images[0]?.fileType || '',
-        });
+        })
 
         const options: CarouselOptions = {
             align: 'center',
@@ -560,52 +555,56 @@ const ImagePreviewContent = React.forwardRef<
         )
 
         const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-            if ((e.target as HTMLDivElement).id === 'overlay') onClose();
-        };
+            if ((e.target as HTMLDivElement).id === 'overlay') onClose()
+        }
 
         const handleZoomIn = () => {
-            if (scale < 4) setScale(prevScale => prevScale + scaleInterval);
-        };
+            if (scale < 4) setScale((prevScale) => prevScale + scaleInterval)
+        }
 
         const handleZoomOut = () => {
-            setScale(prevScale => Math.max(prevScale - scaleInterval, 1));
-        };
+            setScale((prevScale) => Math.max(prevScale - scaleInterval, 1))
+        }
 
         const handleRotateLeft = () => {
-            setRotateDegree(prev => prev + 10);
-        };
+            setRotateDegree((prev) => prev + 10)
+        }
 
         const handleRotateRight = () => {
-            setRotateDegree(prev => prev - 10);
-        };
+            setRotateDegree((prev) => prev - 10)
+        }
 
         const handleFlipHorizontal = () => {
-            setFlipScale(prev => (prev === 'scaleX(-1)' ? 'scaleX(1)' : 'scaleX(-1)'));
-        };
+            setFlipScale((prev) =>
+                prev === 'scaleX(-1)' ? 'scaleX(1)' : 'scaleX(-1)'
+            )
+        }
 
         const handleFlipVertical = () => {
-            setFlipScale(prev => (prev === 'scaleY(-1)' ? 'scaleY(1)' : 'scaleY(-1)'));
-        };
+            setFlipScale((prev) =>
+                prev === 'scaleY(-1)' ? 'scaleY(1)' : 'scaleY(-1)'
+            )
+        }
 
         const handleResetActionState = () => {
-            setRotateDegree(0);
-            setScale(1);
-            setFlipScale('');
-        };
+            setRotateDegree(0)
+            setScale(1)
+            setFlipScale('')
+        }
 
         useEffect(() => {
             const handleKeyDown = (event: KeyboardEvent) => {
                 if (event.key === 'Escape') {
-                    onClose(); 
+                    onClose()
                 }
-            };
-            window.addEventListener('keydown', handleKeyDown); 
+            }
+            window.addEventListener('keydown', handleKeyDown)
             return () => {
-                window.removeEventListener('keydown', handleKeyDown); 
-            };
-        }, [onClose]);
+                window.removeEventListener('keydown', handleKeyDown)
+            }
+        }, [onClose])
 
-        const isMultipleImage = Images.length > 1;
+        const isMultipleImage = Images.length > 1
 
         return (
             <div>

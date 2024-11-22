@@ -3,85 +3,85 @@ import { MediaRequest } from '..'
 export type AccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
 
 export interface ChangePasswordRequest {
-  otp?: string
-  resetId?: string
-  newPassword: string
-  confirmPassword: string
+    otp?: string
+    resetId?: string
+    newPassword: string
+    confirmPassword: string
 }
 
 export interface ForgotPasswordRequest {
-  key: string
-  accountType: string
-  emailTemplate?: string
-  contactTemplate?: string
+    key: string
+    accountType: string
+    emailTemplate?: string
+    contactTemplate?: string
 }
 
 export interface SendEmailVerificationRequest {
-  emailTemplate?: string
+    emailTemplate?: string
 }
 
 export interface SendContactNumberVerificationRequest {
-  contactTemplate?: string
+    contactTemplate?: string
 }
 
 export interface SignInRequest {
-  email?: string
-  username?: string
-  password: string
-  accountType: AccountType
+    email?: string
+    username?: string
+    password: string
+    accountType: AccountType
 }
 
 export interface SignUpRequest {
-  accountType: AccountType
-  username: string
-  firstName: string
-  lastName: string
-  middleName?: string
-  email: string
-  password: string
-  confirmPassword: string
-  birthDate: Date
-  contactNumber: string
-  permanentAddress: string
-  media?: MediaRequest
+    accountType: AccountType
+    username: string
+    firstName: string
+    lastName: string
+    middleName?: string
+    email: string
+    password: string
+    confirmPassword: string
+    birthDate: Date
+    contactNumber: string
+    permanentAddress: string
+    media?: MediaRequest
 
-  emailTemplate?: string
-  contactTemplate?: string
+    emailTemplate?: string
+    contactTemplate?: string
 }
 
 export interface VerifyEmailRequest {
-  otp: string
+    otp: string
 }
 
 export interface VerifyContactNumberRequest {
-  otp: string
+    otp: string
 }
 
 export interface NewPasswordRequest {
-  PreviousPassword: string
-  NewPassword: string
-  ConfirmPassword: string
+    PreviousPassword: string
+    NewPassword: string
+    ConfirmPassword: string
 }
 
 export interface AccountSettingRequest {
-  birthDate: Date
-  firstName: string
-  middleName?: string
-  lastName: string
-  description?: string
-  permanentAddress: string
+    birthDate: Date
+    firstName: string
+    middleName?: string
+    lastName: string
+    description?: string
+    permanentAddress: string
 }
 
 export interface ChangeEmailRequest {
-  password: string
-  email: string
+    password: string
+    email: string
 }
 
 export interface ChangeContactNumberRequest {
-  password: string
-  contactNumber: string
+    password: string
+    contactNumber: string
 }
 export interface ChangeUsernameRequest {
-  password: string
-  username: string
+    password: string
+    username: string
 }

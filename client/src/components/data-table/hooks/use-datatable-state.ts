@@ -1,10 +1,7 @@
 import { useState } from 'react'
-import {
-    SortingState,
-    PaginationState,
-} from '@tanstack/react-table'
+import { SortingState, PaginationState } from '@tanstack/react-table'
 
-export type TDataTableDisplayType = "Default" | "Full"
+export type TDataTableDisplayType = 'Default' | 'Full'
 
 const useDataTableState = () => {
     const [rowSelection, setRowSelection] = useState({})
@@ -14,7 +11,7 @@ const useDataTableState = () => {
         pageIndex: 0,
         pageSize: 10,
     })
-    const [isScrollable, setIsScrollable] = useState<boolean>(true);
+    const [isScrollable, setIsScrollable] = useState<boolean>(true)
 
     return {
         sorting,

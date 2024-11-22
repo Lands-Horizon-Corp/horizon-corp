@@ -48,16 +48,17 @@ enum SignatureModes {
 type SignatureModeType = SignatureModes
 
 const Signature = ({ className }: SignatureProps) => {
-
-    const [currentMode, setCurrentMode] = useState<SignatureModeType | null>(SignatureModes.DRAW)
+    const [currentMode, setCurrentMode] = useState<SignatureModeType | null>(
+        SignatureModes.DRAW
+    )
     const signatureRef = useRef<SignaturePad | null>(null)
     const [_, setCurrentFile] = useState<FileWithPath | null>()
     const [trimmedData, setTrimmedData] = useState<string | null>('')
     const [isFullScreenMode, setIsFullScreenMode] = useState(false)
-    
+
     const imageRef = useRef<HTMLImageElement | null>(null)
     const camRef = useRef<Webcam>(null)
-    
+
     const { setFile } = useSignature()
     const { onOpen } = useConfirmModalStore()
 
@@ -114,7 +115,7 @@ const Signature = ({ className }: SignatureProps) => {
             'capture-signature'
         )
         setFile(convertedImageToData)
-        if(imageSrc){
+        if (imageSrc) {
             toast.success('Capture Image')
         }
     }
@@ -200,10 +201,10 @@ const Signature = ({ className }: SignatureProps) => {
         }
     }, [])
 
-    const isCurrentMode = (mode: SignatureModeType) =>{
+    const isCurrentMode = (mode: SignatureModeType) => {
         return mode === currentMode ? 'bg-secondary' : ''
     }
-    
+
     return (
         <div
             className={cn(

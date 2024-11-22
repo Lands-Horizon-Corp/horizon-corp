@@ -63,7 +63,7 @@ const PasswordInputModal = <T extends object>({
                             onSubmit({ ...payloadData, ...data })
                             form.reset()
                         })}
-                        autoComplete='off'
+                        autoComplete="off"
                     >
                         <FormField
                             control={form.control}
@@ -83,7 +83,9 @@ const PasswordInputModal = <T extends object>({
                         />
                         <FormErrorMessage errorMessage={firstError} />
                         <div className="flex justify-end gap-x-2">
-                            <Button type="submit" className="px-8">Okay</Button>
+                            <Button type="submit" className="px-8">
+                                Okay
+                            </Button>
                         </div>
                     </form>
                 </Form>

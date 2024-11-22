@@ -52,7 +52,12 @@ const TextFilter = () => {
                 onChange={(inpt) => setValue(inpt.target.value)}
                 placeholder={`value`}
             />
-            <Button size="sm" variant="secondary" className="w-full" onClick={() => clearFilter()}>
+            <Button
+                size="sm"
+                variant="secondary"
+                className="w-full"
+                onClick={() => clearFilter()}
+            >
                 Clear Filter
             </Button>
         </div>

@@ -1,7 +1,7 @@
-import z from "zod";
+import z from 'zod'
 
-import { otpCodeSchema } from "@/validations/common";
+import { otpCodeSchema } from '@/validations/common'
 
 export const otpSchema = z.object({
-    otp: otpCodeSchema
+    otp: otpCodeSchema,
 })

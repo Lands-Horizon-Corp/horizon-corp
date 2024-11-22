@@ -40,7 +40,11 @@ const DataTableDeleteSelected = <T,>({
             }
             size="icon"
             variant="secondary"
-            className={cn("relative", !(isLoading || !canDelete || selectedRows.length === 0 ) && "text-rose-400/80 hover:text-rose-400")}
+            className={cn(
+                'relative',
+                !(isLoading || !canDelete || selectedRows.length === 0) &&
+                    'text-rose-400/80 hover:text-rose-400'
+            )}
         >
             {isLoading ? (
                 <LoadingSpinner />

@@ -12,8 +12,6 @@ import { IBaseComp } from '@/types/component'
 import { useSidebarContext } from './sidebar-context'
 import type { TSidebarItem } from '@/components/sidebar/sidebar-types'
 
-
-
 export interface ISidebarProps extends IBaseComp {
     items: TSidebarItem[]
     enableCollapse?: boolean
@@ -28,10 +26,8 @@ const SidebarContent = ({
     enableCollapse = false,
     enableFocusBlur = false,
 }: ISidebarProps) => {
-
     const { isExpanded, toggleExpanded, isMobileSidebarVisible } =
         useSidebarContext()
-
 
     return (
         <div

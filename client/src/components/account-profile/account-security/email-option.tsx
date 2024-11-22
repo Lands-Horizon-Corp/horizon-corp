@@ -86,7 +86,7 @@ const EmailOption = ({ email, verified, onSave }: Props) => {
     }, [email, form])
 
     return (
-        <div className={cn("space-y-0", hasChanges && "space-y-2")}>
+        <div className={cn('space-y-0', hasChanges && 'space-y-2')}>
             <PasswordInputModal
                 state={pwdModalState}
                 payloadData={form.getValues()}

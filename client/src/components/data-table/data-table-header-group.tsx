@@ -23,7 +23,7 @@ const DataTableHeaderGroup = <TData,>({
         {headerGroups.map((headerGroup) => (
             <TableRow
                 key={headerGroup.id}
-                className="text-nowrap bg-secondary dark:bg-popover hover:bg-popover"
+                className="text-nowrap bg-secondary hover:bg-popover dark:bg-popover"
             >
                 <SortableContext
                     items={columnOrder}
@@ -33,10 +33,7 @@ const DataTableHeaderGroup = <TData,>({
                         <TableHead
                             key={header.id}
                             colSpan={header.colSpan}
-                            className={cn(
-                                'relative',
-                                headerClassName
-                            )}
+                            className={cn('relative', headerClassName)}
                         >
                             {header.isPlaceholder
                                 ? null

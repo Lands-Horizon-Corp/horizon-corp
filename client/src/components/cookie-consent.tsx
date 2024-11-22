@@ -36,7 +36,7 @@ const CookieConsent = () => {
     return (
         <Alert
             className={cn(
-                'fixed bottom-0 left-1/2 mb-3 z-50 flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-x-4 gap-y-4 rounded-xl bg-popover/95 text-center shadow-center-md backdrop-blur delay-150 duration-500 ease-in-out md:mb-6 lg:w-fit lg:max-w-none lg:flex-row lg:text-left',
+                'fixed bottom-0 left-1/2 z-50 mb-3 flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-x-4 gap-y-4 rounded-xl bg-popover/95 text-center shadow-center-md backdrop-blur delay-150 duration-500 ease-in-out md:mb-6 lg:w-fit lg:max-w-none lg:flex-row lg:text-left',
                 accepted && 'pointer-events-none opacity-0'
             )}
         >
