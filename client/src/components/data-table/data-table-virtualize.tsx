@@ -1,5 +1,6 @@
-import { Row, Table, flexRender } from '@tanstack/react-table'
+import { useRef } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { Row, Table, flexRender } from '@tanstack/react-table'
 
 import {
     Table as UITable,
@@ -12,7 +13,6 @@ import {
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { useRef } from 'react'
 
 interface Props<TData> extends IBaseCompNoChild {
     table: Table<TData>

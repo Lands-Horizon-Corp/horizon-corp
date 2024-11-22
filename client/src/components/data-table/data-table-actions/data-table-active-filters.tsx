@@ -2,11 +2,11 @@ import { useMemo } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { TrashIcon, XIcon } from '@/components/icons'
 import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { TrashIcon, XIcon } from '@/components/icons'
 import { useDataTableFilter } from '../data-table-filter-context'
 
 const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {

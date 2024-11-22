@@ -10,6 +10,7 @@ import {
 } from '@dnd-kit/core'
 import { Table } from '@tanstack/react-table'
 import { arrayMove } from '@dnd-kit/sortable'
+import { useCallback, useEffect, useRef } from 'react'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 
 import DataTableBody from './data-table-body'
@@ -18,7 +19,6 @@ import DataTableHeaderGroup from './data-table-header-group'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { useCallback, useEffect, useRef } from 'react'
 
 interface Props<TData> extends IBaseCompNoChild {
     table: Table<TData>
