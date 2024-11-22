@@ -22,6 +22,7 @@ import { IBaseCompNoChild } from '@/types'
 
 interface Props<TData> extends IBaseCompNoChild {
     table: Table<TData>
+    rowClassName?: string
     isScrollable?: boolean
     isStickyHeader?: boolean
     setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>
@@ -30,6 +31,7 @@ interface Props<TData> extends IBaseCompNoChild {
 const DataTable = <TData,>({
     table,
     className,
+    rowClassName,
     isScrollable,
     isStickyHeader,
     setColumnOrder,
@@ -130,7 +132,7 @@ const DataTable = <TData,>({
                 )}
             >
                 {table.getLeftHeaderGroups().length > 0 && (
-                    <div className="ecoop-scroll sticky left-[0%] z-50 h-fit w-fit border-r border-popover shadow-xl">
+                    <div className="ecoop-scroll sticky left-[0%] z-50 h-fit w-fit border-r shadow dark:border-popover/80">
                         <UITable
                             ref={leftTableRef}
                             className="h-fit w-auto"
@@ -148,6 +150,7 @@ const DataTable = <TData,>({
                             />
                             <DataTableBody
                                 targetGroup="left"
+                                rowClassName={rowClassName}
                                 rows={table.getRowModel().rows}
                             />
                         </UITable>
@@ -161,7 +164,10 @@ const DataTable = <TData,>({
                                 columnOrder={table.getState().columnOrder}
                                 headerGroups={table.getCenterHeaderGroups()}
                             />
-                            <DataTableBody rows={table.getRowModel().rows} />
+                            <DataTableBody
+                                rowClassName={rowClassName}
+                                rows={table.getRowModel().rows}
+                            />
                         </UITable>
                     </div>
                 )}
@@ -184,6 +190,7 @@ const DataTable = <TData,>({
                             />
                             <DataTableBody
                                 targetGroup="right"
+                                rowClassName={rowClassName}
                                 rows={table.getRowModel().rows}
                             />
                         </UITable>

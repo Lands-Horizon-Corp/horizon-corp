@@ -1,13 +1,16 @@
 import { flexRender, Row } from '@tanstack/react-table'
 
 import { TableBody, TableCell, TableRow } from '@/components/ui/table'
+import { cn } from '@/lib'
 
 const DataTableBody = <TData,>({
     rows,
     targetGroup,
+    rowClassName,
 }: {
     rows: Row<TData>[]
     targetGroup?: 'left' | 'right'
+    rowClassName?: string
 }) => {
     return (
         <TableBody>
@@ -15,7 +18,10 @@ const DataTableBody = <TData,>({
                 <TableRow
                     key={row.id}
                     data-row-id={row.id}
-                    className="h-14 w-fit align-middle hover:bg-popover/80 data-[state=selected]:bg-popover dark:bg-secondary/90"
+                    className={cn(
+                        'h-14 w-fit bg-background/90 align-middle hover:bg-secondary/90 data-[state=selected]:bg-secondary dark:data-[state=selected]:bg-popover dark:bg-secondary/90 dark:hover:bg-popover/95',
+                        rowClassName
+                    )}
                     data-state={row.getIsSelected() && 'selected'}
                 >
                     {(targetGroup === undefined
