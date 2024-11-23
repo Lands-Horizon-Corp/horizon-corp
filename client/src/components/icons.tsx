@@ -11,8 +11,8 @@ import {
     LuUndo2 as LuUndo2Icon,
     LuRedo2 as LuRedo2Icon,
     LuImage as LuImageIcon,
-    LuFileX as  LuFileXIcon,
-    LuHardDriveUpload as LuHardDriveUploadIcon
+    LuFileX as LuFileXIcon,
+    LuHardDriveUpload as LuHardDriveUploadIcon,
 } from 'react-icons/lu'
 import {
     BsBuildingGear as BuildingCogIcon,
@@ -35,6 +35,7 @@ import {
     PiCodeBlock as PiCodeBlockIcon,
     PiTextStrikethroughLight as PiTextStrikethroughLightIcon,
     PiListBulletsBold as PiListBulletsBoldIcon,
+    PiTextAlignCenter as TextCenterIcon,
 } from 'react-icons/pi'
 import {
     HiOutlineSun as SunIcon,
@@ -57,7 +58,7 @@ import {
     AiOutlineMessage as AiOutlineMessageIcon,
     AiOutlineClear as AiOutlineClearIcon,
     AiOutlineFullscreen as AiOutlineFullscreenIcon,
-    AiOutlineFullscreenExit as AiOutlineFullscreenExitIcon
+    AiOutlineFullscreenExit as AiOutlineFullscreenExitIcon,
 } from 'react-icons/ai'
 import { GoArrowLeft as ArrowLeftIcon } from 'react-icons/go'
 import {
@@ -82,10 +83,17 @@ import {
     IoCallOutline as IoCallOutlineIcon,
     IoLocationSharp as IoLocationSharpIcon,
 } from 'react-icons/io5'
-import { RxFontItalic as ToolbarItalicIcon, RxTrash as RxTrashIcon } from 'react-icons/rx'
+import {
+    RxFontItalic as ToolbarItalicIcon,
+    RxTrash as RxTrashIcon,
+} from 'react-icons/rx'
 import {
     FaBold as FaBoldIcon,
     FaRulerHorizontal as FaRulerHorizontalIcon,
+    FaAlignLeft as TextAlignLeftIcon,
+    FaAlignRight as TextAlignRightIcon,
+    FaAlignCenter as TextAlignCenterIcon,
+    FaAlignJustify as TextAlignJustifyIcon,
 } from 'react-icons/fa'
 import { IoIosCode as IoIosCodeIcon } from 'react-icons/io'
 import {
@@ -98,12 +106,11 @@ import { CgFacebook as CgFacebookIcon } from 'react-icons/cg'
 
 import { IBaseCompNoChild } from '@/types/component'
 
-import { GrPowerReset as GrPowerResetIcon } from "react-icons/gr";
+import { GrPowerReset as GrPowerResetIcon } from 'react-icons/gr'
 
 import { SiGooglemaps as SiGooglemapsIcon } from 'react-icons/si'
 import { VscLocation as VscLocationIcon } from 'react-icons/vsc'
-import { FiCamera as FiCameraIcon } from "react-icons/fi";
-
+import { FiCamera as FiCameraIcon } from 'react-icons/fi'
 
 const CookieIcon: React.FC<IBaseCompNoChild> = (props) => {
     return (
@@ -248,5 +255,9 @@ export {
     AiOutlineClearIcon,
     AiOutlineFullscreenIcon,
     AiOutlineFullscreenExitIcon,
-    
+    TextCenterIcon,
+    TextAlignLeftIcon,
+    TextAlignRightIcon,
+    TextAlignCenterIcon,
+    TextAlignJustifyIcon
 }

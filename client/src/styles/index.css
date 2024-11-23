@@ -112,6 +112,7 @@
     from {
         opacity: 0;
     }
+
     to {
         opacity: 0.7;
     }
@@ -160,6 +161,7 @@
     overflow: hidden !important;
     padding-right: 2px !important;
 }
+
 body[data-scroll-locked] {
     overflow: hidden !important;
     overscroll-behavior: contain;
@@ -190,4 +192,58 @@ body[data-scroll-locked] {
 
 body[data-scroll-locked] {
     --removed-body-scroll-bar-size: 2px;
+}
+
+.table-toolbar-custom h1,
+.table-toolbar-custom h2,
+.table-toolbar-custom h3,
+.table-toolbar-custom h4,
+.table-toolbar-custom h5,
+.table-toolbar-custom h6,
+.table-toolbar-custom p,
+.table-toolbar-custom a,
+.table-toolbar-custom ul,
+.table-toolbar-custom ol,
+.table-toolbar-custom pre,
+.table-toolbar-custom code,
+.table-toolbar-custom strong,
+.table-toolbar-custom listItem,
+.table-toolbar-custom blockquote {
+    @apply text-black dark:text-white;
+}
+
+.tiptap table tbody tr .selectedCell{
+    @apply   bg-slate-50 dark:bg-black
+}
+
+.table-toolbar-custom code {
+    @apply rounded bg-secondary/80 px-1 py-0.5 text-[0.95em] font-semibold;
+}
+
+.table-toolbar-custom pre {
+    @apply overflow-x-auto rounded-lg bg-secondary/70 p-4;
+}
+
+.table-toolbar-custom pre code {
+    @apply bg-transparent text-[0.9em] text-inherit;
+}
+
+.table-toolbar-custom {
+    @apply prose p-5 w-screen max-w-full shadow-sm border h-full text-black font-sans focus:outline-none; 
+}
+
+.table th p {
+ @apply px-2
+}
+
+.table col {
+    @apply border
+}
+
+.table tr {
+    @apply border-b-0 border-y-[.5px]
+}
+
+.table {
+    @apply max-w-full
 }
