@@ -13,30 +13,26 @@ const TestLayout = () => {1
     // const { isOpen, setIsOpen } = useImagePreview()
 
     return (
-        // <div className="grid min-h-[100dvh] grid-cols-[auto_1fr]">
-        //     <main>
-        //         <Outlet />
-        //     </main>
-        //     <div className="hidden mx-auto h-[100vh] w-[80%] border">
-        //         <Signature/>
-        //         <h1>Signature testing</h1>
-        //         <Separator  className='my-5 h-[1px] dark:bg-white w-full'/>
-        //         <Button onClick={() => setIsOpen(true)}>view</Button>
-        //         <ImagePreview
-        //             open={isOpen}
-        //             onOpenChange={() => setIsOpen(false)}
-        //         >
-        //             <ImagePreviewContent Images={sampleMediaResourceList} />
-        //         </ImagePreview>
-        //         <h1>Image preview testing</h1>
-        //         <Separator  className='my-5 h-[1px] dark:bg-white w-full'/>
-        //     </div>
-        // </div>
+        <div className="grid min-h-[100dvh] grid-cols-[auto_1fr]">
+            <main>
+                <Outlet />
+            </main>
+            {/* <div className="hidden mx-auto h-[100vh] w-[80%] border">
+                <Signature/>
+                <h1>Signature testing</h1>
+                <Separator  className='my-5 h-[1px] dark:bg-white w-full'/>
+                <Button onClick={() => setIsOpen(true)}>view</Button>
+                <ImagePreview
+                    open={isOpen}
+                    onOpenChange={() => setIsOpen(false)}
+                >
+                    <ImagePreviewContent Images={sampleMediaResourceList} />
+                </ImagePreview>
+                <h1>Image preview testing</h1>
+                <Separator  className='my-5 h-[1px] dark:bg-white w-full'/>
+            </div> */}
+        </div>
 
-        <>
-            <DocumentBuilder/>
-
-        </>
     )
 }
 

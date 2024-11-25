@@ -112,17 +112,6 @@ export const generateTableHTML = (
     )
 }
 
-const CustomTable = Table.extend({
-    addAttributes() {
-      return {
-        ...this.parent?.(), // Keep existing attributes
-        class: {
-          default: 'table',
-        },
-      };
-    },
-  });
-
 interface TableToolsProps {
     editor: Editor | null
     dimensions: {
@@ -131,7 +120,6 @@ interface TableToolsProps {
     }
     handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
-
 
 const TableTools = ({
     editor,
@@ -422,6 +410,17 @@ const TableToolbar = ({ editor }: TableToolBarProps) => {
     )
 }
 
+const CustomTable = Table.extend({
+    addAttributes() {
+        return {
+            ...this.parent?.(), // Keep existing attributes
+            class: {
+                default: 'table',
+            },
+        }
+    },
+})
+
 export default () => {
     const [filterText, setFilterText] = useState('')
 
@@ -454,13 +453,11 @@ export default () => {
     })
 
     const json = editor?.getJSON()
-    // console.log(json)
 
     const applyFilter = () => {
         if (!editor) return
 
         const { doc, tr } = editor.state
-
 
         const tableNode = doc.descendants((node, pos) => {
             console.log('node', node)
@@ -498,8 +495,8 @@ export default () => {
     }
 
     return (
-        <div className="mx-auto h-full w-[90%]">
-            <div className="">
+        <div className="mx-auto h-full w-[90%] ">
+            {/* <div className="">
                 <label>
                     Filter:
                     <input
@@ -509,10 +506,9 @@ export default () => {
                     />
                 </label>
                 <Button onClick={() => applyFilter()}>Apply Filter</Button>
-            </div>
+            </div> */}
             <div className="w-full">
                 <Button onClick={testEditor}>Add table</Button>
-
                 <TableToolbar editor={editor} />
             </div>
             <EditorContent
