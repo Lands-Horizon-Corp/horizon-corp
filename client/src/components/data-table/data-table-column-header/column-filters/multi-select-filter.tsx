@@ -7,7 +7,6 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-    CommandSeparator,
 } from '@/components/ui/command'
 
 import { useColumnFilterState } from './column-filter-state-context'

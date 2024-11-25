@@ -19,12 +19,14 @@ import DataTableHeaderGroup from './data-table-header-group'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
+import DataTableFooter from './data-table-footer'
 
 interface Props<TData> extends IBaseCompNoChild {
     table: Table<TData>
     rowClassName?: string
     isScrollable?: boolean
     isStickyHeader?: boolean
+    isStickyFooter?: boolean
     setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>
 }
 
@@ -34,6 +36,7 @@ const DataTable = <TData,>({
     rowClassName,
     isScrollable,
     isStickyHeader,
+    isStickyFooter,
     setColumnOrder,
 }: Props<TData>) => {
     const handleDragEnd = (event: DragEndEvent) => {
@@ -98,16 +101,71 @@ const DataTable = <TData,>({
         })
     }, [])
 
-    useEffect(() => {
-        syncRowHeights()
+    const syncFooterRowHeights = useCallback(() => {
+        const leftFooterRows = leftTableRef.current?.querySelectorAll(
+            '[data-footer-row-id]'
+        )
+        const centerFooterRows = centerTableRef.current?.querySelectorAll(
+            '[data-footer-row-id]'
+        )
+        const rightFooterRows = rightTableRef.current?.querySelectorAll(
+            '[data-footer-row-id]'
+        )
 
-        const handleResize = () => syncRowHeights()
+        const footerRowIds = new Set<string>()
+        if (leftFooterRows)
+            leftFooterRows.forEach((row) =>
+                footerRowIds.add((row as HTMLElement).dataset.footerRowId!)
+            )
+        if (centerFooterRows)
+            centerFooterRows.forEach((row) =>
+                footerRowIds.add((row as HTMLElement).dataset.footerRowId!)
+            )
+        if (rightFooterRows)
+            rightFooterRows.forEach((row) =>
+                footerRowIds.add((row as HTMLElement).dataset.footerRowId!)
+            )
+
+        footerRowIds.forEach((footerRowId) => {
+            const footerRows = [
+                leftTableRef.current?.querySelector(
+                    `[data-footer-row-id="${footerRowId}"]`
+                ),
+                centerTableRef.current?.querySelector(
+                    `[data-footer-row-id="${footerRowId}"]`
+                ),
+                rightTableRef.current?.querySelector(
+                    `[data-footer-row-id="${footerRowId}"]`
+                ),
+            ].filter(Boolean) as HTMLElement[]
+
+            let maxHeight = 0
+            footerRows.forEach((row) => {
+                row.style.height = 'auto'
+                maxHeight = Math.max(maxHeight, row.offsetHeight)
+            })
+
+            footerRows.forEach((row) => {
+                row.style.height = `${maxHeight}px`
+            })
+        })
+    }, [])
+
+    const syncHeights = useCallback(() => {
+        syncRowHeights()
+        syncFooterRowHeights()
+    }, [syncRowHeights, syncFooterRowHeights])
+
+    useEffect(() => {
+        syncHeights()
+
+        const handleResize = () => syncHeights()
         window.addEventListener('resize', handleResize)
 
         return () => {
             window.removeEventListener('resize', handleResize)
         }
-    }, [syncRowHeights])
+    }, [syncHeights])
 
     const sensors = useSensors(
         useSensor(MouseSensor, {}),
@@ -152,6 +210,11 @@ const DataTable = <TData,>({
                                 targetGroup="left"
                                 rowClassName={rowClassName}
                                 rows={table.getRowModel().rows}
+                            />{' '}
+                            <DataTableFooter
+                                table={table}
+                                isStickyFooter={isStickyFooter && isScrollable}
+                                targetGroup="left"
                             />
                         </UITable>
                     </div>
@@ -167,6 +230,10 @@ const DataTable = <TData,>({
                             <DataTableBody
                                 rowClassName={rowClassName}
                                 rows={table.getRowModel().rows}
+                            />
+                            <DataTableFooter
+                                table={table}
+                                isStickyFooter={isStickyFooter && isScrollable}
                             />
                         </UITable>
                     </div>
@@ -192,6 +259,11 @@ const DataTable = <TData,>({
                                 targetGroup="right"
                                 rowClassName={rowClassName}
                                 rows={table.getRowModel().rows}
+                            />
+                            <DataTableFooter
+                                table={table}
+                                targetGroup="right"
+                                isStickyFooter={isStickyFooter && isScrollable}
                             />
                         </UITable>
                     </div>

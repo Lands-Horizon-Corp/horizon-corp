@@ -55,9 +55,9 @@ const DataTableExportButton = <TData,>({
         }
     }
 
-    const exportAllFiltered = () => {}
+    // const exportAllFiltered = () => {}
 
-    const exportAll = () => {}
+    // const exportAll = () => {}
 
     const exportCurrentPage = () => {
         try {

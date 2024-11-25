@@ -20,7 +20,10 @@ export type TFilterModes =
     | 'after'
 
 export const filterModeMap: {
-    [K in TColumnDataTypes]: { value: TFilterModes; label: string }[]
+    [K in Exclude<TColumnDataTypes, 'enum'>]: {
+        value: TFilterModes
+        label: string
+    }[]
 } = {
     text: [
         { value: 'equal', label: 'Equals' },

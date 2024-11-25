@@ -28,6 +28,7 @@ import DateFilter from '@/components/data-table/data-table-column-header/column-
 import MultiSelectFilter from '@/components/data-table/data-table-column-header/column-filters/multi-select-filter'
 import DataTableOptionsMenu from '@/components/data-table/data-table-actions/data-table-options-menu'
 import { Separator } from '@/components/ui/separator'
+import DataTableFooterSummation from '@/components/data-table/data-table-footer-aggregations/data-table-footer-summation'
 
 type TData = {
     name: string
@@ -58,7 +59,7 @@ const data = () => {
 
     const genders: TData['gender'][] = ['Male', 'Female', 'Other'] // Gender options
 
-    const mockData: TData[] = Array.from({ length: 100 }).map(() => {
+    const mockData: TData[] = Array.from({ length: 20 }).map(() => {
         const age = Math.floor(Math.random() * (65 - 18 + 1)) + 18
         const name = names[Math.floor(Math.random() * names.length)]
         const bday = generateRandomDate(
@@ -76,6 +77,128 @@ const data = () => {
     })
 
     return mockData
+    // return [
+    //     {
+    //         name: 'Ivy',
+    //         age: 18,
+    //         bday: new Date('1967-04-02T00:37:44.422Z'),
+    //         gender: 'Other',
+    //     },
+    //     {
+    //         name: 'Hank',
+    //         age: 53,
+    //         bday: new Date('1971-02-18T18:16:59.171Z'),
+    //         gender: 'Other',
+    //     },
+    //     {
+    //         name: 'Bob',
+    //         age: 33,
+    //         bday: new Date('2005-03-22T03:32:36.242Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Grace',
+    //         age: 22,
+    //         bday: new Date('1965-03-01T04:59:23.534Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Hank',
+    //         age: 37,
+    //         bday: new Date('1964-10-10T21:32:55.882Z'),
+    //         gender: 'Male',
+    //     },
+    //     {
+    //         name: 'Eve',
+    //         age: 64,
+    //         bday: new Date('1961-01-30T18:47:44.231Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Bob',
+    //         age: 22,
+    //         bday: new Date('1986-05-18T02:14:11.508Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Jack',
+    //         age: 43,
+    //         bday: new Date('2001-06-23T10:58:59.983Z'),
+    //         gender: 'Male',
+    //     },
+    //     {
+    //         name: 'Diana',
+    //         age: 27,
+    //         bday: new Date('1991-07-20T23:25:38.895Z'),
+    //         gender: 'Male',
+    //     },
+    //     {
+    //         name: 'Ivy',
+    //         age: 35,
+    //         bday: new Date('1992-03-02T08:20:40.745Z'),
+    //         gender: 'Other',
+    //     },
+    //     {
+    //         name: 'Grace',
+    //         age: 46,
+    //         bday: new Date('1970-10-09T01:18:39.321Z'),
+    //         gender: 'Other',
+    //     },
+    //     {
+    //         name: 'Hank',
+    //         age: 22,
+    //         bday: new Date('1964-02-28T09:23:51.803Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Eve',
+    //         age: 64,
+    //         bday: new Date('2005-04-18T18:44:24.463Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Grace',
+    //         age: 31,
+    //         bday: new Date('2003-01-19T14:26:38.490Z'),
+    //         gender: 'Male',
+    //     },
+    //     {
+    //         name: 'Alice',
+    //         age: 59,
+    //         bday: new Date('1971-02-15T05:37:29.557Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Ivy',
+    //         age: 42,
+    //         bday: new Date('1964-06-09T19:38:23.860Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Alice',
+    //         age: 29,
+    //         bday: new Date('1990-01-24T09:18:35.370Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Jack',
+    //         age: 36,
+    //         bday: new Date('2003-11-13T01:11:58.565Z'),
+    //         gender: 'Female',
+    //     },
+    //     {
+    //         name: 'Eve',
+    //         age: 49,
+    //         bday: new Date('2001-04-05T16:02:03.476Z'),
+    //         gender: 'Male',
+    //     },
+    //     {
+    //         name: 'Frank',
+    //         age: 33,
+    //         bday: new Date('1971-01-29T05:11:01.950Z'),
+    //         gender: 'Female',
+    //     },
+    // ]
 }
 
 const defaultColumns: ColumnDef<TData>[] = [
@@ -202,6 +325,7 @@ const defaultColumns: ColumnDef<TData>[] = [
                 original: { age },
             },
         }) => <div>{age}</div>,
+        footer: (props) => <DataTableFooterSummation {...props} />,
     },
     {
         id: 'Gender',
@@ -333,6 +457,7 @@ const Tbl = () => {
                     <DataTable
                         table={table}
                         isStickyHeader
+                        isStickyFooter
                         isScrollable={isScrollable}
                         className="mb-2 max-h-96 flex-1"
                         setColumnOrder={setColumnOrder}
