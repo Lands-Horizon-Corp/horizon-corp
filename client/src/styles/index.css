@@ -247,3 +247,26 @@ body[data-scroll-locked] {
 .table {
     @apply max-w-full
 }
+
+.page {
+    width: 8.5in; /* Standard US Letter width */
+    height: 11in; /* Standard US Letter height */
+    margin: 0 auto;
+    padding: 1in;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    
+  }
+  
+  .editor-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 2rem); /* Adjust as needed */
+    padding: 1rem;
+    background-color: #f0f0f0;
+  }

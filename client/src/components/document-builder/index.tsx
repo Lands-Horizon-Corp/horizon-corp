@@ -9,7 +9,7 @@ import Text from '@tiptap/extension-text'
 import TextAlign from '@tiptap/extension-text-align'
 
 import { Editor, EditorContent, useEditor } from '@tiptap/react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { THeadingLevel } from '../text-editor'
 import Toolbar from '../text-editor/toolbar'
 import ReactDOMServer from 'react-dom/server'
@@ -70,7 +70,7 @@ for (let i = 1; i <= 100; i++) {
 }
 
 interface TableRowData {
-    [key: string]: string | number | null | undefined // Key-value pairs for each row
+    [key: string]: string | number | null | undefined
 }
 
 interface TableContentProps {
@@ -422,7 +422,11 @@ const CustomTable = Table.extend({
 })
 
 export default () => {
-    const [filterText, setFilterText] = useState('')
+
+    const [pages, setPages] = useState<string[]>(['<p>Start typing...</p>']);
+    const pageHeight = 1056;
+    const editorRef = useRef<HTMLDivElement | null>(null);
+    const [currentPage, setCurrentPage] = useState<number>(0);
 
     const editor = useEditor({
         extensions: [
@@ -444,81 +448,152 @@ export default () => {
                 types: ['heading', 'paragraph'],
             }),
         ],
-        content: '',
+        content: pages[currentPage],
+        onUpdate: ({ editor }) => {
+            // Update the content of the current page whenever it changes
+            const updatedContent = editor.getHTML();
+            setPages((prevPages) => {
+              const updatedPages = [...prevPages];
+              updatedPages[currentPage] = updatedContent;
+              return updatedPages;
+            });
+        }, // Load the content of the active page
         editorProps: {
             attributes: {
                 class: `table-toolbar-custom !w-full dark:text-white `,
             },
         },
+        
     })
 
-    const json = editor?.getJSON()
 
-    const applyFilter = () => {
-        if (!editor) return
+    const handlePageUpdate = () => {
+        const container = editorRef.current;
+    
+        if (!container || !editor) return;
+    
+        const children = Array.from(container.children);
+        let currentHeight = 0;
+        let currentPageContent: HTMLElement[] = [];
+        const newPages: string[] = [];
+    
+        children.forEach((child) => {
+          const element = child as HTMLElement;
+          const elementHeight = element.offsetHeight;
+    
+          if (currentHeight + elementHeight > pageHeight) {
+            // Save current page content and start a new page
+            newPages.push(currentPageContent.map((e) => e.outerHTML).join(''));
+            currentPageContent = [];
+            currentHeight = 0;
+          }
+    
+          currentPageContent.push(element);
+          currentHeight += elementHeight;
+        });
+    
+        // Add the last page's content
+        if (currentPageContent.length) {
+          newPages.push(currentPageContent.map((e) => e.outerHTML).join(''));
+        }
+    
+        if (newPages.length !== pages.length) {
+          setPages(newPages);
+        }
+      };
+    
+      useEffect(() => {
+        if (editor) {
+          editor.on('update', handlePageUpdate);
+        }
+        return () => {
+          editor?.off('update', handlePageUpdate);
+        };
+      }, [editor]);
+    
+      if (!editor) {
+        return null;
+      }
 
-        const { doc, tr } = editor.state
+    const addPage = () => {
+        setPages((prevPages) => [...prevPages, '<p>New page content...</p>']);
+        setCurrentPage(pages.length); // Switch to the new page
+      };
 
-        const tableNode = doc.descendants((node, pos) => {
-            console.log('node', node)
-            if (node.type.name === 'table') {
-                // Iterate over rows and apply the filter
-                node.descendants((rowNode, rowPos) => {
-                    if (rowNode.type.name === 'tableRow') {
-                        const rowText = rowNode.textContent.toLowerCase()
-                        const shouldShow = rowText.includes(
-                            filterText.toLowerCase()
-                        )
-                        const newAttrs = {
-                            ...rowNode.attrs,
-                            'data-hidden': !shouldShow ? 'true' : null,
-                        }
-
-                        tr.setNodeMarkup(pos + rowPos + 1, undefined, newAttrs)
-                    }
-                })
-                return true
-            }
-            return false
-        })
-        console.log('tableNode', tableNode)
-        editor.view.dispatch(tr)
-    }
-    const testEditor = () => {
-        console.log(
-            editor?.commands.insertContent(generateTableHTML(headers, Person))
-        )
-    }
+    const switchToPage = (index: number) => {
+        // Save the current page's content before switching
+        const updatedContent = editor?.getHTML();
+        if (updatedContent !== undefined) {
+          setPages((prevPages) => {
+            const updatedPages = [...prevPages];
+            updatedPages[currentPage] = updatedContent;
+            return updatedPages;
+          });
+        }
+    
+        // Switch to the clicked page
+        setCurrentPage(index);
+        editor?.commands.setContent(pages[index]);
+      };
+    
+    // const testEditor = () => {
+    //     console.log(
+    //         editor?.commands.insertContent(generateTableHTML(headers, Person))
+    //     )
+    // }
 
     if (!editor) {
         return null
     }
 
+    console.log(pages)
+
     return (
-        <div className="mx-auto h-full w-[90%] ">
-            {/* <div className="">
-                <label>
-                    Filter:
-                    <input
-                        type="text"
-                        value={filterText}
-                        onChange={(e) => setFilterText(e.target.value)}
-                    />
-                </label>
-                <Button onClick={() => applyFilter()}>Apply Filter</Button>
-            </div> */}
+        <div className="editor-wrapper">
+              <TableToolbar editor={editor} />
+              <Button
+          className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
+          onClick={addPage}
+        >
+          Add Page
+        </Button>
+        <div className='flex flex-col gap-2'>
+        {pages.map((content, index) => (
+          <div
+            key={index}
+            onClick={() => switchToPage(index)} // Switch page on click
+            className={`page w-[8.5in] h-[11in] mx-auto p-[1in] bg-white shadow-md rounded-lg overflow-hidden relative cursor-pointer ${
+              currentPage === index ? 'border-4 border-blue-500' : ''
+            }`}
+          >
+            {/* Display non-editable content if not the active page */}
+            {currentPage === index ? (
+              <EditorContent className='bg-white w-full h-full' editor={editor} />
+            ) : (
+              <div dangerouslySetInnerHTML={{ __html: content }} />
+            )}
+            <div className='absolute flex bottom-0 w-[80%] justify-center'><span className=''>{index}</span></div>
+          </div>
+        ))}
+        </div>
+      </div>
+    )
+
+    return (
+        <div className="mx-auto h-full w-[90%]">
             <div className="w-full">
-                <Button onClick={testEditor}>Add table</Button>
-                <TableToolbar editor={editor} />
+                {/* <Button onClick={testEditor}>Add table</Button> */}
+              
             </div>
-            <EditorContent
+            {/* <EditorContent
                 onContextMenu={(event) => {
                     console.log('hello')
                     event.preventDefault()
                 }}
                 className="w-full"
                 editor={editor}
-            />
+            /> */}
+          
         </div>
     )
 }
