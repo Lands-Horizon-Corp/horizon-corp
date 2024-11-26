@@ -25,7 +25,7 @@ import {
     Pin,
 } from '@/types/custom-component'
 
-import { LoadingCircleIcon, VscLocationIcon } from '../icons'
+import { LoadingCircleIcon, LocationPinOutlineIcon } from '../icons'
 
 import { useMapStore } from '@/store/map-store'
 
@@ -138,7 +138,7 @@ const CustomSearch = ({ onLocationFound }: TCustomSearchProps) => {
                                     >
                                         <div className="flex p-2">
                                             <div className="w-9">
-                                                <VscLocationIcon className="size-6 text-slate-600 dark:text-destructive-foreground" />
+                                                <LocationPinOutlineIcon className="size-6 text-slate-600 dark:text-destructive-foreground" />
                                             </div>
                                             <p className="truncate text-sm">
                                                 {location.desc}

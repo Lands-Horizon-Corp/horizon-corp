@@ -4,7 +4,7 @@ import {
     DotsVerticalIcon,
     EyeNoneIcon,
     PencilOutlineIcon,
-    TrashIcon,
+    TrashBinIcon,
 } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import {
@@ -69,7 +69,7 @@ const RowActionsGroup = ({ onDelete, onView, onEdit, otherActions }: Props) => {
                         className="text-rose-400 focus:bg-destructive"
                         onClick={onDelete.onClick}
                     >
-                        <TrashIcon className="mr-2" /> {onDelete.text}
+                        <TrashBinIcon className="mr-2" /> {onDelete.text}
                     </DropdownMenuItem>
                 )}
                 {otherActions}

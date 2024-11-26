@@ -6,7 +6,7 @@ import { FaCloudUploadAlt } from 'react-icons/fa'
 import { toast } from 'sonner'
 import { Button } from './button'
 import FileTypeIcon from './file-type'
-import { RxTrashIcon } from '../icons'
+import { TrashIcon } from '../icons'
 
 interface FileUploaderProps extends DropzoneOptions {
     className?: string
@@ -126,7 +126,7 @@ const UploadedFileItem = ({ file, onDelete }: UploadedFileItemProps) => {
                 <p className="text-xs font-semibold">{file.name}</p>
                 <p className="text-xs">{formatBytes(file.size)}</p>
             </div>
-            <RxTrashIcon
+            <TrashIcon
                 onClick={onDelete}
                 size={18}
                 className="cursor-pointer text-destructive hover:scale-105"

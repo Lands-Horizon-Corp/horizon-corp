@@ -26,7 +26,7 @@ export const withCatchAsync = async <
 }
 
 export const formatNumber = (
-    value : number,
+    value: number,
     minimumFractionDigits = 0,
     maximumFractionDigits = 2
 ) => {

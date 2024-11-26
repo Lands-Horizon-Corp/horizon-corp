@@ -1,4 +1,4 @@
-import { LuFileXIcon, LuImageIcon } from '../icons'
+import { FileXIcon, ImageIcon } from '../icons'
 import attachmentAudio from '@/assets/images/file-thumbnails/attachment-audio.svg'
 import attachmentDoc from '@/assets/images/file-thumbnails/attachment-doc.svg'
 import attachmentSheet from '@/assets/images/file-thumbnails/attachment-sheet.svg'
@@ -15,12 +15,12 @@ export const FileTypeIcons = {
     text: <img src={attachmentTxt} loading="lazy" alt="attachment-text" />,
     image: (
         <div className="flex size-8 items-center justify-center rounded-sm bg-green-100">
-            <LuImageIcon className="size-5 text-green-800" />
+            <ImageIcon className="size-5 text-green-800" />
         </div>
     ),
     unknown: (
         <div className="flex size-8 items-center justify-center rounded-sm bg-slate-100">
-            <LuFileXIcon className="size-5 text-slate-800" />
+            <FileXIcon className="size-5 text-slate-800" />
         </div>
     ),
 }

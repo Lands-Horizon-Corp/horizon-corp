@@ -1,8 +1,8 @@
 import { Table } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
-import { TrashIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
+import { TrashBinIcon } from '@/components/icons'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib'
@@ -50,7 +50,7 @@ const DataTableDeleteSelected = <T,>({
                 <LoadingSpinner />
             ) : (
                 <span className="inline-flex items-center gap-x-2">
-                    <TrashIcon className="inline" />
+                    <TrashBinIcon className="inline" />
                     {selectedRows.length > 0 && (
                         <Badge
                             variant="secondary"

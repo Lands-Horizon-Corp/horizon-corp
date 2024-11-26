@@ -24,9 +24,9 @@ import {
 import { Card } from './card'
 import { Button } from './button'
 import {
-    GrPowerResetIcon,
-    MdRotateLeftIcon,
-    MdRotateRightIcon,
+    PowerResetIcon,
+    RotateLeftIcon,
+    RotateRightIcon,
 } from '@/components/icons'
 
 // Utility Functions
@@ -391,7 +391,7 @@ const ImagePreviewActions = React.forwardRef<
                 >
                     <ImagePreviewButtonAction
                         iconClassName="size-4"
-                        Icon={<GrPowerResetIcon />}
+                        Icon={<PowerResetIcon />}
                         name="reset"
                         onClick={handleResetActionState}
                     />
@@ -406,13 +406,13 @@ const ImagePreviewActions = React.forwardRef<
                         onClick={handleZoomOut}
                     />
                     <ImagePreviewButtonAction
-                        Icon={<MdRotateLeftIcon />}
+                        Icon={<RotateLeftIcon />}
                         name="rotate left"
                         iconClassName="size-4"
                         onClick={handleRotateLeft}
                     />
                     <ImagePreviewButtonAction
-                        Icon={<MdRotateRightIcon />}
+                        Icon={<RotateRightIcon />}
                         name="rotate right"
                         iconClassName="size-4"
                         onClick={handleRotateRight}
