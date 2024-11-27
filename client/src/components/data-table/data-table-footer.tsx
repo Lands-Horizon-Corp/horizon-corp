@@ -1,6 +1,7 @@
 import { flexRender, Table } from '@tanstack/react-table'
 
 import { TableFooter, TableRow, TableCell } from '@/components/ui/table'
+
 import { cn } from '@/lib'
 
 const DataTableFooter = <TData,>({
@@ -25,9 +26,12 @@ const DataTableFooter = <TData,>({
     if (NFooter === 0) return
 
     return (
-        <TableFooter className={isStickyFooter ? 'sticky bottom-0 z-50' : ''}>
+        <TableFooter
+            className={cn('', isStickyFooter && 'sticky bottom-0 z-50')}
+        >
             {table.getFooterGroups().map((footerGroup) => (
                 <TableRow
+                    key={footerGroup.id}
                     data-footer-row-id={footerGroup.id}
                     className={cn(
                         'text-nowrap bg-secondary hover:bg-popover dark:bg-popover',
@@ -37,8 +41,9 @@ const DataTableFooter = <TData,>({
                     {footerGroup.headers
                         .filter((grp) => {
                             const pinnedGroup = grp.column.getIsPinned()
-                            if (!targetGroup) return pinnedGroup === false
-                            return targetGroup === pinnedGroup
+                            return targetGroup
+                                ? targetGroup === pinnedGroup
+                                : !pinnedGroup
                         })
                         .map((tc) => (
                             <TableCell
@@ -56,7 +61,5 @@ const DataTableFooter = <TData,>({
         </TableFooter>
     )
 }
-
-DataTableFooter.displayName = 'DataTableFooter'
 
 export default DataTableFooter

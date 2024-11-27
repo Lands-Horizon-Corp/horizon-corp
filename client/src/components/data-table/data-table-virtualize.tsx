@@ -1,3 +1,5 @@
+/** This table is virtualized, incase big data needs to be displayed */
+
 import { useRef } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { Row, Table, flexRender } from '@tanstack/react-table'
@@ -116,7 +118,7 @@ const DataTableVirtualize = <TData,>({
                                         <TableRow
                                             key={row.id}
                                             className={cn('h-14 w-fit')}
-                                            data-index={virtualRow.index} //needed for dynamic row height measurement
+                                            data-index={virtualRow.index} 
                                             ref={(node) =>
                                                 rowVirtualizer.measureElement(
                                                     node
@@ -129,7 +131,7 @@ const DataTableVirtualize = <TData,>({
                                             style={{
                                                 display: 'flex',
                                                 position: 'absolute',
-                                                transform: `translateY(${virtualRow.start}px)`, //this should always be a `style` as it changes on scroll
+                                                transform: `translateY(${virtualRow.start}px)`, 
                                                 width: '100%',
                                             }}
                                         >
@@ -238,7 +240,7 @@ const DataTableVirtualize = <TData,>({
                                         <TableRow
                                             key={row.id}
                                             className={cn('h-14 w-fit')}
-                                            data-index={virtualRow.index} //needed for dynamic row height measurement
+                                            data-index={virtualRow.index} 
                                             ref={(node) =>
                                                 rowVirtualizer.measureElement(
                                                     node

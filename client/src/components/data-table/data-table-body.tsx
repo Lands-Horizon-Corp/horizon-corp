@@ -4,15 +4,28 @@ import { TableBody, TableCell, TableRow } from '@/components/ui/table'
 
 import { cn } from '@/lib'
 
+type TTargetGroup = 'left' | 'right'
+
 const DataTableBody = <TData,>({
     rows,
     targetGroup,
     rowClassName,
 }: {
     rows: Row<TData>[]
-    targetGroup?: 'left' | 'right'
+    targetGroup?: TTargetGroup
     rowClassName?: string
 }) => {
+    const getVisibleCells = (row: Row<TData>, targetGroup?: TTargetGroup) => {
+        switch (targetGroup) {
+            case 'left':
+                return row.getLeftVisibleCells()
+            case 'right':
+                return row.getRightVisibleCells()
+            default:
+                return row.getCenterVisibleCells()
+        }
+    }
+
     return (
         <TableBody>
             {rows.map((row) => (
@@ -25,12 +38,7 @@ const DataTableBody = <TData,>({
                     )}
                     data-state={row.getIsSelected() && 'selected'}
                 >
-                    {(targetGroup === undefined
-                        ? row.getCenterVisibleCells()
-                        : targetGroup === 'left'
-                          ? row.getLeftVisibleCells()
-                          : row.getRightVisibleCells()
-                    ).map((cell) => (
+                    {getVisibleCells(row, targetGroup).map((cell) => (
                         <TableCell
                             key={cell.id}
                             className="size-fit text-nowrap"
@@ -58,7 +66,5 @@ const DataTableBody = <TData,>({
         </TableBody>
     )
 }
-
-DataTableBody.displayName = 'DataTableBody'
 
 export default DataTableBody

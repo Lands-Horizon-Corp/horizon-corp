@@ -2,7 +2,8 @@ import { useMemo } from 'react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { TrashBinIcon, XIcon } from '@/components/icons'
+import FilterChip from '@/components/filter-chip'
+import { TrashBinIcon } from '@/components/icons'
 import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib'
@@ -45,7 +46,8 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
                 {mappedFilters.map((filter) => (
                     <FilterChip
                         key={filter.field}
-                        filterKey={filter.field}
+                        label={filter.field}
+                        tooltipDescription="Remove Filter"
                         onClick={() => removeFilter(filter.field)}
                     />
                 ))}
@@ -53,28 +55,4 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
         </div>
     )
 }
-
-const FilterChip = ({
-    filterKey,
-    onClick,
-}: {
-    filterKey: string
-    onClick: () => void
-}) => {
-    return (
-        <ActionTooltip tooltipContent="remove">
-            <Badge
-                onClick={onClick}
-                variant="secondary"
-                className="group relative cursor-pointer pr-6 text-xs font-normal"
-            >
-                {filterKey}
-                <span className="absolute right-2 top-1/2 block -translate-y-1/2 rounded-full group-hover:bg-background">
-                    <XIcon />
-                </span>
-            </Badge>
-        </ActionTooltip>
-    )
-}
-
 export default DataTableActiveFilters

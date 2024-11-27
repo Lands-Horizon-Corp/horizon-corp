@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-export function useIsMobile(breakpointWidth = 768) {
+export const useIsMobile = (breakpointWidth = 768) => {
     const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
         undefined
     )

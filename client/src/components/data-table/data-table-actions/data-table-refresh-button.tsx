@@ -5,16 +5,17 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 interface Props {
     isLoading?: boolean
     onClick: () => void
+    className? : string
 }
 
-const DataTableRefreshButton = ({ isLoading, onClick }: Props) => {
+const DataTableRefreshButton = ({ isLoading, onClick, className }: Props) => {
     return (
         <Button
-            disabled={isLoading}
-            onClick={onClick}
-            className=""
-            variant="secondary"
             size="icon"
+            onClick={onClick}
+            variant="secondary"
+            disabled={isLoading}
+            className={className}
         >
             {isLoading ? <LoadingSpinner /> : <ReloadIcon />}
         </Button>

@@ -1,13 +1,14 @@
 import { Table } from '@tanstack/react-table'
 
 import {
-    DropdownMenuCheckboxItem,
-    DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuGroup,
     DropdownMenuSeparator,
+    DropdownMenuCheckboxItem,
 } from '@/components/ui/dropdown-menu'
 import { EyeIcon } from '@/components/icons'
+import { useCallback } from 'react'
 
 interface DataTableViewOptionsProps<TData> {
     table: Table<TData>
@@ -16,25 +17,27 @@ interface DataTableViewOptionsProps<TData> {
 const ColumnVisibilityOption = <TData,>({
     table,
 }: DataTableViewOptionsProps<TData>) => {
+    const allColumns = table.getAllColumns()
+
+    const hiddenColumnsLength = allColumns.filter(
+        (col) => !col.getIsVisible()
+    ).length
+
+    const onShowAllColumns = useCallback(() => {
+        table.getAllColumns().forEach((col) => col.toggleVisibility(true))
+    }, [table])
+
     return (
         <DropdownMenuGroup>
             <DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            {table.getAllColumns().filter((col) => !col.getIsVisible()).length >
-                0 && (
-                <DropdownMenuItem
-                    onClick={() =>
-                        table
-                            .getAllColumns()
-                            .forEach((col) => col.toggleVisibility(true))
-                    }
-                >
+            {hiddenColumnsLength > 0 && (
+                <DropdownMenuItem onClick={onShowAllColumns}>
                     <EyeIcon className="mr-2" />
                     Show All
                 </DropdownMenuItem>
             )}
-            {table
-                .getAllColumns()
+            {allColumns
                 .filter(
                     (column) =>
                         typeof column.accessorFn !== 'undefined' &&

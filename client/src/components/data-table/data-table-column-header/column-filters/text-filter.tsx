@@ -49,13 +49,13 @@ const TextFilter = () => {
                 type="text"
                 value={value}
                 className="w-full"
+                placeholder="value"
                 onChange={(inpt) => setValue(inpt.target.value)}
-                placeholder={`value`}
             />
             <Button
                 size="sm"
-                variant="secondary"
                 className="w-full"
+                variant="secondary"
                 onClick={() => clearFilter()}
             >
                 Clear Filter

@@ -80,3 +80,37 @@ export const getFileType = (file: File): FileCategory => {
 
     return 'unknown'
 }
+
+export const isDate = (value: unknown): boolean => {
+    return value instanceof Date && value !== null && value !== undefined
+}
+
+export const isNumber = (value: unknown): boolean => {
+    return (
+        typeof value === 'number' &&
+        !isNaN(value) &&
+        value !== null &&
+        value !== undefined
+    )
+}
+
+export const isObject = (value: unknown): boolean => {
+    return typeof value === 'object' && value !== null && value !== undefined
+}
+
+export const isString = (value: unknown): boolean => {
+    return (
+        typeof value === 'string' &&
+        value !== '' &&
+        value !== null &&
+        value !== undefined
+    )
+}
+
+export const isArray = (value: unknown): boolean => {
+    return Array.isArray(value) && value !== null && value !== undefined
+}
+
+export const isBoolean = (value: unknown): boolean => {
+    return typeof value === 'boolean' && value !== null && value !== undefined
+}

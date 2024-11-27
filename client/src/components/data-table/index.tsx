@@ -210,7 +210,7 @@ const DataTable = <TData,>({
                                 targetGroup="left"
                                 rowClassName={rowClassName}
                                 rows={table.getRowModel().rows}
-                            />{' '}
+                            />
                             <DataTableFooter
                                 table={table}
                                 isStickyFooter={isStickyFooter && isScrollable}

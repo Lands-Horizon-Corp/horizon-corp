@@ -11,6 +11,7 @@ import InputDatePicker from '@/components/input-date-picker'
 import DateRange from './date-range'
 import { useColumnFilterState } from './column-filter-state-context'
 import { filterModeMap, TFilterModes } from '../../data-table-filter-context'
+import { isDate } from '@/helpers'
 
 const DateFilter = () => {
     const {
@@ -54,7 +55,7 @@ const DateFilter = () => {
                 <InputDatePicker
                     id="date-picker-input"
                     captionLayout="dropdown"
-                    value={value instanceof Date ? value : undefined}
+                    value={isDate(value) ? value : undefined}
                     onChange={(newDate) => {
                         if (!newDate) return
                         setValue(newDate)
@@ -62,7 +63,7 @@ const DateFilter = () => {
                 />
             ) : (
                 <DateRange
-                    value={rangeValue as any}
+                    value={rangeValue as unknown as DateRange}
                     onChange={(val) => setRangeValue(val)}
                 />
             )}

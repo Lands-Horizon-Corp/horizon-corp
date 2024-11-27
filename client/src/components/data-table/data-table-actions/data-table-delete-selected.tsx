@@ -10,6 +10,7 @@ import useConfirmModalStore from '@/store/confirm-modal-store'
 
 interface Props<T> {
     table: Table<T>
+    disabled?: boolean
     isLoading?: boolean
     canDelete?: boolean
     onClick: (selectedRows: T[]) => void
@@ -17,9 +18,10 @@ interface Props<T> {
 
 const DataTableDeleteSelected = <T,>({
     table,
+    disabled,
     isLoading,
-    onClick,
     canDelete = false,
+    onClick,
 }: Props<T>) => {
     const { onOpen } = useConfirmModalStore()
 
@@ -27,9 +29,11 @@ const DataTableDeleteSelected = <T,>({
         .getSelectedRowModel()
         .flatRows.map((row) => row.original)
 
+    const isDisabled = !canDelete || selectedRows.length === 0 || disabled
+
     return (
         <Button
-            disabled={isLoading || !canDelete || selectedRows.length === 0}
+            disabled={isLoading || isDisabled}
             onClick={() =>
                 onOpen({
                     title: 'Delete Selected',
@@ -42,7 +46,7 @@ const DataTableDeleteSelected = <T,>({
             variant="secondary"
             className={cn(
                 'relative',
-                !(isLoading || !canDelete || selectedRows.length === 0) &&
+                !(isLoading || isDisabled) &&
                     'text-rose-400/80 hover:text-rose-400'
             )}
         >

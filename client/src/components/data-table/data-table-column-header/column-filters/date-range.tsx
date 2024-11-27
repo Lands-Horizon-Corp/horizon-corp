@@ -1,23 +1,37 @@
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
+import { CaptionLayout, type DateRange } from 'react-day-picker'
 
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import { Calendar } from '@/components/ui/calendar'
+
 import { cn } from '@/lib/utils'
-import { CaptionLayout, type DateRange } from 'react-day-picker'
+import { isDate, isObject } from '@/helpers'
 
 type DateRangePicker = {
-    value: DateRange
-    disabled?: (date: Date) => boolean
-    captionLayout?: CaptionLayout
-    fromYear?: number
     toYear?: number
+    value: DateRange
+    fromYear?: number
+    captionLayout?: CaptionLayout
+    disabled?: (date: Date) => boolean
     onChange: (range: { from: Date; to?: Date }) => void
+}
+
+const isRange = (value: unknown): value is Range => {
+    if (!isObject(value)) {
+        return false
+    }
+
+    const { from, to } = value as { from?: unknown; to?: unknown }
+
+    return (
+        (from === undefined || isDate(from)) && (to === undefined || isDate(to))
+    )
 }
 
 const DateRange = ({
@@ -60,14 +74,7 @@ const DateRange = ({
                     selected={value}
                     fromYear={fromYear}
                     onSelect={(range) => {
-                        if (
-                            !range ||
-                            !(range.from instanceof Date) ||
-                            (range.to !== undefined &&
-                                !(range.to instanceof Date))
-                        )
-                            return
-
+                        if (!range?.from || !isRange(range)) return
                         onChange({ from: range.from, to: range.to })
                     }}
                     disabled={disabled}

@@ -59,7 +59,6 @@ const ColumnActions = <TData, TValue>({
             >
                 {children && (
                     <>
-                        {' '}
                         {children} <DropdownMenuSeparator />
                     </>
                 )}

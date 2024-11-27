@@ -13,7 +13,10 @@ const NumberRange = ({ value, onChange }: Props) => {
                 className="min-w-40"
                 value={value.from ?? ''}
                 onChange={(inpt) =>
-                    onChange({ ...value, from: inpt.target.value as any })
+                    onChange({
+                        ...value,
+                        from: inpt.target.value as unknown as number,
+                    })
                 }
                 placeholder="Min"
             />
@@ -22,7 +25,10 @@ const NumberRange = ({ value, onChange }: Props) => {
                 className="min-w-40"
                 value={value.to ?? ''}
                 onChange={(inpt) =>
-                    onChange({ ...value, to: inpt.target.value as any })
+                    onChange({
+                        ...value,
+                        to: inpt.target.value as unknown as number,
+                    })
                 }
                 placeholder="Max"
             />

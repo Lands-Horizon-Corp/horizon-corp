@@ -24,12 +24,12 @@ interface DataTablePaginationProps<TData> {
     hideSelectedIndicator?: boolean
 }
 
-export default function DataTablePagination<TData>({
+const DataTablePagination = <TData,>({
     table,
     className,
     pageSizes = PAGE_SIZES_DENSE,
     hideSelectedIndicator = false,
-}: DataTablePaginationProps<TData>) {
+}: DataTablePaginationProps<TData>) => {
     return (
         <div
             className={cn(
@@ -120,3 +120,5 @@ export default function DataTablePagination<TData>({
         </div>
     )
 }
+
+export default DataTablePagination

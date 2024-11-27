@@ -21,7 +21,7 @@ interface DataTableColumnHeaderProps<TData, TValue>
     dataType?: TColumnDataTypes
 }
 
-export function DataTableColumnHeader<TData, TValue>({
+const DataTableColumnHeader = <TData, TValue>({
     title,
     table,
     header,
@@ -29,7 +29,7 @@ export function DataTableColumnHeader<TData, TValue>({
     className,
     isResizable,
     tooltipDescription,
-}: DataTableColumnHeaderProps<TData, TValue>) {
+}: DataTableColumnHeaderProps<TData, TValue>) => {
     const { attributes, isDragging, listeners, setNodeRef, transform } =
         useSortable({
             id: header.column.id,
@@ -83,3 +83,5 @@ export function DataTableColumnHeader<TData, TValue>({
         </div>
     )
 }
+
+export default DataTableColumnHeader
