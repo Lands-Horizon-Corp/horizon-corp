@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { FilterObject, TSearchFilter } from '../data-table-filter-context'
+import { FilterObject, TSearchFilter } from '../data-table-filters/data-table-filter-context'
 
 const useDatableFilterState = () => {
     const [filters, setFilters] = useState<FilterObject>({})
 
-    const setFilter = (field: string, filter: TSearchFilter) => {
+    const setFilter = (field: string, filter?: TSearchFilter) => {
         setFilters((prev) => ({ ...prev, [field]: filter }))
     }
 

@@ -5,10 +5,10 @@ import { Column, Header, Table } from '@tanstack/react-table'
 
 import { Button } from '@/components/ui/button'
 import ColumnResizeHandle from './column-drag-resize'
+import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib/utils'
-import { TColumnDataTypes } from '../data-table-filter-context'
-import ActionTooltip from '@/components/action-tooltip'
+import { TColumnDataTypes } from '../data-table-filters/data-table-filter-context'
 
 interface DataTableColumnHeaderProps<TData, TValue>
     extends React.HTMLAttributes<HTMLDivElement> {

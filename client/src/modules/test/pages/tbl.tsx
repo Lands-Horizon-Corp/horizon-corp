@@ -11,7 +11,7 @@ import DataTable from '@/components/data-table'
 import { Checkbox } from '@/components/ui/checkbox'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 import DataTableExportButton from '@/components/data-table/data-table-actions/data-table-export-button'
-import DataTableFilterContext from '@/components/data-table/data-table-filter-context'
+import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import { PushPinSlashIcon } from '@/components/icons'
@@ -21,14 +21,13 @@ import DataTableRefreshButton from '@/components/data-table/data-table-actions/d
 import DataTableActiveFilters from '@/components/data-table/data-table-actions/data-table-active-filters'
 import DataTableDeleteSelected from '@/components/data-table/data-table-actions/data-table-delete-selected'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
-import { ColumnFilterProvider } from '@/components/data-table/data-table-column-header/column-filters/column-filter-state-context'
-import TextFilter from '@/components/data-table/data-table-column-header/column-filters/text-filter'
-import NumberFilter from '@/components/data-table/data-table-column-header/column-filters/number-filter'
-import DateFilter from '@/components/data-table/data-table-column-header/column-filters/date-filter'
-import MultiSelectFilter from '@/components/data-table/data-table-column-header/column-filters/multi-select-filter'
+import MultiSelectFilter from '@/components/data-table/data-table-filters/multi-select-filter'
 import DataTableOptionsMenu from '@/components/data-table/data-table-actions/data-table-options-menu'
 import { Separator } from '@/components/ui/separator'
 import DataTableFooterSummation from '@/components/data-table/data-table-footer-aggregations/data-table-footer-summation'
+import TextFilter from '@/components/data-table/data-table-filters/text-filter'
+import DateFilter from '@/components/data-table/data-table-filters/date-filter'
+import NumberFilter from '@/components/data-table/data-table-filters/number-filter'
 
 type TData = {
     name: string
@@ -77,7 +76,6 @@ const data = () => {
     })
 
     return mockData
-
 }
 
 const defaultColumns: ColumnDef<TData>[] = [
@@ -146,11 +144,9 @@ const defaultColumns: ColumnDef<TData>[] = [
                 title="Name"
                 dataType="text"
             >
-                <ColumnFilterProvider dataType="text" fieldName="name">
-                    <ColumnActions {...props}>
-                        <TextFilter />
-                    </ColumnActions>
-                </ColumnFilterProvider>
+                <ColumnActions {...props}>
+                    <TextFilter<TData> accessorKey={'name'} />
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
@@ -169,11 +165,9 @@ const defaultColumns: ColumnDef<TData>[] = [
                 tooltipDescription="Birth Date of the member"
                 {...props}
             >
-                <ColumnFilterProvider dataType="date" fieldName="bday">
-                    <ColumnActions {...props}>
-                        <DateFilter />
-                    </ColumnActions>
-                </ColumnFilterProvider>
+                <ColumnActions {...props}>
+                    <DateFilter<TData> accessorKey={'bday'} />
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
@@ -192,11 +186,9 @@ const defaultColumns: ColumnDef<TData>[] = [
                 tooltipDescription="Age of the member"
                 {...props}
             >
-                <ColumnFilterProvider dataType="number" fieldName="age">
-                    <ColumnActions {...props}>
-                        <NumberFilter />
-                    </ColumnActions>
-                </ColumnFilterProvider>
+                <ColumnActions {...props}>
+                    <NumberFilter<TData> accessorKey="age" />
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
@@ -216,26 +208,25 @@ const defaultColumns: ColumnDef<TData>[] = [
                 tooltipDescription="Gender of the user"
                 {...props}
             >
-                <ColumnFilterProvider dataType="enum" fieldName="gender">
-                    <ColumnActions {...props}>
-                        <MultiSelectFilter
-                            multiSelectOptions={[
-                                {
-                                    label: 'Male',
-                                    value: 'male',
-                                },
-                                {
-                                    label: 'Femal',
-                                    value: 'female',
-                                },
-                                {
-                                    label: 'Other',
-                                    value: 'other',
-                                },
-                            ]}
-                        />
-                    </ColumnActions>
-                </ColumnFilterProvider>
+                <ColumnActions {...props}>
+                    <MultiSelectFilter<TData>
+                        accessorKey={'gender'}
+                        multiSelectOptions={[
+                            {
+                                label: 'Male',
+                                value: 'male',
+                            },
+                            {
+                                label: 'Femal',
+                                value: 'female',
+                            },
+                            {
+                                label: 'Other',
+                                value: 'other',
+                            },
+                        ]}
+                    />
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
@@ -338,8 +329,8 @@ const Tbl = () => {
                         isStickyHeader
                         isStickyFooter
                         isScrollable={isScrollable}
-                        className="mb-2 max-h-96 flex-1"
                         setColumnOrder={setColumnOrder}
+                        className="mb-2 max-h-96 flex-1"
                     />
                 </div>
                 <DataTablePagination table={table} />

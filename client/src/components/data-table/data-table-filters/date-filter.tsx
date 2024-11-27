@@ -5,24 +5,30 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import DateRange from './date-range'
 import { Button } from '@/components/ui/button'
 import InputDatePicker from '@/components/input-date-picker'
 
-import DateRange from './date-range'
-import { useColumnFilterState } from './column-filter-state-context'
-import { filterModeMap, TFilterModes } from '../../data-table-filter-context'
 import { isDate } from '@/helpers'
+import {
+    filterModeMap,
+    TFilterModes,
+    TSearchFilter,
+    useDataTableFilter,
+} from './data-table-filter-context'
 
-const DateFilter = () => {
-    const {
-        filterState: { filterMode, value, rangeValue },
-        setValue,
-        clearFilter,
-        setFilterMode,
-        setRangeValue,
-    } = useColumnFilterState()
+const DateFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
+    const { filters, setFilter } = useDataTableFilter()
 
     const filterModeOptions = filterModeMap['date']
+
+    const filterVal: TSearchFilter = filters[accessorKey as string] ?? {
+        dataType: 'date',
+        mode: filterModeOptions[0].value,
+        value: undefined,
+        from: undefined,
+        to: undefined,
+    }
 
     return (
         <div
@@ -31,10 +37,13 @@ const DateFilter = () => {
         >
             <p className="text-sm">Filter</p>
             <Select
-                value={filterMode}
+                value={filterVal.mode}
                 onValueChange={(val) => {
                     const newFilterMode = val as TFilterModes
-                    setFilterMode(newFilterMode)
+                    setFilter(accessorKey as string, {
+                        ...filterVal,
+                        mode: newFilterMode,
+                    })
                 }}
             >
                 <SelectTrigger className="">
@@ -51,27 +60,43 @@ const DateFilter = () => {
                     ))}
                 </SelectContent>
             </Select>
-            {filterMode !== 'range' ? (
+            {filterVal.mode !== 'range' ? (
                 <InputDatePicker
                     id="date-picker-input"
                     captionLayout="dropdown"
-                    value={isDate(value) ? value : undefined}
+                    value={
+                        isDate(filterVal.value) ? filterVal.value : undefined
+                    }
                     onChange={(newDate) => {
                         if (!newDate) return
-                        setValue(newDate)
+                        setFilter(accessorKey as string, {
+                            ...filterVal,
+                            value: newDate,
+                        })
                     }}
                 />
             ) : (
                 <DateRange
-                    value={rangeValue as unknown as DateRange}
-                    onChange={(val) => setRangeValue(val)}
+                    value={
+                        {
+                            from: filterVal.from,
+                            to: filterVal.to,
+                        } as unknown as DateRange
+                    }
+                    onChange={(val) =>
+                        setFilter(accessorKey as string, {
+                            ...filterVal,
+                            from: val.from,
+                            to: val.to,
+                        })
+                    }
                 />
             )}
             <Button
                 size="sm"
                 className="w-full"
                 variant="secondary"
-                onClick={() => clearFilter()}
+                onClick={() => setFilter(accessorKey as string)}
             >
                 Clear Filter
             </Button>

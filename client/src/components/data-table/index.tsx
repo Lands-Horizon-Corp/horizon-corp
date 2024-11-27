@@ -30,7 +30,7 @@ interface Props<TData> extends IBaseCompNoChild {
     setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-const DataTable = memo(<TData,>({
+const DataTable = <TData,>({
     table,
     className,
     rowClassName,
@@ -271,6 +271,6 @@ const DataTable = memo(<TData,>({
             </div>
         </DndContext>
     )
-})
+}
 
 export default DataTable

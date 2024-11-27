@@ -69,7 +69,7 @@ export type FilterObject = {
 
 interface DataTableFilterContextType {
     filters: FilterObject
-    setFilter: (field: string, filter: TSearchFilter) => void
+    setFilter: (field: string, filter? : TSearchFilter) => void
     removeFilter: (field: string) => void
     resetFilter: () => void
 }

@@ -1,4 +1,4 @@
-import { Input } from '@/components/ui/input'
+import { DebouncedInput } from '@/components/ui/debounced-input'
 
 interface Props {
     value: { from?: number; to?: number }
@@ -8,26 +8,26 @@ interface Props {
 const NumberRange = ({ value, onChange }: Props) => {
     return (
         <div className="flex items-center gap-x-1">
-            <Input
+            <DebouncedInput
                 type="number"
-                className="min-w-40"
+                className="max-w-32"
                 value={value.from ?? ''}
                 onChange={(inpt) =>
                     onChange({
                         ...value,
-                        from: inpt.target.value as unknown as number,
+                        from: inpt as number,
                     })
                 }
                 placeholder="Min"
             />
-            <Input
+            <DebouncedInput
                 type="number"
-                className="min-w-40"
+                className="max-w-32"
                 value={value.to ?? ''}
                 onChange={(inpt) =>
                     onChange({
                         ...value,
-                        to: inpt.target.value as unknown as number,
+                        to: inpt as number,
                     })
                 }
                 placeholder="Max"

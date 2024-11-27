@@ -5,19 +5,26 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-import { useColumnFilterState } from './column-filter-state-context'
-import { filterModeMap, TFilterModes } from '../../data-table-filter-context'
+import {
+    filterModeMap,
+    TFilterModes,
+    TSearchFilter,
+    useDataTableFilter,
+} from './data-table-filter-context'
+import { DebouncedInput } from '@/components/ui/debounced-input'
 
-const TextFilter = () => {
-    const {
-        filterState: { filterMode, value },
-        setValue,
-        clearFilter,
-        setFilterMode,
-    } = useColumnFilterState()
+const TextFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
+    const { filters, setFilter } = useDataTableFilter()
+
+    const filterVal: TSearchFilter = filters[accessorKey as string] ?? {
+        dataType: 'text',
+        mode: 'equal',
+        value: '',
+        from: undefined,
+        to: undefined,
+    }
 
     const filterModeOptions = filterModeMap['text']
 
@@ -25,10 +32,13 @@ const TextFilter = () => {
         <div onKeyDown={(e) => e.stopPropagation()} className="space-y-2 p-1">
             <p className="text-sm">Filter</p>
             <Select
-                value={filterMode}
+                value={filterVal?.mode}
                 onValueChange={(val) => {
                     const newFilterMode = val as TFilterModes
-                    setFilterMode(newFilterMode)
+                    setFilter(accessorKey as string, {
+                        ...filterVal,
+                        mode: newFilterMode,
+                    })
                 }}
             >
                 <SelectTrigger className="">
@@ -45,18 +55,24 @@ const TextFilter = () => {
                     ))}
                 </SelectContent>
             </Select>
-            <Input
+            <DebouncedInput
                 type="text"
-                value={value}
                 className="w-full"
                 placeholder="value"
-                onChange={(inpt) => setValue(inpt.target.value)}
+                debounceTime={500}
+                value={filterVal.value}
+                onChange={(inpt: number) =>
+                    setFilter(accessorKey as string, {
+                        ...filterVal,
+                        value: inpt,
+                    })
+                }
             />
             <Button
                 size="sm"
                 className="w-full"
                 variant="secondary"
-                onClick={() => clearFilter()}
+                onClick={() => setFilter(accessorKey as string)}
             >
                 Clear Filter
             </Button>

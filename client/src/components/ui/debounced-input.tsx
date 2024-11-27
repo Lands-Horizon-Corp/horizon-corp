@@ -1,47 +1,56 @@
-import * as React from 'react'
-import { Input, InputProps } from './input'
-import useDebounce from '@/hooks/use-debounce'
+import { useState, useEffect } from 'react'
 
-export interface DebouncedInputProps<
-    T extends string | number | readonly string[] | undefined,
-> extends Omit<InputProps, 'value' | 'onChange'> {
+import { Input, InputProps } from './input'
+
+interface DebouncedInputProps<T>
+    extends Omit<InputProps, 'value' | 'onChange'> {
     value: T
     onChange: (value: T) => void
     debounceTime?: number
 }
 
-const DebouncedInput = React.forwardRef<
-    HTMLInputElement,
-    DebouncedInputProps<any>
->(
-    <T extends string | number | readonly string[] | undefined>(
-        {
-            value,
-            onChange,
-            debounceTime = 300,
-            ...props
-        }: DebouncedInputProps<T>,
-        ref: React.Ref<HTMLInputElement>
-    ) => {
-        const [localValue, setLocalValue] = React.useState<T>(value)
+const DebouncedInput = <T,>({
+    value: initialValue,
+    onChange,
+    debounceTime = 300,
+    ...props
+}: DebouncedInputProps<T>) => {
+    const [internalValue, setInternalValue] = useState<T>(initialValue)
 
-        const debouncedValue = useDebounce(localValue, debounceTime)
+    useEffect(() => {
+        if (initialValue !== internalValue) {
+            setInternalValue(initialValue)
+        }
+    }, [initialValue, setInternalValue])
 
-        React.useEffect(() => {
-            onChange(debouncedValue)
-        }, [debouncedValue, onChange])
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            if (internalValue !== initialValue) {
+                onChange(internalValue)
+            }
+        }, debounceTime)
 
-        return (
-            <Input
-                ref={ref}
-                value={localValue}
-                onChange={(e) => setLocalValue(e.target.value as T)}
-                {...props}
-            />
-        )
+        return () => clearTimeout(handler)
+    }, [internalValue, debounceTime, initialValue, onChange])
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        let newValue: T = e.target.value as unknown as T
+
+        if (props.type === 'number') {
+            newValue =
+                e.target.value === '' ? ('' as T) : (+e.target.value as T)
+        }
+
+        setInternalValue(newValue)
     }
-)
 
-DebouncedInput.displayName = 'DebouncedInput'
+    return (
+        <Input
+            {...props}
+            value={internalValue as unknown as string}
+            onChange={handleInputChange}
+        />
+    )
+}
 
 export { DebouncedInput }

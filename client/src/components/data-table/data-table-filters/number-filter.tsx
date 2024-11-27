@@ -5,32 +5,44 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { DebouncedInput } from '@/components/ui/debounced-input'
 
+import {
+    filterModeMap,
+    TFilterModes,
+    TSearchFilter,
+    useDataTableFilter,
+} from './data-table-filter-context'
 import NumberRange from './number-range'
-import { useColumnFilterState } from './column-filter-state-context'
-import { filterModeMap, TFilterModes } from '../../data-table-filter-context'
 
-const NumberFilter = () => {
-    const {
-        filterState: { filterMode, value, rangeValue },
-        setValue,
-        clearFilter,
-        setFilterMode,
-        setRangeValue,
-    } = useColumnFilterState()
-
+const NumberFilter = <TData,>({
+    accessorKey,
+}: {
+    accessorKey: keyof TData
+}) => {
     const filterModeOptions = filterModeMap['number']
+    const { filters, setFilter } = useDataTableFilter()
+
+    const filterVal: TSearchFilter = filters[accessorKey as string] ?? {
+        dataType: 'number',
+        mode: filterModeOptions[0].value,
+        value: '',
+        from: undefined,
+        to: undefined,
+    }
 
     return (
         <div onKeyDown={(e) => e.stopPropagation()} className="space-y-2 p-1">
             <p className="text-sm">Filter</p>
             <Select
-                value={filterMode}
+                value={filterVal.mode}
                 onValueChange={(val) => {
                     const newFilterMode = val as TFilterModes
-                    setFilterMode(newFilterMode)
+                    setFilter(accessorKey as string, {
+                        ...filterVal,
+                        mode: newFilterMode,
+                    })
                 }}
             >
                 <SelectTrigger className="">
@@ -47,18 +59,28 @@ const NumberFilter = () => {
                     ))}
                 </SelectContent>
             </Select>
-            {filterMode !== 'range' ? (
-                <Input
+            {filterVal.mode !== 'range' ? (
+                <DebouncedInput
                     type="number"
-                    value={value}
+                    value={filterVal.value}
                     className="w-full"
-                    onChange={(inpt) => setValue(inpt.target.value)}
+                    onChange={(inpt) => 
+                        setFilter(accessorKey as string, {
+                            ...filterVal,
+                            value: inpt as number,
+                        })
+                    }
                     placeholder={`value`}
                 />
             ) : (
                 <NumberRange
-                    value={rangeValue}
-                    onChange={(val) => setRangeValue(val)}
+                    value={{ from: filterVal.from, to: filterVal.to }}
+                    onChange={(val) =>
+                        setFilter(accessorKey as string, {
+                            ...filterVal,
+                            ...val,
+                        })
+                    }
                 />
             )}
 
@@ -66,7 +88,7 @@ const NumberFilter = () => {
                 size="sm"
                 className="w-full"
                 variant="secondary"
-                onClick={() => clearFilter()}
+                onClick={() => setFilter(accessorKey as string)}
             >
                 Clear Filter
             </Button>

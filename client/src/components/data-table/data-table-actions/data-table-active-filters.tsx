@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import FilterChip from '@/components/filter-chip'
 import { TrashBinIcon } from '@/components/icons'
@@ -8,7 +7,7 @@ import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { useDataTableFilter } from '../data-table-filter-context'
+import { useDataTableFilter } from '../data-table-filters/data-table-filter-context'
 
 const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
     const { filters, resetFilter, removeFilter } = useDataTableFilter()
@@ -32,9 +31,6 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
         <div className={cn('flex max-w-full items-center gap-x-2', className)}>
             <span className="inline-flex items-center">
                 Filters
-                <Badge variant="secondary" className="ml-1 size-fit text-xs">
-                    {mappedFilters.length}
-                </Badge>
             </span>
             <div className="ecoop-scroll flex flex-wrap items-center gap-x-2 gap-y-1">
                 <ActionTooltip tooltipContent="Remove All Filters">
