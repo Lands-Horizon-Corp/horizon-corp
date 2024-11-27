@@ -15,7 +15,7 @@ import Toolbar from '../text-editor/toolbar'
 import ReactDOMServer from 'react-dom/server'
 import { Button } from '../ui/button'
 import { FaTable } from 'react-icons/fa'
-import { Ghost, Table2 } from 'lucide-react'
+import { Ghost, SplitIcon, Table2 } from 'lucide-react'
 import StarterKit from '@tiptap/starter-kit'
 import insertColumnRight from '@/assets/svg/insertColumnRight.svg'
 import insertColumnLeft from '@/assets/svg/insertColumnLeft.svg'
@@ -47,6 +47,13 @@ import {
     TextAlignRightIcon,
 } from '../icons'
 import { cn } from '@/lib'
+
+import { CgBorderLeft } from 'react-icons/cg'
+import { CgBorderRight } from 'react-icons/cg'
+import { CgBorderBottom } from 'react-icons/cg'
+import { CgBorderTop } from 'react-icons/cg'
+import { CgBorderAll } from 'react-icons/cg'
+import { MdOutlineBorderClear } from 'react-icons/md'
 
 const headers = ['Id', 'Name', 'Bday', 'Age', 'Gender']
 const Person: any[] = []
@@ -142,6 +149,14 @@ const TableTools = ({
     const tableInputClass =
         'rounded-[10px] border border-[#4D4C4C]/20 bg-white/50 dark:bg-secondary/70 focus:border-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 placeholder:text-[#838383]'
 
+    const toggleBorder = (side: string, style: string) => {
+        const currentBorder = editor.getAttributes('tableCell')[side]
+        editor.commands.setCellAttribute(
+            side,
+            currentBorder === style ? null : style
+        )
+    }
+
     return (
         <>
             <DropdownMenu>
@@ -188,6 +203,129 @@ const TableTools = ({
                                     ></Input>
                                 </div>
                                 <Button onClick={insertTable}>create</Button>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                    </DropdownMenuSub>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                            <FaTable size={19} className="mr-2" /> Border
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                            <DropdownMenuSubContent className="grid grid-cols-2">
+                                <Button
+                                    className={cn('justify-start')}
+                                    variant={'ghost'}
+                                    onClick={() => {
+                                        editor.commands.setCellAttribute(
+                                            'borderLeft',
+                                            '1px solid black'
+                                        )
+                                        editor.commands.setCellAttribute(
+                                            'borderRight',
+                                            '1px solid black'
+                                        )
+                                        editor.commands.setCellAttribute(
+                                            'borderTop',
+                                            '1px solid black'
+                                        )
+                                        editor.commands.setCellAttribute(
+                                            'borderBottom',
+                                            '1px solid black'
+                                        )
+                                    }}
+                                >
+                                    <CgBorderAll size={24} className="mr-2" />
+                                    border all
+                                </Button>
+                                <Button
+                                    variant={'ghost'}
+                                    className={cn('justify-start')}
+                                    onClick={() => {
+                                        // Remove all borders from the selected cell
+                                        editor.commands.setCellAttribute(
+                                            'borderLeft',
+                                            null
+                                        )
+                                        editor.commands.setCellAttribute(
+                                            'borderRight',
+                                            null
+                                        )
+                                        editor.commands.setCellAttribute(
+                                            'borderTop',
+                                            null
+                                        )
+                                        editor.commands.setCellAttribute(
+                                            'borderBottom',
+                                            null
+                                        )
+                                    }}
+                                >
+                                    <MdOutlineBorderClear
+                                        size={18}
+                                        className="mr-2"
+                                    />
+                                    Unborder all
+                                </Button>
+                                <Button
+                                    variant={'ghost'}
+                                    size={'sm'}
+                                    className={cn('justify-start')}
+                                    onClick={() =>
+                                        toggleBorder(
+                                            'borderLeft',
+                                            '1px solid black'
+                                        )
+                                    }
+                                >
+                                    <CgBorderLeft size={24} className="mr-2" />
+                                    border left
+                                </Button>
+                                <Button
+                                    size={'sm'}
+                                    variant={'ghost'}
+                                    className={cn('justify-start')}
+                                    onClick={() =>
+                                        toggleBorder(
+                                            'borderRight',
+                                            '1px solid black'
+                                        )
+                                    }
+                                >
+                                    <CgBorderRight size={24} className="mr-2" />
+                                    border Right
+                                </Button>
+                                <Button
+                                    size={'sm'}
+                                    variant={'ghost'}
+                                    className={cn('justify-start')}
+                                    onClick={() =>
+                                        toggleBorder(
+                                            'borderTop',
+                                            '1px solid black'
+                                        )
+                                    }
+                                >
+                                    <CgBorderTop size={24} className="mr-2" />
+                                    border Top
+                                </Button>
+                                <Button
+                                    size={'sm'}
+                                    variant={'ghost'}
+                                    className={cn('justify-start')}
+                                    onClick={() =>
+                                        toggleBorder(
+                                            'borderBottom',
+                                            '1px solid black'
+                                        )
+                                    }
+                                >
+                                    <CgBorderBottom
+                                        size={24}
+                                        className="mr-2"
+                                    />
+                                    border Bottom
+                                </Button>
                             </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
@@ -253,6 +391,52 @@ const TableTools = ({
                     >
                         <RxTrashIcon size={20} className="mr-2" />
                         Delete Table
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => editor.chain().focus().splitCell().run()}
+                    >
+                        <SplitIcon size={18} className="mr-2" />
+                        Split Cells
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => {
+                            const currentColor =
+                                editor.getAttributes(
+                                    'tableCell'
+                                ).backgroundColor
+                            editor.commands.setCellAttribute(
+                                'backgroundColor',
+                                currentColor === 'yellow' ? null : 'yellow'
+                            )
+                        }}
+                    >
+                        Toggle Highlight
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() =>
+                            editor.chain().focus().toggleHeaderColumn().run()
+                        }
+                    >
+                        Toggle header Column
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() =>
+                            editor.chain().focus().toggleHeaderCell().run()
+                        }
+                    >
+                        Toggle Header Cell
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() =>
+                            editor.chain().focus().mergeOrSplit().run()
+                        }
+                    >
+                        Merge Or Split
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => editor.chain().focus().fixTables().run()}
+                    >
+                        Fix Tables
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -363,49 +547,6 @@ const TableToolbar = ({ editor }: TableToolBarProps) => {
                     />
                 </>
             )}
-            {/* <Button onClick={testEditor}>test</Button> */}
-
-            {/*
-            <Button onClick={() => editor.chain().focus().mergeCells().run()}>
-                <MergeIcon className="mr-2" /> Merge Cells
-            </Button>
-            <Button onClick={() => editor.chain().focus().splitCell().run()}>
-                <SplitIcon className="mr-2" /> Split Cells
-            </Button>
-            <Button
-                onClick={() =>
-                    editor.chain().focus().toggleHeaderColumn().run()
-                }
-            >
-                Toggle Header Column
-            </Button>
-           
-            <Button
-                onClick={() => editor.chain().focus().toggleHeaderCell().run()}
-            >
-                Toggle Header Cell
-            </Button>
-            <Button onClick={() => editor.chain().focus().mergeOrSplit().run()}>
-                Merge Or Split
-            </Button>
-            <Button
-                onClick={() =>
-                    editor.chain().focus().setCellAttribute('colspan', 2).run()
-                }
-            >
-                Set Cell Attribute
-            </Button>
-            <Button onClick={() => editor.chain().focus().fixTables().run()}>
-                Fix Tables
-            </Button>
-            <Button onClick={() => editor.chain().focus().goToNextCell().run()}>
-                Go To Next Cell
-            </Button>
-            <Button
-                onClick={() => editor.chain().focus().goToPreviousCell().run()}
-            >
-                Go To Previous Cell
-            </Button> */}
         </div>
     )
 }
@@ -413,20 +554,103 @@ const TableToolbar = ({ editor }: TableToolBarProps) => {
 const CustomTable = Table.extend({
     addAttributes() {
         return {
-            ...this.parent?.(), // Keep existing attributes
+            // ...this.parent?.(), // Keep existing attributes
             class: {
                 default: 'table',
+                parseHTML: (element) =>
+                    element.getAttribute('class') || 'table',
+                renderHTML: (attributes) => {
+                    return {
+                        class: attributes.class,
+                    }
+                },
             },
         }
     },
 })
 
-export default () => {
+const CustomTableCell = TableCell.extend({
+    addAttributes() {
+        return {
+            ...this.parent?.(),
+            backgroundColor: {
+                default: null,
+                parseHTML: (element) => element.style.backgroundColor || null,
+                renderHTML: (attributes) => {
+                    console.log('attributes', attributes)
+                    if (!attributes.backgroundColor) {
+                        return {}
+                    }
+                    return {
+                        style: `background-color: ${attributes.backgroundColor};`,
+                    }
+                },
+            },
+            borderLeft: {
+                default: null,
+                parseHTML: (element) => element.style.borderLeft || null,
+                renderHTML: (attributes) => {
+                    if (!attributes.borderLeft) {
+                        return {}
+                    }
+                    return {
+                        style: `border-left: ${attributes.borderLeft};`,
+                    }
+                },
+            },
+            borderRight: {
+                default: null,
+                parseHTML: (element) => element.style.borderRight || null,
+                renderHTML: (attributes) => {
+                    if (!attributes.borderRight) {
+                        return {}
+                    }
+                    return {
+                        style: `border-right: ${attributes.borderRight};`,
+                    }
+                },
+            },
+            borderTop: {
+                default: null,
+                parseHTML: (element) => element.style.borderTop || null,
+                renderHTML: (attributes) => {
+                    if (!attributes.borderTop) {
+                        return {}
+                    }
+                    return {
+                        style: `border-top: ${attributes.borderTop};`,
+                    }
+                },
+            },
+            borderBottom: {
+                default: null,
+                parseHTML: (element) => element.style.borderBottom || null,
+                renderHTML: (attributes) => {
+                    if (!attributes.borderBottom) {
+                        return {}
+                    }
+                    return {
+                        style: `border-bottom: ${attributes.borderBottom};`,
+                    }
+                },
+            },
+        }
+    },
+})
 
-    const [pages, setPages] = useState<string[]>(['<p>Start typing...</p>']);
-    const pageHeight = 1056;
-    const editorRef = useRef<HTMLDivElement | null>(null);
-    const [currentPage, setCurrentPage] = useState<number>(0);
+type PageProps = {
+    htmlTemplate: string
+    style: string
+}
+
+export default () => {
+    const [pages, setPages] = useState<PageProps[]>([
+        { htmlTemplate: '<div></div>', style: '' },
+    ])
+    const pageHeight = 1056
+    const editorRef = useRef<HTMLDivElement | null>(null)
+    const [currentPage, setCurrentPage] = useState<number>(0)
+    const editorRefFocus = useRef<Array<HTMLDivElement | null>>([])
 
     const editor = useEditor({
         extensions: [
@@ -440,160 +664,216 @@ export default () => {
             Paragraph,
             Text,
             Gapcursor,
-            CustomTable,
+            CustomTable.configure({ resizable: true }),
             TableRow,
             TableHeader,
             TableCell,
+            CustomTableCell,
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
             }),
         ],
-        content: pages[currentPage],
+        content: pages[currentPage].htmlTemplate,
         onUpdate: ({ editor }) => {
-            // Update the content of the current page whenever it changes
-            const updatedContent = editor.getHTML();
+            const updatedContent = editor.getHTML()
+            // const getClass = editor.options.editorProps.attributes
+
             setPages((prevPages) => {
-              const updatedPages = [...prevPages];
-              updatedPages[currentPage] = updatedContent;
-              return updatedPages;
-            });
+                const updatedPages = [...prevPages]
+                updatedPages[currentPage].htmlTemplate = updatedContent
+                return updatedPages
+            })
         }, // Load the content of the active page
         editorProps: {
             attributes: {
                 class: `table-toolbar-custom !w-full dark:text-white `,
             },
         },
-        
+        autofocus: true,
+        parseOptions: {
+            preserveWhitespace: 'full',
+        },
     })
 
-
     const handlePageUpdate = () => {
-        const container = editorRef.current;
-    
-        if (!container || !editor) return;
-    
-        const children = Array.from(container.children);
-        let currentHeight = 0;
-        let currentPageContent: HTMLElement[] = [];
-        const newPages: string[] = [];
-    
+        const container = editorRef.current
+
+        if (!container || !editor) return
+
+        const children = Array.from(container.children) // All child elements of the editor container
+        let currentHeight = 0
+        let currentPageContent: HTMLElement[] = []
+        const newPages: PageProps[] = [] // Updated to use PageProps[]
+
+        console.log(children, 'children')
+
         children.forEach((child) => {
-          const element = child as HTMLElement;
-          const elementHeight = element.offsetHeight;
-    
-          if (currentHeight + elementHeight > pageHeight) {
-            // Save current page content and start a new page
-            newPages.push(currentPageContent.map((e) => e.outerHTML).join(''));
-            currentPageContent = [];
-            currentHeight = 0;
-          }
-    
-          currentPageContent.push(element);
-          currentHeight += elementHeight;
-        });
-    
+            const element = child as HTMLElement // Treat each child as an HTMLElement
+            const elementHeight = element.offsetHeight
+
+            if (currentHeight + elementHeight > pageHeight) {
+                // Save current page content and start a new page
+                newPages.push({
+                    htmlTemplate: currentPageContent
+                        .map((e) => e.outerHTML)
+                        .join(''),
+                    style: '', // Add custom styles if needed, or leave empty
+                })
+                currentPageContent = []
+                currentHeight = 0
+            }
+
+            currentPageContent.push(element)
+            currentHeight += elementHeight
+        })
+
         // Add the last page's content
         if (currentPageContent.length) {
-          newPages.push(currentPageContent.map((e) => e.outerHTML).join(''));
+            newPages.push({
+                htmlTemplate: currentPageContent
+                    .map((e) => e.outerHTML)
+                    .join(''),
+                style: '', // Add custom styles if needed
+            })
         }
-    
+
+        // Only update the state if the new pages are different from the current pages
         if (newPages.length !== pages.length) {
-          setPages(newPages);
+            setPages(newPages)
         }
-      };
-    
-      useEffect(() => {
-        if (editor) {
-          editor.on('update', handlePageUpdate);
+    }
+
+    useEffect(() => {
+        console.log(editor)
+
+        if (editor && pages) {
+            editor.on('update', handlePageUpdate)
         }
         return () => {
-          editor?.off('update', handlePageUpdate);
-        };
-      }, [editor]);
-    
-      if (!editor) {
-        return null;
-      }
-
-    const addPage = () => {
-        setPages((prevPages) => [...prevPages, '<p>New page content...</p>']);
-        setCurrentPage(pages.length); // Switch to the new page
-      };
-
-    const switchToPage = (index: number) => {
-        // Save the current page's content before switching
-        const updatedContent = editor?.getHTML();
-        if (updatedContent !== undefined) {
-          setPages((prevPages) => {
-            const updatedPages = [...prevPages];
-            updatedPages[currentPage] = updatedContent;
-            return updatedPages;
-          });
+            editor?.off('update', handlePageUpdate)
         }
-    
-        // Switch to the clicked page
-        setCurrentPage(index);
-        editor?.commands.setContent(pages[index]);
-      };
-    
-    // const testEditor = () => {
-    //     console.log(
-    //         editor?.commands.insertContent(generateTableHTML(headers, Person))
-    //     )
-    // }
+    }, [editor])
 
     if (!editor) {
         return null
     }
+    // const isObject = (value: unknown): value is { [name: string]: string } =>
+    //     value !== null && typeof value === 'object' && !('call' in value)
 
-    console.log(pages)
+    const addPage = () => {
+        // const newPageStyle = editor?.options?.editorProps?.attributes
+        // const getText = editor.getAttributes('text')
+
+        let newPage: PageProps = {
+            style: '',
+            htmlTemplate: '',
+        }
+        const newPageIndex = pages.length
+        newPage = {
+            style: '',
+            htmlTemplate: '',
+        }
+        setPages((prevPages) => [...prevPages, newPage])
+        setCurrentPage(newPageIndex)
+        setTimeout(() => {
+            handleScrollFocusView(newPageIndex)
+        }, 0)
+    }
+    // console.log(editor)
+
+    const switchToPage = (index: number) => {
+        const updatedContent = editor?.getHTML()
+
+        if (updatedContent !== undefined) {
+            setPages((prevPages) => {
+                const updatedPages = [...prevPages]
+                updatedPages[currentPage].htmlTemplate = updatedContent
+                return updatedPages
+            })
+            setCurrentPage(index)
+            editor?.commands.setContent(pages[index].htmlTemplate)
+        }
+    }
+
+    // focus on pages when page is added
+    const handleScrollFocusView = (pageIndex: number) => {
+        if (editorRefFocus.current[pageIndex]) {
+            editorRefFocus.current[pageIndex]?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            })
+        }
+    }
+
+    const insertTable = () => {
+        console.log(
+            editor?.commands.insertContent(generateTableHTML(headers, Person))
+        )
+    }
+    // console.log(pages)
+    if (!editor) {
+        return null
+    }
 
     return (
-        <div className="editor-wrapper">
-              <TableToolbar editor={editor} />
-              <Button
-          className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600"
-          onClick={addPage}
-        >
-          Add Page
-        </Button>
-        <div className='flex flex-col gap-2'>
-        {pages.map((content, index) => (
-          <div
-            key={index}
-            onClick={() => switchToPage(index)} // Switch page on click
-            className={`page w-[8.5in] h-[11in] mx-auto p-[1in] bg-white shadow-md rounded-lg overflow-hidden relative cursor-pointer ${
-              currentPage === index ? 'border-4 border-blue-500' : ''
-            }`}
-          >
-            {/* Display non-editable content if not the active page */}
-            {currentPage === index ? (
-              <EditorContent className='bg-white w-full h-full' editor={editor} />
-            ) : (
-              <div dangerouslySetInnerHTML={{ __html: content }} />
-            )}
-            <div className='absolute flex bottom-0 w-[80%] justify-center'><span className=''>{index}</span></div>
-          </div>
-        ))}
-        </div>
-      </div>
-    )
-
-    return (
-        <div className="mx-auto h-full w-[90%]">
-            <div className="w-full">
-                {/* <Button onClick={testEditor}>Add table</Button> */}
-              
+        <div className="editor-wrapper relative">
+            <div className="fixed z-50 w-full border bg-white">
+                <TableToolbar editor={editor} />
+                <Button
+                    className="rounded-md px-4 py-2 text-white shadow-md"
+                    onClick={addPage}
+                >
+                    Add Page
+                </Button>
+                <Button
+                    className="rounded-md px-4 py-2 text-white shadow-md"
+                    onClick={insertTable}
+                >
+                    insertTable
+                </Button>
             </div>
-            {/* <EditorContent
-                onContextMenu={(event) => {
-                    console.log('hello')
-                    event.preventDefault()
-                }}
-                className="w-full"
-                editor={editor}
-            /> */}
-          
+            <div className="absolute mt-16 flex w-full flex-col gap-10 overflow-auto bg-gray-100 py-10">
+                {pages.map((page, index) => {
+                    console.log(page.htmlTemplate)
+                    const isCurrentPage = currentPage === index
+                    // console.log('content', content)
+                    return (
+                        <div
+                            key={index}
+                            ref={(el) => (editorRefFocus.current[index] = el)}
+                            // Switch page on click
+                            onClick={() =>
+                                !isCurrentPage ? switchToPage(index) : ''
+                            }
+                            className={`page relative mx-auto h-[11in] w-[8.5in] cursor-pointer overflow-hidden rounded-lg bg-white p-[1in] shadow-md ${
+                                isCurrentPage
+                                    ? 'border-4 border-blue-500 shadow-md'
+                                    : ''
+                            }`}
+                        >
+                            {/* Display non-editable content if not the active page */}
+                            {isCurrentPage ? (
+                                <EditorContent
+                                    className="h-full w-full border-0 bg-white"
+                                    editor={editor}
+                                />
+                            ) : (
+                                <div
+                                    className="tiptap ProseMirror table-toolbar-custom !w-full dark:text-white"
+                                    dangerouslySetInnerHTML={{
+                                        __html: page.htmlTemplate,
+                                    }}
+                                />
+                            )}
+                            <div className="absolute bottom-5 right-5 flex justify-center">
+                                <span className="text-xs text-muted-foreground">
+                                    {index}
+                                </span>
+                            </div>
+                        </div>
+                    )
+                })}
+            </div>
         </div>
     )
 }

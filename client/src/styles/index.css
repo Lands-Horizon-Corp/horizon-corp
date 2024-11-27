@@ -229,7 +229,7 @@ body[data-scroll-locked] {
 }
 
 .table-toolbar-custom {
-    @apply prose p-5 w-screen max-w-full shadow-sm border h-full text-black font-sans focus:outline-none; 
+    @apply prose p-0 w-screen max-w-full  h-full text-black font-sans focus:outline-none; 
 }
 
 .table th p {
