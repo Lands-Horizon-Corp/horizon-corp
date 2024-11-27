@@ -1,4 +1,4 @@
-import React, {
+import {
     createContext,
     useContext,
     useState,
@@ -34,11 +34,15 @@ export const ColumnFilterContext = createContext<
     ColumnFilterContextType | undefined
 >(undefined)
 
-export const ColumnFilterProvider: React.FC<{
+export const ColumnFilterProvider = ({
+    children,
+    dataType,
+    fieldName,
+}: {
     children: ReactNode
     fieldName: string
     dataType: TColumnDataTypes
-}> = ({ children, dataType, fieldName }) => {
+}) => {
     const { filters, setFilter } = useDataTableFilter()
 
     const columnFilterValue = filters[fieldName]
@@ -61,17 +65,8 @@ export const ColumnFilterProvider: React.FC<{
     }
 
     useEffect(() => {
-        /*let*/ const colFilterVal = columnFilterValue
-        if (!colFilterVal) {
-            // colFilterVal = {
-            //     value: '',
-            //     mode: 'equal',
-            //     from: undefined,
-            //     to: undefined,
-            //     dataType: dataType,
-            // }
-            return
-        }
+        const colFilterVal = columnFilterValue
+        if (!colFilterVal) return
 
         setValue(colFilterVal.value)
         setFilterMode(colFilterVal.mode)
@@ -90,6 +85,25 @@ export const ColumnFilterProvider: React.FC<{
     useEffect(() => {
         setFilter(fieldName, finalFilter)
     }, [finalFilter, fieldName])
+
+    useEffect(() => {
+        const currentFilter = filters[fieldName]
+        if (!currentFilter) return
+
+        const {
+            value: mainValue,
+            from: mainFromValue,
+            to: mainToValue,
+        } = currentFilter
+
+        if (value !== mainValue) setValue(mainValue)
+        if (rangeValue.from !== mainFromValue || rangeValue.to !== mainToValue)
+            setRangeValue((prev) => ({
+                ...prev,
+                from: mainFromValue,
+                to: mainToValue,
+            }))
+    }, [fieldName, filters])
 
     return (
         <ColumnFilterContext.Provider

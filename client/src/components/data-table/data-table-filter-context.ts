@@ -58,13 +58,11 @@ export const filterModeMap: {
 export type TSearchFilter = {
     dataType: TColumnDataTypes
     value: any
-    mode: TFilterModes // here will the filterModes comes
-    // if mode is range, there will be fromValue and toValue
+    mode: TFilterModes
     from?: any
     to?: any
 }
 
-// Define a type for filters where any string key is allowed
 export type FilterObject = {
     [key: string]: TSearchFilter | undefined
 }

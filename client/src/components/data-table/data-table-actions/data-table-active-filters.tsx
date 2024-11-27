@@ -19,7 +19,11 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
                 field: key,
                 ...value,
             }))
-            .filter((filter) => filter.value || (filter.from && filter.to))
+            .filter((filter) => {
+                if (Array.isArray(filter.value) && filter.value.length === 0)
+                    return false
+                return filter.value || (filter.from && filter.to)
+            })
     }, [filters])
 
     if (mappedFilters.length <= 0) return null
