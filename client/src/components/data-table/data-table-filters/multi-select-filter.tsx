@@ -1,7 +1,4 @@
-import {
-    TSearchFilter,
-    useDataTableFilter,
-} from './data-table-filter-context'
+import { TSearchFilter, useDataTableFilter } from './data-table-filter-context'
 
 import MultiSelectFilter, {
     IMultiSelectOption,
@@ -26,7 +23,11 @@ const DataTableMultiSelectFilter = <TData,>({
 
     return (
         <MultiSelectFilter
-            value={filterVal.value}
+            value={
+                typeof filterVal.value === 'string'
+                    ? [filterVal.value]
+                    : filterVal.value
+            }
             multiSelectOptions={multiSelectOptions}
             setValues={(selected) =>
                 setFilter(accessorKey as string, {

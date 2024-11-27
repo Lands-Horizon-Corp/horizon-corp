@@ -10,7 +10,7 @@ import {
 } from '@dnd-kit/core'
 import { Table } from '@tanstack/react-table'
 import { arrayMove } from '@dnd-kit/sortable'
-import { memo, useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 
 import DataTableBody from './data-table-body'

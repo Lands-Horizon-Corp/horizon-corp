@@ -19,6 +19,7 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
                 ...value,
             }))
             .filter((filter) => {
+                if (filter.field === 'globalSearch') return false
                 if (Array.isArray(filter.value) && filter.value.length === 0)
                     return false
                 return filter.value || (filter.from && filter.to)
@@ -29,9 +30,7 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
 
     return (
         <div className={cn('flex max-w-full items-center gap-x-2', className)}>
-            <span className="inline-flex items-center">
-                Filters
-            </span>
+            <span className="inline-flex items-center">Filters</span>
             <div className="ecoop-scroll flex flex-wrap items-center gap-x-2 gap-y-1">
                 <ActionTooltip tooltipContent="Remove All Filters">
                     <Button

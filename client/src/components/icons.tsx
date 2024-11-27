@@ -12,6 +12,7 @@ import {
     GoTrash as TrashBinIcon,
     GoDotFill as DotBigIcon,
     GoArrowLeft as ArrowLeftIcon,
+    GoSearch as MagnifyingGlassIcon,
 } from 'react-icons/go'
 
 import {
@@ -272,6 +273,7 @@ export {
     AccountSettingIcon,
     FullscreenExitIcon,
     MessageOutlineIcon,
+    MagnifyingGlassIcon,
     HardDriveUploadIcon,
     ListBulletsBoldIcon,
     MixerHorizontalIcon,

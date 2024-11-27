@@ -28,6 +28,7 @@ import DataTableFooterSummation from '@/components/data-table/data-table-footer-
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
 import NumberFilter from '@/components/data-table/data-table-filters/number-filter'
+import DataTableGlobalSearch from '@/components/data-table/data-table-filters/data-table-global-search'
 
 type TData = {
     name: string
@@ -292,6 +293,10 @@ const Tbl = () => {
                 <div className="flex h-full flex-col gap-y-2">
                     <div className="flex w-full max-w-full items-center justify-between gap-x-2">
                         <div className="flex items-center gap-x-2">
+                            <DataTableGlobalSearch<TData>
+                                keysToSearch={['name', 'gender']}
+                                defaultMode="contains"
+                            />
                             <DataTableActiveFilters />
                         </div>
                         <div className="flex items-center gap-x-2">

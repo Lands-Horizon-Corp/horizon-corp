@@ -1,7 +1,11 @@
 import { useState } from 'react'
-import { FilterObject, TSearchFilter } from '../data-table-filters/data-table-filter-context'
+import {
+    FilterObject,
+    TSearchFilter,
+    IDataTableFilterContextType,
+} from '../data-table-filters/data-table-filter-context'
 
-const useDatableFilterState = () => {
+const useDatableFilterState = (): IDataTableFilterContextType => {
     const [filters, setFilters] = useState<FilterObject>({})
 
     const setFilter = (field: string, filter?: TSearchFilter) => {
@@ -20,11 +24,18 @@ const useDatableFilterState = () => {
         return targetFilter
     }
 
+    const bulkSetFilter = (fields: string[], filterValue?: TSearchFilter) => {
+        // eslint-disable-next-line prefer-const
+        let constructedObject = {} as FilterObject
+        fields.forEach((field) => (constructedObject[field] = filterValue))
+        setFilters((prev) => ({ ...prev, ...constructedObject }))
+    }
+
     const resetFilter = () => {
         setFilters({})
     }
 
-    return { filters, setFilter, removeFilter, resetFilter }
+    return { filters, bulkSetFilter, setFilter, removeFilter, resetFilter }
 }
 
 export default useDatableFilterState

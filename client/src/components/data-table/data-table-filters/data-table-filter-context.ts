@@ -67,15 +67,16 @@ export type FilterObject = {
     [key: string]: TSearchFilter | undefined
 }
 
-interface DataTableFilterContextType {
+export interface IDataTableFilterContextType {
     filters: FilterObject
-    setFilter: (field: string, filter? : TSearchFilter) => void
-    removeFilter: (field: string) => void
+    setFilter: (field: string, filter?: TSearchFilter) => void
+    bulkSetFilter: (field: string[], filterValue?: TSearchFilter) => void
     resetFilter: () => void
+    removeFilter: (field: string) => void
 }
 
 const DataTableFilterContext = createContext<
-    DataTableFilterContextType | undefined
+    IDataTableFilterContextType | undefined
 >(undefined)
 
 export const useDataTableFilter = () => {
