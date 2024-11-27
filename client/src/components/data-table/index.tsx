@@ -10,7 +10,7 @@ import {
 } from '@dnd-kit/core'
 import { Table } from '@tanstack/react-table'
 import { arrayMove } from '@dnd-kit/sortable'
-import { useCallback, useEffect, useRef } from 'react'
+import { memo, useCallback, useEffect, useRef } from 'react'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
 
 import DataTableBody from './data-table-body'
@@ -30,7 +30,7 @@ interface Props<TData> extends IBaseCompNoChild {
     setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>
 }
 
-const DataTable = <TData,>({
+const DataTable = memo(<TData,>({
     table,
     className,
     rowClassName,
@@ -271,6 +271,6 @@ const DataTable = <TData,>({
             </div>
         </DndContext>
     )
-}
+})
 
 export default DataTable
