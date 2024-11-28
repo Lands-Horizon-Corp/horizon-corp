@@ -12,9 +12,24 @@ export default defineConfig({
     // TanStackRouterVite(),
     react(),
     tsconfigPaths(),
-    visualizer() as PluginOption,
+    visualizer({
+      filename: 'bundle-analysis.html',
+      template: 'treemap',
+      open: true,
+      gzipSize: true,
+      brotliSize: true,
+    }) as PluginOption,
   ],
-
+  build: {
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+        },
+      },
+    },
+  },
   define: {
     'process.env': process.env
   }
