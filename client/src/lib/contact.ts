@@ -1,12 +1,14 @@
+import logger from '@/helpers/loggers/logger'
 import contactNumberVerificationRaw from '../assets/sms-templates/message.json'
+
 
 // Define the types of templates available
 type Templates = 'contactNumber' | 'changePassword'
 
 // Precompile the Handlebars templates
 const TEMPLATE_MAP: Record<Templates, string> = {
-    contactNumber: contactNumberVerificationRaw['ContactNumber'],
-    changePassword: contactNumberVerificationRaw['ChangePassword'],
+  contactNumber: contactNumberVerificationRaw['ContactNumber'],
+  changePassword: contactNumberVerificationRaw['ChangePassword'],
 }
 
 /**
@@ -17,14 +19,14 @@ const TEMPLATE_MAP: Record<Templates, string> = {
  * @throws Will throw an error if the template type is invalid or generation fails.
  */
 export const getSMSContent = (template: Templates): string => {
-    const compiledTemplate = TEMPLATE_MAP[template]
-    if (!compiledTemplate) {
-        throw new Error(`"${template}" is not a valid template type.`)
-    }
-    try {
-        return compiledTemplate
-    } catch (error) {
-        console.error('Error generating SMS content:', error)
-        throw new Error('Failed to generate SMS content.')
-    }
+  const compiledTemplate = TEMPLATE_MAP[template]
+  if (!compiledTemplate) {
+    throw new Error(`"${template}" is not a valid template type.`)
+  }
+  try {
+    return compiledTemplate
+  } catch (error) {
+    logger.error('Error generating SMS content:', error)
+    throw new Error('Failed to generate SMS content.')
+  }
 }
