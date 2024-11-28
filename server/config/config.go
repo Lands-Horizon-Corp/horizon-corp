@@ -8,16 +8,12 @@ import (
 
 type AppConfig struct {
 	// Application
-	AppClientUrl     string
-	AppPort          string
-	AppTokenName     string
-	AppToken         []byte
-	AppForwardPort   []byte
-	AppAdminToken    []byte
-	AppOwnerToken    []byte
-	AppEmployeeToken []byte
-	AppMemberToken   []byte
-	LogLevel         string
+	AppClientUrl   string
+	AppPort        string
+	AppTokenName   string
+	AppToken       []byte
+	AppForwardPort []byte
+	LogLevel       string
 
 	// AWS
 	AWSAccessKeyID     string
@@ -81,15 +77,11 @@ func LoadConfig() (*AppConfig, error) {
 
 	config := AppConfig{
 		// Application
-		AppClientUrl:     getEnv("APP_CLIENT_URL", "http://client:80"),
-		AppPort:          getEnv("APP_PORT", "8080"),
-		AppTokenName:     getEnv("APP_TOKEN_NAME", "horizon-corp"),
-		AppToken:         []byte(os.Getenv("APP_TOKEN")),
-		AppAdminToken:    []byte(os.Getenv("APP_ADMIN_TOKEN")),
-		AppOwnerToken:    []byte(os.Getenv("APP_OWNER_TOKEN")),
-		AppEmployeeToken: []byte(os.Getenv("APP_EMPLOYEE_TOKEN")),
-		AppMemberToken:   []byte(os.Getenv("APP_MEMBER_TOKEN")),
-		LogLevel:         getEnv("LOG_LEVEL", "info"),
+		AppClientUrl: getEnv("APP_CLIENT_URL", "http://client:80"),
+		AppPort:      getEnv("APP_PORT", "8080"),
+		AppTokenName: getEnv("APP_TOKEN_NAME", "horizon-corp"),
+		AppToken:     []byte(os.Getenv("APP_TOKEN")),
+		LogLevel:     getEnv("LOG_LEVEL", "info"),
 
 		// AWS
 		AWSAccessKeyID:     os.Getenv("AWS_ACCESS_KEY_ID"),
