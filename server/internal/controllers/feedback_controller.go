@@ -1,115 +1,52 @@
 package controllers
 
 import (
-	"horizon/server/helpers"
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests"
 	"horizon/server/internal/resources"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type FeedbackController struct {
-	repo *repositories.FeedbackRepository
+	*BaseController[models.Feedback, *requests.FeedbackRequest, resources.FeedbackResource]
 }
 
-func NewFeedbackController(repo *repositories.FeedbackRepository) *FeedbackController {
-	return &FeedbackController{repo: repo}
+func NewFeedbackController(db *gorm.DB) *FeedbackController {
+	repo := repositories.NewRepository[models.Feedback](db)
+
+	baseController := NewBaseController[models.Feedback, *requests.FeedbackRequest, resources.FeedbackResource](
+		db,
+		ToFeedbackModel,
+		resources.ToResourceFeedback,
+		resources.ToResourceListFeedback,
+		UpdateFeedbackModel,
+	)
+
+	baseController.Repo = repo
+
+	return &FeedbackController{
+		BaseController: baseController,
+	}
 }
 
-func (c *FeedbackController) Create(ctx *gin.Context) {
-	var req requests.FeedbackRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	feedback := models.Feedback{
+func ToFeedbackModel(req *requests.FeedbackRequest) *models.Feedback {
+	return &models.Feedback{
+		Model: gorm.Model{
+			ID: req.ID,
+		},
 		Email:        req.Email,
 		Description:  req.Description,
 		FeedbackType: req.FeedbackType,
 	}
-
-	if err := c.repo.Create(&feedback); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusCreated, resources.ToResourceFeedback(feedback))
 }
 
-func (c *FeedbackController) GetAll(ctx *gin.Context) {
-	feedbacks, err := c.repo.GetAll()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, resources.ToResourceListFeedback(feedbacks))
-}
-
-func (c *FeedbackController) GetByID(ctx *gin.Context) {
-	uid, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-
-	feedback, err := c.repo.GetByID(uid)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Feedback not found"})
-		return
-	}
-	ctx.JSON(http.StatusOK, resources.ToResourceFeedback(feedback))
-}
-
-func (c *FeedbackController) Update(ctx *gin.Context) {
-	id, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-
-	var req requests.FeedbackRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	feedback := models.Feedback{
-		Email:        req.Email,
-		Description:  req.Description,
-		FeedbackType: req.FeedbackType,
-	}
-
-	if err := c.repo.Update(id, &feedback); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resources.ToResourceFeedback(feedback))
-}
-
-func (c *FeedbackController) Delete(ctx *gin.Context) {
-	id, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-	if err := c.repo.Delete(id); err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Feedback not found"})
-		return
-	}
-
-	ctx.JSON(http.StatusNoContent, nil)
+func UpdateFeedbackModel(model *models.Feedback, req *requests.FeedbackRequest) {
+	model.Email = req.Email
+	model.Description = req.Description
+	model.FeedbackType = req.FeedbackType
 }
 
 func FeedbackRoutes(router *gin.RouterGroup, controller *FeedbackController) {

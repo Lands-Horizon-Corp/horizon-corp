@@ -24,18 +24,18 @@ import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
 import PasswordInput from '@/components/ui/password-input'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-import FormErrorMessage from '@/modules/auth/components/form-error-message'
+import FormErrorMessage from '@/components/ui/form-error-message'
 
+import { signInSchema } from '@/validations'
 import { cn, withCatchAsync } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
-import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
 
 import { IBaseCompNoChild } from '@/types/component'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { SignInRequest, UserData } from '@/horizon-corp/types'
 
-type TSignIn = z.infer<typeof signInFormSchema>
+type TSignIn = z.infer<typeof signInSchema>
 
 interface Props
     extends IBaseCompNoChild,
@@ -72,7 +72,7 @@ const SignInForm = ({
     })
 
     const form = useForm<TSignIn>({
-        resolver: zodResolver(signInFormSchema),
+        resolver: zodResolver(signInSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
         defaultValues: {

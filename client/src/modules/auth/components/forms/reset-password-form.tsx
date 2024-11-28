@@ -13,39 +13,19 @@ import {
 } from '@/components/ui/form'
 import { KeyIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import FormErrorMessage from '../form-error-message'
 import PasswordInput from '@/components/ui/password-input'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn, withCatchAsync } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { PASSWORD_MIN_LENGTH } from '@/modules/auth/constants'
 import UserService from '@/horizon-corp/server/auth/UserService'
 
 import { IAuthForm } from '@/types/auth/form-interface'
 import { ChangePasswordRequest } from '@/horizon-corp/types'
+import FormErrorMessage from '@/components/ui/form-error-message'
+import { ResetPasswordSchema } from '@/validations/form-validation/reset-password-schema'
 
-const ResetPasswordFormSchema = z
-    .object({
-        newPassword: z
-            .string({ required_error: 'Password is required' })
-            .min(
-                PASSWORD_MIN_LENGTH,
-                `Password must atleast ${PASSWORD_MIN_LENGTH} characters`
-            ),
-        confirmPassword: z
-            .string({ required_error: 'Confirm password' })
-            .min(PASSWORD_MIN_LENGTH, `Password doesn't match`),
-    })
-    .refine(
-        ({ newPassword, confirmPassword }) => newPassword === confirmPassword,
-        {
-            message: "Password doesn't match",
-            path: ['confirm_password'],
-        }
-    )
-
-type TResetPasswordForm = z.infer<typeof ResetPasswordFormSchema>
+type TResetPasswordForm = z.infer<typeof ResetPasswordSchema>
 
 interface Props extends IAuthForm<TResetPasswordForm, void> {
     resetId: string
@@ -60,7 +40,7 @@ const ResetPasswordForm = ({
     onSuccess,
 }: Props) => {
     const form = useForm<TResetPasswordForm>({
-        resolver: zodResolver(ResetPasswordFormSchema),
+        resolver: zodResolver(ResetPasswordSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
         defaultValues,

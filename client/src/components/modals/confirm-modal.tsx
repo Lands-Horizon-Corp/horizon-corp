@@ -6,13 +6,12 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import { Separator } from '../ui/separator'
-import { Button } from '../ui/button'
 
-interface Props {}
-
-const ConfirmModal = ({}: Props) => {
+const ConfirmModal = () => {
     const { isOpen, modalData, onConfirm, onClose, onCancel } =
         useConfirmModalStore()
 

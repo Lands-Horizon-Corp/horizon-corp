@@ -1,9 +1,6 @@
 import { AxiosResponse } from 'axios'
 import UseServer from '@/horizon-corp/request/server'
 import type {
-    ChangeContactNumberRequest,
-    ChangeEmailRequest,
-    ChangePasswordRequest,
     UserData,
     ForgotPasswordRequest,
     SendEmailVerificationRequest,
@@ -13,6 +10,7 @@ import type {
     VerifyContactNumberRequest,
     VerifyEmailRequest,
     NewPasswordRequest,
+    ChangePasswordRequest,
 } from '@/horizon-corp/types'
 import { getSMSContent, getEmailContent } from '@/lib'
 
@@ -30,7 +28,7 @@ export default class UserService {
         data: SignUpRequest
     ): Promise<AxiosResponse<UserData>> {
         const endpoint = `${UserService.BASE_ENDPOINT}/signup`
-        data.birthdate = new Date()
+        data.birthDate = new Date()
         data.emailTemplate = getEmailContent('otp')
         data.contactTemplate = getSMSContent('contactNumber')
         return await UseServer.post<SignUpRequest, UserData>(endpoint, data)
@@ -60,14 +58,6 @@ export default class UserService {
         await UseServer.post<ForgotPasswordRequest, void>(endpoint, data)
     }
 
-    // GET - /auth/verify-reset-link/${resetId} ex: /auth/verify-reset-link/ba88ffCdD
-    // - check if the resetId is valid
-    // just return 200 ok
-    public static async CheckResetLink(resetId: string): Promise<void> {
-        const endpoint = `${UserService.BASE_ENDPOINT}/verify-reset-link/${resetId}`
-        await UseServer.get<void>(endpoint)
-    }
-
     // POST - /auth/change-password
     public static async ChangePassword(
         data: ChangePasswordRequest
@@ -76,11 +66,12 @@ export default class UserService {
         await UseServer.post<ChangePasswordRequest, void>(endpoint, data)
     }
 
-    // POST - /auth/change-email
-    public static async ChangeEmail(data: ChangeEmailRequest): Promise<void> {
-        const endpoint = `${UserService.BASE_ENDPOINT}/change-email`
-        data.emailTemplate = getEmailContent('otp')
-        await UseServer.post<ChangeEmailRequest, void>(endpoint, data)
+    // GET - /auth/verify-reset-link/${resetId} ex: /auth/verify-reset-link/ba88ffCdD
+    // - check if the resetId is valid
+    // just return 200 ok
+    public static async CheckResetLink(resetId: string): Promise<void> {
+        const endpoint = `${UserService.BASE_ENDPOINT}/verify-reset-link/${resetId}`
+        await UseServer.get<void>(endpoint)
     }
 
     // POST - /auth/send-email-verification
@@ -124,20 +115,7 @@ export default class UserService {
             endpoint,
             data
         )
-
-        // on backend read the current user cookie in backend, based on the information there, you'll know the contact
-        // number to send the OTP to
     }
-
-    // POST - /auth/change-contact-number
-    public static async ChangeContactNumber(
-        data: ChangeContactNumberRequest
-    ): Promise<void> {
-        const endpoint = `${UserService.BASE_ENDPOINT}/change-contact-number`
-        data.contactTemplate = getSMSContent('contactNumber')
-        await UseServer.post<ChangeContactNumberRequest, void>(endpoint, data)
-    }
-
     // POST - /auth/skip-verification
     public static async SkipVerification(): Promise<AxiosResponse<UserData>> {
         const endpoint = `${UserService.BASE_ENDPOINT}/skip-verification`

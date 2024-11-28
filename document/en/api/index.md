@@ -8,10 +8,10 @@ The REST API enables developers to interact programmatically with Horizon Corps 
 
 ### Key Features
 
--   **Blazing Fast**: Powered by Go, the API ensures high-performance processing, capable of handling large-scale requests.
--   **Scalability**: Designed to grow with your needs, allowing seamless expansion as your cooperative operations increase.
--   **JSON Responses**: All data is transmitted in JSON format, making it easy to integrate with various systems and platforms.
--   **Secure**: Implements OAuth2 for secure authentication and authorization across all endpoints.
+- **Blazing Fast**: Powered by Go, the API ensures high-performance processing, capable of handling large-scale requests.
+- **Scalability**: Designed to grow with your needs, allowing seamless expansion as your cooperative operations increase.
+- **JSON Responses**: All data is transmitted in JSON format, making it easy to integrate with various systems and platforms.
+- **Secure**: Implements OAuth2 for secure authentication and authorization across all endpoints.
 
 ## Example Request
 
@@ -28,14 +28,14 @@ curl -X GET "https://api.horizoncorps.com/v1/users" \
 ```js [Javascript]
 // Fetch (JavaScript)
 fetch("https://api.horizoncorps.com/v1/users", {
-    method: "GET",
-    headers: {
-        Authorization: "Bearer YOUR_ACCESS_TOKEN",
-    },
+  method: "GET",
+  headers: {
+    Authorization: "Bearer YOUR_ACCESS_TOKEN",
+  },
 })
-    .then((response) => response.json())
-    .then((data) => console.log(data))
-    .catch((error) => console.error("Error:", error));
+  .then((response) => response.json())
+  .then((data) => console.log(data))
+  .catch((error) => console.error("Error:", error));
 ```
 
 ```py [python 🐍]
@@ -69,7 +69,6 @@ else:
 | `200`     | application/json |                                  UserBase |
 | `400`     | application/json | `{"code":"400", "message":"Bad Request"}` |
 
-
 <details>
 <summary>UserBase Type</summary>
 
@@ -84,7 +83,7 @@ else:
 | `contactNumber`      |   string   |                                    User's contact number |
 | `permanentAddress`   |   string   |                                 User's permanent address |
 | `description`        |   string   |                  A short description or bio for the user |
-| `birthdate`          |    Date    |                                     User's date of birth |
+| `birthDate`          |    Date    |                                     User's date of birth |
 | `validEmail`         |  boolean   |                Indicates if the user's email is verified |
 | `validContactNumber` |  boolean   |       Indicates if the user's contact number is verified |
 | `mediaId`            |  string?   |              (Optional) ID of the user's profile picture |

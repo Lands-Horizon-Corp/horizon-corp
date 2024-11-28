@@ -13,7 +13,7 @@ type UserResource struct {
 	MiddleName         string         `json:"middleName"`
 	PermanentAddress   string         `json:"permanentAddress"`
 	Description        string         `json:"description"`
-	Birthdate          time.Time      `json:"birthdate"`
+	BirthDate          time.Time      `json:"birthDate"`
 	Username           string         `json:"username"`
 	Email              string         `json:"email"`
 	IsEmailVerified    bool           `json:"isEmailVerified"`
@@ -26,14 +26,18 @@ type UserResource struct {
 	UpdatedAt          string         `json:"updatedAt"`
 }
 
-func ToResourceUser(user models.User, accountType string) UserResource {
-	var mediaResource *MediaResource
-	if user.MediaID != nil {
-		media := ToResourceMedia(user.Media)
-		mediaResource = &media
+// Convert models.User to *UserResource
+func ToResourceUser(user *models.User, accountType string) *UserResource {
+	if user == nil {
+		return nil
 	}
 
-	return UserResource{
+	var mediaResource *MediaResource
+	if user.Media != nil {
+		mediaResource = ToResourceMedia(user.Media)
+	}
+
+	return &UserResource{
 		AccountType:        accountType,
 		ID:                 user.ID,
 		FirstName:          user.FirstName,
@@ -41,7 +45,7 @@ func ToResourceUser(user models.User, accountType string) UserResource {
 		MiddleName:         user.MiddleName,
 		PermanentAddress:   user.PermanentAddress,
 		Description:        user.Description,
-		Birthdate:          user.Birthdate,
+		BirthDate:          user.BirthDate,
 		Username:           user.Username,
 		Email:              user.Email,
 		IsEmailVerified:    user.IsEmailVerified,
@@ -55,8 +59,9 @@ func ToResourceUser(user models.User, accountType string) UserResource {
 	}
 }
 
-func ToResourceListUsers(users []models.User, accountType string) []UserResource {
-	var resources []UserResource
+// Convert []*models.User to []*UserResource
+func ToResourceListUsers(users []*models.User, accountType string) []*UserResource {
+	var resources []*UserResource
 	for _, user := range users {
 		resources = append(resources, ToResourceUser(user, accountType))
 	}

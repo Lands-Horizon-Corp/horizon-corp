@@ -7,7 +7,7 @@ import AuthPageWrapper from '../components/auth-page-wrapper'
 import ForgotPasswordEmail, {
     TForgotPasswordEmail,
 } from '@/modules/auth/components/forms/forgot-password-email'
-import FormErrorMessage from '../components/form-error-message'
+import FormErrorMessage from '../../../components/ui/form-error-message'
 import { EmailCheckIcon, ArrowLeftIcon } from '@/components/icons'
 import ResendPasswordResetLinkButton from '../components/resend-password-reset-link-button'
 

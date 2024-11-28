@@ -23,7 +23,7 @@ import {
 import { Input } from '../ui/input'
 
 import { FeedbackFormSchema } from './validations'
-import FormErrorMessage from '@/modules/auth/components/form-error-message'
+import FormErrorMessage from '@/components/ui/form-error-message'
 import { UpdateStatus } from '@/types/constants'
 import TextEditor from '../text-editor'
 import FeedbackService from '@/horizon-corp/server/common/FeedbackService'

@@ -8,7 +8,7 @@ const AuthNav = () => {
     return (
         <RootNav className="pointer-events-none fixed w-full">
             <NavEcoopLogo className="pointer-events-auto" />
-            <NavContainer></NavContainer>
+            <NavContainer />
             <NavContainer className="pointer-events-auto">
                 <NavAuthGroup />
                 <NavThemeToggle />

@@ -13,11 +13,12 @@ import { CaptionLayout } from 'react-day-picker'
 
 type InputDatePickerProps = {
     id: string
-    value: Date | undefined
-    disabled?: (date: Date) => boolean
-    captionLayout?: CaptionLayout
     fromYear?: number
     toYear?: number
+    className?: string
+    value: Date | undefined
+    captionLayout?: CaptionLayout
+    disabled?: (date: Date) => boolean
     onChange: (date: Date | undefined) => void
 }
 
@@ -26,7 +27,7 @@ const InputDatePicker = ({
     value,
     onChange,
     disabled,
-    fromYear = 1930,
+    fromYear = 1900,
     toYear = new Date().getFullYear(),
     ...other
 }: InputDatePickerProps) => {

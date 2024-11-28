@@ -40,7 +40,7 @@ export interface SignUpRequest {
     email: string
     password: string
     confirmPassword: string
-    birthdate: Date
+    birthDate: Date
     contactNumber: string
     permanentAddress: string
     media?: MediaRequest
@@ -57,22 +57,31 @@ export interface VerifyContactNumberRequest {
     otp: string
 }
 
-export interface ChangeEmailRequest {
-    email: string
-    emailTemplate?: string
-}
-
-export interface ChangeContactNumberRequest {
-    contactNumber: string
-    contactTemplate?: string
-}
-
 export interface NewPasswordRequest {
     PreviousPassword: string
     NewPassword: string
     ConfirmPassword: string
 }
 
-export interface DescriptionRequest {
-    description: string
+export interface AccountSettingRequest {
+    birthDate: Date
+    firstName: string
+    middleName?: string
+    lastName: string
+    description?: string
+    permanentAddress: string
+}
+
+export interface ChangeEmailRequest {
+    password: string
+    email: string
+}
+
+export interface ChangeContactNumberRequest {
+    password: string
+    contactNumber: string
+}
+export interface ChangeUsernameRequest {
+    password: string
+    username: string
 }

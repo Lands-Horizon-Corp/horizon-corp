@@ -1,9 +1,16 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Gender struct {
-	Name        string `json:"name" gorm:"unique;not null"`
-	Description string `json:"description,omitempty"`
 	gorm.Model
+	Name        string `gorm:"type:varchar(255);unique;not null" json:"name"`
+	Description string `gorm:"type:text" json:"description"`
+
+	Employees []*Employee `gorm:"foreignKey:MediaID" json:"employees"`
+	Members   []*Member   `gorm:"foreignKey:MediaID" json:"members"`
+	Owners    []*Owner    `gorm:"foreignKey:MediaID" json:"owners"`
+	Admins    []*Admin    `gorm:"foreignKey:MediaID" json:"admins"`
 }
