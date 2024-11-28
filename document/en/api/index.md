@@ -34,8 +34,8 @@ fetch("https://api.horizoncorps.com/v1/users", {
   },
 })
   .then((response) => response.json())
-  .then((data) => console.log(data))
-  .catch((error) => console.error("Error:", error));
+  .then((data) => logger.log(data))
+  .catch((error) => logger.error("Error:", error));
 ```
 
 ```py [python 🐍]
