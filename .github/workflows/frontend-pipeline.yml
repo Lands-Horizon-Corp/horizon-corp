@@ -23,7 +23,7 @@ jobs:
           node-version: "22.11.0"
 
       - name: Install pnpm
-        run: npm install -g pnpm@9.14.2
+        run: npm install -g pnpm@9.14.3
 
       - name: Navigate to client directory
         run: cd ./client
@@ -51,7 +51,7 @@ jobs:
           node-version: "22.11.0"
 
       - name: Install pnpm
-        run: npm install -g pnpm@9.14.2
+        run: npm install -g pnpm@9.14.3
 
       - name: Navigate to client directory
         run: cd ./client
@@ -79,7 +79,7 @@ jobs:
           node-version: "22.11.0"
 
       - name: Install pnpm
-        run: npm install -g pnpm@9.14.2
+        run: npm install -g pnpm@9.14.3
 
       - name: Navigate to client directory
         run: cd ./client
