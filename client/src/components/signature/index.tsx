@@ -123,7 +123,7 @@ const Signature = ({ className }: SignatureProps) => {
     const handleDownloadDrawSignature = () => {
         const canvas = document.createElement('canvas')
         const context = canvas.getContext('2d')
-        let downloadImage = imageRef?.current
+        const downloadImage = imageRef?.current
 
         if (!context) return
         if (!downloadImage) return

@@ -60,7 +60,7 @@ export const DownloadButton = React.forwardRef<
     DownloadProps
 >(({ fileName, fileType, imageRef, fileUrl, className, name }, ref) => {
     const handleDownload = () => {
-        let downloadImage = imageRef?.current
+        const downloadImage = imageRef?.current
 
         // If imageRef is not provided, use the fileUrl directly
         if (!downloadImage && fileUrl) {
