@@ -185,12 +185,12 @@ const DataTable = <TData,>({
                     'relative z-10 flex rounded-xl border dark:bg-secondary',
                     isScrollable
                         ? 'ecoop-scroll max-h-full overflow-y-scroll'
-                        : 'h-fit max-h-none',
+                        : 'h-fit max-h-none overflow-clip',
                     className
                 )}
             >
                 {table.getLeftHeaderGroups().length > 0 && (
-                    <div className="ecoop-scroll sticky left-[0%] z-50 h-fit w-fit border-r shadow dark:border-popover/80">
+                    <div className="ecoop-scroll sticky left-[0%] z-50 h-fit w-fit border-r dark:border-popover/80">
                         <UITable
                             ref={leftTableRef}
                             className="h-fit w-auto"
@@ -239,7 +239,7 @@ const DataTable = <TData,>({
                     </div>
                 )}
                 {table.getRightHeaderGroups().length > 0 && (
-                    <div className="ecoop-scroll sticky right-0 z-10 h-fit w-fit border-l border-popover shadow-xl">
+                    <div className="ecoop-scroll sticky right-0 z-50 h-fit w-fit border-l dark:border-popover/80">
                         <UITable
                             ref={rightTableRef}
                             className="w-auto"

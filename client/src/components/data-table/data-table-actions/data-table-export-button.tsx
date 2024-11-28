@@ -49,6 +49,7 @@ const DataTableExportButton = <TData,>({
             const finalFileName = `${fileName}-${format(new Date(), "yyyy-MM-dd'T'HH:mm:ss'Z'")}`
             exportTableData(dataToExport, finalFileName)
             toast.success(`Selected Data exported to ${finalFileName}`)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_err) {
             toast.error('Failed to export')
         }
@@ -88,6 +89,7 @@ const DataTableExportButton = <TData,>({
 
             exportTableData(dataToExport, finalFileName)
             toast.success(`Current page data exported to ${finalFileName}`)
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (_err) {
             toast.error('Failed to export')
         }

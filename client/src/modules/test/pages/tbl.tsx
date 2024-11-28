@@ -17,7 +17,7 @@ import useDatableFilterState from '@/components/data-table/hooks/use-datatable-f
 import { PushPinSlashIcon } from '@/components/icons'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
-import DataTableRefreshButton from '@/components/data-table/data-table-actions/data-table-refresh-button'
+import RefreshButton from '@/components/refresh-button'
 import DataTableActiveFilters from '@/components/data-table/data-table-actions/data-table-active-filters'
 import DataTableDeleteSelected from '@/components/data-table/data-table-actions/data-table-delete-selected'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
@@ -261,6 +261,8 @@ const Tbl = () => {
 
     const memoizedData = useMemo(() => data(), [])
 
+    const dummyPageSize = 300
+
     const table = useReactTable({
         columns,
         data: memoizedData,
@@ -274,7 +276,7 @@ const Tbl = () => {
             rowSelection,
             columnVisibility,
         },
-        rowCount: 1000,
+        rowCount: dummyPageSize,
         manualSorting: true,
         manualFiltering: true,
         manualPagination: true,
@@ -307,7 +309,7 @@ const Tbl = () => {
                                     console.log('Deleting these -> ', rows)
                                 }}
                             />
-                            <DataTableRefreshButton
+                            <RefreshButton
                                 onClick={() => {}}
                                 isLoading={false}
                             />
@@ -338,7 +340,7 @@ const Tbl = () => {
                         className="mb-2 max-h-96 flex-1"
                     />
                 </div>
-                <DataTablePagination table={table} />
+                <DataTablePagination table={table} totalSize={dummyPageSize} />
                 <pre>{JSON.stringify(dataTableFilterState, null, 2)}</pre>
             </div>
         </DataTableFilterContext.Provider>

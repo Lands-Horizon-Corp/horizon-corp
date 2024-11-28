@@ -17,23 +17,22 @@ const ColumnResizeHandle = <TData, TValue>({
 
     return (
         <div
-            {...{
-                className: `absolute duration-100 ease-in-out top-0 right-2 flex items-center justify-center w-[1px] h-full hover:bg-border/40  hover:bg-border/80 ${
-                    header.column.getIsResizing() ? 'bg-foreground/80 z-50' : ''
-                }`,
-                style: {
-                    transform:
-                        table.options.columnResizeMode === 'onEnd' &&
-                        header.column.getIsResizing()
-                            ? `translateX(${
-                                  (table.options.columnResizeDirection === 'rtl'
-                                      ? -1
-                                      : 1) *
-                                  (table.getState().columnSizingInfo
-                                      .deltaOffset ?? 0)
-                              }px)`
-                            : '',
-                },
+            className={cn(
+                'absolute right-2 top-0 flex h-full w-[1px] items-center justify-center duration-100 ease-in-out hover:bg-border/40 hover:bg-border/80',
+                header.column.getIsResizing() && 'z-50 bg-foreground/80'
+            )}
+            style={{
+                transform:
+                    table.options.columnResizeMode === 'onEnd' &&
+                    header.column.getIsResizing()
+                        ? `translateX(${
+                              (table.options.columnResizeDirection === 'rtl'
+                                  ? -1
+                                  : 1) *
+                              (table.getState().columnSizingInfo.deltaOffset ??
+                                  0)
+                          }px)`
+                        : '',
             }}
         >
             <span

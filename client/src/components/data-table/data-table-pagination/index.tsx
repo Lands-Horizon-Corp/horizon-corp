@@ -21,15 +21,19 @@ interface DataTablePaginationProps<TData> {
     table: Table<TData>
     className?: string
     pageSizes?: number[]
+    totalSize: number
     hideSelectedIndicator?: boolean
 }
 
 const DataTablePagination = <TData,>({
     table,
     className,
+    totalSize,
     pageSizes = PAGE_SIZES_DENSE,
     hideSelectedIndicator = false,
 }: DataTablePaginationProps<TData>) => {
+    const finalPageSizes = pageSizes.filter((size) => size < totalSize)
+
     return (
         <div
             className={cn(
@@ -61,7 +65,7 @@ const DataTablePagination = <TData,>({
                             />
                         </SelectTrigger>
                         <SelectContent side="top">
-                            {pageSizes.map((pageSize) => (
+                            {finalPageSizes.map((pageSize) => (
                                 <SelectItem
                                     key={pageSize}
                                     value={`${pageSize}`}
@@ -69,6 +73,7 @@ const DataTablePagination = <TData,>({
                                     {pageSize}
                                 </SelectItem>
                             ))}
+                            <SelectItem value={`${totalSize}`}>All</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>

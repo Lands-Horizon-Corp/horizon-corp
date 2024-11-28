@@ -32,6 +32,9 @@ const DataTableBody = <TData,>({
                 <TableRow
                     key={row.id}
                     data-row-id={row.id}
+                    onClick={() => {
+                        row.toggleSelected()
+                    }}
                     className={cn(
                         'h-14 w-fit bg-background/90 align-middle hover:bg-secondary/90 data-[state=selected]:bg-secondary dark:bg-secondary/90 dark:hover:bg-popover/95 dark:data-[state=selected]:bg-popover',
                         rowClassName
