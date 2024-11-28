@@ -326,7 +326,6 @@ const Tbl = () => {
                             />
                             <DataTableExportButton
                                 table={table}
-                                fileName="sampletable"
                                 columnsToExport={['name', 'age', 'bday']}
                             />
                         </div>
