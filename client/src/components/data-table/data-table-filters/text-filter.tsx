@@ -16,9 +16,9 @@ import {
 import { DebouncedInput } from '@/components/ui/debounced-input'
 
 const TextFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
-    const { filters, setFilter } = useDataTableFilter()
+    const { filters, setFilter } = useDataTableFilter<string, keyof TData>()
 
-    const filterVal: TSearchFilter = filters[accessorKey as string] ?? {
+    const filterVal: TSearchFilter<string> = filters[accessorKey as string] ?? {
         dataType: 'text',
         mode: 'equal',
         value: '',
@@ -35,7 +35,7 @@ const TextFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                 value={filterVal?.mode}
                 onValueChange={(val) => {
                     const newFilterMode = val as TFilterModes
-                    setFilter(accessorKey as string, {
+                    setFilter(accessorKey, {
                         ...filterVal,
                         mode: newFilterMode,
                     })
@@ -60,9 +60,9 @@ const TextFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                 className="w-full"
                 placeholder="value"
                 debounceTime={500}
-                value={filterVal.value}
-                onChange={(inpt: number) =>
-                    setFilter(accessorKey as string, {
+                value={filterVal.value || ''}
+                onChange={(inpt: string) =>
+                    setFilter(accessorKey, {
                         ...filterVal,
                         value: inpt,
                     })
@@ -72,7 +72,7 @@ const TextFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                 size="sm"
                 className="w-full"
                 variant="secondary"
-                onClick={() => setFilter(accessorKey as string)}
+                onClick={() => setFilter(accessorKey)}
             >
                 Clear Filter
             </Button>

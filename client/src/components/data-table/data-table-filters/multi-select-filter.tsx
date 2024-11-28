@@ -11,9 +11,15 @@ const DataTableMultiSelectFilter = <TData,>({
     accessorKey: keyof TData
     multiSelectOptions: IMultiSelectOption[]
 }) => {
-    const { filters, setFilter } = useDataTableFilter()
+    const { filters, setFilter } = useDataTableFilter<
+        string,
+        keyof TData,
+        string[]
+    >()
 
-    const filterVal: TSearchFilter = filters[accessorKey as string] ?? {
+    const filterVal: TSearchFilter<string, string[]> = filters[
+        accessorKey as string
+    ] ?? {
         dataType: 'date',
         mode: 'equal',
         value: undefined,
@@ -24,18 +30,20 @@ const DataTableMultiSelectFilter = <TData,>({
     return (
         <MultiSelectFilter
             value={
-                typeof filterVal.value === 'string'
-                    ? [filterVal.value]
-                    : filterVal.value
+                filterVal.value
+                    ? typeof filterVal.value === 'string'
+                        ? [filterVal.value]
+                        : filterVal.value
+                    : []
             }
             multiSelectOptions={multiSelectOptions}
             setValues={(selected) =>
-                setFilter(accessorKey as string, {
+                setFilter(accessorKey, {
                     ...filterVal,
                     value: selected,
                 })
             }
-            clearValues={() => setFilter(accessorKey as string)}
+            clearValues={() => setFilter(accessorKey)}
         />
     )
 }

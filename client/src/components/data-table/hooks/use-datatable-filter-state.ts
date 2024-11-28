@@ -2,10 +2,10 @@ import { useState } from 'react'
 import {
     FilterObject,
     TSearchFilter,
-    IDataTableFilterContextType,
+    IDataTableFilterState,
 } from '../data-table-filters/data-table-filter-context'
 
-const useDatableFilterState = (): IDataTableFilterContextType => {
+const useDatableFilterState = (): IDataTableFilterState => {
     const [filters, setFilters] = useState<FilterObject>({})
 
     const setFilter = (field: string, filter?: TSearchFilter) => {

@@ -18,11 +18,11 @@ import {
 } from './data-table-filter-context'
 
 const DateFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
-    const { filters, setFilter } = useDataTableFilter()
+    const { filters, setFilter } = useDataTableFilter<Date, keyof TData>()
 
     const filterModeOptions = filterModeMap['date']
 
-    const filterVal: TSearchFilter = filters[accessorKey as string] ?? {
+    const filterVal: TSearchFilter<Date> = filters[accessorKey] ?? {
         dataType: 'date',
         mode: filterModeOptions[0].value,
         value: undefined,
@@ -40,7 +40,7 @@ const DateFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                 value={filterVal.mode}
                 onValueChange={(val) => {
                     const newFilterMode = val as TFilterModes
-                    setFilter(accessorKey as string, {
+                    setFilter(accessorKey, {
                         ...filterVal,
                         mode: newFilterMode,
                     })
@@ -69,9 +69,11 @@ const DateFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                     }
                     onChange={(newDate) => {
                         if (!newDate) return
-                        setFilter(accessorKey as string, {
+                        setFilter(accessorKey, {
                             ...filterVal,
                             value: newDate,
+                            from: undefined,
+                            to: undefined,
                         })
                     }}
                 />
@@ -81,13 +83,15 @@ const DateFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                         {
                             from: filterVal.from,
                             to: filterVal.to,
+                            value: undefined,
                         } as unknown as DateRange
                     }
                     onChange={(val) =>
-                        setFilter(accessorKey as string, {
+                        setFilter(accessorKey, {
                             ...filterVal,
                             from: val.from,
                             to: val.to,
+                            value: undefined,
                         })
                     }
                 />
@@ -96,7 +100,7 @@ const DateFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                 size="sm"
                 className="w-full"
                 variant="secondary"
-                onClick={() => setFilter(accessorKey as string)}
+                onClick={() => setFilter(accessorKey)}
             >
                 Clear Filter
             </Button>

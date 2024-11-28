@@ -55,32 +55,47 @@ export const filterModeMap: {
     ],
 }
 
-export type TSearchFilter = {
+export type TSearchFilter<T = unknown, TValue = T> = {
     dataType: TColumnDataTypes
-    value: any
+    value?: TValue
     mode: TFilterModes
-    from?: any
-    to?: any
+    from?: TValue
+    to?: TValue
 }
 
-export type FilterObject = {
-    [key: string]: TSearchFilter | undefined
+export type FilterObject<T = unknown, TValue = T> = {
+    [key: string]: TSearchFilter<T, TValue> | undefined
 }
 
-export interface IDataTableFilterContextType {
-    filters: FilterObject
-    setFilter: (field: string, filter?: TSearchFilter) => void
-    bulkSetFilter: (field: string[], filterValue?: TSearchFilter) => void
+export interface IDataTableFilterState<
+    T = unknown,
+    TField = string,
+    TValue = T,
+> {
+    filters: FilterObject<T, TValue>
+    setFilter: (field: TField, filter?: TSearchFilter<TValue, TValue>) => void
+    bulkSetFilter: (
+        field: TField[],
+        filterValue?: TSearchFilter<TValue, TValue>
+    ) => void
     resetFilter: () => void
-    removeFilter: (field: string) => void
+    removeFilter: (field: TField) => void
 }
 
 const DataTableFilterContext = createContext<
-    IDataTableFilterContextType | undefined
+    IDataTableFilterState<unknown> | undefined
 >(undefined)
 
-export const useDataTableFilter = () => {
-    const context = useContext(DataTableFilterContext)
+export const useDataTableFilter = <
+    T = unknown,
+    TData = string,
+    TValue = T,
+>() => {
+    const context = useContext(DataTableFilterContext) as IDataTableFilterState<
+        T,
+        TData,
+        TValue
+    >
 
     if (!context) {
         throw new Error(
