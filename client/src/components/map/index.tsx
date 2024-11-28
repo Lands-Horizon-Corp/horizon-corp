@@ -28,6 +28,7 @@ import {
 import { LoadingCircleIcon, LocationPinOutlineIcon } from '../icons'
 
 import { useMapStore } from '@/store/map-store'
+import logger from '@/helpers/loggers/logger'
 
 const getLocationDescription = async (latlng: LatLngExpression) => {
     const { lat, lng } = latLng(latlng)
@@ -37,7 +38,7 @@ const getLocationDescription = async (latlng: LatLngExpression) => {
         const data = await response.json()
         return data.display_name || 'Address not found'
     } catch (error) {
-        console.error('Error fetching reverse geocode data:', error)
+        logger.error('Error fetching reverse geocode data:', error)
     }
 }
 

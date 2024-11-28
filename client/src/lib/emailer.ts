@@ -2,6 +2,7 @@ import otpVerificationRaw from '../assets/email-templates/account-otp-verificati
 import accountVerificationRaw from '../assets/email-templates/account-verification.html?raw'
 import accountChangepasswordRaw from '../assets/email-templates/account-change-password.html?raw'
 import DOMPurify from 'isomorphic-dompurify';
+import logger from '@/helpers/loggers/logger';
 
 // Define the types of templates available
 type Templates = 'otp' | 'verification' | 'changePassword'
@@ -28,7 +29,7 @@ export const getEmailContent = (template: Templates): string => {
   try {
     return DOMPurify.sanitize(compiledTemplate)
   } catch (error) {
-    console.error('Error generating email content:', error)
+    logger.error('Error generating email content:', error)
     throw new Error('Failed to generate email content.')
   }
 }
