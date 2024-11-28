@@ -27,3 +27,4 @@ dist-ssr
 ./stats.html
 **.trash/
 **/tsconfig.app.tsbuildinfo
+./bundle-analysis.html
