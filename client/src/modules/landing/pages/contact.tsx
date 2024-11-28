@@ -21,10 +21,10 @@ import { Button } from '@/components/ui/button'
 
 import {
     LoadingCircleIcon,
-    AiOutlineMessageIcon,
-    MdOutlineEmailIcon,
-    IoCallOutlineIcon,
-    CgFacebookIcon,
+    MessageOutlineIcon,
+    EmailIcon,
+    TelephoneIcon,
+    FacebookIcon,
 } from '@/components/icons'
 
 import { PhoneInput } from '@/components/contact-input/contact-input'
@@ -277,19 +277,19 @@ const ContactPage = () => {
                                 </p>
                             </div>
                             <div className="flex space-x-2">
-                                <AiOutlineMessageIcon className="self-center" />
+                                <MessageOutlineIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     start a live chat
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
-                                <MdOutlineEmailIcon className="self-center" />
+                                <EmailIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     shoot us an email
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
-                                <CgFacebookIcon className="self-center" />
+                                <FacebookIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     Message us on Facebook
                                 </Link>
@@ -305,7 +305,7 @@ const ContactPage = () => {
                                 </p>
                             </div>
                             <div className="flex space-x-2">
-                                <IoCallOutlineIcon className="self-center" />
+                                <TelephoneIcon className="self-center" />
                                 <Link
                                     className="text-sm font-semibold underline"
                                     to="/"

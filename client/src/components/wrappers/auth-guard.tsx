@@ -4,7 +4,11 @@ import { Navigate, useRouter } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-import { PatchCheckIcon, PatchExclamationIcon, PatchMinusIcon } from '@/components/icons'
+import {
+    PatchCheckIcon,
+    PatchExclamationIcon,
+    PatchMinusIcon,
+} from '@/components/icons'
 
 import { cn } from '@/lib'
 import { UserData } from '@/horizon-corp/types'
@@ -36,7 +40,10 @@ const AuthGuard = ({
         if (authStatus === 'error' && !currentUser)
             return (
                 <div className="relative flex h-screen w-full items-center justify-center">
-                    <p>Sorry, There&apos;s an unexpected problem, try refreshing the page.</p>
+                    <p>
+                        Sorry, There&apos;s an unexpected problem, try
+                        refreshing the page.
+                    </p>
                 </div>
             )
 

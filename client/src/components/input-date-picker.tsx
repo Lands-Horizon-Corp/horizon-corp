@@ -13,11 +13,12 @@ import { CaptionLayout } from 'react-day-picker'
 
 type InputDatePickerProps = {
     id: string
-    value: Date | undefined
-    disabled?: (date: Date) => boolean
-    captionLayout?: CaptionLayout
     fromYear?: number
     toYear?: number
+    className?: string
+    value: Date | undefined
+    captionLayout?: CaptionLayout
+    disabled?: (date: Date) => boolean
     onChange: (date: Date | undefined) => void
 }
 

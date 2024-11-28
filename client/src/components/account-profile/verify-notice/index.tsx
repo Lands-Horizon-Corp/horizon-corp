@@ -12,7 +12,7 @@ const VerifyNotice = ({ currentUser, onSuccess }: Props) => {
         select: ({ location: { hash } }) => hash,
     })
 
-    if (!currentUser || hash === "security") return null
+    if (!currentUser || hash === 'security') return null
 
     return (
         <>

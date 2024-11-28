@@ -14,13 +14,10 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import TimeInCounter from '@/components/time-in-out/time-in-counter'
 import TimeInTimeOut, { TTImeInEntry } from '@/components/time-in-out'
 
-import {
-    randomEndOfDayQuoute,
-    randomStartOfDayQuoute,
-} from '@/constants/quoutes'
 import { cn } from '@/lib/utils'
 import { UserData } from '@/horizon-corp/types'
 import { IBaseCompNoChild } from '@/types/component'
+import { randomEndOfDayQuoute, randomStartOfDayQuoute } from '@/constants'
 
 interface Props extends IBaseCompNoChild {
     currentUser: UserData | null

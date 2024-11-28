@@ -25,8 +25,6 @@ import { ChangePasswordRequest } from '@/horizon-corp/types'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import { ResetPasswordSchema } from '@/validations/form-validation/reset-password-schema'
 
-
-
 type TResetPasswordForm = z.infer<typeof ResetPasswordSchema>
 
 interface Props extends IAuthForm<TResetPasswordForm, void> {

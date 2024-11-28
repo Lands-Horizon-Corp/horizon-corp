@@ -83,7 +83,7 @@ const AccountProfileBanner = ({
                 <span className="text-sm text-foreground/80">
                     {currentUser.firstName} {currentUser.lastName}
                 </span>
-                <div className="flex flex-row gap-y-1 mt-2 sm:items-center flex-wrap gap-x-2 text-xs text-foreground/60">
+                <div className="mt-2 flex flex-row flex-wrap gap-x-2 gap-y-1 text-xs text-foreground/60 sm:items-center">
                     <span>
                         <EmailIcon className="inline" /> {currentUser.email}
                     </span>

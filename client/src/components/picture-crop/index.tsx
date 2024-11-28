@@ -5,8 +5,8 @@ import Cropper, { Area } from 'react-easy-crop'
 import {
     ZoomInIcon,
     ZoomOutIcon,
-    RotateLeftIcon,
-    RotateRightIcon,
+    RotateBoxLeftIcon,
+    RotateBoxRightIcon,
     FlipVerticalIcon,
     FlipHorizontalIcon,
     FlipVerticalLineIcon,
@@ -187,7 +187,7 @@ const PictureCrop = ({ image, onCancel, onCrop }: Props) => {
                     <ZoomInIcon className="size-4 duration-200 ease-in-out group-hover:text-foreground" />
                 </div>
                 <div className="group flex items-center gap-x-2">
-                    <RotateLeftIcon className="size-4 duration-200 ease-in-out group-hover:text-foreground" />
+                    <RotateBoxLeftIcon className="size-4 duration-200 ease-in-out group-hover:text-foreground" />
                     <Slider
                         step={1}
                         max={360}
@@ -200,7 +200,7 @@ const PictureCrop = ({ image, onCancel, onCrop }: Props) => {
                         thumbClassName="size-4 duration-200 border-primary/50 bg-background"
                         onValueChange={(val) => setRotation(val[0])}
                     />
-                    <RotateRightIcon className="size-4 duration-200 ease-in-out group-hover:text-foreground" />
+                    <RotateBoxRightIcon className="size-4 duration-200 ease-in-out group-hover:text-foreground" />
                 </div>
             </fieldset>
             <fieldset

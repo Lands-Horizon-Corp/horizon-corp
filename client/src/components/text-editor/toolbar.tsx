@@ -5,15 +5,15 @@ import { Button } from '@/components/ui/button'
 
 import {
     ToolbarItalicIcon,
-    LuListOrderedIcon,
-    LuUndo2Icon,
-    LuRedo2Icon,
-    PiTextStrikethroughLightIcon,
-    PiListBulletsBoldIcon,
-    PiCodeBlockIcon,
+    ListOrderedIcon,
+    UndoIcon,
+    RedoIcon,
+    TextStrikethroughLightIcon,
+    ListBulletsBoldIcon,
+    CodeBlockIcon,
     FaBoldIcon,
     IoIosCodeIcon,
-    TbBlockquoteIcon,
+    BlockQuoteIcon,
 } from '@/components/icons'
 
 import { THeadingLevel } from '.'
@@ -56,7 +56,7 @@ const Toolbar = ({
                 pressed={editor.isActive('strike')}
                 onClick={() => editor.chain().focus().toggleStrike().run()}
             >
-                <PiTextStrikethroughLightIcon className="size-4" />
+                <TextStrikethroughLightIcon className="size-4" />
             </Toggle>
             <Toggle
                 pressed={editor.isActive('code')}
@@ -87,39 +87,39 @@ const Toolbar = ({
                     editor.chain().focus().toggleBulletList().run()
                 }
             >
-                <PiListBulletsBoldIcon className="size-4" />
+                <ListBulletsBoldIcon className="size-4" />
             </Toggle>
             <Toggle
                 onClick={() => editor.chain().focus().toggleOrderedList().run()}
                 className={editor.isActive('orderedList') ? 'is-active' : ''}
             >
-                <LuListOrderedIcon className="size-4" />
+                <ListOrderedIcon className="size-4" />
             </Toggle>
             <Button
                 variant={'ghost'}
                 onClick={() => editor.chain().focus().toggleCodeBlock().run()}
                 className={editor.isActive('codeBlock') ? 'is-active' : ''}
             >
-                <PiCodeBlockIcon className="size-4" />
+                <CodeBlockIcon className="size-4" />
             </Button>
             <Button
                 variant={'ghost'}
                 onClick={() => editor.chain().focus().toggleBlockquote().run()}
                 className={editor.isActive('blockquote') ? 'is-active' : ''}
             >
-                <TbBlockquoteIcon className="size-4" />
+                <BlockQuoteIcon className="size-4" />
             </Button>
             <Button
                 variant={'ghost'}
                 onClick={() => editor.chain().focus().undo().run()}
             >
-                <LuUndo2Icon className="size-4" />
+                <UndoIcon className="size-4" />
             </Button>
             <Button
                 variant={'ghost'}
                 onClick={() => editor.chain().focus().redo().run()}
             >
-                <LuRedo2Icon className="size-4" />
+                <RedoIcon className="size-4" />
             </Button>
         </div>
     )

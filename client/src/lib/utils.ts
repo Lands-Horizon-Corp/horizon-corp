@@ -1,7 +1,7 @@
 import { twMerge } from 'tailwind-merge'
 import { clsx, type ClassValue } from 'clsx'
 
-export function cn(...inputs: ClassValue[]) {
+export const cn = (...inputs: ClassValue[]) => {
     return twMerge(clsx(inputs))
 }
 
@@ -23,4 +23,17 @@ export const withCatchAsync = async <
 
             throw err
         })
+}
+
+export const formatNumber = (
+    value: number,
+    minimumFractionDigits = 0,
+    maximumFractionDigits = 2
+) => {
+    if (isNaN(value)) return '...'
+    return value.toLocaleString('en-US', {
+        useGrouping: true,
+        minimumFractionDigits,
+        maximumFractionDigits,
+    })
 }

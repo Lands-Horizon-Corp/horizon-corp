@@ -11,7 +11,7 @@ import { IBaseComp } from '@/types/component'
 import { useTheme } from '@/providers/theme-provider'
 import { MoonIcon, SunIcon, SunMoonIcon } from '@/components/icons'
 
-export function ThemeToggleMenu({ className }: IBaseComp) {
+export const ThemeToggleMenu = ({ className }: IBaseComp) => {
     const { setTheme } = useTheme()
 
     return (
