@@ -12,6 +12,7 @@ services:
     ports:
       - "${CLIENT_FORWARD_PORT}:${CLIENT_PORT}"
     environment:
+      - "VITE_CLIENT_APP_ENV=${APP_ENV}"
       - "VITE_CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}"
       - "VITE_CLIENT_PORT=${CLIENT_PORT}"
       - "VITE_CLIENT_SERVER_URL=${CLIENT_SERVER_URL}"
@@ -38,6 +39,7 @@ services:
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:
+      - APP_ENV=${APP_ENV}
       - APP_CLIENT_URL=${APP_CLIENT_URL}
       - APP_PORT=${APP_PORT}
       - APP_TOKEN=${APP_TOKEN}

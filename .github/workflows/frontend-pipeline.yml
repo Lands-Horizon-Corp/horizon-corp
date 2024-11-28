@@ -36,6 +36,10 @@ jobs:
         run: pnpm run lint
         working-directory: ./client
 
+      - name: Run Prettier Check
+        run: pnpm run fc
+        working-directory: ./client
+
   test:
     name: Run Vitest Tests
     runs-on: ubuntu-latest
