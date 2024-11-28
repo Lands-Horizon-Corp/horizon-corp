@@ -29,6 +29,7 @@ import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
 import NumberFilter from '@/components/data-table/data-table-filters/number-filter'
 import DataTableGlobalSearch from '@/components/data-table/data-table-filters/data-table-global-search'
+import logger from '@/helpers/loggers/logger'
 
 type TData = {
     name: string
@@ -106,21 +107,21 @@ const defaultColumns: ColumnDef<TData>[] = [
                         text: 'Delete',
                         isAllowed: true,
                         onClick: () => {
-                            console.log('delete')
+                            logger.log('delete')
                         },
                     }}
                     onEdit={{
                         text: 'Edit',
                         isAllowed: false,
                         onClick: () => {
-                            console.log('edit')
+                            logger.log('edit')
                         },
                     }}
                     onView={{
                         text: 'View',
                         isAllowed: true,
                         onClick: () => {
-                            console.log('view')
+                            logger.log('view')
                         },
                     }}
                 />
@@ -306,7 +307,7 @@ const Tbl = () => {
                                 table={table}
                                 canDelete={true}
                                 onClick={(rows) => {
-                                    console.log('Deleting these -> ', rows)
+                                    logger.log('Deleting these -> ', rows)
                                 }}
                             />
                             <RefreshButton

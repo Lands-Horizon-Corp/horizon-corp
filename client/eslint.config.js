@@ -20,6 +20,7 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       "@typescript-eslint/no-unused-expressions": ["error", { "allowShortCircuit": true }],
+      "no-console": ["warn", { "allow": ["warn", "error"] }],
       '@typescript-eslint/no-explicit-any': "warn",
       'react-refresh/only-export-components': [
         'warn',
