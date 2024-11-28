@@ -6,7 +6,7 @@ import ActionTooltip from '@/components/action-tooltip'
 
 interface Props {
     label: string
-    Icon? : IconType
+    Icon?: IconType
     onClick: () => void
     tooltipDescription: string
 }

@@ -50,7 +50,7 @@ const DataTableGlobalSearch = <T,>({
             {visible && (
                 <span className="relative">
                     <DebouncedInput
-                        className="animate-in text-xs fade-in-75"
+                        className="text-xs animate-in fade-in-75"
                         value={filterVal.value}
                         placeholder={
                             otherProps.placeHolder ??

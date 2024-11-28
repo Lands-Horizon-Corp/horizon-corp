@@ -118,7 +118,7 @@ const DataTableVirtualize = <TData,>({
                                         <TableRow
                                             key={row.id}
                                             className={cn('h-14 w-fit')}
-                                            data-index={virtualRow.index} 
+                                            data-index={virtualRow.index}
                                             ref={(node) =>
                                                 rowVirtualizer.measureElement(
                                                     node
@@ -131,7 +131,7 @@ const DataTableVirtualize = <TData,>({
                                             style={{
                                                 display: 'flex',
                                                 position: 'absolute',
-                                                transform: `translateY(${virtualRow.start}px)`, 
+                                                transform: `translateY(${virtualRow.start}px)`,
                                                 width: '100%',
                                             }}
                                         >
@@ -240,7 +240,7 @@ const DataTableVirtualize = <TData,>({
                                         <TableRow
                                             key={row.id}
                                             className={cn('h-14 w-fit')}
-                                            data-index={virtualRow.index} 
+                                            data-index={virtualRow.index}
                                             ref={(node) =>
                                                 rowVirtualizer.measureElement(
                                                     node

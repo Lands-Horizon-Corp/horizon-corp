@@ -6,7 +6,7 @@ COPY package.json pnpm-lock.yaml ./
 
 RUN npm install -g npm@10.8.2
 
-RUN npm install -g pnpm@9.14.2
+RUN npm install -g pnpm@9.14.3
 
 RUN pnpm install
 

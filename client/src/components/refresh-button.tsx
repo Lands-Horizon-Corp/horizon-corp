@@ -5,7 +5,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 interface Props {
     isLoading?: boolean
     onClick: () => void
-    className? : string
+    className?: string
 }
 
 const DataTableRefreshButton = ({ isLoading, onClick, className }: Props) => {

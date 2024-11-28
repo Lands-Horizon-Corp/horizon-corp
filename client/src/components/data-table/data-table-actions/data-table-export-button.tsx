@@ -26,17 +26,13 @@ const DataTableExportButton = <TData,>({
         .getSelectedRowModel()
         .flatRows.map(({ original }) => original)
 
-    const exportLocalSelected = () => {
-
-    }
+    const exportLocalSelected = () => {}
 
     // const exportAllFiltered = () => {}
 
     // const exportAll = () => {}
 
-    const exportCurrentPage = () => {
-
-    }
+    const exportCurrentPage = () => {}
 
     return (
         <DropdownMenu>
