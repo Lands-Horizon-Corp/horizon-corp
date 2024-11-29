@@ -1,9 +1,9 @@
-import { useMemo, useState } from 'react'
 import {
     getCoreRowModel,
     getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table'
+import { useMemo, useState } from 'react'
 
 import DataTable from '@/components/data-table'
 import { Separator } from '@/components/ui/separator'
@@ -19,9 +19,10 @@ import logger from '@/helpers/loggers/logger'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import { companiesTableColumns as columns } from './columns'
-import { IBaseCompNoChild } from '@/types'
 import { cn } from '@/lib'
+import { IBaseCompNoChild } from '@/types'
+import { CompanyResource } from '@/horizon-corp/types'
+import { companiesTableColumns as columns } from './columns'
 
 const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     const {
@@ -43,13 +44,16 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         columns.map((c) => c.id!)
     )
 
-    const memoizedData: {
-        name: string
-        address: string
-        owner: string
-    }[] = useMemo(
+    const memoizedData: CompanyResource[] = useMemo(
         () => [
-            { name: 'John Company', address: 'Lols', owner: 'johny' }
+            {
+                id: 0,
+                name: 'Johny',
+                contactNumber: '0999999999',
+                isAdminVerified: false,
+                createdAt: '2024-11-29T04:03:53.492Z',
+                updatedAt: '2024-11-29T04:03:53.492Z',
+            },
         ],
         []
     )

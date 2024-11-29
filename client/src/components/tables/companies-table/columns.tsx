@@ -1,18 +1,17 @@
 import { ColumnDef } from '@tanstack/react-table'
 
+import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { PushPinSlashIcon } from '@/components/icons'
-import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 
-import logger from '@/helpers/loggers/logger'
+import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
 
-export const companiesTableColumns: ColumnDef<{
-    name: string
-    address: string
-    owner: string
-}>[] = [
+import logger from '@/helpers/loggers/logger'
+import { CompanyResource } from '@/horizon-corp/types'
+
+export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
     {
         id: 'select',
         header: ({ table, column }) => (
@@ -72,12 +71,7 @@ export const companiesTableColumns: ColumnDef<{
         id: 'Name',
         accessorKey: 'name',
         header: (props) => (
-            <DataTableColumnHeader
-                {...props}
-                isResizable
-                title="Name"
-                dataType="text"
-            >
+            <DataTableColumnHeader {...props} isResizable title="Name">
                 <ColumnActions {...props}></ColumnActions>
             </DataTableColumnHeader>
         ),
@@ -86,5 +80,95 @@ export const companiesTableColumns: ColumnDef<{
                 original: { name },
             },
         }) => <div>{name}</div>,
+    },
+    {
+        id: 'address',
+        accessorKey: 'address',
+        header: (props) => (
+            <DataTableColumnHeader {...props} isResizable title="Address">
+                <ColumnActions {...props}></ColumnActions>
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { address },
+            },
+        }) => <div>{address}</div>,
+    },
+    {
+        id: 'branches',
+        accessorKey: 'branches',
+        header: (props) => (
+            <DataTableColumnHeader {...props} isResizable title="Branches">
+                <ColumnActions {...props}></ColumnActions>
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { branches },
+            },
+        }) => <div>{branches?.length ?? 0}</div>,
+    },
+    {
+        id: 'owner',
+        accessorKey: 'owner',
+        header: (props) => (
+            <DataTableColumnHeader {...props} isResizable title="Owner">
+                <ColumnActions {...props}></ColumnActions>
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { owner },
+            },
+        }) => (
+            <div>
+                {owner?.username ?? (
+                    <span className="text-center italic text-foreground/40">
+                        -
+                    </span>
+                )}
+            </div>
+        ),
+    },
+    {
+        id: 'contactNumber',
+        accessorKey: 'contactNumber',
+        header: (props) => (
+            <DataTableColumnHeader
+                {...props}
+                isResizable
+                title="Contact Number"
+            >
+                <ColumnActions {...props}></ColumnActions>
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { contactNumber },
+            },
+        }) => <div>{contactNumber}</div>,
+    },
+    {
+        id: 'isVerified',
+        accessorKey: 'contactNumber',
+        header: (props) => (
+            <DataTableColumnHeader {...props} isResizable title="Verified">
+                <ColumnActions {...props}></ColumnActions>
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { isAdminVerified },
+            },
+        }) => (
+            <div>
+                {isAdminVerified ? (
+                    <Badge variant="success">Verified</Badge>
+                ) : (
+                    <Badge variant="warning">Not Verified</Badge>
+                )}
+            </div>
+        ),
     },
 ]
