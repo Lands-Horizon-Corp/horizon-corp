@@ -416,11 +416,11 @@ func (c *AuthController) VerifyEmail(ctx *gin.Context) {
 		c.respondWithError(ctx, http.StatusUnauthorized, "VerifyEmail: Invalid or expired OTP", "Invalid or expired OTP.")
 		return
 	}
-	user := &models.User{
-		AccountType:     userClaims.AccountType,
-		IsEmailVerified: true,
-	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
+	updatedUser, err := c.userRepo.UpdateEmailVerification(
+		userClaims.AccountType,
+		userClaims.ID,
+		true,
+	)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("VerifyEmail: User update error: %v", err), "Failed to update user status.")
 		return
@@ -500,11 +500,11 @@ func (c *AuthController) VerifyContactNumber(ctx *gin.Context) {
 		return
 	}
 
-	user := &models.User{
-		AccountType:       userClaims.AccountType,
-		IsContactVerified: true,
-	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
+	updatedUser, err := c.userRepo.UpdateContactVerification(
+		userClaims.AccountType,
+		userClaims.ID,
+		true,
+	)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("VerifyContactNumber: User update error: %v", err), "Failed to update user status.")
 		return
@@ -520,12 +520,11 @@ func (c *AuthController) SkipVerification(ctx *gin.Context) {
 		c.respondWithError(ctx, http.StatusUnauthorized, err.Error(), "User not authenticated.")
 		return
 	}
-
-	user := &models.User{
-		AccountType:        userClaims.AccountType,
-		IsSkipVerification: true,
-	}
-	updatedUser, err := c.userRepo.UpdateColumns(userClaims.ID, user)
+	updatedUser, err := c.userRepo.UpdateSkipVerification(
+		userClaims.AccountType,
+		userClaims.ID,
+		true,
+	)
 	if err != nil {
 		c.respondWithError(ctx, http.StatusInternalServerError, fmt.Sprintf("SkipVerification: User update error: %v", err), "Failed to update verification status.")
 		return

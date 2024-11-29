@@ -3,7 +3,6 @@ package repositories
 import (
 	"errors"
 	"fmt"
-	"reflect"
 	"regexp"
 
 	"github.com/go-sql-driver/mysql"
@@ -72,33 +71,18 @@ func (r *Repository[T]) Delete(id uint) error {
 
 func (r *Repository[T]) UpdateColumns(id uint, updates T, preloads []string) (*T, error) {
 	entity := new(T)
-	db := r.DB
-	for _, preload := range preloads {
-		db = db.Preload(preload)
-	}
-	if err := db.First(entity, id).Error; err != nil {
-		return nil, handleDBError(err)
-	}
-	updatesValue := reflect.ValueOf(updates)
-	entityValue := reflect.ValueOf(entity).Elem()
-	updatesType := updatesValue.Type()
 
-	for i := 0; i < updatesValue.NumField(); i++ {
-		field := updatesType.Field(i)
-		updateField := updatesValue.Field(i)
-		entityField := entityValue.FieldByName(field.Name)
-		if updateField.Kind() == reflect.Bool {
-			entityField.Set(updateField)
-		} else if updateField.IsValid() && !updateField.IsZero() {
-			entityField.Set(updateField)
+	db := r.DB
+	if len(preloads) > 0 {
+		for _, preload := range preloads {
+			db = db.Preload(preload)
 		}
 	}
-	if err := db.Save(entity).Error; err != nil {
+
+	if err := db.Model(entity).Where("id = ?", id).Updates(updates).Error; err != nil {
 		return nil, handleDBError(err)
 	}
-	for _, preload := range preloads {
-		db = db.Preload(preload)
-	}
+
 	if err := db.First(entity, id).Error; err != nil {
 		return nil, handleDBError(err)
 	}

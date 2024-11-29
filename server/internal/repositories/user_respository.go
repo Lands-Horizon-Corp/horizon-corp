@@ -258,6 +258,126 @@ func (r *UserRepository) UpdatePassword(accountType string, userID uint, passwor
 	}
 }
 
+func (r *UserRepository) UpdateEmailVerification(accountType string, userID uint, value bool) (*models.User, error) {
+	switch accountType {
+	case "Admin":
+		preloads := []string{"Media", "Role", "Gender"}
+		updated := &models.Admin{IsEmailVerified: value}
+		user, err := r.admin.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertAdminToUser(user), nil
+	case "Owner":
+		preloads := []string{"Media", "Company", "Gender"}
+		updated := &models.Owner{IsEmailVerified: value}
+		user, err := r.owner.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertOwnerToUser(user), nil
+	case "Employee":
+
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
+		updated := &models.Employee{IsEmailVerified: value}
+		user, err := r.employee.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertEmployeeToUser(user), nil
+	case "Member":
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
+		updated := &models.Member{IsEmailVerified: value}
+		user, err := r.member.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertMemberToUser(user), nil
+	default:
+		return nil, fmt.Errorf("invalid account type")
+	}
+}
+
+func (r *UserRepository) UpdateContactVerification(accountType string, userID uint, value bool) (*models.User, error) {
+	switch accountType {
+	case "Admin":
+		preloads := []string{"Media", "Role", "Gender"}
+		updated := &models.Admin{IsContactVerified: value}
+		user, err := r.admin.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertAdminToUser(user), nil
+	case "Owner":
+		preloads := []string{"Media", "Company", "Gender"}
+		updated := &models.Owner{IsContactVerified: value}
+		user, err := r.owner.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertOwnerToUser(user), nil
+	case "Employee":
+
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
+		updated := &models.Employee{IsContactVerified: value}
+		user, err := r.employee.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertEmployeeToUser(user), nil
+	case "Member":
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
+		updated := &models.Member{IsContactVerified: value}
+		user, err := r.member.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertMemberToUser(user), nil
+	default:
+		return nil, fmt.Errorf("invalid account type")
+	}
+}
+
+func (r *UserRepository) UpdateSkipVerification(accountType string, userID uint, value bool) (*models.User, error) {
+	switch accountType {
+	case "Admin":
+		preloads := []string{"Media", "Role", "Gender"}
+		updated := &models.Admin{IsSkipVerification: value}
+		user, err := r.admin.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertAdminToUser(user), nil
+	case "Owner":
+		preloads := []string{"Media", "Company", "Gender"}
+		updated := &models.Owner{IsSkipVerification: value}
+		user, err := r.owner.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertOwnerToUser(user), nil
+	case "Employee":
+
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
+		updated := &models.Employee{IsSkipVerification: value}
+		user, err := r.employee.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertEmployeeToUser(user), nil
+	case "Member":
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
+		updated := &models.Member{IsSkipVerification: value}
+		user, err := r.member.UpdateColumns(userID, *updated, preloads)
+		if err != nil {
+			return nil, err
+		}
+		return ConvertMemberToUser(user), nil
+	default:
+		return nil, fmt.Errorf("invalid account type")
+	}
+}
+
 // ConvertUserToAdmin converts a User to an Admin model
 func ConvertUserToAdmin(user *models.User) *models.Admin {
 	return &models.Admin{
