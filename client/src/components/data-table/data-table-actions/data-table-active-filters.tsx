@@ -22,6 +22,11 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
                 if (filter.field === 'globalSearch') return false
                 if (Array.isArray(filter.value) && filter.value.length === 0)
                     return false
+
+                if (filter.value === 0 || filter.value) {
+                    return true
+                }
+
                 return filter.value || (filter.from && filter.to)
             })
     }, [filters])

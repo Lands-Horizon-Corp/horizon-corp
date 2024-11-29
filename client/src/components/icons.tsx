@@ -86,6 +86,7 @@ import {
 
 import {
     AiOutlineKey as KeyIcon,
+    AiFillHome as HomeFillIcon,
     AiOutlineClear as SmallBrushIcon,
     AiOutlineFullscreen as FullscreenIcon,
     AiOutlineLoading as LoadingCircleIcon,
@@ -208,6 +209,7 @@ export {
     PushPinIcon,
     EyeNoneIcon,
     PaymentsIcon,
+    HomeFillIcon,
     TrashBinIcon,
     FacebookIcon,
     QuestionIcon,

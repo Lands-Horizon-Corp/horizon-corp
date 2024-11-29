@@ -239,7 +239,7 @@ const DataTable = <TData,>({
                     'relative z-10 flex rounded-xl border dark:bg-secondary',
                     isScrollable
                         ? 'ecoop-scroll max-h-full overflow-y-scroll'
-                        : 'h-fit max-h-none overflow-clip',
+                        : 'h-fit max-h-none overflow-clip min-h-fit',
                     className
                 )}
             >
