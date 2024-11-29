@@ -85,28 +85,30 @@ func (r *UserRepository) GetAll(accountType string) ([]*models.User, error) {
 }
 
 func (r *UserRepository) GetByID(accountType string, id uint) (*models.User, error) {
-	preloads := []string{"Media", "Branch", "Role", "Gender"}
 	switch accountType {
 	case "Admin":
-
+		preloads := []string{"Media", "Role", "Gender"}
 		admin, err := r.admin.GetByID(id, preloads)
 		if err != nil {
 			return nil, err
 		}
 		return ConvertAdminToUser(admin), nil
 	case "Owner":
+		preloads := []string{"Media", "Company", "Gender"}
 		owner, err := r.owner.GetByID(id, preloads)
 		if err != nil {
 			return nil, err
 		}
 		return ConvertOwnerToUser(owner), nil
 	case "Employee":
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
 		employee, err := r.employee.GetByID(id, preloads)
 		if err != nil {
 			return nil, err
 		}
 		return ConvertEmployeeToUser(employee), nil
 	case "Member":
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
 		member, err := r.member.GetByID(id, preloads)
 		if err != nil {
 			return nil, err
@@ -125,18 +127,22 @@ func (r *UserRepository) Update(user *models.User) error {
 		}
 		user.Password = hashedPassword
 	}
-	preloads := []string{"Media", "Branch", "Role", "Gender"}
+
 	switch user.AccountType {
 	case "Admin":
+		preloads := []string{"Media", "Role", "Gender"}
 		admin := ConvertUserToAdmin(user)
 		return r.admin.Update(admin, preloads)
 	case "Owner":
+		preloads := []string{"Media", "Company", "Gender"}
 		owner := ConvertUserToOwner(user)
 		return r.owner.Update(owner, preloads)
 	case "Employee":
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
 		employee := ConvertUserToEmployee(user)
 		return r.employee.Update(employee, preloads)
 	case "Member":
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
 		member := ConvertUserToMember(user)
 		return r.member.Update(member, preloads)
 	default:
@@ -199,9 +205,9 @@ func (r *UserRepository) UpdateColumns(id uint, user *models.User) (*models.User
 		user.Password = hashedPassword
 	}
 
-	preloads := []string{"Media", "Branch", "Role", "Gender"}
 	switch user.AccountType {
 	case "Admin":
+		preloads := []string{"Media", "Role", "Gender"}
 		admin := ConvertUserToAdmin(user)
 		updatedAdmin, err := r.admin.UpdateColumns(id, *admin, preloads)
 		if err != nil {
@@ -209,6 +215,7 @@ func (r *UserRepository) UpdateColumns(id uint, user *models.User) (*models.User
 		}
 		return ConvertAdminToUser(updatedAdmin), nil
 	case "Owner":
+		preloads := []string{"Media", "Company", "Gender"}
 		owner := ConvertUserToOwner(user)
 		updatedOwner, err := r.owner.UpdateColumns(id, *owner, preloads)
 		if err != nil {
@@ -216,6 +223,7 @@ func (r *UserRepository) UpdateColumns(id uint, user *models.User) (*models.User
 		}
 		return ConvertOwnerToUser(updatedOwner), nil
 	case "Employee":
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
 		employee := ConvertUserToEmployee(user)
 		updatedEmployee, err := r.employee.UpdateColumns(id, *employee, preloads)
 		if err != nil {
@@ -223,6 +231,7 @@ func (r *UserRepository) UpdateColumns(id uint, user *models.User) (*models.User
 		}
 		return ConvertEmployeeToUser(updatedEmployee), nil
 	case "Member":
+		preloads := []string{"Media", "Branch", "Role", "Gender"}
 		member := ConvertUserToMember(user)
 		updatedMember, err := r.member.UpdateColumns(id, *member, preloads)
 		if err != nil {
