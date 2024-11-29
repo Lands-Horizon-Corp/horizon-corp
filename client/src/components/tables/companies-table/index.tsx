@@ -19,10 +19,14 @@ import logger from '@/helpers/loggers/logger'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import { cn } from '@/lib'
+import { cn, withCatchAsync } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { CompanyResource } from '@/horizon-corp/types'
 import { companiesTableColumns as columns } from './columns'
+import { useQuery } from '@tanstack/react-query'
+import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+import { serverRequestErrExtractor } from '@/helpers'
+import { toast } from 'sonner'
 
 const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     const {
@@ -44,8 +48,22 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         columns.map((c) => c.id!)
     )
 
-    const memoizedData: CompanyResource[] = useMemo(
-        () => [
+    const { data } = useQuery<CompanyResource[], string>({
+        queryKey: ['company-list'],
+        queryFn: async () => {
+            const [error, result] = await withCatchAsync(
+                CompanyService.getAll()
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                throw errorMessage
+            }
+
+            return result
+        },
+        initialData: [
             {
                 id: 1,
                 name: 'User1',
@@ -287,12 +305,11 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                 updatedAt: '2023-10-31T05:00:00.000Z',
             },
         ],
-        []
-    )
+    })
 
     const table = useReactTable({
         columns,
-        data: memoizedData,
+        data,
         initialState: {
             columnPinning: { left: ['select'] },
         },
@@ -303,7 +320,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
             rowSelection,
             columnVisibility,
         },
-        rowCount: memoizedData.length,
+        rowCount: data.length,
         manualSorting: true,
         manualFiltering: true,
         manualPagination: true,
@@ -360,10 +377,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                     setColumnOrder={setColumnOrder}
                     className="mb-2 max-h-96 flex-1"
                 />
-                <DataTablePagination
-                    table={table}
-                    totalSize={memoizedData.length}
-                />
+                <DataTablePagination table={table} totalSize={data.length} />
             </div>
         </DataTableFilterContext.Provider>
     )
