@@ -14,7 +14,6 @@ declare module '@tanstack/react-router' {
 
 const App = () => {
     const [queryClient] = useState(new QueryClient());
-
     return (
         <QueryClientProvider client={queryClient}>
             <ThemeProvider>
