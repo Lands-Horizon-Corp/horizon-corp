@@ -305,34 +305,69 @@ body[data-scroll-locked] {
     @apply max-w-full
 }
 
-.page {
-    width: 8.5in; /* Standard US Letter width */
-    height: 11in; /* Standard US Letter height */
-    margin: 0 auto;
-    padding: 1in;
-    background-color: white;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+
+.tiptap:first-child {
+    margin-top: 0;
+}
+
+/* Table-specific styling */
+.tiptap table {
+    border-collapse: collapse;
+    margin: 0;
     overflow: hidden;
+    table-layout: fixed;
+    width: 100%;
+}
+
+.tiptap table td,
+.tiptap table th {
+    border: 1px solid var(--gray-3);
+    box-sizing: border-box;
+    min-width: 1em;
+    padding: 6px 8px;
     position: relative;
-    
-  }
-  
-  .editor-container {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    overflow-y: auto;
-    max-height: calc(100vh - 2rem); /* Adjust as needed */
-    padding: 1rem;
-    background-color: #f0f0f0;
-  }
-  
-  @layer base {
-  * {
-    @apply border-border;
-    }
-  body {
-    @apply bg-background text-foreground;
-    }
+    vertical-align: top;
+}
+
+.tiptap table td > *,
+.tiptap table th > * {
+    margin-bottom: 0;
+}
+
+.tiptap table th {
+    background-color: var(--gray-1);
+    font-weight: bold;
+    text-align: left;
+}
+
+.tiptap table .selectedCell:after {
+    background: var(--gray-2);
+    content: "";
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 2;
+}
+
+.tiptap table .column-resize-handle {
+    bottom: -2px;
+    pointer-events: none;
+    position: absolute;
+    right: -2px;
+    top: 0;
+    width: 1px;
+    @apply bg-black/20
+}
+
+.tiptap .tableWrapper {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+}
+
+.tiptap.resize-cursor {
+    cursor: ew-resize;
+    cursor: col-resize;
 }

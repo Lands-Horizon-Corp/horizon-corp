@@ -1,6 +1,6 @@
 import { cn } from '@/lib'
 import { Editor } from '@tiptap/react'
-import { Table2, SplitIcon } from 'lucide-react'
+import { Table2, SplitIcon, MoreHorizontal } from 'lucide-react'
 import {
     CgBorderAll,
     CgBorderLeft,
@@ -42,17 +42,16 @@ import {
     DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
 import { SidebarTrigger } from '../ui/sidebar'
-import { HiDocumentPlus } from 'react-icons/hi2'
+import { HiDocumentPlus, HiTrash } from 'react-icons/hi2'
+import { useDocumentBuilderStore } from '@/store/document-builder-store'
 
 interface TableToolBarProps extends React.ComponentProps<'div'> {
     editor: Editor | null
-    addPage: () => void
 }
 
 export const ReportBuilderToolbar = ({
     editor,
     className,
-    addPage,
 }: TableToolBarProps) => {
     const [activeHeading, setActiveHeading] = useState<THeadingLevel | null>(
         null
@@ -95,9 +94,8 @@ export const ReportBuilderToolbar = ({
                         dimensions={dimensions}
                         handleInputChange={handleInputChange}
                     />
-                    <Button size="sm" variant="ghost" onClick={addPage}>
-                        <HiDocumentPlus size={19} />
-                    </Button>
+
+                    <PagingToolbar />
                     <TextAlignTool editor={editor} />
                     <Toolbar
                         isHeadingDisabled={false}
@@ -110,6 +108,34 @@ export const ReportBuilderToolbar = ({
                 </>
             )}
         </div>
+    )
+}
+
+interface PageToolBarProps {}
+
+const PagingToolbar = ({}: PageToolBarProps) => {
+    const { currentPage, addPage, deletePage } = useDocumentBuilderStore()
+
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger>
+                <Button variant="ghost" className={cn('px-2.5')}>
+                    <HiDocumentPlus size={19} />
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="[&>div>img]:mr-2 [&>div]:text-xs">
+                <DropdownMenuLabel>Page</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => addPage()}>
+                    <HiDocumentPlus size={19} className="mr-2" />
+                    Add Page
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => deletePage(currentPage)}>
+                    <HiTrash size={19} className="mr-2" />
+                    Delete Page
+                </DropdownMenuItem>
+            </DropdownMenuContent>
+        </DropdownMenu>
     )
 }
 
@@ -155,7 +181,7 @@ export const TableToolbar = ({
         <>
             <DropdownMenu>
                 <DropdownMenuTrigger>
-                    <Button variant={'ghost'} className="">
+                    <Button variant={'ghost'} className={cn('px-2.5')}>
                         <Table2 size={20} />
                     </Button>
                 </DropdownMenuTrigger>
@@ -449,7 +475,7 @@ export const TextAlignTool = ({ editor }: TextAlignToolProps) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger>
-                <Button variant={'ghost'} className="">
+                <Button variant="ghost" className={cn('px-2.5')}>
                     <TextAlignLeftIcon size={17} />
                 </Button>
             </DropdownMenuTrigger>

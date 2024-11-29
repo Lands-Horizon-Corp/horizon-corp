@@ -5,15 +5,14 @@ import { useSidebar } from '../ui/sidebar'
 
 interface TableToolBarProps extends React.ComponentProps<'div'> {
     editor: Editor | null
-    addPage: () => void
 }
 
-const DocumentBuilderTools = ({ editor, addPage }: TableToolBarProps) => {
+const DocumentBuilderTools = ({ editor }: TableToolBarProps) => {
     const { open } = useSidebar()
 
     return (
         <div className="fixed z-20 flex h-14 w-full items-center justify-center border bg-white dark:bg-black">
-            <ReportBuilderToolbar addPage={addPage} className="grow" editor={editor} />
+            <ReportBuilderToolbar className="grow" editor={editor} />
             {open && <div className="w-[16rem] flex-none"></div>}
         </div>
     )

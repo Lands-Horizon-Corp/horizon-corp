@@ -12,7 +12,6 @@ import { Outlet } from '@tanstack/react-router'
 // import DocumentBuilder from '@/components/document-builder'
 const TestLayout = () => {1
     // const { isOpen, setIsOpen } = useImagePreview()
-
     return (
         <div className="grid min-h-[100dvh] grid-cols-[auto_1fr]">
             <main>
