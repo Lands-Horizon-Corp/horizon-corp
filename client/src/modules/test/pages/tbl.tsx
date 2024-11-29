@@ -140,12 +140,7 @@ const defaultColumns: ColumnDef<TData>[] = [
         id: 'Name',
         accessorKey: 'name',
         header: (props) => (
-            <DataTableColumnHeader
-                {...props}
-                isResizable
-                title="Name"
-                dataType="text"
-            >
+            <DataTableColumnHeader {...props} isResizable title="Name">
                 <ColumnActions {...props}>
                     <TextFilter<TData> accessorKey={'name'} />
                 </ColumnActions>
@@ -240,6 +235,7 @@ const defaultColumns: ColumnDef<TData>[] = [
 ]
 
 const Tbl = () => {
+    const [columns] = useState<typeof defaultColumns>(() => [...defaultColumns])
     const {
         sorting,
         setSorting,
@@ -249,16 +245,15 @@ const Tbl = () => {
         setPagination,
         rowSelection,
         setRowSelection,
+        columnOrder,
+        setColumnOrder,
         columnVisibility,
         setColumnVisibility,
-    } = useDataTableState()
+    } = useDataTableState({
+        columnOrder: columns.map((c) => c.id!),
+    })
 
     const dataTableFilterState = useDatableFilterState()
-
-    const [columns] = useState<typeof defaultColumns>(() => [...defaultColumns])
-    const [columnOrder, setColumnOrder] = useState<string[]>(() =>
-        columns.map((c) => c.id!)
-    )
 
     const memoizedData = useMemo(() => data(), [])
 

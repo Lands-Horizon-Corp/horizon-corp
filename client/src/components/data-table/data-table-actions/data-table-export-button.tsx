@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { ExportIcon, CsvIcon } from '@/components/icons'
 
-interface Props<TData> {
+export interface IDataTableExportProps<TData> {
     table: Table<TData>
     columnsToExport: Array<keyof TData>
 }
@@ -18,7 +18,7 @@ interface Props<TData> {
 const DataTableExportButton = <TData,>({
     table,
     columnsToExport,
-}: Props<TData>) => {
+}: IDataTableExportProps<TData>) => {
     if (columnsToExport.length === 0)
         throw new Error('columnsToExport should not be empty')
 

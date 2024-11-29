@@ -2,13 +2,17 @@ import { ReloadIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-interface Props {
+export interface IRefreshButtonProps {
     isLoading?: boolean
     onClick: () => void
     className?: string
 }
 
-const DataTableRefreshButton = ({ isLoading, onClick, className }: Props) => {
+const RefreshButton = ({
+    isLoading,
+    onClick,
+    className,
+}: IRefreshButtonProps) => {
     return (
         <Button
             size="icon"
@@ -22,4 +26,4 @@ const DataTableRefreshButton = ({ isLoading, onClick, className }: Props) => {
     )
 }
 
-export default DataTableRefreshButton
+export default RefreshButton

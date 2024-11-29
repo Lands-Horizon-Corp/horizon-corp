@@ -1,55 +1,47 @@
+import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
 import {
+    useReactTable,
     getCoreRowModel,
     getSortedRowModel,
-    useReactTable,
 } from '@tanstack/react-table'
-import { useMemo, useState } from 'react'
 
 import DataTable from '@/components/data-table'
-import { Separator } from '@/components/ui/separator'
-import DataTableRefreshButton from '@/components/refresh-button'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
-import DataTableOptionsMenu from '@/components/data-table/data-table-actions/data-table-options-menu'
-import DataTableExportButton from '@/components/data-table/data-table-actions/data-table-export-button'
-import DataTableActiveFilters from '@/components/data-table/data-table-actions/data-table-active-filters'
-import DataTableDeleteSelected from '@/components/data-table/data-table-actions/data-table-delete-selected'
-
-import logger from '@/helpers/loggers/logger'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
 import { cn, withCatchAsync } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
+import { serverRequestErrExtractor } from '@/helpers'
 import { CompanyResource } from '@/horizon-corp/types'
 import { companiesTableColumns as columns } from './columns'
-import { useQuery } from '@tanstack/react-query'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import { serverRequestErrExtractor } from '@/helpers'
-import { toast } from 'sonner'
+import DataTableToolbar from '@/components/data-table/data-table-toolbar'
 
 const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     const {
         sorting,
         setSorting,
-        isScrollable,
-        setIsScrollable,
         pagination,
         setPagination,
+        columnOrder,
+        setColumnOrder,
+        isScrollable,
+        setIsScrollable,
         rowSelection,
         setRowSelection,
         columnVisibility,
         setColumnVisibility,
-    } = useDataTableState()
+    } = useDataTableState({
+        columnOrder: columns.map((c) => c.id!),
+    })
 
     const dataTableFilterState = useDatableFilterState()
 
-    const [columnOrder, setColumnOrder] = useState<string[]>(() =>
-        columns.map((c) => c.id!)
-    )
-
-    const { data } = useQuery<CompanyResource[], string>({
-        queryKey: ['company-list'],
+    const { data, isPending, refetch } = useQuery<CompanyResource[], string>({
+        queryKey: ['company-list' /* FILTER DITO DESU */],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 CompanyService.getAll()
@@ -61,7 +53,9 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                 throw errorMessage
             }
 
-            return result
+            if (!result) throw "Something wen't wroing"
+
+            return result ?? []
         },
         initialData: [
             {
@@ -305,6 +299,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                 updatedAt: '2023-10-31T05:00:00.000Z',
             },
         ],
+        retry: 1,
     })
 
     const table = useReactTable({
@@ -336,39 +331,28 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     return (
         <DataTableFilterContext.Provider value={dataTableFilterState}>
             <div className={cn('flex h-full flex-col gap-y-2', className)}>
-                <div className="flex w-full max-w-full items-center justify-between gap-x-2">
-                    <div className="flex items-center gap-x-2">
-                        <DataTableActiveFilters />
-                    </div>
-                    <div className="flex items-center gap-x-2">
-                        <DataTableDeleteSelected
-                            table={table}
-                            canDelete={true}
-                            onClick={(rows) => {
-                                logger.log('Deleting these -> ', rows)
-                            }}
-                        />
-                        <DataTableRefreshButton
-                            onClick={() => {}}
-                            isLoading={false}
-                        />
-                        <DataTableOptionsMenu
-                            table={table}
-                            scrollOption={{
-                                isScrollable,
-                                setIsScrollable,
-                            }}
-                        />
-                        <Separator
-                            orientation="vertical"
-                            className="h-full min-h-7"
-                        />
-                        <DataTableExportButton
-                            table={table}
-                            columnsToExport={['name']}
-                        />
-                    </div>
-                </div>
+                <DataTableToolbar
+                    table={table}
+                    refreshActionProps={{
+                        isLoading: isPending,
+                        onClick: () => refetch(),
+                    }}
+                    deleteActionProps={{
+                        isLoading: false,
+                        onClick: () => {},
+                    }}
+                    scrollableProps={{ isScrollable, setIsScrollable }}
+                    exportActionProps={{
+                        columnsToExport: [
+                            'name',
+                            'owner',
+                            'address',
+                            'branches',
+                            'contactNumber',
+                            'isAdminVerified',
+                        ],
+                    }}
+                />
                 <DataTable
                     table={table}
                     isStickyHeader

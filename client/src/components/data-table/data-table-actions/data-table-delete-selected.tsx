@@ -8,7 +8,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { cn } from '@/lib'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 
-interface Props<T> {
+export interface IDataTableDeleteSelectedProps<T> {
     table: Table<T>
     disabled?: boolean
     isLoading?: boolean
@@ -22,7 +22,7 @@ const DataTableDeleteSelected = <T,>({
     isLoading,
     canDelete = false,
     onClick,
-}: Props<T>) => {
+}: IDataTableDeleteSelectedProps<T>) => {
     const { onOpen } = useConfirmModalStore()
 
     const selectedRows = table

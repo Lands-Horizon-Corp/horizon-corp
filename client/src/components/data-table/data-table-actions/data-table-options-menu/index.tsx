@@ -10,13 +10,13 @@ import { Button } from '@/components/ui/button'
 import { MixerHorizontalIcon } from '@/components/icons'
 
 import DataTableScrollOption, {
-    DataTableScrollableOptionProps,
+    IDataTableScrollableOptionProps,
 } from './scroll-option'
 import ColumnVisibilityOption from './column-visibility-option'
 
 interface Props<T> {
     table: Table<T>
-    scrollOption?: DataTableScrollableOptionProps
+    scrollOption?: IDataTableScrollableOptionProps
 }
 
 const DataTableOptionsMenu = <T,>({ table, scrollOption }: Props<T>) => {

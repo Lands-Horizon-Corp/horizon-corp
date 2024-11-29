@@ -11,11 +11,15 @@ export type TDataTableDisplayType = 'Default' | 'Full'
 interface Props {
     pageIndex?: number
     pageSize?: number
+    columnOrder?: string[]
 }
 
 const useDataTableState = (props?: Props) => {
     const [rowSelection, setRowSelection] = useState({})
     const [sorting, setSorting] = useState<SortingState>([])
+    const [columnOrder, setColumnOrder] = useState<string[]>(
+        props?.columnOrder ?? []
+    )
     const [columnVisibility, setColumnVisibility] = useState({})
     const [isScrollable, setIsScrollable] = useState<boolean>(true)
     const [pagination, setPagination] = useState<PaginationState>({
@@ -24,16 +28,22 @@ const useDataTableState = (props?: Props) => {
     })
 
     return {
-        sorting,
-        pagination,
-        rowSelection,
-        isScrollable,
-        columnVisibility,
-        setSorting,
-        setPagination,
-        setRowSelection,
-        setIsScrollable,
-        setColumnVisibility,
+        // states: {
+            sorting,
+            pagination,
+            columnOrder,
+            rowSelection,
+            isScrollable,
+            columnVisibility,
+        // },
+        // setters: {
+            setSorting,
+            setPagination,
+            setColumnOrder,
+            setRowSelection,
+            setIsScrollable,
+            setColumnVisibility,
+        // },
     }
 }
 
