@@ -10,6 +10,9 @@ import ColumnActions from '@/components/data-table/data-table-column-header/colu
 
 import logger from '@/helpers/loggers/logger'
 import { CompanyResource } from '@/horizon-corp/types'
+import TextFilter from '@/components/data-table/data-table-filters/text-filter'
+import NumberFilter from '@/components/data-table/data-table-filters/number-filter'
+import DataTableMultiSelectFilter from '@/components/data-table/data-table-filters/multi-select-filter'
 
 export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
     {
@@ -72,7 +75,9 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         accessorKey: 'name',
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Name">
-                <ColumnActions {...props}></ColumnActions>
+                <ColumnActions {...props}>
+                    <TextFilter<CompanyResource> accessorKey={'name'} />
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
@@ -86,7 +91,9 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         accessorKey: 'address',
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Address">
-                <ColumnActions {...props}></ColumnActions>
+                <ColumnActions {...props}>
+                    <TextFilter<CompanyResource> accessorKey={'address'} />
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
@@ -100,7 +107,9 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         accessorKey: 'branches',
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Branches">
-                <ColumnActions {...props}></ColumnActions>
+                <ColumnActions {...props}>
+                    <NumberFilter<CompanyResource> accessorKey={'branches'} />
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
@@ -140,7 +149,11 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
                 isResizable
                 title="Contact Number"
             >
-                <ColumnActions {...props}></ColumnActions>
+                <ColumnActions {...props}>
+                    <TextFilter<CompanyResource>
+                        accessorKey={'contactNumber'}
+                    />
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
@@ -151,10 +164,24 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
     },
     {
         id: 'isVerified',
-        accessorKey: 'contactNumber',
+        accessorKey: 'isAdminVerified',
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Verified">
-                <ColumnActions {...props}></ColumnActions>
+                <ColumnActions {...props}>
+                    <DataTableMultiSelectFilter<CompanyResource>
+                        accessorKey="isAdminVerified"
+                        multiSelectOptions={[
+                            {
+                                label: 'Verified',
+                                value: 'true',
+                            },
+                            {
+                                label: 'Not Verified',
+                                value: 'false',
+                            },
+                        ]}
+                    ></DataTableMultiSelectFilter>
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({

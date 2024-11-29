@@ -48,7 +48,7 @@ const PageBreadCrumb = ({ className, homeUrl }: Props) => {
         })
 
         return paths
-    }, [pathName, matches])
+    }, [pathName, homeUrl, matches])
 
     return (
         <Breadcrumb className={cn('capitalize', className)}>
