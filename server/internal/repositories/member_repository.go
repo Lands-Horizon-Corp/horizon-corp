@@ -1,76 +1,58 @@
 package repositories
 
 import (
+	"horizon/server/config"
+	"horizon/server/helpers"
 	"horizon/server/internal/models"
-	"regexp"
 
 	"gorm.io/gorm"
 )
 
 type MemberRepository struct {
-	DB *gorm.DB
+	*Repository[models.Member]
 }
 
 func NewMemberRepository(db *gorm.DB) *MemberRepository {
-	return &MemberRepository{DB: db}
-}
-
-func (r *MemberRepository) Create(member *models.Member) error {
-	err := r.DB.Create(member).Error
-	return handleDBError(err)
-}
-
-func (r *MemberRepository) GetAll() ([]models.Member, error) {
-	var members []models.Member
-	err := r.DB.Preload("Media").Find(&members).Error
-	return members, handleDBError(err)
-}
-
-func (r *MemberRepository) GetByID(id uint) (models.Member, error) {
-	var member models.Member
-	err := r.DB.Preload("Media").First(&member, id).Error
-	return member, handleDBError(err)
-}
-
-func (r *MemberRepository) Update(id uint, member *models.Member) error {
-	member.ID = id
-	err := r.DB.Save(member).Error
-	return handleDBError(err)
-}
-
-func (r *MemberRepository) Delete(id uint) error {
-	err := r.DB.Delete(&models.Member{}, id).Error
-	return handleDBError(err)
-}
-
-func (r *MemberRepository) FindByEmailUsernameOrContact(input string) (models.Member, error) {
-	var member models.Member
-
-	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
-	phoneRegex := `^\+?[1-9]\d{1,14}$`
-
-	isEmail, _ := regexp.MatchString(emailRegex, input)
-	isPhone, _ := regexp.MatchString(phoneRegex, input)
-
-	if isEmail {
-		err := r.DB.Preload("Media").Where("email = ?", input).First(&member).Error
-		return member, handleDBError(err)
-	} else if isPhone {
-		err := r.DB.Preload("Media").Where("contact_number = ?", input).First(&member).Error
-		return member, handleDBError(err)
-	} else {
-		err := r.DB.Preload("Media").Where("username = ?", input).First(&member).Error
-		return member, handleDBError(err)
+	return &MemberRepository{
+		Repository: NewRepository[models.Member](db),
 	}
 }
 
-func (r *MemberRepository) UpdateColumns(id uint, columns map[string]interface{}) (models.Member, error) {
+func (r *MemberRepository) GetByEmail(email string) (*models.Member, error) {
 	var member models.Member
-	if err := r.DB.Model(&member).Where("id = ?", id).Updates(columns).Error; err != nil {
-		return member, handleDBError(err)
+	err := r.DB.Preload("Media").Where("email = ?", email).First(&member).Error
+	return &member, handleDBError(err)
+}
+
+func (r *MemberRepository) GetByContactNumber(contactNumber string) (*models.Member, error) {
+	var member models.Member
+	err := r.DB.Preload("Media").Where("contact_number = ?", contactNumber).First(&member).Error
+	return &member, handleDBError(err)
+}
+
+func (r *MemberRepository) GetByUsername(username string) (*models.Member, error) {
+	var member models.Member
+	err := r.DB.Preload("Media").Where("username = ?", username).First(&member).Error
+	return &member, handleDBError(err)
+}
+
+func (r *MemberRepository) FindByEmailUsernameOrContact(input string) (*models.Member, error) {
+	switch helpers.GetKeyType(input) {
+	case "contact":
+		return r.GetByContactNumber(input)
+	case "email":
+		return r.GetByEmail(input)
+	default:
+		return r.GetByUsername(input)
 	}
-	if err := r.DB.Preload("Media").First(&member, id).Error; err != nil {
-		return member, handleDBError(err)
+}
+
+func (r *MemberRepository) UpdatePassword(id uint, password string) error {
+	newPassword, err := config.HashPassword(password)
+	if err != nil {
+		return err
 	}
-	return member, nil
+	updated := &models.Member{Password: newPassword}
+	_, err = r.Repository.UpdateColumns(id, *updated, []string{})
+	return err
 }

@@ -8,19 +8,16 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import UserAvatar from '@/components/user-avatar'
+// import UserAvatar from '@/components/user-avatar'
 import ActionTooltip from '@/components/action-tooltip'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import TimeInCounter from '@/components/time-in-out/time-in-counter'
 import TimeInTimeOut, { TTImeInEntry } from '@/components/time-in-out'
 
-import {
-    randomEndOfDayQuoute,
-    randomStartOfDayQuoute,
-} from '@/constants/quoutes'
 import { cn } from '@/lib/utils'
 import { UserData } from '@/horizon-corp/types'
 import { IBaseCompNoChild } from '@/types/component'
+import { randomEndOfDayQuoute, randomStartOfDayQuoute } from '@/constants'
 
 interface Props extends IBaseCompNoChild {
     currentUser: UserData | null
@@ -59,7 +56,7 @@ const NavTimeInBar = ({ className, currentUser }: Props) => {
                     variant="secondary"
                     size={loading ? 'icon' : 'default'}
                     className={cn(
-                        'pointer-events-none relative flex cursor-not-allowed items-center gap-x-2 rounded-full border-2 border-secondary bg-popover p-1.5 text-sm text-foreground/70 delay-150 duration-300 ease-in-out',
+                        'pointer-events-none relative flex cursor-not-allowed items-center gap-x-2 rounded-full border-2 border-secondary bg-popover text-sm text-foreground/70 delay-150 duration-300 ease-in-out',
                         className,
                         timeInEntry && 'border-primary/40',
                         !loading && 'pointer-events-auto cursor-pointer pr-3'
@@ -68,10 +65,10 @@ const NavTimeInBar = ({ className, currentUser }: Props) => {
                     {loading && <LoadingSpinner />}
                     {!loading && (
                         <>
-                            <UserAvatar
-                                src="https://avatars.githubusercontent.com/u/48374007?s=80&v=4"
-                                fallback="JX"
-                            />
+                            {/* <UserAvatar
+                                src={currentUser.media?.downloadURL ?? ''}
+                                fallback={currentUser.username.charAt(0) ?? '-'}
+                            /> */}
                             {!timeInEntry && <span>Time-in</span>}
                             {timeInEntry && (
                                 <span>

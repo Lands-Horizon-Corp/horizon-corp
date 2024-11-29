@@ -59,8 +59,8 @@ func main() {
 			controllers.NewUserController,
 
 			// Roles
-			repositories.NewRolesRepository,
-			controllers.NewRolesController,
+			repositories.NewRoleRepository,
+			controllers.NewRoleController,
 
 			// Error Details
 			repositories.NewErrorDetailRepository,
@@ -81,6 +81,10 @@ func main() {
 			// Media
 			repositories.NewMediaRepository,
 			controllers.NewMediaController,
+
+			// Timesheets
+			repositories.NewTimesheetRepository,
+			controllers.NewTimesheetController,
 
 			// Router
 			routes.ProvideAPI,

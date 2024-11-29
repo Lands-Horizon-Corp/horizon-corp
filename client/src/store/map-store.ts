@@ -1,7 +1,7 @@
-import { MapContainerProps } from "react-leaflet";
-import { create } from "zustand";
+import { MapContainerProps } from 'react-leaflet'
+import { create } from 'zustand'
 
-import { Pin } from "@/types/custom-component";
+import { Pin } from '@/types/custom-component'
 
 interface MapStoreState {
     markerPosition?: { x: number; y: number }
@@ -14,7 +14,10 @@ interface MapStoreActions {
     setMarkers: (newPin: Pin[]) => void
 }
 
-interface MapStoreProps extends MapStoreState, MapStoreActions, MapContainerProps {}
+interface MapStoreProps
+    extends MapStoreState,
+        MapStoreActions,
+        MapContainerProps {}
 
 export const useMapStore = create<MapStoreProps>()((set) => ({
     setMarkerPosition: (nextPosition) =>

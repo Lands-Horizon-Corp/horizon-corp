@@ -1,108 +1,42 @@
 package controllers
 
 import (
-	"horizon/server/helpers"
 	"horizon/server/internal/models"
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests"
 	"horizon/server/internal/resources"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-type RolesController struct {
-	repo *repositories.RolesRepository
+type RoleController struct {
+	*BaseController[models.Role, *requests.RoleRequest, resources.RoleResource]
 }
 
-func NewRolesController(repo *repositories.RolesRepository) *RolesController {
-	return &RolesController{repo: repo}
+func NewRoleController(db *gorm.DB) *RoleController {
+	repo := repositories.NewRepository[models.Role](db)
+
+	baseController := NewBaseController[models.Role, *requests.RoleRequest, resources.RoleResource](
+		db,
+		ToRoleModel,
+		resources.ToResourceRole,
+		resources.ToResourceListRoles,
+		UpdateRoleModel,
+	)
+
+	baseController.Repo = repo
+
+	return &RoleController{
+		BaseController: baseController,
+	}
 }
 
-func (c *RolesController) Create(ctx *gin.Context) {
-	var req requests.RolesRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Validate the request
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Create Roles instance
-	roles := models.Roles{
-		Name:               req.Name,
-		Description:        req.Description,
-		ApiKey:             req.ApiKey,
-		Color:              req.Color,
-		ReadRole:           req.ReadRole,
-		WriteRole:          req.WriteRole,
-		UpdateRole:         req.UpdateRole,
-		DeleteRole:         req.DeleteRole,
-		ReadErrorDetails:   req.ReadErrorDetails,
-		WriteErrorDetails:  req.WriteErrorDetails,
-		UpdateErrorDetails: req.UpdateErrorDetails,
-		DeleteErrorDetails: req.DeleteErrorDetails,
-		ReadGender:         req.ReadGender,
-		WriteGender:        req.WriteGender,
-		UpdateGender:       req.UpdateGender,
-		DeleteGender:       req.DeleteGender,
-	}
-
-	// Save to the repository
-	if err := c.repo.Create(&roles); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Return the created error details as a resource
-	ctx.JSON(http.StatusCreated, resources.ToResourceRoles(roles))
-}
-func (c *RolesController) GetAll(ctx *gin.Context) {
-	errorDetail, err := c.repo.GetAll()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.JSON(http.StatusOK, resources.ToResourceListRoles(errorDetail))
-}
-
-func (c *RolesController) GetByID(ctx *gin.Context) {
-	uid, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-
-	roles, err := c.repo.GetByID(uid)
-	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Roles not found"})
-		return
-	}
-	ctx.JSON(http.StatusOK, resources.ToResourceRoles(roles))
-}
-
-func (c *RolesController) Update(ctx *gin.Context) {
-	id, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-
-	var req requests.RolesRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := req.Validate(); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	// Create Roles instance
-	roles := models.Roles{
+func ToRoleModel(req *requests.RoleRequest) *models.Role {
+	return &models.Role{
+		Model: gorm.Model{
+			ID: req.ID,
+		},
 		Name:               req.Name,
 		Description:        req.Description,
 		Color:              req.Color,
@@ -120,29 +54,28 @@ func (c *RolesController) Update(ctx *gin.Context) {
 		UpdateGender:       req.UpdateGender,
 		DeleteGender:       req.DeleteGender,
 	}
-
-	if err := c.repo.Update(id, &roles); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, resources.ToResourceRoles(roles))
 }
 
-func (c *RolesController) Delete(ctx *gin.Context) {
-	id, err := helpers.ParseIDParam(ctx, "id")
-	if err != nil {
-		return
-	}
-	if err := c.repo.Delete(id); err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Roles not found"})
-		return
-	}
-
-	ctx.JSON(http.StatusNoContent, nil)
+func UpdateRoleModel(model *models.Role, req *requests.RoleRequest) {
+	model.Name = req.Name
+	model.Description = req.Description
+	model.Color = req.Color
+	model.ApiKey = req.ApiKey
+	model.ReadRole = req.ReadRole
+	model.WriteRole = req.WriteRole
+	model.UpdateRole = req.UpdateRole
+	model.DeleteRole = req.DeleteRole
+	model.ReadErrorDetails = req.ReadErrorDetails
+	model.WriteErrorDetails = req.WriteErrorDetails
+	model.UpdateErrorDetails = req.UpdateErrorDetails
+	model.DeleteErrorDetails = req.DeleteErrorDetails
+	model.ReadGender = req.ReadGender
+	model.WriteGender = req.WriteGender
+	model.UpdateGender = req.UpdateGender
+	model.DeleteGender = req.DeleteGender
 }
 
-func RolesRoutes(router *gin.RouterGroup, controller *RolesController) {
+func RoleRoutes(router *gin.RouterGroup, controller *RoleController) {
 	group := router.Group("/role")
 	{
 		group.POST("", controller.Create)

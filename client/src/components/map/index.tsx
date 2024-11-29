@@ -25,9 +25,10 @@ import {
     Pin,
 } from '@/types/custom-component'
 
-import { LoadingCircleIcon, VscLocationIcon } from '../icons'
+import { LoadingCircleIcon, LocationPinOutlineIcon } from '../icons'
 
 import { useMapStore } from '@/store/map-store'
+import logger from '@/helpers/loggers/logger'
 
 const getLocationDescription = async (latlng: LatLngExpression) => {
     const { lat, lng } = latLng(latlng)
@@ -37,7 +38,7 @@ const getLocationDescription = async (latlng: LatLngExpression) => {
         const data = await response.json()
         return data.display_name || 'Address not found'
     } catch (error) {
-        console.error('Error fetching reverse geocode data:', error)
+        logger.error('Error fetching reverse geocode data:', error)
     }
 }
 
@@ -138,7 +139,7 @@ const CustomSearch = ({ onLocationFound }: TCustomSearchProps) => {
                                     >
                                         <div className="flex p-2">
                                             <div className="w-9">
-                                                <VscLocationIcon className="size-6 text-slate-600 dark:text-destructive-foreground" />
+                                                <LocationPinOutlineIcon className="size-6 text-slate-600 dark:text-destructive-foreground" />
                                             </div>
                                             <p className="truncate text-sm">
                                                 {location.desc}

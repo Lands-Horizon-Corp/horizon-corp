@@ -19,13 +19,13 @@ func NewOwnerAuthService(tokenService TokenService, logger *zap.Logger) *OwnerAu
 	}
 }
 
-func (s *OwnerAuthService) GenerateOwnerToken(owner models.Owner, expiration time.Duration) (string, error) {
+func (s *OwnerAuthService) GenerateOwnerToken(owner *models.Owner, expiration time.Duration) (string, error) {
 	claims := &UserClaims{
 		ID:          owner.ID,
 		AccountType: "Owner",
 	}
 
-	token, err := s.tokenService.GenerateToken(claims, 0)
+	token, err := s.tokenService.GenerateToken(claims, expiration)
 	if err != nil {
 		s.logger.Error("Failed to generate owner token", zap.Error(err))
 		return "", err

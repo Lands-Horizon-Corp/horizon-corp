@@ -14,7 +14,7 @@ type User struct {
 	MiddleName         string    `json:"middle_name"`
 	PermanentAddress   string    `json:"permanent_address"`
 	Description        string    `json:"description"`
-	Birthdate          time.Time `json:"birthdate"`
+	BirthDate          time.Time `json:"birth_date"`
 	Username           string    `json:"username"`
 	Email              string    `json:"email"`
 	Password           string    `json:"password"`
@@ -23,6 +23,6 @@ type User struct {
 	IsContactVerified  bool      `json:"is_contact_verified"`
 	IsSkipVerification bool      `json:"is_skip_verification"`
 	ContactNumber      string    `json:"contact_number"`
-	Media              Media     `json:"media"`
+	Media              *Media    `json:"media"`
 	Status             string    `json:"status"`
 }

@@ -17,7 +17,7 @@ export interface UserBase extends BaseModel {
     contactNumber: string
     permanentAddress: string
     description: string
-    birthdate: Date
+    birthDate: Date
     validEmail: boolean
     validContactNumber: boolean
     mediaId?: string

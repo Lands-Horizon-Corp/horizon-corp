@@ -1,30 +1,32 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
-type Roles struct {
-	Name        string `json:"name" gorm:"unique;not null"`
-	Description string `json:"description,omitempty"`
-	Color       string `json:"colors"`
+type Role struct {
 	gorm.Model
+	Name        string `gorm:"type:varchar(255);unique;not null" json:"name"`
+	Description string `gorm:"type:text" json:"description"`
+	ApiKey      string `gorm:"type:varchar(255);unique;not null" json:"api_key"`
+	Color       string `gorm:"type:varchar(255)" json:"color"`
 
-	ApiKey string `json:"api_key,omitempty" gorm:"unique;not null"`
+	ReadRole   bool `gorm:"default:false" json:"read_role"`
+	WriteRole  bool `gorm:"default:false" json:"write_role"`
+	UpdateRole bool `gorm:"default:false" json:"update_role"`
+	DeleteRole bool `gorm:"default:false" json:"delete_role"`
 
-	// Role Module
-	ReadRole   bool `json:"read_role,omitempty" gorm:"default:false"`
-	WriteRole  bool `json:"write_role,omitempty" gorm:"default:false"`
-	UpdateRole bool `json:"update_role,omitempty" gorm:"default:false"`
-	DeleteRole bool `json:"delete_role,omitempty" gorm:"default:false"`
+	ReadErrorDetails   bool `gorm:"default:false" json:"read_error_details"`
+	WriteErrorDetails  bool `gorm:"default:false" json:"write_error_details"`
+	UpdateErrorDetails bool `gorm:"default:false" json:"update_error_details"`
+	DeleteErrorDetails bool `gorm:"default:false" json:"delete_error_details"`
 
-	// Error Details Module
-	ReadErrorDetails   bool `json:"read_error_details,omitempty" gorm:"default:false"`
-	WriteErrorDetails  bool `json:"write_error_details,omitempty" gorm:"default:false"`
-	UpdateErrorDetails bool `json:"update_error_details,omitempty" gorm:"default:false"`
-	DeleteErrorDetails bool `json:"delete_error_details,omitempty" gorm:"default:false"`
+	ReadGender   bool `gorm:"default:false" json:"read_gender"`
+	WriteGender  bool `gorm:"default:false" json:"write_gender"`
+	UpdateGender bool `gorm:"default:false" json:"update_gender"`
+	DeleteGender bool `gorm:"default:false" json:"delete_gender"`
 
-	// Gender Module
-	ReadGender   bool `json:"read_gender,omitempty" gorm:"default:false"`
-	WriteGender  bool `json:"write_gender,omitempty" gorm:"default:false"`
-	UpdateGender bool `json:"update_gender,omitempty" gorm:"default:false"`
-	DeleteGender bool `json:"delete_gender,omitempty" gorm:"default:false"`
+	Admins    []*Admin    `gorm:"foreignKey:RoleID" json:"admins"`
+	Employees []*Employee `gorm:"foreignKey:RoleID" json:"employees"`
+	Members   []*Member   `gorm:"foreignKey:RoleID" json:"members"`
 }

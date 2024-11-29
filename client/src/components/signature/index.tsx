@@ -10,12 +10,12 @@ import { FileWithPath } from 'react-dropzone'
 import { useSignature } from '@/store/signature-store'
 
 import {
-    AiOutlineClearIcon,
-    AiOutlineFullscreenExitIcon,
-    AiOutlineFullscreenIcon,
-    FiCameraIcon,
-    LuHardDriveUploadIcon,
-    MdOutlineDrawIcon,
+    SmallBrushIcon,
+    FullscreenExitIcon,
+    FullscreenIcon,
+    CameraIcon,
+    HardDriveUploadIcon,
+    DrawIcon,
 } from '../icons'
 import { MdOutlineFileDownload } from 'react-icons/md'
 
@@ -48,16 +48,17 @@ enum SignatureModes {
 type SignatureModeType = SignatureModes
 
 const Signature = ({ className }: SignatureProps) => {
-
-    const [currentMode, setCurrentMode] = useState<SignatureModeType | null>(SignatureModes.DRAW)
+    const [currentMode, setCurrentMode] = useState<SignatureModeType | null>(
+        SignatureModes.DRAW
+    )
     const signatureRef = useRef<SignaturePad | null>(null)
     const [_, setCurrentFile] = useState<FileWithPath | null>()
     const [trimmedData, setTrimmedData] = useState<string | null>('')
     const [isFullScreenMode, setIsFullScreenMode] = useState(false)
-    
+
     const imageRef = useRef<HTMLImageElement | null>(null)
     const camRef = useRef<Webcam>(null)
-    
+
     const { setFile } = useSignature()
     const { onOpen } = useConfirmModalStore()
 
@@ -114,7 +115,7 @@ const Signature = ({ className }: SignatureProps) => {
             'capture-signature'
         )
         setFile(convertedImageToData)
-        if(imageSrc){
+        if (imageSrc) {
             toast.success('Capture Image')
         }
     }
@@ -122,7 +123,7 @@ const Signature = ({ className }: SignatureProps) => {
     const handleDownloadDrawSignature = () => {
         const canvas = document.createElement('canvas')
         const context = canvas.getContext('2d')
-        let downloadImage = imageRef?.current
+        const downloadImage = imageRef?.current
 
         if (!context) return
         if (!downloadImage) return
@@ -200,10 +201,10 @@ const Signature = ({ className }: SignatureProps) => {
         }
     }, [])
 
-    const isCurrentMode = (mode: SignatureModeType) =>{
+    const isCurrentMode = (mode: SignatureModeType) => {
         return mode === currentMode ? 'bg-secondary' : ''
     }
-    
+
     return (
         <div
             className={cn(
@@ -235,7 +236,7 @@ const Signature = ({ className }: SignatureProps) => {
                             handleSignaturePicking(SignatureModes.DRAW)
                         }
                     >
-                        <MdOutlineDrawIcon className="size-4 lg:mr-2" />
+                        <DrawIcon className="size-4 lg:mr-2" />
                         <span className="hidden lg:block">Draw Signature</span>
                     </Button>
                     <Button
@@ -248,7 +249,7 @@ const Signature = ({ className }: SignatureProps) => {
                             handleSignaturePicking(SignatureModes.CAPTURE)
                         }
                     >
-                        <FiCameraIcon className="size-4 lg:mr-2" />
+                        <CameraIcon className="size-4 lg:mr-2" />
                         <span className="hidden lg:block">
                             Capture Signature
                         </span>
@@ -263,7 +264,7 @@ const Signature = ({ className }: SignatureProps) => {
                             handleSignaturePicking(SignatureModes.UPLOAD)
                         }
                     >
-                        <LuHardDriveUploadIcon className="size-4 lg:mr-2" />
+                        <HardDriveUploadIcon className="size-4 lg:mr-2" />
                         <span className="hidden lg:block">
                             Upload Signature
                         </span>
@@ -280,7 +281,7 @@ const Signature = ({ className }: SignatureProps) => {
                                             size={'sm'}
                                             variant={'ghost'}
                                         >
-                                            <AiOutlineFullscreenIcon
+                                            <FullscreenIcon
                                                 size={24}
                                                 className="ease-in-out hover:scale-105 hover:cursor-pointer"
                                             />
@@ -303,7 +304,7 @@ const Signature = ({ className }: SignatureProps) => {
                                             onClick={handleIsFullScreenMode}
                                             variant={'ghost'}
                                         >
-                                            <AiOutlineFullscreenExitIcon
+                                            <FullscreenExitIcon
                                                 size={24}
                                                 className="ease-in-out hover:scale-105 hover:cursor-pointer"
                                             />
@@ -361,7 +362,7 @@ const Signature = ({ className }: SignatureProps) => {
                         size={'sm'}
                         onClick={handleClear}
                     >
-                        <AiOutlineClearIcon className="mr-2 size-4" />
+                        <SmallBrushIcon className="mr-2 size-4" />
                         Clear
                     </Button>
                 )}

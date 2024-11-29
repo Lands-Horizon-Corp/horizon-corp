@@ -11,7 +11,7 @@ import {
 import { FaTable } from 'react-icons/fa'
 import { MdOutlineBorderAll, MdOutlineBorderClear } from 'react-icons/md'
 import {
-    RxTrashIcon,
+    TrashIcon,
     TextAlignCenterIcon,
     TextAlignJustifyIcon,
     TextAlignLeftIcon,
@@ -95,12 +95,8 @@ export const ReportBuilderToolbar = ({
                         dimensions={dimensions}
                         handleInputChange={handleInputChange}
                     />
-                    <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={addPage}
-                    >
-                      <HiDocumentPlus size={19} />
+                    <Button size="sm" variant="ghost" onClick={addPage}>
+                        <HiDocumentPlus size={19} />
                     </Button>
                     <TextAlignTool editor={editor} />
                     <Toolbar
@@ -389,7 +385,7 @@ export const TableToolbar = ({
                             editor.chain().focus().deleteTable().run()
                         }
                     >
-                        <RxTrashIcon size={20} className="mr-2" />
+                        <TrashIcon size={20} className="mr-2" />
                         Delete Table
                     </DropdownMenuItem>
                     <DropdownMenuItem
@@ -459,7 +455,7 @@ export const TextAlignTool = ({ editor }: TextAlignToolProps) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="[&>div>svg]:mr-2 [&>div]:text-xs">
                 <DropdownMenuLabel>Text Align</DropdownMenuLabel>
-                <DropdownMenuSeparator/>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                     onClick={() => {
                         editor.commands.setTextAlign('left')

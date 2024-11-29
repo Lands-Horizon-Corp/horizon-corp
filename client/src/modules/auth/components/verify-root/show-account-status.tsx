@@ -5,7 +5,7 @@ import UserAvatar from '@/components/user-avatar'
 import { WarningCircleIcon } from '@/components/icons'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { HELP_CONTACT } from '../../constants'
+import { HELP_CONTACT } from '@/constants'
 import { UserData } from '@/horizon-corp/types'
 import { getUsersAccountTypeRedirectPage } from '@/helpers'
 

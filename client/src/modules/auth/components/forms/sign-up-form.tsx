@@ -26,18 +26,19 @@ import { VerifiedPatchIcon } from '@/components/icons'
 import PasswordInput from '@/components/ui/password-input'
 import InputDatePicker from '@/components/input-date-picker'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-import FormErrorMessage from '@/modules/auth/components/form-error-message'
+import FormErrorMessage from '@/components/ui/form-error-message'
 
 import { cn, withCatchAsync } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
-import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
+import { signUpSchema } from '@/validations/form-validation/sign-up-schema'
 
 import { IAuthForm } from '@/types/auth/form-interface'
 import { useUserAuthStore } from '@/store/user-auth-store'
+import { PhoneInput } from '@/components/contact-input/contact-input'
 
-type TSignUpForm = z.infer<typeof signUpFormSchema>
+type TSignUpForm = z.infer<typeof signUpSchema>
 
 const defaultValue: TSignUpForm = {
     acceptTerms: false,
@@ -46,7 +47,7 @@ const defaultValue: TSignUpForm = {
     contactNumber: '',
     email: '',
     permanentAddress: '',
-    birthdate: new Date(),
+    birthDate: new Date(),
     firstName: '',
     lastName: '',
     middleName: '',
@@ -66,10 +67,10 @@ const SignUpForm = ({
     const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TSignUpForm>({
-        resolver: zodResolver(signUpFormSchema),
+        resolver: zodResolver(signUpSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
-        defaultValues,
+        values: defaultValues,
     })
 
     const onFormSubmit = async (data: TSignUpForm) => {
@@ -235,7 +236,7 @@ const SignUpForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="birthdate"
+                        name="birthDate"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
@@ -274,11 +275,9 @@ const SignUpForm = ({
                                     </FormLabel>
                                     <FormControl>
                                         <div className="flex flex-1 items-center gap-x-2">
-                                            <Input
+                                            <PhoneInput
                                                 {...field}
-                                                id={field.name}
-                                                autoComplete="tel-country-code"
-                                                placeholder="Contact Number"
+                                                defaultCountry="PH"
                                             />
                                             <VerifiedPatchIcon
                                                 className={cn(

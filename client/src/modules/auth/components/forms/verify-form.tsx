@@ -1,6 +1,7 @@
 import z from 'zod'
 import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
 
@@ -18,20 +19,19 @@ import {
     InputOTPSlot,
 } from '@/components/ui/input-otp'
 import { Button } from '@/components/ui/button'
-import FormErrorMessage from '../form-error-message'
+import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib/utils'
+import { otpSchema } from '@/validations'
 import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
-import { otpFormSchema } from '@/modules/auth/validations/otp-form'
 
 import { UserData } from '@/horizon-corp/types'
 import { IAuthForm } from '@/types/auth/form-interface'
-import { useMutation } from '@tanstack/react-query'
 import ResendVerifyContactButton from '../resend-verify-contact-button'
 
-type TVerifyForm = z.infer<typeof otpFormSchema>
+type TVerifyForm = z.infer<typeof otpSchema>
 
 interface Props extends IAuthForm<TVerifyForm, UserData> {
     verifyMode: 'mobile' | 'email'
@@ -48,7 +48,7 @@ const VerifyForm = ({
     onSkip,
 }: Props) => {
     const form = useForm({
-        resolver: zodResolver(otpFormSchema),
+        resolver: zodResolver(otpSchema),
         reValidateMode: 'onChange',
         defaultValues,
     })

@@ -35,3 +35,6 @@ server/main
 
 ./client/stats.html
 client/stats.html
+
+./server/tmp/build-errors.log
+./client/bundle-analysis.html

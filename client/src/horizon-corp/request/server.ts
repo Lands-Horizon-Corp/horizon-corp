@@ -15,7 +15,7 @@ export default class UseServer {
         headers: {
             'Content-Type': 'application/json',
         },
-        withCredentials: true, // Set to true if credentials are needed
+        withCredentials: true,
     })
 
     /**
