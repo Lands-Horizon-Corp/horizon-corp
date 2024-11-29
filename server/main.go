@@ -53,6 +53,10 @@ func main() {
 			repositories.NewMemberRepository,
 			controllers.NewAuthController,
 
+			// Company
+			repositories.NewCompaniesRepository,
+			controllers.NewCompaniesController,
+
 			// User
 			auth.NewUserAuthService,
 			repositories.NewUserRepository,

@@ -26,7 +26,7 @@ func ProvideAPI(
 	mediaController *controllers.MediaController,
 	userController *controllers.UserController,
 	timesheetController *controllers.TimesheetController,
-
+	companyController *controllers.CompaniesController,
 	// Middleware
 	authMiddleware *middleware.AuthMiddleware,
 
@@ -66,6 +66,7 @@ func ProvideAPI(
 		v1.GET("/", func(c *gin.Context) {
 			c.Status(http.StatusOK)
 		})
+		controllers.CompaniesRoutes(v1, companyController)
 		controllers.AuthRoutes(v1, authMiddleware, authController)
 		controllers.TimesheetRoutes(v1, authMiddleware, timesheetController)
 		controllers.RoleRoutes(v1, roleController)

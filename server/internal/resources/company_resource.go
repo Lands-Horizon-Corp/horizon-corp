@@ -16,7 +16,7 @@ type CompanyResource struct {
 	IsAdminVerified bool              `json:"isAdminVerified"`
 	Owner           *OwnerResource    `json:"owner,omitempty"`
 	Media           *MediaResource    `json:"media,omitempty"`
-	Branches        []*BranchResource `json:"branches,omitempty"` // Updated to slice of pointers
+	Branches        []*BranchResource `json:"branches,omitempty"`
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
