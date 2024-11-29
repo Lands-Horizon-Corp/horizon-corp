@@ -36,7 +36,7 @@ const adminViewCompaniesRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'companies-management/view-companies',
     component: lazyRouteComponent(
-        () => import('./pages/companies-management/view-companies')
+        () => import('./pages/companies-management/view-companies/index')
     ),
 })
 

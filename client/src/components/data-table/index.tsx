@@ -151,10 +151,64 @@ const DataTable = <TData,>({
         })
     }, [])
 
+    const syncHeaderRowHeights = useCallback(() => {
+        const leftHeaderRows = leftTableRef.current?.querySelectorAll(
+            '[data-header-row-id]'
+        )
+        const centerHeaderRows = centerTableRef.current?.querySelectorAll(
+            '[data-header-row-id]'
+        )
+        const rightHeaderRows = rightTableRef.current?.querySelectorAll(
+            '[data-header-row-id]'
+        )
+
+        const headerRowIds = new Set<string>()
+        if (leftHeaderRows) {
+            leftHeaderRows.forEach((row) =>
+                headerRowIds.add((row as HTMLElement).dataset.headerRowId!)
+            )
+        }
+        if (centerHeaderRows) {
+            centerHeaderRows.forEach((row) =>
+                headerRowIds.add((row as HTMLElement).dataset.headerRowId!)
+            )
+        }
+        if (rightHeaderRows) {
+            rightHeaderRows.forEach((row) =>
+                headerRowIds.add((row as HTMLElement).dataset.headerRowId!)
+            )
+        }
+
+        headerRowIds.forEach((headerRowId) => {
+            const headerRows = [
+                leftTableRef.current?.querySelector(
+                    `[data-header-row-id="${headerRowId}"]`
+                ),
+                centerTableRef.current?.querySelector(
+                    `[data-header-row-id="${headerRowId}"]`
+                ),
+                rightTableRef.current?.querySelector(
+                    `[data-header-row-id="${headerRowId}"]`
+                ),
+            ].filter(Boolean) as HTMLElement[]
+
+            let maxHeight = 0
+            headerRows.forEach((row) => {
+                row.style.height = 'auto'
+                maxHeight = Math.max(maxHeight, row.offsetHeight)
+            })
+
+            headerRows.forEach((row) => {
+                row.style.height = `${maxHeight}px`
+            })
+        })
+    }, [])
+
     const syncHeights = useCallback(() => {
         syncRowHeights()
+        syncHeaderRowHeights()
         syncFooterRowHeights()
-    }, [syncRowHeights, syncFooterRowHeights])
+    }, [syncHeaderRowHeights, syncRowHeights, syncFooterRowHeights])
 
     useEffect(() => {
         syncHeights()
@@ -189,85 +243,110 @@ const DataTable = <TData,>({
                     className
                 )}
             >
-                {table.getLeftHeaderGroups().length > 0 && (
-                    <div className="ecoop-scroll sticky left-[0%] z-50 h-fit w-fit border-r dark:border-popover/80">
-                        <UITable
-                            ref={leftTableRef}
-                            className="h-fit w-auto"
-                            style={{
-                                width:
-                                    table.getLeftHeaderGroups().length > 0
-                                        ? table.getLeftTotalSize()
-                                        : 'fit-content',
-                            }}
-                        >
-                            <DataTableHeaderGroup
-                                isStickyHeader={isStickyHeader && isScrollable}
-                                columnOrder={table.getState().columnOrder}
-                                headerGroups={table.getLeftHeaderGroups()}
-                            />
-                            <DataTableBody
-                                targetGroup="left"
-                                rowClassName={rowClassName}
-                                rows={table.getRowModel().rows}
-                            />
-                            <DataTableFooter
-                                table={table}
-                                isStickyFooter={isStickyFooter && isScrollable}
-                                targetGroup="left"
-                            />
-                        </UITable>
-                    </div>
-                )}
-                {table.getCenterHeaderGroups().length > 0 && (
-                    <div className="z-0 flex h-fit flex-1">
-                        <UITable ref={centerTableRef} className="h-fit flex-1">
-                            <DataTableHeaderGroup
-                                isStickyHeader={isStickyHeader && isScrollable}
-                                columnOrder={table.getState().columnOrder}
-                                headerGroups={table.getCenterHeaderGroups()}
-                            />
-                            <DataTableBody
-                                rowClassName={rowClassName}
-                                rows={table.getRowModel().rows}
-                            />
-                            <DataTableFooter
-                                table={table}
-                                isStickyFooter={isStickyFooter && isScrollable}
-                            />
-                        </UITable>
-                    </div>
-                )}
-                {table.getRightHeaderGroups().length > 0 && (
-                    <div className="ecoop-scroll sticky right-0 z-50 h-fit w-fit border-l dark:border-popover/80">
-                        <UITable
-                            ref={rightTableRef}
-                            className="w-auto"
-                            style={{
-                                width:
-                                    table.getRightHeaderGroups().length > 0
-                                        ? table.getRightTotalSize()
-                                        : 'fit-content',
-                            }}
-                        >
-                            <DataTableHeaderGroup
-                                columnOrder={table.getState().columnOrder}
-                                isStickyHeader={isStickyHeader && isScrollable}
-                                headerGroups={table.getRightHeaderGroups()}
-                            />
-                            <DataTableBody
-                                targetGroup="right"
-                                rowClassName={rowClassName}
-                                rows={table.getRowModel().rows}
-                            />
-                            <DataTableFooter
-                                table={table}
-                                targetGroup="right"
-                                isStickyFooter={isStickyFooter && isScrollable}
-                            />
-                        </UITable>
-                    </div>
-                )}
+                <>
+                    {table.getLeftHeaderGroups().length > 0 &&
+                        table.getRowCount() > 0 && (
+                            <div className="ecoop-scroll sticky left-[0%] z-50 h-fit w-fit border-r dark:border-popover/80">
+                                <UITable
+                                    ref={leftTableRef}
+                                    className="h-fit w-auto"
+                                    style={{
+                                        width:
+                                            table.getLeftHeaderGroups().length >
+                                            0
+                                                ? table.getLeftTotalSize()
+                                                : 'fit-content',
+                                    }}
+                                >
+                                    <DataTableHeaderGroup
+                                        isStickyHeader={
+                                            isStickyHeader && isScrollable
+                                        }
+                                        columnOrder={
+                                            table.getState().columnOrder
+                                        }
+                                        headerGroups={table.getLeftHeaderGroups()}
+                                    />
+                                    <DataTableBody
+                                        targetGroup="left"
+                                        rowClassName={rowClassName}
+                                        rows={table.getRowModel().rows}
+                                    />
+                                    <DataTableFooter
+                                        table={table}
+                                        isStickyFooter={
+                                            isStickyFooter && isScrollable
+                                        }
+                                        targetGroup="left"
+                                    />
+                                </UITable>
+                            </div>
+                        )}
+                    {table.getCenterHeaderGroups().length > 0 && (
+                        <div className="z-0 flex h-fit flex-1">
+                            <UITable
+                                ref={centerTableRef}
+                                className="h-fit flex-1"
+                            >
+                                <DataTableHeaderGroup
+                                    isStickyHeader={
+                                        isStickyHeader && isScrollable
+                                    }
+                                    columnOrder={table.getState().columnOrder}
+                                    headerGroups={table.getCenterHeaderGroups()}
+                                />
+                                <DataTableBody
+                                    rowClassName={rowClassName}
+                                    rows={table.getRowModel().rows}
+                                />
+                                <DataTableFooter
+                                    table={table}
+                                    isStickyFooter={
+                                        isStickyFooter && isScrollable
+                                    }
+                                />
+                            </UITable>
+                        </div>
+                    )}
+                    {table.getRightHeaderGroups().length > 0 &&
+                        table.getRowCount() > 0 && (
+                            <div className="ecoop-scroll sticky right-0 z-50 h-fit w-fit border-l dark:border-popover/80">
+                                <UITable
+                                    ref={rightTableRef}
+                                    className="w-auto"
+                                    style={{
+                                        width:
+                                            table.getRightHeaderGroups()
+                                                .length > 0
+                                                ? table.getRightTotalSize()
+                                                : 'fit-content',
+                                    }}
+                                >
+                                    <DataTableHeaderGroup
+                                        columnOrder={
+                                            table.getState().columnOrder
+                                        }
+                                        isStickyHeader={
+                                            isStickyHeader && isScrollable
+                                        }
+                                        headerGroups={table.getRightHeaderGroups()}
+                                    />
+                                    <DataTableBody
+                                        targetGroup="right"
+                                        rowClassName={rowClassName}
+                                        rows={table.getRowModel().rows}
+                                    />
+                                    <DataTableFooter
+                                        table={table}
+                                        targetGroup="right"
+                                        isStickyFooter={
+                                            isStickyFooter && isScrollable
+                                        }
+                                    />
+                                </UITable>
+                            </div>
+                        )}
+                </>
             </div>
         </DndContext>
     )
