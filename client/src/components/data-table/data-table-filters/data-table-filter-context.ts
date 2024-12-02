@@ -63,7 +63,13 @@ export type TSearchFilter<T = unknown, TValue = T> = {
     to?: TValue
 }
 
-export type FilterObject<T = unknown, TValue = T> = {
+export type TFinalFilter<T = unknown, TValue = T> = {
+    field: string | keyof T
+    preload : string
+    value: TValue | { from: TValue; to: TValue }
+} & Omit<TSearchFilter, 'value' | 'from' | 'to'>
+
+export type TFilterObject<T = unknown, TValue = T> = {
     [key: string]: TSearchFilter<T, TValue> | undefined
 }
 
@@ -72,7 +78,8 @@ export interface IDataTableFilterState<
     TField = string,
     TValue = T,
 > {
-    filters: FilterObject<T, TValue>
+    filters: TFilterObject<T, TValue>
+    finalFilters: TFinalFilter[]
     setFilter: (field: TField, filter?: TSearchFilter<TValue, TValue>) => void
     bulkSetFilter: (
         field: TField[],

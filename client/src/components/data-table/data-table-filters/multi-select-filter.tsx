@@ -20,7 +20,7 @@ const DataTableMultiSelectFilter = <TData,>({
     const filterVal: TSearchFilter<string, string[]> = filters[
         accessorKey as string
     ] ?? {
-        dataType: 'date',
+        dataType: 'enum',
         mode: 'equal',
         value: undefined,
         from: undefined,

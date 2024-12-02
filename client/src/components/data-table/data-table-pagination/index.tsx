@@ -1,21 +1,24 @@
 import { Table } from '@tanstack/react-table'
 
-import { Button } from '@/components/ui/button'
 import {
     Select,
-    SelectContent,
     SelectItem,
-    SelectTrigger,
     SelectValue,
+    SelectContent,
+    SelectTrigger,
 } from '@/components/ui/select'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
     ChevronsLeftIcon,
     ChevronsRightIcon,
 } from '@/components/icons'
+import { cn } from '@/lib/utils'
 import { PAGE_SIZES_DENSE } from '@/constants'
+import logger from '@/helpers/loggers/logger'
+import { useEffect } from 'react'
 
 interface DataTablePaginationProps<TData> {
     table: Table<TData>
@@ -33,6 +36,16 @@ const DataTablePagination = <TData,>({
     hideSelectedIndicator = false,
 }: DataTablePaginationProps<TData>) => {
     const finalPageSizes = pageSizes.filter((size) => size < totalSize)
+
+    useEffect(() => {
+        if (
+            table.getRowCount() < finalPageSizes[0] &&
+            table.getState().pagination.pageSize !== finalPageSizes[0]
+        )
+            logger.log('Less')
+
+        logger.log('Not less')
+    }, [table])
 
     return (
         <div

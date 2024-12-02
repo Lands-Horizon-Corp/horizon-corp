@@ -13,6 +13,9 @@ import { IBaseCompNoChild } from '@/types'
 import { IDataTableScrollableOptionProps } from './data-table-actions/data-table-options-menu/scroll-option'
 import { type IDataTableExportProps } from '@/components/data-table/data-table-actions/data-table-export-button'
 import { type IDataTableDeleteSelectedProps } from '@/components/data-table/data-table-actions/data-table-delete-selected'
+import DataTableGlobalSearch, {
+    IGlobalSearchProps,
+} from './data-table-filters/data-table-global-search'
 
 export interface IDataTableToolbarProps<TData = unknown>
     extends IBaseCompNoChild {
@@ -21,11 +24,13 @@ export interface IDataTableToolbarProps<TData = unknown>
     scrollableProps?: IDataTableScrollableOptionProps
     exportActionProps?: Omit<IDataTableExportProps<TData>, 'table'>
     deleteActionProps?: Omit<IDataTableDeleteSelectedProps<TData>, 'table'>
+    globalSearchProps?: IGlobalSearchProps<TData>
 }
 
 const DataTableToolbar = <TData,>({
     table,
     scrollableProps,
+    globalSearchProps,
     deleteActionProps,
     exportActionProps,
     refreshActionProps,
@@ -33,6 +38,9 @@ const DataTableToolbar = <TData,>({
     return (
         <div className="flex w-full max-w-full items-center justify-between gap-x-2">
             <div className="flex items-center gap-x-2">
+                {globalSearchProps ? (
+                    <DataTableGlobalSearch {...globalSearchProps} />
+                ) : null}
                 <DataTableActiveFilters />
             </div>
             <div className="flex items-center gap-x-2">

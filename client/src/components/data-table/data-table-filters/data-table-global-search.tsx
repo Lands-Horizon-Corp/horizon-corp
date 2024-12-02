@@ -14,7 +14,7 @@ type KeysOfType<T, ValueType> = {
     [K in keyof T]: T[K] extends ValueType ? K : never
 }[keyof T]
 
-interface Props<T> {
+export interface IGlobalSearchProps<T> {
     keysToSearch: Array<KeysOfType<T, string>>
     defaultMode: TFilterModes
     placeHolder?: string
@@ -26,7 +26,7 @@ const DataTableGlobalSearch = <T,>({
     keysToSearch,
     defaultMode,
     ...otherProps
-}: Props<T>) => {
+}: IGlobalSearchProps<T>) => {
     const [visible, setVisible] = useState(false)
     const { filters, setFilter, bulkSetFilter } = useDataTableFilter()
 

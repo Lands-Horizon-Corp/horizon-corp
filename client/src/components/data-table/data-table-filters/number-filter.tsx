@@ -62,7 +62,7 @@ const NumberFilter = <TData,>({
             {filterVal.mode !== 'range' ? (
                 <DebouncedInput
                     type="number"
-                    value={filterVal.value}
+                    value={filterVal.value ?? ''}
                     className="w-full"
                     onChange={(inpt) =>
                         setFilter(accessorKey, {
