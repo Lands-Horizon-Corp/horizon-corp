@@ -11,7 +11,10 @@ import (
 	"horizon/server/internal/repositories"
 	"horizon/server/internal/requests"
 
+	"horizon/server/helpers"
+
 	"github.com/gin-gonic/gin"
+	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 )
 
@@ -121,35 +124,130 @@ func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
 	})
 }
 
-// func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
-// 	preloads := getPreloadsFromQuery(ctx)
-// 	pageIndex, pageSize := getPageParamsFromQuery(ctx)
+func (c *BaseController[Model, Request, Resource]) ExportAllFiltered(ctx *gin.Context) {
+	builder := helpers.NewExcelSheetBuilder("Sheet1")
 
-// 	var filterRequest struct {
-// 		Filters []repositories.Filter `json:"filters"`
-// 	}
-// 	if err := ctx.ShouldBindJSON(&filterRequest); err != nil && err != io.EOF {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-// 		return
-// 	}
-// 	filters := filterRequest.Filters
+	// Set headers.
+	builder.SetHeaders([]string{"ID", "Name", "Amount"})
 
-// 	result, err := c.Repo.ApplyFilters(filters, preloads, pageIndex, pageSize)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	// Add rows of data.
+	builder.AddRow([]interface{}{1, "Alice", 1000.50})
+	builder.AddRow([]interface{}{2, "Bob", 1500.75})
+	builder.AddRow([]interface{}{3, "Charlie", 2000.00})
 
-// 	resources := c.ToResourceList(result.Data)
-// 	ctx.JSON(http.StatusOK, gin.H{
-// 		"data":      resources,
-// 		"pageIndex": result.PageIndex,
-// 		"totalPage": result.TotalPage,
-// 		"pageSize":  result.PageSize,
-// 		"totalSize": result.TotalSize,
-// 		"pages":     result.Pages,
-// 	})
-// }
+	// Add a style for the "Amount" column (C).
+	builder.AddStyle("C", &excelize.Style{
+		NumFmt: 5, // Built-in currency format.
+	})
+
+	// Build the Excel file.
+	excelData, err := builder.Build()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to generate Excel file",
+		})
+		return
+	}
+
+	// Set response headers for file download.
+	ctx.Header("Content-Disposition", "attachment; filename=exported_data.xlsx")
+	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	ctx.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelData)
+}
+
+func (c *BaseController[Model, Request, Resource]) ExportAll(ctx *gin.Context) {
+	builder := helpers.NewExcelSheetBuilder("Sheet1")
+
+	// Set headers.
+	builder.SetHeaders([]string{"ID", "Name", "Amount"})
+
+	// Add rows of data.
+	builder.AddRow([]interface{}{1, "Alice", 1000.50})
+	builder.AddRow([]interface{}{2, "Bob", 1500.75})
+	builder.AddRow([]interface{}{3, "Charlie", 2000.00})
+
+	// Add a style for the "Amount" column (C).
+	builder.AddStyle("C", &excelize.Style{
+		NumFmt: 5, // Built-in currency format.
+	})
+
+	// Build the Excel file.
+	excelData, err := builder.Build()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to generate Excel file",
+		})
+		return
+	}
+
+	// Set response headers for file download.
+	ctx.Header("Content-Disposition", "attachment; filename=exported_data.xlsx")
+	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	ctx.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelData)
+
+}
+
+func (c *BaseController[Model, Request, Resource]) ExportSelected(ctx *gin.Context) {
+	builder := helpers.NewExcelSheetBuilder("Sheet1")
+
+	// Set headers.
+	builder.SetHeaders([]string{"ID", "Name", "Amount"})
+
+	// Add rows of data.
+	builder.AddRow([]interface{}{1, "Alice", 1000.50})
+	builder.AddRow([]interface{}{2, "Bob", 1500.75})
+	builder.AddRow([]interface{}{3, "Charlie", 2000.00})
+
+	// Add a style for the "Amount" column (C).
+	builder.AddStyle("C", &excelize.Style{
+		NumFmt: 5, // Built-in currency format.
+	})
+
+	// Build the Excel file.
+	excelData, err := builder.Build()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to generate Excel file",
+		})
+		return
+	}
+
+	// Set response headers for file download.
+	ctx.Header("Content-Disposition", "attachment; filename=exported_data.xlsx")
+	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	ctx.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelData)
+}
+
+func (c *BaseController[Model, Request, Resource]) ExportCurrentPage(ctx *gin.Context) {
+	builder := helpers.NewExcelSheetBuilder("Sheet1")
+
+	// Set headers.
+	builder.SetHeaders([]string{"ID", "Name", "Amount"})
+
+	// Add rows of data.
+	builder.AddRow([]interface{}{1, "Alice", 1000.50})
+	builder.AddRow([]interface{}{2, "Bob", 1500.75})
+	builder.AddRow([]interface{}{3, "Charlie", 2000.00})
+
+	// Add a style for the "Amount" column (C).
+	builder.AddStyle("C", &excelize.Style{
+		NumFmt: 5, // Built-in currency format.
+	})
+
+	// Build the Excel file.
+	excelData, err := builder.Build()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to generate Excel file",
+		})
+		return
+	}
+
+	// Set response headers for file download.
+	ctx.Header("Content-Disposition", "attachment; filename=exported_data.xlsx")
+	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	ctx.Data(http.StatusOK, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", excelData)
+}
 
 // Update updates an existing entity by ID
 func (c *BaseController[Model, Request, Resource]) Update(ctx *gin.Context) {
@@ -227,22 +325,22 @@ func getPreloadsFromQuery(ctx *gin.Context) []string {
 }
 
 // Helper function to extract pagination parameters
-func getPageParamsFromQuery(ctx *gin.Context) (pageIndex int, pageSize int) {
-	pageIndexStr := ctx.DefaultQuery("pageIndex", "1")
-	pageSizeStr := ctx.DefaultQuery("pageSize", "10")
+// func getPageParamsFromQuery(ctx *gin.Context) (pageIndex int, pageSize int) {
+// 	pageIndexStr := ctx.DefaultQuery("pageIndex", "1")
+// 	pageSizeStr := ctx.DefaultQuery("pageSize", "10")
 
-	pageIndex, err := strconv.Atoi(pageIndexStr)
-	if err != nil || pageIndex < 1 {
-		pageIndex = 1
-	}
+// 	pageIndex, err := strconv.Atoi(pageIndexStr)
+// 	if err != nil || pageIndex < 1 {
+// 		pageIndex = 1
+// 	}
 
-	pageSize, err = strconv.Atoi(pageSizeStr)
-	if err != nil || pageSize < 1 {
-		pageSize = 10
-	}
+// 	pageSize, err = strconv.Atoi(pageSizeStr)
+// 	if err != nil || pageSize < 1 {
+// 		pageSize = 10
+// 	}
 
-	return pageIndex, pageSize
-}
+// 	return pageIndex, pageSize
+// }
 
 // {
 // 	"filter": ["Owishi minecraft"]
