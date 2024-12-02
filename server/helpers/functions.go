@@ -3,6 +3,7 @@ package helpers
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -61,4 +62,20 @@ func DecodeBase64[T any](encodedData string, target *T) error {
 		return err
 	}
 	return nil
+}
+
+func DecodeBase64JSON(encoded string) (map[string]interface{}, error) {
+	// Decode Base64
+	decoded, err := base64.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode Base64: %w", err)
+	}
+
+	// Parse JSON
+	var result map[string]interface{}
+	if err := json.Unmarshal(decoded, &result); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal JSON: %w", err)
+	}
+
+	return result, nil
 }

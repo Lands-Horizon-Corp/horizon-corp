@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/base64"
 	"errors"
 	"fmt"
 	"net/http"
@@ -17,6 +16,22 @@ import (
 	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 )
+
+type TSearchFilter struct {
+	DataType string      `json:"dataType"` // TColumnDataTypes
+	Value    interface{} `json:"value,omitempty"`
+	Mode     string      `json:"mode"` // TFilterModes
+	From     interface{} `json:"from,omitempty"`
+	To       interface{} `json:"to,omitempty"`
+}
+
+// TFinalFilter represents the final filter object.
+type TFinalFilter struct {
+	Field   string      `json:"field"` // Field to filter
+	Preload string      `json:"preload"`
+	Value   interface{} `json:"value"` // Either a single value or a range { from, to }
+	TSearchFilter
+}
 
 // BaseController is a generic controller for CRUD operations with preloads
 type BaseController[Model any, Request requests.Validatable, Resource any] struct {
@@ -100,14 +115,14 @@ func (c *BaseController[Model, Request, Resource]) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resources)
 }
 
+// Filter handles the filtering of data based on client-specified filters.
 func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
 	filterParam := ctx.Query("filter")
-	decodedFilter, err := base64.StdEncoding.DecodeString(filterParam)
+	decodedData, err := helpers.DecodeBase64JSON(filterParam)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid base64 encoding"})
 		return
 	}
-	fmt.Println(decodedFilter)
+	fmt.Println(decodedData)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":      []string{},
@@ -117,9 +132,9 @@ func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
 		"totalSize": 1,
 		"pages": []string{
 			"/api/filter-something-1",
-			"/api/filter-something-1",
-			"/api/filter-something-1",
-			"/api/filter-something-1",
+			"/api/filter-something-2",
+			"/api/filter-something-3",
+			"/api/filter-something-4",
 		},
 	})
 }
