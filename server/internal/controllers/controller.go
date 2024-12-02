@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -95,6 +97,60 @@ func (c *BaseController[Model, Request, Resource]) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resources)
 }
 
+func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
+	filterParam := ctx.Query("filter")
+	decodedFilter, err := base64.StdEncoding.DecodeString(filterParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid base64 encoding"})
+		return
+	}
+	fmt.Println(decodedFilter)
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":      []string{},
+		"pageIndex": 1,
+		"totalPage": 1,
+		"pageSize":  1,
+		"totalSize": 1,
+		"pages": []string{
+			"/api/filter-something-1",
+			"/api/filter-something-1",
+			"/api/filter-something-1",
+			"/api/filter-something-1",
+		},
+	})
+}
+
+// func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
+// 	preloads := getPreloadsFromQuery(ctx)
+// 	pageIndex, pageSize := getPageParamsFromQuery(ctx)
+
+// 	var filterRequest struct {
+// 		Filters []repositories.Filter `json:"filters"`
+// 	}
+// 	if err := ctx.ShouldBindJSON(&filterRequest); err != nil && err != io.EOF {
+// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	filters := filterRequest.Filters
+
+// 	result, err := c.Repo.ApplyFilters(filters, preloads, pageIndex, pageSize)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	resources := c.ToResourceList(result.Data)
+// 	ctx.JSON(http.StatusOK, gin.H{
+// 		"data":      resources,
+// 		"pageIndex": result.PageIndex,
+// 		"totalPage": result.TotalPage,
+// 		"pageSize":  result.PageSize,
+// 		"totalSize": result.TotalSize,
+// 		"pages":     result.Pages,
+// 	})
+// }
+
 // Update updates an existing entity by ID
 func (c *BaseController[Model, Request, Resource]) Update(ctx *gin.Context) {
 	idParam := ctx.Param("id")
@@ -169,3 +225,26 @@ func getPreloadsFromQuery(ctx *gin.Context) []string {
 	}
 	return strings.Split(preloadsParam, ",")
 }
+
+// Helper function to extract pagination parameters
+func getPageParamsFromQuery(ctx *gin.Context) (pageIndex int, pageSize int) {
+	pageIndexStr := ctx.DefaultQuery("pageIndex", "1")
+	pageSizeStr := ctx.DefaultQuery("pageSize", "10")
+
+	pageIndex, err := strconv.Atoi(pageIndexStr)
+	if err != nil || pageIndex < 1 {
+		pageIndex = 1
+	}
+
+	pageSize, err = strconv.Atoi(pageSizeStr)
+	if err != nil || pageSize < 1 {
+		pageSize = 10
+	}
+
+	return pageIndex, pageSize
+}
+
+// {
+// 	"filter": ["Owishi minecraft"]
+// 	"preload": ["Role", "Role.Admin"]
+// }

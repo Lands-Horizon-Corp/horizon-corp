@@ -9,100 +9,90 @@ import (
 	"gorm.io/gorm"
 )
 
+// Repository is a generic repository for managing entities in the database
 type Repository[T any] struct {
 	DB *gorm.DB
 }
 
+// NewRepository creates a new instance of Repository
 func NewRepository[T any](db *gorm.DB) *Repository[T] {
 	return &Repository[T]{DB: db}
 }
 
+// Create adds a new entity to the database
 func (r *Repository[T]) Create(entity *T) error {
-	err := r.DB.Create(entity).Error
-	return handleDBError(err)
+	return handleDBError(r.DB.Create(entity).Error)
 }
 
+// GetByID retrieves an entity by its ID, optionally preloading related data
 func (r *Repository[T]) GetByID(id uint, preloads []string) (*T, error) {
 	entity := new(T)
 	db := r.DB
-	if len(preloads) > 0 {
-		for _, preload := range preloads {
-			db = db.Preload(preload)
-		}
+	for _, preload := range preloads {
+		db = db.Preload(preload)
 	}
-	err := db.First(entity, id).Error
-	if err != nil {
-		return nil, handleDBError(err)
-	}
-	return entity, nil
-}
-
-func (r *Repository[T]) GetAll(preloads []string) ([]*T, error) {
-	var entities []*T
-	db := r.DB
-	if len(preloads) > 0 {
-		for _, preload := range preloads {
-			db = db.Preload(preload)
-		}
-	}
-
-	err := db.Find(&entities).Error
-	return entities, handleDBError(err)
-}
-
-func (r *Repository[T]) Update(entity *T, preloads []string) error {
-	db := r.DB
-
-	if len(preloads) > 0 {
-		for _, preload := range preloads {
-			db = db.Preload(preload)
-		}
-	}
-
-	err := db.Save(entity).Error
-	return handleDBError(err)
-}
-
-func (r *Repository[T]) Delete(id uint) error {
-	entity := new(T)
-	err := r.DB.Delete(entity, id).Error
-	return handleDBError(err)
-}
-
-func (r *Repository[T]) UpdateColumns(id uint, updates T, preloads []string) (*T, error) {
-	entity := new(T)
-
-	db := r.DB
-	if len(preloads) > 0 {
-		for _, preload := range preloads {
-			db = db.Preload(preload)
-		}
-	}
-
-	if err := db.Model(entity).Where("id = ?", id).Updates(updates).Error; err != nil {
-		return nil, handleDBError(err)
-	}
-
 	if err := db.First(entity, id).Error; err != nil {
 		return nil, handleDBError(err)
 	}
-
 	return entity, nil
 }
 
+// GetAll retrieves all entities, optionally preloading related data
+func (r *Repository[T]) GetAll(preloads []string) ([]*T, error) {
+	var entities []*T
+	db := r.DB
+	for _, preload := range preloads {
+		db = db.Preload(preload)
+	}
+	return entities, handleDBError(db.Find(&entities).Error)
+}
+
+// Update modifies an existing entity
+func (r *Repository[T]) Update(entity *T, preloads []string) error {
+	db := r.DB
+	for _, preload := range preloads {
+		db = db.Preload(preload)
+	}
+	return handleDBError(db.Save(entity).Error)
+}
+
+// Delete removes an entity by its ID
+func (r *Repository[T]) Delete(id uint) error {
+	entity := new(T)
+	return handleDBError(r.DB.Delete(entity, id).Error)
+}
+
+// UpdateColumns performs a partial update on an entity's fields
+func (r *Repository[T]) UpdateColumns(id uint, updates T, preloads []string) (*T, error) {
+	entity := new(T)
+	db := r.DB
+	for _, preload := range preloads {
+		db = db.Preload(preload)
+	}
+	if err := db.Model(entity).Where("id = ?", id).Updates(updates).Error; err != nil {
+		return nil, handleDBError(err)
+	}
+	if err := db.First(entity, id).Error; err != nil {
+		return nil, handleDBError(err)
+	}
+	return entity, nil
+}
+
+// Custom error definitions
 var (
-	ErrNotFound              = errors.New("we couldn't find the information you were looking for")
-	ErrUniqueConstraint      = errors.New("the information you entered needs to be unique, but it already exists")
-	ErrInvalidValueType      = errors.New("the type of information you provided is not correct or expected")
-	ErrDuplicateEntry        = errors.New("the information you tried to add already exists")
-	ErrForeignKeyViolation   = errors.New("there's a link between pieces of information, and the connection you tried to make is invalid")
-	ErrTimeout               = errors.New("the action took too long and was stopped")
-	ErrDataTooLong           = errors.New("the information you entered is too long for where it's being stored")
-	ErrInvalidSyntax         = errors.New("there's an error in the way the request was written")
-	ErrCheckConstraintFailed = errors.New("the information you provided doesn't meet the required conditions")
-	ErrBadNull               = errors.New("you must provide information; it can't be left blank")
+	ErrNotFound              = errors.New("record not found")
+	ErrUniqueConstraint      = errors.New("unique constraint violation")
+	ErrInvalidValueType      = errors.New("invalid value type")
+	ErrDuplicateEntry        = errors.New("duplicate entry")
+	ErrForeignKeyViolation   = errors.New("foreign key constraint violation")
+	ErrTimeout               = errors.New("operation timed out")
+	ErrDataTooLong           = errors.New("data too long for column")
+	ErrInvalidSyntax         = errors.New("syntax error")
+	ErrCheckConstraintFailed = errors.New("check constraint violation")
+	ErrBadNull               = errors.New("null value not allowed")
 )
 
+// MySQL error codes
 const (
 	MySQLErrorDuplicateEntry          = 1062
 	MySQLErrorNoReferencedRow1        = 1451
@@ -116,6 +106,7 @@ const (
 	MySQLErrorDuplicateEntryWithKey   = 1586
 )
 
+// Regex patterns for error parsing
 var (
 	reDuplicateEntry   = regexp.MustCompile(`Duplicate entry '.*' for key '(.+)'`)
 	reDataTooLong      = regexp.MustCompile(`Data too long for column '(.+)' at row`)
@@ -123,86 +114,57 @@ var (
 	reInvalidValueType = regexp.MustCompile(`Out of range value for column '(.+)' at row`)
 )
 
+// handleDBError maps database errors to custom error types
 func handleDBError(err error) error {
 	if err == nil {
 		return nil
 	}
-
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return ErrNotFound
 	}
-
 	var mysqlErr *mysql.MySQLError
 	if errors.As(err, &mysqlErr) {
 		return mapMySQLError(mysqlErr)
 	}
-
 	return err
 }
 
+// mapMySQLError maps MySQL-specific errors to custom error types
 func mapMySQLError(mysqlErr *mysql.MySQLError) error {
 	switch mysqlErr.Number {
 	case MySQLErrorDuplicateEntry:
-		keyInfo := extractKeyInfo(mysqlErr.Message, reDuplicateEntry)
-		if keyInfo != "" {
-			return fmt.Errorf("%w: %s", ErrDuplicateEntry, keyInfo)
-		}
-		return ErrDuplicateEntry
-
+		return formatError(ErrDuplicateEntry, mysqlErr.Message, reDuplicateEntry)
 	case MySQLErrorDuplicateEntryWithKey:
-		keyInfo := extractKeyInfo(mysqlErr.Message, reDuplicateEntry)
-		if keyInfo != "" {
-			return fmt.Errorf("%w: %s", ErrUniqueConstraint, keyInfo)
-		}
-		return ErrUniqueConstraint
-
+		return formatError(ErrUniqueConstraint, mysqlErr.Message, reDuplicateEntry)
 	case MySQLErrorNoReferencedRow1, MySQLErrorNoReferencedRow2:
 		return ErrForeignKeyViolation
-
 	case MySQLErrorBadNull:
-		columnInfo := extractColumnInfo(reBadNull, mysqlErr.Message)
-		if columnInfo != "" {
-			return fmt.Errorf("%w: %s", ErrBadNull, columnInfo)
-		}
-		return ErrBadNull
-
+		return formatError(ErrBadNull, mysqlErr.Message, reBadNull)
 	case MySQLErrorDataTooLong:
-		columnInfo := extractColumnInfo(reDataTooLong, mysqlErr.Message)
-		if columnInfo != "" {
-			return fmt.Errorf("%w: %s", ErrDataTooLong, columnInfo)
-		}
-		return ErrDataTooLong
-
+		return formatError(ErrDataTooLong, mysqlErr.Message, reDataTooLong)
 	case MySQLErrorParseError:
 		return ErrInvalidSyntax
-
 	case MySQLErrorCheckConstraintViolated:
 		return ErrCheckConstraintFailed
-
 	case MySQLErrorLockDeadlock:
 		return ErrTimeout
-
 	case MySQLErrorDataOutOfRange:
-		columnInfo := extractColumnInfo(reInvalidValueType, mysqlErr.Message)
-		if columnInfo != "" {
-			return fmt.Errorf("%w: %s", ErrInvalidValueType, columnInfo)
-		}
-		return ErrInvalidValueType
-
+		return formatError(ErrInvalidValueType, mysqlErr.Message, reInvalidValueType)
 	default:
 		return fmt.Errorf("unhandled MySQL error %d: %s", mysqlErr.Number, mysqlErr.Message)
 	}
 }
 
-func extractKeyInfo(message string, re *regexp.Regexp) string {
-	matches := re.FindStringSubmatch(message)
-	if len(matches) > 1 {
-		return stripTableName(matches[1])
+// formatError extracts key or column information from an error message and formats it
+func formatError(baseErr error, message string, re *regexp.Regexp) error {
+	info := extractColumnInfo(re, message)
+	if info != "" {
+		return fmt.Errorf("%w: %s", baseErr, info)
 	}
-	return ""
+	return baseErr
 }
 
-// extractColumnInfo extracts the column name from the error message using the provided regex
+// extractColumnInfo extracts the column or key name from an error message
 func extractColumnInfo(re *regexp.Regexp, message string) string {
 	matches := re.FindStringSubmatch(message)
 	if len(matches) > 1 {
@@ -211,8 +173,7 @@ func extractColumnInfo(re *regexp.Regexp, message string) string {
 	return ""
 }
 
-// stripTableName removes the table name from the key or column name if present
-// For example, "users.email_unique" becomes "email_unique"
+// stripTableName removes the table prefix from a key or column name
 func stripTableName(name string) string {
 	if dotIndex := lastDotIndex(name); dotIndex != -1 {
 		return name[dotIndex+1:]
@@ -220,7 +181,7 @@ func stripTableName(name string) string {
 	return name
 }
 
-// lastDotIndex returns the index of the last dot in the string or -1 if not found
+// lastDotIndex returns the last dot index in a string or -1 if not found
 func lastDotIndex(s string) int {
 	for i := len(s) - 1; i >= 0; i-- {
 		if s[i] == '.' {

@@ -61,6 +61,7 @@ func CompaniesRoutes(router *gin.RouterGroup, controller *CompaniesController) {
 	group := router.Group("/companies")
 	{
 		group.POST("", controller.Create)
+		group.POST("", controller.Filter)
 		group.GET("", controller.GetAll)
 		group.GET("/:id", controller.GetByID)
 		group.PUT("/:id", controller.Update)

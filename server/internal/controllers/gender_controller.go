@@ -47,5 +47,6 @@ func GenderRoutes(router *gin.RouterGroup, controller *GenderController) {
 		group.GET("/:id", controller.GetByID)
 		group.PUT("/:id", controller.Update)
 		group.DELETE("/:id", controller.Delete)
+		group.POST("/filter", controller.Filter)
 	}
 }
