@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"regexp"
 	"strings"
 )
@@ -39,4 +41,24 @@ func isValidKey(key string) bool {
 func isValidUsername(username string) bool {
 	re := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	return re.MatchString(username)
+}
+
+func EncodeBase64[T any](data T) (string, error) {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return "", err
+	}
+	encodedData := base64.StdEncoding.EncodeToString(jsonData)
+	return encodedData, nil
+}
+
+func DecodeBase64[T any](encodedData string, target *T) error {
+	decodedData, err := base64.StdEncoding.DecodeString(encodedData)
+	if err != nil {
+		return err
+	}
+	if err := json.Unmarshal(decodedData, target); err != nil {
+		return err
+	}
+	return nil
 }
