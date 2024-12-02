@@ -15,16 +15,15 @@ import {
     ChevronsLeftIcon,
     ChevronsRightIcon,
 } from '@/components/icons'
+
 import { cn } from '@/lib/utils'
 import { PAGE_SIZES_DENSE } from '@/constants'
-import logger from '@/helpers/loggers/logger'
-import { useEffect } from 'react'
 
 interface DataTablePaginationProps<TData> {
-    table: Table<TData>
     className?: string
-    pageSizes?: number[]
     totalSize: number
+    table: Table<TData>
+    pageSizes?: number[]
     hideSelectedIndicator?: boolean
 }
 
@@ -36,16 +35,6 @@ const DataTablePagination = <TData,>({
     hideSelectedIndicator = false,
 }: DataTablePaginationProps<TData>) => {
     const finalPageSizes = pageSizes.filter((size) => size < totalSize)
-
-    useEffect(() => {
-        if (
-            table.getRowCount() < finalPageSizes[0] &&
-            table.getState().pagination.pageSize !== finalPageSizes[0]
-        )
-            logger.log('Less')
-
-        logger.log('Not less')
-    }, [table])
 
     return (
         <div

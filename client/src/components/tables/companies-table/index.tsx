@@ -1,10 +1,10 @@
-import { toast } from 'sonner'
-import { useQuery } from '@tanstack/react-query'
 import {
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
+import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -14,7 +14,6 @@ import useDatableFilterState from '@/components/data-table/hooks/use-datatable-f
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
 import { IBaseCompNoChild } from '@/types'
-import logger from '@/helpers/loggers/logger'
 import { cn, toBase64, withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
 import { companiesTableColumns as columns } from './columns'
@@ -103,8 +102,6 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         getSortedRowModel: getSortedRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
     })
-
-    logger.log(data)
 
     return (
         <DataTableFilterContext.Provider value={filterState}>
