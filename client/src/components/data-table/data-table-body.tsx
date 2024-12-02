@@ -8,12 +8,14 @@ type TTargetGroup = 'left' | 'right'
 
 const DataTableBody = <TData,>({
     rows,
+    colCount,
     targetGroup,
     rowClassName,
 }: {
     rows: Row<TData>[]
     targetGroup?: TTargetGroup
     rowClassName?: string
+    colCount?: number
 }) => {
     const getVisibleCells = (row: Row<TData>, targetGroup?: TTargetGroup) => {
         switch (targetGroup) {
@@ -56,10 +58,7 @@ const DataTableBody = <TData,>({
             ))}
             {rows.length === 0 && (
                 <TableRow>
-                    <TableCell
-                        colSpan={rows.length || 0}
-                        className="h-24 text-center"
-                    >
+                    <TableCell colSpan={colCount} className="h-24 text-center">
                         <span className="w-full text-center text-xs text-foreground/60">
                             no data
                         </span>

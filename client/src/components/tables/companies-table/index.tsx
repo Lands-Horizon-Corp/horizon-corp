@@ -46,6 +46,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     const {
         data: { data, totalPage, pageSize },
         isPending,
+        isRefetching,
         refetch,
     } = useQuery<CompanyPaginatedResource, string>({
         queryKey: ['company-list', filterState.filters],
@@ -115,7 +116,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                     }}
                     table={table}
                     refreshActionProps={{
-                        isLoading: isPending,
+                        isLoading: isPending || isRefetching,
                         onClick: () => refetch(),
                     }}
                     deleteActionProps={{

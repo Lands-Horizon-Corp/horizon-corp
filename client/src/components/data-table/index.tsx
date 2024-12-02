@@ -300,6 +300,7 @@ const DataTable = <TData,>({
                                 <DataTableBody
                                     rowClassName={rowClassName}
                                     rows={table.getRowModel().rows}
+                                    colCount={table.getAllColumns().length}
                                 />
                                 <DataTableFooter
                                     table={table}
