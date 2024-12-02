@@ -13,13 +13,13 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import { cn, toBase64, withCatchAsync } from '@/lib'
-import logger from '@/helpers/loggers/logger'
 import { IBaseCompNoChild } from '@/types'
+import logger from '@/helpers/loggers/logger'
+import { cn, toBase64, withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
 import { companiesTableColumns as columns } from './columns'
-import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 import { CompanyPaginatedResource } from '@/horizon-corp/types'
+import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 
 const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     const {
@@ -51,12 +51,10 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     } = useQuery<CompanyPaginatedResource, string>({
         queryKey: ['company-list', filterState.filters],
         queryFn: async () => {
-            const toPass = { filters: filterState.finalFilters, ...pagination }
-
-            logger.log(toPass)
-
             const [error, result] = await withCatchAsync(
-                CompanyService.filter(toBase64(toPass))
+                CompanyService.filter(
+                    toBase64({ filters: filterState.filters, ...pagination })
+                )
             )
 
             if (error) {

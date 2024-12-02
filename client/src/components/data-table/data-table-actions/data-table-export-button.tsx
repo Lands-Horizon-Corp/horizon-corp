@@ -16,9 +16,9 @@ export interface IDataTableExportProps<TData> {
     disabled?: boolean
     isLoading?: boolean
     exportAll?: () => void
-    exportSelected?: (rowsSelected: TData[]) => void
     exportCurrentPage?: () => void
     exportAllFiltered?: () => void
+    exportSelected?: (rowsSelected: TData[]) => void
 }
 
 const DataTableExportButton = <TData,>({
