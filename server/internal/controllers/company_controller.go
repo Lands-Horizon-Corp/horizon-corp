@@ -65,6 +65,6 @@ func CompaniesRoutes(router *gin.RouterGroup, controller *CompaniesController) {
 		group.GET("/:id", controller.GetByID)
 		group.PUT("/:id", controller.Update)
 		group.DELETE("/:id", controller.Delete)
-		group.GET("/filter", controller.Filter)
+		group.GET("/search", controller.Filter)
 	}
 }
