@@ -14,11 +14,11 @@ import useDatableFilterState from '@/components/data-table/hooks/use-datatable-f
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
 import { cn, toBase64, withCatchAsync } from '@/lib'
+import logger from '@/helpers/loggers/logger'
 import { IBaseCompNoChild } from '@/types'
 import { serverRequestErrExtractor } from '@/helpers'
 import { companiesTableColumns as columns } from './columns'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import logger from '@/helpers/loggers/logger'
 import { CompanyPaginatedResource } from '@/horizon-corp/types'
 
 const CompaniesTable = ({ className }: IBaseCompNoChild) => {
@@ -51,10 +51,12 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     } = useQuery<CompanyPaginatedResource, string>({
         queryKey: ['company-list', filterState.filters],
         queryFn: async () => {
+            const toPass = { filters: filterState.finalFilters, ...pagination }
+
+            logger.log(toPass)
+
             const [error, result] = await withCatchAsync(
-                CompanyService.filter(
-                    toBase64({ filters: filterState.filters, pagination })
-                )
+                CompanyService.filter(toBase64(toPass))
             )
 
             if (error) {
@@ -125,14 +127,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
-                        columnsToExport: [
-                            'name',
-                            'owner',
-                            'address',
-                            'branches',
-                            'contactNumber',
-                            'isAdminVerified',
-                        ],
+                        disabled: isPending || isRefetching,
                     }}
                 />
                 <DataTable

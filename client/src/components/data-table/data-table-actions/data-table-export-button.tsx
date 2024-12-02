@@ -9,30 +9,34 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { ExportIcon, CsvIcon } from '@/components/icons'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 export interface IDataTableExportProps<TData> {
     table: Table<TData>
-    columnsToExport: Array<keyof TData>
+    disabled?: boolean
+    isLoading?: boolean
+    exportAll?: () => void
+    exportSelected?: (rowsSelected: TData[]) => void
+    exportCurrentPage?: () => void
+    exportAllFiltered?: () => void
 }
 
 const DataTableExportButton = <TData,>({
     table,
-    columnsToExport,
+    disabled = false,
+    isLoading = false,
+    exportAll,
+    exportSelected,
+    exportCurrentPage,
+    exportAllFiltered,
 }: IDataTableExportProps<TData>) => {
-    if (columnsToExport.length === 0)
-        throw new Error('columnsToExport should not be empty')
-
     const selectedData = table
         .getSelectedRowModel()
         .flatRows.map(({ original }) => original)
 
-    const exportLocalSelected = () => {}
-
-    // const exportAllFiltered = () => {}
-
-    // const exportAll = () => {}
-
-    const exportCurrentPage = () => {}
+    const forceDisabled =
+        selectedData.length === 0 ||
+        !(exportAll || exportSelected || exportCurrentPage || exportAllFiltered)
 
     return (
         <DropdownMenu>
@@ -40,35 +44,44 @@ const DataTableExportButton = <TData,>({
                 <Button
                     size="sm"
                     variant={'secondary'}
+                    disabled={disabled || isLoading || forceDisabled}
                     className="gap-x-1 rounded-md"
                 >
                     <ExportIcon className="size-4" />
-                    Export
+                    {isLoading ? <LoadingSpinner /> : 'Export'}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="min-w-44">
                 <DropdownMenuGroup>
-                    {selectedData.length > 0 && (
-                        <DropdownMenuItem onClick={() => exportLocalSelected()}>
+                    {selectedData.length > 0 && exportSelected && (
+                        <DropdownMenuItem
+                            onClick={() => exportSelected(selectedData)}
+                        >
                             <CsvIcon className="mr-2 size-4 text-emerald-600" />
                             <span>Export Selected</span>
                         </DropdownMenuItem>
                     )}
-                    <DropdownMenuItem>
-                        <CsvIcon className="mr-2 size-4 text-emerald-600" />
-                        <span>Export All Filtered</span>
-                        {/* No ID */}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <CsvIcon className="mr-2 size-4 text-emerald-600" />
-                        <span>Export All</span>
-                        {/* No ID, no filters */}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => exportCurrentPage()}>
-                        <CsvIcon className="mr-2 size-4 text-emerald-600" />
-                        <span>Export Current Page</span>
-                        {/* With ID's */}
-                    </DropdownMenuItem>
+                    {exportAllFiltered && (
+                        <DropdownMenuItem onClick={() => exportAllFiltered()}>
+                            <CsvIcon className="mr-2 size-4 text-emerald-600" />
+                            <span>Export All Filtered</span>
+                            {/* No ID */}
+                        </DropdownMenuItem>
+                    )}
+                    {exportAll && (
+                        <DropdownMenuItem onClick={() => exportAll}>
+                            <CsvIcon className="mr-2 size-4 text-emerald-600" />
+                            <span>Export All</span>
+                            {/* No ID, no filters */}
+                        </DropdownMenuItem>
+                    )}
+                    {exportCurrentPage && (
+                        <DropdownMenuItem onClick={() => exportCurrentPage()}>
+                            <CsvIcon className="mr-2 size-4 text-emerald-600" />
+                            <span>Export Current Page</span>
+                            {/* With ID's */}
+                        </DropdownMenuItem>
+                    )}
                 </DropdownMenuGroup>
             </DropdownMenuContent>
         </DropdownMenu>
