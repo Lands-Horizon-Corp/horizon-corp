@@ -60,7 +60,7 @@ const DataTableBody = <TData,>({
                 <TableRow>
                     <TableCell colSpan={colCount} className="h-24 text-center">
                         <span className="w-full text-center text-xs text-foreground/60">
-                            no data
+                            🫥 no data
                         </span>
                     </TableCell>
                 </TableRow>
