@@ -32,7 +32,7 @@ export default class CompanyService {
   public static async filter(
     filters?: string
   ): Promise<CompanyPaginatedResource> {
-    const url = `${CompanyService.BASE_ENDPOINT}/search/?filter=${filters}`
+    const url = `${CompanyService.BASE_ENDPOINT}/search?filter=${filters}`
     const response = await UseServer.get<CompanyPaginatedResource>(url)
     return response.data
   }
