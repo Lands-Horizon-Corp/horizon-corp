@@ -1,5 +1,6 @@
+import { downloadFile } from '@/horizon-corp/helpers'
 import UseServer from '../../request/server'
-import { GenderResource, GendersRequest } from '../../types'
+import { GenderPaginatedResource, GenderResource, GendersRequest } from '../../types'
 
 /**
  * Service class to handle CRUD operations for genders.
@@ -75,5 +76,64 @@ export default class GenderService {
     const endpoint = `${GenderService.BASE_ENDPOINT}/${id}`
     const response = await UseServer.get<GenderResource>(endpoint)
     return response.data
+  }
+
+
+  /**
+ * Retrieves all genders.
+ *
+ * @returns {Promise<GenderPaginatedResource>} - A promise that resolves to an array of gebder resources.
+ */
+  public static async filter(
+    filters?: string
+  ): Promise<GenderPaginatedResource> {
+    const url = `${GenderService.BASE_ENDPOINT}/search?filter=${filters}`
+    const response = await UseServer.get<GenderPaginatedResource>(url)
+    return response.data
+  }
+
+
+  /**
+   * Exports all genders.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the export is complete.
+   */
+  public static async exportAll(): Promise<void> {
+    const url = `${GenderService.BASE_ENDPOINT}/export`
+    await downloadFile(url, 'all_genders_export.xlsx')
+  }
+
+  /**
+   * Exports filtered genders.
+   *
+   * @param {string} [filters] - The filters to apply for exporting genders.
+   * @returns {Promise<void>} - A promise that resolves when the export is complete.
+   */
+  public static async exportAllFiltered(filters?: string): Promise<void> {
+    const url = `${GenderService.BASE_ENDPOINT}/export-search?filter=${filters || ''}`
+    await downloadFile(url, 'filtered_genders_export.xlsx')
+  }
+
+  /**
+   * Exports selected genders.
+   *
+   * @param {number[]} ids - The IDs of the selected genders to export.
+   * @returns {Promise<void>} - A promise that resolves when the export is complete.
+   */
+  public static async exportSelected(ids: number[]): Promise<void> {
+    const query = ids.map((id) => `ids=${id}`).join('&')
+    const url = `${GenderService.BASE_ENDPOINT}/export-selected?${query}`
+    await downloadFile(url, 'selected_genders_export.xlsx')
+  }
+
+  /**
+   * Exports the current page of genders.
+   *
+   * @param {number} page - The page number to export.
+   * @returns {Promise<void>} - A promise that resolves when the export is complete.
+   */
+  public static async exportCurrentPage(page: number): Promise<void> {
+    const url = `${GenderService.BASE_ENDPOINT}/export-current-page/${page}`
+    await downloadFile(url, `current_page_genders_${page}_export.xlsx`)
   }
 }

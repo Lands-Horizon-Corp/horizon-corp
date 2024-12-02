@@ -1,3 +1,5 @@
+import { FilterPages } from "../table"
+
 export interface GenderResource {
   id: number
   name: string
@@ -5,3 +7,6 @@ export interface GenderResource {
   createdAt: string
   updatedAt: string
 }
+
+
+export type GenderPaginatedResource = FilterPages<GenderResource>

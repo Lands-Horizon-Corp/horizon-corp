@@ -24,20 +24,6 @@ export default class CompanyService {
     )
     return response.data
   }
-
-  /**
-   * Retrieves all companies.
-   *
-   * @returns {Promise<CompanyResource>} - A promise that resolves to an array of company resources.
-   */
-  public static async filter(
-    filters?: string
-  ): Promise<CompanyPaginatedResource> {
-    const url = `${CompanyService.BASE_ENDPOINT}/search?filter=${filters}`
-    const response = await UseServer.get<CompanyPaginatedResource>(url)
-    return response.data
-  }
-
   /**
    * Creates a new company.
    *
@@ -96,6 +82,18 @@ export default class CompanyService {
     return response.data
   }
 
+  /**
+ * Retrieves all companies.
+ *
+ * @returns {Promise<CompanyResource>} - A promise that resolves to an array of company resources.
+ */
+  public static async filter(
+    filters?: string
+  ): Promise<CompanyPaginatedResource> {
+    const url = `${CompanyService.BASE_ENDPOINT}/search?filter=${filters}`
+    const response = await UseServer.get<CompanyPaginatedResource>(url)
+    return response.data
+  }
 
 
   /**
@@ -139,7 +137,7 @@ export default class CompanyService {
    */
   public static async exportCurrentPage(page: number): Promise<void> {
     const url = `${CompanyService.BASE_ENDPOINT}/export-current-page/${page}`
-    await downloadFile(url, `current_page_${page}_export.xlsx`)
+    await downloadFile(url, `current_page_companies_${page}_export.xlsx`)
   }
 
 }
