@@ -1,4 +1,5 @@
 
+import { downloadFile } from '@/horizon-corp/helpers'
 import UseServer from '../../request/server'
 import {
   CompanyResource,
@@ -94,4 +95,51 @@ export default class CompanyService {
     const response = await UseServer.get<CompanyResource>(endpoint)
     return response.data
   }
+
+
+
+  /**
+   * Exports all companies.
+   *
+   * @returns {Promise<void>} - A promise that resolves when the export is complete.
+   */
+  public static async exportAll(): Promise<void> {
+    const url = `${CompanyService.BASE_ENDPOINT}/export`
+    await downloadFile(url, 'all_companies_export.xlsx')
+  }
+
+  /**
+   * Exports filtered companies.
+   *
+   * @param {string} [filters] - The filters to apply for exporting companies.
+   * @returns {Promise<void>} - A promise that resolves when the export is complete.
+   */
+  public static async exportAllFiltered(filters?: string): Promise<void> {
+    const url = `${CompanyService.BASE_ENDPOINT}/export-search?filter=${filters || ''}`
+    await downloadFile(url, 'filtered_companies_export.xlsx')
+  }
+
+  /**
+   * Exports selected companies.
+   *
+   * @param {number[]} ids - The IDs of the selected companies to export.
+   * @returns {Promise<void>} - A promise that resolves when the export is complete.
+   */
+  public static async exportSelected(ids: number[]): Promise<void> {
+    const query = ids.map((id) => `ids=${id}`).join('&')
+    const url = `${CompanyService.BASE_ENDPOINT}/export-selected?${query}`
+    await downloadFile(url, 'selected_companies_export.xlsx')
+  }
+
+  /**
+   * Exports the current page of companies.
+   *
+   * @param {number} page - The page number to export.
+   * @returns {Promise<void>} - A promise that resolves when the export is complete.
+   */
+  public static async exportCurrentPage(page: number): Promise<void> {
+    const url = `${CompanyService.BASE_ENDPOINT}/export-current-page/${page}`
+    await downloadFile(url, `current_page_${page}_export.xlsx`)
+  }
+
 }
