@@ -38,9 +38,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         columnOrder: columns.map((c) => c.id!),
     })
 
-    const filterState = useDatableFilterState({
-        name: 'preload.name',
-    })
+    const filterState = useDatableFilterState({})
 
     const {
         data: { data, totalPage, pageSize },
