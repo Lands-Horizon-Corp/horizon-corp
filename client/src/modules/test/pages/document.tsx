@@ -73,13 +73,13 @@ export type Person = {
 // ];
 
 
+
 const document = () => {
     return (
         <div className="h-screen w-screen">
             <DocumentBuilder />
             {/* <InsertTable data={payments} columns={columns} /> */}
             {/* <InsertTable data={persons} columns={personColumns} />; */}
-
         </div>
     )
 }

@@ -1,23 +1,26 @@
-import { Editor } from '@tiptap/react';
+import { Editor, JSONContent, Node } from '@tiptap/react';
 import { create } from 'zustand'
 
 interface PageProps {
     htmlTemplate: string;
     style: string;
+    JsonPage?: JSONContent,
 }
 
 interface DocumentBuilderState {
     pages: PageProps[];
     currentPage: number;
+    height: number,
 }
 
 interface DocumentBuilderActions {
-    addPage: () => void;
+    addPage: (editor: Editor) => void;
     deletePage: (index: number) => void;
     switchToPage: (index: number, editor: Editor) => void;
     setCurrentPage: (index: number) => void;
-    updatePageContent: (index: number, content: string) => void;
+    updateJsonPageContent: (index:number, content: Editor) => void;
     handleScrollFocusView: (pageIndex: number) => void;
+    setHeight: (height: number) => void;
 }
 
 interface DocumentBuilderStore extends DocumentBuilderState, DocumentBuilderActions {
@@ -26,17 +29,19 @@ interface DocumentBuilderStore extends DocumentBuilderState, DocumentBuilderActi
 
 export const useDocumentBuilderStore = create<DocumentBuilderStore>((set, get) => ({
     pages: [
-        { htmlTemplate: '<div></div>', style: '' },
+        { htmlTemplate: '<div>start Typing...</div>', style: '', JsonPage:[{type: 'doc', content:[{type:"text", text:"hello"}]}] },
     ],
     currentPage: 0,
+    height: 0,
     editorRefFocus: [],
-    addPage: () => {
+    addPage: (editor: Editor) => {
         const newPage: PageProps = {
             htmlTemplate: '',
             style: '',
+            JsonPage: [{type: 'doc', content:[{type:"text", text:"hello..."}]}]
         };
         const newPageIndex = get().pages.length;
-
+        
         set((state) => ({
             ...state,
             pages: [...state.pages, newPage],
@@ -46,7 +51,6 @@ export const useDocumentBuilderStore = create<DocumentBuilderStore>((set, get) =
             get().handleScrollFocusView(newPageIndex);
         }, 0);
     },
-
     deletePage: (index: number) => {
         set((state) => ({
             ...state,
@@ -54,7 +58,6 @@ export const useDocumentBuilderStore = create<DocumentBuilderStore>((set, get) =
             currentPage: state.currentPage > index ? state.currentPage - 1 : state.currentPage,
         }));
     },
-
     switchToPage: (index: number, editor: Editor) => {
         const { pages, currentPage } = get();
         const updatedContent = editor?.getHTML()
@@ -68,27 +71,24 @@ export const useDocumentBuilderStore = create<DocumentBuilderStore>((set, get) =
             }));
             editor?.commands.setContent(pages[index].htmlTemplate)
         }
-        
     },
-
     setCurrentPage: (index: number) => {
         set((state) => ({
             ...state,
             currentPage: index,
         }));
     },
-
-    updatePageContent: (index: number, content: string) => {
+    updateJsonPageContent: (index:number, editor: Editor) => {
         set((state) => {
+            const content = editor?.getJSON()
             const updatedPages = [...state.pages];
-            updatedPages[index].htmlTemplate = content;
+            updatedPages[index].JsonPage = content;
             return {
                 ...state,
                 pages: updatedPages,
             };
         });
     },
-
     handleScrollFocusView: (pageIndex: number) => {
         const editorRefFocus = get().editorRefFocus;
         if (editorRefFocus[pageIndex]) {
@@ -98,5 +98,11 @@ export const useDocumentBuilderStore = create<DocumentBuilderStore>((set, get) =
             });
         }
     },
+    setHeight: (height: number)=>{
+        set((state)=>({
+            ...state,
+            height:height 
+        })) 
+    },  
 
 }));

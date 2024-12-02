@@ -53,6 +53,7 @@ export const ReportBuilderToolbar = ({
     editor,
     className,
 }: TableToolBarProps) => {
+
     const [activeHeading, setActiveHeading] = useState<THeadingLevel | null>(
         null
     )
@@ -61,6 +62,7 @@ export const ReportBuilderToolbar = ({
         row: 0,
         col: 0,
     })
+
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -75,6 +77,8 @@ export const ReportBuilderToolbar = ({
         editor?.chain().focus().toggleHeading({ level }).run()
         setActiveHeading(level)
     }
+
+   
 
     if (!editor) {
         return null
@@ -94,8 +98,7 @@ export const ReportBuilderToolbar = ({
                         dimensions={dimensions}
                         handleInputChange={handleInputChange}
                     />
-
-                    <PagingToolbar />
+                    <PagingToolbar editor={editor} />
                     <TextAlignTool editor={editor} />
                     <Toolbar
                         isHeadingDisabled={false}
@@ -111,9 +114,11 @@ export const ReportBuilderToolbar = ({
     )
 }
 
-interface PageToolBarProps {}
+interface PageToolBarProps {
+    editor: Editor;
+}
 
-const PagingToolbar = ({}: PageToolBarProps) => {
+const PagingToolbar = ({editor}: PageToolBarProps) => {
     const { currentPage, addPage, deletePage } = useDocumentBuilderStore()
 
     return (
@@ -126,7 +131,7 @@ const PagingToolbar = ({}: PageToolBarProps) => {
             <DropdownMenuContent className="[&>div>img]:mr-2 [&>div]:text-xs">
                 <DropdownMenuLabel>Page</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => addPage()}>
+                <DropdownMenuItem onClick={() => addPage(editor)}>
                     <HiDocumentPlus size={19} className="mr-2" />
                     Add Page
                 </DropdownMenuItem>
@@ -157,6 +162,14 @@ export const TableToolbar = ({
         return null
     }
 
+    const { height, setHeight, pages} = useDocumentBuilderStore()
+
+    const handleHeightOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target
+        if (parseInt(value) < 0) return
+        setHeight(parseInt(value))
+    }
+
     const insertTable = () => {
         console.log(editor.commands)
         editor.commands.insertTable({
@@ -165,6 +178,14 @@ export const TableToolbar = ({
             withHeaderRow: true,
         })
     }
+    // console.log('pages', pages)
+
+    const handleTableHeight = (height: number) => {
+        editor?.chain().focus().updateAttributes('tableRow', {
+            rowHeight: height, // Dynamically set based on user input
+          }).run()
+    }
+
 
     const tableInputClass =
         'rounded-[10px] border border-[#4D4C4C]/20 bg-white/50 dark:bg-secondary/70 focus:border-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 placeholder:text-[#838383]'
@@ -180,7 +201,7 @@ export const TableToolbar = ({
     return (
         <>
             <DropdownMenu>
-                <DropdownMenuTrigger>
+                <DropdownMenuTrigger >
                     <Button variant={'ghost'} className={cn('px-2.5')}>
                         <Table2 size={20} />
                     </Button>
@@ -352,6 +373,30 @@ export const TableToolbar = ({
                         </DropdownMenuPortal>
                     </DropdownMenuSub>
                     <DropdownMenuSeparator />
+                    <DropdownMenuSub>
+                        <DropdownMenuSubTrigger>
+                            <FaTable size={19} className="mr-2" /> Table Height
+                        </DropdownMenuSubTrigger>
+                        <DropdownMenuPortal>
+                            <DropdownMenuSubContent className="flex flex-col gap-2 p-2 [&>div>span]:text-sm [&>div>span]:text-muted-foreground [&>div]:flex [&>div]:items-center [&>div]:space-x-2">
+                                <div>
+                                    <span>Height</span>
+                                    <Input
+                                        name="height"
+                                        value={height}
+                                        type="number"
+                                        onChange={handleHeightOnChange}
+                                        onClick={(e) => e.preventDefault()}
+                                        onPointerDown={(e) =>
+                                            e.stopPropagation()
+                                        }
+                                        className={cn(tableInputClass)}
+                                    ></Input>
+                                </div>
+                                <Button onClick={()=> handleTableHeight(height)}>set Height</Button>
+                            </DropdownMenuSubContent>
+                        </DropdownMenuPortal>
+                    </DropdownMenuSub>
                     <DropdownMenuItem
                         onClick={() =>
                             editor.chain().focus().addColumnBefore().run()
@@ -474,7 +519,7 @@ export const TextAlignTool = ({ editor }: TextAlignToolProps) => {
     if (!editor) return null
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className={cn('px-2.5')}>
                     <TextAlignLeftIcon size={17} />
                 </Button>

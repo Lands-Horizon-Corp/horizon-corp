@@ -214,12 +214,12 @@
     @apply bg-transparent text-[0.9em] text-inherit;
 }
 
-.with-scroll-bars-hidden {
+.signature-with-scroll-bars-hidden {
     overflow: hidden !important;
     padding-right: 2px !important;
 }
 
-body[data-scroll-locked] {
+body[signature-data-scroll-locked] {
     overflow: hidden !important;
     overscroll-behavior: contain;
     position: relative !important;
@@ -231,23 +231,23 @@ body[data-scroll-locked] {
     margin-right: 2px !important;
 }
 
-.right-scroll-bar-position {
+.signature-right-scroll-bar-position {
     right: 2px !important;
 }
 
-.width-before-scroll-bar {
+.signature-width-before-scroll-bar {
     margin-right: 2px !important;
 }
 
-.right-scroll-bar-position .right-scroll-bar-position {
+.signature-right-scroll-bar-position .signature-right-scroll-bar-position {
     right: 0 !important;
 }
 
-.width-before-scroll-bar .width-before-scroll-bar {
+.signature-width-before-scroll-bar .signature-width-before-scroll-bar {
     margin-right: 0 !important;
 }
 
-body[data-scroll-locked] {
+body[signature-data-scroll-locked] {
     --removed-body-scroll-bar-size: 2px;
 }
 
@@ -270,7 +270,7 @@ body[data-scroll-locked] {
 }
 
 .tiptap table tbody tr .selectedCell{
-    @apply   bg-slate-50 
+    @apply  bg-slate-50 
 }
 
 .table-toolbar-custom code {
@@ -318,6 +318,7 @@ body[data-scroll-locked] {
     table-layout: fixed;
     width: 100%;
 }
+
 
 .tiptap table td,
 .tiptap table th {

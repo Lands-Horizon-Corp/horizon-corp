@@ -150,29 +150,29 @@ const Signature = ({ className }: SignatureProps) => {
 
     const handleIsFullScreenMode = () => {
         if (!isFullScreenMode) {
-            document.body.setAttribute('data-scroll-locked', '1')
+            document.body.setAttribute('signature-data-scroll-locked', '1')
         } else {
-            document.body.removeAttribute('data-scroll-locked')
+            document.body.removeAttribute('signature-data-scroll-locked')
         }
         setIsFullScreenMode((prev) => !prev)
     }
 
     const applyScrollLock = (body: HTMLElement) => {
         body.classList.add(
-            'with-scroll-bars-hidden',
-            'right-scroll-bar-position',
-            'width-before-scroll-bar'
+            'signature-with-scroll-bars-hidden',
+            'signature-right-scroll-bar-position',
+            'signature-width-before-scroll-bar'
         )
-        body.setAttribute('data-scroll-locked', '')
+        body.setAttribute('signature-data-scroll-locked', '')
     }
 
     const removeScrollLock = (body: HTMLElement) => {
         body.classList.remove(
-            'with-scroll-bars-hidden',
-            'right-scroll-bar-position',
-            'width-before-scroll-bar'
+            'signature-with-scroll-bars-hidden',
+            'signature-right-scroll-bar-position',
+            'signature-width-before-scroll-bar'
         )
-        body.removeAttribute('data-scroll-locked')
+        body.removeAttribute('signature-data-scroll-locked')
     }
 
     useEffect(() => {

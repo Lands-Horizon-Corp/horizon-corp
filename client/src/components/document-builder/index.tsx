@@ -2,32 +2,53 @@ import Document from '@tiptap/extension-document'
 import Gapcursor from '@tiptap/extension-gapcursor'
 import Paragraph from '@tiptap/extension-paragraph'
 import TableCell from '@tiptap/extension-table-cell'
-import TableHeader from '@tiptap/extension-table-header'
-import TableRow from '@tiptap/extension-table-row'
 import Text from '@tiptap/extension-text'
 import TextAlign from '@tiptap/extension-text-align'
 import { EditorContent, useEditor } from '@tiptap/react'
 import { useEffect, useRef } from 'react'
 import StarterKit from '@tiptap/starter-kit'
-import { CustomTable, CustomTableCell } from './custom-table-editor'
+import {
+    CustomTable,
+    CustomTableCell,
+    CustomTableRow,
+} from './document-custom-table-editor'
 import { SidebarProvider } from '../ui/sidebar'
 import DocumenetSidePanel from './document-side-panel'
-import DocumentBuilderTools from './document-builder-tools'
+import DocumentBuilderTools from './document-builder-toolbar-container'
 import DOMPurify from 'isomorphic-dompurify'
 import { useDocumentBuilderStore } from '@/store/document-builder-store'
+import TableRow from '@tiptap/extension-table-row'
+import TableHeader from '@tiptap/extension-table-header'
+import { Editor, Node, mergeAttributes } from '@tiptap/core';
 
 export type PageProps = {
     htmlTemplate: string
     style: string
 }
+export const Page = Node.create({
+    name: 'page',
+    group: 'block',
+    content: 'block+',
+    parseHTML() {
+      return [
+        {
+          tag: 'div[data-type="page"]',
+        },
+      ];
+    },
+    renderHTML({ HTMLAttributes }) {
+      return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'page', class: 'page' }), 0];
+    },
+  });
 
-export default () => {
+export const DocumentBuilder = () => {
     const pageHeight = 1056
 
     const editorRefFocus = useRef<Array<HTMLDivElement | null>>([])
     const editorRef = useRef<HTMLDivElement | null>()
 
-    const { pages, currentPage, switchToPage, addPage} = useDocumentBuilderStore()
+    const { pages, currentPage, switchToPage, updateJsonPageContent } =
+        useDocumentBuilderStore()
 
     useEffect(() => {
         useDocumentBuilderStore.setState({
@@ -47,39 +68,42 @@ export default () => {
             Text,
             Gapcursor,
             CustomTable.configure({ resizable: true }),
+            CustomTableRow,
             TableRow,
-            TableHeader,
             TableCell,
+            TableHeader,
             CustomTableCell,
             TextAlign.configure({
-                types: ['heading', 'parsagraph'],
+                types: ['heading', 'paragraph'],
             }),
         ],
         content: pages[currentPage].htmlTemplate,
         onUpdate: ({ editor }) => {
-            const updatedContent = editor.getHTML()
-            const contentHeight = editor.view.dom.scrollHeight;
-            
+            const contentHeight = editor.view.dom.scrollHeight
+            const { state } = editor
+
+            updateJsonPageContent(currentPage, editor)
+            organizeContentIntoPages(editor, 844);
+       
+
             // console.log(contentHeight)
-            console.log('contentHeight', contentHeight)
-            if(contentHeight === 844) return
-            const nextPage = currentPage + 1
-            const hasNextPage = !!pages[currentPage + 1]
+            // console.log('contentHeight', contentHeight)
+            // if(contentHeight === 844) return
+            // const nextPage = currentPage + 1
+            // const hasNextPage = !!pages[currentPage + 1]
 
-            if(hasNextPage && contentHeight > 844){
-                switchToPage(nextPage, editor)
-            }else{
-                if(contentHeight > 844){
-                    addPage()
-                }
-            }
-
-            // console.log('updatedContent', updatedContent)
-            
+            // if(hasNextPage && contentHeight > 844){
+            //     switchToPage(nextPage, editor)
+            // }else{
+            //     if(contentHeight > 844){
+            //         addPage()
+            //     }
+            // }
         },
+        Page,
         editorProps: {
             attributes: {
-                class: `table-toolbar-custom !w-full dark:text-black  `,
+                class: `table-toolbar-custom !w-full dark:text-black `,
             },
         },
         autofocus: true,
@@ -88,9 +112,56 @@ export default () => {
         },
     })
 
+    const organizeContentIntoPages = (editor:Editor, maxPageHeight: number) => {
+        const { state } = editor
+        const { schema, doc } = state
+        // Placeholder for paginated content
+        const pages = []
+        let currentPages = []
+        let currentHeight = editor.view.dom.scrollHeight
+     
+        doc.content.forEach((node, offset) => {
+            // console.log(node)
+            const nodeHeight = estimateNodeHeight(node) // Function to estimate node height
+            if (currentHeight > maxPageHeight) {
+                // Push the current page and start a new one
+
+                pages.push(schema.node('page', {}, currentPages))
+                currentPages = []
+                currentHeight = 0
+            }
+
+            currentPages.push(node)
+        })
+
+        // Push the final page
+        if (currentPages.length) {
+            pages.push(schema.node('page', {}, currentPages))
+        }
+
+        // Update the editor state with paginated content
+        const newDoc = schema.node('doc', {}, pages)
+        console.log('newDoc', newDoc)
+        editor.view.dispatch(state.tr.replaceWith(0, doc.nodeSize - 2, newDoc))
+    }
+
+    const estimateNodeHeight = (node: any) => {
+        const baseHeight = 20 // Base height for a textblock
+        if (node.type.name === 'paragraph' || node.type.name === 'heading') {
+            return (
+                baseHeight +
+                Math.ceil(node.textContent.length / 50) * baseHeight
+            )
+        }
+        if (node.type.name === 'table') {
+            const rows = node.content.childCount
+            return rows * 40 // Example row height
+        }
+        return baseHeight
+    }
+
     const NonEditableHTML = ({ htmlContent }: { htmlContent: string }) => {
         const sanitizedHTML = DOMPurify.sanitize(htmlContent)
-
         return (
             <div
                 className="tiptap ProseMirror table-toolbar-custom !w-full"
@@ -98,6 +169,8 @@ export default () => {
             />
         )
     }
+
+    // console.log(editor.state)
 
     // const handlePageUpdate = () => {
     //     const container = editorRef.current
@@ -289,7 +362,6 @@ export default () => {
             <div className="flex w-full">
                 <div className="relative w-full">
                     <DocumentBuilderTools editor={editor} />
-
                     <div
                         ref={(el) => {
                             editorRef.current = el
@@ -309,16 +381,12 @@ export default () => {
                                             ? switchToPage(index, editor)
                                             : ''
                                     }
-                                    className={`page relative border-0 mx-auto h-[11in] w-[8.5in] cursor-pointer overflow-hidden rounded-lg bg-white p-[1in]  ${
-                                        isCurrentPage
-                                            ? 'shadow-md'
-                                            : ''
+                                    className={`page relative mx-auto h-[11in] w-[8.5in] cursor-pointer overflow-hidden rounded-lg border-0 bg-white p-[1in] ${
+                                        isCurrentPage ? 'shadow-md' : ''
                                     }`}
                                 >
                                     {isCurrentPage ? (
-                                        <EditorContent
-                                            editor={editor}
-                                        />
+                                        <EditorContent editor={editor} />
                                     ) : (
                                         <NonEditableHTML
                                             htmlContent={page.htmlTemplate}
@@ -339,3 +407,5 @@ export default () => {
         </SidebarProvider>
     )
 }
+
+export default DocumentBuilder
