@@ -16,7 +16,7 @@ type CompaniesController struct {
 
 func NewCompaniesController(db *gorm.DB) *CompaniesController {
 	repo := repositories.NewRepository[models.Company](db)
-	baseController := NewBaseController[models.Company, *requests.CompanyRequest, resources.CompanyResource](
+	baseController := NewBaseController(
 		db,
 		ToCompanyModel,
 		resources.ToResourceCompany,
