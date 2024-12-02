@@ -56,7 +56,7 @@ func ProvideAPI(
 			"http://localhost:3000",
 			"http://localhost:3001",
 			"http://localhost:4173",
-			"http://localhost:8080",
+			"http://localhost:8080 ",
 		},
 		AllowMethods:  []string{"POST", "GET", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:  []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
