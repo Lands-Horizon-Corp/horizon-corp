@@ -7,7 +7,13 @@ import {
     IDataTableFilterState,
 } from '../data-table-filters/data-table-filter-context'
 
-const useDatableFilterState = (): IDataTableFilterState => {
+type FilterStateOpts = {
+    [key: string]: string
+}
+
+const useDatableFilterState = (
+    preloadMap?: FilterStateOpts
+): IDataTableFilterState => {
     const [filters, setFilters] = useState<TFilterObject>({})
 
     const setFilter = (field: string, filter?: TSearchFilter) => {
@@ -52,11 +58,13 @@ const useDatableFilterState = (): IDataTableFilterState => {
             } else if (value.mode !== 'range' && value.value === undefined)
                 return
 
+            const preload = preloadMap ? preloadMap[key] : ''
+
             filteredFilter.push({
                 field: key,
-                preload: '',
-                dataType: value.dataType,
                 mode: value.mode,
+                dataType: value.dataType,
+                preload: preload ?? '',
                 value:
                     value.mode === 'range'
                         ? { from: value.from, to: value.to }
@@ -65,7 +73,7 @@ const useDatableFilterState = (): IDataTableFilterState => {
         })
 
         return filteredFilter
-    }, [filters])
+    }, [filters, preloadMap])
 
     return {
         filters,

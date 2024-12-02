@@ -13,13 +13,13 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import { cn, withCatchAsync } from '@/lib'
+import { cn, toBase64, withCatchAsync } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { serverRequestErrExtractor } from '@/helpers'
-import { CompanyResource } from '@/horizon-corp/types'
 import { companiesTableColumns as columns } from './columns'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 import logger from '@/helpers/loggers/logger'
+import { CompanyPaginatedResource } from '@/horizon-corp/types'
 
 const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     const {
@@ -39,15 +39,21 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         columnOrder: columns.map((c) => c.id!),
     })
 
-    const dataTableFilterState = useDatableFilterState()
+    const filterState = useDatableFilterState({
+        name: 'preload.name',
+    })
 
-    logger.log(dataTableFilterState.finalFilters)
-
-    const { data, isPending, refetch } = useQuery<CompanyResource[], string>({
-        queryKey: ['company-list' /* FILTER DITO DESU */],
+    const {
+        data: { data, totalPage, pageSize },
+        isPending,
+        refetch,
+    } = useQuery<CompanyPaginatedResource, string>({
+        queryKey: ['company-list', filterState.filters],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
-                CompanyService.getAll()
+                CompanyService.filter(
+                    toBase64({ filters: filterState.filters, pagination })
+                )
             )
 
             if (error) {
@@ -58,72 +64,21 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
 
             if (!result) throw "Something wen't wroing"
 
-            return result ?? []
+            return result
         },
-        initialData: [
-            {
-                id: 1,
-                name: 'User1',
-                contactNumber: '0991234567',
-                isAdminVerified: true,
-                createdAt: '2023-11-28T12:00:00.000Z',
-                updatedAt: '2023-11-29T12:00:00.000Z',
-            },
-            {
-                id: 2,
-                name: 'User2',
-                contactNumber: '0992345678',
-                isAdminVerified: false,
-                createdAt: '2023-11-27T11:30:00.000Z',
-                updatedAt: '2023-11-28T12:45:00.000Z',
-            },
-            {
-                id: 3,
-                name: 'User3',
-                contactNumber: '0993456789',
-                isAdminVerified: true,
-                createdAt: '2023-11-26T10:15:00.000Z',
-                updatedAt: '2023-11-27T11:15:00.000Z',
-            },
-            {
-                id: 4,
-                name: 'User4',
-                contactNumber: '0994567890',
-                isAdminVerified: false,
-                createdAt: '2023-11-25T09:45:00.000Z',
-                updatedAt: '2023-11-26T10:45:00.000Z',
-            },
-            {
-                id: 5,
-                name: 'User5',
-                contactNumber: '0995678901',
-                isAdminVerified: true,
-                createdAt: '2023-11-24T08:30:00.000Z',
-                updatedAt: '2023-11-25T09:30:00.000Z',
-            },
-            {
-                id: 6,
-                name: 'User6',
-                contactNumber: '0996789012',
-                isAdminVerified: false,
-                createdAt: '2023-11-23T07:00:00.000Z',
-                updatedAt: '2023-11-24T08:15:00.000Z',
-            },
-            {
-                id: 7,
-                name: 'User7',
-                contactNumber: '0997890123',
-                isAdminVerified: true,
-                createdAt: '2023-11-22T06:45:00.000Z',
-                updatedAt: '2023-11-23T07:15:00.000Z',
-            },
-        ],
+        initialData: {
+            data: [],
+            pages: [],
+            totalSize: 0,
+            totalPage: 1,
+            ...pagination,
+        },
         retry: 1,
     })
 
     const table = useReactTable({
         columns,
-        data,
+        data: data,
         initialState: {
             columnPinning: { left: ['select'] },
         },
@@ -134,7 +89,8 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
             rowSelection,
             columnVisibility,
         },
-        rowCount: data.length,
+        rowCount: pageSize,
+        pageCount: totalPage,
         manualSorting: true,
         manualFiltering: true,
         manualPagination: true,
@@ -147,8 +103,10 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         onColumnVisibilityChange: setColumnVisibility,
     })
 
+    logger.log(data)
+
     return (
-        <DataTableFilterContext.Provider value={dataTableFilterState}>
+        <DataTableFilterContext.Provider value={filterState}>
             <div className={cn('flex h-full flex-col gap-y-2', className)}>
                 <DataTableToolbar
                     globalSearchProps={{
