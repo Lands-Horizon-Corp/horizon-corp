@@ -26,8 +26,10 @@ type FilterPages[T any] struct {
 
 type PaginatedRequest struct {
 	Filters   []Filter `json:"filters"`
+	Preloads  []string `json:"preloads"`
 	PageIndex int      `json:"pageIndex"`
 	PageSize  int      `json:"pageSize"`
+	Logic     string   `json:"logic"`
 }
 
 const (
@@ -44,6 +46,7 @@ const (
 	ModeLessThan     FilterMode = "lt"
 	ModeLessEqual    FilterMode = "lte"
 	ModeRange        FilterMode = "range"
+	ModeBetween      FilterMode = "between"
 	ModeBefore       FilterMode = "before"
 	ModeAfter        FilterMode = "after"
 	ModeBooleanTrue  FilterMode = "true"
@@ -62,7 +65,7 @@ const (
 // Base filter interface
 type Filter interface {
 	GetField() string
-	GetMode() string
+	GetMode() FilterMode
 	GetDataType() string
 	GetValue() interface{}
 }
@@ -86,7 +89,7 @@ func (f OneValueFilter) GetField() string {
 	return value
 }
 
-func (f OneValueFilter) GetMode() string       { return string(f.Mode) }
+func (f OneValueFilter) GetMode() FilterMode   { return FilterMode(f.Mode) }
 func (f OneValueFilter) GetDataType() string   { return string(f.DataType) }
 func (f OneValueFilter) GetValue() interface{} { return f.Value }
 
@@ -95,7 +98,7 @@ type EnumFilter struct {
 	Field    string         `json:"field"`
 	Mode     FilterMode     `json:"mode"`
 	DataType FilterDataType `json:"dataType"`
-	Value    []string       `json:"value"`
+	Value    []interface{}  `json:"value"`
 }
 
 func (f EnumFilter) GetField() string {
@@ -105,7 +108,7 @@ func (f EnumFilter) GetField() string {
 	}
 	return value
 }
-func (f EnumFilter) GetMode() string       { return string(f.Mode) }
+func (f EnumFilter) GetMode() FilterMode   { return FilterMode(f.Mode) }
 func (f EnumFilter) GetDataType() string   { return string(f.DataType) }
 func (f EnumFilter) GetValue() interface{} { return f.Value }
 
@@ -124,7 +127,7 @@ func (f RangeFilter) GetField() string {
 	}
 	return value
 }
-func (f RangeFilter) GetMode() string       { return string(f.Mode) }
+func (f RangeFilter) GetMode() FilterMode   { return FilterMode(f.Mode) }
 func (f RangeFilter) GetDataType() string   { return string(f.DataType) }
 func (f RangeFilter) GetValue() interface{} { return f.Value }
 
@@ -149,7 +152,7 @@ func extractFilters(data []interface{}) []Filter {
 
 			switch filterDataType {
 			case DataTypeText, DataTypeNumber, DataTypeFloat, DataTypeBoolean, DataTypeDate, DataTypeDatetime, DataTypeTime:
-				if filterMode == ModeRange {
+				if filterMode == ModeRange || filterMode == ModeBetween {
 					if valueMap, ok := value.(map[string]interface{}); ok {
 						rangeFilter := RangeFilter{
 							Field:    field,
@@ -173,10 +176,17 @@ func extractFilters(data []interface{}) []Filter {
 				}
 			case DataTypeEnum:
 				if enumValues, ok := value.([]interface{}); ok {
-					var values []string
+					var values []interface{}
 					for _, v := range enumValues {
-						if strVal, ok := v.(string); ok {
-							values = append(values, strVal)
+						if filterDataType == DataTypeBoolean {
+							// Convert boolean string values to numeric representation for SQL
+							if v == "true" {
+								values = append(values, 1)
+							} else if v == "false" {
+								values = append(values, 0)
+							}
+						} else {
+							values = append(values, v)
 						}
 					}
 					enumFilter := EnumFilter{
@@ -194,51 +204,14 @@ func extractFilters(data []interface{}) []Filter {
 	return filters
 }
 
-func convertFilterMode(mode string) string {
-	switch mode {
-	case "equal":
-		return "="
-	case "nequal":
-		return "<>"
-	case "contains":
-		return "LIKE"
-	case "ncontains":
-		return "NOT LIKE"
-	case "gt":
-		return ">"
-	case "gte":
-		return ">="
-	case "lt":
-		return "<"
-	case "lte":
-		return "<="
-	case "startswith":
-		return "LIKE"
-	case "endswith":
-		return "LIKE"
-	case "isempty":
-		return "="
-	case "isnotempty":
-		return "<>"
-	case "before":
-		return "<"
-	case "after":
-		return ">"
-	case "true":
-		return "= TRUE"
-	case "false":
-		return "= FALSE"
-	default:
-		return "="
-	}
-}
-
 func (c *Repository[T]) Filter(filter map[string]interface{}) (*FilterPages[*T], error) {
 	var entities []*T
 	db := c.DB
 
 	pageIndex := helpers.GetBase64Int(filter, "pageIndex", 1)
 	pageSize := helpers.GetBase64Int(filter, "pageSize", 10)
+	preloads := helpers.GetBase64ArrayString(filter, "preloads")
+	logic := helpers.GetBase64String(filter, "logic", "AND")
 
 	if filtersData, ok := filter["filters"].([]interface{}); ok {
 		filters := extractFilters(filtersData)
@@ -246,30 +219,68 @@ func (c *Repository[T]) Filter(filter map[string]interface{}) (*FilterPages[*T],
 			PageIndex: pageIndex,
 			PageSize:  pageSize,
 			Filters:   filters,
+			Preloads:  preloads,
+			Logic:     logic,
 		}
 
-		filters = paginatedRequest.Filters
-		for _, filter := range filters {
-			switch filter := filter.(type) {
-			case OneValueFilter:
-				db = db.Where(fmt.Sprintf("%s %s ?", filter.GetField(), convertFilterMode(filter.GetMode())), filter.GetValue())
-			case RangeFilter:
-				db = db.Where(fmt.Sprintf("%s >= ? AND %s <= ?", filter.GetField(), filter.GetField()), filter.Value.From, filter.Value.To)
-			case EnumFilter:
-				db = db.Where(fmt.Sprintf("%s IN (?)", filter.GetField()), filter.GetValue())
+		// Apply preloads if any
+		if len(paginatedRequest.Preloads) > 0 {
+			for _, preload := range paginatedRequest.Preloads {
+				db = db.Preload(preload)
 			}
 		}
 
+		// Apply filters
+		for _, filter := range paginatedRequest.Filters {
+			if paginatedRequest.Logic == "OR" {
+				db = db.Or(func(tx *gorm.DB) *gorm.DB {
+					switch filter := filter.(type) {
+					case OneValueFilter:
+						applyOneValueFilter(tx, filter)
+					case RangeFilter:
+						applyRangeFilter(tx, filter)
+					case EnumFilter:
+						applyEnumFilter(tx, filter)
+					}
+					return tx
+				})
+			} else {
+				switch filter := filter.(type) {
+				case OneValueFilter:
+					applyOneValueFilter(db, filter)
+				case RangeFilter:
+					applyRangeFilter(db, filter)
+				case EnumFilter:
+					applyEnumFilter(db, filter)
+				}
+			}
+		}
+
+		// Optimize count query using a separate session without preloads and filters
+		dbCount := c.DB.Session(&gorm.Session{}).Model(new(T))
+		for _, filter := range paginatedRequest.Filters {
+			applyCountFilter(dbCount, filter)
+		}
+
+		// Count total records
+		var totalSize int64
+		dbCount.Count(&totalSize)
+
+		// Calculate total pages
+		totalPage := (int(totalSize) + paginatedRequest.PageSize - 1) / paginatedRequest.PageSize
+
+		// Check if the requested page index is within range
+		if pageIndex > totalPage {
+			return nil, fmt.Errorf("requested page index %d exceeds total pages %d", pageIndex, totalPage)
+		}
+
+		// Retrieve paginated records
 		err := db.Offset((paginatedRequest.PageIndex - 1) * paginatedRequest.PageSize).Limit(paginatedRequest.PageSize).Find(&entities).Error
 		if err != nil {
 			return &FilterPages[*T]{}, fmt.Errorf("failed to retrieve records: %w", err)
 		}
 
-		var totalSize int64
-		db.Model(&entities).Count(&totalSize)
-
-		totalPage := (int(totalSize) + paginatedRequest.PageSize - 1) / paginatedRequest.PageSize
-
+		// Generate pagination pages
 		pages := make([]Page, totalPage)
 		for i := 0; i < totalPage; i++ {
 			pages[i] = Page{
@@ -277,6 +288,7 @@ func (c *Repository[T]) Filter(filter map[string]interface{}) (*FilterPages[*T],
 				PageIndex: i + 1,
 			}
 		}
+
 		return &FilterPages[*T]{
 			Data:      entities,
 			PageIndex: paginatedRequest.PageIndex,
@@ -289,7 +301,79 @@ func (c *Repository[T]) Filter(filter map[string]interface{}) (*FilterPages[*T],
 	return nil, fmt.Errorf("%s", "something wrong extracting data")
 }
 
-// Repository is a generic repository for managing entities in the database
+func applyOneValueFilter(db *gorm.DB, filter OneValueFilter) {
+	field := filter.GetField()
+	mode := filter.GetMode()
+	value := filter.GetValue()
+
+	switch mode {
+	case ModeEqual:
+		db.Where(fmt.Sprintf("%s = ?", field), value)
+	case ModeNotEqual:
+		db.Where(fmt.Sprintf("%s <> ?", field), value)
+	case ModeContains:
+		db.Where(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%%%v%%", value))
+	case ModeNotContains:
+		db.Where(fmt.Sprintf("%s NOT LIKE ?", field), fmt.Sprintf("%%%v%%", value))
+	case ModeStartsWith:
+		db.Where(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%v%%", value))
+	case ModeEndsWith:
+		db.Where(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%%%v", value))
+	case ModeIsEmpty:
+		db.Where(fmt.Sprintf("%s = ?", field), "")
+	case ModeIsNotEmpty:
+		db.Where(fmt.Sprintf("%s <> ?", field), "")
+	case ModeGreaterThan:
+		db.Where(fmt.Sprintf("%s > ?", field), value)
+	case ModeGreaterEqual:
+		db.Where(fmt.Sprintf("%s >= ?", field), value)
+	case ModeLessThan:
+		db.Where(fmt.Sprintf("%s < ?", field), value)
+	case ModeLessEqual:
+		db.Where(fmt.Sprintf("%s <= ?", field), value)
+	case ModeBooleanTrue:
+		db.Where(fmt.Sprintf("%s = ?", field), true)
+	case ModeBooleanFalse:
+		db.Where(fmt.Sprintf("%s = ?", field), false)
+	case ModeBefore:
+		db.Where(fmt.Sprintf("%s < ?", field), value)
+	case ModeAfter:
+		db.Where(fmt.Sprintf("%s > ?", field), value)
+	default:
+		db.Where(fmt.Sprintf("%s = ?", field), value)
+	}
+}
+
+func applyRangeFilter(db *gorm.DB, filter RangeFilter) {
+	field := filter.GetField()
+	value := filter.GetValue().(RangeValue)
+
+	if filter.GetDataType() == string(DataTypeDate) {
+		db.Where(fmt.Sprintf("DATE(%s) >= ? AND DATE(%s) <= ?", field, field), value.From, value.To)
+	} else if filter.GetDataType() == string(DataTypeDatetime) {
+		db.Where(fmt.Sprintf("%s >= ? AND %s <= ?", field, field), value.From, value.To)
+	} else if filter.GetDataType() == string(DataTypeTime) {
+		db.Where(fmt.Sprintf("TIME(%s) >= ? AND TIME(%s) <= ?", field, field), value.From, value.To)
+	} else {
+		db.Where(fmt.Sprintf("%s >= ? AND %s <= ?", field, field), value.From, value.To)
+	}
+}
+
+func applyEnumFilter(db *gorm.DB, filter EnumFilter) {
+	db.Where(fmt.Sprintf("%s IN (?)", filter.GetField()), filter.GetValue())
+}
+
+func applyCountFilter(db *gorm.DB, filter Filter) {
+	switch filter := filter.(type) {
+	case OneValueFilter:
+		applyOneValueFilter(db, filter)
+	case RangeFilter:
+		applyRangeFilter(db, filter)
+	case EnumFilter:
+		applyEnumFilter(db, filter)
+	}
+}
+
 type Repository[T any] struct {
 	DB *gorm.DB
 }
