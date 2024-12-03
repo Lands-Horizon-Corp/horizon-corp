@@ -13,10 +13,13 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
+import {
+    companiesTableColumns as columns,
+    companyGlobalSearchTargets,
+} from './columns'
 import { IBaseCompNoChild } from '@/types'
 import { cn, toBase64, withCatchAsync } from '@/lib'
 import { serverRequestErrExtractor } from '@/helpers'
-import { companiesTableColumns as columns } from './columns'
 import { CompanyPaginatedResource } from '@/horizon-corp/types'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 
@@ -38,7 +41,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         columnOrder: columns.map((c) => c.id!),
     })
 
-    const filterState = useDatableFilterState({})
+    const filterState = useDatableFilterState()
 
     const {
         data: { data, totalPage, pageSize },
@@ -107,7 +110,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                 <DataTableToolbar
                     globalSearchProps={{
                         defaultMode: 'equal',
-                        keysToSearch: ['name', 'contactNumber'],
+                        targets: companyGlobalSearchTargets,
                     }}
                     table={table}
                     refreshActionProps={{

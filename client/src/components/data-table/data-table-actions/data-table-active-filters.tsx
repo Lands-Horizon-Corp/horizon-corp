@@ -16,6 +16,7 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
         return Object.entries(filters)
             .map(([key, value]) => ({
                 field: key,
+                displayText: value?.displayText,
                 ...value,
             }))
             .filter((filter) => {
@@ -50,7 +51,7 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
                 {mappedFilters.map((filter) => (
                     <FilterChip
                         key={filter.field}
-                        label={filter.field}
+                        label={filter.displayText ?? filter.field}
                         tooltipDescription="Remove Filter"
                         onClick={() => removeFilter(filter.field)}
                     />

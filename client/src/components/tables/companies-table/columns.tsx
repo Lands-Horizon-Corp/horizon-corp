@@ -5,14 +5,23 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { PushPinSlashIcon } from '@/components/icons'
 
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
+import TextFilter from '@/components/data-table/data-table-filters/text-filter'
+import NumberFilter from '@/components/data-table/data-table-filters/number-filter'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
+import DataTableMultiSelectFilter from '@/components/data-table/data-table-filters/multi-select-filter'
 
 import logger from '@/helpers/loggers/logger'
 import { CompanyResource } from '@/horizon-corp/types'
-import TextFilter from '@/components/data-table/data-table-filters/text-filter'
-import NumberFilter from '@/components/data-table/data-table-filters/number-filter'
-import DataTableMultiSelectFilter from '@/components/data-table/data-table-filters/multi-select-filter'
+import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
+
+export const companyGlobalSearchTargets: IGlobalSearchTargets[] = [
+    { field: 'name', displayText: 'Name' },
+    { field: 'address', displayText: 'Address' },
+    { field: 'Owner.username', displayText: 'Owner' },
+    { field: 'contactNumber', displayText: 'Contact' },
+    { field: 'isAdminVerified', displayText: 'Verify Status' },
+]
 
 export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
     {
@@ -76,7 +85,7 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Name">
                 <ColumnActions {...props}>
-                    <TextFilter<CompanyResource> accessorKey={'name'} />
+                    <TextFilter displayText="Name" field="name" />
                 </ColumnActions>
             </DataTableColumnHeader>
         ),
@@ -92,7 +101,7 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Address">
                 <ColumnActions {...props}>
-                    <TextFilter<CompanyResource> accessorKey={'address'} />
+                    <TextFilter displayText="Address" field="address" />
                 </ColumnActions>
             </DataTableColumnHeader>
         ),
@@ -108,7 +117,7 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Branches">
                 <ColumnActions {...props}>
-                    <NumberFilter<CompanyResource> accessorKey={'branches'} />
+                    <NumberFilter displayText="# Branches" field="branches" />
                 </ColumnActions>
             </DataTableColumnHeader>
         ),
@@ -123,7 +132,9 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         accessorKey: 'owner',
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Owner">
-                <ColumnActions {...props}></ColumnActions>
+                <ColumnActions {...props}>
+                    <TextFilter displayText="Owner" field="Owner.username" />
+                </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
@@ -150,9 +161,7 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
                 title="Contact Number"
             >
                 <ColumnActions {...props}>
-                    <TextFilter<CompanyResource>
-                        accessorKey={'contactNumber'}
-                    />
+                    <TextFilter displayText="Contact" field="contactNumber" />
                 </ColumnActions>
             </DataTableColumnHeader>
         ),
@@ -168,8 +177,9 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Verified">
                 <ColumnActions {...props}>
-                    <DataTableMultiSelectFilter<CompanyResource>
-                        accessorKey="isAdminVerified"
+                    <DataTableMultiSelectFilter
+                        displayText="Verify Status"
+                        field="isAdminVerified"
                         multiSelectOptions={[
                             {
                                 label: 'Verified',

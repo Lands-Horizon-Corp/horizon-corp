@@ -6,24 +6,26 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import { DebouncedInput } from '@/components/ui/debounced-input'
 
 import {
     filterModeMap,
+    IFilterComponentProps,
     TFilterModes,
     TSearchFilter,
     useDataTableFilter,
 } from './data-table-filter-context'
-import { DebouncedInput } from '@/components/ui/debounced-input'
 
-const TextFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
-    const { filters, setFilter } = useDataTableFilter<string, keyof TData>()
+const TextFilter = ({ field, displayText }: IFilterComponentProps) => {
+    const { filters, setFilter } = useDataTableFilter<string, string>()
 
-    const filterVal: TSearchFilter<string> = filters[accessorKey as string] ?? {
-        dataType: 'text',
-        mode: 'equal',
+    const filterVal: TSearchFilter<string> = filters[field] ?? {
         value: '',
-        from: undefined,
+        displayText,
+        mode: 'equal',
         to: undefined,
+        from: undefined,
+        dataType: 'text',
     }
 
     const filterModeOptions = filterModeMap['text']
@@ -35,7 +37,7 @@ const TextFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                 value={filterVal?.mode}
                 onValueChange={(val) => {
                     const newFilterMode = val as TFilterModes
-                    setFilter(accessorKey, {
+                    setFilter(field, {
                         ...filterVal,
                         mode: newFilterMode,
                     })
@@ -62,7 +64,7 @@ const TextFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                 debounceTime={500}
                 value={filterVal.value || ''}
                 onChange={(inpt: string) =>
-                    setFilter(accessorKey, {
+                    setFilter(field, {
                         ...filterVal,
                         value: inpt,
                     })
@@ -72,7 +74,7 @@ const TextFilter = <TData,>({ accessorKey }: { accessorKey: keyof TData }) => {
                 size="sm"
                 className="w-full"
                 variant="secondary"
-                onClick={() => setFilter(accessorKey)}
+                onClick={() => setFilter(field)}
             >
                 Clear Filter
             </Button>

@@ -10,32 +10,34 @@ import {
     useDataTableFilter,
 } from './data-table-filter-context'
 
-type KeysOfType<T, ValueType> = {
-    [K in keyof T]: T[K] extends ValueType ? K : never
-}[keyof T]
+export interface IGlobalSearchTargets {
+    field: string
+    displayText: string
+}
 
-export interface IGlobalSearchProps<T> {
-    keysToSearch: Array<KeysOfType<T, string>>
-    defaultMode: TFilterModes
+export interface IGlobalSearchProps {
     placeHolder?: string
+    defaultMode: TFilterModes
+    targets: IGlobalSearchTargets[]
 }
 
 const accessorKey = 'globalSearch'
 
-const DataTableGlobalSearch = <T,>({
-    keysToSearch,
+const DataTableGlobalSearch = ({
+    targets,
     defaultMode,
     ...otherProps
-}: IGlobalSearchProps<T>) => {
+}: IGlobalSearchProps) => {
     const [visible, setVisible] = useState(false)
     const { filters, setFilter, bulkSetFilter } = useDataTableFilter()
 
     const filterVal: TSearchFilter = filters[accessorKey as string] ?? {
+        value: '',
+        to: undefined,
+        from: undefined,
         dataType: 'text',
         mode: defaultMode,
-        value: '',
-        from: undefined,
-        to: undefined,
+        displayText: 'Global Search',
     }
 
     return (
@@ -58,7 +60,7 @@ const DataTableGlobalSearch = <T,>({
                         }
                         onChange={(val) => {
                             setFilter(accessorKey, { ...filterVal, value: val })
-                            bulkSetFilter(keysToSearch as string[], {
+                            bulkSetFilter(targets, {
                                 ...filterVal,
                                 value: val,
                             })
@@ -69,7 +71,7 @@ const DataTableGlobalSearch = <T,>({
                         className="p-.5 absolute right-2 top-1/2 size-fit -translate-y-1/2 rounded-full"
                         onClick={() => {
                             setFilter(accessorKey)
-                            bulkSetFilter(keysToSearch as string[])
+                            bulkSetFilter(targets)
                         }}
                     >
                         <XIcon className="size-4" />

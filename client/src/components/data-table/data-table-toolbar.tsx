@@ -24,7 +24,7 @@ export interface IDataTableToolbarProps<TData = unknown>
     scrollableProps?: IDataTableScrollableOptionProps
     exportActionProps?: Omit<IDataTableExportProps<TData>, 'table'>
     deleteActionProps?: Omit<IDataTableDeleteSelectedProps<TData>, 'table'>
-    globalSearchProps?: IGlobalSearchProps<TData>
+    globalSearchProps?: IGlobalSearchProps
 }
 
 const DataTableToolbar = <TData,>({

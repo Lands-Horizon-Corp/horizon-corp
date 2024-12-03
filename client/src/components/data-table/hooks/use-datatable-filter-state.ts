@@ -7,13 +7,7 @@ import {
     IDataTableFilterState,
 } from '../data-table-filters/data-table-filter-context'
 
-type FilterStateOpts = {
-    [key: string]: string
-}
-
-const useDatableFilterState = (
-    preloadMap?: FilterStateOpts
-): IDataTableFilterState => {
+const useDatableFilterState = (): IDataTableFilterState => {
     const [filters, setFilters] = useState<TFilterObject>({})
 
     const setFilter = (field: string, filter?: TSearchFilter) => {
@@ -32,9 +26,17 @@ const useDatableFilterState = (
         return targetFilter
     }
 
-    const bulkSetFilter = (fields: string[], filterValue?: TSearchFilter) => {
+    const bulkSetFilter = (
+        targets: { field: string; displayText: string }[],
+        filterValue?: TSearchFilter
+    ) => {
         const constructedObject = {} as TFilterObject
-        fields.forEach((field) => (constructedObject[field] = filterValue))
+        targets.forEach(({ field, displayText }) => {
+            constructedObject[field] = {
+                ...filterValue,
+                displayText,
+            } as TSearchFilter
+        })
         setFilters((prev) => ({ ...prev, ...constructedObject }))
     }
 
@@ -58,13 +60,10 @@ const useDatableFilterState = (
             } else if (value.mode !== 'range' && value.value === undefined)
                 return
 
-            const preload = preloadMap ? preloadMap[key] : ''
-
             filteredFilter.push({
                 field: key,
                 mode: value.mode,
                 dataType: value.dataType,
-                preload: preload ?? '',
                 value:
                     value.mode === 'range'
                         ? { from: value.from, to: value.to }
@@ -73,7 +72,7 @@ const useDatableFilterState = (
         })
 
         return filteredFilter
-    }, [filters, preloadMap])
+    }, [filters])
 
     return {
         filters,

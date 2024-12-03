@@ -56,18 +56,18 @@ export const filterModeMap: {
 }
 
 export type TSearchFilter<T = unknown, TValue = T> = {
-    dataType: TColumnDataTypes
+    to?: TValue
+    from?: TValue
     value?: TValue
     mode: TFilterModes
-    from?: TValue
-    to?: TValue
+    displayText: string
+    dataType: TColumnDataTypes
 }
 
 export type TFinalFilter<T = unknown, TValue = T> = {
     field: string | keyof T
-    preload : string
     value: TValue | { from: TValue; to: TValue }
-} & Omit<TSearchFilter, 'value' | 'from' | 'to'>
+} & Omit<TSearchFilter, 'value' | 'from' | 'to' | 'displayText'>
 
 export type TFilterObject<T = unknown, TValue = T> = {
     [key: string]: TSearchFilter<T, TValue> | undefined
@@ -82,11 +82,16 @@ export interface IDataTableFilterState<
     finalFilters: TFinalFilter[]
     setFilter: (field: TField, filter?: TSearchFilter<TValue, TValue>) => void
     bulkSetFilter: (
-        field: TField[],
+        field: { field: TField; displayText: string }[],
         filterValue?: TSearchFilter<TValue, TValue>
     ) => void
     resetFilter: () => void
     removeFilter: (field: TField) => void
+}
+
+export interface IFilterComponentProps {
+    field: string
+    displayText: string
 }
 
 const DataTableFilterContext = createContext<

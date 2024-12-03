@@ -1,30 +1,35 @@
-import { TSearchFilter, useDataTableFilter } from './data-table-filter-context'
+import {
+    IFilterComponentProps,
+    TSearchFilter,
+    useDataTableFilter,
+} from './data-table-filter-context'
 
 import MultiSelectFilter, {
     IMultiSelectOption,
 } from '@/components/multi-select-filter'
 
-const DataTableMultiSelectFilter = <TData,>({
-    multiSelectOptions,
-    accessorKey,
-}: {
-    accessorKey: keyof TData
+interface IDatatableMultiFilter extends IFilterComponentProps {
     multiSelectOptions: IMultiSelectOption[]
-}) => {
+}
+
+const DataTableMultiSelectFilter = ({
+    field,
+    displayText,
+    multiSelectOptions,
+}: IDatatableMultiFilter) => {
     const { filters, setFilter } = useDataTableFilter<
         string,
-        keyof TData,
+        string,
         string[]
     >()
 
-    const filterVal: TSearchFilter<string, string[]> = filters[
-        accessorKey as string
-    ] ?? {
-        dataType: 'enum',
+    const filterVal: TSearchFilter<string, string[]> = filters[field] ?? {
+        displayText,
         mode: 'equal',
-        value: undefined,
-        from: undefined,
         to: undefined,
+        from: undefined,
+        dataType: 'enum',
+        value: undefined,
     }
 
     return (
@@ -38,12 +43,12 @@ const DataTableMultiSelectFilter = <TData,>({
             }
             multiSelectOptions={multiSelectOptions}
             setValues={(selected) =>
-                setFilter(accessorKey, {
+                setFilter(field, {
                     ...filterVal,
                     value: selected,
                 })
             }
-            clearValues={() => setFilter(accessorKey)}
+            clearValues={() => setFilter(field)}
         />
     )
 }
