@@ -123,7 +123,8 @@ func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
 		return
 	}
 	fmt.Println(decodedData)
-
+	// spcecific database
+	// then filter
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":      []string{},
 		"pageIndex": 1,
