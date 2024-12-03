@@ -45,16 +45,18 @@ const DataTableGlobalSearch = <T,>({
         displayText: 'Global Search',
     }
 
+    if (targets.length === 0) return
+
     return (
         <div className="flex items-center gap-x-1">
             <Button
-                variant="secondary"
                 size="sm"
+                variant="secondary"
                 onClick={() => setVisible((prev) => !prev)}
             >
                 <MagnifyingGlassIcon />
             </Button>
-            {visible && (
+            {visible && targets.length > 0 && (
                 <ActionTooltip
                     side="bottom"
                     tooltipContent="Global search will only apply on fields that are text searchable"

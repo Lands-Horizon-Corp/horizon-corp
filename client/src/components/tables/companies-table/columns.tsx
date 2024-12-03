@@ -177,7 +177,7 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         ),
     },
     {
-        id: 'contactNumber',
+        id: 'Contact Number',
         accessorKey: 'contactNumber',
         header: (props) => (
             <DataTableColumnHeader
@@ -200,7 +200,7 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         }) => <div>{contactNumber}</div>,
     },
     {
-        id: 'isVerified',
+        id: 'Verify Status',
         accessorKey: 'isAdminVerified',
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Verified">
@@ -237,7 +237,7 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         ),
     },
     {
-        id: 'createdAt',
+        id: 'Created At',
         accessorKey: 'createdAt',
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Date Created">

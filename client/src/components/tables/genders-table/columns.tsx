@@ -1,21 +1,17 @@
 import { ColumnDef } from '@tanstack/react-table'
 
-import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { PushPinSlashIcon } from '@/components/icons'
 
-import UserAvatar from '@/components/user-avatar'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
-import NumberFilter from '@/components/data-table/data-table-filters/number-filter'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
-import DataTableMultiSelectFilter from '@/components/data-table/data-table-filters/multi-select-filter'
 
 import { toReadableDate } from '@/utils'
 import logger from '@/helpers/loggers/logger'
-import { CompanyResource, GenderResource } from '@/horizon-corp/types'
+import { GenderResource } from '@/horizon-corp/types'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 export const gendersGlobalSearchTargets: IGlobalSearchTargets<GenderResource>[] =
@@ -81,9 +77,12 @@ export const genderTableColumns: ColumnDef<GenderResource>[] = [
         id: 'Name',
         accessorKey: 'name',
         header: (props) => (
-            <DataTableColumnHeader {...props} isResizable title="Name">
+            <DataTableColumnHeader {...props} isResizable title="Gender">
                 <ColumnActions {...props}>
-                    <TextFilter displayText="Name" field="name" />
+                    <TextFilter<GenderResource>
+                        field="name"
+                        displayText="Gender"
+                    />
                 </ColumnActions>
             </DataTableColumnHeader>
         ),
@@ -94,151 +93,33 @@ export const genderTableColumns: ColumnDef<GenderResource>[] = [
         }) => <div>{name}</div>,
     },
     {
-        id: 'Logo',
-        accessorKey: 'media',
+        id: 'description',
+        accessorKey: 'description',
         header: (props) => (
-            <DataTableColumnHeader {...props} isResizable title="Logo">
-                <ColumnActions {...props} />
-            </DataTableColumnHeader>
-        ),
-        cell: ({
-            row: {
-                original: { media },
-            },
-        }) => (
-            <div>
-                <UserAvatar src={media?.downloadURL ?? ''} />
-            </div>
-        ),
-    },
-    {
-        id: 'address',
-        accessorKey: 'address',
-        header: (props) => (
-            <DataTableColumnHeader {...props} isResizable title="Address">
+            <DataTableColumnHeader {...props} isResizable title="Description">
                 <ColumnActions {...props}>
-                    <TextFilter displayText="Address" field="address" />
-                </ColumnActions>
-            </DataTableColumnHeader>
-        ),
-        cell: ({
-            row: {
-                original: { address },
-            },
-        }) => <div>{address}</div>,
-    },
-    {
-        id: 'branches',
-        accessorKey: 'branches',
-        header: (props) => (
-            <DataTableColumnHeader {...props} isResizable title="Branches">
-                <ColumnActions {...props}>
-                    <NumberFilter displayText="# Branches" field="branches" />
-                </ColumnActions>
-            </DataTableColumnHeader>
-        ),
-        cell: ({
-            row: {
-                original: { branches },
-            },
-        }) => <div>{branches?.length ?? 0}</div>,
-    },
-    {
-        id: 'owner',
-        accessorKey: 'owner.username',
-        header: (props) => (
-            <DataTableColumnHeader {...props} isResizable title="Owner">
-                <ColumnActions {...props}>
-                    <TextFilter<CompanyResource>
-                        displayText="Owner"
-                        field="Owner.username"
+                    <TextFilter<GenderResource>
+                        field="description"
+                        displayText="Description"
                     />
                 </ColumnActions>
             </DataTableColumnHeader>
         ),
         cell: ({
             row: {
-                original: { owner },
+                original: { description },
             },
-        }) => (
-            <div>
-                {owner?.username ?? (
-                    <span className="text-center italic text-foreground/40">
-                        -
-                    </span>
-                )}
-            </div>
-        ),
+        }) => <div>{description}</div>,
     },
     {
-        id: 'contactNumber',
-        accessorKey: 'contactNumber',
-        header: (props) => (
-            <DataTableColumnHeader
-                {...props}
-                isResizable
-                title="Contact Number"
-            >
-                <ColumnActions {...props}>
-                    <TextFilter<CompanyResource>
-                        displayText="Contact"
-                        field="contactNumber"
-                    />
-                </ColumnActions>
-            </DataTableColumnHeader>
-        ),
-        cell: ({
-            row: {
-                original: { contactNumber },
-            },
-        }) => <div>{contactNumber}</div>,
-    },
-    {
-        id: 'isVerified',
-        accessorKey: 'isAdminVerified',
-        header: (props) => (
-            <DataTableColumnHeader {...props} isResizable title="Verified">
-                <ColumnActions {...props}>
-                    <DataTableMultiSelectFilter<CompanyResource>
-                        displayText="Verify Status"
-                        field="isAdminVerified"
-                        multiSelectOptions={[
-                            {
-                                label: 'Verified',
-                                value: 'true',
-                            },
-                            {
-                                label: 'Not Verified',
-                                value: 'false',
-                            },
-                        ]}
-                    ></DataTableMultiSelectFilter>
-                </ColumnActions>
-            </DataTableColumnHeader>
-        ),
-        cell: ({
-            row: {
-                original: { isAdminVerified },
-            },
-        }) => (
-            <div>
-                {isAdminVerified ? (
-                    <Badge variant="success">Verified</Badge>
-                ) : (
-                    <Badge variant="warning">Not Verified</Badge>
-                )}
-            </div>
-        ),
-    },
-    {
-        id: 'createdAt',
+        id: 'Created Date',
         accessorKey: 'createdAt',
         header: (props) => (
-            <DataTableColumnHeader {...props} isResizable title="Date Created">
+            <DataTableColumnHeader {...props} isResizable title="Created">
                 <ColumnActions {...props}>
-                    <DateFilter<CompanyResource>
-                        displayText="Date Created"
+                    <DateFilter<GenderResource>
                         field="createdAt"
+                        displayText="Date Created"
                     />
                 </ColumnActions>
             </DataTableColumnHeader>
@@ -248,5 +129,24 @@ export const genderTableColumns: ColumnDef<GenderResource>[] = [
                 original: { createdAt },
             },
         }) => <div>{toReadableDate(createdAt)}</div>,
+    },
+    {
+        id: 'Updated Date',
+        accessorKey: 'updatedAt',
+        header: (props) => (
+            <DataTableColumnHeader {...props} isResizable title="Updated">
+                <ColumnActions {...props}>
+                    <DateFilter<GenderResource>
+                        field="createdAt"
+                        displayText="Last Update"
+                    />
+                </ColumnActions>
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { updatedAt },
+            },
+        }) => <div>{toReadableDate(updatedAt)}</div>,
     },
 ]
