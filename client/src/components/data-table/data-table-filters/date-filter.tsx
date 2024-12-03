@@ -19,8 +19,8 @@ import {
     IFilterComponentProps,
 } from './data-table-filter-context'
 
-const DateFilter = ({ field, displayText }: IFilterComponentProps) => {
-    const { filters, setFilter } = useDataTableFilter<Date>()
+const DateFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
+    const { filters, setFilter } = useDataTableFilter<Date, typeof field>()
 
     const filterModeOptions = filterModeMap['date']
 

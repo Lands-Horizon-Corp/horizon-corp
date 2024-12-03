@@ -1,25 +1,25 @@
 import {
-    IFilterComponentProps,
     TSearchFilter,
     useDataTableFilter,
+    IFilterComponentProps,
 } from './data-table-filter-context'
 
 import MultiSelectFilter, {
     IMultiSelectOption,
 } from '@/components/multi-select-filter'
 
-interface IDatatableMultiFilter extends IFilterComponentProps {
+interface IDatatableMultiFilter<T> extends IFilterComponentProps<T> {
     multiSelectOptions: IMultiSelectOption[]
 }
 
-const DataTableMultiSelectFilter = ({
+const DataTableMultiSelectFilter = <T,>({
     field,
     displayText,
     multiSelectOptions,
-}: IDatatableMultiFilter) => {
+}: IDatatableMultiFilter<T>) => {
     const { filters, setFilter } = useDataTableFilter<
         string,
-        string,
+        typeof field,
         string[]
     >()
 

@@ -16,8 +16,8 @@ import {
     useDataTableFilter,
 } from './data-table-filter-context'
 
-const TextFilter = ({ field, displayText }: IFilterComponentProps) => {
-    const { filters, setFilter } = useDataTableFilter<string, string>()
+const TextFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
+    const { filters, setFilter } = useDataTableFilter<string, typeof field>()
 
     const filterVal: TSearchFilter<string> = filters[field] ?? {
         value: '',

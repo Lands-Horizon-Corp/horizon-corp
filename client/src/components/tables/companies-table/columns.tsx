@@ -15,13 +15,14 @@ import logger from '@/helpers/loggers/logger'
 import { CompanyResource } from '@/horizon-corp/types'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
-export const companyGlobalSearchTargets: IGlobalSearchTargets[] = [
-    { field: 'name', displayText: 'Name' },
-    { field: 'address', displayText: 'Address' },
-    { field: 'Owner.username', displayText: 'Owner' },
-    { field: 'contactNumber', displayText: 'Contact' },
-    { field: 'isAdminVerified', displayText: 'Verify Status' },
-]
+export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[] =
+    [
+        { field: 'name', displayText: 'Name' },
+        { field: 'address', displayText: 'Address' },
+        { field: 'Owner.username', displayText: 'Owner' },
+        { field: 'contactNumber', displayText: 'Contact' },
+        { field: 'isAdminVerified', displayText: 'Verify Status' },
+    ]
 
 export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
     {
@@ -129,11 +130,14 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
     },
     {
         id: 'owner',
-        accessorKey: 'owner',
+        accessorKey: 'owner.username',
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Owner">
                 <ColumnActions {...props}>
-                    <TextFilter displayText="Owner" field="Owner.username" />
+                    <TextFilter<CompanyResource>
+                        displayText="Owner"
+                        field="Owner.username"
+                    />
                 </ColumnActions>
             </DataTableColumnHeader>
         ),
@@ -161,7 +165,10 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
                 title="Contact Number"
             >
                 <ColumnActions {...props}>
-                    <TextFilter displayText="Contact" field="contactNumber" />
+                    <TextFilter<CompanyResource>
+                        displayText="Contact"
+                        field="contactNumber"
+                    />
                 </ColumnActions>
             </DataTableColumnHeader>
         ),
@@ -177,7 +184,7 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Verified">
                 <ColumnActions {...props}>
-                    <DataTableMultiSelectFilter
+                    <DataTableMultiSelectFilter<CompanyResource>
                         displayText="Verify Status"
                         field="isAdminVerified"
                         multiSelectOptions={[

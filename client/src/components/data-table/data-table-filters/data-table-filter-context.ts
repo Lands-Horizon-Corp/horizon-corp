@@ -1,3 +1,4 @@
+import { KeysOfOrString } from '@/types'
 import { createContext, useContext } from 'react'
 
 export type TColumnDataTypes = 'number' | 'text' | 'date' | 'enum'
@@ -89,8 +90,8 @@ export interface IDataTableFilterState<
     removeFilter: (field: TField) => void
 }
 
-export interface IFilterComponentProps {
-    field: string
+export interface IFilterComponentProps<T> {
+    field: KeysOfOrString<T>
     displayText: string
 }
 
@@ -100,12 +101,12 @@ const DataTableFilterContext = createContext<
 
 export const useDataTableFilter = <
     T = unknown,
-    TData = string,
+    TField = string,
     TValue = T,
 >() => {
     const context = useContext(DataTableFilterContext) as IDataTableFilterState<
         T,
-        TData,
+        TField,
         TValue
     >
 
