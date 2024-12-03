@@ -24,3 +24,16 @@ CREATE TABLE IF NOT EXISTS `owners` (
     FOREIGN KEY (`media_id`) REFERENCES `media`(`id`) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (`gender_id`) REFERENCES `genders`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+
+
+
+INSERT INTO `owners` (`first_name`, `last_name`, `middle_name`, `permanent_address`, `description`, `birth_date`, `username`, `email`, `password`, `contact_number`, `is_email_verified`, `is_contact_verified`, `is_skip_verification`, `status`, `media_id`, `gender_id`)
+VALUES
+    ('John', 'Doe', 'Michael', '123 Main St, Los Angeles, CA', 'An experienced entrepreneur with a passion for technology.', '1985-06-15 00:00:00.000', 'johndoe', 'johndoe@example.com', 'JDJhJDEyJHBMNElVbzlpbjFaUWJPdVJvZVcuVHVSNExlRFc5ai9kYlJBRWJpbVd5SGs2Q2UyejlJUDRL', '1234567890', TRUE, TRUE, FALSE, 'Active', NULL, 1),
+    ('Jane', 'Smith', NULL, '456 Park Avenue, New York, NY', 'A creative business owner with expertise in design.', '1990-08-25 00:00:00.000', 'janesmith', 'janesmith@example.com', 'JDJhJDEyJHBMNElVbzlpbjFaUWJPdVJvZVcuVHVSNExlRFc5ai9kYlJBRWJpbVd5SGs2Q2UyejlJUDRL', '2345678901', TRUE, FALSE, FALSE, 'Pending', NULL, 2),
+    ('Robert', 'Johnson', 'Lee', '789 Elm St, Chicago, IL', 'A professional with a background in real estate.', '1975-03-12 00:00:00.000', 'robertjohnson', 'robertj@example.com', 'JDJhJDEyJHBMNElVbzlpbjFaUWJPdVJvZVcuVHVSNExlRFc5ai9kYlJBRWJpbVd5SGs2Q2UyejlJUDRL', '3456789012', FALSE, TRUE, FALSE, 'Inactive', NULL, 1),
+    ('Emily', 'Davis', NULL, '321 Maple St, Seattle, WA', 'Business owner specializing in event planning.', '1995-11-03 00:00:00.000', 'emilydavis', 'emilyd@example.com', 'JDJhJDEyJHBMNElVbzlpbjFaUWJPdVJvZVcuVHVSNExlRFc5ai9kYlJBRWJpbVd5SGs2Q2UyejlJUDRL', '4567890123', FALSE, FALSE, TRUE, 'Pending', NULL, 2),
+    ('Michael', 'Brown', 'James', '654 Pine St, Denver, CO', 'Entrepreneur with a focus on sustainable businesses.', '1980-01-01 00:00:00.000', 'michaelbrown', 'mbrown@example.com', 'JDJhJDEyJHBMNElVbzlpbjFaUWJPdVJvZVcuVHVSNExlRFc5ai9kYlJBRWJpbVd5SGs2Q2UyejlJUDRL', '5678901234', TRUE, TRUE, TRUE, 'Active', NULL, 1);
