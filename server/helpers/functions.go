@@ -3,6 +3,7 @@ package helpers
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 	"strings"
@@ -64,18 +65,31 @@ func DecodeBase64[T any](encodedData string, target *T) error {
 	return nil
 }
 
+const maxDecodedLength = 1024 * 1024
+
 func DecodeBase64JSON(encoded string) (map[string]interface{}, error) {
-	// Decode Base64
 	decoded, err := base64.StdEncoding.DecodeString(encoded)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode Base64: %w", err)
 	}
+	if len(decoded) > maxDecodedLength {
+		return nil, errors.New("decoded string exceeds maximum allowed size")
+	}
 
-	// Parse JSON
+	decodedString := string(decoded)
+	if containsSQLInjectionRisk(decodedString) {
+		return nil, fmt.Errorf("decoded string contains potentially dangerous SQL injection patterns")
+	}
+
 	var result map[string]interface{}
 	if err := json.Unmarshal(decoded, &result); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal JSON: %w", err)
 	}
 
 	return result, nil
+}
+
+func containsSQLInjectionRisk(value string) bool {
+	injectionPattern := regexp.MustCompile(`(?i)\b(SELECT|INSERT|DELETE|UPDATE|DROP|TRUNCATE|ALTER|CREATE|--|;)\b`)
+	return injectionPattern.MatchString(value)
 }

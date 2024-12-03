@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"fmt"
+	"regexp"
 	"strings"
 	"unicode"
 )
@@ -26,10 +28,16 @@ func GetBase64Filters(data map[string]interface{}, key string) []interface{} {
 	return []interface{}{}
 }
 
-func CamelToSnake(s string) string {
+func CamelToSnake(s string) (string, error) {
 	if len(s) == 0 {
-		return s
+		return "", fmt.Errorf("input string is empty")
 	}
+
+	validInput := regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+	if !validInput.MatchString(s) {
+		return "", fmt.Errorf("invalid input string: %s", s)
+	}
+
 	var sb strings.Builder
 	for i, r := range s {
 		if unicode.IsUpper(r) {
@@ -37,9 +45,14 @@ func CamelToSnake(s string) string {
 				sb.WriteRune('_')
 			}
 			sb.WriteRune(unicode.ToLower(r))
-		} else {
+		} else if unicode.IsLetter(r) || unicode.IsDigit(r) { // Allow letters and digits only
 			sb.WriteRune(r)
 		}
 	}
-	return sb.String()
+
+	result := sb.String()
+	if !regexp.MustCompile(`^[a-z0-9_]+$`).MatchString(result) {
+		return "", fmt.Errorf("invalid output string: %s", result)
+	}
+	return result, nil
 }

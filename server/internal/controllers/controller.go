@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -46,6 +47,7 @@ func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
 	filterParam := ctx.Query("filter")
 	decodedData, err := helpers.DecodeBase64JSON(filterParam)
 	if err != nil {
+		fmt.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})
 		return
 	}
@@ -55,7 +57,20 @@ func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
+
 	var data = c.ToResourceList(result.Data)
+	if data == nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"data":      []string{},
+			"pageIndex": result.PageIndex,
+			"totalPage": result.TotalPage,
+			"pageSize":  result.PageSize,
+			"totalSize": result.TotalSize,
+			"pages":     result.Pages,
+		})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":      data,
 		"pageIndex": result.PageIndex,

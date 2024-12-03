@@ -10,6 +10,20 @@ import (
 	"gorm.io/gorm"
 )
 
+type Page struct {
+	Page      string `json:"page"`
+	PageIndex int    `json:"pageIndex"`
+}
+
+type FilterPages[T any] struct {
+	Data      []T    `json:"data"`
+	PageIndex int    `json:"pageIndex"`
+	TotalPage int    `json:"totalPage"`
+	PageSize  int    `json:"pageSize"`
+	TotalSize int    `json:"totalSize"`
+	Pages     []Page `json:"pages"`
+}
+
 type PaginatedRequest struct {
 	Filters   []Filter `json:"filters"`
 	PageIndex int      `json:"pageIndex"`
@@ -32,11 +46,17 @@ const (
 	ModeRange        FilterMode = "range"
 	ModeBefore       FilterMode = "before"
 	ModeAfter        FilterMode = "after"
+	ModeBooleanTrue  FilterMode = "true"
+	ModeBooleanFalse FilterMode = "false"
 
-	DataTypeText   FilterDataType = "text"
-	DataTypeNumber FilterDataType = "number"
-	DataTypeDate   FilterDataType = "date"
-	DataTypeEnum   FilterDataType = "enum"
+	DataTypeText     FilterDataType = "text"
+	DataTypeNumber   FilterDataType = "number"
+	DataTypeFloat    FilterDataType = "float"
+	DataTypeBoolean  FilterDataType = "boolean"
+	DataTypeDate     FilterDataType = "date"
+	DataTypeDatetime FilterDataType = "datetime"
+	DataTypeTime     FilterDataType = "time"
+	DataTypeEnum     FilterDataType = "enum"
 )
 
 // Base filter interface
@@ -58,7 +78,14 @@ type OneValueFilter struct {
 	Value    interface{}    `json:"value"`
 }
 
-func (f OneValueFilter) GetField() string      { return helpers.CamelToSnake(f.Field) }
+func (f OneValueFilter) GetField() string {
+	value, err := helpers.CamelToSnake(f.Field)
+	if err != nil {
+		return ""
+	}
+	return value
+}
+
 func (f OneValueFilter) GetMode() string       { return string(f.Mode) }
 func (f OneValueFilter) GetDataType() string   { return string(f.DataType) }
 func (f OneValueFilter) GetValue() interface{} { return f.Value }
@@ -71,7 +98,13 @@ type EnumFilter struct {
 	Value    []string       `json:"value"`
 }
 
-func (f EnumFilter) GetField() string      { return helpers.CamelToSnake(f.Field) }
+func (f EnumFilter) GetField() string {
+	value, err := helpers.CamelToSnake(f.Field)
+	if err != nil {
+		return ""
+	}
+	return value
+}
 func (f EnumFilter) GetMode() string       { return string(f.Mode) }
 func (f EnumFilter) GetDataType() string   { return string(f.DataType) }
 func (f EnumFilter) GetValue() interface{} { return f.Value }
@@ -84,7 +117,13 @@ type RangeFilter struct {
 	Value    RangeValue     `json:"value"`
 }
 
-func (f RangeFilter) GetField() string      { return helpers.CamelToSnake(f.Field) }
+func (f RangeFilter) GetField() string {
+	value, err := helpers.CamelToSnake(f.Field)
+	if err != nil {
+		return ""
+	}
+	return value
+}
 func (f RangeFilter) GetMode() string       { return string(f.Mode) }
 func (f RangeFilter) GetDataType() string   { return string(f.DataType) }
 func (f RangeFilter) GetValue() interface{} { return f.Value }
@@ -109,7 +148,7 @@ func extractFilters(data []interface{}) []Filter {
 			value := filterMap["value"]
 
 			switch filterDataType {
-			case DataTypeText, DataTypeNumber, DataTypeDate:
+			case DataTypeText, DataTypeNumber, DataTypeFloat, DataTypeBoolean, DataTypeDate, DataTypeDatetime, DataTypeTime:
 				if filterMode == ModeRange {
 					if valueMap, ok := value.(map[string]interface{}); ok {
 						rangeFilter := RangeFilter{
@@ -155,30 +194,6 @@ func extractFilters(data []interface{}) []Filter {
 	return filters
 }
 
-type Page struct {
-	Page      string `json:"page"`
-	PageIndex int    `json:"pageIndex"`
-}
-
-type FilterPages[T any] struct {
-	Data      []T    `json:"data"`
-	PageIndex int    `json:"pageIndex"`
-	TotalPage int    `json:"totalPage"`
-	PageSize  int    `json:"pageSize"`
-	TotalSize int    `json:"totalSize"`
-	Pages     []Page `json:"pages"`
-}
-
-// Repository is a generic repository for managing entities in the database
-type Repository[T any] struct {
-	DB *gorm.DB
-}
-
-// NewRepository creates a new instance of Repository
-func NewRepository[T any](db *gorm.DB) *Repository[T] {
-	return &Repository[T]{DB: db}
-}
-
 func convertFilterMode(mode string) string {
 	switch mode {
 	case "equal":
@@ -197,6 +212,22 @@ func convertFilterMode(mode string) string {
 		return "<"
 	case "lte":
 		return "<="
+	case "startswith":
+		return "LIKE"
+	case "endswith":
+		return "LIKE"
+	case "isempty":
+		return "="
+	case "isnotempty":
+		return "<>"
+	case "before":
+		return "<"
+	case "after":
+		return ">"
+	case "true":
+		return "= TRUE"
+	case "false":
+		return "= FALSE"
 	default:
 		return "="
 	}
@@ -225,17 +256,9 @@ func (c *Repository[T]) Filter(filter map[string]interface{}) (*FilterPages[*T],
 			case RangeFilter:
 				db = db.Where(fmt.Sprintf("%s >= ? AND %s <= ?", filter.GetField(), filter.GetField()), filter.Value.From, filter.Value.To)
 			case EnumFilter:
-				if enumValues, ok := filter.GetValue().([]string); ok {
-					for _, enumValue := range enumValues {
-						fmt.Println(enumValue)
-						fmt.Println(filter.GetField())
-						db = db.Where(fmt.Sprintf("%s = ?", filter.GetField()), enumValue)
-					}
-				}
+				db = db.Where(fmt.Sprintf("%s IN (?)", filter.GetField()), filter.GetValue())
 			}
 		}
-
-		fmt.Println("----")
 
 		err := db.Offset((paginatedRequest.PageIndex - 1) * paginatedRequest.PageSize).Limit(paginatedRequest.PageSize).Find(&entities).Error
 		if err != nil {
@@ -262,9 +285,18 @@ func (c *Repository[T]) Filter(filter map[string]interface{}) (*FilterPages[*T],
 			TotalSize: int(totalSize),
 			Pages:     pages,
 		}, nil
-
 	}
 	return nil, fmt.Errorf("%s", "something wrong extracting data")
+}
+
+// Repository is a generic repository for managing entities in the database
+type Repository[T any] struct {
+	DB *gorm.DB
+}
+
+// NewRepository creates a new instance of Repository
+func NewRepository[T any](db *gorm.DB) *Repository[T] {
+	return &Repository[T]{DB: db}
 }
 
 // Create adds a new entity to the database
