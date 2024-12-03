@@ -18,7 +18,7 @@ import PasswordInput from '@/components/ui/password-input'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { withCatchAsync } from '@/lib'
+import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { passwordSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'

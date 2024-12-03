@@ -23,7 +23,8 @@ import { Button } from '@/components/ui/button'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { cn, withCatchAsync } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { withCatchAsync } from "@/utils"
 import { serverRequestErrExtractor } from '@/helpers'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { userAccountTypeSchema } from '@/validations/common'

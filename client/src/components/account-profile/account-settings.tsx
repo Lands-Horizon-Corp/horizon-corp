@@ -27,7 +27,9 @@ import {
     lastNameSchema,
     middleNameSchema,
 } from '@/validations/common'
-import { cn, withCatchAsync } from '@/lib'
+
+import { cn } from '@/lib'
+import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { AccountSettingRequest, UserData } from '@/horizon-corp/types'
 import ProfileService from '@/horizon-corp/server/auth/ProfileService'

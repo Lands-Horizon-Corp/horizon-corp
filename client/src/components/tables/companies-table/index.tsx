@@ -17,8 +17,9 @@ import {
     companiesTableColumns as columns,
     companyGlobalSearchTargets,
 } from './columns'
+import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { cn, toBase64, withCatchAsync } from '@/lib'
+import { withCatchAsync, toBase64 } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { CompanyPaginatedResource } from '@/horizon-corp/types'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'

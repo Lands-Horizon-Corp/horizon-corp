@@ -4,13 +4,16 @@ import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
 import { PushPinSlashIcon } from '@/components/icons'
 
+import UserAvatar from '@/components/user-avatar'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
+import DateFilter from '@/components/data-table/data-table-filters/date-filter'
 import NumberFilter from '@/components/data-table/data-table-filters/number-filter'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
 import DataTableMultiSelectFilter from '@/components/data-table/data-table-filters/multi-select-filter'
 
+import { toReadableDate } from '@/utils'
 import logger from '@/helpers/loggers/logger'
 import { CompanyResource } from '@/horizon-corp/types'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
@@ -95,6 +98,24 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
                 original: { name },
             },
         }) => <div>{name}</div>,
+    },
+    {
+        id: 'Logo',
+        accessorKey: 'media',
+        header: (props) => (
+            <DataTableColumnHeader {...props} isResizable title="Logo">
+                <ColumnActions {...props} />
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { media },
+            },
+        }) => (
+            <div>
+                <UserAvatar src={media?.downloadURL ?? ''} />
+            </div>
+        ),
     },
     {
         id: 'address',
@@ -214,5 +235,24 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
                 )}
             </div>
         ),
+    },
+    {
+        id: 'createdAt',
+        accessorKey: 'createdAt',
+        header: (props) => (
+            <DataTableColumnHeader {...props} isResizable title="Date Created">
+                <ColumnActions {...props}>
+                    <DateFilter<CompanyResource>
+                        displayText="Date Created"
+                        field="createdAt"
+                    />
+                </ColumnActions>
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { createdAt },
+            },
+        }) => <div>{toReadableDate(createdAt)}</div>,
     },
 ]

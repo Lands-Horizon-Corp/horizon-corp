@@ -13,11 +13,11 @@ import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import { LogoutIcon, UserIcon } from '@/components/icons'
 
-import { withCatchAsync } from '@/lib'
 import {
     getUsersAccountTypeRedirectPage,
     serverRequestErrExtractor,
 } from '@/helpers'
+import { withCatchAsync } from '@/utils'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import UserService from '@/horizon-corp/server/auth/UserService'

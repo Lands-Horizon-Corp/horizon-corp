@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 
-import { withCatchAsync } from '@/lib'
+import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import useConfirmModalStore from '@/store/confirm-modal-store'

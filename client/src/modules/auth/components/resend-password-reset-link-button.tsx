@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { withCatchAsync } from '@/lib'
+import { withCatchAsync } from '@/utils'
 import UseCooldown from '@/hooks/use-cooldown'
 import { AccountType } from '@/horizon-corp/types'
 import { serverRequestErrExtractor } from '@/helpers'

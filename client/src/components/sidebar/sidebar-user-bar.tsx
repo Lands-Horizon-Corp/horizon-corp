@@ -22,7 +22,8 @@ import {
 } from '@/components/icons'
 import UserAvatar from '@/components/user-avatar'
 
-import { cn, withCatchAsync } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { withCatchAsync } from '@/utils'
 import { IBaseCompNoChild } from '@/types/component'
 import { useTheme } from '@/providers/theme-provider'
 import { serverRequestErrExtractor } from '@/helpers'
