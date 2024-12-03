@@ -15,9 +15,12 @@ import { GenderResource } from '@/horizon-corp/types'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 export const gendersGlobalSearchTargets: IGlobalSearchTargets<GenderResource>[] =
-    []
+    [
+        { field: 'name', displayText: 'Gender' },
+        { field: 'description', displayText: '' },
+    ]
 
-export const genderTableColumns: ColumnDef<GenderResource>[] = [
+const genderTableColumns: ColumnDef<GenderResource>[] = [
     {
         id: 'select',
         header: ({ table, column }) => (
@@ -137,7 +140,7 @@ export const genderTableColumns: ColumnDef<GenderResource>[] = [
             <DataTableColumnHeader {...props} isResizable title="Updated">
                 <ColumnActions {...props}>
                     <DateFilter<GenderResource>
-                        field="createdAt"
+                        field="updatedAt"
                         displayText="Last Update"
                     />
                 </ColumnActions>
@@ -150,3 +153,5 @@ export const genderTableColumns: ColumnDef<GenderResource>[] = [
         }) => <div>{toReadableDate(updatedAt)}</div>,
     },
 ]
+
+export default genderTableColumns

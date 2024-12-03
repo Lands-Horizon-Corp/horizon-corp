@@ -1,10 +1,9 @@
 import { ColumnDef } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
+import UserAvatar from '@/components/user-avatar'
 import { Checkbox } from '@/components/ui/checkbox'
 import { PushPinSlashIcon } from '@/components/icons'
-
-import UserAvatar from '@/components/user-avatar'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
@@ -27,7 +26,7 @@ export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[]
         { field: 'isAdminVerified', displayText: 'Verify Status' },
     ]
 
-export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
+const companiesTableColumns: ColumnDef<CompanyResource>[] = [
     {
         id: 'select',
         header: ({ table, column }) => (
@@ -256,3 +255,5 @@ export const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         }) => <div>{toReadableDate(createdAt)}</div>,
     },
 ]
+
+export default companiesTableColumns

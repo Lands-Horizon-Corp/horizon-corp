@@ -13,16 +13,17 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import columns, { gendersGlobalSearchTargets } from './columns'
+import columns, { membersGlobalSearchTargets } from './columns'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { withCatchAsync, toBase64 } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
+/* TO REPLACE ONCE MEMBER RESOURCE IS MADE */
 import { GenderPaginatedResource } from '@/horizon-corp/types'
 import GenderService from '@/horizon-corp/server/common/GenderService'
 
-const GendersTable = ({ className }: IBaseCompNoChild) => {
+const MembersTable = ({ className }: IBaseCompNoChild) => {
     const {
         sorting,
         setSorting,
@@ -48,13 +49,13 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
         isRefetching,
         refetch,
     } = useQuery<GenderPaginatedResource, string>({
-        queryKey: ['genders', 'table', filterState.filters],
+        queryKey: ['members', 'table', filterState.filters],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 GenderService.filter(
                     toBase64({
                         filters: filterState.finalFilters,
-                        preloads: [],
+                        preloads: ['Media'],
                         ...pagination,
                     })
                 )
@@ -65,8 +66,6 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
                 toast.error(errorMessage)
                 throw errorMessage
             }
-
-            if (!result) throw "Something wen't wroing"
 
             return result
         },
@@ -113,7 +112,7 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
                 <DataTableToolbar
                     globalSearchProps={{
                         defaultMode: 'equal',
-                        targets: gendersGlobalSearchTargets,
+                        targets: membersGlobalSearchTargets,
                     }}
                     table={table}
                     refreshActionProps={{
@@ -143,4 +142,4 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
     )
 }
 
-export default GendersTable
+export default MembersTable

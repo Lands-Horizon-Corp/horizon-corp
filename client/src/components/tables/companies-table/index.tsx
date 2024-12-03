@@ -13,16 +13,16 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import {
-    companiesTableColumns as columns,
-    companyGlobalSearchTargets,
-} from './columns'
+import columns, { companyGlobalSearchTargets } from './columns'
+
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { withCatchAsync, toBase64 } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { CompanyPaginatedResource } from '@/horizon-corp/types'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+
+import logger from '@/helpers/loggers/logger'
 
 const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     const {
@@ -44,6 +44,8 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
 
     const filterState = useDatableFilterState()
 
+    logger.log(filterState.finalFilters)
+
     const {
         data: { data, totalPage, pageSize },
         isPending,
@@ -56,7 +58,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                 CompanyService.filter(
                     toBase64({
                         filters: filterState.finalFilters,
-                        shallowPreload: ['Media'],
+                        preloads: ['Media'],
                         ...pagination,
                     })
                 )
@@ -67,8 +69,6 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                 toast.error(errorMessage)
                 throw errorMessage
             }
-
-            if (!result) throw "Something wen't wroing"
 
             return result
         },

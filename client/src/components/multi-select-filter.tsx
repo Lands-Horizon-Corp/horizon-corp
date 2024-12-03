@@ -24,8 +24,8 @@ const MultiSelectFilter = ({
     clearValues,
 }: {
     value: string[]
-    multiSelectOptions: IMultiSelectOption[]
     clearValues: () => void
+    multiSelectOptions: IMultiSelectOption[]
     setValues: (selectedValues: string[]) => void
 }) => {
     const selectedValues = new Set(value)

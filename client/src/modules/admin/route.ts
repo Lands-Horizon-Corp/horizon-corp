@@ -23,7 +23,7 @@ const adminDashboardRoute = createRoute({
 const adminViewMembersRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'members-management/view-members',
-    component: lazyRouteComponent(() => import('./pages/members/view-members')),
+    component: lazyRouteComponent(() => import('./pages/members/view-members/index')),
 })
 
 const adminMembersFeedbackRoute = createRoute({
