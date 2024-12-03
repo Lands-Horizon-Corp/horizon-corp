@@ -54,7 +54,11 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 CompanyService.filter(
-                    toBase64({ filters: filterState.filters, ...pagination })
+                    toBase64({
+                        filters: filterState.filters,
+                        shallowPreload: ['Media'],
+                        ...pagination,
+                    })
                 )
             )
 

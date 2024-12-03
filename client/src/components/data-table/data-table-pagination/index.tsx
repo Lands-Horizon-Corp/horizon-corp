@@ -34,7 +34,7 @@ const DataTablePagination = <TData,>({
     pageSizes = PAGE_SIZES_DENSE,
     hideSelectedIndicator = false,
 }: DataTablePaginationProps<TData>) => {
-    const finalPageSizes = pageSizes.filter((size) => size < totalSize)
+    const finalPageSizes = pageSizes
 
     return (
         <div
@@ -50,10 +50,11 @@ const DataTablePagination = <TData,>({
                     {table.getFilteredRowModel().rows.length} row(s) selected.
                 </div>
             )}
-            <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-6 md:space-y-0 lg:space-x-8">
+            <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-3 md:space-y-0 lg:space-x-8">
                 <div className="flex items-center space-x-2">
                     <p className="text-sm font-medium">Rows per page</p>
                     <Select
+                        disabled={totalSize === 0}
                         value={`${table.getState().pagination.pageSize}`}
                         onValueChange={(value) => {
                             table.setPageSize(Number(value))

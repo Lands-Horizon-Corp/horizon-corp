@@ -1,4 +1,5 @@
 import { Table } from '@tanstack/react-table'
+import { useQuery } from '@tanstack/react-query'
 
 import {
     DropdownMenu,
@@ -34,7 +35,19 @@ const DataTableExportButton = <TData,>({
         .getSelectedRowModel()
         .flatRows.map(({ original }) => original)
 
+    const { refetch: exportSelectedData, isFetching: isExportingSelected } =
+        useQuery<void, string, TData[]>({
+            queryKey: ['export', 'selected'],
+            queryFn: (selectedData) => {
+                exportSelected?.(selectedData)
+            },
+            enabled: false,
+        })
+
+    const isExporting = isExportingSelected
+
     const forceDisabled =
+        isExporting ||
         selectedData.length === 0 ||
         !(exportAll || exportSelected || exportCurrentPage || exportAllFiltered)
 
@@ -55,7 +68,7 @@ const DataTableExportButton = <TData,>({
                 <DropdownMenuGroup>
                     {selectedData.length > 0 && exportSelected && (
                         <DropdownMenuItem
-                            onClick={() => exportSelected(selectedData)}
+                            onClick={() => exportSelectedData(selectedData)}
                         >
                             <CsvIcon className="mr-2 size-4 text-emerald-600" />
                             <span>Export Selected</span>
