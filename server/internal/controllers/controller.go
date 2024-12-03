@@ -17,20 +17,10 @@ import (
 	"gorm.io/gorm"
 )
 
-type TSearchFilter struct {
-	DataType string      `json:"dataType"` // TColumnDataTypes
-	Value    interface{} `json:"value,omitempty"`
-	Mode     string      `json:"mode"` // TFilterModes
-	From     interface{} `json:"from,omitempty"`
-	To       interface{} `json:"to,omitempty"`
-}
-
-// TFinalFilter represents the final filter object.
-type TFinalFilter struct {
-	Field   string      `json:"field"` // Field to filter
-	Preload string      `json:"preload"`
-	Value   interface{} `json:"value"` // Either a single value or a range { from, to }
-	TSearchFilter
+type PaginatedRequest struct {
+	Filters   []interface{} `json:"filters"`
+	PageIndex int           `json:"pageIndex"`
+	PageSize  int           `json:"pageSize"`
 }
 
 // BaseController is a generic controller for CRUD operations with preloads
@@ -115,16 +105,37 @@ func (c *BaseController[Model, Request, Resource]) GetAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resources)
 }
 
-// Filter handles the filtering of data based on client-specified filters.
 func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
 	filterParam := ctx.Query("filter")
 	decodedData, err := helpers.DecodeBase64JSON(filterParam)
 	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})
 		return
 	}
-	fmt.Println(decodedData)
-	// spcecific database
-	// then filter
+
+	var paginatedRequest PaginatedRequest
+	if pageIndex, ok := decodedData["pageIndex"].(int); ok {
+		paginatedRequest.PageIndex = pageIndex
+	} else {
+		paginatedRequest.PageIndex = 1
+	}
+
+	if pageSize, ok := decodedData["pageSize"].(int); ok {
+		paginatedRequest.PageSize = pageSize
+	} else {
+		paginatedRequest.PageSize = 10
+	}
+
+	if filters, ok := decodedData["filters"].([]interface{}); ok {
+		paginatedRequest.Filters = filters
+	} else {
+		paginatedRequest.Filters = []interface{}{}
+	}
+
+	fmt.Println("Page Size: ", paginatedRequest.PageSize)
+	fmt.Println("Page Index: ", paginatedRequest.PageIndex)
+	fmt.Println("Filters: ", paginatedRequest.Filters)
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"data":      []string{},
 		"pageIndex": 1,
