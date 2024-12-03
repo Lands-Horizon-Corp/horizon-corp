@@ -14,17 +14,17 @@ import useDatableFilterState from '@/components/data-table/hooks/use-datatable-f
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
 import {
-    companiesTableColumns as columns,
-    companyGlobalSearchTargets,
+    genderTableColumns as columns,
+    gendersGlobalSearchTargets,
 } from './columns'
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { withCatchAsync, toBase64 } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { CompanyPaginatedResource } from '@/horizon-corp/types'
-import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+import { GenderPaginatedResource } from '@/horizon-corp/types'
+import GenderService from '@/horizon-corp/server/common/GenderService'
 
-const CompaniesTable = ({ className }: IBaseCompNoChild) => {
+const GendersTable = ({ className }: IBaseCompNoChild) => {
     const {
         sorting,
         setSorting,
@@ -49,14 +49,13 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         isPending,
         isRefetching,
         refetch,
-    } = useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['company', 'table', filterState.finalFilters],
+    } = useQuery<GenderPaginatedResource, string>({
+        queryKey: ['genders', 'table', filterState.filters],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
-                CompanyService.filter(
+                GenderService.filter(
                     toBase64({
                         filters: filterState.finalFilters,
-                        shallowPreload: ['Media'],
                         ...pagination,
                     })
                 )
@@ -115,7 +114,7 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                 <DataTableToolbar
                     globalSearchProps={{
                         defaultMode: 'equal',
-                        targets: companyGlobalSearchTargets,
+                        targets: gendersGlobalSearchTargets,
                     }}
                     table={table}
                     refreshActionProps={{
@@ -145,4 +144,4 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     )
 }
 
-export default CompaniesTable
+export default GendersTable
