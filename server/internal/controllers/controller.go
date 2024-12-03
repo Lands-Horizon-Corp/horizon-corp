@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -16,12 +15,6 @@ import (
 	"github.com/xuri/excelize/v2"
 	"gorm.io/gorm"
 )
-
-type PaginatedRequest struct {
-	Filters   []interface{} `json:"filters"`
-	PageIndex int           `json:"pageIndex"`
-	PageSize  int           `json:"pageSize"`
-}
 
 // BaseController is a generic controller for CRUD operations with preloads
 type BaseController[Model any, Request requests.Validatable, Resource any] struct {
@@ -47,6 +40,30 @@ func NewBaseController[Model any, Request requests.Validatable, Resource any](
 		ToResourceList: toResourceList,
 		UpdateModel:    updateModel,
 	}
+}
+
+func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
+	filterParam := ctx.Query("filter")
+	decodedData, err := helpers.DecodeBase64JSON(filterParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})
+		return
+	}
+
+	result, err := c.Repo.Filter(decodedData)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	var data = c.ToResourceList(result.Data)
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":      data,
+		"pageIndex": result.PageIndex,
+		"totalPage": result.TotalPage,
+		"pageSize":  result.PageSize,
+		"totalSize": result.TotalSize,
+		"pages":     result.Pages,
+	})
 }
 
 // Create handles the creation of a new entity
@@ -103,52 +120,6 @@ func (c *BaseController[Model, Request, Resource]) GetAll(ctx *gin.Context) {
 
 	resources := c.ToResourceList(modelPointers)
 	ctx.JSON(http.StatusOK, resources)
-}
-
-func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
-	filterParam := ctx.Query("filter")
-	decodedData, err := helpers.DecodeBase64JSON(filterParam)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})
-		return
-	}
-
-	var paginatedRequest PaginatedRequest
-	if pageIndex, ok := decodedData["pageIndex"].(int); ok {
-		paginatedRequest.PageIndex = pageIndex
-	} else {
-		paginatedRequest.PageIndex = 1
-	}
-
-	if pageSize, ok := decodedData["pageSize"].(int); ok {
-		paginatedRequest.PageSize = pageSize
-	} else {
-		paginatedRequest.PageSize = 10
-	}
-
-	if filters, ok := decodedData["filters"].([]interface{}); ok {
-		paginatedRequest.Filters = filters
-	} else {
-		paginatedRequest.Filters = []interface{}{}
-	}
-
-	fmt.Println("Page Size: ", paginatedRequest.PageSize)
-	fmt.Println("Page Index: ", paginatedRequest.PageIndex)
-	fmt.Println("Filters: ", paginatedRequest.Filters)
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"data":      []string{},
-		"pageIndex": 1,
-		"totalPage": 1,
-		"pageSize":  1,
-		"totalSize": 1,
-		"pages": []string{
-			"/api/filter-something-1",
-			"/api/filter-something-2",
-			"/api/filter-something-3",
-			"/api/filter-something-4",
-		},
-	})
 }
 
 func (c *BaseController[Model, Request, Resource]) ExportAllFiltered(ctx *gin.Context) {

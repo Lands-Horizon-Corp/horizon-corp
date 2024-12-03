@@ -3,11 +3,171 @@ package repositories
 import (
 	"errors"
 	"fmt"
+	"horizon/server/helpers"
 	"regexp"
 
 	"github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
 )
+
+type PaginatedRequest struct {
+	Filters   []Filter `json:"filters"`
+	PageIndex int      `json:"pageIndex"`
+	PageSize  int      `json:"pageSize"`
+}
+
+const (
+	ModeEqual        FilterMode = "equal"
+	ModeNotEqual     FilterMode = "nequal"
+	ModeContains     FilterMode = "contains"
+	ModeNotContains  FilterMode = "ncontains"
+	ModeStartsWith   FilterMode = "startswith"
+	ModeEndsWith     FilterMode = "endswith"
+	ModeIsEmpty      FilterMode = "isempty"
+	ModeIsNotEmpty   FilterMode = "isnotempty"
+	ModeGreaterThan  FilterMode = "gt"
+	ModeGreaterEqual FilterMode = "gte"
+	ModeLessThan     FilterMode = "lt"
+	ModeLessEqual    FilterMode = "lte"
+	ModeRange        FilterMode = "range"
+	ModeBefore       FilterMode = "before"
+	ModeAfter        FilterMode = "after"
+
+	DataTypeText   FilterDataType = "text"
+	DataTypeNumber FilterDataType = "number"
+	DataTypeDate   FilterDataType = "date"
+	DataTypeEnum   FilterDataType = "enum"
+)
+
+// Base filter interface
+type Filter interface {
+	GetField() string
+	GetMode() string
+	GetDataType() string
+	GetValue() interface{}
+}
+
+type FilterMode string
+type FilterDataType string
+
+// OneValueFilter, RangeFilter, EnumFilter, etc.
+type OneValueFilter struct {
+	Field    string         `json:"field"`
+	Mode     FilterMode     `json:"mode"`
+	DataType FilterDataType `json:"dataType"`
+	Value    interface{}    `json:"value"`
+}
+
+func (f OneValueFilter) GetField() string      { return helpers.CamelToSnake(f.Field) }
+func (f OneValueFilter) GetMode() string       { return string(f.Mode) }
+func (f OneValueFilter) GetDataType() string   { return string(f.DataType) }
+func (f OneValueFilter) GetValue() interface{} { return f.Value }
+
+// EnumFilter specifically for multiple values
+type EnumFilter struct {
+	Field    string         `json:"field"`
+	Mode     FilterMode     `json:"mode"`
+	DataType FilterDataType `json:"dataType"`
+	Value    []string       `json:"value"`
+}
+
+func (f EnumFilter) GetField() string      { return helpers.CamelToSnake(f.Field) }
+func (f EnumFilter) GetMode() string       { return string(f.Mode) }
+func (f EnumFilter) GetDataType() string   { return string(f.DataType) }
+func (f EnumFilter) GetValue() interface{} { return f.Value }
+
+// RangeFilter to handle range types with from and to fields
+type RangeFilter struct {
+	Field    string         `json:"field"`
+	Mode     FilterMode     `json:"mode"`
+	DataType FilterDataType `json:"dataType"`
+	Value    RangeValue     `json:"value"`
+}
+
+func (f RangeFilter) GetField() string      { return helpers.CamelToSnake(f.Field) }
+func (f RangeFilter) GetMode() string       { return string(f.Mode) }
+func (f RangeFilter) GetDataType() string   { return string(f.DataType) }
+func (f RangeFilter) GetValue() interface{} { return f.Value }
+
+// RangeValue struct for holding from and to values
+type RangeValue struct {
+	From interface{} `json:"from"`
+	To   interface{} `json:"to"`
+}
+
+func extractFilters(data []interface{}) []Filter {
+	var filters []Filter
+
+	for _, rawFilter := range data {
+		if filterMap, ok := rawFilter.(map[string]interface{}); ok {
+			field, _ := filterMap["field"].(string)
+			mode, _ := filterMap["mode"].(string)
+			dataType, _ := filterMap["dataType"].(string)
+
+			filterMode := FilterMode(mode)
+			filterDataType := FilterDataType(dataType)
+			value := filterMap["value"]
+
+			switch filterDataType {
+			case DataTypeText, DataTypeNumber, DataTypeDate:
+				if filterMode == ModeRange {
+					if valueMap, ok := value.(map[string]interface{}); ok {
+						rangeFilter := RangeFilter{
+							Field:    field,
+							Mode:     filterMode,
+							DataType: filterDataType,
+							Value: RangeValue{
+								From: valueMap["from"],
+								To:   valueMap["to"],
+							},
+						}
+						filters = append(filters, rangeFilter)
+					}
+				} else {
+					oneValueFilter := OneValueFilter{
+						Field:    field,
+						Mode:     filterMode,
+						DataType: filterDataType,
+						Value:    value,
+					}
+					filters = append(filters, oneValueFilter)
+				}
+			case DataTypeEnum:
+				if enumValues, ok := value.([]interface{}); ok {
+					var values []string
+					for _, v := range enumValues {
+						if strVal, ok := v.(string); ok {
+							values = append(values, strVal)
+						}
+					}
+					enumFilter := EnumFilter{
+						Field:    field,
+						Mode:     filterMode,
+						DataType: filterDataType,
+						Value:    values,
+					}
+					filters = append(filters, enumFilter)
+				}
+			}
+		}
+	}
+
+	return filters
+}
+
+type Page struct {
+	Page      string `json:"page"`
+	PageIndex int    `json:"pageIndex"`
+}
+
+type FilterPages[T any] struct {
+	Data      []T    `json:"data"`
+	PageIndex int    `json:"pageIndex"`
+	TotalPage int    `json:"totalPage"`
+	PageSize  int    `json:"pageSize"`
+	TotalSize int    `json:"totalSize"`
+	Pages     []Page `json:"pages"`
+}
 
 // Repository is a generic repository for managing entities in the database
 type Repository[T any] struct {
@@ -17,6 +177,94 @@ type Repository[T any] struct {
 // NewRepository creates a new instance of Repository
 func NewRepository[T any](db *gorm.DB) *Repository[T] {
 	return &Repository[T]{DB: db}
+}
+
+func convertFilterMode(mode string) string {
+	switch mode {
+	case "equal":
+		return "="
+	case "nequal":
+		return "<>"
+	case "contains":
+		return "LIKE"
+	case "ncontains":
+		return "NOT LIKE"
+	case "gt":
+		return ">"
+	case "gte":
+		return ">="
+	case "lt":
+		return "<"
+	case "lte":
+		return "<="
+	default:
+		return "="
+	}
+}
+
+func (c *Repository[T]) Filter(filter map[string]interface{}) (*FilterPages[*T], error) {
+	var entities []*T
+	db := c.DB
+
+	pageIndex := helpers.GetBase64Int(filter, "pageIndex", 1)
+	pageSize := helpers.GetBase64Int(filter, "pageSize", 10)
+
+	if filtersData, ok := filter["filters"].([]interface{}); ok {
+		filters := extractFilters(filtersData)
+		paginatedRequest := PaginatedRequest{
+			PageIndex: pageIndex,
+			PageSize:  pageSize,
+			Filters:   filters,
+		}
+
+		filters = paginatedRequest.Filters
+		for _, filter := range filters {
+			switch filter := filter.(type) {
+			case OneValueFilter:
+				db = db.Where(fmt.Sprintf("%s %s ?", filter.GetField(), convertFilterMode(filter.GetMode())), filter.GetValue())
+			case RangeFilter:
+				db = db.Where(fmt.Sprintf("%s >= ? AND %s <= ?", filter.GetField(), filter.GetField()), filter.Value.From, filter.Value.To)
+			case EnumFilter:
+				if enumValues, ok := filter.GetValue().([]string); ok {
+					for _, enumValue := range enumValues {
+						fmt.Println(enumValue)
+						fmt.Println(filter.GetField())
+						db = db.Where(fmt.Sprintf("%s = ?", filter.GetField()), enumValue)
+					}
+				}
+			}
+		}
+
+		fmt.Println("----")
+
+		err := db.Offset((paginatedRequest.PageIndex - 1) * paginatedRequest.PageSize).Limit(paginatedRequest.PageSize).Find(&entities).Error
+		if err != nil {
+			return &FilterPages[*T]{}, fmt.Errorf("failed to retrieve records: %w", err)
+		}
+
+		var totalSize int64
+		db.Model(&entities).Count(&totalSize)
+
+		totalPage := (int(totalSize) + paginatedRequest.PageSize - 1) / paginatedRequest.PageSize
+
+		pages := make([]Page, totalPage)
+		for i := 0; i < totalPage; i++ {
+			pages[i] = Page{
+				Page:      fmt.Sprintf("/api/page/%d", i+1),
+				PageIndex: i + 1,
+			}
+		}
+		return &FilterPages[*T]{
+			Data:      entities,
+			PageIndex: paginatedRequest.PageIndex,
+			TotalPage: totalPage,
+			PageSize:  paginatedRequest.PageSize,
+			TotalSize: int(totalSize),
+			Pages:     pages,
+		}, nil
+
+	}
+	return nil, fmt.Errorf("%s", "something wrong extracting data")
 }
 
 // Create adds a new entity to the database
