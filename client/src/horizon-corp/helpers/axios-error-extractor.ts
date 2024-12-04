@@ -1,3 +1,4 @@
+import { isObjectEmpty } from '@/utils'
 import { AxiosError } from 'axios'
 
 export const axiosErrorMessageExtractor = (
@@ -18,6 +19,8 @@ export const axiosErrorMessageExtractor = (
         }
     }
     const { response } = error
+
+    if (isObjectEmpty(response)) return 'Unknown server error occured'
 
     switch (response.status) {
         case 404:

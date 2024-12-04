@@ -210,16 +210,16 @@ const DataTable = <TData,>({
         syncFooterRowHeights()
     }, [syncHeaderRowHeights, syncRowHeights, syncFooterRowHeights])
 
+    const tableRows = table.getRowModel().rows
+
     useEffect(() => {
         syncHeights()
-
         const handleResize = () => syncHeights()
         window.addEventListener('resize', handleResize)
-
         return () => {
             window.removeEventListener('resize', handleResize)
         }
-    }, [syncHeights])
+    }, [syncHeights, tableRows])
 
     const sensors = useSensors(
         useSensor(MouseSensor, {}),
