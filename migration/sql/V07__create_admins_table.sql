@@ -26,3 +26,8 @@ CREATE TABLE IF NOT EXISTS `admins` (
     FOREIGN KEY (`role_id`) REFERENCES `roles`(`id`) ON DELETE SET NULL ON UPDATE CASCADE,
     FOREIGN KEY (`gender_id`) REFERENCES `genders`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+INSERT INTO `admins` (`first_name`, `last_name`, `middle_name`, `permanent_address`, `description`, `birth_date`, `username`, `email`, `password`, `contact_number`, `is_email_verified`, `is_contact_verified`, `is_skip_verification`, `status`, `media_id`, `gender_id`)
+VALUES
+    ('John', 'Doe', 'A.', '123 Main St, Los Angeles, CA', 'An experienced entrepreneur with a passion for technology.', '1985-06-15 00:00:00.000', 'admin', 'admin@example.com', 'JDJhJDEyJHBMNElVbzlpbjFaUWJPdVJvZVcuVHVSNExlRFc5ai9kYlJBRWJpbVd5SGs2Q2UyejlJUDRL', '1234567890', TRUE, TRUE, TRUE, 'Verified', NULL, 1);
