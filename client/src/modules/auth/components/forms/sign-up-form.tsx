@@ -24,7 +24,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { VerifiedPatchIcon } from '@/components/icons'
 import PasswordInput from '@/components/ui/password-input'
-import InputDatePicker from '@/components/input-date-picker'
+import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/components/ui/form-error-message'
 

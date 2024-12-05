@@ -1,18 +1,18 @@
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
+import { CaptionLayout } from 'react-day-picker'
 
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import DateTimePicker from './date-time-picker'
+
 import { cn } from '@/lib/utils'
-import { CaptionLayout } from 'react-day-picker'
 
 type InputDatePickerProps = {
-    id: string
     fromYear?: number
     toYear?: number
     className?: string
@@ -23,7 +23,6 @@ type InputDatePickerProps = {
 }
 
 const InputDatePicker = ({
-    id,
     value,
     onChange,
     disabled,
@@ -35,7 +34,6 @@ const InputDatePicker = ({
         <Popover modal>
             <PopoverTrigger asChild>
                 <Button
-                    id={id}
                     variant={'outline'}
                     className={cn(
                         'w-full pl-3 text-left font-normal',
@@ -50,14 +48,12 @@ const InputDatePicker = ({
                 className="w-auto rounded-2xl bg-popover/85 p-0 backdrop-blur"
                 align="start"
             >
-                <Calendar
+                <DateTimePicker
                     {...other}
-                    mode="single"
                     toYear={toYear}
-                    showOutsideDays
-                    selected={value}
+                    value={value}
                     fromYear={fromYear}
-                    onSelect={onChange}
+                    onChange={onChange}
                     disabled={disabled}
                 />
             </PopoverContent>

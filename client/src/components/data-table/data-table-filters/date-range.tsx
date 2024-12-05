@@ -1,4 +1,5 @@
-import { format } from 'date-fns'
+import { useState } from 'react'
+import { format, isAfter } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
 import { CaptionLayout, type DateRange } from 'react-day-picker'
 
@@ -8,42 +9,40 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
 
 import { cn } from '@/lib/utils'
-import { isDate, isObject } from '@/helpers'
+import { isObject } from '@/helpers'
+import DateTimeSetter from '../../date-time-pickers/date-time-setter'
+import DateRangePicker from '@/components/date-time-pickers/date-range-picker'
 
-type DateRangePicker = {
+type DateRangeProps = {
     toYear?: number
+    modal?: boolean
     value: DateRange
     fromYear?: number
-    modal?: boolean
+    withTimePick?: boolean
     captionLayout?: CaptionLayout
     disabled?: (date: Date) => boolean
     onChange: (range: { from: Date; to?: Date }) => void
 }
 
-const isRange = (value: unknown): value is Range => {
-    if (!isObject(value)) {
-        return false
-    }
-
-    const { from, to } = value as { from?: unknown; to?: unknown }
-
-    return (
-        (from === undefined || isDate(from)) && (to === undefined || isDate(to))
-    )
-}
-
 const DateRange = ({
     value,
-    modal = false,
     onChange,
-    disabled,
-    fromYear = 1930,
-    toYear = new Date().getFullYear(),
+    modal = false,
+    withTimePick = false,
     ...other
-}: DateRangePicker) => {
+}: DateRangeProps) => {
+    const [selected, setSelected] = useState<DateRange | undefined>(value)
+
+    const isInvalid =
+        selected === undefined ||
+        !isObject(selected) ||
+        selected.from === undefined ||
+        selected.to === undefined ||
+        isAfter(selected.from, selected.to) ||
+        (selected.from === value.from && selected.to === value.to)
+
     return (
         <Popover modal={modal}>
             <PopoverTrigger asChild>
@@ -68,19 +67,68 @@ const DateRange = ({
                 className="w-auto rounded-2xl bg-popover/85 p-0 backdrop-blur"
                 align="start"
             >
-                <Calendar
+                <DateRangePicker
                     {...other}
-                    mode="range"
-                    toYear={toYear}
-                    showOutsideDays
-                    selected={value}
-                    fromYear={fromYear}
-                    onSelect={(range) => {
-                        if (!range?.from || !isRange(range)) return
-                        onChange({ from: range.from, to: range.to })
-                    }}
-                    disabled={disabled}
+                    onChange={(range) => setSelected(range)}
+                    value={selected}
                 />
+                {withTimePick && (
+                    <div className="flex w-full gap-x-2 px-2 pb-2">
+                        {selected?.from && (
+                            <div className="flex w-full flex-col space-y-1">
+                                <p className="text-xs text-foreground/70">
+                                    From
+                                </p>
+                                <DateTimeSetter
+                                    date={selected.from}
+                                    onChange={(newDate) => {
+                                        setSelected((prev) => ({
+                                            ...prev,
+                                            from: newDate,
+                                        }))
+                                    }}
+                                />
+                            </div>
+                        )}
+                        {selected?.to && (
+                            <div className="flex w-full flex-col space-y-1">
+                                <p className="text-xs text-foreground/70">To</p>
+                                <DateTimeSetter
+                                    date={selected.to}
+                                    onChange={(newDate) => {
+                                        setSelected((prev) =>
+                                            prev
+                                                ? {
+                                                      ...prev,
+                                                      to: newDate,
+                                                  }
+                                                : {
+                                                      from: undefined,
+                                                      to: newDate,
+                                                  }
+                                        )
+                                    }}
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
+                <div className="flex w-full justify-end px-2 pb-2">
+                    <Button
+                        onClick={() =>
+                            onChange(
+                                selected as unknown as {
+                                    from: Date
+                                    to?: Date | undefined
+                                }
+                            )
+                        }
+                        disabled={isInvalid}
+                        className=""
+                    >
+                        Apply
+                    </Button>
+                </div>
             </PopoverContent>
         </Popover>
     )
