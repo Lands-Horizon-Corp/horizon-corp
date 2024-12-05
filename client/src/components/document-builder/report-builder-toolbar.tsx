@@ -178,7 +178,7 @@ export const TableToolbar = ({
             withHeaderRow: true,
         })
     }
-    // console.log('pages', pages)
+    // console.log('pages',nd pages)
 
     const handleTableHeight = (height: number) => {
         editor?.chain().focus().updateAttributes('tableRow', {

@@ -19,27 +19,44 @@ import DOMPurify from 'isomorphic-dompurify'
 import { useDocumentBuilderStore } from '@/store/document-builder-store'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
-import { Editor, Node, mergeAttributes } from '@tiptap/core';
+import { Editor, Node, NodeViewRendererOptions, mergeAttributes } from '@tiptap/core'
+import { DOMSerializer } from 'prosemirror-model'
 
 export type PageProps = {
     htmlTemplate: string
     style: string
 }
-export const Page = Node.create({
-    name: 'page',
-    group: 'block',
-    content: 'block+',
-    parseHTML() {
-      return [
-        {
-          tag: 'div[data-type="page"]',
-        },
-      ];
-    },
-    renderHTML({ HTMLAttributes }) {
-      return ['div', mergeAttributes(HTMLAttributes, { 'data-type': 'page', class: 'page' }), 0];
-    },
-  });
+
+
+export const CustomNode = Node.create({
+  name: 'customNode',
+
+  group: 'block',
+
+  content: 'inline*',
+
+  parseHTML() {
+    return [{ tag: 'div[data-type="customNode"]' }];
+  },
+
+  renderHTML({ HTMLAttributes }) {
+    return ['div', { ...HTMLAttributes, 'data-type': 'customNode' }, 0];
+  },
+
+  addNodeView() {
+    return ({ node }: NodeViewRendererOptions) => {
+      const dom = document.createElement('div');
+      dom.setAttribute('data-type', 'customNode');
+      dom.textContent = node.textContent || 'Hello, custom node!';
+
+      return {
+        dom,
+      };
+    };
+  },
+});
+
+
 
 export const DocumentBuilder = () => {
     const pageHeight = 1056
@@ -47,14 +64,14 @@ export const DocumentBuilder = () => {
     const editorRefFocus = useRef<Array<HTMLDivElement | null>>([])
     const editorRef = useRef<HTMLDivElement | null>()
 
-    const { pages, currentPage, switchToPage, updateJsonPageContent } =
-        useDocumentBuilderStore()
+    const { pages, currentPage, switchToPage, updateJsonPageContent, handleAddOrSwitchPage, addPage} = useDocumentBuilderStore()
 
     useEffect(() => {
         useDocumentBuilderStore.setState({
             editorRefFocus: editorRefFocus.current,
         })
     }, [])
+
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
@@ -76,16 +93,18 @@ export const DocumentBuilder = () => {
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
             }),
+            CustomNode
         ],
         content: pages[currentPage].htmlTemplate,
         onUpdate: ({ editor }) => {
-            const contentHeight = editor.view.dom.scrollHeight
-            const { state } = editor
+             handleAddOrSwitchPage(editor);
+            
+            // const contentHeight = editor.view.dom.scrollHeight
+            // const { state } = editor
 
-            updateJsonPageContent(currentPage, editor)
-            organizeContentIntoPages(editor, 844);
-       
-
+            // updateJsonPageContent(currentPage, editor)
+            // const pages = organizeContentIntoPages(editor, 420)
+            // console.log('pages', pages)
             // console.log(contentHeight)
             // console.log('contentHeight', contentHeight)
             // if(contentHeight === 844) return
@@ -100,7 +119,6 @@ export const DocumentBuilder = () => {
             //     }
             // }
         },
-        Page,
         editorProps: {
             attributes: {
                 class: `table-toolbar-custom !w-full dark:text-black `,
@@ -111,39 +129,78 @@ export const DocumentBuilder = () => {
             preserveWhitespace: 'full',
         },
     })
+    // const organizeContentIntoPages = (
+    //     editor: Editor,
+    //     maxPageHeight: number
+    // ) => {
+    //     const updatePagesInStore = useDocumentBuilderStore.getState().setPages; 
+    //     const { state } = editor
+    //     const { schema, doc } = state
 
-    const organizeContentIntoPages = (editor:Editor, maxPageHeight: number) => {
-        const { state } = editor
-        const { schema, doc } = state
-        // Placeholder for paginated content
-        const pages = []
-        let currentPages = []
-        let currentHeight = editor.view.dom.scrollHeight
-     
-        doc.content.forEach((node, offset) => {
-            // console.log(node)
-            const nodeHeight = estimateNodeHeight(node) // Function to estimate node height
-            if (currentHeight > maxPageHeight) {
-                // Push the current page and start a new one
+    //     const pages: Array<{
+    //         htmlTemplate: string
+    //         style: string
+    //         jsonPage: any[]
+    //     }> = []
 
-                pages.push(schema.node('page', {}, currentPages))
-                currentPages = []
-                currentHeight = 0
-            }
+    //     let currentPageNodes: any[] = []
+    //     let currentHeight = 0
 
-            currentPages.push(node)
-        })
+    //     // Iterate over the document nodes
+    //     doc.content.forEach((node, offset) => {
+    //         const nodeHeight = estimateNodeHeight(node)
+    //         console.log(currentHeight, maxPageHeight, offset)
+    //         // If adding the current node exceeds the max page height, finalize the current page
+    //         if (currentHeight + nodeHeight > maxPageHeight) {
+    //             const pageHtml = createHtmlFromNodes(currentPageNodes, editor)
+    //             const pageJson = currentPageNodes.map((n) => n.toJSON())
 
-        // Push the final page
-        if (currentPages.length) {
-            pages.push(schema.node('page', {}, currentPages))
-        }
+    //             pages.push({
+    //                 htmlTemplate: pageHtml,
+    //                 style: '', // Add styles if needed
+    //                 jsonPage: pageJson,
+    //             })
 
-        // Update the editor state with paginated content
-        const newDoc = schema.node('doc', {}, pages)
-        console.log('newDoc', newDoc)
-        editor.view.dispatch(state.tr.replaceWith(0, doc.nodeSize - 2, newDoc))
-    }
+    //             // Reset for the next page
+    //             currentPageNodes = []
+    //             currentHeight = 0
+    //         }
+
+    //         // Add the node to the current page
+    //         currentPageNodes.push(node)
+    //         currentHeight += nodeHeight
+    //     })
+
+    //     // Push the final page if any nodes remain
+    //     if (currentPageNodes.length) {
+    //         const pageHtml = createHtmlFromNodes(currentPageNodes, editor)
+    //         const pageJson = currentPageNodes.map((n) => n.toJSON())
+
+    //         pages.push({
+    //             htmlTemplate: pageHtml,
+    //             style: '', // Add styles if needed
+    //             jsonPage: pageJson,
+    //         })
+    //     }
+
+    //     console.log('Generated Pages:', pages)
+    //     updatePagesInStore(pages)
+    //     return pages
+    // }
+
+    // const createHtmlFromNodes = (nodes: any[], editor: any): string => {
+    //     const { schema } = editor.state
+
+    //     // Create a temporary document fragment from the nodes
+    //     const fragment = DOMSerializer.fromSchema(schema).serializeFragment(
+    //         schema.node('doc', null, nodes).content
+    //     )
+
+    //     // Convert the fragment into an HTML string
+    //     return Array.from(fragment.childNodes)
+    //         .map((node) => node.outerHTML)
+    //         .join('')
+    // }
 
     const estimateNodeHeight = (node: any) => {
         const baseHeight = 20 // Base height for a textblock
@@ -356,7 +413,6 @@ export const DocumentBuilder = () => {
     if (!editor) {
         return null
     }
-
     return (
         <SidebarProvider>
             <div className="flex w-full">
@@ -386,7 +442,7 @@ export const DocumentBuilder = () => {
                                     }`}
                                 >
                                     {isCurrentPage ? (
-                                        <EditorContent editor={editor} />
+                                        <EditorContent className='border' editor={editor} />
                                     ) : (
                                         <NonEditableHTML
                                             htmlContent={page.htmlTemplate}

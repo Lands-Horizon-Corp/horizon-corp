@@ -25,52 +25,57 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
+import Tbl from '@/modules/test/pages/tbl'
 
 interface InsertTableProps<TData> {
-    data: TData[]
-    columns: ColumnDef<TData>[]
-    filterPlaceholder?: string
+    data?: TData[]
+    columns?: ColumnDef<TData>[]
+    filterPlaceholder?: string,
+    trigger: ReactNode,
+    Content: ReactNode,
 }
 
 export const InsertTable = <TData,>({
     data,
     columns,
     filterPlaceholder = 'Filter...',
+    trigger,
+    Content
 }: InsertTableProps<TData>) => {
-    const [sorting, setSorting] = useState<SortingState>([])
-    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-        {}
-    )
-    const [rowSelection, setRowSelection] = useState({})
+    // const [sorting, setSorting] = useState<SortingState>([])
+    // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    // const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    //     {}
+    // )
+    // const [rowSelection, setRowSelection] = useState({})
 
-    const table = useReactTable({
-        data,
-        columns,
-        onSortingChange: setSorting,
-        onColumnFiltersChange: setColumnFilters,
-        getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-        getFilteredRowModel: getFilteredRowModel(),
-        onColumnVisibilityChange: setColumnVisibility,
-        onRowSelectionChange: setRowSelection,
-        state: {
-            sorting,
-            columnFilters,
-            columnVisibility,
-            rowSelection,
-        },
-    })
+    // const table = useReactTable({
+    //     data,
+    //     columns,
+    //     onSortingChange: setSorting,
+    //     onColumnFiltersChange: setColumnFilters,
+    //     getCoreRowModel: getCoreRowModel(),
+    //     getPaginationRowModel: getPaginationRowModel(),
+    //     getSortedRowModel: getSortedRowModel(),
+    //     getFilteredRowModel: getFilteredRowModel(),
+    //     onColumnVisibilityChange: setColumnVisibility,
+    //     onRowSelectionChange: setRowSelection,
+    //     state: {
+    //         sorting,
+    //         columnFilters,
+    //         columnVisibility,
+    //         rowSelection,
+    //     },
+    // })
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="outline">Edit Table</Button>
+              {trigger}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px]">
-                <div className="w-full">
+                <div className="w-full hidden">
                     <div className="flex items-center py-4">
                         <Input
                             placeholder={filterPlaceholder}
@@ -160,6 +165,9 @@ export const InsertTable = <TData,>({
                             Next
                         </Button>
                     </div>
+                </div>
+                <div className='w-full'>
+                 {Content}         
                 </div>
             </DialogContent>
         </Dialog>
