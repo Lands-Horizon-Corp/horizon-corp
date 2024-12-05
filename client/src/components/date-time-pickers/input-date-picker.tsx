@@ -13,6 +13,7 @@ import DateTimePicker from './date-time-picker'
 import { cn } from '@/lib/utils'
 
 type InputDatePickerProps = {
+    id?: string
     fromYear?: number
     toYear?: number
     className?: string
@@ -23,6 +24,7 @@ type InputDatePickerProps = {
 }
 
 const InputDatePicker = ({
+    id,
     value,
     onChange,
     disabled,
@@ -34,6 +36,7 @@ const InputDatePicker = ({
         <Popover modal>
             <PopoverTrigger asChild>
                 <Button
+                    id={id}
                     variant={'outline'}
                     className={cn(
                         'w-full pl-3 text-left font-normal',
