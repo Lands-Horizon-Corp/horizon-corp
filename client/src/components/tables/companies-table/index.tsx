@@ -57,7 +57,8 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
             const [error, result] = await withCatchAsync(
                 CompanyService.filter(
                     toBase64({
-                        filters: [], //filterState.finalFilters,
+                        filters: [],
+                        logic: filterState.filterLogic,
                         preloads: ['Media'],
                         ...pagination,
                     })
@@ -129,6 +130,10 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
                         disabled: isPending || isRefetching,
+                    }}
+                    filterLogicProps={{
+                        filterLogic: filterState.filterLogic,
+                        setFilterLogic: filterState.setFilterLogic,
                     }}
                 />
                 <DataTable

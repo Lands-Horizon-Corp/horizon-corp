@@ -13,13 +13,21 @@ import DataTableScrollOption, {
     IDataTableScrollableOptionProps,
 } from './scroll-option'
 import ColumnVisibilityOption from './column-visibility-option'
+import DataTableFilterLogicOption, {
+    IDataTableFilterLogicOptionProps,
+} from './filter-logic-option'
 
 interface Props<T> {
     table: Table<T>
     scrollOption?: IDataTableScrollableOptionProps
+    filterLogicOption?: IDataTableFilterLogicOptionProps
 }
 
-const DataTableOptionsMenu = <T,>({ table, scrollOption }: Props<T>) => {
+const DataTableOptionsMenu = <T,>({
+    table,
+    scrollOption,
+    filterLogicOption,
+}: Props<T>) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -29,13 +37,19 @@ const DataTableOptionsMenu = <T,>({ table, scrollOption }: Props<T>) => {
             </DropdownMenuTrigger>
             <DropdownMenuContent
                 align="end"
-                className="ecoop-scroll max-h-[70vh] min-w-[180px] overflow-y-scroll"
+                className="ecoop-scroll max-h-[70vh] min-w-[180px] overflow-y-scroll [&::-webkit-scrollbar]:w-[3px]"
             >
                 <ColumnVisibilityOption table={table} />
                 {scrollOption && (
                     <>
                         <DropdownMenuSeparator />
                         <DataTableScrollOption {...scrollOption} />
+                    </>
+                )}
+                {filterLogicOption && (
+                    <>
+                        <DropdownMenuSeparator />
+                        <DataTableFilterLogicOption {...filterLogicOption} />
                     </>
                 )}
             </DropdownMenuContent>

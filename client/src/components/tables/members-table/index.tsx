@@ -55,6 +55,7 @@ const MembersTable = ({ className }: IBaseCompNoChild) => {
                 GenderService.filter(
                     toBase64({
                         filters: filterState.finalFilters,
+                        logic: filterState.filterLogic,
                         preloads: ['Media'],
                         ...pagination,
                     })
@@ -126,6 +127,10 @@ const MembersTable = ({ className }: IBaseCompNoChild) => {
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
                         disabled: isPending || isRefetching,
+                    }}
+                    filterLogicProps={{
+                        filterLogic: filterState.filterLogic,
+                        setFilterLogic: filterState.setFilterLogic,
                     }}
                 />
                 <DataTable

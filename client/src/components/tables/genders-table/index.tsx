@@ -54,6 +54,7 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
                 GenderService.filter(
                     toBase64({
                         filters: filterState.finalFilters,
+                        logic: filterState.filterLogic,
                         preloads: [],
                         ...pagination,
                     })
@@ -127,6 +128,10 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
                         disabled: isPending || isRefetching,
+                    }}
+                    filterLogicProps={{
+                        filterLogic: filterState.filterLogic,
+                        setFilterLogic: filterState.setFilterLogic,
                     }}
                 />
                 <DataTable

@@ -1,6 +1,8 @@
 import { KeysOfOrString } from '@/types'
 import { createContext, useContext } from 'react'
 
+export type TFilterLogic = 'AND' | 'OR'
+
 export type TColumnDataTypes = 'number' | 'text' | 'date' | 'enum'
 
 export type TFilterModes =
@@ -80,7 +82,9 @@ export interface IDataTableFilterState<
     TValue = T,
 > {
     filters: TFilterObject<T, TValue>
+    filterLogic: TFilterLogic
     finalFilters: TFinalFilter[]
+    setFilterLogic: (newFilterLogic: TFilterLogic) => void
     setFilter: (field: TField, filter?: TSearchFilter<TValue, TValue>) => void
     bulkSetFilter: (
         field: { field: TField; displayText: string }[],

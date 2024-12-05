@@ -5,10 +5,12 @@ import {
     TSearchFilter,
     TFilterObject,
     IDataTableFilterState,
+    TFilterLogic,
 } from '../data-table-filters/data-table-filter-context'
 
 const useDatableFilterState = (): IDataTableFilterState => {
     const [filters, setFilters] = useState<TFilterObject>({})
+    const [filterLogic, setFilterLogic] = useState<TFilterLogic>('AND')
 
     const setFilter = (field: string, filter?: TSearchFilter) => {
         setFilters((prev) => ({ ...prev, [field]: filter }))
@@ -76,11 +78,13 @@ const useDatableFilterState = (): IDataTableFilterState => {
 
     return {
         filters,
+        filterLogic,
         finalFilters,
         setFilter,
-        removeFilter,
         resetFilter,
+        removeFilter,
         bulkSetFilter,
+        setFilterLogic,
     }
 }
 

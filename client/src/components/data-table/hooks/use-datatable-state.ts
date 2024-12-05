@@ -29,20 +29,20 @@ const useDataTableState = (props?: Props) => {
 
     return {
         // states: {
-            sorting,
-            pagination,
-            columnOrder,
-            rowSelection,
-            isScrollable,
-            columnVisibility,
+        sorting,
+        pagination,
+        columnOrder,
+        rowSelection,
+        isScrollable,
+        columnVisibility,
         // },
         // setters: {
-            setSorting,
-            setPagination,
-            setColumnOrder,
-            setRowSelection,
-            setIsScrollable,
-            setColumnVisibility,
+        setSorting,
+        setPagination,
+        setColumnOrder,
+        setRowSelection,
+        setIsScrollable,
+        setColumnVisibility,
         // },
     }
 }

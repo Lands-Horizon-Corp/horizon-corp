@@ -16,6 +16,7 @@ import { IBaseCompNoChild } from '@/types'
 import { type IDataTableScrollableOptionProps } from './data-table-actions/data-table-options-menu/scroll-option'
 import { type IDataTableExportProps } from '@/components/data-table/data-table-actions/data-table-export-button'
 import { type IDataTableDeleteSelectedProps } from '@/components/data-table/data-table-actions/data-table-delete-selected'
+import { IDataTableFilterLogicOptionProps } from './data-table-actions/data-table-options-menu/filter-logic-option'
 
 export interface IDataTableToolbarProps<TData = unknown>
     extends IBaseCompNoChild {
@@ -23,6 +24,7 @@ export interface IDataTableToolbarProps<TData = unknown>
     refreshActionProps: IRefreshButtonProps
     globalSearchProps?: IGlobalSearchProps<TData>
     scrollableProps?: IDataTableScrollableOptionProps
+    filterLogicProps?: IDataTableFilterLogicOptionProps
     exportActionProps?: Omit<IDataTableExportProps<TData>, 'table'>
     deleteActionProps?: Omit<IDataTableDeleteSelectedProps<TData>, 'table'>
 }
@@ -30,6 +32,7 @@ export interface IDataTableToolbarProps<TData = unknown>
 const DataTableToolbar = <TData,>({
     table,
     scrollableProps,
+    filterLogicProps,
     globalSearchProps,
     deleteActionProps,
     exportActionProps,
@@ -51,12 +54,11 @@ const DataTableToolbar = <TData,>({
                     />
                 )}
                 <DataTableRefreshButton {...refreshActionProps} />
-                {scrollableProps && (
-                    <DataTableOptionsMenu
-                        table={table}
-                        scrollOption={scrollableProps}
-                    />
-                )}
+                <DataTableOptionsMenu
+                    table={table}
+                    scrollOption={scrollableProps}
+                    filterLogicOption={filterLogicProps}
+                />
                 {exportActionProps && (
                     <>
                         <Separator
