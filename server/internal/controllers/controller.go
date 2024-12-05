@@ -54,6 +54,7 @@ func (c *BaseController[Model, Request, Resource]) Filter(ctx *gin.Context) {
 
 	result, err := c.Repo.Filter(decodedData)
 	if err != nil {
+		fmt.Print(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}

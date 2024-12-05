@@ -267,9 +267,8 @@ func (c *Repository[T]) Filter(filter map[string]interface{}) (*FilterPages[*T],
 		dbCount.Count(&totalSize)
 
 		// Calculate total pages
-		totalPage := (int(totalSize) + paginatedRequest.PageSize - 1) / paginatedRequest.PageSize
+		totalPage := (int(totalSize) + paginatedRequest.PageSize) / paginatedRequest.PageSize
 
-		// Check if the requested page index is within range
 		if pageIndex > totalPage {
 			return nil, fmt.Errorf("requested page index %d exceeds total pages %d", pageIndex, totalPage)
 		}
