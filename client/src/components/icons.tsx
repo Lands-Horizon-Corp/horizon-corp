@@ -31,6 +31,7 @@ import {
     LuCameraOff as CameraOffIcon,
     LuListOrdered as ListOrderedIcon,
     LuCalendarCheck as CalendarCheckIcon,
+    LuChevronsUpDown as ChevronsUpDownIcon,
     LuHardDriveUpload as HardDriveUploadIcon,
 } from 'react-icons/lu'
 
@@ -272,6 +273,7 @@ export {
     RotateBoxRightIcon,
     BuildingBranchIcon,
     LoadingSpinnerIcon,
+    ChevronsUpDownIcon,
     AccountSettingIcon,
     FullscreenExitIcon,
     MessageOutlineIcon,

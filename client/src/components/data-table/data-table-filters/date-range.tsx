@@ -17,6 +17,7 @@ type DateRangePicker = {
     toYear?: number
     value: DateRange
     fromYear?: number
+    modal?: boolean
     captionLayout?: CaptionLayout
     disabled?: (date: Date) => boolean
     onChange: (range: { from: Date; to?: Date }) => void
@@ -36,6 +37,7 @@ const isRange = (value: unknown): value is Range => {
 
 const DateRange = ({
     value,
+    modal = false,
     onChange,
     disabled,
     fromYear = 1930,
@@ -43,7 +45,7 @@ const DateRange = ({
     ...other
 }: DateRangePicker) => {
     return (
-        <Popover>
+        <Popover modal={modal}>
             <PopoverTrigger asChild>
                 <Button
                     variant={'outline'}

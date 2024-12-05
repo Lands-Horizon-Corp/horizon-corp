@@ -1,11 +1,16 @@
 import * as React from 'react'
+import { format, setMonth } from 'date-fns'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { DayPicker, useDayPicker, useNavigation } from 'react-day-picker'
 
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover'
+import { Button, buttonVariants } from '@/components/ui/button'
+
 import { cn } from '@/lib/utils'
-import { buttonVariants } from '@/components/ui/button'
-import { Select, SelectContent, SelectItem, SelectTrigger } from './select'
-import { format, setMonth } from 'date-fns'
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
@@ -22,7 +27,7 @@ function Calendar({
             classNames={{
                 months: 'flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0',
                 month: 'space-y-4',
-                caption: 'flex justify-center pt-1 relative items-center',
+                caption: 'flex justify-center pt-1 items-center',
                 caption_label: cn(
                     'text-sm font-medium',
                     (props.captionLayout === 'dropdown' ||
@@ -71,6 +76,7 @@ function Calendar({
                         toMonth,
                         toYear,
                     } = useDayPicker()
+                    const [visible, setVisible] = React.useState(false)
 
                     const { goToMonth, currentMonth } = useNavigation()
 
@@ -83,34 +89,52 @@ function Calendar({
                             })
                         )
                         return (
-                            <Select
-                                onValueChange={(newValue) => {
-                                    const newDate = new Date(currentMonth)
-                                    newDate.setMonth(parseInt(newValue))
-                                    goToMonth(newDate)
-                                }}
-                                value={value?.toString()}
+                            <Popover
+                                open={visible}
+                                onOpenChange={(val) => setVisible(val)}
                             >
-                                <SelectTrigger className="text-sm">
-                                    {format(currentMonth, 'MMM')}
-                                </SelectTrigger>
-                                <SelectContent className="bg-background/70 backdrop-blur-md">
-                                    {selectItems.map((selectItem) => (
-                                        <SelectItem
-                                            className={cn(
-                                                'text-foreground/80 duration-200 ease-in-out hover:font-medium hover:text-foreground',
-                                                value?.toString() ==
-                                                    selectItem.value &&
-                                                    'bg-secondary/80 text-foreground'
-                                            )}
-                                            value={selectItem.value}
-                                            key={selectItem.value}
-                                        >
-                                            {selectItem.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        className="size-fit cursor-pointer bg-transparent p-0 hover:bg-transparent"
+                                    >
+                                        {format(currentMonth, 'MMMM')}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="ecoop-scroll max-h-64 overflow-y-scroll rounded-xl bg-popover/90 backdrop-blur">
+                                    <div className="grid grid-cols-3 gap-x-2 gap-y-0.5">
+                                        {selectItems.map((selectItem) => (
+                                            <Button
+                                                key={selectItem.value}
+                                                size="sm"
+                                                variant="ghost"
+                                                className={cn(
+                                                    'rounded-full text-sm',
+                                                    value?.toString() ===
+                                                        selectItem.value
+                                                        ? 'bg-secondary/80 font-medium text-foreground'
+                                                        : 'text-foreground/80 hover:font-medium hover:text-foreground'
+                                                )}
+                                                onClick={() => {
+                                                    const newDate = new Date(
+                                                        currentMonth
+                                                    )
+                                                    newDate.setMonth(
+                                                        parseInt(
+                                                            selectItem.value
+                                                        )
+                                                    )
+
+                                                    goToMonth(newDate)
+                                                    setVisible(false)
+                                                }}
+                                            >
+                                                {selectItem.label}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
                         )
                     } else if (name === 'years') {
                         const earliestYear =
@@ -136,34 +160,51 @@ function Calendar({
                         }
 
                         return (
-                            <Select
-                                onValueChange={(newValue) => {
-                                    const newDate = new Date(currentMonth)
-                                    newDate.setFullYear(parseInt(newValue))
-                                    goToMonth(newDate)
-                                }}
-                                value={value?.toString()}
+                            <Popover
+                                open={visible}
+                                onOpenChange={(val) => setVisible(val)}
                             >
-                                <SelectTrigger className="text-sm">
-                                    {currentMonth.getFullYear()}
-                                </SelectTrigger>
-                                <SelectContent className="bg-background/70 backdrop-blur-md">
-                                    {selectItems.map((selectItem) => (
-                                        <SelectItem
-                                            className={cn(
-                                                'text-foreground/80 duration-200 ease-in-out hover:font-medium hover:text-foreground',
-                                                value?.toString() ==
-                                                    selectItem.value &&
-                                                    'bg-secondary/80 text-foreground'
-                                            )}
-                                            value={selectItem.value}
-                                            key={selectItem.value}
-                                        >
-                                            {selectItem.label}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="ghost"
+                                        className="size-fit cursor-pointer bg-transparent p-0 hover:bg-transparent"
+                                    >
+                                        {currentMonth.getFullYear()}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="ecoop-scroll max-h-64 overflow-y-scroll rounded-xl bg-popover/90 backdrop-blur">
+                                    <div className="grid grid-cols-3 gap-x-2 gap-y-0.5">
+                                        {selectItems.map((selectItem) => (
+                                            <Button
+                                                key={selectItem.value}
+                                                size="sm"
+                                                variant="ghost"
+                                                className={cn(
+                                                    'rounded-full text-sm',
+                                                    value?.toString() ===
+                                                        selectItem.value
+                                                        ? 'bg-secondary/80 font-medium text-foreground'
+                                                        : 'text-foreground/80 hover:font-medium hover:text-foreground'
+                                                )}
+                                                onClick={() => {
+                                                    const newDate = new Date(
+                                                        currentMonth
+                                                    )
+                                                    newDate.setFullYear(
+                                                        parseInt(
+                                                            selectItem.value
+                                                        )
+                                                    )
+                                                    goToMonth(newDate)
+                                                    setVisible(false)
+                                                }}
+                                            >
+                                                {selectItem.label}
+                                            </Button>
+                                        ))}
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
                         )
                     }
                     return null

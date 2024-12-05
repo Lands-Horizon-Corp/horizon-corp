@@ -6,7 +6,7 @@ import {
     SelectValue,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import InputDatePicker from '@/components/input-date-picker'
+// import InputDatePicker from '@/components/input-date-picker'
 
 import DateRange from './date-range'
 
@@ -18,6 +18,8 @@ import {
     useDataTableFilter,
     IFilterComponentProps,
 } from './data-table-filter-context'
+import InputDatePicker from '@/components/input-date-picker'
+import TimePicker from '@/components/time-picker'
 
 const DateFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
     const { filters, setFilter } = useDataTableFilter<Date, typeof field>()
@@ -36,7 +38,7 @@ const DateFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
     return (
         <div
             onKeyDown={(e) => e.stopPropagation()}
-            className="min-w-48 space-y-2 p-1"
+            className="flex min-w-72 flex-col space-y-2 p-1"
         >
             <p className="text-sm">Filter</p>
             <Select
@@ -64,24 +66,45 @@ const DateFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
                 </SelectContent>
             </Select>
             {filterVal.mode !== 'range' ? (
-                <InputDatePicker
-                    id="date-picker-input"
-                    captionLayout="dropdown"
-                    value={
-                        isDate(filterVal.value) ? filterVal.value : undefined
-                    }
-                    onChange={(newDate) => {
-                        if (!newDate) return
-                        setFilter(field, {
-                            ...filterVal,
-                            value: newDate,
-                            from: undefined,
-                            to: undefined,
-                        })
-                    }}
-                />
+                <>
+                    <InputDatePicker
+                        id="date-picker-input"
+                        captionLayout="dropdown"
+                        value={
+                            isDate(filterVal.value)
+                                ? filterVal.value
+                                : undefined
+                        }
+                        onChange={(newDate) => {
+                            if (!newDate) return
+                            setFilter(field, {
+                                ...filterVal,
+                                value: newDate,
+                                from: undefined,
+                                to: undefined,
+                            })
+                        }}
+                    />
+                    {filterVal.value && (
+                        <TimePicker
+                            date={filterVal.value}
+                            onChange={(updatedDate) => {
+                                if (!updatedDate) return
+                                setFilter(field, {
+                                    ...filterVal,
+                                    value: updatedDate,
+                                    from: undefined,
+                                    to: undefined,
+                                })
+                            }}
+                        />
+                    )}
+                </>
             ) : (
                 <DateRange
+                    modal
+                    fromYear={1960}
+                    captionLayout="dropdown-buttons"
                     value={
                         {
                             from: filterVal.from,

@@ -32,7 +32,7 @@ const InputDatePicker = ({
     ...other
 }: InputDatePickerProps) => {
     return (
-        <Popover>
+        <Popover modal>
             <PopoverTrigger asChild>
                 <Button
                     id={id}
