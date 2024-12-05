@@ -3,7 +3,7 @@ import { createContext, useContext } from 'react'
 
 export type TFilterLogic = 'AND' | 'OR'
 
-export type TColumnDataTypes = 'number' | 'text' | 'date' | 'enum'
+export type TColumnDataTypes = 'number' | 'text' | 'date' | 'boolean'
 
 export type TFilterModes =
     | 'equal'

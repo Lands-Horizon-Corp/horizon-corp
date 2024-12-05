@@ -204,17 +204,18 @@ const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Verified">
                 <ColumnActions {...props}>
-                    <DataTableMultiSelectFilter<CompanyResource>
-                        displayText="Verify Status"
+                    <DataTableMultiSelectFilter<CompanyResource, boolean>
+                        dataType="boolean"
                         field="isAdminVerified"
+                        displayText="Verify Status"
                         multiSelectOptions={[
                             {
                                 label: 'Verified',
-                                value: 'true',
+                                value: true,
                             },
                             {
                                 label: 'Not Verified',
-                                value: 'false',
+                                value: false,
                             },
                         ]}
                     ></DataTableMultiSelectFilter>

@@ -12,21 +12,21 @@ import {
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 
-export interface IMultiSelectOption {
+export interface IMultiSelectOption<TValue> {
     label: string
-    value: string
+    value: TValue
 }
 
-const MultiSelectFilter = ({
+const MultiSelectFilter = <TValue,>({
     value,
     multiSelectOptions,
     setValues,
     clearValues,
 }: {
-    value: string[]
+    value: TValue[]
     clearValues: () => void
-    multiSelectOptions: IMultiSelectOption[]
-    setValues: (selectedValues: string[]) => void
+    multiSelectOptions: IMultiSelectOption<TValue>[]
+    setValues: (selectedValues: TValue[]) => void
 }) => {
     const selectedValues = new Set(value)
 
@@ -40,11 +40,11 @@ const MultiSelectFilter = ({
                         No results found.
                     </CommandEmpty>
                     <CommandGroup>
-                        {multiSelectOptions.map((option) => {
+                        {multiSelectOptions.map((option, i) => {
                             const isSelected = selectedValues.has(option.value)
                             return (
                                 <CommandItem
-                                    key={option.value}
+                                    key={`${option.label}-${i}`}
                                     onSelect={() => {
                                         if (isSelected) {
                                             selectedValues.delete(option.value)
