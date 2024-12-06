@@ -44,7 +44,7 @@ const MembersTable = ({ className }: IBaseCompNoChild) => {
     const filterState = useDatableFilterState()
 
     const {
-        data: { data, totalPage, pageSize },
+        data: { data, totalPage, pageSize, totalSize },
         isPending,
         isRefetching,
         refetch,
@@ -141,7 +141,7 @@ const MembersTable = ({ className }: IBaseCompNoChild) => {
                     setColumnOrder={setColumnOrder}
                     className="mb-2 max-h-96 flex-1"
                 />
-                <DataTablePagination table={table} totalSize={data.length} />
+                <DataTablePagination table={table} totalSize={totalSize} />
             </div>
         </DataTableFilterContext.Provider>
     )

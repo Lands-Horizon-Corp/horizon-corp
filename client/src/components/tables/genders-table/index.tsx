@@ -40,21 +40,22 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
         columnOrder: columns.map((c) => c.id!),
     })
 
-    const filterState = useDatableFilterState()
+    const filterState = useDatableFilterState({
+        onFilterChange: () => setPagination({ ...pagination, pageIndex: 1 }),
+    })
 
     const {
-        data: { data, totalPage, pageSize },
+        data: { data, totalPage, pageSize, totalSize },
         isPending,
         isRefetching,
         refetch,
     } = useQuery<GenderPaginatedResource, string>({
-        queryKey: ['genders', 'table', filterState.filters],
+        queryKey: ['genders', 'table', filterState.finalFilters, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 GenderService.filter(
                     toBase64({
-                        filters: filterState.finalFilters,
-                        logic: filterState.filterLogic,
+                        ...filterState.finalFilters,
                         preloads: [],
                         ...pagination,
                     })
@@ -142,7 +143,7 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
                     setColumnOrder={setColumnOrder}
                     className="mb-2 max-h-96 flex-1"
                 />
-                <DataTablePagination table={table} totalSize={data.length} />
+                <DataTablePagination table={table} totalSize={totalSize} />
             </div>
         </DataTableFilterContext.Provider>
     )
