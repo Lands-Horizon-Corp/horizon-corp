@@ -34,6 +34,7 @@ const DataTablePagination = <TData,>({
     pageSizes = PAGE_SIZES_DENSE,
     hideSelectedIndicator = false,
 }: DataTablePaginationProps<TData>) => {
+    const currentPageSize = table.getState().pagination.pageSize
     const finalPageSizes = pageSizes
 
     return (
@@ -55,17 +56,13 @@ const DataTablePagination = <TData,>({
                     <p className="text-sm font-medium">Rows per page</p>
                     <Select
                         disabled={totalSize === 0}
-                        value={`${table.getState().pagination.pageSize}`}
+                        value={`${currentPageSize}`}
                         onValueChange={(value) => {
                             table.setPageSize(Number(value))
                         }}
                     >
                         <SelectTrigger className="h-8 w-[70px]">
-                            <SelectValue
-                                placeholder={
-                                    table.getState().pagination.pageSize
-                                }
-                            />
+                            <SelectValue placeholder={currentPageSize} />
                         </SelectTrigger>
                         <SelectContent side="top">
                             {finalPageSizes.map((pageSize) => (
@@ -76,7 +73,11 @@ const DataTablePagination = <TData,>({
                                     {pageSize}
                                 </SelectItem>
                             ))}
-                            <SelectItem value={`${totalSize}`}>All</SelectItem>
+                            {!finalPageSizes.includes(totalSize) && (
+                                <SelectItem value={`${totalSize}`}>
+                                    All
+                                </SelectItem>
+                            )}
                         </SelectContent>
                     </Select>
                 </div>
