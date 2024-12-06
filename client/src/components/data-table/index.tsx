@@ -240,7 +240,7 @@ const DataTable = <TData,>({
                 className={cn(
                     'relative z-10 flex rounded-xl border dark:bg-secondary',
                     isScrollable
-                        ? 'ecoop-scroll max-h-full overflow-y-scroll'
+                        ? 'ecoop-scroll max-h-full overflow-y-scroll [&::-webkit-scrollbar]:w-1.5'
                         : 'h-fit max-h-none min-h-fit overflow-clip',
                     className
                 )}
