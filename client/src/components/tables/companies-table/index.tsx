@@ -42,9 +42,11 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         columnOrder: columns.map((c) => c.id!),
     })
 
-    const filterState = useDatableFilterState()
+    const filterState = useDatableFilterState({
+        onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
+    })
 
-    logger.log(filterState.finalFilters)
+    logger.log('Final Filters', filterState.finalFilters, pagination)
 
     const {
         data: { data, totalPage, pageSize },
@@ -52,15 +54,14 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
         isRefetching,
         refetch,
     } = useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['company', 'table', filterState.finalFilters],
+        queryKey: ['company', 'table', filterState.finalFilters, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 CompanyService.filter(
                     toBase64({
-                        filters: /* [], */ filterState.finalFilters,
-                        logic: filterState.filterLogic,
                         preloads: ['Media'],
                         ...pagination,
+                        ...filterState.finalFilters,
                     })
                 )
             )

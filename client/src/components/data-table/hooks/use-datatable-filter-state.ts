@@ -7,8 +7,13 @@ import {
     IDataTableFilterState,
     TFilterLogic,
 } from '../data-table-filters/data-table-filter-context'
+import useDebounce from '@/hooks/use-debounce'
+import logger from '@/helpers/loggers/logger'
 
-const useDatableFilterState = (): IDataTableFilterState => {
+const useDatableFilterState = (options?: {
+    debounceFinalFilterMs?: number
+    onFilterChange?: () => void
+}): IDataTableFilterState => {
     const [filters, setFilters] = useState<TFilterObject>({})
     const [filterLogic, setFilterLogic] = useState<TFilterLogic>('AND')
 
@@ -46,35 +51,47 @@ const useDatableFilterState = (): IDataTableFilterState => {
         setFilters({})
     }
 
-    const finalFilters: TFinalFilter[] = useMemo(() => {
-        const filteredFilter: TFinalFilter[] = []
+    logger.log('Debouncing Johny')
 
-        Object.entries(filters).forEach(([key, value]) => {
-            if (!value) return
+    const debouncedFilter = useDebounce(
+        filters,
+        options?.debounceFinalFilterMs ?? 800
+    )
 
-            if (!value.mode || key === 'globalSearch') return
+    const finalFilters: { filters: TFinalFilter[]; logic: TFilterLogic } =
+        useMemo(() => {
+            logger.log('Memoized', debouncedFilter)
 
-            if (
-                value.mode === 'range' &&
-                (value.from === undefined || value.to === undefined)
-            ) {
-                return
-            } else if (value.mode !== 'range' && value.value === undefined)
-                return
+            const filteredFilter: TFinalFilter[] = []
 
-            filteredFilter.push({
-                field: key,
-                mode: value.mode,
-                dataType: value.dataType,
-                value:
-                    value.mode === 'range'
-                        ? { from: value.from, to: value.to }
-                        : value.value,
+            Object.entries(debouncedFilter).forEach(([key, value]) => {
+                if (!value) return
+
+                if (!value.mode || key === 'globalSearch') return
+
+                if (
+                    value.mode === 'range' &&
+                    (value.from === undefined || value.to === undefined)
+                ) {
+                    return
+                } else if (value.mode !== 'range' && value.value === undefined)
+                    return
+
+                filteredFilter.push({
+                    field: key,
+                    mode: value.mode,
+                    dataType: value.dataType,
+                    value:
+                        value.mode === 'range'
+                            ? { from: value.from, to: value.to }
+                            : value.value,
+                })
             })
-        })
 
-        return filteredFilter
-    }, [filters])
+            options?.onFilterChange?.()
+
+            return { filters: filteredFilter, logic: filterLogic }
+        }, [debouncedFilter, filterLogic])
 
     return {
         filters,

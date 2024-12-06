@@ -81,9 +81,9 @@ export interface IDataTableFilterState<
     TField = string,
     TValue = T,
 > {
-    filters: TFilterObject<T, TValue>
     filterLogic: TFilterLogic
-    finalFilters: TFinalFilter[]
+    filters: TFilterObject<T, TValue>
+    finalFilters: { filters: TFinalFilter[]; logic: TFilterLogic }
     setFilterLogic: (newFilterLogic: TFilterLogic) => void
     setFilter: (field: TField, filter?: TSearchFilter<TValue, TValue>) => void
     bulkSetFilter: (
