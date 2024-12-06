@@ -9,7 +9,7 @@ import (
 type Admin struct {
 	gorm.Model
 
-	// fields
+	// Fields
 	FirstName          string     `gorm:"type:varchar(255);not null" json:"first_name"`
 	LastName           string     `gorm:"type:varchar(255);not null" json:"last_name"`
 	MiddleName         string     `gorm:"type:varchar(255)" json:"middle_name"`

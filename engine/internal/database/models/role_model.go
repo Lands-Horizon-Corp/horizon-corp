@@ -4,6 +4,8 @@ import "gorm.io/gorm"
 
 type Role struct {
 	gorm.Model
+
+	// Fields
 	Name        string `gorm:"type:varchar(255);unique;not null" json:"name"`
 	Description string `gorm:"type:text" json:"description"`
 	ApiKey      string `gorm:"type:varchar(255);unique;not null" json:"api_key"`
@@ -24,6 +26,7 @@ type Role struct {
 	UpdateGender bool `gorm:"default:false" json:"update_gender"`
 	DeleteGender bool `gorm:"default:false" json:"delete_gender"`
 
+	// Relationship 0 to many
 	Admins    []*Admin    `gorm:"foreignKey:RoleID" json:"admins"`
 	Employees []*Employee `gorm:"foreignKey:RoleID" json:"employees"`
 	Members   []*Member   `gorm:"foreignKey:RoleID" json:"members"`

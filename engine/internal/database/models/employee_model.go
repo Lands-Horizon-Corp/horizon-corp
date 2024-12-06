@@ -8,6 +8,8 @@ import (
 
 type Employee struct {
 	gorm.Model
+
+	// Fields
 	FirstName          string     `gorm:"type:varchar(255);not null" json:"first_name"`
 	LastName           string     `gorm:"type:varchar(255);not null" json:"last_name"`
 	MiddleName         string     `gorm:"type:varchar(255)" json:"middle_name"`
@@ -22,17 +24,26 @@ type Employee struct {
 	IsSkipVerification bool       `gorm:"default:false" json:"is_skip_verification"`
 	ContactNumber      string     `gorm:"type:varchar(255);unique;not null" json:"contact_number"`
 	Status             UserStatus `gorm:"type:varchar(255);default:'Pending'" json:"status"`
-	MediaID            *uint      `gorm:"type:bigint;unsigned" json:"media_id"`
-	Media              *Media     `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
-	BranchID           *uint      `gorm:"type:bigint;unsigned" json:"branch_id"`
-	Branch             *Branch    `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"branch"`
 	Longitude          *float64   `gorm:"type:decimal(10,7)" json:"longitude"`
 	Latitude           *float64   `gorm:"type:decimal(10,7)" json:"latitude"`
 
+	// Relationship 0 to 1
+	MediaID *uint  `gorm:"type:bigint;unsigned" json:"media_id"`
+	Media   *Media `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
+
+	// Relationship 0 to 1
+	BranchID *uint   `gorm:"type:bigint;unsigned" json:"branch_id"`
+	Branch   *Branch `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"branch"`
+
+	// Relationship 0 to 1
+	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
+	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+
+	// Relationship 0 to 1
+	GenderID *uint   `gorm:"type:bigint;unsigned" json:"gender_id"`
+	Gender   *Gender `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
+
+	// Relationship 0 to many
 	Timesheets []*Timesheet `gorm:"foreignKey:EmployeeID" json:"timesheets"`
-	RoleID     *uint        `gorm:"type:bigint;unsigned" json:"role_id"`
-	Role       *Role        `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
-	GenderID   *uint        `gorm:"type:bigint;unsigned" json:"gender_id"`
-	Gender     *Gender      `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
-	Footsteps  []*Footstep  `gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
+	Footsteps  []*Footstep  `gorm:"foreignKey:EmployeeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
 }

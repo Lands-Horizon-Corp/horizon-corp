@@ -4,6 +4,8 @@ import "gorm.io/gorm"
 
 type Media struct {
 	gorm.Model
+
+	// Fields
 	FileName   string `gorm:"type:varchar(255);not null" json:"file_name"`
 	FileSize   int64  `gorm:"not null" json:"file_size"`
 	FileType   string `gorm:"type:varchar(50);not null" json:"file_type"`
@@ -12,6 +14,7 @@ type Media struct {
 	Key        string `gorm:"type:varchar(255)" json:"key"`
 	BucketName string `gorm:"type:varchar(255)" json:"bucket_name"`
 
+	// Relationship 0 to many
 	Employees []*Employee `gorm:"foreignKey:MediaID" json:"employees"`
 	Members   []*Member   `gorm:"foreignKey:MediaID" json:"members"`
 	Owners    []*Owner    `gorm:"foreignKey:MediaID" json:"owners"`
