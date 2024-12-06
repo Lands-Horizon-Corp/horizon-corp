@@ -1,4 +1,4 @@
-package contact
+package models
 
 import (
 	"gorm.io/gorm"
@@ -6,6 +6,8 @@ import (
 
 type Contact struct {
 	gorm.Model
+
+	// Fields
 	FirstName     string `gorm:"type:varchar(255);not null" json:"first_name"`
 	LastName      string `gorm:"type:varchar(255);not null" json:"last_name"`
 	Email         string `gorm:"type:varchar(255);unique;not null" json:"email"`
