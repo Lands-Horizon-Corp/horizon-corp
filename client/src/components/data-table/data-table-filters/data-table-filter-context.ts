@@ -23,7 +23,7 @@ export type TFilterModes =
     | 'after'
 
 export const filterModeMap: {
-    [K in Exclude<TColumnDataTypes, 'enum'>]: {
+    [K in Exclude<TColumnDataTypes, 'boolean'>]: {
         value: TFilterModes
         label: string
     }[]

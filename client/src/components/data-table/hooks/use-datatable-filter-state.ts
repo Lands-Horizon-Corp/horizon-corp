@@ -8,7 +8,6 @@ import {
     TFilterLogic,
 } from '../data-table-filters/data-table-filter-context'
 import useDebounce from '@/hooks/use-debounce'
-import logger from '@/helpers/loggers/logger'
 
 const useDatableFilterState = (options?: {
     debounceFinalFilterMs?: number
@@ -51,8 +50,6 @@ const useDatableFilterState = (options?: {
         setFilters({})
     }
 
-    logger.log('Debouncing Johny')
-
     const debouncedFilter = useDebounce(
         filters,
         options?.debounceFinalFilterMs ?? 800
@@ -60,12 +57,10 @@ const useDatableFilterState = (options?: {
 
     const finalFilters: { filters: TFinalFilter[]; logic: TFilterLogic } =
         useMemo(() => {
-            logger.log('Memoized', debouncedFilter)
-
             const filteredFilter: TFinalFilter[] = []
 
             Object.entries(debouncedFilter).forEach(([key, value]) => {
-                if (!value) return
+                if (!value || !value.value) return
 
                 if (!value.mode || key === 'globalSearch') return
 
