@@ -53,9 +53,8 @@ type AppConfig struct {
 	ContactNumber string
 }
 
-func (ac *AppConfig) LoadConfig() (*AppConfig, error) {
+func NewAppConfig() *AppConfig {
 	var errList []string
-
 	cachePort, err := strconv.Atoi(getEnv("CACHE_PORT", "6379"))
 	if err != nil {
 		errList = append(errList, fmt.Sprintf("Invalid CACHE_PORT: %v", err))
@@ -70,12 +69,17 @@ func (ac *AppConfig) LoadConfig() (*AppConfig, error) {
 			errList = append(errList, fmt.Sprintf("%s is required but not set", v))
 		}
 	}
-
+	requiredVars = []string{"DB_USERNAME", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME", "DB_CHARSET", "STORAGE_ENDPOINT", "STORAGE_REGION", "STORAGE_ACCESS_KEY", "STORAGE_SECRET_KEY", "STORAGE_BUCKET_NAME"}
+	for _, v := range requiredVars {
+		if value := os.Getenv(v); value == "" {
+			errList = append(errList, fmt.Sprintf("%s is required but not set", v))
+		}
+	}
 	if len(errList) > 0 {
-		return nil, fmt.Errorf("configuration errors: %v", errList)
+		return &AppConfig{}
 	}
 
-	config := AppConfig{
+	return &AppConfig{
 		// Application
 		AppClientUrl: getEnv("APP_CLIENT_URL", "http://client:80"),
 		AppPort:      getEnv("APP_PORT", "8080"),
@@ -121,8 +125,6 @@ func (ac *AppConfig) LoadConfig() (*AppConfig, error) {
 		// SMS Test
 		ContactNumber: os.Getenv("CONTACT_NUMBER"),
 	}
-
-	return &config, nil
 }
 
 func getEnv(key, defaultValue string) string {
