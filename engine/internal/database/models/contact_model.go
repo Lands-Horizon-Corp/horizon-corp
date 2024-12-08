@@ -24,6 +24,12 @@ type ContactResource struct {
 	ContactNumber string `json:"contactNumber"`
 	Description   string `json:"description"`
 }
+type (
+	ContactResourceProvider interface {
+		ToResource(contact *Contact) *ContactResource
+		ToResourceList(contact []*Contact) []*ContactResource
+	}
+)
 
 type ContactModel struct {
 	lc     *fx.Lifecycle

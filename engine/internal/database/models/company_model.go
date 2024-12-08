@@ -45,22 +45,29 @@ type CompanyResource struct {
 	Branches        []*BranchResource `json:"branches"`
 }
 
+type (
+	CompanyResourceProvider interface {
+		ToResource(company *Company) *CompanyResource
+		ToResourceList(company []*Company) []*CompanyResource
+	}
+)
+
 type CompanyModel struct {
 	lc          *fx.Lifecycle
 	db          *gorm.DB
 	logger      *zap.Logger
-	mediaModel  *MediaModel
-	ownerModel  *OwnerModel
-	branchModel *BranchModel
+	mediaModel  MediaResourceProvider
+	ownerModel  OwnerResourceProvider
+	branchModel BranchResourceProvider
 }
 
 func NewCompanyModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	mediaModel *MediaModel,
-	ownerModel *OwnerModel,
-	branchModel *BranchModel,
+	mediaModel MediaResourceProvider,
+	ownerModel OwnerResourceProvider,
+	branchModel BranchResourceProvider,
 ) *CompanyModel {
 	return &CompanyModel{
 		lc:          lc,

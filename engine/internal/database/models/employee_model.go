@@ -79,27 +79,35 @@ type EmployeeResource struct {
 	Footsteps          []*FootstepResource  `json:"footsteps"`
 }
 
+type (
+	EmployeeResourceProvider interface {
+		ToResource(employee *Employee) *EmployeeResource
+		ToResourceList(employee []*Employee) []*EmployeeResource
+	}
+)
+
 type EmployeeModel struct {
 	lc             *fx.Lifecycle
 	db             *gorm.DB
 	logger         *zap.Logger
-	mediaModel     *MediaModel
-	branchModel    *BranchModel
-	roleModel      *RoleModel
-	genderModel    *GenderModel
-	timesheetModel *TimesheetModel
-	footstepModel  *FootstepModel
+	mediaModel     MediaResourceProvider
+	branchModel    BranchResourceProvider
+	roleModel      RoleResourceProvider
+	genderModel    GenderResourceProvider
+	timesheetModel TimesheetResourceProvider
+	footstepModel  FootstepResourceProvider
 }
 
 func NewEmployeeModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	mediaModel *MediaModel,
-	branchModel *BranchModel,
-	genderModel *GenderModel,
-	timesheetModel *TimesheetModel,
-	footstepModel *FootstepModel,
+	mediaModel MediaResourceProvider,
+	branchModel BranchResourceProvider,
+	roleModel RoleResourceProvider,
+	genderModel GenderResourceProvider,
+	timesheetModel TimesheetResourceProvider,
+	footstepModel FootstepResourceProvider,
 ) *EmployeeModel {
 	return &EmployeeModel{
 		lc:             lc,
@@ -107,6 +115,7 @@ func NewEmployeeModel(
 		logger:         logger,
 		mediaModel:     mediaModel,
 		branchModel:    branchModel,
+		roleModel:      roleModel,
 		genderModel:    genderModel,
 		timesheetModel: timesheetModel,
 		footstepModel:  footstepModel,

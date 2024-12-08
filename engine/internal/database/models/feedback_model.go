@@ -21,6 +21,13 @@ type FeedbackResource struct {
 	FeedbackType string `json:"feedbackType"`
 }
 
+type (
+	FeedbackResourceProvider interface {
+		ToResource(feedback *Feedback) *FeedbackResource
+		ToResourceList(feedback []*Feedback) []*FeedbackResource
+	}
+)
+
 type FeedbackModel struct {
 	lc     *fx.Lifecycle
 	db     *gorm.DB

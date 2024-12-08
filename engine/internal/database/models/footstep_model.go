@@ -45,24 +45,31 @@ type FootstepResource struct {
 	Member      *MemberResource   `json:"member"`
 }
 
+type (
+	FootstepResourceProvider interface {
+		ToResource(footstep *Footstep) *FootstepResource
+		ToResourceList(footstep []*Footstep) []*FootstepResource
+	}
+)
+
 type FootstepModel struct {
 	lc            *fx.Lifecycle
 	db            *gorm.DB
 	logger        *zap.Logger
-	adminModel    *AdminModel
-	employeeModel *EmployeeModel
-	ownerModel    *OwnerModel
-	memberModel   *MemberModel
+	adminModel    AdminResourceProvider
+	employeeModel EmployeeResourceProvider
+	ownerModel    OwnerResourceProvider
+	memberModel   MemberResourceProvider
 }
 
 func NewFootstepModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	adminModel *AdminModel,
-	employeeModel *EmployeeModel,
-	ownerModel *OwnerModel,
-	memberModel *MemberModel,
+	adminModel AdminResourceProvider,
+	employeeModel EmployeeResourceProvider,
+	ownerModel OwnerResourceProvider,
+	memberModel MemberResourceProvider,
 ) *FootstepModel {
 	return &FootstepModel{
 		lc:            lc,

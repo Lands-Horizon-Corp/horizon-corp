@@ -67,24 +67,31 @@ type AdminResource struct {
 	Footsteps          []*FootstepResource `json:"footsteps"`
 }
 
+type (
+	AdminResourceProvider interface {
+		ToResource(admin *Admin) *AdminResource
+		ToResourceList(admin []*Admin) []*AdminResource
+	}
+)
+
 type AdminModel struct {
 	lc            *fx.Lifecycle
 	db            *gorm.DB
 	logger        *zap.Logger
-	mediaModel    *MediaModel
-	roleModel     *RoleModel
-	genderModel   *GenderModel
-	footstepModel *FootstepModel
+	mediaModel    MediaResourceProvider
+	roleModel     RoleResourceProvider
+	genderModel   GenderResourceProvider
+	footstepModel FootstepResourceProvider
 }
 
 func NewAdminModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	mediaModel *MediaModel,
-	roleModel *RoleModel,
-	genderModel *GenderModel,
-	footstepModel *FootstepModel,
+	mediaModel MediaResourceProvider,
+	roleModel RoleResourceProvider,
+	genderModel GenderResourceProvider,
+	footstepModel FootstepResourceProvider,
 ) *AdminModel {
 	return &AdminModel{
 		lc:            lc,

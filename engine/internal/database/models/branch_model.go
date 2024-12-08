@@ -49,24 +49,31 @@ type BranchResource struct {
 	Members         []*MemberResource   `json:"members"`
 }
 
+type (
+	BranchResourceProvider interface {
+		ToResource(branch *Branch) *BranchResource
+		ToResourceList(branch []*Branch) []*BranchResource
+	}
+)
+
 type BranchModel struct {
 	lc            *fx.Lifecycle
 	db            *gorm.DB
 	logger        *zap.Logger
-	mediaModel    *MediaModel
-	companyModel  *CompanyModel
-	employeeModel *EmployeeModel
-	memberModel   *MemberModel
+	mediaModel    MediaResourceProvider
+	companyModel  CompanyResourceProvider
+	employeeModel EmployeeResourceProvider
+	memberModel   MemberResourceProvider
 }
 
 func NewBranchModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	mediaModel *MediaModel,
-	companyModel *CompanyModel,
-	employeeModel *EmployeeModel,
-	memberModel *MemberModel,
+	mediaModel MediaResourceProvider,
+	companyModel CompanyResourceProvider,
+	employeeModel EmployeeResourceProvider,
+	memberModel MemberResourceProvider,
 ) *BranchModel {
 	return &BranchModel{
 		lc:            lc,

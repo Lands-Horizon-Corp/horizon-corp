@@ -35,20 +35,27 @@ type TimesheetResource struct {
 	MediaOut   *MediaResource    `json:"mediaOut"`
 }
 
+type (
+	TimesheetResourceProvider interface {
+		ToResource(timesheet *Timesheet) *TimesheetResource
+		ToResourceList(timesheet []*Timesheet) []*TimesheetResource
+	}
+)
+
 type TimesheetModel struct {
 	lc            *fx.Lifecycle
 	db            *gorm.DB
 	logger        *zap.Logger
-	employeeModel *EmployeeModel
-	mediaModel    *MediaModel
+	employeeModel EmployeeResourceProvider
+	mediaModel    MediaResourceProvider
 }
 
 func NewTimesheetModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	employeeModel *EmployeeModel,
-	mediaModel *MediaModel,
+	employeeModel EmployeeResourceProvider,
+	mediaModel MediaResourceProvider,
 ) *TimesheetModel {
 	return &TimesheetModel{
 		lc:            lc,

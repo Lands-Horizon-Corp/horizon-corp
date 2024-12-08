@@ -29,24 +29,31 @@ type GenderResource struct {
 	Admins      []*AdminResource    `json:"admins"`
 }
 
+type (
+	GenderResourceProvider interface {
+		ToResource(gender *Gender) *GenderResource
+		ToResourceList(gender []*Gender) []*GenderResource
+	}
+)
+
 type GenderModel struct {
 	lc            *fx.Lifecycle
 	db            *gorm.DB
 	logger        *zap.Logger
-	adminModel    *AdminModel
-	employeeModel *EmployeeModel
-	ownerModel    *OwnerModel
-	memberModel   *MemberModel
+	adminModel    AdminResourceProvider
+	employeeModel EmployeeResourceProvider
+	ownerModel    OwnerResourceProvider
+	memberModel   MemberResourceProvider
 }
 
 func NewGenderModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	adminModel *AdminModel,
-	employeeModel *EmployeeModel,
-	ownerModel *OwnerModel,
-	memberModel *MemberModel,
+	adminModel AdminResourceProvider,
+	employeeModel EmployeeResourceProvider,
+	ownerModel OwnerResourceProvider,
+	memberModel MemberResourceProvider,
 ) *GenderModel {
 	return &GenderModel{
 		lc:            lc,

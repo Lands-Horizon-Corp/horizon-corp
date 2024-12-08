@@ -46,16 +46,23 @@ type MediaResource struct {
 	Branches  []*BranchResource   `json:"branches"`
 }
 
+type (
+	MediaResourceProvider interface {
+		ToResource(media *Media) *MediaResource
+		ToResourceList(media []*Media) []*MediaResource
+	}
+)
+
 type MediaModel struct {
 	lc              *fx.Lifecycle
 	db              *gorm.DB
 	logger          *zap.Logger
-	adminModel      *AdminModel
-	employeeModel   *EmployeeModel
-	ownerModel      *OwnerModel
-	memberModel     *MemberModel
-	companyModel    *CompanyModel
-	branchModel     *BranchModel
+	adminModel      AdminResourceProvider
+	employeeModel   EmployeeResourceProvider
+	ownerModel      OwnerResourceProvider
+	memberModel     MemberResourceProvider
+	companyModel    CompanyResourceProvider
+	branchModel     BranchResourceProvider
 	storageProvider *providers.StorageProvider
 }
 
@@ -63,12 +70,12 @@ func NewMediaModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	adminModel *AdminModel,
-	employeeModel *EmployeeModel,
-	ownerModel *OwnerModel,
-	memberModel *MemberModel,
-	companyModel *CompanyModel,
-	branchModel *BranchModel,
+	adminModel AdminResourceProvider,
+	employeeModel EmployeeResourceProvider,
+	ownerModel OwnerResourceProvider,
+	memberModel MemberResourceProvider,
+	companyModel CompanyResourceProvider,
+	branchModel BranchResourceProvider,
 	storageProvider *providers.StorageProvider,
 ) *MediaModel {
 	return &MediaModel{

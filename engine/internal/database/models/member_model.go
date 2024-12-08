@@ -80,26 +80,33 @@ type MemberResource struct {
 	Footsteps []*FootstepResource `json:"footsteps"`
 }
 
+type (
+	MemberResourceProvider interface {
+		ToResource(member *Member) *MemberResource
+		ToResourceList(member []*Member) []*MemberResource
+	}
+)
+
 type MemberModel struct {
 	lc           *fx.Lifecycle
 	db           *gorm.DB
 	logger       *zap.Logger
-	mediaModel   *MediaModel
-	branchModel  *BranchModel
-	roleModel    *RoleModel
-	genderModel  *GenderModel
-	footsepModel *FootstepModel
+	mediaModel   MediaResourceProvider
+	branchModel  BranchResourceProvider
+	roleModel    RoleResourceProvider
+	genderModel  GenderResourceProvider
+	footsepModel FootstepResourceProvider
 }
 
 func NewMemberModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	mediaModel *MediaModel,
-	branchModel *BranchModel,
-	roleModel *RoleModel,
-	genderModel *GenderModel,
-	footstepModel *FootstepModel,
+	mediaModel MediaResourceProvider,
+	branchModel BranchResourceProvider,
+	roleModel RoleResourceProvider,
+	genderModel GenderResourceProvider,
+	footstepModel FootstepResourceProvider,
 ) *MemberModel {
 	return &MemberModel{
 		lc:           lc,

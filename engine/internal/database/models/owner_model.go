@@ -71,26 +71,33 @@ type OwnerResource struct {
 	Companies          []*CompanyResource  `json:"companies"`
 }
 
+type (
+	OwnerResourceProvider interface {
+		ToResource(owner *Owner) *OwnerResource
+		ToResourceList(owner []*Owner) []*OwnerResource
+	}
+)
+
 type OwnerModel struct {
 	lc            *fx.Lifecycle
 	db            *gorm.DB
 	logger        *zap.Logger
-	mediaModel    *MediaModel
-	genderModel   *GenderModel
-	footstepModel *FootstepModel
-	companyModel  *CompanyModel
-	roleModel     *RoleModel
+	mediaModel    MediaResourceProvider
+	genderModel   GenderResourceProvider
+	footstepModel FootstepResourceProvider
+	companyModel  CompanyResourceProvider
+	roleModel     RoleResourceProvider
 }
 
 func NewOwnerModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	mediaModel *MediaModel,
-	genderModel *GenderModel,
-	footstepModel *FootstepModel,
-	companyModel *CompanyModel,
-	roleModel *RoleModel,
+	mediaModel MediaResourceProvider,
+	genderModel GenderResourceProvider,
+	footstepModel FootstepResourceProvider,
+	companyModel CompanyResourceProvider,
+	roleModel RoleResourceProvider,
 ) *OwnerModel {
 	return &OwnerModel{
 		lc:            lc,

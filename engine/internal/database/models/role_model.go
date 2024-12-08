@@ -60,24 +60,31 @@ type RoleResource struct {
 	Members   []*MemberResource   `json:"members"`
 }
 
+type (
+	RoleResourceProvider interface {
+		ToResource(role *Role) *RoleResource
+		ToResourceList(role []*Role) []*RoleResource
+	}
+)
+
 type RoleModel struct {
 	lc            *fx.Lifecycle
 	db            *gorm.DB
 	logger        *zap.Logger
-	adminModel    *AdminModel
-	employeeModel *EmployeeModel
-	ownerModel    *OwnerModel
-	memberModel   *MemberModel
+	adminModel    AdminResourceProvider
+	employeeModel EmployeeResourceProvider
+	ownerModel    OwnerResourceProvider
+	memberModel   MemberResourceProvider
 }
 
 func NewRoleModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
-	adminModel *AdminModel,
-	employeeModel *EmployeeModel,
-	ownerModel *OwnerModel,
-	memberModel *MemberModel,
+	adminModel AdminResourceProvider,
+	employeeModel EmployeeResourceProvider,
+	ownerModel OwnerResourceProvider,
+	memberModel MemberResourceProvider,
 ) *RoleModel {
 	return &RoleModel{
 		lc:            lc,
