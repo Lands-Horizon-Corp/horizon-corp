@@ -58,7 +58,6 @@ func ToResourceMedia(media *models.Media) *MediaResource {
 	}
 }
 
-// Convert []*models.Media to []*MediaResource
 func ToResourceListMedia(mediaList []*models.Media) []*MediaResource {
 	var resources []*MediaResource
 	for _, media := range mediaList {

@@ -5,17 +5,12 @@ import (
 	"go.uber.org/zap"
 )
 
-type LoggerProvider struct {
-	cfg    *config.AppConfig
-	logger *zap.Logger
-}
-
 func NewLoggerProvider(
 	cfg *config.AppConfig,
-	logger *zap.Logger,
-) *LoggerProvider {
-	return &LoggerProvider{
-		cfg:    cfg,
-		logger: logger,
+) (*zap.Logger, error) {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		return nil, err
 	}
+	return logger, nil
 }

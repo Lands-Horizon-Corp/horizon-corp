@@ -23,13 +23,11 @@ type BranchResource struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
-// Convert models.Branch to *BranchResource
 func ToResourceBranch(branch *models.Branch) *BranchResource {
 	if branch == nil {
 		return nil
 	}
 
-	// Initialize optional nested resources
 	var mediaResource *MediaResource
 	if branch.Media != nil {
 		mediaResource = ToResourceMedia(branch.Media)
@@ -55,7 +53,6 @@ func ToResourceBranch(branch *models.Branch) *BranchResource {
 	}
 }
 
-// Convert []models.Branch to []*BranchResource
 func ToResourceListBranch(branches []*models.Branch) []*BranchResource {
 	var resources []*BranchResource
 	for _, branch := range branches {

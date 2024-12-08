@@ -25,11 +25,11 @@ type EmployeeResource struct {
 	Branch             *BranchResource       `json:"branch,omitempty"`
 	Longitude          *float64              `json:"longitude,omitempty"`
 	Latitude           *float64              `json:"latitude,omitempty"`
-	Timesheets         []*TimesheetResource  `json:"timesheets,omitempty"` // Updated to slice of pointers
+	Timesheets         []*TimesheetResource  `json:"timesheets,omitempty"`
 	Role               *RoleResource         `json:"role,omitempty"`
 	GenderID           *uint                 `json:"genderId,omitempty"`
 	Gender             *GenderResource       `json:"gender,omitempty"`
-	Footsteps          []*FootstepResource   `json:"footsteps,omitempty"` // Updated to slice of pointers
+	Footsteps          []*FootstepResource   `json:"footsteps,omitempty"`
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`

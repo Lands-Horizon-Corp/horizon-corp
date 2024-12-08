@@ -25,7 +25,7 @@ type AdminResource struct {
 	Role               *RoleResource       `json:"role,omitempty"`
 	GenderID           *uint               `json:"genderId,omitempty"`
 	Gender             *GenderResource     `json:"gender,omitempty"`
-	Footsteps          []*FootstepResource `json:"footsteps,omitempty"` // Updated to slice of pointers
+	Footsteps          []*FootstepResource `json:"footsteps,omitempty"`
 
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -36,7 +36,6 @@ func ToResourceAdmin(admin *models.Admin) *AdminResource {
 		return nil
 	}
 
-	// Initialize optional nested resources
 	var mediaResource *MediaResource
 	if admin.Media != nil {
 		mediaResource = ToResourceMedia(admin.Media)

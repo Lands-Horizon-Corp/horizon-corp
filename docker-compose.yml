@@ -27,15 +27,15 @@ services:
     networks:
       - app-network
 
-  server:
+  engine:
     restart: always
     build:
-      context: ./server
+      context: ./engine
       dockerfile: Dockerfile
     platform: linux/amd64
     env_file: ./.env
     volumes:
-      - ./server:/app
+      - ./engine:/app
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:
@@ -152,25 +152,25 @@ services:
     networks:
       - app-network
 
-  flyway:
-    build:
-      context: ./migration
-      dockerfile: Dockerfile
-    env_file: ./.env
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DB_HOST: db
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_CHARSET: ${DB_CHARSET}
-      DB_PARSE_TIME: ${DB_PARSE_TIME}
-    entrypoint: ["flyway", "migrate"]
-    networks:
-      - app-network
+  # flyway:
+  #   build:
+  #     context: ./migration
+  #     dockerfile: Dockerfile
+  #   env_file: ./.env
+  #   depends_on:
+  #     db:
+  #       condition: service_healthy
+  #   environment:
+  #     DB_HOST: db
+  #     DB_PORT: ${DB_PORT}
+  #     DB_USERNAME: ${DB_USERNAME}
+  #     DB_PASSWORD: ${DB_PASSWORD}
+  #     DB_NAME: ${DB_NAME}
+  #     DB_CHARSET: ${DB_CHARSET}
+  #     DB_PARSE_TIME: ${DB_PARSE_TIME}
+  #   entrypoint: ["flyway", "migrate"]
+  #   networks:
+  #     - app-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -200,7 +200,7 @@ services:
       MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY}
     volumes:
       - minio_data:/data
-    command: server /data --console-address ":38813"
+    command: engine /data --console-address ":38813"
     networks:
       - app-network
 

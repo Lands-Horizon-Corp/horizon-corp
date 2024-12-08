@@ -17,7 +17,6 @@ type ContactResource struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
-// Convert models.Contact to *ContactResource
 func ToResourceContact(contact *models.Contact) *ContactResource {
 	if contact == nil {
 		return nil
@@ -35,7 +34,6 @@ func ToResourceContact(contact *models.Contact) *ContactResource {
 	}
 }
 
-// Convert []models.Contact to []*ContactResource
 func ToResourceListContacts(contacts []*models.Contact) []*ContactResource {
 	var resources []*ContactResource
 	for _, contact := range contacts {

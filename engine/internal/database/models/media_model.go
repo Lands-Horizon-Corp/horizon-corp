@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -28,13 +29,14 @@ type Media struct {
 }
 
 type MediaResource struct {
-	FileName   string `json:"fileName"`
-	FileSize   int64  `json:"fileSize"`
-	FileType   string `json:"fileType"`
-	StorageKey string `json:"storageKey"`
-	URL        string `json:"uRL"`
-	Key        string `json:"key"`
-	BucketName string `json:"bucketName"`
+	FileName    string `json:"fileName"`
+	FileSize    int64  `json:"fileSize"`
+	FileType    string `json:"fileType"`
+	StorageKey  string `json:"storageKey"`
+	URL         string `json:"uRL"`
+	Key         string `json:"key"`
+	DownloadURL string `json:"downloadURL"`
+	BucketName  string `json:"bucketName"`
 
 	Employees []*EmployeeResource `json:"employees"`
 	Members   []*MemberResource   `json:"members"`
@@ -45,15 +47,16 @@ type MediaResource struct {
 }
 
 type MediaModel struct {
-	lc            *fx.Lifecycle
-	db            *gorm.DB
-	logger        *zap.Logger
-	adminModel    *AdminModel
-	employeeModel *EmployeeModel
-	ownerModel    *OwnerModel
-	memberModel   *MemberModel
-	companyModel  *CompanyModel
-	branchModel   *BranchModel
+	lc              *fx.Lifecycle
+	db              *gorm.DB
+	logger          *zap.Logger
+	adminModel      *AdminModel
+	employeeModel   *EmployeeModel
+	ownerModel      *OwnerModel
+	memberModel     *MemberModel
+	companyModel    *CompanyModel
+	branchModel     *BranchModel
+	storageProvider *providers.StorageProvider
 }
 
 func NewMediaModel(
@@ -66,17 +69,19 @@ func NewMediaModel(
 	memberModel *MemberModel,
 	companyModel *CompanyModel,
 	branchModel *BranchModel,
+	storageProvider *providers.StorageProvider,
 ) *MediaModel {
 	return &MediaModel{
-		lc:            lc,
-		db:            db,
-		logger:        logger,
-		adminModel:    adminModel,
-		employeeModel: employeeModel,
-		ownerModel:    ownerModel,
-		memberModel:   memberModel,
-		companyModel:  companyModel,
-		branchModel:   branchModel,
+		lc:              lc,
+		db:              db,
+		logger:          logger,
+		adminModel:      adminModel,
+		employeeModel:   employeeModel,
+		ownerModel:      ownerModel,
+		memberModel:     memberModel,
+		companyModel:    companyModel,
+		branchModel:     branchModel,
+		storageProvider: storageProvider,
 	}
 }
 
@@ -88,20 +93,26 @@ func (mm *MediaModel) ToResource(media *Media) *MediaResource {
 		return nil
 	}
 
+	temporaryURL, err := mm.storageProvider.GeneratePresignedURL(media.StorageKey)
+	if err != nil {
+		return nil
+	}
+
 	return &MediaResource{
-		FileName:   media.FileName,
-		FileSize:   media.FileSize,
-		FileType:   media.FileType,
-		StorageKey: media.StorageKey,
-		URL:        media.URL,
-		Key:        media.Key,
-		BucketName: media.BucketName,
-		Employees:  mm.employeeModel.ToResourceList(media.Employees),
-		Members:    mm.memberModel.ToResourceList(media.Members),
-		Owners:     mm.ownerModel.ToResourceList(media.Owners),
-		Admins:     mm.adminModel.ToResourceList(media.Admins),
-		Companies:  mm.companyModel.ToResourceList(media.Companies),
-		Branches:   mm.branchModel.ToResourceList(media.Branches),
+		FileName:    media.FileName,
+		FileSize:    media.FileSize,
+		FileType:    media.FileType,
+		StorageKey:  media.StorageKey,
+		URL:         media.URL,
+		Key:         media.Key,
+		BucketName:  media.BucketName,
+		DownloadURL: temporaryURL,
+		Employees:   mm.employeeModel.ToResourceList(media.Employees),
+		Members:     mm.memberModel.ToResourceList(media.Members),
+		Owners:      mm.ownerModel.ToResourceList(media.Owners),
+		Admins:      mm.adminModel.ToResourceList(media.Admins),
+		Companies:   mm.companyModel.ToResourceList(media.Companies),
+		Branches:    mm.branchModel.ToResourceList(media.Branches),
 	}
 }
 

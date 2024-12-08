@@ -22,19 +22,16 @@ type CompanyResource struct {
 	UpdatedAt string `json:"updatedAt"`
 }
 
-// Convert models.Company to *CompanyResource
 func ToResourceCompany(company *models.Company) *CompanyResource {
 	if company == nil {
 		return nil
 	}
 
-	// Convert Owner
 	var ownerResource *OwnerResource
 	if company.Owner != nil {
 		ownerResource = ToResourceOwner(company.Owner)
 	}
 
-	// Convert Media
 	var mediaResource *MediaResource
 	if company.Media != nil {
 		mediaResource = ToResourceMedia(company.Media)
