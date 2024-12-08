@@ -3,6 +3,8 @@ package models
 import (
 	"time"
 
+	"go.uber.org/fx"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -39,4 +41,58 @@ type Admin struct {
 
 	// Relationship 0 to many
 	Footsteps []*Footstep `gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
+}
+
+type AdminResource struct {
+	FirstName          string              `json:"firstName"`
+	LastName           string              `json:"lastName"`
+	MiddleName         string              `json:"middleName"`
+	PermanentAddress   string              `json:"permanentAddress"`
+	Description        string              `json:"description"`
+	BirthDate          time.Time           `json:"birthDate"`
+	Username           string              `json:"username"`
+	Email              string              `json:"email"`
+	Password           string              `json:"password"`
+	ContactNumber      string              `json:"contactNumber"`
+	IsEmailVerified    bool                `json:"isEmailVerified"`
+	IsContactVerified  bool                `json:"isContactVerified"`
+	IsSkipVerification bool                `json:"isSkipVerification"`
+	Status             UserStatus          `json:"status"`
+	MediaID            *uint               `json:"mediaID"`
+	Media              *MediaResource      `json:"media"`
+	RoleID             *uint               `json:"roleID"`
+	Role               *RoleResource       `json:"role"`
+	GenderID           *uint               `json:"genderID"`
+	Gender             *GenderResource     `json:"gender"`
+	Footsteps          []*FootstepResource `json:"footsteps"`
+}
+
+type AdminModel struct {
+	lc     *fx.Lifecycle
+	db     *gorm.DB
+	logger *zap.Logger
+}
+
+func NewAdminModel(
+	lc *fx.Lifecycle,
+	db *gorm.DB,
+	logger *zap.Logger,
+) *AdminModel {
+	return &AdminModel{
+		lc:     lc,
+		db:     db,
+		logger: logger,
+	}
+}
+
+func (am *AdminModel) SeedDatabase() {
+
+}
+
+func (am *AdminModel) ToResource() {
+
+}
+
+func (am *AdminModel) ToResourceList() {
+
 }

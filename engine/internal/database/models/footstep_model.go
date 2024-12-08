@@ -1,6 +1,8 @@
 package models
 
 import (
+	"go.uber.org/fx"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -27,4 +29,45 @@ type Footstep struct {
 	// Relationship 0 to 1
 	MemberID *uint   `gorm:"index" json:"member_id,omitempty"`
 	Member   *Member `gorm:"foreignKey:MemberID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member,omitempty"`
+}
+
+type FootstepResource struct {
+	AccountType string            `json:"accountType"`
+	Description string            `json:"description"`
+	Activity    string            `json:"activity"`
+	AdminID     *uint             `json:"adminID"`
+	Admin       *AdminResource    `json:"admin"`
+	EmployeeID  *uint             `json:"employeeID"`
+	Employee    *EmployeeResource `json:"employee"`
+	OwnerID     *uint             `json:"ownerID"`
+	Owner       *OwnerResource    `json:"owner"`
+	MemberID    *uint             `json:"memberID"`
+	Member      *MemberResource   `json:"member"`
+}
+
+type FootstepModel struct {
+	lc     *fx.Lifecycle
+	db     *gorm.DB
+	logger *zap.Logger
+}
+
+func NewFootstepModel(
+	lc *fx.Lifecycle,
+	db *gorm.DB,
+	logger *zap.Logger,
+) *FootstepModel {
+	return &FootstepModel{
+		lc:     lc,
+		db:     db,
+		logger: logger,
+	}
+}
+
+func (fm *FootstepModel) SeedDatabase() {
+}
+
+func (fm *FootstepModel) ToResource() {
+}
+
+func (fm *FootstepModel) ToResourceList() {
 }

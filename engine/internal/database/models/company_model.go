@@ -1,6 +1,8 @@
 package models
 
 import (
+	"go.uber.org/fx"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -26,4 +28,46 @@ type Company struct {
 
 	// Relationship 0 to many
 	Branches []*Branch `gorm:"foreignKey:CompanyID" json:"branches"`
+}
+
+type CompanyResource struct {
+	Name            string            `json:"name"`
+	Description     string            `json:"description"`
+	Address         string            `json:"address"`
+	Longitude       float64           `json:"longitude"`
+	Latitude        float64           `json:"latitude"`
+	ContactNumber   string            `json:"contactNumber"`
+	OwnerID         *uint             `json:"ownerID"`
+	Owner           *OwnerResource    `json:"owner"`
+	MediaID         *uint             `json:"mediaID"`
+	Media           *MediaResource    `json:"media"`
+	IsAdminVerified bool              `json:"isAdminVerified"`
+	Branches        []*BranchResource `json:"branches"`
+}
+
+type CompanyModel struct {
+	lc     *fx.Lifecycle
+	db     *gorm.DB
+	logger *zap.Logger
+}
+
+func NewCompanyModel(
+	lc *fx.Lifecycle,
+	db *gorm.DB,
+	logger *zap.Logger,
+) *CompanyModel {
+	return &CompanyModel{
+		lc:     lc,
+		db:     db,
+		logger: logger,
+	}
+}
+
+func (cm *CompanyModel) SeedDatabase() {
+}
+
+func (cm *CompanyModel) ToResource() {
+}
+
+func (cm *CompanyModel) ToResourceList() {
 }

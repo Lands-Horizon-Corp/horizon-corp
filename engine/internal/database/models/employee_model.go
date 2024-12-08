@@ -3,6 +3,8 @@ package models
 import (
 	"time"
 
+	"go.uber.org/fx"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -46,4 +48,63 @@ type Employee struct {
 	// Relationship 0 to many
 	Timesheets []*Timesheet `gorm:"foreignKey:EmployeeID" json:"timesheets"`
 	Footsteps  []*Footstep  `gorm:"foreignKey:EmployeeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
+}
+
+type EmployeeResource struct {
+	FirstName          string               `json:"firstName"`
+	LastName           string               `json:"lastName"`
+	MiddleName         string               `json:"middleName"`
+	PermanentAddress   string               `json:"permanentAddress"`
+	Description        string               `json:"description"`
+	BirthDate          time.Time            `json:"birthDate"`
+	Username           string               `json:"username"`
+	Email              string               `json:"email"`
+	Password           string               `json:"password"`
+	IsEmailVerified    bool                 `json:"isEmailVerified"`
+	IsContactVerified  bool                 `json:"isContactVerified"`
+	IsSkipVerification bool                 `json:"isSkipVerification"`
+	ContactNumber      string               `json:"contactNumber"`
+	Status             UserStatus           `json:"status"`
+	Longitude          *float64             `json:"longitude"`
+	Latitude           *float64             `json:"latitude"`
+	MediaID            *uint                `json:"mediaID"`
+	Media              *MediaResource       `json:"media"`
+	BranchID           *uint                `json:"branchID"`
+	Branch             *BranchResource      `json:"branch"`
+	RoleID             *uint                `json:"roleID"`
+	Role               *RoleResource        `json:"role"`
+	GenderID           *uint                `json:"genderID"`
+	Gender             *GenderResource      `json:"gender"`
+	Timesheets         []*TimesheetResource `json:"timesheets"`
+	Footsteps          []*FootstepResource  `json:"footsteps"`
+}
+
+// EmployeeModel handles operations related to employees.
+type EmployeeModel struct {
+	lc     *fx.Lifecycle
+	db     *gorm.DB
+	logger *zap.Logger
+}
+
+// NewEmployeeModel is the constructor for EmployeeModel.
+// It initializes the EmployeeModel with the provided lifecycle, database, and logger.
+func NewEmployeeModel(
+	lc *fx.Lifecycle,
+	db *gorm.DB,
+	logger *zap.Logger,
+) *EmployeeModel {
+	return &EmployeeModel{
+		lc:     lc,
+		db:     db,
+		logger: logger,
+	}
+}
+
+func (em *EmployeeModel) SeedDatabase() {
+}
+
+func (em *EmployeeModel) ToResource() {
+}
+
+func (em *EmployeeModel) ToResourceList() {
 }

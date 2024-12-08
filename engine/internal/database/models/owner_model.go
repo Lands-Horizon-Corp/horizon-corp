@@ -3,6 +3,8 @@ package models
 import (
 	"time"
 
+	"go.uber.org/fx"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -38,4 +40,54 @@ type Owner struct {
 	// Relationship 0 to many
 	Footsteps []*Footstep `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
 	Companies []*Company  `gorm:"foreignKey:OwnerID" json:"companies"`
+}
+
+type OwnerResource struct {
+	FirstName          string              `json:"firstName"`
+	LastName           string              `json:"lastName"`
+	MiddleName         string              `json:"middleName"`
+	PermanentAddress   string              `json:"permanentAddress"`
+	Description        string              `json:"description"`
+	BirthDate          time.Time           `json:"birthDate"`
+	Username           string              `json:"username"`
+	Email              string              `json:"email"`
+	Password           string              `json:"password"`
+	ContactNumber      string              `json:"contactNumber"`
+	IsEmailVerified    bool                `json:"isEmailVerified"`
+	IsContactVerified  bool                `json:"isContactVerified"`
+	IsSkipVerification bool                `json:"isSkipVerification"`
+	Status             UserStatus          `json:"status"`
+	MediaID            *uint               `json:"mediaID"`
+	Media              *MediaResource      `json:"media"`
+	GenderID           *uint               `json:"genderID"`
+	Gender             *GenderResource     `json:"gender"`
+	Footsteps          []*FootstepResource `json:"footsteps"`
+	Companies          []*CompanyResource  `json:"companies"`
+}
+
+type OwnerModel struct {
+	lc     *fx.Lifecycle
+	db     *gorm.DB
+	logger *zap.Logger
+}
+
+func NewOwnerModel(
+	lc *fx.Lifecycle,
+	db *gorm.DB,
+	logger *zap.Logger,
+) *OwnerModel {
+	return &OwnerModel{
+		lc:     lc,
+		db:     db,
+		logger: logger,
+	}
+}
+
+func (mm *OwnerModel) SeedDatabase() {
+}
+
+func (mm *OwnerModel) ToResource() {
+}
+
+func (mm *OwnerModel) ToResourceList() {
 }

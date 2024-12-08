@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"go.uber.org/fx"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
+)
 
 type Media struct {
 	gorm.Model
@@ -21,4 +25,48 @@ type Media struct {
 	Admins    []*Admin    `gorm:"foreignKey:MediaID" json:"admins"`
 	Companies []*Company  `gorm:"foreignKey:MediaID" json:"companies"`
 	Branches  []*Branch   `gorm:"foreignKey:MediaID" json:"branches"`
+}
+
+type MediaResource struct {
+	FileName   string `json:"fileName"`
+	FileSize   int64  `json:"fileSize"`
+	FileType   string `json:"fileType"`
+	StorageKey string `json:"storageKey"`
+	URL        string `json:"uRL"`
+	Key        string `json:"key"`
+	BucketName string `json:"bucketName"`
+
+	Employees []*EmployeeResource `json:"employees"`
+	Members   []*MediaResource    `json:"members"`
+	Owners    []*OwnerResource    `json:"owners"`
+	Admins    []*AdminResource    `json:"admins"`
+	Companies []*CompanyResource  `json:"companies"`
+	Branches  []*BranchResource   `json:"branches"`
+}
+
+type MediaModel struct {
+	lc     *fx.Lifecycle
+	db     *gorm.DB
+	logger *zap.Logger
+}
+
+func NewMediaModel(
+	lc *fx.Lifecycle,
+	db *gorm.DB,
+	logger *zap.Logger,
+) *MediaModel {
+	return &MediaModel{
+		lc:     lc,
+		db:     db,
+		logger: logger,
+	}
+}
+
+func (mm *MediaModel) SeedDatabase() {
+}
+
+func (mm *MediaModel) ToResource() {
+}
+
+func (mm *MediaModel) ToResourceList() {
 }

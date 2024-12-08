@@ -1,6 +1,8 @@
 package models
 
 import (
+	"go.uber.org/fx"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -29,4 +31,50 @@ type Branch struct {
 
 	// Relationship 0 to many
 	Members []*Member `gorm:"foreignKey:BranchID" json:"members"`
+}
+
+type BranchResource struct {
+	Name            string              `json:"name"`
+	Address         string              `json:"address"`
+	Longitude       float64             `json:"longitude"`
+	Latitude        float64             `json:"latitude"`
+	Email           string              `json:"email"`
+	ContactNumber   string              `json:"contactNumber"`
+	IsAdminVerified bool                `json:"isAdminVerified"`
+	MediaID         *uint               `json:"mediaID"`
+	Media           *MediaResource      `json:"media"`
+	CompanyID       *uint               `json:"companyID"`
+	Company         *CompanyResource    `json:"company"`
+	Employees       []*EmployeeResource `json:"employees"`
+	Members         []*MemberResource   `json:"members"`
+}
+
+type BranchModel struct {
+	lc     *fx.Lifecycle
+	db     *gorm.DB
+	logger *zap.Logger
+}
+
+func NewBranchModel(
+	lc *fx.Lifecycle,
+	db *gorm.DB,
+	logger *zap.Logger,
+) *BranchModel {
+	return &BranchModel{
+		lc:     lc,
+		db:     db,
+		logger: logger,
+	}
+}
+
+func (bm *BranchModel) SeedDatabase() {
+
+}
+
+func (bm *BranchModel) ToResource() {
+
+}
+
+func (bm *BranchModel) ToResourceList() {
+
 }
