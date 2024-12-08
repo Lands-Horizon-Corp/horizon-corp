@@ -68,31 +68,75 @@ type AdminResource struct {
 }
 
 type AdminModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc            *fx.Lifecycle
+	db            *gorm.DB
+	logger        *zap.Logger
+	mediaModel    *MediaModel
+	roleModel     *RoleModel
+	genderModel   *GenderModel
+	footstepModel *FootstepModel
 }
 
 func NewAdminModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	mediaModel *MediaModel,
+	roleModel *RoleModel,
+	genderModel *GenderModel,
+	footstepModel *FootstepModel,
 ) *AdminModel {
 	return &AdminModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:            lc,
+		db:            db,
+		logger:        logger,
+		mediaModel:    mediaModel,
+		roleModel:     roleModel,
+		genderModel:   genderModel,
+		footstepModel: footstepModel,
 	}
 }
 
+func (am *AdminModel) ToResource(admin *Admin) *AdminResource {
+	if admin == nil {
+		return nil
+	}
+	return &AdminResource{
+		FirstName:          admin.FirstName,
+		LastName:           admin.LastName,
+		MiddleName:         admin.MiddleName,
+		PermanentAddress:   admin.PermanentAddress,
+		Description:        admin.Description,
+		BirthDate:          admin.BirthDate,
+		Username:           admin.Username,
+		Email:              admin.Email,
+		Password:           admin.Password,
+		ContactNumber:      admin.ContactNumber,
+		IsEmailVerified:    admin.IsEmailVerified,
+		IsContactVerified:  admin.IsContactVerified,
+		IsSkipVerification: admin.IsSkipVerification,
+		Status:             admin.Status,
+		MediaID:            admin.MediaID,
+		Media:              am.mediaModel.ToResource(admin.Media),
+		RoleID:             admin.RoleID,
+		Role:               am.roleModel.ToResource(admin.Role),
+		GenderID:           admin.GenderID,
+		Gender:             am.genderModel.ToResource(admin.Gender),
+		Footsteps:          am.footstepModel.ToResourceList(admin.Footsteps),
+	}
+}
+
+func (am *AdminModel) ToResourceList(admins []*Admin) []*AdminResource {
+	if admins == nil {
+		return nil
+	}
+	var adminResources []*AdminResource
+	for _, admin := range admins {
+		adminResources = append(adminResources, am.ToResource(admin))
+	}
+	return adminResources
+}
+
 func (am *AdminModel) SeedDatabase() {
-
-}
-
-func (am *AdminModel) ToResource() {
-
-}
-
-func (am *AdminModel) ToResourceList() {
 
 }

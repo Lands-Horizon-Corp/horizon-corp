@@ -40,6 +40,10 @@ type Owner struct {
 	// Relationship 0 to many
 	Footsteps []*Footstep `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
 	Companies []*Company  `gorm:"foreignKey:OwnerID" json:"companies"`
+
+	// Relationship 0 to many
+	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
+	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 }
 
 type OwnerResource struct {
@@ -61,33 +65,86 @@ type OwnerResource struct {
 	Media              *MediaResource      `json:"media"`
 	GenderID           *uint               `json:"genderID"`
 	Gender             *GenderResource     `json:"gender"`
+	RoleID             *uint               `json:"roleID"`
+	Role               *RoleResource       `json:"role"`
 	Footsteps          []*FootstepResource `json:"footsteps"`
 	Companies          []*CompanyResource  `json:"companies"`
 }
 
 type OwnerModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc            *fx.Lifecycle
+	db            *gorm.DB
+	logger        *zap.Logger
+	mediaModel    *MediaModel
+	genderModel   *GenderModel
+	footstepModel *FootstepModel
+	companyModel  *CompanyModel
+	roleModel     *RoleModel
 }
 
 func NewOwnerModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	mediaModel *MediaModel,
+	genderModel *GenderModel,
+	footstepModel *FootstepModel,
+	companyModel *CompanyModel,
+	roleModel *RoleModel,
 ) *OwnerModel {
 	return &OwnerModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:            lc,
+		db:            db,
+		logger:        logger,
+		mediaModel:    mediaModel,
+		genderModel:   genderModel,
+		footstepModel: footstepModel,
+		companyModel:  companyModel,
+		roleModel:     roleModel,
 	}
 }
 
 func (mm *OwnerModel) SeedDatabase() {
 }
 
-func (mm *OwnerModel) ToResource() {
+func (mm *OwnerModel) ToResource(owner *Owner) *OwnerResource {
+	if owner == nil {
+		return nil
+	}
+
+	return &OwnerResource{
+		FirstName:          owner.FirstName,
+		LastName:           owner.LastName,
+		MiddleName:         owner.MiddleName,
+		PermanentAddress:   owner.PermanentAddress,
+		Description:        owner.Description,
+		BirthDate:          owner.BirthDate,
+		Username:           owner.Username,
+		Email:              owner.Email,
+		Password:           owner.Password,
+		ContactNumber:      owner.ContactNumber,
+		IsEmailVerified:    owner.IsEmailVerified,
+		IsContactVerified:  owner.IsContactVerified,
+		IsSkipVerification: owner.IsSkipVerification,
+		Status:             owner.Status,
+		MediaID:            owner.MediaID,
+		Media:              mm.mediaModel.ToResource(owner.Media),
+		GenderID:           owner.GenderID,
+		Gender:             mm.genderModel.ToResource(owner.Gender),
+		RoleID:             owner.RoleID,
+		Role:               mm.roleModel.ToResource(owner.Role),
+		Footsteps:          mm.footstepModel.ToResourceList(owner.Footsteps),
+		Companies:          mm.companyModel.ToResourceList(owner.Companies),
+	}
 }
 
-func (mm *OwnerModel) ToResourceList() {
+func (mm *OwnerModel) ToResourceList(owners []*Owner) []*OwnerResource {
+	if owners == nil {
+		return nil
+	}
+	var ownerResources []*OwnerResource
+	for _, owner := range owners {
+		ownerResources = append(ownerResources, mm.ToResource(owner))
+	}
+	return ownerResources
 }

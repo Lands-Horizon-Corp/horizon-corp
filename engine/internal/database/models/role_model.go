@@ -31,6 +31,7 @@ type Role struct {
 
 	// Relationship 0 to many
 	Admins    []*Admin    `gorm:"foreignKey:RoleID" json:"admins"`
+	Owners    []*Owner    `gorm:"foreignKey:RoleID" json:"owners"`
 	Employees []*Employee `gorm:"foreignKey:RoleID" json:"employees"`
 	Members   []*Member   `gorm:"foreignKey:RoleID" json:"members"`
 }
@@ -54,33 +55,81 @@ type RoleResource struct {
 	DeleteGender       bool   `json:"deleteGender"`
 
 	Admins    []*AdminResource    `json:"admins"`
+	Owners    []*OwnerResource    `json:"owners"`
 	Employees []*EmployeeResource `json:"employees"`
 	Members   []*MemberResource   `json:"members"`
 }
 
 type RoleModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc            *fx.Lifecycle
+	db            *gorm.DB
+	logger        *zap.Logger
+	adminModel    *AdminModel
+	employeeModel *EmployeeModel
+	ownerModel    *OwnerModel
+	memberModel   *MemberModel
 }
 
 func NewRoleModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	adminModel *AdminModel,
+	employeeModel *EmployeeModel,
+	ownerModel *OwnerModel,
+	memberModel *MemberModel,
 ) *RoleModel {
 	return &RoleModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:            lc,
+		db:            db,
+		logger:        logger,
+		adminModel:    adminModel,
+		employeeModel: employeeModel,
+		ownerModel:    ownerModel,
+		memberModel:   memberModel,
 	}
 }
 
 func (mm *RoleModel) SeedDatabase() {
 }
 
-func (mm *RoleModel) ToResource() {
+func (mm *RoleModel) ToResource(role *Role) *RoleResource {
+	if role == nil {
+		return nil
+	}
+
+	return &RoleResource{
+		Name:               role.Name,
+		Description:        role.Description,
+		ApiKey:             role.ApiKey,
+		Color:              role.Color,
+		ReadRole:           role.ReadRole,
+		WriteRole:          role.WriteRole,
+		UpdateRole:         role.UpdateRole,
+		DeleteRole:         role.DeleteRole,
+		ReadErrorDetails:   role.ReadErrorDetails,
+		WriteErrorDetails:  role.WriteErrorDetails,
+		UpdateErrorDetails: role.UpdateErrorDetails,
+		DeleteErrorDetails: role.DeleteErrorDetails,
+		ReadGender:         role.ReadGender,
+		WriteGender:        role.WriteGender,
+		UpdateGender:       role.UpdateGender,
+		DeleteGender:       role.DeleteGender,
+		Admins:             mm.adminModel.ToResourceList(role.Admins),
+		Owners:             mm.ownerModel.ToResourceList(role.Owners),
+		Employees:          mm.employeeModel.ToResourceList(role.Employees),
+		Members:            mm.memberModel.ToResourceList(role.Members),
+	}
 }
 
-func (mm *RoleModel) ToResourceList() {
+func (mm *RoleModel) ToResourceList(roles []*Role) []*RoleResource {
+	if roles == nil {
+		return nil
+	}
+
+	var roleResources []*RoleResource
+	for _, role := range roles {
+		roleResources = append(roleResources, mm.ToResource(role))
+	}
+	return roleResources
 }

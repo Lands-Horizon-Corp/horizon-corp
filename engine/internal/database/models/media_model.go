@@ -37,7 +37,7 @@ type MediaResource struct {
 	BucketName string `json:"bucketName"`
 
 	Employees []*EmployeeResource `json:"employees"`
-	Members   []*MediaResource    `json:"members"`
+	Members   []*MemberResource   `json:"members"`
 	Owners    []*OwnerResource    `json:"owners"`
 	Admins    []*AdminResource    `json:"admins"`
 	Companies []*CompanyResource  `json:"companies"`
@@ -45,28 +45,74 @@ type MediaResource struct {
 }
 
 type MediaModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc            *fx.Lifecycle
+	db            *gorm.DB
+	logger        *zap.Logger
+	adminModel    *AdminModel
+	employeeModel *EmployeeModel
+	ownerModel    *OwnerModel
+	memberModel   *MemberModel
+	companyModel  *CompanyModel
+	branchModel   *BranchModel
 }
 
 func NewMediaModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	adminModel *AdminModel,
+	employeeModel *EmployeeModel,
+	ownerModel *OwnerModel,
+	memberModel *MemberModel,
+	companyModel *CompanyModel,
+	branchModel *BranchModel,
 ) *MediaModel {
 	return &MediaModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:            lc,
+		db:            db,
+		logger:        logger,
+		adminModel:    adminModel,
+		employeeModel: employeeModel,
+		ownerModel:    ownerModel,
+		memberModel:   memberModel,
+		companyModel:  companyModel,
+		branchModel:   branchModel,
 	}
 }
 
 func (mm *MediaModel) SeedDatabase() {
 }
 
-func (mm *MediaModel) ToResource() {
+func (mm *MediaModel) ToResource(media *Media) *MediaResource {
+	if media == nil {
+		return nil
+	}
+
+	return &MediaResource{
+		FileName:   media.FileName,
+		FileSize:   media.FileSize,
+		FileType:   media.FileType,
+		StorageKey: media.StorageKey,
+		URL:        media.URL,
+		Key:        media.Key,
+		BucketName: media.BucketName,
+		Employees:  mm.employeeModel.ToResourceList(media.Employees),
+		Members:    mm.memberModel.ToResourceList(media.Members),
+		Owners:     mm.ownerModel.ToResourceList(media.Owners),
+		Admins:     mm.adminModel.ToResourceList(media.Admins),
+		Companies:  mm.companyModel.ToResourceList(media.Companies),
+		Branches:   mm.branchModel.ToResourceList(media.Branches),
+	}
 }
 
-func (mm *MediaModel) ToResourceList() {
+func (mm *MediaModel) ToResourceList(mediaList []*Media) []*MediaResource {
+	if mediaList == nil {
+		return nil
+	}
+
+	var mediaResources []*MediaResource
+	for _, media := range mediaList {
+		mediaResources = append(mediaResources, mm.ToResource(media))
+	}
+	return mediaResources
 }

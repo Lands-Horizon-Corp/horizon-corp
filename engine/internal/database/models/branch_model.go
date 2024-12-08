@@ -50,20 +50,32 @@ type BranchResource struct {
 }
 
 type BranchModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc            *fx.Lifecycle
+	db            *gorm.DB
+	logger        *zap.Logger
+	mediaModel    *MediaModel
+	companyModel  *CompanyModel
+	employeeModel *EmployeeModel
+	memberModel   *MemberModel
 }
 
 func NewBranchModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	mediaModel *MediaModel,
+	companyModel *CompanyModel,
+	employeeModel *EmployeeModel,
+	memberModel *MemberModel,
 ) *BranchModel {
 	return &BranchModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:            lc,
+		db:            db,
+		logger:        logger,
+		mediaModel:    mediaModel,
+		companyModel:  companyModel,
+		employeeModel: employeeModel,
+		memberModel:   memberModel,
 	}
 }
 
@@ -71,10 +83,35 @@ func (bm *BranchModel) SeedDatabase() {
 
 }
 
-func (bm *BranchModel) ToResource() {
+func (bm *BranchModel) ToResource(branch *Branch) *BranchResource {
+	if branch == nil {
+		return nil
+	}
 
+	return &BranchResource{
+		Name:            branch.Name,
+		Address:         branch.Address,
+		Longitude:       branch.Longitude,
+		Latitude:        branch.Latitude,
+		Email:           branch.Email,
+		ContactNumber:   branch.ContactNumber,
+		IsAdminVerified: branch.IsAdminVerified,
+		MediaID:         branch.MediaID,
+		Media:           bm.mediaModel.ToResource(branch.Media),
+		CompanyID:       branch.CompanyID,
+		Company:         bm.companyModel.ToResource(branch.Company),
+		Employees:       bm.employeeModel.ToResourceList(branch.Employees),
+		Members:         bm.memberModel.ToResourceList(branch.Members),
+	}
 }
 
-func (bm *BranchModel) ToResourceList() {
-
+func (bm *BranchModel) ToResourceList(branches []*Branch) []*BranchResource {
+	if branches == nil {
+		return nil
+	}
+	var branchResources []*BranchResource
+	for _, branch := range branches {
+		branchResources = append(branchResources, bm.ToResource(branch))
+	}
+	return branchResources
 }

@@ -67,7 +67,7 @@ type MemberResource struct {
 	ContactNumber      string          `json:"contactNumber"`
 	Status             UserStatus      `json:"status"`
 	MediaID            *uint           `json:"mediaID"`
-	Media              *Media          `json:"media"`
+	Media              *MediaResource  `json:"media"`
 	BranchID           *uint           `json:"branchID"`
 	Branch             *BranchResource `json:"branch"`
 	Longitude          *float64        `json:"longitude"`
@@ -81,28 +81,82 @@ type MemberResource struct {
 }
 
 type MemberModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc           *fx.Lifecycle
+	db           *gorm.DB
+	logger       *zap.Logger
+	mediaModel   *MediaModel
+	branchModel  *BranchModel
+	roleModel    *RoleModel
+	genderModel  *GenderModel
+	footsepModel *FootstepModel
 }
 
 func NewMemberModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	mediaModel *MediaModel,
+	branchModel *BranchModel,
+	roleModel *RoleModel,
+	genderModel *GenderModel,
+	footstepModel *FootstepModel,
 ) *MemberModel {
 	return &MemberModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:           lc,
+		db:           db,
+		logger:       logger,
+		mediaModel:   mediaModel,
+		branchModel:  branchModel,
+		roleModel:    roleModel,
+		genderModel:  genderModel,
+		footsepModel: footstepModel,
 	}
 }
 
 func (mm *MemberModel) SeedDatabase() {
 }
 
-func (mm *MemberModel) ToResource() {
+func (mm *MemberModel) ToResource(member *Member) *MemberResource {
+	if member == nil {
+		return nil
+	}
+
+	return &MemberResource{
+		FirstName:          member.FirstName,
+		LastName:           member.LastName,
+		MiddleName:         member.MiddleName,
+		PermanentAddress:   member.PermanentAddress,
+		Description:        member.Description,
+		BirthDate:          member.BirthDate,
+		Username:           member.Username,
+		Email:              member.Email,
+		Password:           member.Password,
+		IsEmailVerified:    member.IsEmailVerified,
+		IsContactVerified:  member.IsContactVerified,
+		IsSkipVerification: member.IsSkipVerification,
+		ContactNumber:      member.ContactNumber,
+		Status:             member.Status,
+		MediaID:            member.MediaID,
+		Media:              mm.mediaModel.ToResource(member.Media),
+		BranchID:           member.BranchID,
+		Branch:             mm.branchModel.ToResource(member.Branch),
+		Longitude:          member.Longitude,
+		Latitude:           member.Latitude,
+		RoleID:             member.RoleID,
+		Role:               mm.roleModel.ToResource(member.Role),
+		GenderID:           member.GenderID,
+		Gender:             mm.genderModel.ToResource(member.Gender),
+		Footsteps:          mm.footsepModel.ToResourceList(member.Footsteps),
+	}
 }
 
-func (mm *MemberModel) ToResourceList() {
+func (mm *MemberModel) ToResourceList(members []*Member) []*MemberResource {
+	if members == nil {
+		return nil
+	}
+	var memberResources []*MemberResource
+	for _, member := range members {
+		memberResources = append(memberResources, mm.ToResource(member))
+	}
+	return memberResources
 }

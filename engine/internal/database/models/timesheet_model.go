@@ -36,28 +36,56 @@ type TimesheetResource struct {
 }
 
 type TimesheetModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc            *fx.Lifecycle
+	db            *gorm.DB
+	logger        *zap.Logger
+	employeeModel *EmployeeModel
+	mediaModel    *MediaModel
 }
 
 func NewTimesheetModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	employeeModel *EmployeeModel,
+	mediaModel *MediaModel,
 ) *TimesheetModel {
 	return &TimesheetModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:            lc,
+		db:            db,
+		logger:        logger,
+		employeeModel: employeeModel,
+		mediaModel:    mediaModel,
 	}
 }
 
 func (mm *TimesheetModel) SeedDatabase() {
 }
 
-func (mm *TimesheetModel) ToResource() {
+func (mm *TimesheetModel) ToResource(timesheet *Timesheet) *TimesheetResource {
+	if timesheet == nil {
+		return nil
+	}
+
+	return &TimesheetResource{
+		EmployeeID: timesheet.EmployeeID,
+		Employee:   mm.employeeModel.ToResource(timesheet.Employee),
+		TimeIn:     timesheet.TimeIn,
+		TimeOut:    timesheet.TimeOut,
+		MediaInID:  timesheet.MediaInID,
+		MediaIn:    mm.mediaModel.ToResource(timesheet.MediaIn),
+		MediaOutID: timesheet.MediaOutID,
+		MediaOut:   mm.mediaModel.ToResource(timesheet.MediaOut),
+	}
 }
 
-func (mm *TimesheetModel) ToResourceList() {
+func (mm *TimesheetModel) ToResourceList(timesheets []*Timesheet) []*TimesheetResource {
+	if timesheets == nil {
+		return nil
+	}
+	var timesheetResources []*TimesheetResource
+	for _, timesheet := range timesheets {
+		timesheetResources = append(timesheetResources, mm.ToResource(timesheet))
+	}
+	return timesheetResources
 }

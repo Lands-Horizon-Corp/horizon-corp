@@ -46,28 +46,64 @@ type FootstepResource struct {
 }
 
 type FootstepModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc            *fx.Lifecycle
+	db            *gorm.DB
+	logger        *zap.Logger
+	adminModel    *AdminModel
+	employeeModel *EmployeeModel
+	ownerModel    *OwnerModel
+	memberModel   *MemberModel
 }
 
 func NewFootstepModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	adminModel *AdminModel,
+	employeeModel *EmployeeModel,
+	ownerModel *OwnerModel,
+	memberModel *MemberModel,
 ) *FootstepModel {
 	return &FootstepModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:            lc,
+		db:            db,
+		logger:        logger,
+		adminModel:    adminModel,
+		employeeModel: employeeModel,
+		ownerModel:    ownerModel,
+		memberModel:   memberModel,
 	}
 }
 
 func (fm *FootstepModel) SeedDatabase() {
 }
 
-func (fm *FootstepModel) ToResource() {
+func (fm *FootstepModel) ToResource(footstep *Footstep) *FootstepResource {
+	if footstep == nil {
+		return nil
+	}
+	return &FootstepResource{
+		AccountType: footstep.AccountType,
+		Description: footstep.Description,
+		Activity:    footstep.Activity,
+		AdminID:     footstep.AdminID,
+		Admin:       fm.adminModel.ToResource(footstep.Admin),
+		EmployeeID:  footstep.EmployeeID,
+		Employee:    fm.employeeModel.ToResource(footstep.Employee),
+		OwnerID:     footstep.OwnerID,
+		Owner:       fm.ownerModel.ToResource(footstep.Owner),
+		MemberID:    footstep.MemberID,
+		Member:      fm.memberModel.ToResource(footstep.Member),
+	}
 }
 
-func (fm *FootstepModel) ToResourceList() {
+func (fm *FootstepModel) ToResourceList(footsteps []*Footstep) []*FootstepResource {
+	if footsteps == nil {
+		return nil
+	}
+	var footstepResources []*FootstepResource
+	for _, footstep := range footsteps {
+		footstepResources = append(footstepResources, fm.ToResource(footstep))
+	}
+	return footstepResources
 }

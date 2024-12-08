@@ -46,8 +46,26 @@ func NewContactModel(
 func (cm *ContactModel) SeedDatabase() {
 }
 
-func (cm *ContactModel) ToResource() {
+func (cm *ContactModel) ToResource(contact *Contact) *ContactResource {
+	if contact == nil {
+		return nil
+	}
+	return &ContactResource{
+		FirstName:     contact.FirstName,
+		LastName:      contact.LastName,
+		Email:         contact.Email,
+		ContactNumber: contact.ContactNumber,
+		Description:   contact.Description,
+	}
 }
 
-func (cm *ContactModel) ToResourceList() {
+func (cm *ContactModel) ToResourceList(contacts []*Contact) []*ContactResource {
+	if contacts == nil {
+		return nil
+	}
+	var contactResources []*ContactResource
+	for _, contact := range contacts {
+		contactResources = append(contactResources, cm.ToResource(contact))
+	}
+	return contactResources
 }

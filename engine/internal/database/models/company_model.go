@@ -46,28 +46,63 @@ type CompanyResource struct {
 }
 
 type CompanyModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc          *fx.Lifecycle
+	db          *gorm.DB
+	logger      *zap.Logger
+	mediaModel  *MediaModel
+	ownerModel  *OwnerModel
+	branchModel *BranchModel
 }
 
 func NewCompanyModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	mediaModel *MediaModel,
+	ownerModel *OwnerModel,
+	branchModel *BranchModel,
 ) *CompanyModel {
 	return &CompanyModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:          lc,
+		db:          db,
+		logger:      logger,
+		mediaModel:  mediaModel,
+		ownerModel:  ownerModel,
+		branchModel: branchModel,
 	}
 }
 
 func (cm *CompanyModel) SeedDatabase() {
 }
 
-func (cm *CompanyModel) ToResource() {
+func (cm *CompanyModel) ToResource(company *Company) *CompanyResource {
+	if company == nil {
+		return nil
+	}
+
+	return &CompanyResource{
+		Name:            company.Name,
+		Description:     company.Description,
+		Address:         company.Address,
+		Longitude:       company.Longitude,
+		Latitude:        company.Latitude,
+		ContactNumber:   company.ContactNumber,
+		OwnerID:         company.OwnerID,
+		Owner:           cm.ownerModel.ToResource(company.Owner),
+		MediaID:         company.MediaID,
+		Media:           cm.mediaModel.ToResource(company.Media),
+		IsAdminVerified: company.IsAdminVerified,
+		Branches:        cm.branchModel.ToResourceList(company.Branches),
+	}
 }
 
-func (cm *CompanyModel) ToResourceList() {
+func (cm *CompanyModel) ToResourceList(companies []*Company) []*CompanyResource {
+	if companies == nil {
+		return nil
+	}
+	var companyResources []*CompanyResource
+	for _, company := range companies {
+		companyResources = append(companyResources, cm.ToResource(company))
+	}
+	return companyResources
 }

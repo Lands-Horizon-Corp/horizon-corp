@@ -79,32 +79,85 @@ type EmployeeResource struct {
 	Footsteps          []*FootstepResource  `json:"footsteps"`
 }
 
-// EmployeeModel handles operations related to employees.
 type EmployeeModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
+	lc             *fx.Lifecycle
+	db             *gorm.DB
+	logger         *zap.Logger
+	mediaModel     *MediaModel
+	branchModel    *BranchModel
+	roleModel      *RoleModel
+	genderModel    *GenderModel
+	timesheetModel *TimesheetModel
+	footstepModel  *FootstepModel
 }
 
-// NewEmployeeModel is the constructor for EmployeeModel.
-// It initializes the EmployeeModel with the provided lifecycle, database, and logger.
 func NewEmployeeModel(
 	lc *fx.Lifecycle,
 	db *gorm.DB,
 	logger *zap.Logger,
+	mediaModel *MediaModel,
+	branchModel *BranchModel,
+	genderModel *GenderModel,
+	timesheetModel *TimesheetModel,
+	footstepModel *FootstepModel,
 ) *EmployeeModel {
 	return &EmployeeModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+		lc:             lc,
+		db:             db,
+		logger:         logger,
+		mediaModel:     mediaModel,
+		branchModel:    branchModel,
+		genderModel:    genderModel,
+		timesheetModel: timesheetModel,
+		footstepModel:  footstepModel,
 	}
 }
 
 func (em *EmployeeModel) SeedDatabase() {
 }
 
-func (em *EmployeeModel) ToResource() {
+func (em *EmployeeModel) ToResource(employee *Employee) *EmployeeResource {
+	if employee == nil {
+		return nil
+	}
+
+	return &EmployeeResource{
+		FirstName:          employee.FirstName,
+		LastName:           employee.LastName,
+		MiddleName:         employee.MiddleName,
+		PermanentAddress:   employee.PermanentAddress,
+		Description:        employee.Description,
+		BirthDate:          employee.BirthDate,
+		Username:           employee.Username,
+		Email:              employee.Email,
+		Password:           employee.Password,
+		IsEmailVerified:    employee.IsEmailVerified,
+		IsContactVerified:  employee.IsContactVerified,
+		IsSkipVerification: employee.IsSkipVerification,
+		ContactNumber:      employee.ContactNumber,
+		Status:             employee.Status,
+		Longitude:          employee.Longitude,
+		Latitude:           employee.Latitude,
+		MediaID:            employee.MediaID,
+		Media:              em.mediaModel.ToResource(employee.Media),
+		BranchID:           employee.BranchID,
+		Branch:             em.branchModel.ToResource(employee.Branch),
+		RoleID:             employee.RoleID,
+		Role:               em.roleModel.ToResource(employee.Role),
+		GenderID:           employee.GenderID,
+		Gender:             em.genderModel.ToResource(employee.Gender),
+		Timesheets:         em.timesheetModel.ToResourceList(employee.Timesheets),
+		Footsteps:          em.footstepModel.ToResourceList(employee.Footsteps),
+	}
 }
 
-func (em *EmployeeModel) ToResourceList() {
+func (em *EmployeeModel) ToResourceList(employees []*Employee) []*EmployeeResource {
+	if employees == nil {
+		return nil
+	}
+	var employeeResources []*EmployeeResource
+	for _, employee := range employees {
+		employeeResources = append(employeeResources, em.ToResource(employee))
+	}
+	return employeeResources
 }
