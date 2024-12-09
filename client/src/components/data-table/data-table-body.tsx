@@ -38,7 +38,7 @@ const DataTableBody = <TData,>({
                         row.toggleSelected()
                     }}
                     className={cn(
-                        'h-14 w-fit bg-background/90 align-middle hover:bg-secondary/90 data-[state=selected]:bg-secondary dark:bg-secondary/90 dark:hover:bg-popover/95 dark:data-[state=selected]:bg-popover',
+                        'h-14 w-fit bg-background/90 align-middle cursor-pointer hover:bg-secondary/90 data-[state=selected]:bg-secondary dark:bg-secondary/90 dark:hover:bg-popover/95 dark:data-[state=selected]:bg-popover',
                         rowClassName
                     )}
                     data-state={row.getIsSelected() && 'selected'}

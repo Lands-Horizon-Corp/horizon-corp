@@ -5,6 +5,7 @@ import {
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
+import { forwardRef, useCallback, useImperativeHandle } from 'react'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -19,10 +20,14 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { withCatchAsync, toBase64 } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { GenderPaginatedResource } from '@/horizon-corp/types'
+import { GenderPaginatedResource, GenderResource } from '@/horizon-corp/types'
 import GenderService from '@/horizon-corp/server/common/GenderService'
 
-const GendersTable = ({ className }: IBaseCompNoChild) => {
+export interface CompaniesTableRef {
+    selectedRowIds: Record<string, boolean>
+}
+
+const GendersTable = forwardRef(({ className }: IBaseCompNoChild, ref) => {
     const {
         sorting,
         setSorting,
@@ -82,6 +87,8 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
         retry: 1,
     })
 
+    const getRowIdFn = useCallback((row: GenderResource) => `${row.id}`, [])
+
     const table = useReactTable({
         columns,
         data: data,
@@ -100,6 +107,7 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
         manualSorting: true,
         manualFiltering: true,
         manualPagination: true,
+        getRowId: getRowIdFn,
         onSortingChange: setSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
@@ -108,6 +116,10 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
         getSortedRowModel: getSortedRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
     })
+
+    useImperativeHandle(ref, () => ({
+        selectedRowIds: table.getState().rowSelection,
+    }))
 
     return (
         <DataTableFilterContext.Provider value={filterState}>
@@ -156,6 +168,8 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
             </div>
         </DataTableFilterContext.Provider>
     )
-}
+})
+
+GendersTable.displayName = 'GendersTable'
 
 export default GendersTable

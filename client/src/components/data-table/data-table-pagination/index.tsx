@@ -47,8 +47,7 @@ const DataTablePagination = <TData,>({
         >
             {!hideSelectedIndicator && (
                 <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length} of{' '}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
+                    {table.getFilteredSelectedRowModel().rows.length} row(s) selected.
                 </div>
             )}
             <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-3 md:space-y-0 lg:space-x-8">
