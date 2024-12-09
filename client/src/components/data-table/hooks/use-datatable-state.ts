@@ -1,5 +1,9 @@
-import { useState } from 'react'
-import { SortingState, PaginationState } from '@tanstack/react-table'
+import { useEffect, useState } from 'react'
+import {
+    SortingState,
+    PaginationState,
+    RowSelectionState,
+} from '@tanstack/react-table'
 
 import {
     PAGINATION_INITIAL_INDEX,
@@ -8,14 +12,19 @@ import {
 
 export type TDataTableDisplayType = 'Default' | 'Full'
 
-interface Props {
-    pageIndex?: number
+interface Props<TData> {
     pageSize?: number
+    pageIndex?: number
     columnOrder?: string[]
+    onSelectedData?: (data: TData[]) => void
 }
 
-const useDataTableState = (props?: Props) => {
-    const [rowSelection, setRowSelection] = useState({})
+const useDataTableState = <TData>(props?: Props<TData>) => {
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
+    const [selectedRowsData, setSelectedRowsData] = useState<
+        Map<string | number, TData>
+    >(new Map())
+
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnOrder, setColumnOrder] = useState<string[]>(
         props?.columnOrder ?? []
@@ -27,6 +36,12 @@ const useDataTableState = (props?: Props) => {
         pageSize: props?.pageSize ?? PAGINATION_INITIAL_PAGE_SIZE,
     })
 
+    useEffect(() => {
+        props?.onSelectedData?.(
+            Array.from<TData>(selectedRowsData.values()).map((val) => val)
+        )
+    }, [props, selectedRowsData])
+
     return {
         // states: {
         sorting,
@@ -35,6 +50,7 @@ const useDataTableState = (props?: Props) => {
         rowSelection,
         isScrollable,
         columnVisibility,
+        selectedRowsData,
         // },
         // setters: {
         setSorting,
@@ -42,6 +58,7 @@ const useDataTableState = (props?: Props) => {
         setColumnOrder,
         setRowSelection,
         setIsScrollable,
+        setSelectedRowsData,
         setColumnVisibility,
         // },
     }
