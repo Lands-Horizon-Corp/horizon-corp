@@ -126,7 +126,18 @@ const MembersTable = ({ className }: IBaseCompNoChild) => {
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
+                        pagination,
+                        filters: filterState.finalFilters,
                         disabled: isPending || isRefetching,
+                        /*
+                        exportAll: .exportAll,
+                        exportAllFiltered: .exportAllFiltered,
+                        exportCurrentPage: .exportCurrentPage,
+                        exportSelected: (ids) =>
+                            .exportSelected(
+                                ids.map(({ id }) => id)
+                            ),
+                            */
                     }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,

@@ -17,16 +17,17 @@ import { toReadableDate } from '@/utils'
 import logger from '@/helpers/loggers/logger'
 import { MemberResource } from '@/horizon-corp/types/profile'
 
-export const membersGlobalSearchTargets: IGlobalSearchTargets<MemberResource>[] = [
-    { field: 'username', displayText: 'Username' },
-    { field: 'firstName', displayText: 'First Name' },
-    { field: 'middleName', displayText: 'Middle Name' },
-    { field: 'lastName', displayText: 'Last Name' },
-    { field: 'email', displayText: 'Email' },
-    { field: 'gender', displayText: 'Gender' },
-    { field: 'permanentAddress', displayText: 'Address' },
-    { field: 'contactNumber', displayText: 'Contact Number' },
-];
+export const membersGlobalSearchTargets: IGlobalSearchTargets<MemberResource>[] =
+    [
+        { field: 'username', displayText: 'Username' },
+        { field: 'firstName', displayText: 'First Name' },
+        { field: 'middleName', displayText: 'Middle Name' },
+        { field: 'lastName', displayText: 'Last Name' },
+        { field: 'email', displayText: 'Email' },
+        { field: 'gender', displayText: 'Gender' },
+        { field: 'permanentAddress', displayText: 'Address' },
+        { field: 'contactNumber', displayText: 'Contact Number' },
+    ]
 
 const memberTableColumns: ColumnDef<MemberResource>[] = [
     {
@@ -283,12 +284,13 @@ const memberTableColumns: ColumnDef<MemberResource>[] = [
         header: (props) => (
             <DataTableColumnHeader {...props} isResizable title="Email Status">
                 <ColumnActions {...props}>
-                    <DataTableMultiSelectFilter<MemberResource>
+                    <DataTableMultiSelectFilter<MemberResource, boolean>
+                        dataType="boolean"
                         field="isEmailVerified"
                         displayText="Email Status"
                         multiSelectOptions={[
-                            { label: 'Verified', value: 'true' },
-                            { label: 'Not Verified', value: 'false' },
+                            { label: 'Verified', value: true },
+                            { label: 'Not Verified', value: false },
                         ]}
                     />
                 </ColumnActions>

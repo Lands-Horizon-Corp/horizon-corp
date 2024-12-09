@@ -7,16 +7,16 @@ import DataTableGlobalSearch, {
     IGlobalSearchProps,
 } from './data-table-filters/data-table-global-search'
 import { Separator } from '@/components/ui/separator'
+import DataTableExportButton from '@/components/data-table/data-table-actions/data-table-export'
 import DataTableOptionsMenu from '@/components/data-table/data-table-actions/data-table-options-menu'
-import DataTableExportButton from '@/components/data-table/data-table-actions/data-table-export-button'
 import DataTableActiveFilters from '@/components/data-table/data-table-actions/data-table-active-filters'
 import DataTableDeleteSelected from '@/components/data-table/data-table-actions/data-table-delete-selected'
 
 import { IBaseCompNoChild } from '@/types'
+import { type IDataTableExportProps } from '@/components/data-table/data-table-actions/data-table-export'
 import { type IDataTableScrollableOptionProps } from './data-table-actions/data-table-options-menu/scroll-option'
-import { type IDataTableExportProps } from '@/components/data-table/data-table-actions/data-table-export-button'
-import { type IDataTableDeleteSelectedProps } from '@/components/data-table/data-table-actions/data-table-delete-selected'
 import { IDataTableFilterLogicOptionProps } from './data-table-actions/data-table-options-menu/filter-logic-option'
+import { type IDataTableDeleteSelectedProps } from '@/components/data-table/data-table-actions/data-table-delete-selected'
 
 export interface IDataTableToolbarProps<TData = unknown>
     extends IBaseCompNoChild {

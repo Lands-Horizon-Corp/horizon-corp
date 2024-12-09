@@ -128,7 +128,16 @@ const GendersTable = ({ className }: IBaseCompNoChild) => {
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
+                        pagination,
+                        filters: filterState.finalFilters,
                         disabled: isPending || isRefetching,
+                        exportAll: GenderService.exportAll,
+                        exportAllFiltered: GenderService.exportAllFiltered,
+                        exportCurrentPage: GenderService.exportCurrentPage,
+                        exportSelected: (ids) =>
+                            GenderService.exportSelected(
+                                ids.map(({ id }) => id)
+                            ),
                     }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,

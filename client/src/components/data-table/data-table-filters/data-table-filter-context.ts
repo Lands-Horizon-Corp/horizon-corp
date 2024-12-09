@@ -1,5 +1,5 @@
-import { KeysOfOrString } from '@/types'
 import { createContext, useContext } from 'react'
+import { KeysOfOrString } from '@/types'
 
 export type TFilterLogic = 'AND' | 'OR'
 
@@ -72,6 +72,8 @@ export type TFinalFilter<T = unknown, TValue = T> = {
     value: TValue | { from: TValue; to: TValue }
 } & Omit<TSearchFilter, 'value' | 'from' | 'to' | 'displayText'>
 
+export type TFilterPayload = { filters: TFinalFilter[]; logic: TFilterLogic }
+
 export type TFilterObject<T = unknown, TValue = T> = {
     [key: string]: TSearchFilter<T, TValue> | undefined
 }
@@ -83,7 +85,7 @@ export interface IDataTableFilterState<
 > {
     filterLogic: TFilterLogic
     filters: TFilterObject<T, TValue>
-    finalFilters: { filters: TFinalFilter[]; logic: TFilterLogic }
+    finalFilters: TFilterPayload
     setFilterLogic: (newFilterLogic: TFilterLogic) => void
     setFilter: (field: TField, filter?: TSearchFilter<TValue, TValue>) => void
     bulkSetFilter: (

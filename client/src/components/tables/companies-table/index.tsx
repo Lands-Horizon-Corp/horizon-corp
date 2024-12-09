@@ -22,8 +22,6 @@ import { serverRequestErrExtractor } from '@/helpers'
 import { CompanyPaginatedResource } from '@/horizon-corp/types'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 
-import logger from '@/helpers/loggers/logger'
-
 const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     const {
         sorting,
@@ -45,8 +43,6 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
     const filterState = useDatableFilterState({
         onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
     })
-
-    logger.log('Final Filters', filterState.finalFilters, pagination)
 
     const {
         data: { data, totalPage, pageSize, totalSize },
@@ -130,7 +126,17 @@ const CompaniesTable = ({ className }: IBaseCompNoChild) => {
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
+                        pagination,
+                        isLoading: isPending,
+                        filters: filterState.finalFilters,
                         disabled: isPending || isRefetching,
+                        exportAll: CompanyService.exportAll,
+                        exportAllFiltered: CompanyService.exportAllFiltered,
+                        exportCurrentPage: CompanyService.exportCurrentPage,
+                        exportSelected: (ids) =>
+                            CompanyService.exportSelected(
+                                ids.map(({ id }) => id)
+                            ),
                     }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,
