@@ -2,8 +2,6 @@ import {
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
-    OnChangeFn,
-    RowSelectionState,
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { useCallback } from 'react'
@@ -42,12 +40,10 @@ const CompaniesTable = ({
         setColumnOrder,
         isScrollable,
         setIsScrollable,
-        rowSelection,
-        setRowSelection,
+        rowSelectionState,
+        createHandleRowSelectionChange,
         columnVisibility,
         setColumnVisibility,
-        selectedRowsData,
-        setSelectedRowsData,
     } = useDataTableState<CompanyResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectedData,
@@ -95,29 +91,7 @@ const CompaniesTable = ({
 
     const getRowIdFn = useCallback((row: CompanyResource) => `${row.id}`, [])
 
-    const handleRowSelectionChange: OnChangeFn<RowSelectionState> = (
-        updaterOrValue
-    ) => {
-        setRowSelection((prevRowSelection) => {
-            const newRowSelection =
-                typeof updaterOrValue === 'function'
-                    ? updaterOrValue(prevRowSelection)
-                    : updaterOrValue
-
-            const newSelectedRowsData = new Map(selectedRowsData)
-
-            data.forEach((row) => {
-                if (newRowSelection[row.id]) {
-                    newSelectedRowsData.set(row.id, row)
-                } else {
-                    newSelectedRowsData.delete(row.id)
-                }
-            })
-
-            setSelectedRowsData(newSelectedRowsData)
-            return newRowSelection
-        })
-    }
+    const handleRowSelectionChange = createHandleRowSelectionChange(data)
 
     const table = useReactTable({
         columns,
@@ -129,7 +103,7 @@ const CompaniesTable = ({
             sorting,
             pagination,
             columnOrder,
-            rowSelection,
+            rowSelection: rowSelectionState.rowSelection,
             columnVisibility,
         },
         rowCount: pageSize,
@@ -189,7 +163,7 @@ const CompaniesTable = ({
                     isStickyFooter
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2 max-h-96 flex-1"
+                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

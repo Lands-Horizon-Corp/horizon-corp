@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react'
 import {
+    OnChangeFn,
     SortingState,
     PaginationState,
     RowSelectionState,
 } from '@tanstack/react-table'
+import { useState } from 'react'
 
 import {
     PAGINATION_INITIAL_INDEX,
@@ -19,11 +20,20 @@ interface Props<TData> {
     onSelectedData?: (data: TData[]) => void
 }
 
-const useDataTableState = <TData>(props?: Props<TData>) => {
-    const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
-    const [selectedRowsData, setSelectedRowsData] = useState<
-        Map<string | number, TData>
-    >(new Map())
+interface RowSelectionStateWithData<TData> {
+    rowSelection: RowSelectionState
+    selectedRowsData: Map<string | number, TData>
+}
+
+const useDataTableState = <TData extends { id: string | number }>(
+    props?: Props<TData>
+) => {
+    const [rowSelectionState, setRowSelectionState] = useState<
+        RowSelectionStateWithData<TData>
+    >({
+        rowSelection: {},
+        selectedRowsData: new Map(),
+    })
 
     const [sorting, setSorting] = useState<SortingState>([])
     const [columnOrder, setColumnOrder] = useState<string[]>(
@@ -36,31 +46,52 @@ const useDataTableState = <TData>(props?: Props<TData>) => {
         pageSize: props?.pageSize ?? PAGINATION_INITIAL_PAGE_SIZE,
     })
 
-    useEffect(() => {
-        props?.onSelectedData?.(
-            Array.from<TData>(selectedRowsData.values()).map((val) => val)
-        )
-    }, [props, selectedRowsData])
+    const createHandleRowSelectionChange = (
+        data: TData[]
+    ): OnChangeFn<RowSelectionState> => {
+        return (updaterOrValue) => {
+            setRowSelectionState((prev) => {
+                const newRowSelection =
+                    typeof updaterOrValue === 'function'
+                        ? updaterOrValue(prev.rowSelection)
+                        : updaterOrValue
+
+                const newSelectedRowsData = new Map(prev.selectedRowsData)
+
+                data.forEach((row) => {
+                    if (newRowSelection[row.id]) {
+                        newSelectedRowsData.set(row.id, row)
+                    } else {
+                        newSelectedRowsData.delete(row.id)
+                    }
+                })
+
+                props?.onSelectedData?.(
+                    Array.from(newSelectedRowsData.values())
+                )
+
+                return {
+                    rowSelection: newRowSelection,
+                    selectedRowsData: newSelectedRowsData,
+                }
+            })
+        }
+    }
 
     return {
-        // states: {
         sorting,
-        pagination,
-        columnOrder,
-        rowSelection,
-        isScrollable,
-        columnVisibility,
-        selectedRowsData,
-        // },
-        // setters: {
         setSorting,
+        pagination,
         setPagination,
+        columnOrder,
         setColumnOrder,
-        setRowSelection,
+        isScrollable,
         setIsScrollable,
-        setSelectedRowsData,
+        columnVisibility,
         setColumnVisibility,
-        // },
+        rowSelectionState,
+        setRowSelectionState,
+        createHandleRowSelectionChange,
     }
 }
 

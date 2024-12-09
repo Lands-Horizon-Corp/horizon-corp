@@ -17,6 +17,7 @@ import { type IDataTableExportProps } from '@/components/data-table/data-table-a
 import { type IDataTableScrollableOptionProps } from './data-table-actions/data-table-options-menu/scroll-option'
 import { IDataTableFilterLogicOptionProps } from './data-table-actions/data-table-options-menu/filter-logic-option'
 import { type IDataTableDeleteSelectedProps } from '@/components/data-table/data-table-actions/data-table-delete-selected'
+import DataTableUnselect from './data-table-actions/data-table-unselect'
 
 export interface IDataTableToolbarProps<TData = unknown>
     extends IBaseCompNoChild {
@@ -47,6 +48,7 @@ const DataTableToolbar = <TData,>({
                 <DataTableActiveFilters />
             </div>
             <div className="flex items-center gap-x-2">
+                <DataTableUnselect table={table} />
                 {deleteActionProps && (
                     <DataTableDeleteSelected
                         table={table}

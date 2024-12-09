@@ -120,6 +120,7 @@ import {
     BsFillPatchMinusFill as PatchMinusIcon,
     BsFillPatchCheckFill as PatchCheckIcon,
     BsLayoutSidebarInset as SidebarLeftIcon,
+    BsDashSquareDotted as DashSquareDottedIcon,
     BsPatchExclamationFill as PatchExclamationIcon,
 } from 'react-icons/bs'
 
@@ -282,6 +283,7 @@ export {
     ListBulletsBoldIcon,
     MixerHorizontalIcon,
     TransactionListIcon,
+    DashSquareDottedIcon,
     PatchExclamationIcon,
     FlipVerticalLineIcon,
     LocationPinOutlineIcon,
