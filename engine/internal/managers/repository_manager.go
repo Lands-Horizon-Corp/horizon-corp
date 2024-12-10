@@ -61,6 +61,7 @@ func (r *Repository[T]) Delete(id uint) error {
 	return nil
 }
 
+// applyPreloads accepts a slice of preloads ([]string) for multiple preloads
 func (r *Repository[T]) applyPreloads(query *gorm.DB, preloads []string) *gorm.DB {
 	for _, preload := range preloads {
 		query = query.Preload(preload)

@@ -87,15 +87,6 @@ type AdminRequest struct {
 	GenderID *uint `json:"genderID,omitempty"`
 }
 
-func (m *ModelResource) ValidateAdminRequest(req *AdminRequest) error {
-	validate := validator.New()
-	err := validate.Struct(req)
-	if err != nil {
-		return m.helpers.FormatValidationError(err)
-	}
-	return nil
-}
-
 func (m *ModelResource) AdminToResource(admin *Admin) *AdminResource {
 	if admin == nil {
 		return nil
@@ -134,6 +125,15 @@ func (m *ModelResource) AdminToResourceList(admins []*Admin) []*AdminResource {
 		adminResources = append(adminResources, m.AdminToResource(admin))
 	}
 	return adminResources
+}
+
+func (m *ModelResource) ValidateAdminRequest(req *AdminRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
 }
 
 func (m *ModelResource) AdminSeeders() error {
