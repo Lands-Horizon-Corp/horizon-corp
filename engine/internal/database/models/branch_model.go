@@ -51,6 +51,7 @@ type BranchResource struct {
 
 type (
 	BranchResourceProvider interface {
+		SeedDatabase()
 		ToResource(branch *Branch) *BranchResource
 		ToResourceList(branch []*Branch) []*BranchResource
 	}

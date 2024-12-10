@@ -82,6 +82,7 @@ type MemberResource struct {
 
 type (
 	MemberResourceProvider interface {
+		SeedDatabase()
 		ToResource(member *Member) *MemberResource
 		ToResourceList(member []*Member) []*MemberResource
 	}

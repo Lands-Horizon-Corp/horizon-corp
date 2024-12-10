@@ -9,7 +9,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func Migrate(lc fx.Lifecycle, db *gorm.DB, logger *zap.Logger) {
+func Migrate(
+	lc fx.Lifecycle,
+	db *gorm.DB,
+	logger *zap.Logger,
+	// admin models.AdminResourceProvider,
+) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			logger.Info("Running database migrations...")
@@ -34,6 +39,7 @@ func Migrate(lc fx.Lifecycle, db *gorm.DB, logger *zap.Logger) {
 				return err
 			}
 
+			// admin.SeedDatabase()
 			logger.Info("Database migrations completed successfully.")
 			return nil
 		},

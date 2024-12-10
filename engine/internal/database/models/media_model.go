@@ -48,6 +48,7 @@ type MediaResource struct {
 
 type (
 	MediaResourceProvider interface {
+		SeedDatabase()
 		ToResource(media *Media) *MediaResource
 		ToResourceList(media []*Media) []*MediaResource
 	}

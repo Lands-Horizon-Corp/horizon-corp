@@ -3,8 +3,6 @@ package database
 import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"go.uber.org/fx"
-	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 var Module = fx.Module(
@@ -26,7 +24,5 @@ var Module = fx.Module(
 		models.NewRoleModel,
 		models.NewTimesheetModel,
 	),
-	fx.Invoke(func(lc fx.Lifecycle, db *gorm.DB, logger *zap.Logger) {
-		Migrate(lc, db, logger)
-	}),
+	fx.Invoke(Migrate),
 )

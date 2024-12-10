@@ -37,6 +37,7 @@ type TimesheetResource struct {
 
 type (
 	TimesheetResourceProvider interface {
+		SeedDatabase()
 		ToResource(timesheet *Timesheet) *TimesheetResource
 		ToResourceList(timesheet []*Timesheet) []*TimesheetResource
 	}

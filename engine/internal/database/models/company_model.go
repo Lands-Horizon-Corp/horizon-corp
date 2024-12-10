@@ -47,6 +47,7 @@ type CompanyResource struct {
 
 type (
 	CompanyResourceProvider interface {
+		SeedDatabase()
 		ToResource(company *Company) *CompanyResource
 		ToResourceList(company []*Company) []*CompanyResource
 	}

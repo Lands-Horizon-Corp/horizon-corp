@@ -26,6 +26,7 @@ type ContactResource struct {
 }
 type (
 	ContactResourceProvider interface {
+		SeedDatabase()
 		ToResource(contact *Contact) *ContactResource
 		ToResourceList(contact []*Contact) []*ContactResource
 	}

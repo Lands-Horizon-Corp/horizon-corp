@@ -62,6 +62,7 @@ type RoleResource struct {
 
 type (
 	RoleResourceProvider interface {
+		SeedDatabase()
 		ToResource(role *Role) *RoleResource
 		ToResourceList(role []*Role) []*RoleResource
 	}

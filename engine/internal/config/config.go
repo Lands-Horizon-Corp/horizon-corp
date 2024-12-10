@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"time"
 )
 
 type AppConfig struct {
 	// Application
+	AppName        string
+	AppVersion     string
+	AppEnv         string
 	AppClientUrl   string
 	AppPort        string
 	AppTokenName   string
@@ -21,14 +25,16 @@ type AppConfig struct {
 	AWSRegion          string
 
 	// Database
-	DBUsername  string
-	DBPassword  string
-	DBHost      string
-	DBPort      string
-	DBName      string
-	DBCharset   string
-	DBParseTime string
-	DBLoc       string
+	DBUsername   string
+	DBPassword   string
+	DBHost       string
+	DBPort       string
+	DBName       string
+	DBCharset    string
+	DBParseTime  string
+	DBLoc        string
+	DBMaxRetries int
+	DBRetryDelay time.Duration
 
 	// Caching
 	CachePort     int
@@ -55,32 +61,63 @@ type AppConfig struct {
 
 func NewAppConfig() *AppConfig {
 	var errList []string
+
+	// Parse CACHE_PORT or default to 6379 if invalid
 	cachePort, err := strconv.Atoi(getEnv("CACHE_PORT", "6379"))
 	if err != nil {
-		errList = append(errList, fmt.Sprintf("Invalid CACHE_PORT: %v", err))
+		errList = append(errList, fmt.Sprintf("Invalid CACHE_PORT: %v (defaulting to 6379)", err))
 		cachePort = 6379
 	}
 
+	// Construct Cache URL with fallback to redis:6379
 	cacheURL := getEnv("CACHE_URL", "redis:"+strconv.Itoa(cachePort))
 
-	requiredVars := []string{"DB_USERNAME", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME", "DB_CHARSET", "STORAGE_ENDPOINT", "STORAGE_REGION", "STORAGE_ACCESS_KEY", "STORAGE_SECRET_KEY", "STORAGE_BUCKET_NAME"}
+	// Required environment variables for database and storage
+	requiredVars := []string{
+		"DB_USERNAME", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME", "DB_CHARSET",
+		"STORAGE_ENDPOINT", "STORAGE_REGION", "STORAGE_ACCESS_KEY", "STORAGE_SECRET_KEY", "STORAGE_BUCKET_NAME",
+	}
+
+	// Check for required variables
 	for _, v := range requiredVars {
 		if value := os.Getenv(v); value == "" {
 			errList = append(errList, fmt.Sprintf("%s is required but not set", v))
 		}
 	}
-	requiredVars = []string{"DB_USERNAME", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME", "DB_CHARSET", "STORAGE_ENDPOINT", "STORAGE_REGION", "STORAGE_ACCESS_KEY", "STORAGE_SECRET_KEY", "STORAGE_BUCKET_NAME"}
-	for _, v := range requiredVars {
-		if value := os.Getenv(v); value == "" {
-			errList = append(errList, fmt.Sprintf("%s is required but not set", v))
+
+	// Parse DB_MAX_RETRIES, defaulting to 5 if not set or invalid
+	dbMaxRetries := 5
+	if dbMaxRetriesStr := os.Getenv("DB_MAX_RETRIES"); dbMaxRetriesStr != "" {
+		if val, err := strconv.Atoi(dbMaxRetriesStr); err == nil {
+			dbMaxRetries = val
+		} else {
+			errList = append(errList, fmt.Sprintf("Invalid DB_MAX_RETRIES value '%s', defaulting to 5", dbMaxRetriesStr))
 		}
 	}
+
+	// Parse DB_RETRY_DELAY as a time.Duration, defaulting to 2s if invalid
+	dbRetryDelay := 2 * time.Second
+	dbRetryDelayStr := getEnv("DB_RETRY_DELAY", "2s")
+	if parsedDelay, err := time.ParseDuration(dbRetryDelayStr); err == nil {
+		dbRetryDelay = parsedDelay
+	} else {
+		errList = append(errList, fmt.Sprintf("Invalid DB_RETRY_DELAY value '%s', defaulting to 2s", dbRetryDelayStr))
+	}
+
+	// If any errors were encountered, print them and return an empty AppConfig
 	if len(errList) > 0 {
+		for _, e := range errList {
+			fmt.Println("Error:", e)
+		}
 		return &AppConfig{}
 	}
 
+	// Return the fully initialized configuration
 	return &AppConfig{
 		// Application
+		AppName:      getEnv("APP_NAME", "horizon-corp"),
+		AppVersion:   getEnv("APP_VERSION", "0.0.0"),
+		AppEnv:       getEnv("APP_ENV", ""),
 		AppClientUrl: getEnv("APP_CLIENT_URL", "http://client:80"),
 		AppPort:      getEnv("APP_PORT", "8080"),
 		AppTokenName: getEnv("APP_TOKEN_NAME", "horizon-corp"),
@@ -93,14 +130,16 @@ func NewAppConfig() *AppConfig {
 		AWSRegion:          os.Getenv("AWS_REGION"),
 
 		// Database
-		DBUsername:  os.Getenv("DB_USERNAME"),
-		DBPassword:  os.Getenv("DB_PASSWORD"),
-		DBHost:      os.Getenv("DB_HOST"),
-		DBPort:      os.Getenv("DB_PORT"),
-		DBName:      os.Getenv("DB_NAME"),
-		DBCharset:   os.Getenv("DB_CHARSET"),
-		DBParseTime: os.Getenv("DB_PARSE_TIME"),
-		DBLoc:       os.Getenv("DB_LOC"),
+		DBUsername:   os.Getenv("DB_USERNAME"),
+		DBPassword:   os.Getenv("DB_PASSWORD"),
+		DBHost:       os.Getenv("DB_HOST"),
+		DBPort:       os.Getenv("DB_PORT"),
+		DBName:       os.Getenv("DB_NAME"),
+		DBCharset:    os.Getenv("DB_CHARSET"),
+		DBParseTime:  os.Getenv("DB_PARSE_TIME"),
+		DBLoc:        os.Getenv("DB_LOC"),
+		DBMaxRetries: dbMaxRetries,
+		DBRetryDelay: dbRetryDelay,
 
 		// Cache
 		CachePort:     cachePort,
@@ -122,11 +161,13 @@ func NewAppConfig() *AppConfig {
 		EmailUser:     os.Getenv("EMAIL_USER"),
 		EmailPassword: os.Getenv("EMAIL_PASSWORD"),
 
-		// SMS Test
+		// Contact
 		ContactNumber: os.Getenv("CONTACT_NUMBER"),
 	}
 }
 
+// getEnv returns the value of the environment variable named by the key.
+// If the variable is not present, it returns defaultValue.
 func getEnv(key, defaultValue string) string {
 	if value, exists := os.LookupEnv(key); exists {
 		return value

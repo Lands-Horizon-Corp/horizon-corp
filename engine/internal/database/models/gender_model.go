@@ -31,6 +31,7 @@ type GenderResource struct {
 
 type (
 	GenderResourceProvider interface {
+		SeedDatabase()
 		ToResource(gender *Gender) *GenderResource
 		ToResourceList(gender []*Gender) []*GenderResource
 	}

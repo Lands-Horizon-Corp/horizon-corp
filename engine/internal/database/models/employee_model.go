@@ -81,6 +81,7 @@ type EmployeeResource struct {
 
 type (
 	EmployeeResourceProvider interface {
+		SeedDatabase()
 		ToResource(employee *Employee) *EmployeeResource
 		ToResourceList(employee []*Employee) []*EmployeeResource
 	}

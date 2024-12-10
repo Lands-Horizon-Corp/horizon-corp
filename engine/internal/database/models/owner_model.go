@@ -73,6 +73,7 @@ type OwnerResource struct {
 
 type (
 	OwnerResourceProvider interface {
+		SeedDatabase()
 		ToResource(owner *Owner) *OwnerResource
 		ToResourceList(owner []*Owner) []*OwnerResource
 	}

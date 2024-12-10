@@ -4,8 +4,12 @@ import "go.uber.org/fx"
 
 var Module = fx.Module(
 	"providers",
-	fx.Provide(NewCacheProvider),
-	fx.Provide(NewDatabaseProvider),
-	fx.Provide(NewLoggerProvider),
-	fx.Provide(NewStorageProvider),
+	fx.Provide(
+		NewLoggerProvider,
+		NewCacheProvider,
+		NewDatabaseProvider,
+		NewEmailProvider,
+		NewStorageProvider,
+		NewSMSProvider,
+	),
 )

@@ -23,6 +23,7 @@ type FeedbackResource struct {
 
 type (
 	FeedbackResourceProvider interface {
+		SeedDatabase()
 		ToResource(feedback *Feedback) *FeedbackResource
 		ToResourceList(feedback []*Feedback) []*FeedbackResource
 	}

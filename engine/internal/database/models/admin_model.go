@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"go.uber.org/fx"
@@ -69,6 +70,7 @@ type AdminResource struct {
 
 type (
 	AdminResourceProvider interface {
+		SeedDatabase()
 		ToResource(admin *Admin) *AdminResource
 		ToResourceList(admin []*Admin) []*AdminResource
 	}
@@ -145,5 +147,5 @@ func (am *AdminModel) ToResourceList(admins []*Admin) []*AdminResource {
 }
 
 func (am *AdminModel) SeedDatabase() {
-
+	fmt.Println("seeding admin 0000000 -------")
 }

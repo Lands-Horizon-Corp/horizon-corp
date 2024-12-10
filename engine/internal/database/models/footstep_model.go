@@ -47,6 +47,7 @@ type FootstepResource struct {
 
 type (
 	FootstepResourceProvider interface {
+		SeedDatabase()
 		ToResource(footstep *Footstep) *FootstepResource
 		ToResourceList(footstep []*Footstep) []*FootstepResource
 	}
