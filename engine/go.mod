@@ -20,7 +20,7 @@ require (
 	go.uber.org/dig v1.18.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/net v0.30.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
 )
 
 require (
@@ -32,6 +32,7 @@ require (
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27
 	go.uber.org/fx v1.23.0
-	golang.org/x/text v0.19.0 // indirect
+	golang.org/x/crypto v0.30.0
+	golang.org/x/text v0.21.0 // indirect
 	gorm.io/driver/mysql v1.5.7
 )

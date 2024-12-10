@@ -14,6 +14,7 @@ type AppConfig struct {
 	AppEnv         string
 	AppClientUrl   string
 	AppPort        string
+	AppSeeder      string
 	AppTokenName   string
 	AppToken       []byte
 	AppForwardPort []byte
@@ -120,6 +121,7 @@ func NewAppConfig() *AppConfig {
 		AppEnv:       getEnv("APP_ENV", ""),
 		AppClientUrl: getEnv("APP_CLIENT_URL", "http://client:80"),
 		AppPort:      getEnv("APP_PORT", "8080"),
+		AppSeeder:    getEnv("APP_SEEDER", "horizon-corp-seed"),
 		AppTokenName: getEnv("APP_TOKEN_NAME", "horizon-corp"),
 		AppToken:     []byte(os.Getenv("APP_TOKEN")),
 		LogLevel:     getEnv("LOG_LEVEL", "info"),
