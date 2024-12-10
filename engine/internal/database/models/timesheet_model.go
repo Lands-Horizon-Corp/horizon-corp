@@ -3,8 +3,6 @@ package models
 import (
 	"time"
 
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -35,65 +33,34 @@ type TimesheetResource struct {
 	MediaOut   *MediaResource    `json:"mediaOut"`
 }
 
-type (
-	TimesheetResourceProvider interface {
-		SeedDatabase()
-		ToResource(timesheet *Timesheet) *TimesheetResource
-		ToResourceList(timesheet []*Timesheet) []*TimesheetResource
-	}
-)
-
-type TimesheetModel struct {
-	lc            *fx.Lifecycle
-	db            *gorm.DB
-	logger        *zap.Logger
-	employeeModel EmployeeResourceProvider
-	mediaModel    MediaResourceProvider
-}
-
-func NewTimesheetModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	employeeModel EmployeeResourceProvider,
-	mediaModel MediaResourceProvider,
-) *TimesheetModel {
-	return &TimesheetModel{
-		lc:            lc,
-		db:            db,
-		logger:        logger,
-		employeeModel: employeeModel,
-		mediaModel:    mediaModel,
-	}
-}
-
-func (mm *TimesheetModel) SeedDatabase() {
-}
-
-func (mm *TimesheetModel) ToResource(timesheet *Timesheet) *TimesheetResource {
+func (m *ModelResource) TimesheetToResource(timesheet *Timesheet) *TimesheetResource {
 	if timesheet == nil {
 		return nil
 	}
-
 	return &TimesheetResource{
 		EmployeeID: timesheet.EmployeeID,
-		Employee:   mm.employeeModel.ToResource(timesheet.Employee),
+		Employee:   m.EmployeeToResource(timesheet.Employee),
 		TimeIn:     timesheet.TimeIn,
 		TimeOut:    timesheet.TimeOut,
 		MediaInID:  timesheet.MediaInID,
-		MediaIn:    mm.mediaModel.ToResource(timesheet.MediaIn),
+		MediaIn:    m.MediaToResource(timesheet.MediaIn),
 		MediaOutID: timesheet.MediaOutID,
-		MediaOut:   mm.mediaModel.ToResource(timesheet.MediaOut),
+		MediaOut:   m.MediaToResource(timesheet.MediaOut),
 	}
 }
 
-func (mm *TimesheetModel) ToResourceList(timesheets []*Timesheet) []*TimesheetResource {
+func (m *ModelResource) TimesheetToResourceList(timesheets []*Timesheet) []*TimesheetResource {
 	if timesheets == nil {
 		return nil
 	}
 	var timesheetResources []*TimesheetResource
 	for _, timesheet := range timesheets {
-		timesheetResources = append(timesheetResources, mm.ToResource(timesheet))
+		timesheetResources = append(timesheetResources, m.TimesheetToResource(timesheet))
 	}
 	return timesheetResources
+}
+
+func (m *ModelResource) TimesheetSeeders() error {
+	m.logger.Info("Seeding Timesheet")
+	return nil
 }

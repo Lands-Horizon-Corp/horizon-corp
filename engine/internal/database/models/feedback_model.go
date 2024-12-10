@@ -1,8 +1,6 @@
 package models
 
 import (
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -21,37 +19,29 @@ type FeedbackResource struct {
 	FeedbackType string `json:"feedbackType"`
 }
 
-type (
-	FeedbackResourceProvider interface {
-		SeedDatabase()
-		ToResource(feedback *Feedback) *FeedbackResource
-		ToResourceList(feedback []*Feedback) []*FeedbackResource
+func (m *ModelResource) FeedbackToResource(feedback *Feedback) *FeedbackResource {
+	if feedback == nil {
+		return nil
 	}
-)
-
-type FeedbackModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
-}
-
-func NewFeedbackModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-) *FeedbackModel {
-	return &FeedbackModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
+	return &FeedbackResource{
+		Email:        feedback.Email,
+		Description:  feedback.Description,
+		FeedbackType: feedback.FeedbackType,
 	}
 }
 
-func (fm *FeedbackModel) SeedDatabase() {
+func (m *ModelResource) FeedbackToResourceList(feedbacks []*Feedback) []*FeedbackResource {
+	if feedbacks == nil {
+		return nil
+	}
+	var feedbackResources []*FeedbackResource
+	for _, feedback := range feedbacks {
+		feedbackResources = append(feedbackResources, m.FeedbackToResource(feedback))
+	}
+	return feedbackResources
 }
 
-func (fm *FeedbackModel) ToResource() {
-}
-
-func (fm *FeedbackModel) ToResourceList() {
+func (m *ModelResource) FeedbackSeeders() error {
+	m.logger.Info("Seeding Feedback")
+	return nil
 }

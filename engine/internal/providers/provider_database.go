@@ -11,13 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type Database interface {
-	Ping() error
-	Close() error
-}
-
 type DatabaseService struct {
-	client *gorm.DB
+	Client *gorm.DB
 	cfg    *config.AppConfig
 	logger *LoggerService
 }
@@ -25,7 +20,7 @@ type DatabaseService struct {
 func NewDatabaseProvider(
 	cfg *config.AppConfig,
 	logger *LoggerService,
-) (Database, error) {
+) (*DatabaseService, error) {
 
 	if cfg.DBHost == "" || cfg.DBName == "" || cfg.DBUsername == "" {
 		logger.Error("Database configuration is incomplete",
@@ -65,7 +60,7 @@ func NewDatabaseProvider(
 			)
 
 			return &DatabaseService{
-				client: db,
+				Client: db,
 				cfg:    cfg,
 				logger: logger,
 			}, nil
@@ -121,7 +116,7 @@ func buildDSN(cfg *config.AppConfig) string {
 }
 
 func (ds *DatabaseService) Ping() error {
-	sqlDB, err := ds.client.DB()
+	sqlDB, err := ds.Client.DB()
 	if err != nil {
 		ds.logger.Error("Failed to retrieve SQL DB handle from GORM",
 			zap.Error(err))
@@ -138,7 +133,7 @@ func (ds *DatabaseService) Ping() error {
 }
 
 func (ds *DatabaseService) Close() error {
-	sqlDB, err := ds.client.DB()
+	sqlDB, err := ds.Client.DB()
 	if err != nil {
 		ds.logger.Error("Failed to retrieve SQL DB handle from GORM",
 			zap.Error(err))

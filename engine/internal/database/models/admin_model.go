@@ -1,11 +1,8 @@
 package models
 
 import (
-	"fmt"
 	"time"
 
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -68,45 +65,7 @@ type AdminResource struct {
 	Footsteps          []*FootstepResource `json:"footsteps"`
 }
 
-type (
-	AdminResourceProvider interface {
-		SeedDatabase()
-		ToResource(admin *Admin) *AdminResource
-		ToResourceList(admin []*Admin) []*AdminResource
-	}
-)
-
-type AdminModel struct {
-	lc            *fx.Lifecycle
-	db            *gorm.DB
-	logger        *zap.Logger
-	mediaModel    MediaResourceProvider
-	roleModel     RoleResourceProvider
-	genderModel   GenderResourceProvider
-	footstepModel FootstepResourceProvider
-}
-
-func NewAdminModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	mediaModel MediaResourceProvider,
-	roleModel RoleResourceProvider,
-	genderModel GenderResourceProvider,
-	footstepModel FootstepResourceProvider,
-) *AdminModel {
-	return &AdminModel{
-		lc:            lc,
-		db:            db,
-		logger:        logger,
-		mediaModel:    mediaModel,
-		roleModel:     roleModel,
-		genderModel:   genderModel,
-		footstepModel: footstepModel,
-	}
-}
-
-func (am *AdminModel) ToResource(admin *Admin) *AdminResource {
+func (m *ModelResource) AdminToResource(admin *Admin) *AdminResource {
 	if admin == nil {
 		return nil
 	}
@@ -126,26 +85,27 @@ func (am *AdminModel) ToResource(admin *Admin) *AdminResource {
 		IsSkipVerification: admin.IsSkipVerification,
 		Status:             admin.Status,
 		MediaID:            admin.MediaID,
-		Media:              am.mediaModel.ToResource(admin.Media),
+		Media:              m.MediaToResource(admin.Media),
 		RoleID:             admin.RoleID,
-		Role:               am.roleModel.ToResource(admin.Role),
+		Role:               m.RoleToResource(admin.Role),
 		GenderID:           admin.GenderID,
-		Gender:             am.genderModel.ToResource(admin.Gender),
-		Footsteps:          am.footstepModel.ToResourceList(admin.Footsteps),
+		Gender:             m.GenderToResource(admin.Gender),
+		Footsteps:          m.FootstepToResourceList(admin.Footsteps),
 	}
 }
 
-func (am *AdminModel) ToResourceList(admins []*Admin) []*AdminResource {
+func (m *ModelResource) AdminToResourceList(admins []*Admin) []*AdminResource {
 	if admins == nil {
 		return nil
 	}
 	var adminResources []*AdminResource
 	for _, admin := range admins {
-		adminResources = append(adminResources, am.ToResource(admin))
+		adminResources = append(adminResources, m.AdminToResource(admin))
 	}
 	return adminResources
 }
 
-func (am *AdminModel) SeedDatabase() {
-	fmt.Println("seeding admin 0000000 -------")
+func (m *ModelResource) AdminSeeders() error {
+	m.logger.Info("Seeding Admin")
+	return nil
 }

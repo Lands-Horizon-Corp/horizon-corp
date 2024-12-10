@@ -3,8 +3,6 @@ package models
 import (
 	"time"
 
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -71,51 +69,7 @@ type OwnerResource struct {
 	Companies          []*CompanyResource  `json:"companies"`
 }
 
-type (
-	OwnerResourceProvider interface {
-		SeedDatabase()
-		ToResource(owner *Owner) *OwnerResource
-		ToResourceList(owner []*Owner) []*OwnerResource
-	}
-)
-
-type OwnerModel struct {
-	lc            *fx.Lifecycle
-	db            *gorm.DB
-	logger        *zap.Logger
-	mediaModel    MediaResourceProvider
-	genderModel   GenderResourceProvider
-	footstepModel FootstepResourceProvider
-	companyModel  CompanyResourceProvider
-	roleModel     RoleResourceProvider
-}
-
-func NewOwnerModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	mediaModel MediaResourceProvider,
-	genderModel GenderResourceProvider,
-	footstepModel FootstepResourceProvider,
-	companyModel CompanyResourceProvider,
-	roleModel RoleResourceProvider,
-) *OwnerModel {
-	return &OwnerModel{
-		lc:            lc,
-		db:            db,
-		logger:        logger,
-		mediaModel:    mediaModel,
-		genderModel:   genderModel,
-		footstepModel: footstepModel,
-		companyModel:  companyModel,
-		roleModel:     roleModel,
-	}
-}
-
-func (mm *OwnerModel) SeedDatabase() {
-}
-
-func (mm *OwnerModel) ToResource(owner *Owner) *OwnerResource {
+func (m *ModelResource) OwnerToResource(owner *Owner) *OwnerResource {
 	if owner == nil {
 		return nil
 	}
@@ -136,23 +90,28 @@ func (mm *OwnerModel) ToResource(owner *Owner) *OwnerResource {
 		IsSkipVerification: owner.IsSkipVerification,
 		Status:             owner.Status,
 		MediaID:            owner.MediaID,
-		Media:              mm.mediaModel.ToResource(owner.Media),
+		Media:              m.MediaToResource(owner.Media),
 		GenderID:           owner.GenderID,
-		Gender:             mm.genderModel.ToResource(owner.Gender),
+		Gender:             m.GenderToResource(owner.Gender),
 		RoleID:             owner.RoleID,
-		Role:               mm.roleModel.ToResource(owner.Role),
-		Footsteps:          mm.footstepModel.ToResourceList(owner.Footsteps),
-		Companies:          mm.companyModel.ToResourceList(owner.Companies),
+		Role:               m.RoleToResource(owner.Role),
+		Footsteps:          m.FootstepToResourceList(owner.Footsteps),
+		Companies:          m.CompanyToResourceList(owner.Companies),
 	}
 }
 
-func (mm *OwnerModel) ToResourceList(owners []*Owner) []*OwnerResource {
+func (m *ModelResource) OwnerToResourceList(owners []*Owner) []*OwnerResource {
 	if owners == nil {
 		return nil
 	}
 	var ownerResources []*OwnerResource
 	for _, owner := range owners {
-		ownerResources = append(ownerResources, mm.ToResource(owner))
+		ownerResources = append(ownerResources, m.OwnerToResource(owner))
 	}
 	return ownerResources
+}
+
+func (m *ModelResource) OwnerSeeders() error {
+	m.logger.Info("Seeding Owner")
+	return nil
 }

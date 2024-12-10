@@ -1,8 +1,6 @@
 package models
 
 import (
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -45,48 +43,8 @@ type FootstepResource struct {
 	Member      *MemberResource   `json:"member"`
 }
 
-type (
-	FootstepResourceProvider interface {
-		SeedDatabase()
-		ToResource(footstep *Footstep) *FootstepResource
-		ToResourceList(footstep []*Footstep) []*FootstepResource
-	}
-)
-
-type FootstepModel struct {
-	lc            *fx.Lifecycle
-	db            *gorm.DB
-	logger        *zap.Logger
-	adminModel    AdminResourceProvider
-	employeeModel EmployeeResourceProvider
-	ownerModel    OwnerResourceProvider
-	memberModel   MemberResourceProvider
-}
-
-func NewFootstepModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	adminModel AdminResourceProvider,
-	employeeModel EmployeeResourceProvider,
-	ownerModel OwnerResourceProvider,
-	memberModel MemberResourceProvider,
-) *FootstepModel {
-	return &FootstepModel{
-		lc:            lc,
-		db:            db,
-		logger:        logger,
-		adminModel:    adminModel,
-		employeeModel: employeeModel,
-		ownerModel:    ownerModel,
-		memberModel:   memberModel,
-	}
-}
-
-func (fm *FootstepModel) SeedDatabase() {
-}
-
-func (fm *FootstepModel) ToResource(footstep *Footstep) *FootstepResource {
+// FootstepToResource implements Models.
+func (m *ModelResource) FootstepToResource(footstep *Footstep) *FootstepResource {
 	if footstep == nil {
 		return nil
 	}
@@ -95,23 +53,29 @@ func (fm *FootstepModel) ToResource(footstep *Footstep) *FootstepResource {
 		Description: footstep.Description,
 		Activity:    footstep.Activity,
 		AdminID:     footstep.AdminID,
-		Admin:       fm.adminModel.ToResource(footstep.Admin),
+		Admin:       m.AdminToResource(footstep.Admin),
 		EmployeeID:  footstep.EmployeeID,
-		Employee:    fm.employeeModel.ToResource(footstep.Employee),
+		Employee:    m.EmployeeToResource(footstep.Employee),
 		OwnerID:     footstep.OwnerID,
-		Owner:       fm.ownerModel.ToResource(footstep.Owner),
+		Owner:       m.OwnerToResource(footstep.Owner),
 		MemberID:    footstep.MemberID,
-		Member:      fm.memberModel.ToResource(footstep.Member),
+		Member:      m.MemberToResource(footstep.Member),
 	}
 }
 
-func (fm *FootstepModel) ToResourceList(footsteps []*Footstep) []*FootstepResource {
+// FootstepToResourceList implements Models.
+func (m *ModelResource) FootstepToResourceList(footsteps []*Footstep) []*FootstepResource {
 	if footsteps == nil {
 		return nil
 	}
 	var footstepResources []*FootstepResource
 	for _, footstep := range footsteps {
-		footstepResources = append(footstepResources, fm.ToResource(footstep))
+		footstepResources = append(footstepResources, m.FootstepToResource(footstep))
 	}
 	return footstepResources
+}
+
+func (m *ModelResource) FootstepSeeders() error {
+	m.logger.Info("Seeding Footstep")
+	return nil
 }

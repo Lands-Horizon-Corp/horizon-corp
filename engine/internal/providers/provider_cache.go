@@ -11,17 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
-type Cache interface {
-	Delete(key string) error
-	Exists(key string) (bool, error)
-	Set(key string, value interface{}, expiration time.Duration) error
-	Get(key string) (string, error)
-	Increment(key string) (int64, error)
-	Decrement(key string) (int64, error)
-}
-
 type CacheService struct {
-	client *redis.Client
+	Client *redis.Client
 	cfg    *config.AppConfig
 	logger *LoggerService
 }
@@ -35,7 +26,7 @@ const (
 func NewCacheProvider(
 	cfg *config.AppConfig,
 	logger *LoggerService,
-) (Cache, error) {
+) (*CacheService, error) {
 
 	if cfg == nil {
 		return nil, errors.New("configuration is nil")
@@ -81,7 +72,7 @@ func NewCacheProvider(
 			logger.Info("Successfully connected to Redis",
 				zap.String("address", cfg.CacheURL))
 			return &CacheService{
-				client: redisClient,
+				Client: redisClient,
 				cfg:    cfg,
 				logger: logger,
 			}, nil
@@ -94,7 +85,7 @@ func NewCacheProvider(
 }
 
 func (cs *CacheService) Delete(key string) error {
-	err := cs.client.Del(key).Err()
+	err := cs.Client.Del(key).Err()
 	if err != nil {
 		cs.logger.Error("Failed to delete key from cache",
 			zap.String("key", key),
@@ -104,7 +95,7 @@ func (cs *CacheService) Delete(key string) error {
 }
 
 func (cs *CacheService) Exists(key string) (bool, error) {
-	val, err := cs.client.Exists(key).Result()
+	val, err := cs.Client.Exists(key).Result()
 	if err != nil {
 		cs.logger.Error("Failed to check if key exists in cache",
 			zap.String("key", key),
@@ -115,7 +106,7 @@ func (cs *CacheService) Exists(key string) (bool, error) {
 }
 
 func (cs *CacheService) Set(key string, value interface{}, expiration time.Duration) error {
-	err := cs.client.Set(key, value, expiration).Err()
+	err := cs.Client.Set(key, value, expiration).Err()
 	if err != nil {
 		cs.logger.Error("Failed to set key in cache",
 			zap.String("key", key),
@@ -125,7 +116,7 @@ func (cs *CacheService) Set(key string, value interface{}, expiration time.Durat
 }
 
 func (cs *CacheService) Get(key string) (string, error) {
-	val, err := cs.client.Get(key).Result()
+	val, err := cs.Client.Get(key).Result()
 	if err == redis.Nil {
 		cs.logger.Debug("Cache miss",
 			zap.String("key", key))
@@ -140,7 +131,7 @@ func (cs *CacheService) Get(key string) (string, error) {
 }
 
 func (cs *CacheService) Increment(key string) (int64, error) {
-	val, err := cs.client.Incr(key).Result()
+	val, err := cs.Client.Incr(key).Result()
 	if err != nil {
 		cs.logger.Error("Failed to increment key in cache",
 			zap.String("key", key),
@@ -150,7 +141,7 @@ func (cs *CacheService) Increment(key string) (int64, error) {
 }
 
 func (cs *CacheService) Decrement(key string) (int64, error) {
-	val, err := cs.client.Decr(key).Result()
+	val, err := cs.Client.Decr(key).Result()
 	if err != nil {
 		cs.logger.Error("Failed to decrement key in cache",
 			zap.String("key", key),

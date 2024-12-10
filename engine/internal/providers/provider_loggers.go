@@ -9,20 +9,12 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type Logger interface {
-	Info(msg string, fields ...zap.Field)
-	Error(msg string, fields ...zap.Field)
-	Warn(msg string, fields ...zap.Field)
-	Debug(msg string, fields ...zap.Field)
-	Sync() error
-}
-
 type LoggerService struct {
-	client *zap.Logger
+	Client *zap.Logger
 	cfg    *config.AppConfig
 }
 
-func NewLoggerProvider(cfg *config.AppConfig) (Logger, error) {
+func NewLoggerProvider(cfg *config.AppConfig) (*LoggerService, error) {
 	logLevel := mapLogLevel(cfg.LogLevel)
 
 	var (
@@ -73,7 +65,7 @@ func NewLoggerProvider(cfg *config.AppConfig) (Logger, error) {
 	)
 
 	return &LoggerService{
-		client: logger,
+		Client: logger,
 		cfg:    cfg,
 	}, nil
 }
@@ -100,21 +92,21 @@ func mapLogLevel(levelStr string) zapcore.Level {
 }
 
 func (ls *LoggerService) Info(msg string, fields ...zap.Field) {
-	ls.client.Info(msg, fields...)
+	ls.Client.Info(msg, fields...)
 }
 
 func (ls *LoggerService) Error(msg string, fields ...zap.Field) {
-	ls.client.Error(msg, fields...)
+	ls.Client.Error(msg, fields...)
 }
 
 func (ls *LoggerService) Warn(msg string, fields ...zap.Field) {
-	ls.client.Warn(msg, fields...)
+	ls.Client.Warn(msg, fields...)
 }
 
 func (ls *LoggerService) Debug(msg string, fields ...zap.Field) {
-	ls.client.Debug(msg, fields...)
+	ls.Client.Debug(msg, fields...)
 }
 
 func (ls *LoggerService) Sync() error {
-	return ls.client.Sync()
+	return ls.Client.Sync()
 }

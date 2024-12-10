@@ -21,15 +21,6 @@ import (
 	"go.uber.org/zap"
 )
 
-type Storage interface {
-	CreateBucketIfNotExists() error
-	UploadFile(fileHeader *multipart.FileHeader) (*Media, error)
-	UploadLocalFile(localFilePath string) (*Media, error)
-	UploadFromURL(fileURL string) (*Media, error)
-	DeleteFile(key string) error
-	GeneratePresignedURL(key string) (string, error)
-}
-
 type Media struct {
 	FileName   string
 	FileSize   int64
@@ -40,7 +31,7 @@ type Media struct {
 }
 
 type StorageProvider struct {
-	client  s3iface.S3API
+	Client  s3iface.S3API
 	cfg     *config.AppConfig
 	logger  *LoggerService
 	helpers *helpers.HelpersFunction
@@ -50,7 +41,7 @@ func NewStorageProvider(
 	cfg *config.AppConfig,
 	logger *LoggerService,
 	helpers *helpers.HelpersFunction,
-) (Storage, error) {
+) (*StorageProvider, error) {
 
 	logger.Debug("Initializing AWS S3 session",
 		zap.String("endpoint", cfg.StorageEndpoint),
@@ -72,7 +63,7 @@ func NewStorageProvider(
 	logger.Info("Successfully initialized AWS S3 session.")
 
 	return &StorageProvider{
-		client:  s3.New(sess),
+		Client:  s3.New(sess),
 		cfg:     cfg,
 		logger:  logger,
 		helpers: helpers,
@@ -84,7 +75,7 @@ func (fc *StorageProvider) CreateBucketIfNotExists() error {
 		zap.String("bucketName", fc.cfg.StorageBucketName),
 	)
 
-	_, err := fc.client.HeadBucket(&s3.HeadBucketInput{
+	_, err := fc.Client.HeadBucket(&s3.HeadBucketInput{
 		Bucket: aws.String(fc.cfg.StorageBucketName),
 	})
 	if err == nil {
@@ -98,7 +89,7 @@ func (fc *StorageProvider) CreateBucketIfNotExists() error {
 		zap.String("bucketName", fc.cfg.StorageBucketName),
 	)
 
-	_, err = fc.client.CreateBucket(&s3.CreateBucketInput{
+	_, err = fc.Client.CreateBucket(&s3.CreateBucketInput{
 		Bucket: aws.String(fc.cfg.StorageBucketName),
 	})
 	if err != nil {
@@ -113,7 +104,7 @@ func (fc *StorageProvider) CreateBucketIfNotExists() error {
 		zap.String("bucketName", fc.cfg.StorageBucketName),
 	)
 
-	if waitErr := fc.client.WaitUntilBucketExists(&s3.HeadBucketInput{
+	if waitErr := fc.Client.WaitUntilBucketExists(&s3.HeadBucketInput{
 		Bucket: aws.String(fc.cfg.StorageBucketName),
 	}); waitErr != nil {
 		fc.logger.Error("Failed waiting for bucket creation",
@@ -135,7 +126,7 @@ func (fc *StorageProvider) UploadToS3(bucketName, key string, body io.Reader) (*
 		zap.String("key", key),
 	)
 
-	uploader := s3manager.NewUploaderWithClient(fc.client)
+	uploader := s3manager.NewUploaderWithClient(fc.Client)
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(bucketName),
 		Key:    aws.String(key),
@@ -183,7 +174,7 @@ func (fc *StorageProvider) UploadFile(fileHeader *multipart.FileHeader) (*Media,
 		return nil, err
 	}
 
-	uploader := s3manager.NewUploaderWithClient(fc.client)
+	uploader := s3manager.NewUploaderWithClient(fc.Client)
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(fc.cfg.StorageBucketName),
 		Key:    aws.String(key),
@@ -351,7 +342,7 @@ func (fc *StorageProvider) DeleteFile(key string) error {
 		zap.String("key", key),
 	)
 
-	_, err := fc.client.DeleteObject(&s3.DeleteObjectInput{
+	_, err := fc.Client.DeleteObject(&s3.DeleteObjectInput{
 		Bucket: aws.String(fc.cfg.StorageBucketName),
 		Key:    aws.String(key),
 	})
@@ -364,7 +355,7 @@ func (fc *StorageProvider) DeleteFile(key string) error {
 		return fmt.Errorf("failed to delete file %s from bucket %s: %w", key, fc.cfg.StorageBucketName, err)
 	}
 
-	if waitErr := fc.client.WaitUntilObjectNotExists(&s3.HeadObjectInput{
+	if waitErr := fc.Client.WaitUntilObjectNotExists(&s3.HeadObjectInput{
 		Bucket: aws.String(fc.cfg.StorageBucketName),
 		Key:    aws.String(key),
 	}); waitErr != nil {
@@ -391,7 +382,7 @@ func (fc *StorageProvider) GeneratePresignedURL(key string) (string, error) {
 	)
 
 	expiration := 20 * time.Minute
-	req, _ := fc.client.GetObjectRequest(&s3.GetObjectInput{
+	req, _ := fc.Client.GetObjectRequest(&s3.GetObjectInput{
 		Bucket: aws.String(fc.cfg.StorageBucketName),
 		Key:    aws.String(key),
 	})

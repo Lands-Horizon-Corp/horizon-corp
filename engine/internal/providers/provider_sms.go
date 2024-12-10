@@ -15,11 +15,6 @@ import (
 	"go.uber.org/zap"
 )
 
-type SMS interface {
-	FormatSMS(req SMSRequest) (string, error)
-	SendSMS(req SMSRequest) error
-}
-
 type SMSRequest struct {
 	To   string             `json:"to"`
 	Body string             `json:"body"`
@@ -31,17 +26,17 @@ type snsClient interface {
 }
 
 type SMSService struct {
-	client  snsClient
+	Client  snsClient
 	cfg     *config.AppConfig
-	logger  Logger
+	logger  *LoggerService
 	helpers *helpers.HelpersFunction
 }
 
 func NewSMSProvider(
 	cfg *config.AppConfig,
-	logger Logger,
+	logger *LoggerService,
 	helpers *helpers.HelpersFunction,
-) (SMS, error) {
+) (*SMSService, error) {
 	if cfg == nil {
 		return nil, errors.New("configuration cannot be nil")
 	}
@@ -62,13 +57,15 @@ func NewSMSProvider(
 	svc := sns.New(sess)
 	logger.Info("AWS SNS session initialized successfully for SMS")
 	return &SMSService{
-		client: svc,
+		Client: svc,
 		logger: logger,
 		cfg:    cfg,
 	}, nil
 }
-
 func (s *SMSService) FormatSMS(req SMSRequest) (string, error) {
+	req.Body = s.helpers.SanitizeBody(req.Body)
+	req.Vars = s.helpers.SanitizeMessageVars(req.Vars)
+
 	tmpl, err := template.New("sms").Parse(req.Body)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse SMS template: %w", err)
@@ -76,7 +73,7 @@ func (s *SMSService) FormatSMS(req SMSRequest) (string, error) {
 
 	var data interface{}
 	if req.Vars != nil {
-		data = req.Vars
+		data = *req.Vars
 	}
 
 	var buf bytes.Buffer
@@ -88,6 +85,8 @@ func (s *SMSService) FormatSMS(req SMSRequest) (string, error) {
 }
 
 func (s *SMSService) SendSMS(req SMSRequest) error {
+	req.To = s.helpers.SanitizePhoneNumber(req.To)
+
 	if req.To == "" {
 		err := errors.New("recipient phone number is required")
 		s.logger.Error("Missing recipient phone number", zap.Error(err))
@@ -122,7 +121,7 @@ func (s *SMSService) SendSMS(req SMSRequest) error {
 		zap.String("messagePreview", s.helpers.PreviewString(formattedMessage, 60)),
 	)
 
-	_, err = s.client.Publish(params)
+	_, err = s.Client.Publish(params)
 	if err != nil {
 		s.logger.Error("Failed to send SMS", zap.Error(err), zap.String("to", req.To))
 		return fmt.Errorf("failed to send SMS to %s: %w", req.To, err)

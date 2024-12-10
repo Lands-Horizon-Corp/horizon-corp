@@ -1,8 +1,6 @@
 package models
 
 import (
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -49,53 +47,10 @@ type BranchResource struct {
 	Members         []*MemberResource   `json:"members"`
 }
 
-type (
-	BranchResourceProvider interface {
-		SeedDatabase()
-		ToResource(branch *Branch) *BranchResource
-		ToResourceList(branch []*Branch) []*BranchResource
-	}
-)
-
-type BranchModel struct {
-	lc            *fx.Lifecycle
-	db            *gorm.DB
-	logger        *zap.Logger
-	mediaModel    MediaResourceProvider
-	companyModel  CompanyResourceProvider
-	employeeModel EmployeeResourceProvider
-	memberModel   MemberResourceProvider
-}
-
-func NewBranchModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	mediaModel MediaResourceProvider,
-	companyModel CompanyResourceProvider,
-	employeeModel EmployeeResourceProvider,
-	memberModel MemberResourceProvider,
-) *BranchModel {
-	return &BranchModel{
-		lc:            lc,
-		db:            db,
-		logger:        logger,
-		mediaModel:    mediaModel,
-		companyModel:  companyModel,
-		employeeModel: employeeModel,
-		memberModel:   memberModel,
-	}
-}
-
-func (bm *BranchModel) SeedDatabase() {
-
-}
-
-func (bm *BranchModel) ToResource(branch *Branch) *BranchResource {
+func (m *ModelResource) BranchToResource(branch *Branch) *BranchResource {
 	if branch == nil {
 		return nil
 	}
-
 	return &BranchResource{
 		Name:            branch.Name,
 		Address:         branch.Address,
@@ -105,21 +60,26 @@ func (bm *BranchModel) ToResource(branch *Branch) *BranchResource {
 		ContactNumber:   branch.ContactNumber,
 		IsAdminVerified: branch.IsAdminVerified,
 		MediaID:         branch.MediaID,
-		Media:           bm.mediaModel.ToResource(branch.Media),
+		Media:           m.MediaToResource(branch.Media),
 		CompanyID:       branch.CompanyID,
-		Company:         bm.companyModel.ToResource(branch.Company),
-		Employees:       bm.employeeModel.ToResourceList(branch.Employees),
-		Members:         bm.memberModel.ToResourceList(branch.Members),
+		Company:         m.CompanyToResource(branch.Company),
+		Employees:       m.EmployeeToResourceList(branch.Employees),
+		Members:         m.MemberToResourceList(branch.Members),
 	}
 }
 
-func (bm *BranchModel) ToResourceList(branches []*Branch) []*BranchResource {
-	if branches == nil {
+func (m *ModelResource) BranchToResourceList(branch []*Branch) []*BranchResource {
+	if branch == nil {
 		return nil
 	}
 	var branchResources []*BranchResource
-	for _, branch := range branches {
-		branchResources = append(branchResources, bm.ToResource(branch))
+	for _, branch := range branch {
+		branchResources = append(branchResources, m.BranchToResource(branch))
 	}
 	return branchResources
+}
+
+func (m *ModelResource) BranchSeeders() error {
+	m.logger.Info("Seeding Branch")
+	return nil
 }

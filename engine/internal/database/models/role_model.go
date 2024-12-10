@@ -1,8 +1,6 @@
 package models
 
 import (
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -60,48 +58,8 @@ type RoleResource struct {
 	Members   []*MemberResource   `json:"members"`
 }
 
-type (
-	RoleResourceProvider interface {
-		SeedDatabase()
-		ToResource(role *Role) *RoleResource
-		ToResourceList(role []*Role) []*RoleResource
-	}
-)
-
-type RoleModel struct {
-	lc            *fx.Lifecycle
-	db            *gorm.DB
-	logger        *zap.Logger
-	adminModel    AdminResourceProvider
-	employeeModel EmployeeResourceProvider
-	ownerModel    OwnerResourceProvider
-	memberModel   MemberResourceProvider
-}
-
-func NewRoleModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	adminModel AdminResourceProvider,
-	employeeModel EmployeeResourceProvider,
-	ownerModel OwnerResourceProvider,
-	memberModel MemberResourceProvider,
-) *RoleModel {
-	return &RoleModel{
-		lc:            lc,
-		db:            db,
-		logger:        logger,
-		adminModel:    adminModel,
-		employeeModel: employeeModel,
-		ownerModel:    ownerModel,
-		memberModel:   memberModel,
-	}
-}
-
-func (mm *RoleModel) SeedDatabase() {
-}
-
-func (mm *RoleModel) ToResource(role *Role) *RoleResource {
+// RoleToResource implements Models.
+func (m *ModelResource) RoleToResource(role *Role) *RoleResource {
 	if role == nil {
 		return nil
 	}
@@ -123,21 +81,26 @@ func (mm *RoleModel) ToResource(role *Role) *RoleResource {
 		WriteGender:        role.WriteGender,
 		UpdateGender:       role.UpdateGender,
 		DeleteGender:       role.DeleteGender,
-		Admins:             mm.adminModel.ToResourceList(role.Admins),
-		Owners:             mm.ownerModel.ToResourceList(role.Owners),
-		Employees:          mm.employeeModel.ToResourceList(role.Employees),
-		Members:            mm.memberModel.ToResourceList(role.Members),
+		Admins:             m.AdminToResourceList(role.Admins),
+		Owners:             m.OwnerToResourceList(role.Owners),
+		Employees:          m.EmployeeToResourceList(role.Employees),
+		Members:            m.MemberToResourceList(role.Members),
 	}
 }
 
-func (mm *RoleModel) ToResourceList(roles []*Role) []*RoleResource {
+func (m *ModelResource) RoleToResourceList(roles []*Role) []*RoleResource {
 	if roles == nil {
 		return nil
 	}
 
 	var roleResources []*RoleResource
 	for _, role := range roles {
-		roleResources = append(roleResources, mm.ToResource(role))
+		roleResources = append(roleResources, m.RoleToResource(role))
 	}
 	return roleResources
+}
+
+func (m *ModelResource) RoleSeeders() error {
+	m.logger.Info("Seeding Role")
+	return nil
 }

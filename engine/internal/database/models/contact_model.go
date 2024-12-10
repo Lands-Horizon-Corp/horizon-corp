@@ -1,8 +1,6 @@
 package models
 
 import (
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -24,36 +22,8 @@ type ContactResource struct {
 	ContactNumber string `json:"contactNumber"`
 	Description   string `json:"description"`
 }
-type (
-	ContactResourceProvider interface {
-		SeedDatabase()
-		ToResource(contact *Contact) *ContactResource
-		ToResourceList(contact []*Contact) []*ContactResource
-	}
-)
 
-type ContactModel struct {
-	lc     *fx.Lifecycle
-	db     *gorm.DB
-	logger *zap.Logger
-}
-
-func NewContactModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-) *ContactModel {
-	return &ContactModel{
-		lc:     lc,
-		db:     db,
-		logger: logger,
-	}
-}
-
-func (cm *ContactModel) SeedDatabase() {
-}
-
-func (cm *ContactModel) ToResource(contact *Contact) *ContactResource {
+func (m *ModelResource) ContactToResource(contact *Contact) *ContactResource {
 	if contact == nil {
 		return nil
 	}
@@ -66,13 +36,19 @@ func (cm *ContactModel) ToResource(contact *Contact) *ContactResource {
 	}
 }
 
-func (cm *ContactModel) ToResourceList(contacts []*Contact) []*ContactResource {
+func (m *ModelResource) ContactToResourceList(contacts []*Contact) []*ContactResource {
 	if contacts == nil {
 		return nil
 	}
 	var contactResources []*ContactResource
 	for _, contact := range contacts {
-		contactResources = append(contactResources, cm.ToResource(contact))
+		contactResources = append(contactResources, m.ContactToResource(contact))
 	}
 	return contactResources
+}
+
+// ContactSeeders implements Models.
+func (m *ModelResource) ContactSeeders() error {
+	m.logger.Info("Seeding Contact")
+	return nil
 }

@@ -3,8 +3,6 @@ package models
 import (
 	"time"
 
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -79,54 +77,7 @@ type EmployeeResource struct {
 	Footsteps          []*FootstepResource  `json:"footsteps"`
 }
 
-type (
-	EmployeeResourceProvider interface {
-		SeedDatabase()
-		ToResource(employee *Employee) *EmployeeResource
-		ToResourceList(employee []*Employee) []*EmployeeResource
-	}
-)
-
-type EmployeeModel struct {
-	lc             *fx.Lifecycle
-	db             *gorm.DB
-	logger         *zap.Logger
-	mediaModel     MediaResourceProvider
-	branchModel    BranchResourceProvider
-	roleModel      RoleResourceProvider
-	genderModel    GenderResourceProvider
-	timesheetModel TimesheetResourceProvider
-	footstepModel  FootstepResourceProvider
-}
-
-func NewEmployeeModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	mediaModel MediaResourceProvider,
-	branchModel BranchResourceProvider,
-	roleModel RoleResourceProvider,
-	genderModel GenderResourceProvider,
-	timesheetModel TimesheetResourceProvider,
-	footstepModel FootstepResourceProvider,
-) *EmployeeModel {
-	return &EmployeeModel{
-		lc:             lc,
-		db:             db,
-		logger:         logger,
-		mediaModel:     mediaModel,
-		branchModel:    branchModel,
-		roleModel:      roleModel,
-		genderModel:    genderModel,
-		timesheetModel: timesheetModel,
-		footstepModel:  footstepModel,
-	}
-}
-
-func (em *EmployeeModel) SeedDatabase() {
-}
-
-func (em *EmployeeModel) ToResource(employee *Employee) *EmployeeResource {
+func (m *ModelResource) EmployeeToResource(employee *Employee) *EmployeeResource {
 	if employee == nil {
 		return nil
 	}
@@ -149,25 +100,31 @@ func (em *EmployeeModel) ToResource(employee *Employee) *EmployeeResource {
 		Longitude:          employee.Longitude,
 		Latitude:           employee.Latitude,
 		MediaID:            employee.MediaID,
-		Media:              em.mediaModel.ToResource(employee.Media),
+		Media:              m.MediaToResource(employee.Media),
 		BranchID:           employee.BranchID,
-		Branch:             em.branchModel.ToResource(employee.Branch),
+		Branch:             m.BranchToResource(employee.Branch),
 		RoleID:             employee.RoleID,
-		Role:               em.roleModel.ToResource(employee.Role),
+		Role:               m.RoleToResource(employee.Role),
 		GenderID:           employee.GenderID,
-		Gender:             em.genderModel.ToResource(employee.Gender),
-		Timesheets:         em.timesheetModel.ToResourceList(employee.Timesheets),
-		Footsteps:          em.footstepModel.ToResourceList(employee.Footsteps),
+		Gender:             m.GenderToResource(employee.Gender),
+		Timesheets:         m.TimesheetToResourceList(employee.Timesheets),
+		Footsteps:          m.FootstepToResourceList(employee.Footsteps),
 	}
 }
 
-func (em *EmployeeModel) ToResourceList(employees []*Employee) []*EmployeeResource {
+func (m *ModelResource) EmployeeToResourceList(employees []*Employee) []*EmployeeResource {
 	if employees == nil {
 		return nil
 	}
 	var employeeResources []*EmployeeResource
 	for _, employee := range employees {
-		employeeResources = append(employeeResources, em.ToResource(employee))
+		employeeResources = append(employeeResources, m.EmployeeToResource(employee))
 	}
 	return employeeResources
+}
+
+// EmployeeSeeders implements Models.
+func (m *ModelResource) EmployeeSeeders() error {
+	m.logger.Info("Seeding Employee")
+	return nil
 }

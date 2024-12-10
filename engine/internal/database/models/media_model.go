@@ -1,9 +1,6 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -46,66 +43,14 @@ type MediaResource struct {
 	Branches  []*BranchResource   `json:"branches"`
 }
 
-type (
-	MediaResourceProvider interface {
-		SeedDatabase()
-		ToResource(media *Media) *MediaResource
-		ToResourceList(media []*Media) []*MediaResource
-	}
-)
-
-type MediaModel struct {
-	lc              *fx.Lifecycle
-	db              *gorm.DB
-	logger          *zap.Logger
-	adminModel      AdminResourceProvider
-	employeeModel   EmployeeResourceProvider
-	ownerModel      OwnerResourceProvider
-	memberModel     MemberResourceProvider
-	companyModel    CompanyResourceProvider
-	branchModel     BranchResourceProvider
-	storageProvider *providers.StorageProvider
-}
-
-func NewMediaModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	adminModel AdminResourceProvider,
-	employeeModel EmployeeResourceProvider,
-	ownerModel OwnerResourceProvider,
-	memberModel MemberResourceProvider,
-	companyModel CompanyResourceProvider,
-	branchModel BranchResourceProvider,
-	storageProvider *providers.StorageProvider,
-) *MediaModel {
-	return &MediaModel{
-		lc:              lc,
-		db:              db,
-		logger:          logger,
-		adminModel:      adminModel,
-		employeeModel:   employeeModel,
-		ownerModel:      ownerModel,
-		memberModel:     memberModel,
-		companyModel:    companyModel,
-		branchModel:     branchModel,
-		storageProvider: storageProvider,
-	}
-}
-
-func (mm *MediaModel) SeedDatabase() {
-}
-
-func (mm *MediaModel) ToResource(media *Media) *MediaResource {
+func (m *ModelResource) MediaToResource(media *Media) *MediaResource {
 	if media == nil {
 		return nil
 	}
-
-	temporaryURL, err := mm.storageProvider.GeneratePresignedURL(media.StorageKey)
+	temporaryURL, err := m.storage.GeneratePresignedURL(media.StorageKey)
 	if err != nil {
 		return nil
 	}
-
 	return &MediaResource{
 		FileName:    media.FileName,
 		FileSize:    media.FileSize,
@@ -115,23 +60,30 @@ func (mm *MediaModel) ToResource(media *Media) *MediaResource {
 		Key:         media.Key,
 		BucketName:  media.BucketName,
 		DownloadURL: temporaryURL,
-		Employees:   mm.employeeModel.ToResourceList(media.Employees),
-		Members:     mm.memberModel.ToResourceList(media.Members),
-		Owners:      mm.ownerModel.ToResourceList(media.Owners),
-		Admins:      mm.adminModel.ToResourceList(media.Admins),
-		Companies:   mm.companyModel.ToResourceList(media.Companies),
-		Branches:    mm.branchModel.ToResourceList(media.Branches),
+		Employees:   m.EmployeeToResourceList(media.Employees),
+		Members:     m.MemberToResourceList(media.Members),
+		Owners:      m.OwnerToResourceList(media.Owners),
+		Admins:      m.AdminToResourceList(media.Admins),
+		Companies:   m.CompanyToResourceList(media.Companies),
+		Branches:    m.BranchToResourceList(media.Branches),
 	}
 }
 
-func (mm *MediaModel) ToResourceList(mediaList []*Media) []*MediaResource {
+// MediaToResourceList implements Models.
+func (m *ModelResource) MediaToResourceList(mediaList []*Media) []*MediaResource {
 	if mediaList == nil {
 		return nil
 	}
 
 	var mediaResources []*MediaResource
 	for _, media := range mediaList {
-		mediaResources = append(mediaResources, mm.ToResource(media))
+		mediaResources = append(mediaResources, m.MediaToResource(media))
 	}
 	return mediaResources
+}
+
+// MediaSeeders implements Models.
+func (m *ModelResource) MediaSeeders() error {
+	m.logger.Info("Seeding Media")
+	return nil
 }

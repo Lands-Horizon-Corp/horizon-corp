@@ -22,10 +22,10 @@ type MailSender interface {
 }
 
 type EmailService struct {
-	cfg        *config.AppConfig
-	logger     Logger
-	helpers    *helpers.HelpersFunction
-	mailSender MailSender
+	cfg     *config.AppConfig
+	logger  *LoggerService
+	helpers *helpers.HelpersFunction
+	Client  MailSender
 }
 
 type EmailRequest struct {
@@ -37,7 +37,7 @@ type EmailRequest struct {
 
 func NewEmailProvider(
 	cfg *config.AppConfig,
-	logger Logger,
+	logger *LoggerService,
 	helpers *helpers.HelpersFunction,
 ) *EmailService {
 	var sender MailSender
@@ -48,10 +48,10 @@ func NewEmailProvider(
 	}
 
 	return &EmailService{
-		cfg:        cfg,
-		logger:     logger,
-		helpers:    helpers,
-		mailSender: sender,
+		cfg:     cfg,
+		logger:  logger,
+		helpers: helpers,
+		Client:  sender,
 	}
 }
 
@@ -108,7 +108,7 @@ func (es *EmailService) SendEmail(req EmailRequest) error {
 	req.Body = sanitizedBody
 
 	// Use the configured mail sender
-	if err := es.mailSender.SendEmail(req); err != nil {
+	if err := es.Client.SendEmail(req); err != nil {
 		es.logger.Error("Failed to send email", zap.Error(err))
 		return err
 	}
@@ -121,7 +121,7 @@ func (es *EmailService) SendEmail(req EmailRequest) error {
 
 type MailHogSender struct {
 	cfg    *config.AppConfig
-	logger Logger
+	logger *LoggerService
 }
 
 func (m *MailHogSender) SendEmail(req EmailRequest) error {
@@ -147,7 +147,7 @@ func (m *MailHogSender) SendEmail(req EmailRequest) error {
 
 type AwsSesSender struct {
 	cfg    *config.AppConfig
-	logger Logger
+	logger *LoggerService
 }
 
 func (a *AwsSesSender) SendEmail(req EmailRequest) error {

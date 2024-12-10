@@ -1,8 +1,6 @@
 package models
 
 import (
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -45,45 +43,7 @@ type CompanyResource struct {
 	Branches        []*BranchResource `json:"branches"`
 }
 
-type (
-	CompanyResourceProvider interface {
-		SeedDatabase()
-		ToResource(company *Company) *CompanyResource
-		ToResourceList(company []*Company) []*CompanyResource
-	}
-)
-
-type CompanyModel struct {
-	lc          *fx.Lifecycle
-	db          *gorm.DB
-	logger      *zap.Logger
-	mediaModel  MediaResourceProvider
-	ownerModel  OwnerResourceProvider
-	branchModel BranchResourceProvider
-}
-
-func NewCompanyModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	mediaModel MediaResourceProvider,
-	ownerModel OwnerResourceProvider,
-	branchModel BranchResourceProvider,
-) *CompanyModel {
-	return &CompanyModel{
-		lc:          lc,
-		db:          db,
-		logger:      logger,
-		mediaModel:  mediaModel,
-		ownerModel:  ownerModel,
-		branchModel: branchModel,
-	}
-}
-
-func (cm *CompanyModel) SeedDatabase() {
-}
-
-func (cm *CompanyModel) ToResource(company *Company) *CompanyResource {
+func (m *ModelResource) CompanyToResource(company *Company) *CompanyResource {
 	if company == nil {
 		return nil
 	}
@@ -96,21 +56,26 @@ func (cm *CompanyModel) ToResource(company *Company) *CompanyResource {
 		Latitude:        company.Latitude,
 		ContactNumber:   company.ContactNumber,
 		OwnerID:         company.OwnerID,
-		Owner:           cm.ownerModel.ToResource(company.Owner),
+		Owner:           m.OwnerToResource(company.Owner),
 		MediaID:         company.MediaID,
-		Media:           cm.mediaModel.ToResource(company.Media),
+		Media:           m.MediaToResource(company.Media),
 		IsAdminVerified: company.IsAdminVerified,
-		Branches:        cm.branchModel.ToResourceList(company.Branches),
+		Branches:        m.BranchToResourceList(company.Branches),
 	}
 }
 
-func (cm *CompanyModel) ToResourceList(companies []*Company) []*CompanyResource {
+func (m *ModelResource) CompanyToResourceList(companies []*Company) []*CompanyResource {
 	if companies == nil {
 		return nil
 	}
 	var companyResources []*CompanyResource
 	for _, company := range companies {
-		companyResources = append(companyResources, cm.ToResource(company))
+		companyResources = append(companyResources, m.CompanyToResource(company))
 	}
 	return companyResources
+}
+
+func (m *ModelResource) CompanySeeders() error {
+	m.logger.Info("Seeding Company")
+	return nil
 }

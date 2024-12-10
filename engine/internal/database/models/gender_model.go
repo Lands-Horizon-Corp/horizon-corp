@@ -1,8 +1,6 @@
 package models
 
 import (
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -29,70 +27,33 @@ type GenderResource struct {
 	Admins      []*AdminResource    `json:"admins"`
 }
 
-type (
-	GenderResourceProvider interface {
-		SeedDatabase()
-		ToResource(gender *Gender) *GenderResource
-		ToResourceList(gender []*Gender) []*GenderResource
-	}
-)
-
-type GenderModel struct {
-	lc            *fx.Lifecycle
-	db            *gorm.DB
-	logger        *zap.Logger
-	adminModel    AdminResourceProvider
-	employeeModel EmployeeResourceProvider
-	ownerModel    OwnerResourceProvider
-	memberModel   MemberResourceProvider
-}
-
-func NewGenderModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	adminModel AdminResourceProvider,
-	employeeModel EmployeeResourceProvider,
-	ownerModel OwnerResourceProvider,
-	memberModel MemberResourceProvider,
-) *GenderModel {
-	return &GenderModel{
-		lc:            lc,
-		db:            db,
-		logger:        logger,
-		adminModel:    adminModel,
-		employeeModel: employeeModel,
-		ownerModel:    ownerModel,
-		memberModel:   memberModel,
-	}
-}
-
-func (gm *GenderModel) SeedDatabase() {
-}
-
-func (gm *GenderModel) ToResource(gender *Gender) *GenderResource {
+func (m *ModelResource) GenderToResource(gender *Gender) *GenderResource {
 	if gender == nil {
 		return nil
 	}
-
 	return &GenderResource{
 		Name:        gender.Name,
 		Description: gender.Description,
-		Employees:   gm.employeeModel.ToResourceList(gender.Employees),
-		Members:     gm.memberModel.ToResourceList(gender.Members),
-		Owners:      gm.ownerModel.ToResourceList(gender.Owners),
-		Admins:      gm.adminModel.ToResourceList(gender.Admins),
+		Employees:   m.EmployeeToResourceList(gender.Employees),
+		Members:     m.MemberToResourceList(gender.Members),
+		Owners:      m.OwnerToResourceList(gender.Owners),
+		Admins:      m.AdminToResourceList(gender.Admins),
 	}
 }
 
-func (gm *GenderModel) ToResourceList(genders []*Gender) []*GenderResource {
+func (m *ModelResource) GenderToResourceList(genders []*Gender) []*GenderResource {
 	if genders == nil {
 		return nil
 	}
 
 	var genderResources []*GenderResource
 	for _, gender := range genders {
-		genderResources = append(genderResources, gm.ToResource(gender))
+		genderResources = append(genderResources, m.GenderToResource(gender))
 	}
 	return genderResources
+}
+
+func (m *ModelResource) GenderSeeders() error {
+	m.logger.Info("Seeding Gender")
+	return nil
 }

@@ -4,43 +4,43 @@ import (
 	"context"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-func Migrate(
+type DatabaseMigration struct {
+	lc       fx.Lifecycle
+	db       *providers.DatabaseService
+	logger   *providers.LoggerService
+	resource *models.ModelResource
+}
+
+func NewDatabaseMigration(
 	lc fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	// admin models.AdminResourceProvider,
-) {
+	db *providers.DatabaseService,
+	logger *providers.LoggerService,
+	resource *models.ModelResource,
+) *DatabaseMigration {
+
+	migration := &DatabaseMigration{
+		lc:       lc,
+		db:       db,
+		logger:   logger,
+		resource: resource,
+	}
+
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			logger.Info("Running database migrations...")
-
-			// Directly pass the list of models to AutoMigrate
-			if err := db.AutoMigrate(
-				&models.Admin{},
-				&models.Branch{},
-				&models.Company{},
-				&models.Contact{},
-				&models.Employee{},
-				&models.Feedback{},
-				&models.Footstep{},
-				&models.Gender{},
-				&models.Media{},
-				&models.Member{},
-				&models.Owner{},
-				&models.Role{},
-				&models.Timesheet{},
-			); err != nil {
-				logger.Error("Migration failed", zap.Error(err))
+			if err := migrateModels(db.Client, resource.Models, logger); err != nil {
 				return err
 			}
-
-			// admin.SeedDatabase()
-			logger.Info("Database migrations completed successfully.")
+			if err := seedModels(db.Client, resource.Models, logger); err != nil {
+				return err
+			}
+			logger.Info("Database migrations and seeding completed successfully.")
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
@@ -48,4 +48,54 @@ func Migrate(
 			return nil
 		},
 	})
+
+	return migration
+}
+
+// migrateModels migrates all models
+func migrateModels(db *gorm.DB, models []models.MigrateItem, logger *providers.LoggerService) error {
+	for _, item := range models {
+		logger.Info("Migrating model", zap.String("model", item.ModelName))
+		if err := db.AutoMigrate(item.Model); err != nil {
+			logger.Error("Migration failed", zap.String("model", item.ModelName), zap.Error(err))
+			return err
+		}
+	}
+	return nil
+}
+
+// seedModels runs all seeders for the models
+func seedModels(db *gorm.DB, models []models.MigrateItem, logger *providers.LoggerService) error {
+	for _, item := range models {
+		shouldSeed, err := shouldSeedModel(db, item.Model, logger, item.ModelName)
+		if err != nil {
+			logger.Error("Seeder check failed", zap.String("model", item.ModelName), zap.Error(err))
+			return err
+		}
+
+		if shouldSeed {
+			logger.Info("Seeding model", zap.String("model", item.ModelName))
+			if err := item.Seeder(); err != nil {
+				logger.Error("Seeding failed", zap.String("model", item.ModelName), zap.Error(err))
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func shouldSeedModel(db *gorm.DB, model interface{}, logger *providers.LoggerService, modelName string) (bool, error) {
+	if !db.Migrator().HasTable(model) {
+		logger.Info(modelName + " table does not exist, skipping seeding.")
+		return false, nil
+	}
+	var count int64
+	if err := db.Model(model).Count(&count).Error; err != nil {
+		return false, err
+	}
+	if count > 0 {
+		logger.Info(modelName + " data already exists, skipping seeding.")
+		return false, nil
+	}
+	return true, nil
 }

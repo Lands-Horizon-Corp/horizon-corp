@@ -7,22 +7,6 @@ import (
 
 var Module = fx.Module(
 	"database",
-
-	fx.Provide(
-		// Models
-		models.NewAdminModel,
-		models.NewBranchModel,
-		models.NewCompanyModel,
-		models.NewContactModel,
-		models.NewEmployeeModel,
-		models.NewFeedbackModel,
-		models.NewFootstepModel,
-		models.NewGenderModel,
-		models.NewMediaModel,
-		models.NewMemberModel,
-		models.NewOwnerModel,
-		models.NewRoleModel,
-		models.NewTimesheetModel,
-	),
-	fx.Invoke(Migrate),
+	fx.Provide(models.NewModelResource),
+	fx.Invoke(NewDatabaseMigration),
 )

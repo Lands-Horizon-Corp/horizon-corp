@@ -3,8 +3,6 @@ package models
 import (
 	"time"
 
-	"go.uber.org/fx"
-	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -80,55 +78,10 @@ type MemberResource struct {
 	Footsteps []*FootstepResource `json:"footsteps"`
 }
 
-type (
-	MemberResourceProvider interface {
-		SeedDatabase()
-		ToResource(member *Member) *MemberResource
-		ToResourceList(member []*Member) []*MemberResource
-	}
-)
-
-type MemberModel struct {
-	lc           *fx.Lifecycle
-	db           *gorm.DB
-	logger       *zap.Logger
-	mediaModel   MediaResourceProvider
-	branchModel  BranchResourceProvider
-	roleModel    RoleResourceProvider
-	genderModel  GenderResourceProvider
-	footsepModel FootstepResourceProvider
-}
-
-func NewMemberModel(
-	lc *fx.Lifecycle,
-	db *gorm.DB,
-	logger *zap.Logger,
-	mediaModel MediaResourceProvider,
-	branchModel BranchResourceProvider,
-	roleModel RoleResourceProvider,
-	genderModel GenderResourceProvider,
-	footstepModel FootstepResourceProvider,
-) *MemberModel {
-	return &MemberModel{
-		lc:           lc,
-		db:           db,
-		logger:       logger,
-		mediaModel:   mediaModel,
-		branchModel:  branchModel,
-		roleModel:    roleModel,
-		genderModel:  genderModel,
-		footsepModel: footstepModel,
-	}
-}
-
-func (mm *MemberModel) SeedDatabase() {
-}
-
-func (mm *MemberModel) ToResource(member *Member) *MemberResource {
+func (m *ModelResource) MemberToResource(member *Member) *MemberResource {
 	if member == nil {
 		return nil
 	}
-
 	return &MemberResource{
 		FirstName:          member.FirstName,
 		LastName:           member.LastName,
@@ -145,26 +98,29 @@ func (mm *MemberModel) ToResource(member *Member) *MemberResource {
 		ContactNumber:      member.ContactNumber,
 		Status:             member.Status,
 		MediaID:            member.MediaID,
-		Media:              mm.mediaModel.ToResource(member.Media),
+		Media:              m.MediaToResource(member.Media),
 		BranchID:           member.BranchID,
-		Branch:             mm.branchModel.ToResource(member.Branch),
+		Branch:             m.BranchToResource(member.Branch),
 		Longitude:          member.Longitude,
 		Latitude:           member.Latitude,
 		RoleID:             member.RoleID,
-		Role:               mm.roleModel.ToResource(member.Role),
+		Role:               m.RoleToResource(member.Role),
 		GenderID:           member.GenderID,
-		Gender:             mm.genderModel.ToResource(member.Gender),
-		Footsteps:          mm.footsepModel.ToResourceList(member.Footsteps),
+		Gender:             m.GenderToResource(member.Gender),
+		Footsteps:          m.FootstepToResourceList(member.Footsteps),
 	}
 }
-
-func (mm *MemberModel) ToResourceList(members []*Member) []*MemberResource {
+func (m *ModelResource) MemberToResourceList(members []*Member) []*MemberResource {
 	if members == nil {
 		return nil
 	}
 	var memberResources []*MemberResource
 	for _, member := range members {
-		memberResources = append(memberResources, mm.ToResource(member))
+		memberResources = append(memberResources, m.MemberToResource(member))
 	}
 	return memberResources
+}
+func (m *ModelResource) MemberSeeders() error {
+	m.logger.Info("Seeding Member")
+	return nil
 }
