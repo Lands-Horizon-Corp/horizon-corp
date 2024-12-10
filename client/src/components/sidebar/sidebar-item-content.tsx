@@ -42,8 +42,8 @@ const SidebarItemContent = forwardRef<HTMLDivElement, Props>(
                 {...other}
                 onClick={onCollapse ?? onClick}
                 className={cn(
-                    'group/navself relative flex cursor-pointer items-center justify-between gap-x-3 rounded-lg border border-transparent px-2 py-2 font-light duration-300 ease-in-out hover:bg-secondary/85 hover:text-foreground group-hover:blur-[0.7px] group-hover:hover:blur-none',
-                    isActive && 'font-medium',
+                    'group/navself relative flex cursor-pointer items-center justify-between gap-x-3 rounded-lg border border-transparent px-2 py-2 font-light text-foreground/80 duration-300 ease-in-out hover:bg-secondary/85 hover:text-foreground',
+                    isActive && 'text-foreground',
                     !onCollapse &&
                         isActive &&
                         'bg-secondary/70 dark:bg-secondary/40',
