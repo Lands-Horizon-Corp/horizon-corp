@@ -149,3 +149,12 @@ func (cs *CacheService) Decrement(key string) (int64, error) {
 	}
 	return val, err
 }
+
+// Ping checks the connection to Redis and logs the result
+func (cs *CacheService) Ping() error {
+	err := cs.Client.Ping().Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}

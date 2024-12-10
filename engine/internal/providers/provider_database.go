@@ -124,11 +124,8 @@ func (ds *DatabaseService) Ping() error {
 	}
 
 	if err := sqlDB.Ping(); err != nil {
-		ds.logger.Error("Database ping failed",
-			zap.Error(err))
 		return err
 	}
-	ds.logger.Debug("Database ping successful")
 	return nil
 }
 

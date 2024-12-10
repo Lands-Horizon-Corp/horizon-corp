@@ -8,5 +8,4 @@ import (
 var Module = fx.Module(
 	"database",
 	fx.Provide(models.NewModelResource),
-	fx.Invoke(NewDatabaseMigration),
 )

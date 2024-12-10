@@ -24,6 +24,16 @@ func NewAdminService(
 		models.AdminToResource,
 		models.AdminToResourceList,
 	)
+
+	adminRoutes := engine.Client.Group("/admins")
+	{
+		adminRoutes.POST("/", controller.Create)
+		adminRoutes.GET("/", controller.GetAll)
+		adminRoutes.GET("/:id", controller.GetByID)
+		adminRoutes.PUT("/:id", controller.Update)
+		adminRoutes.DELETE("/:id", controller.Delete)
+	}
+
 	return &AdminService{
 		controller: controller,
 		db:         db,

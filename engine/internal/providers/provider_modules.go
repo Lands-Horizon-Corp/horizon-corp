@@ -12,5 +12,4 @@ var Module = fx.Module(
 		NewStorageProvider,
 		NewSMSProvider,
 	),
-	fx.Invoke(NewEngineProvider),
 )

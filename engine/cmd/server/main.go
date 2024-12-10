@@ -10,12 +10,19 @@ import (
 )
 
 func main() {
+
 	app := fx.New(
 		config.Module,
 		helpers.Module,
 		providers.Module,
 		database.Module,
 		modules.Module,
+
+		fx.Invoke(
+			database.NewDatabaseMigration,
+			providers.NewEngineProvider,
+			providers.NewTerminalService,
+		),
 	)
 	app.Run()
 }

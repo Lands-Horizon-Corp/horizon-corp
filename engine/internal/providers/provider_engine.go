@@ -31,6 +31,126 @@ var SuspiciousPaths = []string{
 	"database", "db", "logs", "debug",
 }
 
+func NewEngineProvider(
+	lc fx.Lifecycle,
+	cfg *config.AppConfig,
+	logger *LoggerService,
+	cache *CacheService,
+) (*EngineService, error) {
+	router := gin.Default()
+
+	router.Use(BlockIPMiddleware(cache, logger))
+	router.Use(DetectSuspiciousAccessMiddleware(cache, logger))
+
+	if cfg.AppEnv == "production" || cfg.AppEnv == "staging" {
+		router.Use(enforceHTTPS)
+	}
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{
+			"http://0.0.0.0",
+			"http://0.0.0.0:80",
+			"http://0.0.0.0:3000",
+			"http://0.0.0.0:3001",
+			"http://0.0.0.0:4173",
+			"http://0.0.0.0:8080",
+
+			// Client Docker
+			"http://client",
+			"http://client:80",
+			"http://client:3000",
+			"http://client:3001",
+			"http://client:4173",
+			"http://client:8080",
+
+			// Localhost
+			"http://localhost:",
+			"http://localhost:80",
+			"http://localhost:3000",
+			"http://localhost:3001",
+			"http://localhost:4173",
+			"http://localhost:8080 ",
+		},
+		AllowMethods:     []string{"POST", "GET", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	router.Use(secure.New(secure.Config{
+		STSSeconds:           31536000,
+		STSIncludeSubdomains: true,
+		FrameDeny:            true,
+		ContentTypeNosniff:   true,
+		BrowserXssFilter:     true,
+		SSLProxyHeaders:      map[string]string{"X-Forwarded-Proto": "https"},
+	}))
+
+	router.Use(RateLimiterMiddleware(cache, logger, 20, 20))
+
+	router.GET("/favicon.ico", func(c *gin.Context) {
+		resp, err := http.Get("https://s3.ap-southeast-2.amazonaws.com/horizon.assets/ecoop-logo.png")
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+		defer resp.Body.Close()
+
+		c.Header("Content-Type", resp.Header.Get("Content-Type"))
+
+		_, err = io.Copy(c.Writer, resp.Body)
+		if err != nil {
+			c.Status(http.StatusInternalServerError)
+			return
+		}
+	})
+
+	// Example route
+	router.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"message": "Welcome to the secure Gin server!"})
+	})
+
+	// HTTP Server Configuration
+	server := &http.Server{
+		Addr:         ":" + cfg.AppPort,
+		Handler:      router,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+
+	lc.Append(fx.Hook{
+		OnStart: func(ctx context.Context) error {
+			go func() {
+				logger.Info("Starting Gin server on port http://localhost:" + cfg.AppPort)
+				if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+					logger.Error("Failed to start server", zap.Error(err))
+				}
+			}()
+			return nil
+		},
+		OnStop: func(ctx context.Context) error {
+			logger.Info("Shutting down Gin server...")
+			ctxShutdown, cancel := context.WithTimeout(ctx, 5*time.Second)
+			defer cancel()
+			if err := server.Shutdown(ctxShutdown); err != nil {
+				logger.Error("Server forced to shutdown", zap.Error(err))
+			}
+			return nil
+		},
+	})
+
+	return &EngineService{
+		Client: router,
+		server: server,
+	}, nil
+}
+
+func (es *EngineService) RegisterRoutes(routes *gin.RouterGroup) {
+
+}
+
 // Helper function to check for suspicious patterns
 func containsSuspiciousPattern(path string) bool {
 	lowerPath := strings.ToLower(path)
@@ -158,124 +278,4 @@ func enforceHTTPS(c *gin.Context) {
 		return
 	}
 	c.Next()
-}
-
-func NewEngineProvider(
-	lc fx.Lifecycle,
-	cfg *config.AppConfig,
-	logger *LoggerService,
-	cache *CacheService,
-) (*EngineService, error) {
-	router := gin.Default()
-
-	router.Use(BlockIPMiddleware(cache, logger))
-	router.Use(DetectSuspiciousAccessMiddleware(cache, logger))
-
-	if cfg.AppEnv == "production" || cfg.AppEnv == "staging" {
-		router.Use(enforceHTTPS)
-	}
-
-	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{
-			"http://0.0.0.0",
-			"http://0.0.0.0:80",
-			"http://0.0.0.0:3000",
-			"http://0.0.0.0:3001",
-			"http://0.0.0.0:4173",
-			"http://0.0.0.0:8080",
-
-			// Client Docker
-			"http://client",
-			"http://client:80",
-			"http://client:3000",
-			"http://client:3001",
-			"http://client:4173",
-			"http://client:8080",
-
-			// Localhost
-			"http://localhost:",
-			"http://localhost:80",
-			"http://localhost:3000",
-			"http://localhost:3001",
-			"http://localhost:4173",
-			"http://localhost:8080 ",
-		},
-		AllowMethods:     []string{"POST", "GET", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Content-Type", "X-XSRF-TOKEN", "Accept", "Origin", "X-Requested-With", "Authorization"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
-
-	router.Use(secure.New(secure.Config{
-		STSSeconds:           31536000,
-		STSIncludeSubdomains: true,
-		FrameDeny:            true,
-		ContentTypeNosniff:   true,
-		BrowserXssFilter:     true,
-		SSLProxyHeaders:      map[string]string{"X-Forwarded-Proto": "https"},
-	}))
-
-	router.Use(RateLimiterMiddleware(cache, logger, 20, 20))
-
-	router.GET("/favicon.ico", func(c *gin.Context) {
-		resp, err := http.Get("https://s3.ap-southeast-2.amazonaws.com/horizon.assets/ecoop-logo.png")
-		if err != nil {
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-		defer resp.Body.Close()
-
-		c.Header("Content-Type", resp.Header.Get("Content-Type"))
-
-		_, err = io.Copy(c.Writer, resp.Body)
-		if err != nil {
-			c.Status(http.StatusInternalServerError)
-			return
-		}
-	})
-
-	// Example route
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Welcome to the secure Gin server!"})
-	})
-
-	// HTTP Server Configuration
-	server := &http.Server{
-		Addr:         ":" + cfg.AppPort,
-		Handler:      router,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  60 * time.Second,
-	}
-
-	lc.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			go func() {
-				logger.Info("Starting Gin server on port http://localhost:" + cfg.AppPort)
-				if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-					logger.Error("Failed to start server", zap.Error(err))
-				}
-			}()
-			return nil
-		},
-		OnStop: func(ctx context.Context) error {
-			logger.Info("Shutting down Gin server...")
-			ctxShutdown, cancel := context.WithTimeout(ctx, 5*time.Second)
-			defer cancel()
-			if err := server.Shutdown(ctxShutdown); err != nil {
-				logger.Error("Server forced to shutdown", zap.Error(err))
-			}
-			return nil
-		},
-	})
-
-	return &EngineService{
-		Client: router,
-		server: server,
-	}, nil
-}
-
-func (es *EngineService) RegisterRoutes(routes *gin.RouterGroup) {
-
 }
