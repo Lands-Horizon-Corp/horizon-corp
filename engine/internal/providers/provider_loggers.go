@@ -46,17 +46,6 @@ func NewLoggerProvider(cfg *config.AppConfig) (*LoggerService, error) {
 		}
 	}
 
-	// Add contextual fields if available
-	if cfg.AppName != "" {
-		logger = logger.With(zap.String("appName", cfg.AppName))
-	}
-	if cfg.AppEnv != "" {
-		logger = logger.With(zap.String("environment", cfg.AppEnv))
-	}
-	if cfg.AppVersion != "" {
-		logger = logger.With(zap.String("version", cfg.AppVersion))
-	}
-
 	logger.Info("Logger initialized successfully",
 		zap.String("environment", cfg.AppEnv),
 		zap.String("appName", cfg.AppName),
