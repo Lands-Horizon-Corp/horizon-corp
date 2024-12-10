@@ -4,7 +4,7 @@ import {
     PaginationState,
     RowSelectionState,
 } from '@tanstack/react-table'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 import {
     PAGINATION_INITIAL_INDEX,
@@ -17,7 +17,7 @@ interface Props<TData> {
     pageSize?: number
     pageIndex?: number
     columnOrder?: string[]
-    onSelectedData?: (data: TData[]) => void
+    onSelectData?: (data: TData[]) => void
 }
 
 interface RowSelectionStateWithData<TData> {
@@ -46,6 +46,8 @@ const useDataTableState = <TData extends { id: string | number }>(
         pageSize: props?.pageSize ?? PAGINATION_INITIAL_PAGE_SIZE,
     })
 
+    const getRowIdFn = useCallback((row: TData) => `${row.id}`, [])
+
     const createHandleRowSelectionChange = (
         data: TData[]
     ): OnChangeFn<RowSelectionState> => {
@@ -66,9 +68,7 @@ const useDataTableState = <TData extends { id: string | number }>(
                     }
                 })
 
-                props?.onSelectedData?.(
-                    Array.from(newSelectedRowsData.values())
-                )
+                props?.onSelectData?.(Array.from(newSelectedRowsData.values()))
 
                 return {
                     rowSelection: newRowSelection,
@@ -79,6 +79,7 @@ const useDataTableState = <TData extends { id: string | number }>(
     }
 
     return {
+        getRowIdFn,
         sorting,
         setSorting,
         pagination,

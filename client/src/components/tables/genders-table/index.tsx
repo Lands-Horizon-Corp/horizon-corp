@@ -5,7 +5,6 @@ import {
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { useQuery } from '@tanstack/react-query'
-import { forwardRef, useCallback, useImperativeHandle } from 'react'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -17,31 +16,32 @@ import DataTableFilterContext from '@/components/data-table/data-table-filters/d
 import columns, { gendersGlobalSearchTargets } from './columns'
 
 import { cn } from '@/lib'
-import { IBaseCompNoChild } from '@/types'
+import { TableProps } from '../types'
 import { withCatchAsync, toBase64 } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { GenderPaginatedResource, GenderResource } from '@/horizon-corp/types'
 import GenderService from '@/horizon-corp/server/common/GenderService'
+import { GenderPaginatedResource, GenderResource } from '@/horizon-corp/types'
 
-export interface CompaniesTableRef {
-    selectedRowIds: Record<string, boolean>
-}
-
-const GendersTable = forwardRef(({ className }: IBaseCompNoChild, ref) => {
+const GendersTable = ({
+    className,
+    onSelectData,
+}: TableProps<GenderResource>) => {
     const {
         sorting,
         setSorting,
+        getRowIdFn,
         pagination,
         setPagination,
         columnOrder,
         setColumnOrder,
         isScrollable,
         setIsScrollable,
-        rowSelection,
-        setRowSelection,
         columnVisibility,
         setColumnVisibility,
+        rowSelectionState,
+        createHandleRowSelectionChange,
     } = useDataTableState({
+        onSelectData,
         columnOrder: columns.map((c) => c.id!),
     })
 
@@ -87,7 +87,7 @@ const GendersTable = forwardRef(({ className }: IBaseCompNoChild, ref) => {
         retry: 1,
     })
 
-    const getRowIdFn = useCallback((row: GenderResource) => `${row.id}`, [])
+    const onRowSelectionChange = createHandleRowSelectionChange(data)
 
     const table = useReactTable({
         columns,
@@ -99,8 +99,8 @@ const GendersTable = forwardRef(({ className }: IBaseCompNoChild, ref) => {
             sorting,
             pagination,
             columnOrder,
-            rowSelection,
             columnVisibility,
+            rowSelection: rowSelectionState.rowSelection,
         },
         rowCount: pageSize,
         pageCount: totalPage,
@@ -112,14 +112,10 @@ const GendersTable = forwardRef(({ className }: IBaseCompNoChild, ref) => {
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onColumnOrderChange: setColumnOrder,
-        onRowSelectionChange: setRowSelection,
+        onRowSelectionChange: onRowSelectionChange,
         getSortedRowModel: getSortedRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
     })
-
-    useImperativeHandle(ref, () => ({
-        selectedRowIds: table.getState().rowSelection,
-    }))
 
     return (
         <DataTableFilterContext.Provider value={filterState}>
@@ -162,14 +158,12 @@ const GendersTable = forwardRef(({ className }: IBaseCompNoChild, ref) => {
                     isStickyFooter
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2 max-h-96 flex-1"
+                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>
         </DataTableFilterContext.Provider>
     )
-})
-
-GendersTable.displayName = 'GendersTable'
+}
 
 export default GendersTable

@@ -4,7 +4,6 @@ import {
     getSortedRowModel,
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { useCallback } from 'react'
 import { useQuery } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
@@ -17,23 +16,20 @@ import DataTableFilterContext from '@/components/data-table/data-table-filters/d
 import columns, { companyGlobalSearchTargets } from './columns'
 
 import { cn } from '@/lib'
-import { IBaseCompNoChild } from '@/types'
+import { TableProps } from '../types'
 import { withCatchAsync, toBase64 } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 import { CompanyPaginatedResource, CompanyResource } from '@/horizon-corp/types'
 
-interface ICompaniesTableProps extends IBaseCompNoChild {
-    onSelectedData?: (datas: CompanyResource[]) => void
-}
-
 const CompaniesTable = ({
     className,
-    onSelectedData,
-}: ICompaniesTableProps) => {
+    onSelectData,
+}: TableProps<CompanyResource>) => {
     const {
         sorting,
         setSorting,
+        getRowIdFn,
         pagination,
         setPagination,
         columnOrder,
@@ -46,7 +42,7 @@ const CompaniesTable = ({
         setColumnVisibility,
     } = useDataTableState<CompanyResource>({
         columnOrder: columns.map((c) => c.id!),
-        onSelectedData,
+        onSelectData,
     })
 
     const filterState = useDatableFilterState({
@@ -88,8 +84,6 @@ const CompaniesTable = ({
         },
         retry: 1,
     })
-
-    const getRowIdFn = useCallback((row: CompanyResource) => `${row.id}`, [])
 
     const handleRowSelectionChange = createHandleRowSelectionChange(data)
 

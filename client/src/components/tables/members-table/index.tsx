@@ -16,29 +16,35 @@ import DataTableFilterContext from '@/components/data-table/data-table-filters/d
 import columns, { membersGlobalSearchTargets } from './columns'
 
 import { cn } from '@/lib'
-import { IBaseCompNoChild } from '@/types'
+import { TableProps } from '../types'
 import { withCatchAsync, toBase64 } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 /* TO REPLACE ONCE MEMBER RESOURCE IS MADE */
 import { GenderPaginatedResource } from '@/horizon-corp/types'
+import { MemberResource } from '@/horizon-corp/types/profile'
 import GenderService from '@/horizon-corp/server/common/GenderService'
 
-const MembersTable = ({ className }: IBaseCompNoChild) => {
+const MembersTable = ({
+    className,
+    onSelectData,
+}: TableProps<MemberResource>) => {
     const {
         sorting,
         setSorting,
+        getRowIdFn,
         pagination,
         setPagination,
         columnOrder,
         setColumnOrder,
         isScrollable,
         setIsScrollable,
-        rowSelection,
-        setRowSelection,
+        rowSelectionState,
+        createHandleRowSelectionChange,
         columnVisibility,
         setColumnVisibility,
     } = useDataTableState({
         columnOrder: columns.map((c) => c.id!),
+        onSelectData,
     })
 
     const filterState = useDatableFilterState()
@@ -80,6 +86,8 @@ const MembersTable = ({ className }: IBaseCompNoChild) => {
         retry: 1,
     })
 
+    const onRowSelectionChange = createHandleRowSelectionChange(data)
+
     const table = useReactTable({
         columns,
         data: data,
@@ -90,19 +98,20 @@ const MembersTable = ({ className }: IBaseCompNoChild) => {
             sorting,
             pagination,
             columnOrder,
-            rowSelection,
             columnVisibility,
+            rowSelection: rowSelectionState.rowSelection,
         },
         rowCount: pageSize,
         pageCount: totalPage,
         manualSorting: true,
         manualFiltering: true,
         manualPagination: true,
+        onRowSelectionChange,
+        getRowId : getRowIdFn,
         onSortingChange: setSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onColumnOrderChange: setColumnOrder,
-        onRowSelectionChange: setRowSelection,
         getSortedRowModel: getSortedRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
     })
