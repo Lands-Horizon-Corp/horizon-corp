@@ -1,14 +1,7 @@
 package contact
 
-import (
-	"gorm.io/gorm"
-)
+import "go.uber.org/fx"
 
-type Contact struct {
-	gorm.Model
-	FirstName     string `gorm:"type:varchar(255);not null" json:"first_name"`
-	LastName      string `gorm:"type:varchar(255);not null" json:"last_name"`
-	Email         string `gorm:"type:varchar(255);unique;not null" json:"email"`
-	ContactNumber string `gorm:"type:varchar(15);not null" json:"contact_number"`
-	Description   string `gorm:"type:text" json:"description"`
-}
+var Module = fx.Module(
+	"contact-module",
+)
