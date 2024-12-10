@@ -28,27 +28,22 @@ const PageBreadCrumb = ({ className, homeUrl }: Props) => {
     const matches = router.matches
 
     const paths = useMemo(() => {
-        const paths: { name: string; urlPath: string; isClickable: boolean }[] =
-            []
+        const paths: { name: string; urlPath: string, isClickable : boolean }[] = []
         const components = pathName.split('/').filter((path) => path)
 
         let currentPath = ''
 
         components.forEach((component) => {
-            if ('/' + component === homeUrl) return
-
             currentPath += '/' + component
             paths.push({
                 name: component,
                 urlPath: currentPath,
-                isClickable: matches.some(
-                    (match) => match.fullPath === currentPath
-                ),
+                isClickable: matches.some((match) => match.id === currentPath),
             })
         })
 
         return paths
-    }, [pathName, homeUrl, matches])
+    }, [pathName, matches])
 
     return (
         <Breadcrumb className={cn('capitalize', className)}>
@@ -63,24 +58,23 @@ const PageBreadCrumb = ({ className, homeUrl }: Props) => {
                                 </Link>
                             </BreadcrumbLink>
                         </BreadcrumbItem>
-
-                        <BreadcrumbSeparator>
-                            <ChevronRightIcon className="size-4" />
-                        </BreadcrumbSeparator>
+                        {paths.length > 1 && (
+                            <BreadcrumbSeparator>
+                                <ChevronRightIcon className="size-4" />
+                            </BreadcrumbSeparator>
+                        )}
                     </>
                 )}
                 {paths.map((path, i) => {
+                    if (path.urlPath === homeUrl) return null
+
                     return (
                         <Fragment key={path.urlPath}>
                             <BreadcrumbItem className="text-foreground/40">
                                 {i !== paths.length - 1 ? (
                                     <BreadcrumbLink
-                                        className={cn(
-                                            'text-inherit',
-                                            !path.isClickable &&
-                                                'pointer-events-none'
-                                        )}
                                         asChild
+                                        className="text-inherit"
                                     >
                                         <Link to={path.urlPath}>
                                             {path.name}

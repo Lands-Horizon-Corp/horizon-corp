@@ -1,4 +1,4 @@
-import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
+import { createRoute, lazyRouteComponent, redirect } from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
 
@@ -23,7 +23,9 @@ const adminDashboardRoute = createRoute({
 const adminViewMembersRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'members-management/view-members',
-    component: lazyRouteComponent(() => import('./pages/members/view-members/index')),
+    component: lazyRouteComponent(
+        () => import('./pages/members/view-members/index')
+    ),
 })
 
 const adminMembersFeedbackRoute = createRoute({
@@ -32,11 +34,31 @@ const adminMembersFeedbackRoute = createRoute({
     component: lazyRouteComponent(() => import('./pages/members/feedbacks')),
 })
 
+const adminCompaniesDefaultRoute = createRoute({
+  getParentRoute: () => adminRoute,
+  path: 'companies-management',
+  loader: () => {
+    throw redirect({ to: '/admin/companies-management/view-companies' });
+  },
+});
+
+
 const adminViewCompaniesRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'companies-management/view-companies',
     component: lazyRouteComponent(
-        () => import('./pages/companies-management/view-companies/index')
+        () => import('./pages/companies-management/view-companies')
+    ),
+})
+
+const adminViewCompanyBranchesRoute = createRoute({
+    getParentRoute: () => adminRoute,
+    path: 'companies-management/view-companies/$companyId/view-branches',
+    component: lazyRouteComponent(
+        () =>
+            import(
+                './pages/companies-management/company-branches'
+            )
     ),
 })
 
@@ -77,7 +99,11 @@ const AdminRoute = adminRoute.addChildren([
     adminDashboardRoute,
     adminViewMembersRoute,
     adminMembersFeedbackRoute,
+    
+    adminCompaniesDefaultRoute,
+    adminViewCompanyBranchesRoute,
     adminViewCompaniesRoute,
+
     adminCompaniesFeedbackRoute,
     adminFootstepTrackingRoute,
     adminProfileRoute,

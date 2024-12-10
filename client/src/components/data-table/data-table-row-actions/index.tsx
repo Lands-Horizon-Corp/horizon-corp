@@ -42,7 +42,7 @@ const RowActionsGroup = ({ onDelete, onView, onEdit, otherActions }: Props) => {
                     <DotsVerticalIcon />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
                 <DropdownMenuLabel>Action</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {onView && (
