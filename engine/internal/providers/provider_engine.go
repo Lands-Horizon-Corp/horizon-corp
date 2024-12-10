@@ -275,3 +275,7 @@ func NewEngineProvider(
 		server: server,
 	}, nil
 }
+
+func (es *EngineService) RegisterRoutes(routes *gin.RouterGroup) {
+
+}
