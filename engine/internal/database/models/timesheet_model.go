@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -33,6 +34,16 @@ type TimesheetResource struct {
 	MediaOut   *MediaResource    `json:"mediaOut"`
 }
 
+type TimeInRequest struct {
+	TimeIn  time.Time    `json:"timeIn" validate:"required"`
+	MediaIn MediaRequest `json:"mediaIn" validate:"required"`
+}
+
+type TimeOutRequest struct {
+	TimeOut  time.Time    `json:"timeOut" validate:"required"`
+	MediaOut MediaRequest `json:"mediaOut" validate:"required"`
+}
+
 func (m *ModelResource) TimesheetToResource(timesheet *Timesheet) *TimesheetResource {
 	if timesheet == nil {
 		return nil
@@ -47,6 +58,24 @@ func (m *ModelResource) TimesheetToResource(timesheet *Timesheet) *TimesheetReso
 		MediaOutID: timesheet.MediaOutID,
 		MediaOut:   m.MediaToResource(timesheet.MediaOut),
 	}
+}
+
+func (m *ModelResource) ValidateTimeInRequest(req *TimeInRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
+}
+
+func (m *ModelResource) ValidateTimeOutRequest(req *TimeInRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
 }
 
 func (m *ModelResource) TimesheetToResourceList(timesheets []*Timesheet) []*TimesheetResource {

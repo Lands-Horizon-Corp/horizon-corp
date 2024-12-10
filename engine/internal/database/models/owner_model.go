@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -100,6 +101,26 @@ func (m *ModelResource) OwnerToResource(owner *Owner) *OwnerResource {
 	}
 }
 
+type OwnerRequest struct {
+	FirstName          string    `json:"firstName" validate:"required,max=255"`
+	LastName           string    `json:"lastName" validate:"required,max=255"`
+	MiddleName         string    `json:"middleName,omitempty" validator:"max=255"`
+	PermanentAddress   string    `json:"permanentAddress,omitempty"`
+	Description        string    `json:"description,omitempty"`
+	BirthDate          time.Time `json:"birthDate" validate:"required"`
+	Username           string    `json:"username" validate:"required,max=255"`
+	Email              string    `json:"email" validate:"required,email,max=255"`
+	Password           string    `json:"password" validate:"required,min=8,max=255"`
+	ContactNumber      string    `json:"contactNumber" validate:"required,max=15"`
+	IsEmailVerified    bool      `json:"isEmailVerified"`
+	IsContactVerified  bool      `json:"isContactVerified"`
+	IsSkipVerification bool      `json:"isSkipVerification"`
+	Status             string    `json:"status" validate:"required,oneof=Pending Active Inactive"`
+	MediaID            *uint     `json:"mediaID,omitempty"`
+	GenderID           *uint     `json:"genderID,omitempty"`
+	RoleID             *uint     `json:"roleID,omitempty"`
+}
+
 func (m *ModelResource) OwnerToResourceList(owners []*Owner) []*OwnerResource {
 	if owners == nil {
 		return nil
@@ -109,6 +130,15 @@ func (m *ModelResource) OwnerToResourceList(owners []*Owner) []*OwnerResource {
 		ownerResources = append(ownerResources, m.OwnerToResource(owner))
 	}
 	return ownerResources
+}
+
+func (m *ModelResource) ValidateOwnerRequest(req *OwnerRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
 }
 
 func (m *ModelResource) OwnerSeeders() error {

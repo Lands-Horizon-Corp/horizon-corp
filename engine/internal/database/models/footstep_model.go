@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +44,16 @@ type FootstepResource struct {
 	Member      *MemberResource   `json:"member"`
 }
 
+type FootstepRequest struct {
+	AccountType string `json:"accountType" validate:"required,oneof=Admin Employee Owner Member"`
+	Description string `json:"description,omitempty" validate:"max=1000"`
+	Activity    string `json:"activity" validate:"required,max=255"`
+	AdminID     *uint  `json:"adminID,omitempty"`
+	EmployeeID  *uint  `json:"employeeID,omitempty"`
+	OwnerID     *uint  `json:"ownerID,omitempty"`
+	MemberID    *uint  `json:"memberID,omitempty"`
+}
+
 // FootstepToResource implements Models.
 func (m *ModelResource) FootstepToResource(footstep *Footstep) *FootstepResource {
 	if footstep == nil {
@@ -73,6 +84,15 @@ func (m *ModelResource) FootstepToResourceList(footsteps []*Footstep) []*Footste
 		footstepResources = append(footstepResources, m.FootstepToResource(footstep))
 	}
 	return footstepResources
+}
+
+func (m *ModelResource) ValidateFootstepRequest(req *FootstepRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
 }
 
 func (m *ModelResource) FootstepSeeders() error {

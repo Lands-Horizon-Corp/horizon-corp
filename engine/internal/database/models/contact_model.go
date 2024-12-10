@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -21,6 +22,14 @@ type ContactResource struct {
 	Email         string `json:"email"`
 	ContactNumber string `json:"contactNumber"`
 	Description   string `json:"description"`
+}
+
+type ContactRequest struct {
+	FirstName     string `json:"firstName" validate:"required,max=255"`
+	LastName      string `json:"lastName" validate:"required,max=255"`
+	Email         string `json:"email" validate:"required,email,max=255"`
+	ContactNumber string `json:"contactNumber" validate:"required,max=15"`
+	Description   string `json:"description,omitempty"`
 }
 
 func (m *ModelResource) ContactToResource(contact *Contact) *ContactResource {
@@ -47,7 +56,15 @@ func (m *ModelResource) ContactToResourceList(contacts []*Contact) []*ContactRes
 	return contactResources
 }
 
-// ContactSeeders implements Models.
+func (m *ModelResource) ValidateContactRequest(req *ContactRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
+}
+
 func (m *ModelResource) ContactSeeders() error {
 	m.logger.Info("Seeding Contact")
 	return nil

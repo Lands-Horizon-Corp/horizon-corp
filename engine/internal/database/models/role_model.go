@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -58,6 +59,25 @@ type RoleResource struct {
 	Members   []*MemberResource   `json:"members"`
 }
 
+type RoleRequest struct {
+	Name               string `json:"name" validate:"required,max=255"`
+	Description        string `json:"description,omitempty" validate:"max=1000"`
+	ApiKey             string `json:"apiKey" validate:"required,max=255"`
+	Color              string `json:"color,omitempty" validate:"max=255"`
+	ReadRole           bool   `json:"readRole"`
+	WriteRole          bool   `json:"writeRole"`
+	UpdateRole         bool   `json:"updateRole"`
+	DeleteRole         bool   `json:"deleteRole"`
+	ReadErrorDetails   bool   `json:"readErrorDetails"`
+	WriteErrorDetails  bool   `json:"writeErrorDetails"`
+	UpdateErrorDetails bool   `json:"updateErrorDetails"`
+	DeleteErrorDetails bool   `json:"deleteErrorDetails"`
+	ReadGender         bool   `json:"readGender"`
+	WriteGender        bool   `json:"writeGender"`
+	UpdateGender       bool   `json:"updateGender"`
+	DeleteGender       bool   `json:"deleteGender"`
+}
+
 // RoleToResource implements Models.
 func (m *ModelResource) RoleToResource(role *Role) *RoleResource {
 	if role == nil {
@@ -92,12 +112,20 @@ func (m *ModelResource) RoleToResourceList(roles []*Role) []*RoleResource {
 	if roles == nil {
 		return nil
 	}
-
 	var roleResources []*RoleResource
 	for _, role := range roles {
 		roleResources = append(roleResources, m.RoleToResource(role))
 	}
 	return roleResources
+}
+
+func (m *ModelResource) ValidateRoleRequest(req *RoleRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
 }
 
 func (m *ModelResource) RoleSeeders() error {

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -17,6 +18,12 @@ type FeedbackResource struct {
 	Email        string `json:"email"`
 	Description  string `json:"description"`
 	FeedbackType string `json:"feedbackType"`
+}
+
+type FeedbackRequest struct {
+	Email        string `json:"email" validate:"required,email,max=255"`
+	Description  string `json:"description" validate:"required"`
+	FeedbackType string `json:"feedbackType" validate:"required,oneof=bug feature general"`
 }
 
 func (m *ModelResource) FeedbackToResource(feedback *Feedback) *FeedbackResource {
@@ -39,6 +46,15 @@ func (m *ModelResource) FeedbackToResourceList(feedbacks []*Feedback) []*Feedbac
 		feedbackResources = append(feedbackResources, m.FeedbackToResource(feedback))
 	}
 	return feedbackResources
+}
+
+func (m *ModelResource) ValidateFeedbackRequest(req *FeedbackRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
 }
 
 func (m *ModelResource) FeedbackSeeders() error {

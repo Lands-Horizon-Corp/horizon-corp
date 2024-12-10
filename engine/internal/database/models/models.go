@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 )
@@ -23,6 +24,7 @@ type ModelResource struct {
 	db      *providers.DatabaseService
 	storage *providers.StorageProvider
 	logger  *providers.LoggerService
+	helpers *helpers.HelpersFunction
 	Models  []MigrateItem
 
 	AdminDB     *managers.Repository[Admin]
@@ -44,11 +46,13 @@ func NewModelResource(
 	db *providers.DatabaseService,
 	storage *providers.StorageProvider,
 	logger *providers.LoggerService,
+	helpers *helpers.HelpersFunction,
 ) (*ModelResource, error) {
 	modelResource := &ModelResource{
 		db:      db,
 		storage: storage,
 		logger:  logger,
+		helpers: helpers,
 
 		AdminDB:     managers.NewRepository[Admin](db),
 		BranchDB:    managers.NewRepository[Branch](db),

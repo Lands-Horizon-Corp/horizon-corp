@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -27,6 +28,11 @@ type GenderResource struct {
 	Admins      []*AdminResource    `json:"admins"`
 }
 
+type GenderRequest struct {
+	Name        string `json:"name" validate:"required,max=255"`
+	Description string `json:"description,omitempty" validate:"max=1000"`
+}
+
 func (m *ModelResource) GenderToResource(gender *Gender) *GenderResource {
 	if gender == nil {
 		return nil
@@ -51,6 +57,15 @@ func (m *ModelResource) GenderToResourceList(genders []*Gender) []*GenderResourc
 		genderResources = append(genderResources, m.GenderToResource(gender))
 	}
 	return genderResources
+}
+
+func (m *ModelResource) ValidateGenderRequest(req *GenderRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
 }
 
 func (m *ModelResource) GenderSeeders() error {

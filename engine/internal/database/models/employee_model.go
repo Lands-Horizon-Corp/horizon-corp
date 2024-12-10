@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -77,6 +78,29 @@ type EmployeeResource struct {
 	Footsteps          []*FootstepResource  `json:"footsteps"`
 }
 
+type EmployeeRequest struct {
+	FirstName          string    `json:"firstName" validate:"required,max=255"`
+	LastName           string    `json:"lastName" validate:"required,max=255"`
+	MiddleName         string    `json:"middleName,omitempty" validate:"max=255"`
+	PermanentAddress   string    `json:"permanentAddress,omitempty"`
+	Description        string    `json:"description,omitempty"`
+	BirthDate          time.Time `json:"birthDate" validate:"required"`
+	Username           string    `json:"username" validate:"required,max=255"`
+	Email              string    `json:"email" validate:"required,email,max=255"`
+	Password           string    `json:"password" validate:"required,min=8,max=255"`
+	IsEmailVerified    bool      `json:"isEmailVerified"`
+	IsContactVerified  bool      `json:"isContactVerified"`
+	IsSkipVerification bool      `json:"isSkipVerification"`
+	ContactNumber      string    `json:"contactNumber" validate:"required,max=15"`
+	Status             string    `json:"status" validate:"required,oneof=Pending Active Inactive"`
+	Longitude          *float64  `json:"longitude" validate:"omitempty,longitude"`
+	Latitude           *float64  `json:"latitude" validate:"omitempty,latitude"`
+	MediaID            *uint     `json:"mediaID,omitempty"`
+	BranchID           *uint     `json:"branchID,omitempty"`
+	RoleID             *uint     `json:"roleID,omitempty"`
+	GenderID           *uint     `json:"genderID,omitempty"`
+}
+
 func (m *ModelResource) EmployeeToResource(employee *Employee) *EmployeeResource {
 	if employee == nil {
 		return nil
@@ -123,7 +147,23 @@ func (m *ModelResource) EmployeeToResourceList(employees []*Employee) []*Employe
 	return employeeResources
 }
 
-// EmployeeSeeders implements Models.
+func (m *ModelResource) ValidateEmployeeRequest(req *EmployeeRequest) error {
+	validate := validator.New()
+	validate.RegisterValidation("longitude", func(fl validator.FieldLevel) bool {
+		lon := fl.Field().Float()
+		return lon >= -180 && lon <= 180
+	})
+	validate.RegisterValidation("latitude", func(fl validator.FieldLevel) bool {
+		lat := fl.Field().Float()
+		return lat >= -90 && lat <= 90
+	})
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
+}
+
 func (m *ModelResource) EmployeeSeeders() error {
 	m.logger.Info("Seeding Employee")
 	return nil

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +44,16 @@ type MediaResource struct {
 	Branches  []*BranchResource   `json:"branches"`
 }
 
+type MediaRequest struct {
+	FileName   string `json:"fileName" validate:"required,max=255"`
+	FileSize   int64  `json:"fileSize" validate:"required,min=1"`
+	FileType   string `json:"fileType" validate:"required,max=50"`
+	StorageKey string `json:"storageKey" validate:"required,max=255"`
+	URL        string `json:"url" validate:"required,url,max=255"`
+	Key        string `json:"key,omitempty" validate:"max=255"`
+	BucketName string `json:"bucketName,omitempty" validate:"max=255"`
+}
+
 func (m *ModelResource) MediaToResource(media *Media) *MediaResource {
 	if media == nil {
 		return nil
@@ -82,7 +93,15 @@ func (m *ModelResource) MediaToResourceList(mediaList []*Media) []*MediaResource
 	return mediaResources
 }
 
-// MediaSeeders implements Models.
+func (m *ModelResource) ValidateMediaRequest(req *MediaRequest) error {
+	validate := validator.New()
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
+}
+
 func (m *ModelResource) MediaSeeders() error {
 	m.logger.Info("Seeding Media")
 	return nil

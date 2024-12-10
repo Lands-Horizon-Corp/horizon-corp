@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
 
@@ -43,6 +44,18 @@ type CompanyResource struct {
 	Branches        []*BranchResource `json:"branches"`
 }
 
+type CompanyRequest struct {
+	Name            string  `json:"name" validate:"required,max=255"`
+	Description     string  `json:"description,omitempty"`
+	Address         string  `json:"address" validate:"required,max=500"`
+	Longitude       float64 `json:"longitude" validate:"longitude"`
+	Latitude        float64 `json:"latitude" validate:"latitude"`
+	ContactNumber   string  `json:"contactNumber" validate:"required,max=255"`
+	OwnerID         *uint   `json:"ownerID,omitempty"`
+	MediaID         *uint   `json:"mediaID,omitempty"`
+	IsAdminVerified bool    `json:"isAdminVerified"`
+}
+
 func (m *ModelResource) CompanyToResource(company *Company) *CompanyResource {
 	if company == nil {
 		return nil
@@ -73,6 +86,23 @@ func (m *ModelResource) CompanyToResourceList(companies []*Company) []*CompanyRe
 		companyResources = append(companyResources, m.CompanyToResource(company))
 	}
 	return companyResources
+}
+
+func (m *ModelResource) ValidateCompanyRequest(req *CompanyRequest) error {
+	validate := validator.New()
+	validate.RegisterValidation("longitude", func(fl validator.FieldLevel) bool {
+		lon := fl.Field().Float()
+		return lon >= -180 && lon <= 180
+	})
+	validate.RegisterValidation("latitude", func(fl validator.FieldLevel) bool {
+		lat := fl.Field().Float()
+		return lat >= -90 && lat <= 90
+	})
+	err := validate.Struct(req)
+	if err != nil {
+		return m.helpers.FormatValidationError(err)
+	}
+	return nil
 }
 
 func (m *ModelResource) CompanySeeders() error {
