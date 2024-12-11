@@ -18,14 +18,13 @@ const DataTableUnselect = <T,>({ table, className }: IDataTableDeleteSelectedPro
         .getSelectedRowModel()
         .flatRows.map((row) => row.original)
 
-    if (selectedRows.length === 0) return null
-
     return (
         <ActionTooltip
             tooltipContent={`Unselect ${selectedRows.length} row(s)`}
         >
             <Button
                 size="icon"
+                disabled={selectedRows.length === 0}
                 variant="secondary"
                 className={className}
                 onClick={() =>

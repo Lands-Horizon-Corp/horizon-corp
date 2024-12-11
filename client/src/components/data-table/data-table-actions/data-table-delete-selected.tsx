@@ -2,7 +2,7 @@ import { Table } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { TrashBinIcon } from '@/components/icons'
+import { TrashIcon } from '@/components/icons'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib'
@@ -22,7 +22,7 @@ const DataTableDeleteSelected = <T,>({
     disabled,
     isLoading,
     className,
-    canDelete = false,
+    canDelete = true,
     onClick,
 }: IDataTableDeleteSelectedProps<T>) => {
     const { onOpen } = useConfirmModalStore()
@@ -45,19 +45,14 @@ const DataTableDeleteSelected = <T,>({
                 })
             }
             size="icon"
-            variant="secondary"
-            className={cn(
-                'relative',
-                className,
-                !(isLoading || isDisabled) &&
-                    'text-rose-400/80 hover:text-rose-400'
-            )}
+            variant="destructive"
+            className={cn('relative', className)}
         >
             {isLoading ? (
                 <LoadingSpinner />
             ) : (
                 <span className="inline-flex items-center gap-x-2">
-                    <TrashBinIcon className="inline" />
+                    <TrashIcon className="inline" />
                     {selectedRows.length > 0 && (
                         <Badge
                             variant="secondary"

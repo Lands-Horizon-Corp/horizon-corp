@@ -9,7 +9,6 @@ import {
 } from 'react-icons/ci'
 
 import {
-    GoTrash as TrashBinIcon,
     GoDotFill as DotBigIcon,
     GoArrowLeft as ArrowLeftIcon,
     GoSearch as MagnifyingGlassIcon,
@@ -24,6 +23,7 @@ import {
 import {
     LuUndo2 as UndoIcon,
     LuRedo2 as RedoIcon,
+    LuTrash as TrashIcon,
     LuImage as ImageIcon,
     LuFileX as FileXIcon,
     LuClock8 as ClockIcon,
@@ -137,7 +137,6 @@ import {
 
 import {
     RxReset as ResetIcon,
-    RxTrash as TrashIcon,
     RxEyeNone as EyeNoneIcon,
     RxFontItalic as ToolbarItalicIcon,
     RxDotsVertical as DotsVerticalIcon,
@@ -212,7 +211,6 @@ export {
     EyeNoneIcon,
     PaymentsIcon,
     HomeFillIcon,
-    TrashBinIcon,
     FacebookIcon,
     QuestionIcon,
     SettingsIcon,

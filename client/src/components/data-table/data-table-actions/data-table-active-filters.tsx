@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 
 import { Button } from '@/components/ui/button'
 import FilterChip from '@/components/filter-chip'
-import { TrashBinIcon } from '@/components/icons'
+import { TrashIcon } from '@/components/icons'
 import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib'
@@ -45,7 +45,7 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
                         className="size-fit p-1 text-xs text-foreground/60"
                         onClick={() => resetFilter()}
                     >
-                        <TrashBinIcon />
+                        <TrashIcon />
                     </Button>
                 </ActionTooltip>
                 {mappedFilters.map((filter) => (

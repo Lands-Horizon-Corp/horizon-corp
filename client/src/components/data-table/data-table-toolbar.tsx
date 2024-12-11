@@ -7,18 +7,18 @@ import DataTableGlobalSearch, {
     IGlobalSearchProps,
 } from './data-table-filters/data-table-global-search'
 import { Separator } from '@/components/ui/separator'
+import DataTableUnselect from './data-table-actions/data-table-unselect'
 import DataTableExportButton from '@/components/data-table/data-table-actions/data-table-export'
 import DataTableOptionsMenu from '@/components/data-table/data-table-actions/data-table-options-menu'
 import DataTableActiveFilters from '@/components/data-table/data-table-actions/data-table-active-filters'
 import DataTableDeleteSelected from '@/components/data-table/data-table-actions/data-table-delete-selected'
 
+import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { type IDataTableExportProps } from '@/components/data-table/data-table-actions/data-table-export'
 import { type IDataTableScrollableOptionProps } from './data-table-actions/data-table-options-menu/scroll-option'
 import { IDataTableFilterLogicOptionProps } from './data-table-actions/data-table-options-menu/filter-logic-option'
 import { type IDataTableDeleteSelectedProps } from '@/components/data-table/data-table-actions/data-table-delete-selected'
-import DataTableUnselect from './data-table-actions/data-table-unselect'
-import { cn } from '@/lib'
 
 export interface IDataTableToolbarProps<TData = unknown>
     extends IBaseCompNoChild {
