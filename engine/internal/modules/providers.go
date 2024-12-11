@@ -23,16 +23,16 @@ func NewModuleServiceProvider(
 	middle *middleware.Middleware,
 	apiRoutes *routes.APIRoutes,
 ) {
-
+	router := engineService.Client
 	// Common Middlewares
-	engineService.Client.Use(middle.BlockIPMiddleware())
-	engineService.Client.Use(middle.DetectSuspiciousAccessMiddleware())
+	router.Use(middle.BlockIPMiddleware())
+	router.Use(middle.DetectSuspiciousAccessMiddleware())
 	if cfg.AppEnv == "production" || cfg.AppEnv == "staging" {
-		engineService.Client.Use(middle.EnforceHTTPS)
+		router.Use(middle.EnforceHTTPS)
 	}
-	engineService.Client.Use(middle.Config())
-	engineService.Client.Use(middle.Secure())
-	engineService.Client.Use(middle.RateLimiterMiddleware(20, 20))
+	router.Use(middle.Config())
+	router.Use(middle.Secure())
+	router.Use(middle.RateLimiterMiddleware(20, 20))
 
 	apiRoutes.APITestRoute()
 	apiRoutes.API()

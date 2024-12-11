@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/admin"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/branch"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/company"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
 )
@@ -14,8 +15,9 @@ type APIRoutes struct {
 	router        *gin.Engine
 
 	// Services
-	adminService  *admin.AdminService
-	branchService *branch.BranchService
+	adminService   *admin.AdminService
+	branchService  *branch.BranchService
+	companyService *company.CompanyService
 }
 
 func NewAPIRoutes(
@@ -26,6 +28,7 @@ func NewAPIRoutes(
 	// Services
 	adminService *admin.AdminService,
 	branchService *branch.BranchService,
+	companyService *company.CompanyService,
 
 ) *APIRoutes {
 	return &APIRoutes{
@@ -35,12 +38,14 @@ func NewAPIRoutes(
 		router:        engineService.Client,
 
 		// Services
-		adminService:  adminService,
-		branchService: branchService,
+		adminService:   adminService,
+		branchService:  branchService,
+		companyService: companyService,
 	}
 }
 
 func (ar *APIRoutes) API() {
 	ar.adminService.RegisterRoutes()
 	ar.branchService.RegisterRoutes()
+	ar.companyService.RegisterRoutes()
 }
