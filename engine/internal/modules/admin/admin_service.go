@@ -34,12 +34,12 @@ func NewAdminService(
 }
 
 func (as *AdminService) RegisterRoutes() {
-	adminRoutes := as.engine.Client.Group("/admins")
+	routes := as.engine.Client.Group("/admin")
 	{
-		adminRoutes.POST("/", as.controller.Create)
-		adminRoutes.GET("/", as.controller.GetAll)
-		adminRoutes.GET("/:id", as.controller.GetByID)
-		adminRoutes.PUT("/:id", as.controller.Update)
-		adminRoutes.DELETE("/:id", as.controller.Delete)
+		routes.POST("/", as.controller.Create)
+		routes.GET("/", as.controller.GetAll)
+		routes.GET("/:id", as.controller.GetByID)
+		routes.PUT("/:id", as.controller.Update)
+		routes.DELETE("/:id", as.controller.Delete)
 	}
 }
