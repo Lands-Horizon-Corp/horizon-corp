@@ -6,8 +6,9 @@ import (
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/server/middleware"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/server/routes"
+	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
+	"github.com/Lands-Horizon-Corp/horizon-corp/server/routes"
+
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"go.uber.org/fx"
 	"go.uber.org/zap"

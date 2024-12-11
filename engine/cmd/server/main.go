@@ -6,6 +6,7 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/server"
 	"go.uber.org/fx"
 )
 
@@ -17,7 +18,7 @@ func main() {
 		providers.Module,
 		database.Module,
 		modules.Module,
-
+		server.Module,
 		fx.Invoke(
 			database.NewDatabaseMigration,
 			modules.NewModuleServiceProvider,
