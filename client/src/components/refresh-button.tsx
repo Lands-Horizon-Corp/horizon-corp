@@ -16,8 +16,8 @@ const RefreshButton = ({
     return (
         <Button
             size="icon"
-            onClick={onClick}
             variant="secondary"
+            onClick={onClick}
             disabled={isLoading}
             className={className}
         >

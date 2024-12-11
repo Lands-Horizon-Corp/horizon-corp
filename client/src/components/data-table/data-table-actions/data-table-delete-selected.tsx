@@ -6,9 +6,10 @@ import { TrashBinIcon } from '@/components/icons'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib'
+import { IBaseCompNoChild } from '@/types'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 
-export interface IDataTableDeleteSelectedProps<T> {
+export interface IDataTableDeleteSelectedProps<T> extends IBaseCompNoChild {
     table: Table<T>
     disabled?: boolean
     isLoading?: boolean
@@ -20,6 +21,7 @@ const DataTableDeleteSelected = <T,>({
     table,
     disabled,
     isLoading,
+    className,
     canDelete = false,
     onClick,
 }: IDataTableDeleteSelectedProps<T>) => {
@@ -46,6 +48,7 @@ const DataTableDeleteSelected = <T,>({
             variant="secondary"
             className={cn(
                 'relative',
+                className,
                 !(isLoading || isDisabled) &&
                     'text-rose-400/80 hover:text-rose-400'
             )}

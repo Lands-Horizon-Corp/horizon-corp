@@ -18,6 +18,7 @@ import { type IDataTableScrollableOptionProps } from './data-table-actions/data-
 import { IDataTableFilterLogicOptionProps } from './data-table-actions/data-table-options-menu/filter-logic-option'
 import { type IDataTableDeleteSelectedProps } from '@/components/data-table/data-table-actions/data-table-delete-selected'
 import DataTableUnselect from './data-table-actions/data-table-unselect'
+import { cn } from '@/lib'
 
 export interface IDataTableToolbarProps<TData = unknown>
     extends IBaseCompNoChild {
@@ -48,19 +49,40 @@ const DataTableToolbar = <TData,>({
                 <DataTableActiveFilters />
             </div>
             <div className="flex items-center gap-x-2">
-                <DataTableUnselect table={table} />
-                {deleteActionProps && (
-                    <DataTableDeleteSelected
+                <div className="flex items-center">
+                    <DataTableUnselect
+                        className="rounded-none border first:rounded-l-md last:rounded-r-md"
                         table={table}
-                        {...deleteActionProps}
                     />
-                )}
-                <DataTableRefreshButton {...refreshActionProps} />
-                <DataTableOptionsMenu
-                    table={table}
-                    scrollOption={scrollableProps}
-                    filterLogicOption={filterLogicProps}
-                />
+                    {deleteActionProps && (
+                        <DataTableDeleteSelected
+                            table={table}
+                            {...{
+                                ...deleteActionProps,
+                                className: cn(
+                                    'rounded-none border first:rounded-l-md last:rounded-r-md',
+                                    deleteActionProps.className
+                                ),
+                            }}
+                        />
+                    )}
+                    <DataTableRefreshButton
+                        {...{
+                            ...refreshActionProps,
+                            className: cn(
+                                'rounded-none border first:rounded-l-md last:rounded-r-md',
+                                refreshActionProps.className
+                            ),
+                        }}
+                    />
+                    <DataTableOptionsMenu
+                        table={table}
+                        scrollOption={scrollableProps}
+                        filterLogicOption={filterLogicProps}
+                        className="rounded-none border first:rounded-l-md last:rounded-r-md"
+                    />
+                </div>
+
                 {exportActionProps && (
                     <>
                         <Separator

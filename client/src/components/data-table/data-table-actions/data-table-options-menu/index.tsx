@@ -13,11 +13,13 @@ import DataTableScrollOption, {
     IDataTableScrollableOptionProps,
 } from './scroll-option'
 import ColumnVisibilityOption from './column-visibility-option'
+import { cn } from '@/lib'
+import { IBaseCompNoChild } from '@/types'
 import DataTableFilterLogicOption, {
     IDataTableFilterLogicOptionProps,
 } from './filter-logic-option'
 
-interface Props<T> {
+interface Props<T> extends IBaseCompNoChild {
     table: Table<T>
     scrollOption?: IDataTableScrollableOptionProps
     filterLogicOption?: IDataTableFilterLogicOptionProps
@@ -25,13 +27,14 @@ interface Props<T> {
 
 const DataTableOptionsMenu = <T,>({
     table,
+    className,
     scrollOption,
     filterLogicOption,
 }: Props<T>) => {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button size="icon" variant="secondary" className="rounded-md">
+                <Button size="icon" variant="secondary" className={cn("rounded-md", className)}>
                     <MixerHorizontalIcon className="size-4" />
                 </Button>
             </DropdownMenuTrigger>

@@ -3,13 +3,15 @@ import { Table } from '@tanstack/react-table'
 import { Button } from '@/components/ui/button'
 import ActionTooltip from '@/components/action-tooltip'
 import { DashSquareDottedIcon } from '@/components/icons'
+
+import { IBaseCompNoChild } from '@/types'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 
-export interface IDataTableDeleteSelectedProps<T> {
+export interface IDataTableDeleteSelectedProps<T> extends IBaseCompNoChild {
     table: Table<T>
 }
 
-const DataTableUnselect = <T,>({ table }: IDataTableDeleteSelectedProps<T>) => {
+const DataTableUnselect = <T,>({ table, className }: IDataTableDeleteSelectedProps<T>) => {
     const { onOpen } = useConfirmModalStore();
 
     const selectedRows = table
@@ -25,6 +27,7 @@ const DataTableUnselect = <T,>({ table }: IDataTableDeleteSelectedProps<T>) => {
             <Button
                 size="icon"
                 variant="secondary"
+                className={className}
                 onClick={() =>
                     onOpen({
                         title: 'Unselect',
