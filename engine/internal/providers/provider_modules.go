@@ -11,5 +11,6 @@ var Module = fx.Module(
 		NewEmailProvider,
 		NewStorageProvider,
 		NewSMSProvider,
+		NewEngineProvider,
 	),
 )

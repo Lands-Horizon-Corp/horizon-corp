@@ -20,7 +20,7 @@ func main() {
 
 		fx.Invoke(
 			database.NewDatabaseMigration,
-			providers.NewEngineProvider,
+			modules.NewModuleServiceProvider,
 			providers.NewTerminalService,
 		),
 	)

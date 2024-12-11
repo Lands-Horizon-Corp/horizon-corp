@@ -106,6 +106,8 @@ func printAppDetails(cfg *config.AppConfig, db *DatabaseService, cache *CacheSer
 	}
 
 	fmt.Println()
+
+	fmt.Println()
 	fmt.Println(version("✒ Version ", cfg.AppVersion))
 	fmt.Println()
 }

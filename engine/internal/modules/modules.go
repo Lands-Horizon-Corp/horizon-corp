@@ -13,12 +13,13 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/member"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/owner"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/role"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/server"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/timesheet"
 	"go.uber.org/fx"
 )
 
 var Module = fx.Module(
-	"helpers",
+	"modules",
 	admin.Module,
 	branch.Module,
 	company.Module,
@@ -32,4 +33,5 @@ var Module = fx.Module(
 	owner.Module,
 	role.Module,
 	timesheet.Module,
+	server.Module,
 )
