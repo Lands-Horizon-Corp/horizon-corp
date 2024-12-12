@@ -63,10 +63,13 @@ import {
     PiTextStrikethroughLight as TextStrikethroughLightIcon,
 } from 'react-icons/pi'
 
+import { HiOutlineBadgeCheck as CheckBadgeOutlineIcon } from 'react-icons/hi'
+
 import {
     HiOutlineSun as SunIcon,
     HiOutlineMoon as MoonIcon,
     HiOutlineCog as SettingsIcon,
+    HiCheckBadge as CheckBadgeIcon,
     HiOutlineCodeBracket as DevIcon,
     HiOutlineArrowUp as ArrowUpIcon,
     HiOutlineBell as NotificationIcon,
@@ -112,6 +115,7 @@ import {
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
 } from 'react-icons/md'
+
 import {
     BsZoomIn as ZoomInIcon,
     BsZoomOut as ZoomOutIcon,
@@ -229,6 +233,7 @@ export {
     DashboardIcon,
     IoIosCodeIcon,
     TelephoneIcon,
+    CheckBadgeIcon,
     SmallBrushIcon,
     FullscreenIcon,
     RotateLeftIcon,
@@ -284,6 +289,7 @@ export {
     DashSquareDottedIcon,
     PatchExclamationIcon,
     FlipVerticalLineIcon,
+    CheckBadgeOutlineIcon,
     LocationPinOutlineIcon,
     FlipHorizontalLineIcon,
     Rotate90DegreeLeftIcon,

@@ -1,9 +1,13 @@
-import { ColumnDef } from '@tanstack/react-table'
+import { toast } from 'sonner'
+import { useRouter } from '@tanstack/react-router'
+import { useMutation } from '@tanstack/react-query'
+import { ColumnDef, Row } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
 import UserAvatar from '@/components/user-avatar'
 import { Checkbox } from '@/components/ui/checkbox'
-import { PushPinSlashIcon } from '@/components/icons'
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import { CheckBadgeOutlineIcon, PushPinSlashIcon } from '@/components/icons'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
@@ -11,11 +15,13 @@ import NumberFilter from '@/components/data-table/data-table-filters/number-filt
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
 import DataTableMultiSelectFilter from '@/components/data-table/data-table-filters/multi-select-filter'
-
-import { toReadableDate } from '@/utils'
-import logger from '@/helpers/loggers/logger'
-import { CompanyResource } from '@/horizon-corp/types'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
+
+import { serverRequestErrExtractor } from '@/helpers'
+import { CompanyResource } from '@/horizon-corp/types'
+import { toReadableDate, withCatchAsync } from '@/utils'
+import useConfirmModalStore from '@/store/confirm-modal-store'
+import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 
 export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[] =
     [
@@ -25,6 +31,74 @@ export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[]
         { field: 'contactNumber', displayText: 'Contact' },
         { field: 'isAdminVerified', displayText: 'Verify Status' },
     ]
+
+const CompaniesTableAction = ({ row }: { row: Row<CompanyResource> }) => {
+    const company = row.original
+
+    const router = useRouter()
+    const { onOpen } = useConfirmModalStore()
+
+    const { isPending: isDeletingCompany, mutate: deleteCompany } = useMutation<
+        void,
+        string
+    >({
+        mutationKey: ['delete', 'company', company.id],
+        mutationFn: async () => {
+            const [error] = await withCatchAsync(
+                CompanyService.delete(company.id)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+            }
+        },
+    })
+
+    return (
+        <RowActionsGroup
+            onDelete={{
+                text: 'Delete',
+                isAllowed: !isDeletingCompany,
+                onClick: () =>
+                    onOpen({
+                        title: 'Delete Company',
+                        description: 'Are you sure to delete this company?',
+                        onConfirm: () => deleteCompany(),
+                    }),
+            }}
+            onEdit={{
+                text: 'Edit',
+                isAllowed: true,
+                onClick: () => {
+                    router.navigate({
+                        to: '/admin/companies-management/$companyId/edit',
+                        params: { companyId: company.id },
+                    })
+                },
+            }}
+            onView={{
+                text: 'View',
+                isAllowed: true,
+                onClick: () => {
+                    router.navigate({
+                        to: '/admin/companies-management/$companyId/view',
+                        params: { companyId: company.id },
+                    })
+                },
+            }}
+            otherActions={
+                <>
+                    {!company.isAdminVerified && (
+                        <DropdownMenuItem>
+                            <CheckBadgeOutlineIcon className="mr-2" /> Approve
+                        </DropdownMenuItem>
+                    )}
+                </>
+            }
+        />
+    )
+}
 
 const companiesTableColumns: ColumnDef<CompanyResource>[] = [
     {
@@ -48,29 +122,7 @@ const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         ),
         cell: ({ row }) => (
             <div className="flex w-fit items-center gap-x-1 px-0">
-                <RowActionsGroup
-                    onDelete={{
-                        text: 'Delete',
-                        isAllowed: true,
-                        onClick: () => {
-                            logger.log('delete')
-                        },
-                    }}
-                    onEdit={{
-                        text: 'Edit',
-                        isAllowed: false,
-                        onClick: () => {
-                            logger.log('edit')
-                        },
-                    }}
-                    onView={{
-                        text: 'View',
-                        isAllowed: true,
-                        onClick: () => {
-                            logger.log('view')
-                        },
-                    }}
-                />
+                <CompaniesTableAction row={row} />
                 <Checkbox
                     checked={row.getIsSelected()}
                     onCheckedChange={(value) => row.toggleSelected(!!value)}
