@@ -1,8 +1,10 @@
-import { createRoute, lazyRouteComponent, redirect } from '@tanstack/react-router'
+import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
+import AdminMemberManagementRoute from './pages/members/route'
+import AdminCompaniesManagementRoute from './pages/companies-management/route'
 
-const adminRoute = createRoute({
+export const adminRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'admin',
     component: lazyRouteComponent(() => import('./layout')),
@@ -11,63 +13,13 @@ const adminRoute = createRoute({
 const adminLandingRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: '/',
-    component: lazyRouteComponent(() => import('./pages/')),
+    component: lazyRouteComponent(() => import('./pages')),
 })
 
 const adminDashboardRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'dashboard',
     component: lazyRouteComponent(() => import('./pages/dashboard')),
-})
-
-const adminViewMembersRoute = createRoute({
-    getParentRoute: () => adminRoute,
-    path: 'members-management/view-members',
-    component: lazyRouteComponent(
-        () => import('./pages/members/view-members/index')
-    ),
-})
-
-const adminMembersFeedbackRoute = createRoute({
-    getParentRoute: () => adminRoute,
-    path: 'members-management/feedbacks',
-    component: lazyRouteComponent(() => import('./pages/members/feedbacks')),
-})
-
-const adminCompaniesDefaultRoute = createRoute({
-  getParentRoute: () => adminRoute,
-  path: 'companies-management',
-  loader: () => {
-    throw redirect({ to: '/admin/companies-management/view-companies' });
-  },
-});
-
-
-const adminViewCompaniesRoute = createRoute({
-    getParentRoute: () => adminRoute,
-    path: 'companies-management/view-companies',
-    component: lazyRouteComponent(
-        () => import('./pages/companies-management/view-companies')
-    ),
-})
-
-const adminViewCompanyBranchesRoute = createRoute({
-    getParentRoute: () => adminRoute,
-    path: 'companies-management/view-companies/$companyId',
-    component: lazyRouteComponent(
-        () =>
-            import(
-                './pages/companies-management/company-branches'
-            )
-    ),
-})
-
-const adminCompaniesFeedbackRoute = createRoute({
-    getParentRoute: () => adminRoute,
-    path: 'companies-management/feedbacks',
-    component: lazyRouteComponent(
-        () => import('./pages/companies-management/feedbacks')
-    ),
 })
 
 const adminFootstepTrackingRoute = createRoute({
@@ -97,18 +49,14 @@ const adminSettingsRoute = createRoute({
 const AdminRoute = adminRoute.addChildren([
     adminLandingRoute,
     adminDashboardRoute,
-    adminViewMembersRoute,
-    adminMembersFeedbackRoute,
-    
-    adminCompaniesDefaultRoute,
-    adminViewCompanyBranchesRoute,
-    adminViewCompaniesRoute,
 
-    adminCompaniesFeedbackRoute,
-    adminFootstepTrackingRoute,
+    AdminMemberManagementRoute,
+    AdminCompaniesManagementRoute,
+
     adminProfileRoute,
-    adminNotificationsRoute,
     adminSettingsRoute,
+    adminNotificationsRoute,
+    adminFootstepTrackingRoute,
 ])
 
 export default AdminRoute
