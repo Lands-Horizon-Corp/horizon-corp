@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -199,6 +200,35 @@ func (r *ModelResource) MemberUpdatePassword(id uint, password string) error {
 	updated := &Member{Password: newPassword}
 	_, err = r.MemberDB.UpdateColumns(id, *updated, []string{"Media"})
 	return err
+}
+
+func (r *ModelResource) MemberCreate(user *Member) error {
+	if user == nil {
+		return errors.New("user cannot be nil")
+	}
+	if user.Password == "" {
+		return errors.New("password cannot be empty")
+	}
+	hashedPassword, err := r.cryptoHelpers.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hashedPassword
+	return r.MemberDB.Create(user)
+}
+
+func (r *ModelResource) MemberUpdate(user *Member, preloads []string) error {
+	if user == nil {
+		return errors.New("user cannot be nil")
+	}
+	if user.Password != "" {
+		hashedPassword, err := r.cryptoHelpers.HashPassword(user.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = hashedPassword
+	}
+	return r.MemberDB.Update(user, preloads)
 }
 
 func (m *ModelResource) MemberSeeders() error {

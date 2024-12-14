@@ -26,7 +26,10 @@ func NewAuthService(
 }
 
 func (as AuthService) SignUp(ctx *gin.Context) {
-	// here get here
+	// Admin
+	// Employee
+	// Owner
+	// Member
 }
 
 func (as AuthService) SignIn(ctx *gin.Context) {

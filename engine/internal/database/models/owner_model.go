@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -179,6 +180,34 @@ func (r *ModelResource) OwnerUpdatePassword(id uint, password string) error {
 	return err
 }
 
+func (r *ModelResource) OwnerCreate(user *Owner) error {
+	if user == nil {
+		return errors.New("user cannot be nil")
+	}
+	if user.Password == "" {
+		return errors.New("password cannot be empty")
+	}
+	hashedPassword, err := r.cryptoHelpers.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hashedPassword
+	return r.OwnerDB.Create(user)
+}
+
+func (r *ModelResource) OwnerUpdate(user *Owner, preloads []string) error {
+	if user == nil {
+		return errors.New("user cannot be nil")
+	}
+	if user.Password != "" {
+		hashedPassword, err := r.cryptoHelpers.HashPassword(user.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = hashedPassword
+	}
+	return r.OwnerDB.Update(user, preloads)
+}
 func (m *ModelResource) OwnerSeeders() error {
 	m.logger.Info("Seeding Owner")
 	return nil

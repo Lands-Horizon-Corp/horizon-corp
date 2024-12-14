@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -172,6 +173,34 @@ func (r *ModelResource) AdminUpdatePassword(id uint, password string) error {
 	updated := &Admin{Password: newPassword}
 	_, err = r.AdminDB.UpdateColumns(id, *updated, []string{"Media"})
 	return err
+}
+func (r *ModelResource) AdminCreate(user *Admin) error {
+	if user == nil {
+		return errors.New("user cannot be nil")
+	}
+	if user.Password == "" {
+		return errors.New("password cannot be empty")
+	}
+	hashedPassword, err := r.cryptoHelpers.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hashedPassword
+	return r.AdminDB.Create(user)
+}
+
+func (r *ModelResource) AdminUpdate(user *Admin, preloads []string) error {
+	if user == nil {
+		return errors.New("user cannot be nil")
+	}
+	if user.Password != "" {
+		hashedPassword, err := r.cryptoHelpers.HashPassword(user.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = hashedPassword
+	}
+	return r.AdminDB.Update(user, preloads)
 }
 
 func (m *ModelResource) AdminSeeders() error {

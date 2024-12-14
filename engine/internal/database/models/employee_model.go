@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -192,6 +193,7 @@ func (r *ModelResource) EmployeeFindByEmailUsernameOrContact(input string) (*Emp
 		return r.EmployeeGetByUsername(input)
 	}
 }
+
 func (r *ModelResource) EmployeeUpdatePassword(id uint, password string) error {
 	newPassword, err := r.cryptoHelpers.HashPassword(password)
 	if err != nil {
@@ -200,6 +202,35 @@ func (r *ModelResource) EmployeeUpdatePassword(id uint, password string) error {
 	updated := &Employee{Password: newPassword}
 	_, err = r.EmployeeDB.UpdateColumns(id, *updated, []string{"Media"})
 	return err
+}
+
+func (r *ModelResource) EmployeeCreate(user *Employee) error {
+	if user == nil {
+		return errors.New("user cannot be nil")
+	}
+	if user.Password == "" {
+		return errors.New("password cannot be empty")
+	}
+	hashedPassword, err := r.cryptoHelpers.HashPassword(user.Password)
+	if err != nil {
+		return err
+	}
+	user.Password = hashedPassword
+	return r.EmployeeDB.Create(user)
+}
+
+func (r *ModelResource) EmployeeUpdate(user *Employee, preloads []string) error {
+	if user == nil {
+		return errors.New("user cannot be nil")
+	}
+	if user.Password != "" {
+		hashedPassword, err := r.cryptoHelpers.HashPassword(user.Password)
+		if err != nil {
+			return err
+		}
+		user.Password = hashedPassword
+	}
+	return r.EmployeeDB.Update(user, preloads)
 }
 
 func (m *ModelResource) EmployeeSeeders() error {

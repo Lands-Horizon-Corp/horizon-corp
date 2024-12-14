@@ -47,10 +47,18 @@ func (r *Repository[T]) FindAll(preloads ...string) ([]T, error) {
 	return entities, nil
 }
 
-func (r *Repository[T]) Update(entity *T) error {
-	if err := r.DB.Client.Save(entity).Error; err != nil {
+func (r *Repository[T]) Update(entity *T, preloads []string) error {
+	tx := r.DB.Client
+
+	// Apply preloads
+	for _, preload := range preloads {
+		tx = tx.Preload(preload)
+	}
+
+	if err := tx.Save(entity).Error; err != nil {
 		return fmt.Errorf("failed to update entity: %w", err)
 	}
+
 	return nil
 }
 

@@ -97,6 +97,24 @@ func (h *Controller[T, V, R]) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
+
+	// Get preloads from the query
+	preloads := getPreloads(c)
+
+	// Fetch the entity with preloads
+	entity, err := h.Repo.FindByID(uint(id), preloads...)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Bind the request JSON to the entity
+	if err := c.ShouldBindJSON(entity); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Validate the request
 	var req V
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -106,19 +124,13 @@ func (h *Controller[T, V, R]) Update(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"validation_error": err.Error()})
 		return
 	}
-	entity, err := h.Repo.FindByID(uint(id))
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
-	}
-	if err := c.ShouldBindJSON(entity); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	if err := h.Repo.Update(entity); err != nil {
+
+	// Perform the update
+	if err := h.Repo.Update(entity, preloads); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
 	c.JSON(http.StatusOK, h.Resource(entity))
 }
 
