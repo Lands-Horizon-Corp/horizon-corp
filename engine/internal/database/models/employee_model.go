@@ -63,7 +63,6 @@ type EmployeeResource struct {
 	BirthDate          time.Time            `json:"birthDate"`
 	Username           string               `json:"username"`
 	Email              string               `json:"email"`
-	Password           string               `json:"password"`
 	IsEmailVerified    bool                 `json:"isEmailVerified"`
 	IsContactVerified  bool                 `json:"isContactVerified"`
 	IsSkipVerification bool                 `json:"isSkipVerification"`
@@ -92,7 +91,6 @@ type EmployeeRequest struct {
 	BirthDate          time.Time `json:"birthDate" validate:"required"`
 	Username           string    `json:"username" validate:"required,max=255"`
 	Email              string    `json:"email" validate:"required,email,max=255"`
-	Password           string    `json:"password" validate:"required,min=8,max=255"`
 	IsEmailVerified    bool      `json:"isEmailVerified"`
 	IsContactVerified  bool      `json:"isContactVerified"`
 	IsSkipVerification bool      `json:"isSkipVerification"`
@@ -117,15 +115,15 @@ func (m *ModelResource) EmployeeToResource(employee *Employee) *EmployeeResource
 		CreatedAt: employee.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: employee.UpdatedAt.Format(time.RFC3339),
 
-		FirstName:          employee.FirstName,
-		LastName:           employee.LastName,
-		MiddleName:         employee.MiddleName,
-		PermanentAddress:   employee.PermanentAddress,
-		Description:        employee.Description,
-		BirthDate:          employee.BirthDate,
-		Username:           employee.Username,
-		Email:              employee.Email,
-		Password:           employee.Password,
+		FirstName:        employee.FirstName,
+		LastName:         employee.LastName,
+		MiddleName:       employee.MiddleName,
+		PermanentAddress: employee.PermanentAddress,
+		Description:      employee.Description,
+		BirthDate:        employee.BirthDate,
+		Username:         employee.Username,
+		Email:            employee.Email,
+
 		IsEmailVerified:    employee.IsEmailVerified,
 		IsContactVerified:  employee.IsContactVerified,
 		IsSkipVerification: employee.IsSkipVerification,

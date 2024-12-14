@@ -64,7 +64,6 @@ type MemberResource struct {
 	BirthDate          time.Time       `json:"birthDate"`
 	Username           string          `json:"username"`
 	Email              string          `json:"email"`
-	Password           string          `json:"password"`
 	IsEmailVerified    bool            `json:"isEmailVerified"`
 	IsContactVerified  bool            `json:"isContactVerified"`
 	IsSkipVerification bool            `json:"isSkipVerification"`
@@ -101,7 +100,6 @@ func (m *ModelResource) MemberToResource(member *Member) *MemberResource {
 		BirthDate:          member.BirthDate,
 		Username:           member.Username,
 		Email:              member.Email,
-		Password:           member.Password,
 		IsEmailVerified:    member.IsEmailVerified,
 		IsContactVerified:  member.IsContactVerified,
 		IsSkipVerification: member.IsSkipVerification,

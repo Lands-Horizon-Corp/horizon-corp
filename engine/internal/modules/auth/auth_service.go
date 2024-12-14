@@ -37,7 +37,7 @@ func (as AuthService) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	if err := as.authProvider.Validate(req); err != nil {
+	if err := as.authProvider.ValidateSignUp(req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
 		return
 	}
@@ -121,6 +121,27 @@ func (as AuthService) SignUp(ctx *gin.Context) {
 }
 
 func (as AuthService) SignIn(ctx *gin.Context) {
+	var req SignInRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	if err := as.authProvider.ValidateSignIn(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	switch req.AccountType {
+	case "Member":
+		as.authAccount.MemberSignIn(ctx, req.Key, req.Password)
+	case "Admin":
+		as.authAccount.AdminSignIn(ctx, req.Key, req.Password)
+	case "Owner":
+		as.authAccount.OwnerSignIn(ctx, req.Key, req.Password)
+	case "Employee":
+		as.authAccount.EmployeeSignIn(ctx, req.Key, req.Password)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 
 }
 

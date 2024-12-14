@@ -85,15 +85,15 @@ func (m *ModelResource) OwnerToResource(owner *Owner) *OwnerResource {
 		CreatedAt: owner.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: owner.UpdatedAt.Format(time.RFC3339),
 
-		FirstName:          owner.FirstName,
-		LastName:           owner.LastName,
-		MiddleName:         owner.MiddleName,
-		PermanentAddress:   owner.PermanentAddress,
-		Description:        owner.Description,
-		BirthDate:          owner.BirthDate,
-		Username:           owner.Username,
-		Email:              owner.Email,
-		Password:           owner.Password,
+		FirstName:        owner.FirstName,
+		LastName:         owner.LastName,
+		MiddleName:       owner.MiddleName,
+		PermanentAddress: owner.PermanentAddress,
+		Description:      owner.Description,
+		BirthDate:        owner.BirthDate,
+		Username:         owner.Username,
+		Email:            owner.Email,
+
 		ContactNumber:      owner.ContactNumber,
 		IsEmailVerified:    owner.IsEmailVerified,
 		IsContactVerified:  owner.IsContactVerified,
@@ -111,23 +111,23 @@ func (m *ModelResource) OwnerToResource(owner *Owner) *OwnerResource {
 }
 
 type OwnerRequest struct {
-	FirstName          string    `json:"firstName" validate:"required,max=255"`
-	LastName           string    `json:"lastName" validate:"required,max=255"`
-	MiddleName         string    `json:"middleName,omitempty" validator:"max=255"`
-	PermanentAddress   string    `json:"permanentAddress,omitempty"`
-	Description        string    `json:"description,omitempty"`
-	BirthDate          time.Time `json:"birthDate" validate:"required"`
-	Username           string    `json:"username" validate:"required,max=255"`
-	Email              string    `json:"email" validate:"required,email,max=255"`
-	Password           string    `json:"password" validate:"required,min=8,max=255"`
-	ContactNumber      string    `json:"contactNumber" validate:"required,max=15"`
-	IsEmailVerified    bool      `json:"isEmailVerified"`
-	IsContactVerified  bool      `json:"isContactVerified"`
-	IsSkipVerification bool      `json:"isSkipVerification"`
-	Status             string    `json:"status" validate:"required,oneof=Pending Active Inactive"`
-	MediaID            *uint     `json:"mediaID,omitempty"`
-	GenderID           *uint     `json:"genderID,omitempty"`
-	RoleID             *uint     `json:"roleID,omitempty"`
+	FirstName        string    `json:"firstName" validate:"required,max=255"`
+	LastName         string    `json:"lastName" validate:"required,max=255"`
+	MiddleName       string    `json:"middleName,omitempty" validator:"max=255"`
+	PermanentAddress string    `json:"permanentAddress,omitempty"`
+	Description      string    `json:"description,omitempty"`
+	BirthDate        time.Time `json:"birthDate" validate:"required"`
+	Username         string    `json:"username" validate:"required,max=255"`
+	Email            string    `json:"email" validate:"required,email,max=255"`
+
+	ContactNumber      string `json:"contactNumber" validate:"required,max=15"`
+	IsEmailVerified    bool   `json:"isEmailVerified"`
+	IsContactVerified  bool   `json:"isContactVerified"`
+	IsSkipVerification bool   `json:"isSkipVerification"`
+	Status             string `json:"status" validate:"required,oneof=Pending Active Inactive"`
+	MediaID            *uint  `json:"mediaID,omitempty"`
+	GenderID           *uint  `json:"genderID,omitempty"`
+	RoleID             *uint  `json:"roleID,omitempty"`
 }
 
 func (m *ModelResource) OwnerToResourceList(owners []*Owner) []*OwnerResource {

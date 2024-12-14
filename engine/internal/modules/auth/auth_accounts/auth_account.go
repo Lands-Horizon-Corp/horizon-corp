@@ -7,6 +7,7 @@ import (
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
 	"go.uber.org/zap"
@@ -22,6 +23,7 @@ type AuthAccount struct {
 	logger        *providers.LoggerService
 
 	modelResource *models.ModelResource
+	cryptoHelpers *helpers.HelpersCryptography
 }
 
 func NewAuthAccount(
@@ -33,6 +35,7 @@ func NewAuthAccount(
 	tokenProvider *providers.TokenService,
 	logger *providers.LoggerService,
 	modelResource *models.ModelResource,
+	cryptoHelpers *helpers.HelpersCryptography,
 ) *AuthAccount {
 	return &AuthAccount{
 		cfg:           cfg,
@@ -41,6 +44,7 @@ func NewAuthAccount(
 		otpProvider:   otpProvider,
 		tokenProvider: tokenProvider,
 		modelResource: modelResource,
+		cryptoHelpers: cryptoHelpers,
 	}
 }
 
@@ -236,6 +240,37 @@ func (ap *AuthAccount) FindByEmailUsernameOrContact(accountType, input string) (
 		return ap.modelResource.MemberToResource(user), nil
 	default:
 		return nil, errors.New("invalid account type")
+	}
+}
+
+func (ap *AuthAccount) FindByEmailUsernameOrContactForPassword(accountType, input string) (uint, string, error) {
+	switch accountType {
+	case "Admin":
+		user, err := ap.modelResource.AdminFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return 0, "", err
+		}
+		return user.ID, user.Password, nil
+	case "Owner":
+		user, err := ap.modelResource.OwnerFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return 0, "", err
+		}
+		return user.ID, user.Password, nil
+	case "Employee":
+		user, err := ap.modelResource.EmployeeFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return 0, "", err
+		}
+		return user.ID, user.Password, nil
+	case "Member":
+		user, err := ap.modelResource.MemberFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return 0, "", err
+		}
+		return user.ID, user.Password, nil
+	default:
+		return 0, "", errors.New("invalid account type")
 	}
 }
 

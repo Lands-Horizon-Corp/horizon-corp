@@ -27,6 +27,12 @@ type SignUpRequest struct {
 	ContactTemplate  string               `json:"contactTemplate" validate:"required"`
 }
 
+type SignInRequest struct {
+	Key         string `json:"key" validate:"required,max=255"`
+	Password    string `json:"password" validate:"required,min=8,max=255"`
+	AccountType string `json:"accountType" validate:"required"`
+}
+
 type AuthProvider struct {
 	cfg           *config.AppConfig
 	cryptoHelpers *helpers.HelpersCryptography
@@ -56,7 +62,19 @@ func (ap *AuthProvider) AccountTypeValidator(fl validator.FieldLevel) bool {
 	return false
 }
 
-func (ap *AuthProvider) Validate(r SignUpRequest) error {
+func (ap *AuthProvider) ValidateSignUp(r SignUpRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err := validate.RegisterValidation("accountType", ap.AccountTypeValidator); err != nil {
+		return fmt.Errorf("failed to register account type validator: %v", err)
+	}
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ap *AuthProvider) ValidateSignIn(r SignInRequest) error {
 	validate := validator.New()
 	err := validate.Struct(r)
 	if err := validate.RegisterValidation("accountType", ap.AccountTypeValidator); err != nil {

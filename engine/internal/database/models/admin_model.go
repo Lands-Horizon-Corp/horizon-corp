@@ -56,7 +56,6 @@ type AdminResource struct {
 	BirthDate          time.Time           `json:"birthDate"`
 	Username           string              `json:"username"`
 	Email              string              `json:"email"`
-	Password           string              `json:"password"`
 	ContactNumber      string              `json:"contactNumber"`
 	IsEmailVerified    bool                `json:"isEmailVerified"`
 	IsContactVerified  bool                `json:"isContactVerified"`
@@ -110,7 +109,6 @@ func (m *ModelResource) AdminToResource(admin *Admin) *AdminResource {
 		BirthDate:          admin.BirthDate,
 		Username:           admin.Username,
 		Email:              admin.Email,
-		Password:           admin.Password,
 		ContactNumber:      admin.ContactNumber,
 		IsEmailVerified:    admin.IsEmailVerified,
 		IsContactVerified:  admin.IsContactVerified,
