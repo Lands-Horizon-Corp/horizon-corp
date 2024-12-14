@@ -177,7 +177,25 @@ func (ac *AuthAccount) OwnerSkipVerification(ctx *gin.Context, id uint) {
 	ctx.JSON(http.StatusOK, resource)
 }
 
-func (ac *AuthAccount) OwnerSendEmailVerification(ctx *gin.Context)         {}
+func (ac *AuthAccount) OwnerSendEmailVerification(ctx *gin.Context, id uint, emailTemplate string) {
+	const accountType = "Owner"
+	email, err := ac.GetByIDForEmail(accountType, id)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("NewPassword: User not found: %v", err)})
+		return
+	}
+	emailReq := providers.EmailRequest{
+		To:      email,
+		Subject: "ECOOP: Email Verification",
+		Body:    emailTemplate,
+	}
+	if err := ac.otpProvider.SendEmailOTP(accountType, id, emailReq); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Please check your inbox or spam folder."})
+}
+
 func (ac *AuthAccount) OwnerVerifyEmail(ctx *gin.Context)                   {}
 func (ac *AuthAccount) OwnerSendContactNumberVerification(ctx *gin.Context) {}
 func (ac *AuthAccount) OwnerVerifyContactNumber(ctx *gin.Context)           {}

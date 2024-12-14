@@ -301,6 +301,33 @@ func (as AuthService) SkipVerification(ctx *gin.Context) {
 }
 
 func (as AuthService) SendEmailVerification(ctx *gin.Context) {
+	var req SendEmailVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateSendEmailVerification(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: Validation error: %v", err)})
+		return
+	}
+
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberSendEmailVerification(ctx, claims.ID, req.EmailTemplate)
+	case "Admin":
+		as.authAccount.AdminSendEmailVerification(ctx, claims.ID, req.EmailTemplate)
+	case "Owner":
+		as.authAccount.OwnerSendEmailVerification(ctx, claims.ID, req.EmailTemplate)
+	case "Employee":
+		as.authAccount.EmployeeSendEmailVerification(ctx, claims.ID, req.EmailTemplate)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 
 }
 

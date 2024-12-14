@@ -58,6 +58,10 @@ type NewPasswordRequest struct {
 	ConfirmPassword  string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
 }
 
+type SendEmailVerificationRequest struct {
+	EmailTemplate string `json:"emailTemplate" validate:"required"`
+}
+
 func NewAuthProvider(
 	cfg *config.AppConfig,
 	cryptoHelpers *helpers.HelpersCryptography,
@@ -133,6 +137,15 @@ func (ap *AuthProvider) ValidateChangePassword(r ChangePasswordRequest) error {
 }
 
 func (ap *AuthProvider) ValidateNewPassword(r NewPasswordRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ap *AuthProvider) ValidateSendEmailVerification(r SendEmailVerificationRequest) error {
 	validate := validator.New()
 	err := validate.Struct(r)
 	if err != nil {

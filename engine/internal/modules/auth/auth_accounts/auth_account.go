@@ -181,6 +181,25 @@ func (ap *AuthAccount) GetByIDForPassword(accountType string, id uint) (string, 
 	}
 }
 
+func (ap *AuthAccount) GetByIDForEmail(accountType string, id uint) (string, error) {
+	switch accountType {
+	case "Admin":
+		admin, err := ap.modelResource.AdminDB.FindByID(id)
+		return admin.Email, err
+	case "Owner":
+		owner, err := ap.modelResource.OwnerDB.FindByID(id)
+		return owner.Email, err
+	case "Employee":
+		employee, err := ap.modelResource.EmployeeDB.FindByID(id)
+		return employee.Email, err
+	case "Member":
+		member, err := ap.modelResource.MemberDB.FindByID(id)
+		return member.Email, err
+	default:
+		return "", errors.New("invalid account type")
+	}
+}
+
 func (ap *AuthAccount) Update(user interface{}, accountType string, preloads []string) (interface{}, error) {
 	if user == nil {
 		return nil, errors.New("user cannot be nil")
