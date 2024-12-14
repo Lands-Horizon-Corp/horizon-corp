@@ -2,6 +2,7 @@ package modules
 
 import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/admin"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/auth"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/branch"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/company"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/contact"
@@ -21,6 +22,7 @@ import (
 var Module = fx.Module(
 	"modules",
 	admin.Module,
+	auth.Module,
 	branch.Module,
 	company.Module,
 	contact.Module,
