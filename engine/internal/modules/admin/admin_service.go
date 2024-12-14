@@ -34,7 +34,7 @@ func NewAdminService(
 }
 
 func (as *AdminService) RegisterRoutes() {
-	routes := as.engine.Client.Group("/admin")
+	routes := as.engine.Client.Group("/api/v1//admin")
 	{
 		routes.POST("/", as.controller.Create)
 		routes.GET("/", as.controller.GetAll)

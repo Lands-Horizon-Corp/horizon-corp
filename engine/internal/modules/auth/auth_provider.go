@@ -70,6 +70,10 @@ type SendContactNumberVerificationRequest struct {
 	ContactTemplate string `json:"contactTemplate" validate:"required"`
 }
 
+type VerifyContactNumberRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
+}
+
 func NewAuthProvider(
 	cfg *config.AppConfig,
 	cryptoHelpers *helpers.HelpersCryptography,
@@ -172,6 +176,15 @@ func (ap *AuthProvider) ValidateVerifyEmailRequest(r VerifyEmailRequest) error {
 }
 
 func (ap *AuthProvider) ValidateSendContactNumberVerificationRequest(r SendContactNumberVerificationRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ap *AuthProvider) ValidateVerifyContactNumberRequest(r VerifyContactNumberRequest) error {
 	validate := validator.New()
 	err := validate.Struct(r)
 	if err != nil {

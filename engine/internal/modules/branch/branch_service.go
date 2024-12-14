@@ -34,7 +34,7 @@ func NewBranchService(
 }
 
 func (as *BranchService) RegisterRoutes() {
-	routes := as.engine.Client.Group("/branch")
+	routes := as.engine.Client.Group("/api/v1//branch")
 	{
 		routes.POST("/", as.controller.Create)
 		routes.GET("/", as.controller.GetAll)

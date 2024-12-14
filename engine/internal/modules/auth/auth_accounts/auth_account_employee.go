@@ -236,4 +236,12 @@ func (ac *AuthAccount) EmployeeSendContactNumberVerification(ctx *gin.Context, i
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully."})
 }
-func (ac *AuthAccount) EmployeeVerifyContactNumber(ctx *gin.Context) {}
+func (ac *AuthAccount) EmployeeVerifyContactNumber(ctx *gin.Context, id uint) {
+	const accountType = "Employee"
+	updatedUser, err := ac.UpdateVerification(accountType, id, "contact", true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedUser)
+}

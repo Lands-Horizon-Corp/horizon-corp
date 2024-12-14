@@ -230,4 +230,12 @@ func (ac *AuthAccount) OwnerSendContactNumberVerification(ctx *gin.Context, id u
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully."})
 }
-func (ac *AuthAccount) OwnerVerifyContactNumber(ctx *gin.Context) {}
+func (ac *AuthAccount) OwnerVerifyContactNumber(ctx *gin.Context, id uint) {
+	const accountType = "Owner"
+	updatedUser, err := ac.UpdateVerification(accountType, id, "contact", true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedUser)
+}

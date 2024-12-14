@@ -403,7 +403,32 @@ func (as AuthService) SendContactNumberVerification(ctx *gin.Context) {
 }
 
 func (as AuthService) VerifyContactNumber(ctx *gin.Context) {
-
+	var req VerifyContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateVerifyContactNumberRequest(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberVerifyContactNumber(ctx, claims.ID)
+	case "Admin":
+		as.authAccount.AdminVerifyContactNumber(ctx, claims.ID)
+	case "Owner":
+		as.authAccount.OwnerVerifyContactNumber(ctx, claims.ID)
+	case "Employee":
+		as.authAccount.EmployeeVerifyContactNumber(ctx, claims.ID)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
 func (as *AuthService) RegisterRoutes() {

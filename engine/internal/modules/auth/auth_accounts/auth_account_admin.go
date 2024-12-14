@@ -211,8 +211,8 @@ func (ac *AuthAccount) AdminVerifyEmail(ctx *gin.Context, id uint) {
 		return
 	}
 	ctx.JSON(http.StatusOK, updatedUser)
-
 }
+
 func (ac *AuthAccount) AdminSendContactNumberVerification(ctx *gin.Context, id uint, contactTemplate string) {
 	const accountType = "Admin"
 	contact, err := ac.GetByIDForContact(accountType, id)
@@ -239,4 +239,12 @@ func (ac *AuthAccount) AdminSendContactNumberVerification(ctx *gin.Context, id u
 	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully."})
 
 }
-func (ac *AuthAccount) AdminVerifyContactNumber(ctx *gin.Context) {}
+func (ac *AuthAccount) AdminVerifyContactNumber(ctx *gin.Context, id uint) {
+	const accountType = "Admin"
+	updatedUser, err := ac.UpdateVerification(accountType, id, "contact", true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedUser)
+}

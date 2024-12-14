@@ -34,7 +34,7 @@ func NewCompanyService(
 }
 
 func (as *CompanyService) RegisterRoutes() {
-	routes := as.engine.Client.Group("/company")
+	routes := as.engine.Client.Group("/api/v1/company")
 	{
 		routes.POST("/", as.controller.Create)
 		routes.GET("/", as.controller.GetAll)
