@@ -153,7 +153,24 @@ func (ac *AuthAccount) AdminChangePassword(ctx *gin.Context, id uint, password s
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
 
-func (ac *AuthAccount) AdminNewPassword(ctx *gin.Context)                   {}
+func (ac *AuthAccount) AdminNewPassword(ctx *gin.Context, id uint, newPassword string) {
+	const accountType = "Admin"
+	password, err := ac.GetByIDForPassword(accountType, id)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("NewPassword: User not found: %v", err)})
+		return
+	}
+	if ac.cryptoHelpers.VerifyPassword(password, newPassword) {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "NewPassword: NewPassword: Password verification failed"})
+		return
+	}
+	if err := ac.UpdatePassword(accountType, id, newPassword); err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("NewPassword: Password update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
+}
+
 func (ac *AuthAccount) AdminSkipVerification(ctx *gin.Context)              {}
 func (ac *AuthAccount) AdminSendEmailVerification(ctx *gin.Context)         {}
 func (ac *AuthAccount) AdminVerifyEmail(ctx *gin.Context)                   {}

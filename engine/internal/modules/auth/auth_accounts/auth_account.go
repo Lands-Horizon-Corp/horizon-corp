@@ -151,14 +151,33 @@ func (ap *AuthAccount) GetByID(accountType string, id uint) (interface{}, error)
 		return ap.modelResource.OwnerToResource(owner), err
 	case "Employee":
 		preloads := []string{"Media", "Branch", "Role", "Gender"}
-		owner, err := ap.modelResource.EmployeeDB.FindByID(id, preloads...)
-		return ap.modelResource.EmployeeToResource(owner), err
+		employee, err := ap.modelResource.EmployeeDB.FindByID(id, preloads...)
+		return ap.modelResource.EmployeeToResource(employee), err
 	case "Member":
 		preloads := []string{"Media", "Branch", "Role", "Gender"}
-		owner, err := ap.modelResource.MemberDB.FindByID(id, preloads...)
-		return ap.modelResource.MemberToResource(owner), err
+		member, err := ap.modelResource.MemberDB.FindByID(id, preloads...)
+		return ap.modelResource.MemberToResource(member), err
 	default:
 		return nil, errors.New("invalid account type")
+	}
+}
+
+func (ap *AuthAccount) GetByIDForPassword(accountType string, id uint) (string, error) {
+	switch accountType {
+	case "Admin":
+		admin, err := ap.modelResource.AdminDB.FindByID(id)
+		return admin.Password, err
+	case "Owner":
+		owner, err := ap.modelResource.OwnerDB.FindByID(id)
+		return owner.Password, err
+	case "Employee":
+		employee, err := ap.modelResource.EmployeeDB.FindByID(id)
+		return employee.Password, err
+	case "Member":
+		member, err := ap.modelResource.MemberDB.FindByID(id)
+		return member.Password, err
+	default:
+		return "", errors.New("invalid account type")
 	}
 }
 

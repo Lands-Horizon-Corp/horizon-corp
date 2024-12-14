@@ -251,6 +251,32 @@ func (as AuthService) CurrentUser(ctx *gin.Context) {
 }
 
 func (as AuthService) NewPassword(ctx *gin.Context) {
+	var req NewPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateNewPassword(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.AdminNewPassword(ctx, claims.ID, req.NewPassword)
+	case "Admin":
+		as.authAccount.AdminChangePassword(ctx, claims.ID, req.NewPassword)
+	case "Owner":
+		as.authAccount.OwnerChangePassword(ctx, claims.ID, req.NewPassword)
+	case "Employee":
+		as.authAccount.EmployeeChangePassword(ctx, claims.ID, req.NewPassword)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 
 }
 
