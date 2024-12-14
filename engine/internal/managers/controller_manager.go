@@ -61,7 +61,7 @@ func (h *Controller[T, V, R]) Create(c *gin.Context) {
 
 func (h *Controller[T, V, R]) GetByID(c *gin.Context) {
 	idParam := c.Param("id")
-	id, err := strconv.ParseUint(idParam, 10, 64)
+	id, err := strconv.Atoi(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
@@ -92,7 +92,7 @@ func (h *Controller[T, V, R]) GetAll(c *gin.Context) {
 
 func (h *Controller[T, V, R]) Update(c *gin.Context) {
 	idParam := c.Param("id")
-	id, err := strconv.ParseUint(idParam, 10, 64)
+	id, err := strconv.Atoi(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
@@ -136,7 +136,7 @@ func (h *Controller[T, V, R]) Update(c *gin.Context) {
 
 func (h *Controller[T, V, R]) Delete(c *gin.Context) {
 	idParam := c.Param("id")
-	id, err := strconv.ParseUint(idParam, 10, 64)
+	id, err := strconv.Atoi(idParam)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
