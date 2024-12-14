@@ -34,6 +34,22 @@ func NewAuthService(
 	}
 }
 
+func (as *AuthService) getUserClaims(ctx *gin.Context) (*providers.UserClaims, error) {
+	claims, exists := ctx.Get("claims")
+	if !exists {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		return nil, fmt.Errorf("claims not found in context")
+	}
+
+	userClaims, ok := claims.(*providers.UserClaims)
+	if !ok {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		return nil, fmt.Errorf("failed to cast claims to *auth.UserClaims")
+	}
+
+	return userClaims, nil
+}
+
 func (as AuthService) SignUp(ctx *gin.Context) {
 	var req SignUpRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -221,7 +237,17 @@ func (as AuthService) SignOut(ctx *gin.Context) {
 }
 
 func (as AuthService) CurrentUser(ctx *gin.Context) {
-
+	userClaims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	user, err := as.authAccount.GetByID(userClaims.AccountType, userClaims.ID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found."})
+		return
+	}
+	ctx.JSON(http.StatusOK, user)
 }
 
 func (as AuthService) NewPassword(ctx *gin.Context) {

@@ -151,7 +151,6 @@ func (ac *AuthAccount) MemberChangePassword(ctx *gin.Context, id uint, password 
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
-func (ac *AuthAccount) MemberCurrentUser(ctx *gin.Context)                   {}
 func (ac *AuthAccount) MemberNewPassword(ctx *gin.Context)                   {}
 func (ac *AuthAccount) MemberSkipVerification(ctx *gin.Context)              {}
 func (ac *AuthAccount) MemberSendEmailVerification(ctx *gin.Context)         {}

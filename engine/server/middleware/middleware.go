@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 )
 
@@ -12,18 +13,24 @@ var suspicious = []string{
 }
 
 type Middleware struct {
-	logger     *providers.LoggerService
-	cache      *providers.CacheService
-	suspicious []string
+	cfg           *config.AppConfig
+	logger        *providers.LoggerService
+	cache         *providers.CacheService
+	tokenProvider *providers.TokenService
+	suspicious    []string
 }
 
 func NewMiddleware(
+	cfg *config.AppConfig,
 	logger *providers.LoggerService,
 	cache *providers.CacheService,
+	tokenProvider *providers.TokenService,
 ) *Middleware {
 	return &Middleware{
-		logger:     logger,
-		cache:      cache,
-		suspicious: suspicious,
+		cfg:           cfg,
+		logger:        logger,
+		cache:         cache,
+		suspicious:    suspicious,
+		tokenProvider: tokenProvider,
 	}
 }
