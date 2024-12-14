@@ -205,5 +205,29 @@ func (ac *AuthAccount) MemberVerifyEmail(ctx *gin.Context, id uint) {
 	}
 	ctx.JSON(http.StatusOK, updatedUser)
 }
-func (ac *AuthAccount) MemberSendContactNumberVerification(ctx *gin.Context) {}
-func (ac *AuthAccount) MemberVerifyContactNumber(ctx *gin.Context)           {}
+func (ac *AuthAccount) MemberSendContactNumberVerification(ctx *gin.Context, id uint, contactTemplate string) {
+	const accountType = "Member"
+	contact, err := ac.GetByIDForContact(accountType, id)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("NewPassword: User not found: %v", err)})
+		return
+	}
+	name, err := ac.GetByIDForName(accountType, id)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("NewPassword: User not found: %v", err)})
+		return
+	}
+	contactReq := providers.SMSRequest{
+		To:   contact,
+		Body: contact,
+		Vars: &map[string]string{
+			"name": name,
+		},
+	}
+	if err := ac.otpProvider.SendContactNumberOTP(accountType, id, contactReq); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: SMS sending error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully."})
+}
+func (ac *AuthAccount) MemberVerifyContactNumber(ctx *gin.Context) {}

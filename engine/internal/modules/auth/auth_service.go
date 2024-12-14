@@ -374,7 +374,32 @@ func (as AuthService) VerifyEmail(ctx *gin.Context) {
 }
 
 func (as AuthService) SendContactNumberVerification(ctx *gin.Context) {
-
+	var req SendContactNumberVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateSendContactNumberVerificationRequest(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberSendContactNumberVerification(ctx, claims.ID, req.ContactTemplate)
+	case "Admin":
+		as.authAccount.AdminSendContactNumberVerification(ctx, claims.ID, req.ContactTemplate)
+	case "Owner":
+		as.authAccount.OwnerSendContactNumberVerification(ctx, claims.ID, req.ContactTemplate)
+	case "Employee":
+		as.authAccount.EmployeeSendContactNumberVerification(ctx, claims.ID, req.ContactTemplate)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
 func (as AuthService) VerifyContactNumber(ctx *gin.Context) {
