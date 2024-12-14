@@ -15,8 +15,8 @@ type OTPService struct {
 	cfg          *config.AppConfig
 	logger       *LoggerService
 	helpers      *helpers.HelpersCryptography
-	mail         EmailService
-	sms          SMSService
+	mail         *EmailService
+	sms          *SMSService
 	cacheService *CacheService
 }
 
@@ -26,8 +26,8 @@ func NewOTPProvider(
 	logger *LoggerService,
 	helpers *helpers.HelpersCryptography,
 	cacheService *CacheService,
-	mail EmailService,
-	sms SMSService,
+	mail *EmailService,
+	sms *SMSService,
 ) *OTPService {
 	return &OTPService{
 		cfg:          cfg,

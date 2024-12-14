@@ -104,7 +104,7 @@ func (as AuthService) VerifyContactNumber(ctx *gin.Context) {
 }
 
 func (as *AuthService) RegisterRoutes() {
-	routes := as.engine.Client.Group("/auth")
+	routes := as.engine.Client.Group("/api/v1/auth")
 	{
 		routes.POST("/signup", as.SignUp)
 		routes.POST("/signin", as.SignIn)

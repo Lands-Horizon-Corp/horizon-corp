@@ -9,9 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const accountType = "Member"
-
 func (ac *AuthAccount) MemberSignUp(ctx *gin.Context, emailTemplate, contactTemplate string) {
+	const accountType = "Member"
 
 	var req models.MemberRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
