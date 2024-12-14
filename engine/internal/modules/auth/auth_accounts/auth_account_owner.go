@@ -150,7 +150,6 @@ func (ac *AuthAccount) OwnerChangePassword(ctx *gin.Context, id uint, password s
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
-func (ac *AuthAccount) OwnerSignOut(ctx *gin.Context)                       {}
 func (ac *AuthAccount) OwnerCurrentUser(ctx *gin.Context)                   {}
 func (ac *AuthAccount) OwnerNewPassword(ctx *gin.Context)                   {}
 func (ac *AuthAccount) OwnerSkipVerification(ctx *gin.Context)              {}

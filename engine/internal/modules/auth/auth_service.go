@@ -216,7 +216,8 @@ func (as AuthService) VerifyResetLink(ctx *gin.Context) {
 }
 
 func (as AuthService) SignOut(ctx *gin.Context) {
-
+	as.tokenProvider.ClearTokenCookie(ctx)
+	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
 }
 
 func (as AuthService) CurrentUser(ctx *gin.Context) {

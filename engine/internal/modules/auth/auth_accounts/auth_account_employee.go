@@ -152,7 +152,7 @@ func (ac *AuthAccount) EmployeeChangePassword(ctx *gin.Context, id uint, passwor
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
-func (ac *AuthAccount) EmployeeSignOut(ctx *gin.Context)                       {}
+
 func (ac *AuthAccount) EmployeeCurrentUser(ctx *gin.Context)                   {}
 func (ac *AuthAccount) EmployeeNewPassword(ctx *gin.Context)                   {}
 func (ac *AuthAccount) EmployeeSkipVerification(ctx *gin.Context)              {}
