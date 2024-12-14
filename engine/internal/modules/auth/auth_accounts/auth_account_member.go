@@ -3,6 +3,7 @@ package auth_accounts
 import (
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
@@ -17,7 +18,7 @@ func (ac *AuthAccount) MemberSignUp(ctx *gin.Context, req *models.Member, emailT
 		return
 	}
 
-	token, err := ac.GenerateUserToken(id, accountType)
+	token, err := ac.GenerateUserToken(id, accountType, SignedInExpiration)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
@@ -65,7 +66,7 @@ func (ac *AuthAccount) MemberSignIn(ctx *gin.Context, key, password string) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "SignIn: Invalid credentials."})
 		return
 	}
-	token, err := ac.GenerateUserToken(userID, accountType)
+	token, err := ac.GenerateUserToken(userID, accountType, SignedInExpiration)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "SignIn: Token generation error"})
 		return
@@ -85,7 +86,64 @@ func (ac *AuthAccount) MemberSignIn(ctx *gin.Context, key, password string) {
 	}
 	ctx.JSON(http.StatusOK, user)
 }
-func (ac *AuthAccount) MemberForgotPassword(ctx *gin.Context)                {}
+func (ac *AuthAccount) MemberForgotPassword(ctx *gin.Context, key, emailTemplate, contactTemplate string) {
+	const accountType = "Member"
+	user, err := ac.FindByEmailUsernameOrContactForID(accountType, key)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
+		return
+	}
+
+	token, err := ac.GenerateUserToken(user, accountType, time.Minute*10)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return
+	}
+
+	resetLink := fmt.Sprintf("%s/auth/password-reset/%s", ac.cfg.AppClientUrl, *token)
+	keyType := ac.helpers.GetKeyType(key)
+
+	name, err := ac.FindByEmailUsernameOrContactForName(accountType, key)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
+		return
+	}
+
+	switch keyType {
+	case "contact":
+		contactReq := providers.SMSRequest{
+			To:   key,
+			Body: contactTemplate,
+			Vars: &map[string]string{
+				"name":      name,
+				"eventLink": resetLink,
+			},
+		}
+
+		if err := ac.smsProvider.SendSMS(contactReq); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: SMS sending error %v", err)})
+		}
+	case "email":
+		emailReq := providers.EmailRequest{
+			To:      key,
+			Subject: "ECOOP: Change Password Request",
+			Body:    emailTemplate,
+			Vars: &map[string]string{
+				"name":      name,
+				"eventLink": resetLink,
+			},
+		}
+
+		if err := ac.emailProvider.SendEmail(emailReq); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Email sending error: %v", err)})
+			return
+		}
+	default:
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Invalid key type: %s", keyType)})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "If the account exists, password reset instructions have been sent."})
+}
+
 func (ac *AuthAccount) MemberChangePassword(ctx *gin.Context)                {}
 func (ac *AuthAccount) MemberVerifyResetLink(ctx *gin.Context)               {}
 func (ac *AuthAccount) MemberSignOut(ctx *gin.Context)                       {}

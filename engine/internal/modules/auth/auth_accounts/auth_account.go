@@ -13,16 +13,22 @@ import (
 	"go.uber.org/zap"
 )
 
+const SignedInExpiration = time.Hour * 12
+
 type AuthAccount struct {
 	cfg         *config.AppConfig
 	engine      *providers.EngineService
 	middle      *middleware.Middleware
 	otpProvider *providers.OTPService
 
+	smsProvider   *providers.SMSService
+	emailProvider *providers.EmailService
+
 	tokenProvider *providers.TokenService
 	logger        *providers.LoggerService
-
 	modelResource *models.ModelResource
+
+	helpers       *helpers.HelpersFunction
 	cryptoHelpers *helpers.HelpersCryptography
 }
 
@@ -33,9 +39,15 @@ func NewAuthAccount(
 	otpProvider *providers.OTPService,
 
 	tokenProvider *providers.TokenService,
+	smsProvider *providers.SMSService,
+	emailProvider *providers.EmailService,
+
 	logger *providers.LoggerService,
 	modelResource *models.ModelResource,
+
+	helpers *helpers.HelpersFunction,
 	cryptoHelpers *helpers.HelpersCryptography,
+
 ) *AuthAccount {
 	return &AuthAccount{
 		cfg:           cfg,
@@ -43,14 +55,15 @@ func NewAuthAccount(
 		middle:        middle,
 		otpProvider:   otpProvider,
 		tokenProvider: tokenProvider,
+		smsProvider:   smsProvider,
+		emailProvider: emailProvider,
 		modelResource: modelResource,
+		helpers:       helpers,
 		cryptoHelpers: cryptoHelpers,
 	}
 }
 
-const tokenExpiration = time.Hour * 12
-
-func (at *AuthAccount) GenerateUserToken(id uint, accountType string) (*string, error) {
+func (at *AuthAccount) GenerateUserToken(id uint, accountType string, expiration time.Duration) (*string, error) {
 	validTypes := []string{"Member", "Employee", "Admin", "Owner"}
 	isValid := false
 	for _, validType := range validTypes {
@@ -67,7 +80,7 @@ func (at *AuthAccount) GenerateUserToken(id uint, accountType string) (*string, 
 		ID:          id,
 		AccountType: accountType,
 	}
-	token, err := at.tokenProvider.GenerateToken(claims, tokenExpiration)
+	token, err := at.tokenProvider.GenerateToken(claims, expiration)
 	if err != nil {
 		at.logger.Error("Failed to generate admin token", zap.Error(err))
 		return nil, err
@@ -271,6 +284,68 @@ func (ap *AuthAccount) FindByEmailUsernameOrContactForPassword(accountType, inpu
 		return user.ID, user.Password, nil
 	default:
 		return 0, "", errors.New("invalid account type")
+	}
+}
+
+func (ap *AuthAccount) FindByEmailUsernameOrContactForID(accountType, input string) (uint, error) {
+	switch accountType {
+	case "Admin":
+		user, err := ap.modelResource.AdminFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return 0, err
+		}
+		return user.ID, nil
+	case "Owner":
+		user, err := ap.modelResource.OwnerFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return 0, err
+		}
+		return user.ID, nil
+	case "Employee":
+		user, err := ap.modelResource.EmployeeFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return 0, err
+		}
+		return user.ID, nil
+	case "Member":
+		user, err := ap.modelResource.MemberFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return 0, err
+		}
+		return user.ID, nil
+	default:
+		return 0, errors.New("invalid account type")
+	}
+}
+
+func (ap *AuthAccount) FindByEmailUsernameOrContactForName(accountType, input string) (string, error) {
+	switch accountType {
+	case "Admin":
+		user, err := ap.modelResource.AdminFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s %s", user.FirstName, user.LastName), nil
+	case "Owner":
+		user, err := ap.modelResource.OwnerFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s %s", user.FirstName, user.LastName), nil
+	case "Employee":
+		user, err := ap.modelResource.EmployeeFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s %s", user.FirstName, user.LastName), nil
+	case "Member":
+		user, err := ap.modelResource.MemberFindByEmailUsernameOrContact(input)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s %s", user.FirstName, user.LastName), nil
+	default:
+		return "", errors.New("invalid account type")
 	}
 }
 

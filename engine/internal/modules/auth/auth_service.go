@@ -146,7 +146,27 @@ func (as AuthService) SignIn(ctx *gin.Context) {
 }
 
 func (as AuthService) ForgotPassword(ctx *gin.Context) {
-
+	var req ForgotPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	if err := as.authProvider.ValidateForgotpassword(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	switch req.AccountType {
+	case "Member":
+		as.authAccount.MemberForgotPassword(ctx, req.Key, req.EmailTemplate, req.ContactTemplate)
+	case "Admin":
+		as.authAccount.AdminForgotPassword(ctx, req.Key, req.EmailTemplate, req.ContactTemplate)
+	case "Owner":
+		as.authAccount.OwnerForgotPassword(ctx, req.Key, req.EmailTemplate, req.ContactTemplate)
+	case "Employee":
+		as.authAccount.EmployeeForgotPassword(ctx, req.Key, req.EmailTemplate, req.ContactTemplate)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
 func (as AuthService) ChangePassword(ctx *gin.Context) {

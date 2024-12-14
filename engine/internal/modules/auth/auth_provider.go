@@ -33,6 +33,13 @@ type SignInRequest struct {
 	AccountType string `json:"accountType" validate:"required"`
 }
 
+type ForgotPasswordRequest struct {
+	Key             string `json:"key" validate:"required,max=255"`
+	AccountType     string `json:"accountType" validate:"required,max=10"`
+	EmailTemplate   string `json:"emailTemplate"`
+	ContactTemplate string `json:"contactTemplate"`
+}
+
 type AuthProvider struct {
 	cfg           *config.AppConfig
 	cryptoHelpers *helpers.HelpersCryptography
@@ -84,4 +91,23 @@ func (ap *AuthProvider) ValidateSignIn(r SignInRequest) error {
 		return err
 	}
 	return nil
+}
+
+func (ap *AuthProvider) ValidateForgotpassword(r ForgotPasswordRequest) error {
+	validate := validator.New()
+
+	if err := validate.RegisterValidation("accountType", ap.AccountTypeValidator); err != nil {
+		return fmt.Errorf("failed to register account type validator: %v", err)
+	}
+
+	if err := validate.Struct(r); err != nil {
+		return err
+	}
+
+	if r.EmailTemplate == "" && r.ContactTemplate == "" {
+		return fmt.Errorf("either emailTemplate or contactTemplate must be provided")
+	}
+
+	return nil
+
 }
