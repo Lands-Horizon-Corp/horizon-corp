@@ -143,13 +143,18 @@ func (ac *AuthAccount) OwnerForgotPassword(ctx *gin.Context, key, emailTemplate,
 	ctx.JSON(http.StatusOK, gin.H{"message": "If the account exists, password reset instructions have been sent."})
 }
 
-func (ac *AuthAccount) OwnerChangePassword(ctx *gin.Context, id uint, password string) {}
-func (ac *AuthAccount) OwnerVerifyResetLink(ctx *gin.Context)                          {}
-func (ac *AuthAccount) OwnerSignOut(ctx *gin.Context)                                  {}
-func (ac *AuthAccount) OwnerCurrentUser(ctx *gin.Context)                              {}
-func (ac *AuthAccount) OwnerNewPassword(ctx *gin.Context)                              {}
-func (ac *AuthAccount) OwnerSkipVerification(ctx *gin.Context)                         {}
-func (ac *AuthAccount) OwnerSendEmailVerification(ctx *gin.Context)                    {}
-func (ac *AuthAccount) OwnerVerifyEmail(ctx *gin.Context)                              {}
-func (ac *AuthAccount) OwnerSendContactNumberVerification(ctx *gin.Context)            {}
-func (ac *AuthAccount) OwnerVerifyContactNumber(ctx *gin.Context)                      {}
+func (ac *AuthAccount) OwnerChangePassword(ctx *gin.Context, id uint, password string) {
+	const accountType = "Owner"
+	if err := ac.UpdatePassword(accountType, id, password); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ChangePassword: Password update error: %v", err)})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
+}
+func (ac *AuthAccount) OwnerSignOut(ctx *gin.Context)                       {}
+func (ac *AuthAccount) OwnerCurrentUser(ctx *gin.Context)                   {}
+func (ac *AuthAccount) OwnerNewPassword(ctx *gin.Context)                   {}
+func (ac *AuthAccount) OwnerSkipVerification(ctx *gin.Context)              {}
+func (ac *AuthAccount) OwnerSendEmailVerification(ctx *gin.Context)         {}
+func (ac *AuthAccount) OwnerVerifyEmail(ctx *gin.Context)                   {}
+func (ac *AuthAccount) OwnerSendContactNumberVerification(ctx *gin.Context) {}
+func (ac *AuthAccount) OwnerVerifyContactNumber(ctx *gin.Context)           {}

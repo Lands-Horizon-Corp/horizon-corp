@@ -152,7 +152,7 @@ func (ac *AuthAccount) AdminChangePassword(ctx *gin.Context, id uint, password s
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
-func (ac *AuthAccount) AdminVerifyResetLink(ctx *gin.Context)               {}
+
 func (ac *AuthAccount) AdminSignOut(ctx *gin.Context)                       {}
 func (ac *AuthAccount) AdminCurrentUser(ctx *gin.Context)                   {}
 func (ac *AuthAccount) AdminNewPassword(ctx *gin.Context)                   {}

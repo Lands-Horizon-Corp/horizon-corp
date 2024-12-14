@@ -206,7 +206,13 @@ func (as AuthService) ChangePassword(ctx *gin.Context) {
 }
 
 func (as AuthService) VerifyResetLink(ctx *gin.Context) {
-
+	_, err := as.tokenProvider.VerifyToken(ctx.Param("id"))
+	if err != nil {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("VerifyResetLink: Token verification error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Link verified successfully."})
 }
 
 func (as AuthService) SignOut(ctx *gin.Context) {
