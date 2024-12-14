@@ -12,5 +12,6 @@ var Module = fx.Module(
 		NewStorageProvider,
 		NewSMSProvider,
 		NewEngineProvider,
+		NewOTPProvider,
 	),
 )
