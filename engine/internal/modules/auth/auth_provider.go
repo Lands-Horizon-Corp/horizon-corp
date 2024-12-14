@@ -46,6 +46,12 @@ type AuthProvider struct {
 	modelResource *models.ModelResource
 }
 
+type ChangePasswordRequest struct {
+	ResetID         string `json:"resetId" validate:"required,min=8,max=255"`
+	NewPassword     string `json:"newPassword" validate:"required,min=8,max=255"`
+	ConfirmPassword string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
+}
+
 func NewAuthProvider(
 	cfg *config.AppConfig,
 	cryptoHelpers *helpers.HelpersCryptography,
@@ -110,4 +116,12 @@ func (ap *AuthProvider) ValidateForgotpassword(r ForgotPasswordRequest) error {
 
 	return nil
 
+}
+func (ap *AuthProvider) ValidateChangePassword(r ChangePasswordRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
@@ -11,22 +12,25 @@ import (
 )
 
 type AuthService struct {
-	engine       *providers.EngineService
-	middle       *middleware.Middleware
-	authProvider *AuthProvider
-	authAccount  *auth_accounts.AuthAccount
+	engine        *providers.EngineService
+	middle        *middleware.Middleware
+	tokenProvider *providers.TokenService
+	authProvider  *AuthProvider
+	authAccount   *auth_accounts.AuthAccount
 }
 
 func NewAuthService(
 	engine *providers.EngineService,
 	middle *middleware.Middleware,
+	tokenProvider *providers.TokenService,
 	authProvider *AuthProvider,
 	authAccount *auth_accounts.AuthAccount,
 ) *AuthService {
 	return &AuthService{
-		engine:      engine,
-		middle:      middle,
-		authAccount: authAccount,
+		engine:        engine,
+		middle:        middle,
+		tokenProvider: tokenProvider,
+		authAccount:   authAccount,
 	}
 }
 
@@ -170,7 +174,35 @@ func (as AuthService) ForgotPassword(ctx *gin.Context) {
 }
 
 func (as AuthService) ChangePassword(ctx *gin.Context) {
+	var req ChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: JSON binding error: %v", err)})
+		return
+	}
 
+	if err := as.authProvider.ValidateChangePassword(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.tokenProvider.VerifyToken(req.ResetID)
+	if err != nil {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: Token verification error: %v", err)})
+		return
+	}
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberChangePassword(ctx, claims.ID, req.NewPassword)
+	case "Admin":
+		as.authAccount.AdminChangePassword(ctx, claims.ID, req.NewPassword)
+	case "Owner":
+		as.authAccount.OwnerChangePassword(ctx, claims.ID, req.NewPassword)
+	case "Employee":
+		as.authAccount.EmployeeChangePassword(ctx, claims.ID, req.NewPassword)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
+	as.tokenProvider.DeleteToken(req.ResetID)
 }
 
 func (as AuthService) VerifyResetLink(ctx *gin.Context) {

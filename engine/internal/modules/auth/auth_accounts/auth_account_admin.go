@@ -145,7 +145,13 @@ func (ac *AuthAccount) AdminForgotPassword(ctx *gin.Context, key, emailTemplate,
 	ctx.JSON(http.StatusOK, gin.H{"message": "If the account exists, password reset instructions have been sent."})
 }
 
-func (ac *AuthAccount) AdminChangePassword()                                {}
+func (ac *AuthAccount) AdminChangePassword(ctx *gin.Context, id uint, password string) {
+	const accountType = "Admin"
+	if err := ac.UpdatePassword(accountType, id, password); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ChangePassword: Password update error: %v", err)})
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
+}
 func (ac *AuthAccount) AdminVerifyResetLink(ctx *gin.Context)               {}
 func (ac *AuthAccount) AdminSignOut(ctx *gin.Context)                       {}
 func (ac *AuthAccount) AdminCurrentUser(ctx *gin.Context)                   {}
