@@ -26,7 +26,7 @@ func NewAuthService(
 }
 
 func (as AuthService) SignUp(ctx *gin.Context) {
-
+	// here get here
 }
 
 func (as AuthService) SignIn(ctx *gin.Context) {

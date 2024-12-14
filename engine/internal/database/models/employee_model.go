@@ -164,6 +164,44 @@ func (m *ModelResource) ValidateEmployeeRequest(req *EmployeeRequest) error {
 	return nil
 }
 
+func (r *ModelResource) EmployeeGetByEmail(email string) (*Employee, error) {
+	var employee Employee
+	err := r.EmployeeDB.DB.Client.Preload("Media").Where("email = ?", email).First(&employee).Error
+	return &employee, err
+}
+
+func (r *ModelResource) EmployeeGetByUsername(username string) (*Employee, error) {
+	var employee Employee
+	err := r.EmployeeDB.DB.Client.Preload("Media").Where("username = ?", username).First(&employee).Error
+	return &employee, err
+}
+
+func (r *ModelResource) EmployeeGetByContactNumber(contactNumber string) (*Employee, error) {
+	var employee Employee
+	err := r.EmployeeDB.DB.Client.Preload("Media").Where("contact_number = ?", contactNumber).First(&employee).Error
+	return &employee, err
+}
+
+func (r *ModelResource) EmployeeFindByEmailUsernameOrContact(input string) (*Employee, error) {
+	switch r.helpers.GetKeyType(input) {
+	case "contact":
+		return r.EmployeeGetByContactNumber(input)
+	case "email":
+		return r.EmployeeGetByEmail(input)
+	default:
+		return r.EmployeeGetByUsername(input)
+	}
+}
+func (r *ModelResource) EmployeeUpdatePassword(id uint, password string) error {
+	newPassword, err := r.cryptoHelpers.HashPassword(password)
+	if err != nil {
+		return err
+	}
+	updated := &Employee{Password: newPassword}
+	_, err = r.EmployeeDB.UpdateColumns(id, *updated, []string{"Media"})
+	return err
+}
+
 func (m *ModelResource) EmployeeSeeders() error {
 	m.logger.Info("Seeding Employee")
 	return nil

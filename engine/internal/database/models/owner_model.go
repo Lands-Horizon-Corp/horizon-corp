@@ -141,6 +141,44 @@ func (m *ModelResource) ValidateOwnerRequest(req *OwnerRequest) error {
 	return nil
 }
 
+func (r *ModelResource) OwnerGetByEmail(email string) (*Owner, error) {
+	var owner Owner
+	err := r.OwnerDB.DB.Client.Preload("Media").Where("email = ?", email).First(&owner).Error
+	return &owner, err
+}
+
+func (r *ModelResource) OwnerGetByUsername(username string) (*Owner, error) {
+	var owner Owner
+	err := r.OwnerDB.DB.Client.Preload("Media").Where("username = ?", username).First(&owner).Error
+	return &owner, err
+}
+
+func (r *ModelResource) OwnerGetByContactNumber(contactNumber string) (*Owner, error) {
+	var owner Owner
+	err := r.OwnerDB.DB.Client.Preload("Media").Where("contact_number = ?", contactNumber).First(&owner).Error
+	return &owner, err
+}
+
+func (r *ModelResource) OwnerFindByEmailUsernameOrContact(input string) (*Owner, error) {
+	switch r.helpers.GetKeyType(input) {
+	case "contact":
+		return r.OwnerGetByContactNumber(input)
+	case "email":
+		return r.OwnerGetByEmail(input)
+	default:
+		return r.OwnerGetByUsername(input)
+	}
+}
+func (r *ModelResource) OwnerUpdatePassword(id uint, password string) error {
+	newPassword, err := r.cryptoHelpers.HashPassword(password)
+	if err != nil {
+		return err
+	}
+	updated := &Owner{Password: newPassword}
+	_, err = r.OwnerDB.UpdateColumns(id, *updated, []string{"Media"})
+	return err
+}
+
 func (m *ModelResource) OwnerSeeders() error {
 	m.logger.Info("Seeding Owner")
 	return nil

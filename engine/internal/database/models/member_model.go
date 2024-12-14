@@ -163,6 +163,44 @@ func (m *ModelResource) ValidateMemberRequest(req *MemberRequest) error {
 	return nil
 }
 
+func (r *ModelResource) MemberGetByEmail(email string) (*Member, error) {
+	var member Member
+	err := r.MemberDB.DB.Client.Preload("Media").Where("email = ?", email).First(&member).Error
+	return &member, err
+}
+
+func (r *ModelResource) MemberGetByUsername(username string) (*Member, error) {
+	var member Member
+	err := r.MemberDB.DB.Client.Preload("Media").Where("username = ?", username).First(&member).Error
+	return &member, err
+}
+
+func (r *ModelResource) MemberGetByContactNumber(contactNumber string) (*Member, error) {
+	var member Member
+	err := r.MemberDB.DB.Client.Preload("Media").Where("contact_number = ?", contactNumber).First(&member).Error
+	return &member, err
+}
+
+func (r *ModelResource) MemberFindByEmailUsernameOrContact(input string) (*Member, error) {
+	switch r.helpers.GetKeyType(input) {
+	case "contact":
+		return r.MemberGetByContactNumber(input)
+	case "email":
+		return r.MemberGetByEmail(input)
+	default:
+		return r.MemberGetByUsername(input)
+	}
+}
+func (r *ModelResource) MemberUpdatePassword(id uint, password string) error {
+	newPassword, err := r.cryptoHelpers.HashPassword(password)
+	if err != nil {
+		return err
+	}
+	updated := &Member{Password: newPassword}
+	_, err = r.MemberDB.UpdateColumns(id, *updated, []string{"Media"})
+	return err
+}
+
 func (m *ModelResource) MemberSeeders() error {
 	m.logger.Info("Seeding Member")
 	return nil

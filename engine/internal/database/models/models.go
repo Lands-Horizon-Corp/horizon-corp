@@ -21,11 +21,12 @@ type MigrateItem struct {
 }
 
 type ModelResource struct {
-	db      *providers.DatabaseService
-	storage *providers.StorageProvider
-	logger  *providers.LoggerService
-	helpers *helpers.HelpersFunction
-	Models  []MigrateItem
+	db            *providers.DatabaseService
+	storage       *providers.StorageProvider
+	logger        *providers.LoggerService
+	helpers       *helpers.HelpersFunction
+	cryptoHelpers *helpers.HelpersCryptography
+	Models        []MigrateItem
 
 	AdminDB     *managers.Repository[Admin]
 	BranchDB    *managers.Repository[Branch]
@@ -47,12 +48,15 @@ func NewModelResource(
 	storage *providers.StorageProvider,
 	logger *providers.LoggerService,
 	helpers *helpers.HelpersFunction,
+	cryptoHelpers *helpers.HelpersCryptography,
+
 ) (*ModelResource, error) {
 	modelResource := &ModelResource{
-		db:      db,
-		storage: storage,
-		logger:  logger,
-		helpers: helpers,
+		db:            db,
+		storage:       storage,
+		logger:        logger,
+		helpers:       helpers,
+		cryptoHelpers: cryptoHelpers,
 
 		AdminDB:     managers.NewRepository[Admin](db),
 		BranchDB:    managers.NewRepository[Branch](db),

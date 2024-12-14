@@ -136,6 +136,44 @@ func (m *ModelResource) ValidateAdminRequest(req *AdminRequest) error {
 	return nil
 }
 
+func (r *ModelResource) AdminGetByEmail(email string) (*Admin, error) {
+	var admin Admin
+	err := r.AdminDB.DB.Client.Preload("Media").Where("email = ?", email).First(&admin).Error
+	return &admin, err
+}
+
+func (r *ModelResource) AdminGetByUsername(username string) (*Admin, error) {
+	var admin Admin
+	err := r.AdminDB.DB.Client.Preload("Media").Where("username = ?", username).First(&admin).Error
+	return &admin, err
+}
+
+func (r *ModelResource) AdminGetByContactNumber(contactNumber string) (*Admin, error) {
+	var admin Admin
+	err := r.AdminDB.DB.Client.Preload("Media").Where("contact_number = ?", contactNumber).First(&admin).Error
+	return &admin, err
+}
+
+func (r *ModelResource) AdminFindByEmailUsernameOrContact(input string) (*Admin, error) {
+	switch r.helpers.GetKeyType(input) {
+	case "contact":
+		return r.AdminGetByContactNumber(input)
+	case "email":
+		return r.AdminGetByEmail(input)
+	default:
+		return r.AdminGetByUsername(input)
+	}
+}
+func (r *ModelResource) AdminUpdatePassword(id uint, password string) error {
+	newPassword, err := r.cryptoHelpers.HashPassword(password)
+	if err != nil {
+		return err
+	}
+	updated := &Admin{Password: newPassword}
+	_, err = r.AdminDB.UpdateColumns(id, *updated, []string{"Media"})
+	return err
+}
+
 func (m *ModelResource) AdminSeeders() error {
 	m.logger.Info("Seeding Admin")
 	return nil

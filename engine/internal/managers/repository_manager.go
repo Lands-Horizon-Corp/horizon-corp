@@ -9,15 +9,15 @@ import (
 )
 
 type Repository[T any] struct {
-	db *providers.DatabaseService
+	DB *providers.DatabaseService
 }
 
 func NewRepository[T any](db *providers.DatabaseService) *Repository[T] {
-	return &Repository[T]{db: db}
+	return &Repository[T]{DB: db}
 }
 
 func (r *Repository[T]) Create(entity *T) error {
-	if err := r.db.Client.Create(entity).Error; err != nil {
+	if err := r.DB.Client.Create(entity).Error; err != nil {
 		return fmt.Errorf("failed to create entity: %w", err)
 	}
 	return nil
@@ -25,7 +25,7 @@ func (r *Repository[T]) Create(entity *T) error {
 
 func (r *Repository[T]) FindByID(id uint, preloads ...string) (*T, error) {
 	var entity T
-	query := r.db.Client
+	query := r.DB.Client
 	query = r.applyPreloads(query, preloads)
 
 	result := query.First(&entity, id)
@@ -37,7 +37,7 @@ func (r *Repository[T]) FindByID(id uint, preloads ...string) (*T, error) {
 
 func (r *Repository[T]) FindAll(preloads ...string) ([]T, error) {
 	var entities []T
-	query := r.db.Client
+	query := r.DB.Client
 	query = r.applyPreloads(query, preloads)
 
 	result := query.Find(&entities)
@@ -48,14 +48,14 @@ func (r *Repository[T]) FindAll(preloads ...string) ([]T, error) {
 }
 
 func (r *Repository[T]) Update(entity *T) error {
-	if err := r.db.Client.Save(entity).Error; err != nil {
+	if err := r.DB.Client.Save(entity).Error; err != nil {
 		return fmt.Errorf("failed to update entity: %w", err)
 	}
 	return nil
 }
 
 func (r *Repository[T]) Delete(id uint) error {
-	if err := r.db.Client.Delete(new(T), id).Error; err != nil {
+	if err := r.DB.Client.Delete(new(T), id).Error; err != nil {
 		return fmt.Errorf("failed to delete entity with ID %d: %w", id, err)
 	}
 	return nil
@@ -67,4 +67,20 @@ func (r *Repository[T]) applyPreloads(query *gorm.DB, preloads []string) *gorm.D
 		query = query.Preload(preload)
 	}
 	return query
+}
+
+// UpdateColumns performs a partial update on an entity's fields
+func (r *Repository[T]) UpdateColumns(id uint, updates T, preloads []string) (*T, error) {
+	entity := new(T)
+	db := r.DB.Client
+	for _, preload := range preloads {
+		db = db.Preload(preload)
+	}
+	if err := db.Model(entity).Where("id = ?", id).Updates(updates).Error; err != nil {
+		return nil, err
+	}
+	if err := db.First(entity, id).Error; err != nil {
+		return nil, err
+	}
+	return entity, nil
 }
