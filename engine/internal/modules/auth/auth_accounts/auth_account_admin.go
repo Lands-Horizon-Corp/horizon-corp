@@ -9,35 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (ac *AuthAccount) AdminSignUp(ctx *gin.Context, emailTemplate, contactTemplate string) {
+func (ac *AuthAccount) AdminSignUp(ctx *gin.Context, req *models.Admin, emailTemplate string, contactTemplate string) {
 	const accountType = "Admin"
-	var req models.AdminRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
-	}
-	if err := ac.modelResource.ValidateAdminRequest(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
-	}
-	user := &models.Admin{
-		FirstName:         req.FirstName,
-		LastName:          req.LastName,
-		MiddleName:        req.MiddleName,
-		PermanentAddress:  req.PermanentAddress,
-		Description:       "",
-		BirthDate:         req.BirthDate,
-		Username:          req.Username,
-		Email:             req.Email,
-		Password:          req.Password,
-		IsEmailVerified:   false,
-		IsContactVerified: false,
-		ContactNumber:     req.ContactNumber,
-		MediaID:           nil,
-		Status:            "Pending",
-	}
-
-	id, err := ac.Create(user, accountType)
+	id, err := ac.Create(req, accountType)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
@@ -53,7 +27,7 @@ func (ac *AuthAccount) AdminSignUp(ctx *gin.Context, emailTemplate, contactTempl
 		Subject: "ECOOP: Email Verification",
 		Body:    emailTemplate,
 	}
-	if err := ac.otpProvider.SendEmailOTP(accountType, user.ID, emailReq); err != nil {
+	if err := ac.otpProvider.SendEmailOTP(accountType, req.ID, emailReq); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
@@ -64,10 +38,11 @@ func (ac *AuthAccount) AdminSignUp(ctx *gin.Context, emailTemplate, contactTempl
 			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
 		},
 	}
-	if err := ac.otpProvider.SendContactNumberOTP(accountType, user.ID, contactReq); err != nil {
+	if err := ac.otpProvider.SendContactNumberOTP(accountType, req.ID, contactReq); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
+
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     ac.cfg.AppTokenName,
 		Value:    *token,
@@ -76,8 +51,7 @@ func (ac *AuthAccount) AdminSignUp(ctx *gin.Context, emailTemplate, contactTempl
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
 	})
-	ctx.JSON(http.StatusCreated, user)
-
+	ctx.JSON(http.StatusCreated, req)
 }
 
 func (ac *AuthAccount) AdminSignIn(ctx *gin.Context)                        {}

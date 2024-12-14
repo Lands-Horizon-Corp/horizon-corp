@@ -3,6 +3,7 @@ package auth
 import (
 	"net/http"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/modules/auth/auth_accounts"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
@@ -43,13 +44,77 @@ func (as AuthService) SignUp(ctx *gin.Context) {
 
 	switch req.AccountType {
 	case "Member":
-		as.authAccount.MemberSignUp(ctx, req.EmailTemplate, req.ContactTemplate)
+		user := &models.Member{
+			FirstName:         req.FirstName,
+			LastName:          req.LastName,
+			MiddleName:        req.MiddleName,
+			PermanentAddress:  req.PermanentAddress,
+			Description:       "",
+			BirthDate:         req.BirthDate,
+			Username:          req.Username,
+			Email:             req.Email,
+			Password:          req.Password,
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			ContactNumber:     req.ContactNumber,
+			MediaID:           nil,
+			Status:            "Pending",
+		}
+		as.authAccount.MemberSignUp(ctx, user, req.EmailTemplate, req.ContactTemplate)
 	case "Admin":
-		as.authAccount.AdminSignUp(ctx, req.EmailTemplate, req.ContactTemplate)
+		user := &models.Admin{
+			FirstName:         req.FirstName,
+			LastName:          req.LastName,
+			MiddleName:        req.MiddleName,
+			PermanentAddress:  req.PermanentAddress,
+			Description:       "",
+			BirthDate:         req.BirthDate,
+			Username:          req.Username,
+			Email:             req.Email,
+			Password:          req.Password,
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			ContactNumber:     req.ContactNumber,
+			MediaID:           nil,
+			Status:            "Pending",
+		}
+		as.authAccount.AdminSignUp(ctx, user, req.EmailTemplate, req.ContactTemplate)
 	case "Owner":
-		as.authAccount.OwnerSignUp(ctx, req.EmailTemplate, req.ContactTemplate)
+		user := &models.Owner{
+			FirstName:         req.FirstName,
+			LastName:          req.LastName,
+			MiddleName:        req.MiddleName,
+			PermanentAddress:  req.PermanentAddress,
+			Description:       "",
+			BirthDate:         req.BirthDate,
+			Username:          req.Username,
+			Email:             req.Email,
+			Password:          req.Password,
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			ContactNumber:     req.ContactNumber,
+			MediaID:           nil,
+			Status:            "Pending",
+		}
+		as.authAccount.OwnerSignUp(ctx, user, req.EmailTemplate, req.ContactTemplate)
 	case "Employee":
-		as.authAccount.EmployeeSignUp(ctx, req.EmailTemplate, req.ContactTemplate)
+		user := &models.Employee{
+			FirstName:         req.FirstName,
+			LastName:          req.LastName,
+			MiddleName:        req.MiddleName,
+			PermanentAddress:  req.PermanentAddress,
+			Description:       "",
+			BirthDate:         req.BirthDate,
+			Username:          req.Username,
+			Email:             req.Email,
+			Password:          req.Password,
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			ContactNumber:     req.ContactNumber,
+			MediaID:           nil,
+			Status:            "Pending",
+		}
+		as.authAccount.EmployeeSignUp(ctx, user, req.EmailTemplate, req.ContactTemplate)
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}

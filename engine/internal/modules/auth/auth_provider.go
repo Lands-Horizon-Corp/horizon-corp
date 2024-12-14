@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
@@ -10,11 +11,20 @@ import (
 )
 
 type SignUpRequest struct {
-	AccountType     string `json:"accountType" validate:"required,max=10"`
-	Password        string `json:"password" validate:"required,min=8,max=255"`
-	ConfirmPassword string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=Password"`
-	EmailTemplate   string `json:"emailTemplate" validate:"required"`
-	ContactTemplate string `json:"contactTemplate" validate:"required"`
+	AccountType      string               `json:"accountType" validate:"required,max=10"`
+	FirstName        string               `json:"firstName" validate:"required,max=255"`
+	LastName         string               `json:"lastName" validate:"required,max=255"`
+	MiddleName       string               `json:"middleName" validate:"max=255"`
+	Username         string               `json:"username" validate:"max=255"`
+	Email            string               `json:"email" validate:"required,email,max=255"`
+	Password         string               `json:"password" validate:"required,min=8,max=255"`
+	ConfirmPassword  string               `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=Password"`
+	BirthDate        time.Time            `json:"birthDate" validate:"required"`
+	ContactNumber    string               `json:"contactNumber" validate:"required,max=15"`
+	PermanentAddress string               `json:"permanentAddress" validate:"required,max=500"`
+	Media            *models.MediaRequest `json:"media" validate:"omitempty"`
+	EmailTemplate    string               `json:"emailTemplate" validate:"required"`
+	ContactTemplate  string               `json:"contactTemplate" validate:"required"`
 }
 
 type AuthProvider struct {

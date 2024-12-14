@@ -48,10 +48,16 @@ const tokenExpiration = time.Hour * 12
 
 func (at *AuthAccount) GenerateUserToken(id uint, accountType string) (*string, error) {
 	validTypes := []string{"Member", "Employee", "Admin", "Owner"}
+	isValid := false
 	for _, validType := range validTypes {
 		if accountType == validType {
-			return nil, errors.New("invalid account type")
+			isValid = true
+			break
 		}
+	}
+
+	if !isValid {
+		return nil, errors.New("invalid account type")
 	}
 	claims := &providers.UserClaims{
 		ID:          id,

@@ -9,36 +9,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (ac *AuthAccount) MemberSignUp(ctx *gin.Context, emailTemplate, contactTemplate string) {
+func (ac *AuthAccount) MemberSignUp(ctx *gin.Context, req *models.Member, emailTemplate string, contactTemplate string) {
 	const accountType = "Member"
-
-	var req models.MemberRequest
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
-	}
-	if err := ac.modelResource.ValidateMemberRequest(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
-	}
-	user := &models.Member{
-		FirstName:         req.FirstName,
-		LastName:          req.LastName,
-		MiddleName:        req.MiddleName,
-		PermanentAddress:  req.PermanentAddress,
-		Description:       "",
-		BirthDate:         req.BirthDate,
-		Username:          req.Username,
-		Email:             req.Email,
-		Password:          req.Password,
-		IsEmailVerified:   false,
-		IsContactVerified: false,
-		ContactNumber:     req.ContactNumber,
-		MediaID:           nil,
-		Status:            "Pending",
-	}
-
-	id, err := ac.Create(user, accountType)
+	id, err := ac.Create(req, accountType)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
@@ -54,7 +27,7 @@ func (ac *AuthAccount) MemberSignUp(ctx *gin.Context, emailTemplate, contactTemp
 		Subject: "ECOOP: Email Verification",
 		Body:    emailTemplate,
 	}
-	if err := ac.otpProvider.SendEmailOTP(accountType, user.ID, emailReq); err != nil {
+	if err := ac.otpProvider.SendEmailOTP(accountType, req.ID, emailReq); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
@@ -65,10 +38,11 @@ func (ac *AuthAccount) MemberSignUp(ctx *gin.Context, emailTemplate, contactTemp
 			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
 		},
 	}
-	if err := ac.otpProvider.SendContactNumberOTP(accountType, user.ID, contactReq); err != nil {
+	if err := ac.otpProvider.SendContactNumberOTP(accountType, req.ID, contactReq); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
+
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     ac.cfg.AppTokenName,
 		Value:    *token,
@@ -77,7 +51,7 @@ func (ac *AuthAccount) MemberSignUp(ctx *gin.Context, emailTemplate, contactTemp
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
 	})
-	ctx.JSON(http.StatusCreated, user)
+	ctx.JSON(http.StatusCreated, req)
 }
 
 func (ac *AuthAccount) MemberSignIn(ctx *gin.Context)                        {}
