@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -31,6 +33,10 @@ type Footstep struct {
 }
 
 type FootstepResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	AccountType string            `json:"accountType"`
 	Description string            `json:"description"`
 	Activity    string            `json:"activity"`
@@ -60,6 +66,10 @@ func (m *ModelResource) FootstepToResource(footstep *Footstep) *FootstepResource
 		return nil
 	}
 	return &FootstepResource{
+		ID:        footstep.ID,
+		CreatedAt: footstep.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: footstep.UpdatedAt.Format(time.RFC3339),
+
 		AccountType: footstep.AccountType,
 		Description: footstep.Description,
 		Activity:    footstep.Activity,

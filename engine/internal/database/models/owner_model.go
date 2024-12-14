@@ -47,6 +47,10 @@ type Owner struct {
 }
 
 type OwnerResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	FirstName          string              `json:"firstName"`
 	LastName           string              `json:"lastName"`
 	MiddleName         string              `json:"middleName"`
@@ -77,6 +81,10 @@ func (m *ModelResource) OwnerToResource(owner *Owner) *OwnerResource {
 	}
 
 	return &OwnerResource{
+		ID:        owner.ID,
+		CreatedAt: owner.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: owner.UpdatedAt.Format(time.RFC3339),
+
 		FirstName:          owner.FirstName,
 		LastName:           owner.LastName,
 		MiddleName:         owner.MiddleName,

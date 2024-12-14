@@ -51,6 +51,10 @@ type Employee struct {
 }
 
 type EmployeeResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	FirstName          string               `json:"firstName"`
 	LastName           string               `json:"lastName"`
 	MiddleName         string               `json:"middleName"`
@@ -108,6 +112,11 @@ func (m *ModelResource) EmployeeToResource(employee *Employee) *EmployeeResource
 	}
 
 	return &EmployeeResource{
+
+		ID:        employee.ID,
+		CreatedAt: employee.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: employee.UpdatedAt.Format(time.RFC3339),
+
 		FirstName:          employee.FirstName,
 		LastName:           employee.LastName,
 		MiddleName:         employee.MiddleName,

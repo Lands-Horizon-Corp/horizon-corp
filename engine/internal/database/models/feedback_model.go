@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -15,6 +17,10 @@ type Feedback struct {
 }
 
 type FeedbackResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	Email        string `json:"email"`
 	Description  string `json:"description"`
 	FeedbackType string `json:"feedbackType"`
@@ -31,6 +37,10 @@ func (m *ModelResource) FeedbackToResource(feedback *Feedback) *FeedbackResource
 		return nil
 	}
 	return &FeedbackResource{
+		ID:        feedback.ID,
+		CreatedAt: feedback.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: feedback.UpdatedAt.Format(time.RFC3339),
+
 		Email:        feedback.Email,
 		Description:  feedback.Description,
 		FeedbackType: feedback.FeedbackType,

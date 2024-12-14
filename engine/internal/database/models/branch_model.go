@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -33,6 +35,10 @@ type Branch struct {
 }
 
 type BranchResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	Name            string              `json:"name"`
 	Address         string              `json:"address"`
 	Longitude       float64             `json:"longitude"`
@@ -65,6 +71,10 @@ func (m *ModelResource) BranchToResource(branch *Branch) *BranchResource {
 		return nil
 	}
 	return &BranchResource{
+		ID:        branch.ID,
+		CreatedAt: branch.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: branch.UpdatedAt.Format(time.RFC3339),
+
 		Name:            branch.Name,
 		Address:         branch.Address,
 		Longitude:       branch.Longitude,

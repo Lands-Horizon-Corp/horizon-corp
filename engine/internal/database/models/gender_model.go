@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -20,6 +22,10 @@ type Gender struct {
 }
 
 type GenderResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	Name        string              `json:"name"`
 	Description string              `json:"description"`
 	Employees   []*EmployeeResource `json:"employees"`
@@ -38,6 +44,10 @@ func (m *ModelResource) GenderToResource(gender *Gender) *GenderResource {
 		return nil
 	}
 	return &GenderResource{
+		ID:        gender.ID,
+		CreatedAt: gender.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: gender.UpdatedAt.Format(time.RFC3339),
+
 		Name:        gender.Name,
 		Description: gender.Description,
 		Employees:   m.EmployeeToResourceList(gender.Employees),

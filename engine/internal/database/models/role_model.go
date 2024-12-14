@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -36,6 +38,10 @@ type Role struct {
 }
 
 type RoleResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	Name               string `json:"name"`
 	Description        string `json:"description"`
 	ApiKey             string `json:"apiKey"`
@@ -85,6 +91,10 @@ func (m *ModelResource) RoleToResource(role *Role) *RoleResource {
 	}
 
 	return &RoleResource{
+		ID:        role.ID,
+		CreatedAt: role.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: role.UpdatedAt.Format(time.RFC3339),
+
 		Name:               role.Name,
 		Description:        role.Description,
 		ApiKey:             role.ApiKey,

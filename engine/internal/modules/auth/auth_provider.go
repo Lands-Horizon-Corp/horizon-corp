@@ -7,7 +7,12 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
+	"github.com/go-playground/validator"
 )
+
+type SignUpRequest struct {
+	AccountType string `json:"accountType" validate:"required,max=10"`
+}
 
 type AuthProvider struct {
 	cfg           *config.AppConfig
@@ -27,52 +32,77 @@ func NewAuthProvider(
 	}
 }
 
-func (ap *AuthProvider) Create(user interface{}, accountType string) (interface{}, error) {
+func (ap *AuthProvider) AccountTypeValidator(fl validator.FieldLevel) bool {
+	accountType := fl.Field().String()
+	validTypes := []string{"Member", "Employee", "Admin", "Owner"}
+	for _, validType := range validTypes {
+		if accountType == validType {
+			return true
+		}
+	}
+	return false
+}
+
+func (ap *AuthProvider) Validate(r SignUpRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err := validate.RegisterValidation("accountType", ap.AccountTypeValidator); err != nil {
+		return fmt.Errorf("failed to register account type validator: %v", err)
+	}
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ap *AuthProvider) Create(user interface{}, accountType string) (uint, error) {
 	if user == nil {
-		return nil, errors.New("user cannot be nil")
+		return 0, errors.New("user cannot be nil")
 	}
 
 	switch accountType {
 	case "Employee":
 		employee, ok := user.(*models.Employee)
 		if !ok {
-			return nil, errors.New("invalid user type for Employee")
+			return 0, errors.New("invalid user type for Employee")
 		}
 		if err := ap.modelResource.EmployeeCreate(employee); err != nil {
-			return nil, err
+			return 0, err
 		}
-		return ap.modelResource.EmployeeToResource(employee), nil
+		return employee.ID, nil
 
 	case "Member":
 		member, ok := user.(*models.Member)
 		if !ok {
-			return nil, errors.New("invalid user type for Member")
+			return 0, errors.New("invalid user type for Member")
 		}
 		if err := ap.modelResource.MemberCreate(member); err != nil {
-			return nil, err
+			return 0, err
 		}
-		return ap.modelResource.MemberToResource(member), nil
+		return member.ID, nil
+
 	case "Owner":
 		owner, ok := user.(*models.Owner)
 		if !ok {
-			return nil, errors.New("invalid user type for Owner")
+			return 0, errors.New("invalid user type for Owner")
 		}
 		if err := ap.modelResource.OwnerCreate(owner); err != nil {
-			return nil, err
+			return 0, err
 		}
-		return ap.modelResource.OwnerToResource(owner), nil
+		return owner.ID, nil
 
 	case "Admin":
 		admin, ok := user.(*models.Admin)
 		if !ok {
-			return nil, errors.New("invalid user type for Admin")
+			return 0, errors.New("invalid user type for Admin")
 		}
 		if err := ap.modelResource.AdminCreate(admin); err != nil {
-			return nil, err
+			return 0, err
 		}
-		return ap.modelResource.AdminToResource(admin), nil
+		return admin.ID, nil
+
 	default:
-		return nil, errors.New("unsupported account type")
+		return 0, errors.New("unsupported account type")
 	}
 }
 

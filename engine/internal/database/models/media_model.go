@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -27,6 +29,10 @@ type Media struct {
 }
 
 type MediaResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	FileName    string `json:"fileName"`
 	FileSize    int64  `json:"fileSize"`
 	FileType    string `json:"fileType"`
@@ -63,6 +69,10 @@ func (m *ModelResource) MediaToResource(media *Media) *MediaResource {
 		return nil
 	}
 	return &MediaResource{
+		ID:        media.ID,
+		CreatedAt: media.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: media.UpdatedAt.Format(time.RFC3339),
+
 		FileName:    media.FileName,
 		FileSize:    media.FileSize,
 		FileType:    media.FileType,

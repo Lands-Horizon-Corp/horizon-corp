@@ -24,6 +24,10 @@ type Timesheet struct {
 }
 
 type TimesheetResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	EmployeeID uint              `json:"employeeID"`
 	Employee   *EmployeeResource `json:"employee"`
 	TimeIn     *time.Time        `json:"timeIn"`
@@ -49,6 +53,10 @@ func (m *ModelResource) TimesheetToResource(timesheet *Timesheet) *TimesheetReso
 		return nil
 	}
 	return &TimesheetResource{
+		ID:        timesheet.ID,
+		CreatedAt: timesheet.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: timesheet.UpdatedAt.Format(time.RFC3339),
+
 		EmployeeID: timesheet.EmployeeID,
 		Employee:   m.EmployeeToResource(timesheet.Employee),
 		TimeIn:     timesheet.TimeIn,

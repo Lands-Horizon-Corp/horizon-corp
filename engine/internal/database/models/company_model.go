@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -30,6 +32,10 @@ type Company struct {
 }
 
 type CompanyResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
 	Name            string            `json:"name"`
 	Description     string            `json:"description"`
 	Address         string            `json:"address"`
@@ -62,6 +68,10 @@ func (m *ModelResource) CompanyToResource(company *Company) *CompanyResource {
 	}
 
 	return &CompanyResource{
+		ID:        company.ID,
+		CreatedAt: company.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: company.UpdatedAt.Format(time.RFC3339),
+
 		Name:            company.Name,
 		Description:     company.Description,
 		Address:         company.Address,
