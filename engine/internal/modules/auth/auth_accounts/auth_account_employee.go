@@ -2,7 +2,8 @@ package auth_accounts
 
 import "github.com/gin-gonic/gin"
 
-func (ac *AuthAccount) EmployeeSignUp(ctx *gin.Context)                        {}
+func (ac *AuthAccount) EmployeeSignUp(ctx *gin.Context, contextEmailTemplate, contactTemplate string) {
+}
 func (ac *AuthAccount) EmployeeSignIn(ctx *gin.Context)                        {}
 func (ac *AuthAccount) EmployeeForgotPassword(ctx *gin.Context)                {}
 func (ac *AuthAccount) EmployeeChangePassword(ctx *gin.Context)                {}

@@ -43,149 +43,16 @@ func (as AuthService) SignUp(ctx *gin.Context) {
 
 	switch req.AccountType {
 	case "Member":
-		as.authAccount.MemberSignUp(ctx)
+		as.authAccount.MemberSignUp(ctx, req.EmailTemplate, req.ContactTemplate)
 	case "Admin":
-		as.authAccount.AdminSignUp(ctx)
+		as.authAccount.AdminSignUp(ctx, req.EmailTemplate, req.ContactTemplate)
 	case "Owner":
-		as.authAccount.OwnerSignUp(ctx)
+		as.authAccount.OwnerSignUp(ctx, req.EmailTemplate, req.ContactTemplate)
 	case "Employee":
-		as.authAccount.EmployeeSignUp(ctx)
+		as.authAccount.EmployeeSignUp(ctx, req.EmailTemplate, req.ContactTemplate)
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
-	as.authAccount.AdminSignUp(ctx)
-
-	// switch req.AccountType {
-	// case "Member":
-	// 	user := &models.Member{
-	// 		FirstName:         req.FirstName,
-	// 		LastName:          req.LastName,
-	// 		MiddleName:        req.MiddleName,
-	// 		PermanentAddress:  req.PermanentAddress,
-	// 		Description:       "",
-	// 		BirthDate:         req.BirthDate,
-	// 		Username:          req.Username,
-	// 		Email:             req.Email,
-	// 		Password:          req.Password,
-	// 		IsEmailVerified:   false,
-	// 		IsContactVerified: false,
-	// 		ContactNumber:     req.ContactNumber,
-	// 		MediaID:           nil,
-	// 		Status:            "Pending",
-	// 	}
-	// 	id, err := as.authProvider.Create(user, req.AccountType)
-	// 	if err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
-	// 		return
-	// 	}
-	// 	token, err := as.authToken.GenerateUserToken(id, req.AccountType)
-	// 	if err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
-	// 		return
-	// 	}
-
-	// 	// Send Email OTP
-	// 	emailReq := providers.EmailRequest{
-	// 		To:      req.Email,
-	// 		Subject: "ECOOP: Email Verification",
-	// 		Body:    req.EmailTemplate,
-	// 	}
-	// 	if err := as.otpProvider.SendEmailOTP(req.AccountType, user.ID, emailReq); err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
-	// 		return
-	// 	}
-
-	// 	// Send SMS OTP
-	// 	contactReq := providers.SMSRequest{
-	// 		To:   req.ContactNumber,
-	// 		Body: req.ContactTemplate,
-	// 		Vars: &map[string]string{
-	// 			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
-	// 		},
-	// 	}
-	// 	if err := as.otpProvider.SendContactNumberOTP(req.AccountType, user.ID, contactReq); err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
-	// 		return
-	// 	}
-
-	// 	http.SetCookie(ctx.Writer, &http.Cookie{
-	// 		Name:     as.cfg.AppTokenName,
-	// 		Value:    *token,
-	// 		Path:     "/",
-	// 		HttpOnly: true,
-	// 		Secure:   true,
-	// 		SameSite: http.SameSiteNoneMode,
-	// 	})
-	// 	ctx.JSON(http.StatusCreated, user)
-	// 	return
-
-	// case "Employee":
-	// 	user := &models.Employee{
-	// 		FirstName:         req.FirstName,
-	// 		LastName:          req.LastName,
-	// 		MiddleName:        req.MiddleName,
-	// 		PermanentAddress:  req.PermanentAddress,
-	// 		Description:       "",
-	// 		BirthDate:         req.BirthDate,
-	// 		Username:          req.Username,
-	// 		Email:             req.Email,
-	// 		Password:          req.Password,
-	// 		IsEmailVerified:   false,
-	// 		IsContactVerified: false,
-	// 		ContactNumber:     req.ContactNumber,
-	// 		MediaID:           nil,
-	// 		Status:            "Pending",
-	// 	}
-	// 	created, err := as.authProvider.Create(user, req.AccountType)
-	// 	if err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
-	// 		return
-	// 	}
-	// case "Admin":
-	// 	user := &models.Admin{
-	// 		FirstName:         req.FirstName,
-	// 		LastName:          req.LastName,
-	// 		MiddleName:        req.MiddleName,
-	// 		PermanentAddress:  req.PermanentAddress,
-	// 		Description:       "",
-	// 		BirthDate:         req.BirthDate,
-	// 		Username:          req.Username,
-	// 		Email:             req.Email,
-	// 		Password:          req.Password,
-	// 		IsEmailVerified:   false,
-	// 		IsContactVerified: false,
-	// 		ContactNumber:     req.ContactNumber,
-	// 		MediaID:           nil,
-	// 		Status:            "Pending",
-	// 	}
-	// 	created, err := as.authProvider.Create(user, req.AccountType)
-	// 	if err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
-	// 		return
-	// 	}
-	// case "Owner":
-	// 	user := &models.Owner{
-	// 		FirstName:         req.FirstName,
-	// 		LastName:          req.LastName,
-	// 		MiddleName:        req.MiddleName,
-	// 		PermanentAddress:  req.PermanentAddress,
-	// 		Description:       "",
-	// 		BirthDate:         req.BirthDate,
-	// 		Username:          req.Username,
-	// 		Email:             req.Email,
-	// 		Password:          req.Password,
-	// 		IsEmailVerified:   false,
-	// 		IsContactVerified: false,
-	// 		ContactNumber:     req.ContactNumber,
-	// 		MediaID:           nil,
-	// 		Status:            "Pending",
-	// 	}
-	// 	created, err := as.authProvider.Create(user, req.AccountType)
-	// 	if err != nil {
-	// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
-	// 		return
-	// 	}
-	// }
 }
 
 func (as AuthService) SignIn(ctx *gin.Context) {
