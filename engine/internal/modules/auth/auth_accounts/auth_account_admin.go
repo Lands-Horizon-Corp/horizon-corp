@@ -203,6 +203,15 @@ func (ac *AuthAccount) AdminSendEmailVerification(ctx *gin.Context, id uint, ema
 	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Please check your inbox or spam folder."})
 }
 
-func (ac *AuthAccount) AdminVerifyEmail(ctx *gin.Context)                   {}
+func (ac *AuthAccount) AdminVerifyEmail(ctx *gin.Context, id uint) {
+	const accountType = "Admin"
+	updatedUser, err := ac.UpdateVerification(accountType, id, "email", true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("AdminVerifyEmail: User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedUser)
+
+}
 func (ac *AuthAccount) AdminSendContactNumberVerification(ctx *gin.Context) {}
 func (ac *AuthAccount) AdminVerifyContactNumber(ctx *gin.Context)           {}

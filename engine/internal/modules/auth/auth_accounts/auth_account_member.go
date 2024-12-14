@@ -196,6 +196,14 @@ func (ac *AuthAccount) MemberSendEmailVerification(ctx *gin.Context, id uint, em
 	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Please check your inbox or spam folder."})
 }
 
-func (ac *AuthAccount) MemberVerifyEmail(ctx *gin.Context)                   {}
+func (ac *AuthAccount) MemberVerifyEmail(ctx *gin.Context, id uint) {
+	const accountType = "Member"
+	updatedUser, err := ac.UpdateVerification(accountType, id, "email", true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("AdminVerifyEmail: User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedUser)
+}
 func (ac *AuthAccount) MemberSendContactNumberVerification(ctx *gin.Context) {}
 func (ac *AuthAccount) MemberVerifyContactNumber(ctx *gin.Context)           {}

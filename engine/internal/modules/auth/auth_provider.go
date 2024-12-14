@@ -62,6 +62,10 @@ type SendEmailVerificationRequest struct {
 	EmailTemplate string `json:"emailTemplate" validate:"required"`
 }
 
+type VerifyEmailRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
+}
+
 func NewAuthProvider(
 	cfg *config.AppConfig,
 	cryptoHelpers *helpers.HelpersCryptography,
@@ -146,6 +150,15 @@ func (ap *AuthProvider) ValidateNewPassword(r NewPasswordRequest) error {
 }
 
 func (ap *AuthProvider) ValidateSendEmailVerification(r SendEmailVerificationRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ap *AuthProvider) ValidateVerifyEmailRequest(r VerifyEmailRequest) error {
 	validate := validator.New()
 	err := validate.Struct(r)
 	if err != nil {

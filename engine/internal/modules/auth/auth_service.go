@@ -15,6 +15,7 @@ type AuthService struct {
 	engine        *providers.EngineService
 	middle        *middleware.Middleware
 	tokenProvider *providers.TokenService
+	otpProvider   *providers.OTPService
 	authProvider  *AuthProvider
 	authAccount   *auth_accounts.AuthAccount
 }
@@ -23,13 +24,16 @@ func NewAuthService(
 	engine *providers.EngineService,
 	middle *middleware.Middleware,
 	tokenProvider *providers.TokenService,
+	otpProvider *providers.OTPService,
 	authProvider *AuthProvider,
 	authAccount *auth_accounts.AuthAccount,
 ) *AuthService {
 	return &AuthService{
 		engine:        engine,
 		middle:        middle,
+		otpProvider:   otpProvider,
 		tokenProvider: tokenProvider,
+		authProvider:  authProvider,
 		authAccount:   authAccount,
 	}
 }
@@ -310,7 +314,6 @@ func (as AuthService) SendEmailVerification(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: Validation error: %v", err)})
 		return
 	}
-
 	claims, err := as.getUserClaims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
@@ -328,11 +331,46 @@ func (as AuthService) SendEmailVerification(ctx *gin.Context) {
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
-
 }
 
 func (as AuthService) VerifyEmail(ctx *gin.Context) {
+	var req VerifyEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("VerifyEmail: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateVerifyEmailRequest(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("VerifyEmail: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
 
+	isValid, err := as.otpProvider.ValidateOTP(claims.AccountType, claims.ID, req.Otp, "email")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("VerifyEmail: OTP validation error: %v", err)})
+		return
+	}
+	if !isValid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "VerifyEmail: Invalid or expired OTP"})
+		return
+	}
+
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberVerifyEmail(ctx, claims.ID)
+	case "Admin":
+		as.authAccount.AdminVerifyEmail(ctx, claims.ID)
+	case "Owner":
+		as.authAccount.OwnerVerifyEmail(ctx, claims.ID)
+	case "Employee":
+		as.authAccount.EmployeeVerifyEmail(ctx, claims.ID)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
 func (as AuthService) SendContactNumberVerification(ctx *gin.Context) {
