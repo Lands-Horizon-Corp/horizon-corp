@@ -167,7 +167,16 @@ func (ac *AuthAccount) OwnerNewPassword(ctx *gin.Context, id uint, newPassword s
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
-func (ac *AuthAccount) OwnerSkipVerification(ctx *gin.Context)              {}
+func (ac *AuthAccount) OwnerSkipVerification(ctx *gin.Context, id uint) {
+	const accountType = "Owner"
+	resource, err := ac.UpdateVerification(accountType, id, "skip", true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("SkipVerification: User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, resource)
+}
+
 func (ac *AuthAccount) OwnerSendEmailVerification(ctx *gin.Context)         {}
 func (ac *AuthAccount) OwnerVerifyEmail(ctx *gin.Context)                   {}
 func (ac *AuthAccount) OwnerSendContactNumberVerification(ctx *gin.Context) {}

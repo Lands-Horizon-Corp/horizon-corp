@@ -171,7 +171,15 @@ func (ac *AuthAccount) AdminNewPassword(ctx *gin.Context, id uint, newPassword s
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
 
-func (ac *AuthAccount) AdminSkipVerification(ctx *gin.Context)              {}
+func (ac *AuthAccount) AdminSkipVerification(ctx *gin.Context, id uint) {
+	const accountType = "Admin"
+	resource, err := ac.UpdateVerification(accountType, id, "skip", true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("SkipVerification: User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, resource)
+}
 func (ac *AuthAccount) AdminSendEmailVerification(ctx *gin.Context)         {}
 func (ac *AuthAccount) AdminVerifyEmail(ctx *gin.Context)                   {}
 func (ac *AuthAccount) AdminSendContactNumberVerification(ctx *gin.Context) {}

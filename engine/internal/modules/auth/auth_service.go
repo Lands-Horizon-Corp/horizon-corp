@@ -267,7 +267,7 @@ func (as AuthService) NewPassword(ctx *gin.Context) {
 	}
 	switch claims.AccountType {
 	case "Member":
-		as.authAccount.AdminNewPassword(ctx, claims.ID, req.NewPassword)
+		as.authAccount.MemberChangePassword(ctx, claims.ID, req.NewPassword)
 	case "Admin":
 		as.authAccount.AdminChangePassword(ctx, claims.ID, req.NewPassword)
 	case "Owner":
@@ -281,7 +281,23 @@ func (as AuthService) NewPassword(ctx *gin.Context) {
 }
 
 func (as AuthService) SkipVerification(ctx *gin.Context) {
-
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberSkipVerification(ctx, claims.ID)
+	case "Admin":
+		as.authAccount.AdminSkipVerification(ctx, claims.ID)
+	case "Owner":
+		as.authAccount.OwnerSkipVerification(ctx, claims.ID)
+	case "Employee":
+		as.authAccount.EmployeeSkipVerification(ctx, claims.ID)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
 func (as AuthService) SendEmailVerification(ctx *gin.Context) {

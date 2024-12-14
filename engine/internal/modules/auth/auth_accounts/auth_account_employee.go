@@ -171,7 +171,15 @@ func (ac *AuthAccount) EmployeeNewPassword(ctx *gin.Context, id uint, newPasswor
 	ctx.JSON(http.StatusOK, gin.H{"message": "Password changed successfully."})
 }
 
-func (ac *AuthAccount) EmployeeSkipVerification(ctx *gin.Context)              {}
+func (ac *AuthAccount) EmployeeSkipVerification(ctx *gin.Context, id uint) {
+	const accountType = "Employee"
+	resource, err := ac.UpdateVerification(accountType, id, "skip", true)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("SkipVerification: User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, resource)
+}
 func (ac *AuthAccount) EmployeeSendEmailVerification(ctx *gin.Context)         {}
 func (ac *AuthAccount) EmployeeVerifyEmail(ctx *gin.Context)                   {}
 func (ac *AuthAccount) EmployeeSendContactNumberVerification(ctx *gin.Context) {}
