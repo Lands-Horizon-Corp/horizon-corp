@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -95,6 +96,24 @@ func (m *ModelResource) TimesheetToResourceList(timesheets []*Timesheet) []*Time
 		timesheetResources = append(timesheetResources, m.TimesheetToResource(timesheet))
 	}
 	return timesheetResources
+}
+
+func (m *ModelResource) TimesheetCurrent(employeeId uint) (*Timesheet, error) {
+	var timesheet Timesheet
+	err := m.db.Client.
+		Preload("Employee").
+		Preload("MediaIn").
+		Preload("MediaOut").
+		Where("employee_id = ? AND time_out IS NULL", employeeId).
+		Order("created_at DESC").
+		First(&timesheet).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil
+		}
+		return nil, errors.New("could not retrieve current timesheet")
+	}
+	return &timesheet, nil
 }
 
 func (m *ModelResource) TimesheetSeeders() error {
