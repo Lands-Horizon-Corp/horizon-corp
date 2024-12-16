@@ -60,7 +60,7 @@ const CompaniesTable = ({
             const [error, result] = await withCatchAsync(
                 CompanyService.filter(
                     toBase64({
-                        preloads: ['Media'],
+                        preloads: ['Media', 'Owner'],
                         ...pagination,
                         ...filterState.finalFilters,
                     })

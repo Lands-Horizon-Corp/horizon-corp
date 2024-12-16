@@ -7,8 +7,8 @@ import { useMutation } from '@tanstack/react-query'
 import {
     CheckIcon,
     CloseIcon,
-    PatchCheckIcon,
-    PatchMinusIcon,
+    BadgeCheckFillIcon,
+    BadgeMinusFillIcon,
 } from '@/components/icons'
 import {
     Form,
@@ -120,12 +120,12 @@ const EmailOption = ({ email, verified, onSave }: Props) => {
                                             <span className="inline-flex items-center text-xs text-foreground/50">
                                                 {!verified ? (
                                                     <>
-                                                        <PatchMinusIcon className="mr-1 inline-block text-orange-500" />{' '}
+                                                        <BadgeMinusFillIcon className="mr-1 inline-block text-orange-500" />{' '}
                                                         Not verified
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <PatchCheckIcon className="mr-1 inline-block text-primary" />{' '}
+                                                        <BadgeCheckFillIcon className="mr-1 inline-block text-primary" />{' '}
                                                         Verified
                                                     </>
                                                 )}

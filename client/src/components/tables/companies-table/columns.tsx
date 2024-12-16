@@ -7,7 +7,12 @@ import { Badge } from '@/components/ui/badge'
 import UserAvatar from '@/components/user-avatar'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { CheckBadgeOutlineIcon, PushPinSlashIcon } from '@/components/icons'
+import {
+    BadgeCheckFillIcon,
+    BadgeCheckIcon,
+    BadgeQuestionIcon,
+    PushPinSlashIcon,
+} from '@/components/icons'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
@@ -91,7 +96,7 @@ const CompaniesTableAction = ({ row }: { row: Row<CompanyResource> }) => {
                 <>
                     {!company.isAdminVerified && (
                         <DropdownMenuItem>
-                            <CheckBadgeOutlineIcon className="mr-2" /> Approve
+                            <BadgeCheckIcon className="mr-2" /> Approve
                         </DropdownMenuItem>
                     )}
                 </>
@@ -281,9 +286,19 @@ const companiesTableColumns: ColumnDef<CompanyResource>[] = [
         }) => (
             <div>
                 {isAdminVerified ? (
-                    <Badge variant="success">Verified</Badge>
+                    <Badge
+                        className="flex w-fit items-center gap-x-1"
+                        variant="success"
+                    >
+                        <BadgeCheckFillIcon className="inline" /> Verified
+                    </Badge>
                 ) : (
-                    <Badge variant="warning">Not Verified</Badge>
+                    <Badge
+                        className="flex w-fit items-center gap-x-1"
+                        variant="warning"
+                    >
+                        <BadgeQuestionIcon className="inline" /> Pending
+                    </Badge>
                 )}
             </div>
         ),
