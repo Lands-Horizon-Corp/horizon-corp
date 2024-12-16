@@ -544,3 +544,52 @@ func (ap *AuthAccount) UpdateVerification(accountType string, userID uint, verif
 	}
 	return resource, err
 }
+
+func (ap *AuthAccount) UpdateProfilePicture(accountType string, userID uint, mediaID *uint) (interface{}, error) {
+	var preloads []string
+	var err error
+	var resource interface{}
+
+	switch accountType {
+	case "Admin":
+		preloads = []string{"Media", "Role", "Gender"}
+		admin := &models.Admin{MediaID: mediaID}
+		result, err := ap.modelResource.AdminDB.UpdateColumns(userID, *admin, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.AdminToResource(result)
+
+	case "Owner":
+		preloads = []string{"Media", "Companies", "Gender"}
+		owner := &models.Owner{MediaID: mediaID}
+		result, err := ap.modelResource.OwnerDB.UpdateColumns(userID, *owner, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.OwnerToResource(result)
+
+	case "Employee":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		employee := &models.Employee{MediaID: mediaID}
+		result, err := ap.modelResource.EmployeeDB.UpdateColumns(userID, *employee, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.EmployeeToResource(result)
+
+	case "Member":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		member := &models.Member{MediaID: mediaID}
+
+		result, err := ap.modelResource.MemberDB.UpdateColumns(userID, *member, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.MemberToResource(result)
+
+	default:
+		return nil, fmt.Errorf("invalid account type")
+	}
+	return resource, err
+}

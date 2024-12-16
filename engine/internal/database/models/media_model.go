@@ -51,6 +51,8 @@ type MediaResource struct {
 }
 
 type MediaRequest struct {
+	ID *uint `json:"id"`
+
 	FileName   string `json:"fileName" validate:"required,max=255"`
 	FileSize   int64  `json:"fileSize" validate:"required,min=1"`
 	FileType   string `json:"fileType" validate:"required,max=50"`

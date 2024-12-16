@@ -18,6 +18,7 @@ type AuthService struct {
 	otpProvider   *providers.OTPService
 	authProvider  *AuthProvider
 	authAccount   *auth_accounts.AuthAccount
+	modelResource *models.ModelResource
 }
 
 func NewAuthService(
@@ -27,6 +28,7 @@ func NewAuthService(
 	otpProvider *providers.OTPService,
 	authProvider *AuthProvider,
 	authAccount *auth_accounts.AuthAccount,
+	modelResource *models.ModelResource,
 ) *AuthService {
 	return &AuthService{
 		engine:        engine,
@@ -35,6 +37,7 @@ func NewAuthService(
 		tokenProvider: tokenProvider,
 		authProvider:  authProvider,
 		authAccount:   authAccount,
+		modelResource: modelResource,
 	}
 }
 
@@ -446,23 +449,35 @@ func (as AuthService) VerifyContactNumber(ctx *gin.Context) {
 }
 
 func (as AuthService) ProfilePicture(ctx *gin.Context) {
-	// var req as.modelsResource.MediaRequest
-	// var req models.MediaRequest
-	// if !c.handleRequest(ctx, &req) {
-	// 	return
-	// }
+	var req *models.MediaRequest
 
-	// userClaims, err := c.getUserClaims(ctx)
-	// if err != nil {
-	// 	return
-	// }
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.modelResource.ValidateMediaRequest(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
 
-	// userUpdate := &models.User{
-	// 	AccountType: userClaims.AccountType,
-	// 	MediaID:     &req.ID,
-	// }
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberProfilePicture(ctx, claims.ID, *req.ID)
+	case "Admin":
+		as.authAccount.AdminProfilePicture(ctx, claims.ID, *req.ID)
+	case "Owner":
+		as.authAccount.OwnerProfilePicture(ctx, claims.ID, *req.ID)
+	case "Employee":
+		as.authAccount.EmployeeProfilePicture(ctx, claims.ID, *req.ID)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 
-	// c.updateUser(ctx, userUpdate)
 }
 func (as AuthService) ProfileAccountSetting(ctx *gin.Context) {
 
