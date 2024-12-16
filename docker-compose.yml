@@ -184,6 +184,7 @@ services:
       MINIO_ROOT_PASSWORD: ${STORAGE_SECRET_KEY}
     volumes:
       - minio_data:/data
+    command: server /data --console-address ":9001"
     networks:
       - app-network
 
