@@ -99,7 +99,7 @@ func (as *MediaService) RegisterRoutes() {
 	routes := as.engine.Client.Group("/api/v1/media")
 	{
 		// Common
-		routes.POST("/", as.Create)
+		routes.POST("", as.Create)
 		routes.DELETE("/:id", as.Delete)
 
 		routes.GET("/", as.controller.GetAll)

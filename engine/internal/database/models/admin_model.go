@@ -213,5 +213,6 @@ func (r *ModelResource) AdminUpdate(user *Admin, preloads []string) error {
 
 func (m *ModelResource) AdminSeeders() error {
 	m.logger.Info("Seeding Admin")
+	// Create user
 	return nil
 }
