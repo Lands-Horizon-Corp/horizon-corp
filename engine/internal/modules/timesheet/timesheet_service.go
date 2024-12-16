@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
 	"github.com/gin-gonic/gin"
@@ -17,6 +19,7 @@ type TimesheetService struct {
 	middle        *middleware.Middleware
 	tokenProvider *providers.TokenService
 	modelResource *models.ModelResource
+	helpers       *helpers.HelpersFunction
 }
 
 func NewTimesheetService(
@@ -26,6 +29,7 @@ func NewTimesheetService(
 	middle *middleware.Middleware,
 	tokenProvider *providers.TokenService,
 	modelResource *models.ModelResource,
+	helpers *helpers.HelpersFunction,
 ) *TimesheetService {
 
 	return &TimesheetService{
@@ -35,6 +39,7 @@ func NewTimesheetService(
 		middle:        middle,
 		tokenProvider: tokenProvider,
 		modelResource: modelResource,
+		helpers:       helpers,
 	}
 }
 
@@ -55,25 +60,48 @@ func (ts *TimesheetService) getUserClaims(ctx *gin.Context) (*providers.UserClai
 }
 
 func (ts *TimesheetService) findall(ctx *gin.Context) {
-	userClaims, err := ts.getUserClaims(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+
+	filterParam := ctx.Query("filter")
+	if filterParam == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
 		return
 	}
-	timesheet, err := ts.modelResource.TimesheetCurrent(userClaims.ID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found."})
+
+	var paginatedReq managers.PaginatedRequest
+	if err := ts.helpers.DecodeBase64JSON(filterParam, &paginatedReq); err != nil {
+		fmt.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})
 		return
 	}
-	ctx.JSON(http.StatusOK, ts.modelResource.TimesheetToResource(timesheet))
+
+	if err := ctx.ShouldBind(&paginatedReq); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pagination parameters"})
+		return
+	}
+
+	// filter here
+	// userClaims, err := ts.getUserClaims(ctx)
+	// if err != nil {
+	// 	ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+	// 	return
+	// }
+	// timesheet, err := ts.modelResource.TimesheetFindallForEmployee(userClaims.ID, paginatedReq)
+	// if err != nil {
+	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found."})
+	// 	return
+	// }
+	// data := ts.modelResource.TimesheetToResourceList(timesheet.Data)
+	// ctx.JSON(http.StatusOK, ts.modelResource.TimesheetToResource(timesheet))
+	ctx.JSON(http.StatusOK, gin.H{})
 }
+
 func (ts *TimesheetService) current(ctx *gin.Context) {
 	userClaims, err := ts.getUserClaims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
 		return
 	}
-	timesheet, err := ts.modelResource.TimesheetCurrent(userClaims.ID)
+	timesheet, err := ts.modelResource.TimesheetCurrentForEmployee(userClaims.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found."})
 		return

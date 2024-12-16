@@ -1,6 +1,8 @@
 package helpers
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/mail"
@@ -8,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/go-playground/validator"
@@ -147,31 +150,128 @@ func (hf *HelpersFunction) GetKeyType(key string) string {
 	if trimmedKey == "" {
 		return "empty"
 	}
-	if isValidEmail(trimmedKey) {
+	if hf.isValidEmail(trimmedKey) {
 		return "email"
 	}
-	if isValidKey(trimmedKey) {
+	if hf.isValidKey(trimmedKey) {
 		return "key"
 	}
 
-	if isValidUsername(trimmedKey) {
+	if hf.isValidUsername(trimmedKey) {
 		return "username"
 	}
 	return "unknown"
 }
 
-func isValidEmail(email string) bool {
+func (hf *HelpersFunction) isValidEmail(email string) bool {
 	const emailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	re := regexp.MustCompile(emailRegex)
 	return re.MatchString(email)
 }
 
-func isValidKey(key string) bool {
+func (hf *HelpersFunction) isValidKey(key string) bool {
 	re := regexp.MustCompile(`^[0-9]+$`)
 	return re.MatchString(key)
 }
 
-func isValidUsername(username string) bool {
+func (hf *HelpersFunction) isValidUsername(username string) bool {
 	re := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	return re.MatchString(username)
+}
+
+const maxDecodedLength = 1024 * 1024
+
+func (hf *HelpersFunction) DecodeBase64JSON(encoded string, v interface{}) error {
+	if encoded == "" {
+		return errors.New("encoded string is empty")
+	}
+
+	decoded, err := base64.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		return fmt.Errorf("failed to decode Base64: %w", err)
+	}
+
+	if len(decoded) > maxDecodedLength {
+		return errors.New("decoded string exceeds maximum allowed size")
+	}
+
+	decodedString := string(decoded)
+	if hf.containsSQLInjectionRisk(decodedString) {
+		return errors.New("decoded string contains potentially dangerous SQL injection patterns")
+	}
+
+	if err := json.Unmarshal(decoded, v); err != nil {
+		return fmt.Errorf("failed to unmarshal JSON: %w", err)
+	}
+
+	return nil
+}
+
+func (hf *HelpersFunction) containsSQLInjectionRisk(value string) bool {
+	injectionPattern := regexp.MustCompile(`(?i)\b(SELECT|INSERT|DELETE|UPDATE|DROP|TRUNCATE|ALTER|CREATE|--|;)\b`)
+	return injectionPattern.MatchString(value)
+}
+
+func (hf *HelpersFunction) GetBase64Int(data map[string]interface{}, key string, defaultValue int) int {
+	if value, ok := data[key].(int); ok {
+		return value
+	}
+	return defaultValue
+}
+
+func (hf *HelpersFunction) GetBase64String(data map[string]interface{}, key string, defaultValue string) string {
+	if value, ok := data[key].(string); ok {
+		return value
+	}
+	return defaultValue
+}
+
+func GetBase64Filters(data map[string]interface{}, key string) []interface{} {
+	if filters, ok := data[key].([]interface{}); ok {
+		return filters
+	}
+	return []interface{}{}
+}
+
+// GetBase64ArrayString retrieves a slice of strings from a map
+func (hf *HelpersFunction) GetBase64ArrayString(data map[string]interface{}, key string) []string {
+	if rawArray, ok := data[key].([]interface{}); ok {
+		stringArray := []string{}
+		for _, item := range rawArray {
+			if str, ok := item.(string); ok {
+				stringArray = append(stringArray, str)
+			}
+		}
+		return stringArray
+	}
+	return []string{}
+}
+
+func (hf *HelpersFunction) CamelToSnake(s string) (string, error) {
+	if len(s) == 0 {
+		return "", fmt.Errorf("input string is empty")
+	}
+
+	validInput := regexp.MustCompile(`^[a-zA-Z0-9]+$`)
+	if !validInput.MatchString(s) {
+		return "", fmt.Errorf("invalid input string: %s", s)
+	}
+
+	var sb strings.Builder
+	for i, r := range s {
+		if unicode.IsUpper(r) {
+			if i > 0 {
+				sb.WriteRune('_')
+			}
+			sb.WriteRune(unicode.ToLower(r))
+		} else if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			sb.WriteRune(r)
+		}
+	}
+
+	result := sb.String()
+	if !regexp.MustCompile(`^[a-z0-9_]+$`).MatchString(result) {
+		return "", fmt.Errorf("invalid output string: %s", result)
+	}
+	return result, nil
 }

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -98,7 +99,7 @@ func (m *ModelResource) TimesheetToResourceList(timesheets []*Timesheet) []*Time
 	return timesheetResources
 }
 
-func (m *ModelResource) TimesheetCurrent(employeeId uint) (*Timesheet, error) {
+func (m *ModelResource) TimesheetCurrentForEmployee(employeeId uint) (*Timesheet, error) {
 	var timesheet Timesheet
 	err := m.db.Client.
 		Preload("Employee").
@@ -113,7 +114,12 @@ func (m *ModelResource) TimesheetCurrent(employeeId uint) (*Timesheet, error) {
 		}
 		return nil, errors.New("could not retrieve current timesheet")
 	}
-	return &timesheet, nil
+	return &timesheet, err
+}
+
+func (m *ModelResource) TimesheetFindallForEmployee(employeeId uint, filters managers.PaginatedRequest) (managers.FilterPages[Timesheet], error) {
+	db := m.db.Client.Where("employee_id = ? AND time_out IS NULL", employeeId)
+	return m.TimesheetDB.GetPaginatedResult(db, filters)
 }
 
 func (m *ModelResource) TimesheetSeeders() error {

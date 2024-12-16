@@ -291,7 +291,6 @@ func (r *Repository[T]) applySingleFilter(db *gorm.DB, filter Filter) *gorm.DB {
 					}
 					conditions = append(conditions, condition)
 				}
-				// Combine conditions with OR
 				db = db.Where(strings.Join(conditions, " OR "), args...)
 			default:
 				// Handle other slice types if necessary
@@ -351,9 +350,14 @@ func (r *Repository[T]) applySingleFilter(db *gorm.DB, filter Filter) *gorm.DB {
 }
 
 // GetPaginatedResult executes the query with applied filters and returns paginated results.
-func (r *Repository[T]) GetPaginatedResult(request PaginatedRequest) (FilterPages[T], error) {
+func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, request PaginatedRequest) (FilterPages[T], error) {
 	var results []T
 	var totalSize int64
+
+	clientDB := r.DB.Client
+	if db != nil {
+		clientDB = db
+	}
 
 	// Validate the request before applying filters
 	if err := r.ValidatePaginatedRequest(request); err != nil {
@@ -361,7 +365,7 @@ func (r *Repository[T]) GetPaginatedResult(request PaginatedRequest) (FilterPage
 	}
 
 	// Apply filters and preloads
-	filteredDB := r.ApplyFilters(r.DB.Client, request)
+	filteredDB := r.ApplyFilters(clientDB, request)
 
 	// Count total records
 	err := filteredDB.Model(new(T)).Count(&totalSize).Error
