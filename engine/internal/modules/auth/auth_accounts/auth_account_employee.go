@@ -245,3 +245,15 @@ func (ac *AuthAccount) EmployeeVerifyContactNumber(ctx *gin.Context, id uint) {
 	}
 	ctx.JSON(http.StatusOK, updatedUser)
 }
+
+func (ac *AuthAccount) EmployeeProfilePicture(ctx *gin.Context, media models.MediaResource) {}
+func (ac *AuthAccount) EmployeeProfileAccountSetting(ctx *gin.Context, id uint, birthDate time.Time, firstName, middleName, lastName, description, permanentAddress string) {
+}
+func (ac *AuthAccount) EmployeeProfileChangeEmail(ctx *gin.Context, id uint, password, email string) {
+}
+func (ac *AuthAccount) EmployeeProfileChangeContactNumber(ctx *gin.Context, id uint, password, contactNumber string) {
+}
+func (ac *AuthAccount) EmployeeProfileChangeUsername(ctx *gin.Context, id uint, password, userName string) {
+}
+func (ac *AuthAccount) EmployeeProfileChangePassword(ctx *gin.Context, id uint, password, newPassword string) {
+}

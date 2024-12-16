@@ -248,3 +248,14 @@ func (ac *AuthAccount) AdminVerifyContactNumber(ctx *gin.Context, id uint) {
 	}
 	ctx.JSON(http.StatusOK, updatedUser)
 }
+
+func (ac *AuthAccount) AdminProfilePicture(ctx *gin.Context, media models.MediaResource) {}
+func (ac *AuthAccount) AdminProfileAccountSetting(ctx *gin.Context, id uint, birthDate time.Time, firstName, middleName, lastName, description, permanentAddress string) {
+}
+func (ac *AuthAccount) AdminProfileChangeEmail(ctx *gin.Context, id uint, password, email string) {}
+func (ac *AuthAccount) AdminProfileChangeContactNumber(ctx *gin.Context, id uint, password, contactNumber string) {
+}
+func (ac *AuthAccount) AdminProfileChangeUsername(ctx *gin.Context, id uint, password, userName string) {
+}
+func (ac *AuthAccount) AdminProfileChangePassword(ctx *gin.Context, id uint, password, newPassword string) {
+}

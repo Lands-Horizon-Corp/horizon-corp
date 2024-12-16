@@ -239,3 +239,14 @@ func (ac *AuthAccount) MemberVerifyContactNumber(ctx *gin.Context, id uint) {
 	}
 	ctx.JSON(http.StatusOK, updatedUser)
 }
+
+func (ac *AuthAccount) MemberProfilePicture(ctx *gin.Context, media models.MediaResource) {}
+func (ac *AuthAccount) MemberProfileAccountSetting(ctx *gin.Context, id uint, birthDate time.Time, firstName, middleName, lastName, description, permanentAddress string) {
+}
+func (ac *AuthAccount) MemberProfileChangeEmail(ctx *gin.Context, id uint, password, email string) {}
+func (ac *AuthAccount) MemberProfileChangeContactNumber(ctx *gin.Context, id uint, password, contactNumber string) {
+}
+func (ac *AuthAccount) MemberProfileChangeUsername(ctx *gin.Context, id uint, password, userName string) {
+}
+func (ac *AuthAccount) MemberProfileChangePassword(ctx *gin.Context, id uint, password, newPassword string) {
+}

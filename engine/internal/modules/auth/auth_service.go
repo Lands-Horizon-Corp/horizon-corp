@@ -405,6 +405,7 @@ func (as AuthService) SendContactNumberVerification(ctx *gin.Context) {
 }
 
 func (as AuthService) VerifyContactNumber(ctx *gin.Context) {
+
 	var req VerifyContactNumberRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
@@ -444,6 +445,41 @@ func (as AuthService) VerifyContactNumber(ctx *gin.Context) {
 	}
 }
 
+func (as AuthService) ProfilePicture(ctx *gin.Context) {
+	// var req as.modelsResource.MediaRequest
+	// var req models.MediaRequest
+	// if !c.handleRequest(ctx, &req) {
+	// 	return
+	// }
+
+	// userClaims, err := c.getUserClaims(ctx)
+	// if err != nil {
+	// 	return
+	// }
+
+	// userUpdate := &models.User{
+	// 	AccountType: userClaims.AccountType,
+	// 	MediaID:     &req.ID,
+	// }
+
+	// c.updateUser(ctx, userUpdate)
+}
+func (as AuthService) ProfileAccountSetting(ctx *gin.Context) {
+
+}
+func (as AuthService) ProfileChangeEmail(ctx *gin.Context) {
+
+}
+func (as AuthService) ProfileChangeContactNumber(ctx *gin.Context) {
+
+}
+func (as AuthService) ProfileChangeUsername(ctx *gin.Context) {
+
+}
+func (as AuthService) ProfileChangePassword(ctx *gin.Context) {
+
+}
+
 func (as *AuthService) RegisterRoutes() {
 	routes := as.engine.Client.Group("/api/v1/auth")
 	{
@@ -463,5 +499,16 @@ func (as *AuthService) RegisterRoutes() {
 			routes.POST("/send-contact-number-verification", as.SendContactNumberVerification)
 			routes.POST("/verify-contact-number", as.VerifyContactNumber)
 		}
+	}
+
+	profileAuth := as.engine.Client.Group("/profile")
+	profileAuth.Use(as.middle.AuthMiddleware())
+	{
+		profileAuth.POST("/profile-picture", as.ProfilePicture)
+		profileAuth.POST("/account-setting", as.ProfileAccountSetting)
+		profileAuth.POST("/change-email", as.ProfileChangeEmail)
+		profileAuth.POST("/change-contact-number", as.ProfileChangeContactNumber)
+		profileAuth.POST("/change-username", as.ProfileChangeUsername)
+		profileAuth.POST("/change-password", as.ChangePassword)
 	}
 }

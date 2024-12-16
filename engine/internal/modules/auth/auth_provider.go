@@ -74,6 +74,30 @@ type VerifyContactNumberRequest struct {
 	Otp string `json:"otp" validate:"required,len=6"`
 }
 
+type ChangeEmailRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Email    string `json:"email" validate:"required,email"`
+}
+
+type ChangeContactNumberRequest struct {
+	Password      string `json:"password" validate:"required,min=8,max=255"`
+	ContactNumber string `json:"contactNumber" validate:"required,min=10,max=15"`
+}
+
+type ChangeUsernameRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Username string `json:"username" validate:"required,min=5,max=255"`
+}
+
+type AccountSettingRequest struct {
+	BirthDate        time.Time `json:"birthDate" validate:"required"`
+	FirstName        string    `json:"firstName" validate:"required,max=255"`
+	MiddleName       string    `json:"middleName" validate:"required,max=255"`
+	LastName         string    `json:"lastName" validate:"required,max=255"`
+	Description      string    `json:"description" validate:"max=2048"`
+	PermanentAddress string    `json:"permanentAddress" validate:"required,max=500"`
+}
+
 func NewAuthProvider(
 	cfg *config.AppConfig,
 	cryptoHelpers *helpers.HelpersCryptography,
@@ -185,6 +209,43 @@ func (ap *AuthProvider) ValidateSendContactNumberVerificationRequest(r SendConta
 }
 
 func (ap *AuthProvider) ValidateVerifyContactNumberRequest(r VerifyContactNumberRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ap *AuthProvider) ValidateAccountSettingRequest(r AccountSettingRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ap *AuthProvider) ValidateChangeEmailRequest(r ChangeEmailRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Validate validates the ChangeContactNumberRequest fields
+func (ap *AuthProvider) ValidateChangeContactNumberRequest(r ChangeContactNumberRequest) error {
+	validate := validator.New()
+	err := validate.Struct(r)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ap *AuthProvider) ValidateChangeUsernameRequest(r ChangeUsernameRequest) error {
 	validate := validator.New()
 	err := validate.Struct(r)
 	if err != nil {
