@@ -235,7 +235,7 @@ func (m *ModelResource) OwnerSeeders() error {
 			ContactNumber:     "1234567890",
 			IsEmailVerified:   true,
 			IsContactVerified: true,
-			Status:            "Active",
+			Status:            "Verified",
 		},
 		{
 			FirstName:         "Jane",
