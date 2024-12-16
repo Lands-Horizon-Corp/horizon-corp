@@ -15,8 +15,8 @@ type Branch struct {
 	Address         string  `gorm:"type:varchar(500)" json:"address"`
 	Longitude       float64 `gorm:"type:decimal(10,7)" json:"longitude"`
 	Latitude        float64 `gorm:"type:decimal(10,7)" json:"latitude"`
-	Email           string  `gorm:"type:varchar(255);unique;not null" json:"email"`
-	ContactNumber   string  `gorm:"type:varchar(15);unique;not null" json:"contact_number"`
+	Email           string  `gorm:"type:varchar(255);not null" json:"email"`
+	ContactNumber   string  `gorm:"type:varchar(15);not null" json:"contact_number"`
 	IsAdminVerified bool    `gorm:"default:false" json:"is_admin_verified"`
 
 	// Relationship 0 to 1

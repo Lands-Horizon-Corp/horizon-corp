@@ -6,7 +6,6 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
 	"github.com/gin-gonic/gin"
@@ -57,19 +56,22 @@ func (as *CompanyService) SearchFilter(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
 		return
 	}
-	var paginatedReq filter.PaginatedRequest
-	if err := as.helpers.DecodeBase64JSON(filterParam, &paginatedReq); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})
-		return
-	}
-	companies, err := as.modelResource.CompanyFilterForAdmin(paginatedReq)
+
+	companies, err := as.modelResource.CompanyFilterForAdmin(filterParam)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Companies not found."})
 		return
 	}
 	data := as.modelResource.CompanyToResourceList(companies.Data)
 	if data == nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to transform company data."})
+		ctx.JSON(http.StatusOK, gin.H{
+			"data":      []interface{}{},
+			"pageIndex": companies.PageIndex,
+			"totalPage": companies.TotalPage,
+			"pageSize":  companies.PageSize,
+			"totalSize": companies.TotalSize,
+			"pages":     companies.Pages,
+		})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{

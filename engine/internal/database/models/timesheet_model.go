@@ -117,7 +117,7 @@ func (m *ModelResource) TimesheetCurrentForEmployee(employeeId uint) (*Timesheet
 	return &timesheet, err
 }
 
-func (m *ModelResource) TimesheetFindallForEmployee(employeeId uint, filters filter.PaginatedRequest) (filter.FilterPages[Timesheet], error) {
+func (m *ModelResource) TimesheetFindallForEmployee(employeeId uint, filters string) (filter.FilterPages[Timesheet], error) {
 	db := m.db.Client.Where("employee_id = ? AND time_out IS NULL", employeeId)
 	return m.TimesheetDB.GetPaginatedResult(db, filters)
 }

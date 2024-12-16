@@ -57,7 +57,7 @@ type FilterStruct struct {
 	Value    interface{}    `json:"value"`
 }
 
-func (f FilterStruct) GetField() string { return f.Field }
+func (f FilterStruct) GetField() string { return toSnakeCase(f.Field) }
 
 func (f FilterStruct) GetMode() FilterMode { return f.Mode }
 
@@ -66,14 +66,12 @@ func (f FilterStruct) GetDataType() string { return string(f.DataType) }
 func (f FilterStruct) GetValue() FilterValue { return f.Value }
 
 func (f FilterStruct) IsMultiple() bool {
-	switch f.Mode {
-	case ModeContains, ModeNotContains, ModeBetween, ModeRange, ModeStartsWith, ModeEndsWith:
-		switch f.Value.(type) {
-		case []interface{}, []string, []float64, []int, []bool, []RangeValue:
-			return true
-		}
+	switch f.Value.(type) {
+	case []interface{}, []string, []float64, []int, []bool, []RangeValue:
+		return true
+	default:
+		return false
 	}
-	return false
 }
 
 type Page struct {
@@ -91,9 +89,9 @@ type FilterPages[T any] struct {
 }
 
 type PaginatedRequest struct {
-	Filters   []Filter `json:"filters"`
-	Preloads  []string `json:"preloads"`
-	PageIndex int      `json:"pageIndex"`
-	PageSize  int      `json:"pageSize"`
-	Logic     string   `json:"logic"`
+	Filters   []FilterStruct `json:"filters"`
+	Preloads  []string       `json:"preloads"`
+	PageIndex int            `json:"pageIndex"`
+	PageSize  int            `json:"pageSize"`
+	Logic     string         `json:"logic"`
 }

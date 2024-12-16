@@ -8,19 +8,17 @@ import (
 )
 
 func ApplyFilters(db *gorm.DB, request PaginatedRequest) *gorm.DB {
+	if err := validatePaginatedRequest(request); err != nil {
+		return db
+	}
 	if strings.ToLower(request.Logic) == "or" {
-		db = db.Where(func(tx *gorm.DB) *gorm.DB {
-			for i, filter := range request.Filters {
-				if i == 0 {
-					tx = applyFiltering(tx, filter)
-				} else {
-					tx = tx.Or(func(orTx *gorm.DB) *gorm.DB {
-						return applyFiltering(orTx, filter)
-					})
-				}
+		for i, filter := range request.Filters {
+			if i == 0 {
+				db = applyFiltering(db, filter)
+			} else {
+				db = db.Or(applyFiltering(db, filter))
 			}
-			return tx
-		})
+		}
 	} else {
 		for _, filter := range request.Filters {
 			db = applyFiltering(db, filter)
@@ -35,26 +33,21 @@ func ApplyFilters(db *gorm.DB, request PaginatedRequest) *gorm.DB {
 func applyFiltering(db *gorm.DB, filter Filter) *gorm.DB {
 	value := filter.GetValue()
 	dataType := FilterDataType(filter.GetDataType())
-	if filter.IsMultiple() {
-		values, ok := toSlice(value)
-		if !ok {
-			return db
-		}
 
+	if filter.IsMultiple() {
+		values := convertToTypedSlice(value, dataType)
 		convertedValues := convertValues(dataType, values)
-		return db.Where(func(db *gorm.DB) *gorm.DB {
-			for i, v := range convertedValues {
-				if i == 0 {
-					db = filtering(db, filter, v)
-				} else {
-					db = db.Or(func(db *gorm.DB) *gorm.DB {
-						return filtering(db, filter, v)
-					})
-				}
+
+		for i, v := range convertedValues {
+			if i == 0 {
+				db = filtering(db, filter, v)
+			} else {
+				db = db.Or(filtering(db, filter, v))
 			}
-			return db
-		})
+		}
+		return db
 	}
+
 	return filtering(db, filter, convertValue(dataType, value))
 }
 
@@ -62,6 +55,13 @@ func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 	field := sanitizeField(filter.GetField())
 	mode := filter.GetMode()
 	dataType := FilterDataType(filter.GetDataType())
+
+	if dataType == DataTypeText {
+		field = fmt.Sprintf("LOWER(%s)", field)
+		if strVal, ok := value.(string); ok {
+			value = strings.ToLower(strVal)
+		}
+	}
 
 	switch mode {
 	case ModeEqual:

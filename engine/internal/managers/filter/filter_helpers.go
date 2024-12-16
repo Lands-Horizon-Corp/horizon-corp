@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -24,47 +25,6 @@ func sanitizeField(field string) string {
 		}
 	}
 	return sanitized.String()
-}
-
-// toSlice attempts to convert an interface{} to a slice of FilterValue.
-// Returns the slice and true if successful, otherwise nil and false.
-func toSlice(value interface{}) ([]FilterValue, bool) {
-	switch v := value.(type) {
-	case []FilterValue:
-		return v, true
-	case []string:
-		slice := make([]FilterValue, len(v))
-		for i, val := range v {
-			slice[i] = val
-		}
-		return slice, true
-	case []int:
-		slice := make([]FilterValue, len(v))
-		for i, val := range v {
-			slice[i] = val
-		}
-		return slice, true
-	case []float64:
-		slice := make([]FilterValue, len(v))
-		for i, val := range v {
-			slice[i] = val
-		}
-		return slice, true
-	case []bool:
-		slice := make([]FilterValue, len(v))
-		for i, val := range v {
-			slice[i] = val
-		}
-		return slice, true
-	case []RangeValue:
-		slice := make([]FilterValue, len(v))
-		for i, val := range v {
-			slice[i] = val
-		}
-		return slice, true
-	default:
-		return nil, false
-	}
 }
 
 // convertValue converts the FilterValue to the appropriate type based on FilterDataType.
@@ -183,7 +143,7 @@ func isComparable(dataType FilterDataType) bool {
 	}
 }
 
-func ValidatePaginatedRequest(request PaginatedRequest) error {
+func validatePaginatedRequest(request PaginatedRequest) error {
 	for _, filter := range request.Filters {
 		if filter.GetField() == "" {
 			return errors.New("filter field cannot be empty")
@@ -196,4 +156,14 @@ func ValidatePaginatedRequest(request PaginatedRequest) error {
 		}
 	}
 	return nil
+}
+
+func toSnakeCase(input string) string {
+	input = strings.ReplaceAll(input, "-", " ")
+	re := regexp.MustCompile(`([a-z0-9])([A-Z])`)
+	input = re.ReplaceAllString(input, `${1} ${2}`)
+	input = strings.ReplaceAll(input, "_", " ")
+	spaceRe := regexp.MustCompile(`\s+`)
+	input = spaceRe.ReplaceAllString(input, " ")
+	return strings.ToLower(strings.ReplaceAll(input, " ", "_"))
 }

@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -212,7 +213,52 @@ func (r *ModelResource) AdminUpdate(user *Admin, preloads []string) error {
 }
 
 func (m *ModelResource) AdminSeeders() error {
-	m.logger.Info("Seeding Admin")
-	// Create user
+	media, err := m.storage.UploadFromURL("https://s3.ap-southeast-2.amazonaws.com/horizon.assets/ecoop-logo.png")
+	if err != nil {
+		log.Printf("Error uploading ecoop url")
+		return err
+	}
+
+	uploaded := &Media{
+		FileName:   media.FileName,
+		FileSize:   media.FileSize,
+		FileType:   media.FileType,
+		StorageKey: media.StorageKey,
+		URL:        media.URL,
+		BucketName: media.BucketName,
+	}
+	if err := m.MediaDB.Create(uploaded); err != nil {
+		log.Printf("Error saving ecoop url")
+		return err
+	}
+	admins := []Admin{
+		{
+			FirstName:         "Lands",
+			LastName:          "Horizon",
+			MiddleName:        "ecoop",
+			PermanentAddress:  "123 Main St, Springfield",
+			Description:       "Super administrator",
+			BirthDate:         time.Date(1985, 7, 12, 0, 0, 0, 0, time.UTC),
+			Username:          "alicej",
+			Email:             "lands.horizon@gmail.com",
+			Password:          "7ot2F9XXHpmamuHShXi8r2Wi270",
+			ContactNumber:     "5551234567",
+			IsEmailVerified:   true,
+			IsContactVerified: true,
+			Status:            "Verified",
+			MediaID:           &uploaded.ID,
+		},
+	}
+
+	for _, admin := range admins {
+		err := m.AdminCreate(&admin)
+		if err != nil {
+			log.Printf("Error seeding admin %s: %v", admin.Email, err)
+		} else {
+			log.Printf("Admin %s seeded successfully", admin.Email)
+		}
+	}
+
+	m.logger.Info("Admins seeded successfully")
 	return nil
 }

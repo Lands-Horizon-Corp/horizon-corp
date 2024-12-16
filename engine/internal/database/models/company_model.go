@@ -17,7 +17,7 @@ type Company struct {
 	Address       string  `gorm:"type:varchar(500)" json:"address"`
 	Longitude     float64 `gorm:"type:decimal(10,7)" json:"longitude"`
 	Latitude      float64 `gorm:"type:decimal(10,7)" json:"latitude"`
-	ContactNumber string  `gorm:"type:varchar(255);unique;not null" json:"contact_number"`
+	ContactNumber string  `gorm:"type:varchar(255);not null" json:"contact_number"`
 
 	// Relationship 0 to 1
 	OwnerID *uint  `gorm:"type:bigint;unsigned" json:"owner_id"`
@@ -116,7 +116,7 @@ func (m *ModelResource) ValidateCompanyRequest(req *CompanyRequest) error {
 	return nil
 }
 
-func (m *ModelResource) CompanyFilterForAdmin(filters filter.PaginatedRequest) (filter.FilterPages[Company], error) {
+func (m *ModelResource) CompanyFilterForAdmin(filters string) (filter.FilterPages[Company], error) {
 	db := m.db.Client
 	return m.CompanyDB.GetPaginatedResult(db, filters)
 }

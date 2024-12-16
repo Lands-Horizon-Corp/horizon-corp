@@ -6,7 +6,6 @@ import (
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
 	"github.com/gin-gonic/gin"
@@ -68,24 +67,12 @@ func (ts *TimesheetService) findall(ctx *gin.Context) {
 		return
 	}
 
-	var paginatedReq filter.PaginatedRequest
-	if err := ts.helpers.DecodeBase64JSON(filterParam, &paginatedReq); err != nil {
-		fmt.Println(err)
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})
-		return
-	}
-
-	if err := ctx.ShouldBind(&paginatedReq); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid pagination parameters"})
-		return
-	}
-
 	userClaims, err := ts.getUserClaims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Companies not authenticated."})
 		return
 	}
-	timesheet, err := ts.modelResource.TimesheetFindallForEmployee(userClaims.ID, paginatedReq)
+	timesheet, err := ts.modelResource.TimesheetFindallForEmployee(userClaims.ID, filterParam)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Companies not found."})
 		return

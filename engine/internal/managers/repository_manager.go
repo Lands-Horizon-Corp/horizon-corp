@@ -101,7 +101,7 @@ func (r *Repository[T]) UpdateColumns(id uint, updates T, preloads []string) (*T
 	return entity, nil
 }
 
-func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, request filter.PaginatedRequest) (filter.FilterPages[T], error) {
+func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, req string) (filter.FilterPages[T], error) {
 	var results []*T
 	var totalSize int64
 
@@ -109,33 +109,28 @@ func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, request filter.Paginated
 	if db != nil {
 		clientDB = db
 	}
-
-	if err := filter.ValidatePaginatedRequest(request); err != nil {
+	var paginatedReq filter.PaginatedRequest
+	if err := filter.DecodeBase64JSON(req, &paginatedReq); err != nil {
 		return filter.FilterPages[T]{}, err
 	}
 
-	// Apply filters and preloads
-	filteredDB := filter.ApplyFilters(clientDB, request)
+	filteredDB := filter.ApplyFilters(clientDB, paginatedReq)
 
-	// Count total records
 	err := filteredDB.Model(new(T)).Count(&totalSize).Error
 	if err != nil {
 		return filter.FilterPages[T]{}, err
 	}
 
-	// Calculate total pages
-	totalPages := int(math.Ceil(float64(totalSize) / float64(request.PageSize)))
+	totalPages := int(math.Ceil(float64(totalSize) / float64(paginatedReq.PageSize)))
 	if totalPages == 0 {
 		totalPages = 1
 	}
 
-	// Fetch paginated data
-	err = filteredDB.Offset((request.PageIndex - 1) * request.PageSize).Limit(request.PageSize).Find(&results).Error
+	err = filteredDB.Offset((paginatedReq.PageIndex - 1) * paginatedReq.PageSize).Limit(paginatedReq.PageSize).Find(&results).Error
 	if err != nil {
 		return filter.FilterPages[T]{}, err
 	}
 
-	// Construct pages metadata
 	pages := make([]filter.Page, totalPages)
 	for i := 0; i < totalPages; i++ {
 		pages[i] = filter.Page{
@@ -146,9 +141,9 @@ func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, request filter.Paginated
 
 	return filter.FilterPages[T]{
 		Data:      results,
-		PageIndex: request.PageIndex,
+		PageIndex: paginatedReq.PageIndex,
 		TotalPage: totalPages,
-		PageSize:  request.PageSize,
+		PageSize:  paginatedReq.PageSize,
 		TotalSize: int(totalSize),
 		Pages:     pages,
 	}, nil
