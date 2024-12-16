@@ -251,7 +251,13 @@ func (ac *AuthAccount) OwnerProfilePicture(ctx *gin.Context, id uint, mediaId ui
 }
 
 func (ac *AuthAccount) OwnerProfileAccountSetting(ctx *gin.Context, id uint, birthDate time.Time, firstName, middleName, lastName, description, permanentAddress string) {
-
+	const accountType = "Owner"
+	updatedUser, err := ac.UpdateProfileAccountSettings(accountType, id, birthDate, firstName, middleName, lastName, description, permanentAddress)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedUser)
 }
 
 func (ac *AuthAccount) OwnerProfileChangeEmail(ctx *gin.Context, id uint, password, email string) {}

@@ -480,7 +480,34 @@ func (as AuthService) ProfilePicture(ctx *gin.Context) {
 
 }
 func (as AuthService) ProfileAccountSetting(ctx *gin.Context) {
+	var req *AccountSettingRequest
 
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateAccountSettingRequest(*req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberProfileAccountSetting(ctx, claims.ID, req.BirthDate, req.FirstName, req.MiddleName, req.LastName, req.Description, req.PermanentAddress)
+	case "Admin":
+		as.authAccount.AdminProfileAccountSetting(ctx, claims.ID, req.BirthDate, req.FirstName, req.MiddleName, req.LastName, req.Description, req.PermanentAddress)
+	case "Owner":
+		as.authAccount.OwnerProfileAccountSetting(ctx, claims.ID, req.BirthDate, req.FirstName, req.MiddleName, req.LastName, req.Description, req.PermanentAddress)
+	case "Employee":
+		as.authAccount.EmployeeProfileAccountSetting(ctx, claims.ID, req.BirthDate, req.FirstName, req.MiddleName, req.LastName, req.Description, req.PermanentAddress)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 func (as AuthService) ProfileChangeEmail(ctx *gin.Context) {
 

@@ -593,3 +593,80 @@ func (ap *AuthAccount) UpdateProfilePicture(accountType string, userID uint, med
 	}
 	return resource, err
 }
+
+func (ap *AuthAccount) UpdateProfileAccountSettings(accountType string, userID uint, birthDate time.Time, firstName, middleName, lastName, description, permanentAddress string) (interface{}, error) {
+	var preloads []string
+	var err error
+	var resource interface{}
+
+	switch accountType {
+	case "Admin":
+		preloads = []string{"Media", "Role", "Gender"}
+		admin := &models.Admin{
+			BirthDate:        birthDate,
+			MiddleName:       middleName,
+			FirstName:        firstName,
+			LastName:         lastName,
+			Description:      description,
+			PermanentAddress: permanentAddress,
+		}
+		result, err := ap.modelResource.AdminDB.UpdateColumns(userID, *admin, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.AdminToResource(result)
+
+	case "Owner":
+		preloads = []string{"Media", "Companies", "Gender"}
+		owner := &models.Owner{
+			BirthDate:        birthDate,
+			MiddleName:       middleName,
+			FirstName:        firstName,
+			LastName:         lastName,
+			Description:      description,
+			PermanentAddress: permanentAddress,
+		}
+		result, err := ap.modelResource.OwnerDB.UpdateColumns(userID, *owner, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.OwnerToResource(result)
+
+	case "Employee":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		employee := &models.Employee{
+			BirthDate:        birthDate,
+			MiddleName:       middleName,
+			FirstName:        firstName,
+			LastName:         lastName,
+			Description:      description,
+			PermanentAddress: permanentAddress,
+		}
+		result, err := ap.modelResource.EmployeeDB.UpdateColumns(userID, *employee, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.EmployeeToResource(result)
+
+	case "Member":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		member := &models.Member{
+			BirthDate:        birthDate,
+			MiddleName:       middleName,
+			FirstName:        firstName,
+			LastName:         lastName,
+			Description:      description,
+			PermanentAddress: permanentAddress,
+		}
+
+		result, err := ap.modelResource.MemberDB.UpdateColumns(userID, *member, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.MemberToResource(result)
+
+	default:
+		return nil, fmt.Errorf("invalid account type")
+	}
+	return resource, err
+}
