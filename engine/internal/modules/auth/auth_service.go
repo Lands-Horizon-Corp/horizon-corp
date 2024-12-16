@@ -243,15 +243,16 @@ func (as AuthService) SignOut(ctx *gin.Context) {
 func (as AuthService) CurrentUser(ctx *gin.Context) {
 	userClaims, err := as.getUserClaims(ctx)
 	if err != nil {
+		as.tokenProvider.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
 		return
 	}
 	user, err := as.authAccount.GetByID(userClaims.AccountType, userClaims.ID)
 	if err != nil {
+		as.tokenProvider.ClearTokenCookie(ctx)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found."})
 		return
 	}
-
 	ctx.JSON(http.StatusOK, user)
 }
 
