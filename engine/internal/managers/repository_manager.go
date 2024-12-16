@@ -9,6 +9,7 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers" // Adjust the import path as needed
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 // Repository provides generic CRUD operations with filtering and pagination.
@@ -109,28 +110,42 @@ func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, req string) (filter.Filt
 	if db != nil {
 		clientDB = db
 	}
+
 	var paginatedReq filter.PaginatedRequest
 	if err := filter.DecodeBase64JSON(req, &paginatedReq); err != nil {
 		return filter.FilterPages[T]{}, err
 	}
 
-	filteredDB := filter.ApplyFilters(clientDB, paginatedReq)
+	// Apply filters and enable SQL query logging with Debug()
+	filteredDB := filter.ApplyFilters(clientDB, paginatedReq).Session(&gorm.Session{Logger: clientDB.Logger.LogMode(logger.Info)})
 
+	// Count total records
 	err := filteredDB.Model(new(T)).Count(&totalSize).Error
 	if err != nil {
 		return filter.FilterPages[T]{}, err
 	}
 
+	// Log the SQL query manually
+	stmt := filteredDB.Statement
+	if stmt != nil {
+		sql := stmt.SQL.String()
+		vars := stmt.Vars
+		fmt.Printf("SQL: %s\nVars: %v\n", sql, vars)
+	}
+
+	// Calculate total pages
 	totalPages := int(math.Ceil(float64(totalSize) / float64(paginatedReq.PageSize)))
 	if totalPages == 0 {
 		totalPages = 1
 	}
 
+	// Fetch paginated results
 	err = filteredDB.Offset((paginatedReq.PageIndex - 1) * paginatedReq.PageSize).Limit(paginatedReq.PageSize).Find(&results).Error
 	if err != nil {
 		return filter.FilterPages[T]{}, err
 	}
 
+	// Create pagination metadata
 	pages := make([]filter.Page, totalPages)
 	for i := 0; i < totalPages; i++ {
 		pages[i] = filter.Page{

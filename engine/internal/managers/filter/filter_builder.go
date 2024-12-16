@@ -7,19 +7,29 @@ import (
 	"gorm.io/gorm"
 )
 
+// ApplyFilters applies filters and preloads to a GORM query.
 func ApplyFilters(db *gorm.DB, request PaginatedRequest) *gorm.DB {
 	if err := validatePaginatedRequest(request); err != nil {
 		return db
 	}
+
 	if strings.ToLower(request.Logic) == "or" {
+		fmt.Println("helo 2")
+
+		// Group OR conditions
+		var orConditions *gorm.DB
 		for i, filter := range request.Filters {
 			if i == 0 {
-				db = applyFiltering(db, filter)
+				orConditions = applyFiltering(db, filter)
 			} else {
-				db = db.Or(applyFiltering(db, filter))
+				orConditions = orConditions.Or(applyFiltering(db, filter))
 			}
 		}
+		if orConditions != nil {
+			db = db.Where(orConditions)
+		}
 	} else {
+		fmt.Println("helo 1")
 		for _, filter := range request.Filters {
 			db = applyFiltering(db, filter)
 		}
@@ -38,19 +48,25 @@ func applyFiltering(db *gorm.DB, filter Filter) *gorm.DB {
 		values := convertToTypedSlice(value, dataType)
 		convertedValues := convertValues(dataType, values)
 
-		for i, v := range convertedValues {
-			if i == 0 {
-				db = filtering(db, filter, v)
-			} else {
-				db = db.Or(filtering(db, filter, v))
+		if len(convertedValues) > 0 {
+			// Build a dynamic OR condition string
+			fieldName := filter.GetField()
+			queryParts := []string{}
+			args := []interface{}{}
+
+			for _, v := range convertedValues {
+				queryParts = append(queryParts, fmt.Sprintf("%s = ?", fieldName))
+				args = append(args, v)
 			}
+			return db.Where(strings.Join(queryParts, " OR "), args...)
 		}
-		return db
 	}
 
+	// Single value filtering
 	return filtering(db, filter, convertValue(dataType, value))
 }
 
+// filtering applies a filter condition based on the mode.
 func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 	field := sanitizeField(filter.GetField())
 	mode := filter.GetMode()

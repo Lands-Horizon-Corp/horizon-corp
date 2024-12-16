@@ -15,19 +15,13 @@ func DecodeBase64JSON(encoded string, v interface{}) error {
 	if encoded == "" {
 		return errors.New("encoded string is empty")
 	}
-
-	// Step 1: Base64 Decoding
 	decoded, err := base64.StdEncoding.DecodeString(encoded)
 	if err != nil {
 		return fmt.Errorf("failed to decode Base64: %w", err)
 	}
-
-	// Step 2: Check Length
 	if len(decoded) > maxDecodedLength {
 		return errors.New("decoded string exceeds maximum allowed size")
 	}
-
-	// Step 3: Check for SQL Injection Risk
 	if containsSQLInjectionRisk(string(decoded)) {
 		return errors.New("decoded string contains potentially dangerous SQL injection patterns")
 	}
@@ -38,7 +32,6 @@ func DecodeBase64JSON(encoded string, v interface{}) error {
 		return fmt.Errorf("failed to unmarshal JSON: %w", err)
 	}
 
-	fmt.Printf("Temp Content: %+v\n", temp)
 	err = json.Unmarshal(decoded, v)
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal JSON into target: %w", err)
