@@ -7,6 +7,20 @@ import {
 import CompanyErrorPage from './error'
 import { companyIdPathSchema } from './route-schemas'
 import { adminCompaniesManagement } from '../route'
+import { CompanyResource } from '@/horizon-corp/types'
+import { queryOptions } from '@tanstack/react-query'
+import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+
+// pre-loader of company desu
+export const companyLoader = (companyId: number) =>
+    queryOptions<CompanyResource>({
+        queryKey: ['company', companyId],
+        queryFn: async () => {
+            const data = await CompanyService.getById(companyId)
+            return data
+        },
+        retry: 0,
+    })
 
 const adminCompanyId = createRoute({
     getParentRoute: () => adminCompaniesManagement,
@@ -15,6 +29,9 @@ const adminCompanyId = createRoute({
         parse: companyIdPathSchema.parse,
     },
     errorComponent: CompanyErrorPage,
+    loader: async ({ context, params: { companyId } }) => {
+        await context.queryClient.ensureQueryData(companyLoader(companyId))
+    },
 })
 
 const adminCompanyIndexRoute = createRoute({
@@ -31,17 +48,13 @@ const adminCompanyIndexRoute = createRoute({
 const adminCompanyViewRoute = createRoute({
     getParentRoute: () => adminCompanyId,
     path: 'view',
-    component: lazyRouteComponent(
-        () => import('./view')
-    ),
+    component: lazyRouteComponent(() => import('./view')),
 })
 
 const adminCompanyEditRoute = createRoute({
     getParentRoute: () => adminCompanyId,
     path: 'edit',
-    component: lazyRouteComponent(
-        () => import('./edit')
-    ),
+    component: lazyRouteComponent(() => import('./edit')),
 })
 
 const AdminCompanyIdRoute = adminCompanyId.addChildren([

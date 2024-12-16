@@ -1,4 +1,5 @@
-import { createRootRoute, createRouter } from '@tanstack/react-router';
+import { QueryClient } from '@tanstack/react-query';
+import { createRouter } from '@tanstack/react-router';
 
 import AuthRoute from '@/modules/auth/route';
 import AdminRoute from '@/modules/admin/route';
@@ -11,8 +12,13 @@ import TestRoute from '@/modules/test/route';
 import RootLayout from '@/modules/root-layout';
 import NotFoundPage from '@/components/not-found';
 import practiceLandingRoute from './public/route';
+import { createRootRouteWithContext } from '@tanstack/react-router';
 
-export const rootRoute = createRootRoute();
+export type TRouterContext = {
+    queryClient: QueryClient;
+};
+
+export const rootRoute = createRootRouteWithContext<TRouterContext>()();
 
 const routeTree = rootRoute.addChildren([
     AuthRoute,
@@ -25,10 +31,14 @@ const routeTree = rootRoute.addChildren([
     practiceLandingRoute,
 ]);
 
-const router = createRouter({
-    routeTree,
-    defaultComponent: RootLayout,
-    defaultNotFoundComponent: NotFoundPage,
-});
+const router = (queryClient: QueryClient) =>
+    createRouter({
+        routeTree,
+        context: {
+            queryClient,
+        },
+        defaultComponent: RootLayout,
+        defaultNotFoundComponent: NotFoundPage,
+    });
 
 export default router;

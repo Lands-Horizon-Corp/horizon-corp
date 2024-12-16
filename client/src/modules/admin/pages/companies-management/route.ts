@@ -5,7 +5,8 @@ import {
 } from '@tanstack/react-router'
 
 import { adminRoute } from '../../route'
-import AdminCompanyIdRoute from './$company.companyId/route'
+import AdminCompanyIdRoute from './company.companyId/route'
+import CompanyErrorPage from './company.companyId/error'
 
 export const adminCompaniesManagement = createRoute({
     getParentRoute: () => adminRoute,
@@ -14,6 +15,7 @@ export const adminCompaniesManagement = createRoute({
 
 const adminCompaniesManagementIndexRoute = createRoute({
     getParentRoute: () => adminCompaniesManagement,
+    errorComponent: CompanyErrorPage,
     path: '/',
     beforeLoad: () => {
         throw redirect({ to: '/admin/companies-management/view-companies' })
