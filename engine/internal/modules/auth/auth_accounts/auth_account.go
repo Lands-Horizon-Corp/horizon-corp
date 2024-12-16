@@ -670,3 +670,228 @@ func (ap *AuthAccount) UpdateProfileAccountSettings(accountType string, userID u
 	}
 	return resource, err
 }
+
+func (ap *AuthAccount) UpdateProfileChangeContactNumber(accountType string, userID uint, contactNumber string) (interface{}, error) {
+	var preloads []string
+	var err error
+	var resource interface{}
+
+	switch accountType {
+	case "Admin":
+		preloads = []string{"Media", "Role", "Gender"}
+		admin := &models.Admin{
+			ContactNumber:     contactNumber,
+			IsContactVerified: false,
+		}
+		result, err := ap.modelResource.AdminDB.UpdateColumns(userID, *admin, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.AdminToResource(result)
+
+	case "Owner":
+		preloads = []string{"Media", "Companies", "Gender"}
+		owner := &models.Owner{
+			ContactNumber:     contactNumber,
+			IsContactVerified: false,
+		}
+		result, err := ap.modelResource.OwnerDB.UpdateColumns(userID, *owner, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.OwnerToResource(result)
+
+	case "Employee":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		employee := &models.Employee{
+			ContactNumber:     contactNumber,
+			IsContactVerified: false,
+		}
+		result, err := ap.modelResource.EmployeeDB.UpdateColumns(userID, *employee, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.EmployeeToResource(result)
+
+	case "Member":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		member := &models.Member{
+			ContactNumber:     contactNumber,
+			IsContactVerified: false,
+		}
+
+		result, err := ap.modelResource.MemberDB.UpdateColumns(userID, *member, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.MemberToResource(result)
+
+	default:
+		return nil, fmt.Errorf("invalid account type")
+	}
+	return resource, err
+}
+
+func (ap *AuthAccount) UpdateProfileChangeEmail(accountType string, userID uint, email string) (interface{}, error) {
+	var preloads []string
+	var err error
+	var resource interface{}
+
+	switch accountType {
+	case "Admin":
+		preloads = []string{"Media", "Role", "Gender"}
+		admin := &models.Admin{
+			ContactNumber:   email,
+			IsEmailVerified: false,
+		}
+		result, err := ap.modelResource.AdminDB.UpdateColumns(userID, *admin, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.AdminToResource(result)
+
+	case "Owner":
+		preloads = []string{"Media", "Companies", "Gender"}
+		owner := &models.Owner{
+			ContactNumber:   email,
+			IsEmailVerified: false,
+		}
+		result, err := ap.modelResource.OwnerDB.UpdateColumns(userID, *owner, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.OwnerToResource(result)
+
+	case "Employee":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		employee := &models.Employee{
+			ContactNumber:   email,
+			IsEmailVerified: false,
+		}
+		result, err := ap.modelResource.EmployeeDB.UpdateColumns(userID, *employee, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.EmployeeToResource(result)
+
+	case "Member":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		member := &models.Member{
+			ContactNumber:   email,
+			IsEmailVerified: false,
+		}
+
+		result, err := ap.modelResource.MemberDB.UpdateColumns(userID, *member, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.MemberToResource(result)
+
+	default:
+		return nil, fmt.Errorf("invalid account type")
+	}
+	return resource, err
+}
+
+func (ap *AuthAccount) UpdateProfileChangeUsername(accountType string, userID uint, username string) (interface{}, error) {
+	var preloads []string
+	var err error
+	var resource interface{}
+
+	switch accountType {
+	case "Admin":
+		preloads = []string{"Media", "Role", "Gender"}
+		admin := &models.Admin{
+			Username: username,
+		}
+		result, err := ap.modelResource.AdminDB.UpdateColumns(userID, *admin, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.AdminToResource(result)
+
+	case "Owner":
+		preloads = []string{"Media", "Companies", "Gender"}
+		owner := &models.Owner{
+			Username: username,
+		}
+		result, err := ap.modelResource.OwnerDB.UpdateColumns(userID, *owner, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.OwnerToResource(result)
+
+	case "Employee":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		employee := &models.Employee{
+			Username: username,
+		}
+		result, err := ap.modelResource.EmployeeDB.UpdateColumns(userID, *employee, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.EmployeeToResource(result)
+
+	case "Member":
+		preloads = []string{"Media", "Branch", "Role", "Gender"}
+		member := &models.Member{
+			Username: username,
+		}
+
+		result, err := ap.modelResource.MemberDB.UpdateColumns(userID, *member, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.MemberToResource(result)
+
+	default:
+		return nil, fmt.Errorf("invalid account type")
+	}
+	return resource, err
+}
+
+func (ap *AuthAccount) VerifyPassword(accountType string, userID uint, password string) bool {
+	switch accountType {
+	case "Admin":
+		user, err := ap.modelResource.AdminDB.FindByID(userID)
+		if err != nil {
+			return false
+		}
+		if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
+			return false
+		}
+		return true
+	case "Owner":
+		user, err := ap.modelResource.OwnerDB.FindByID(userID)
+		if err != nil {
+			return false
+		}
+		if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
+			return false
+		}
+		return true
+
+	case "Employee":
+		user, err := ap.modelResource.EmployeeDB.FindByID(userID)
+		if err != nil {
+			return false
+		}
+		if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
+			return false
+		}
+		return true
+
+	case "Member":
+		user, err := ap.modelResource.MemberDB.FindByID(userID)
+		if err != nil {
+			return false
+		}
+		if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
+			return false
+		}
+		return true
+
+	default:
+		return false
+	}
+}

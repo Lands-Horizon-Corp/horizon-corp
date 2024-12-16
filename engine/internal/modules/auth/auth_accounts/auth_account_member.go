@@ -258,10 +258,54 @@ func (ac *AuthAccount) MemberProfileAccountSetting(ctx *gin.Context, id uint, bi
 	}
 	ctx.JSON(http.StatusOK, updatedUser)
 }
-func (ac *AuthAccount) MemberProfileChangeEmail(ctx *gin.Context, id uint, password, email string) {}
+func (ac *AuthAccount) MemberProfileChangeEmail(ctx *gin.Context, id uint, password, email string) {
+	const accountType = "Member"
+	if !ac.VerifyPassword(accountType, id, password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedUser, err := ac.UpdateProfileChangeEmail(accountType, id, email)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedUser)
+}
 func (ac *AuthAccount) MemberProfileChangeContactNumber(ctx *gin.Context, id uint, password, contactNumber string) {
+	const accountType = "Member"
+	if !ac.VerifyPassword(accountType, id, password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedUser, err := ac.UpdateProfileChangeContactNumber(accountType, id, contactNumber)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedUser)
 }
 func (ac *AuthAccount) MemberProfileChangeUsername(ctx *gin.Context, id uint, password, userName string) {
+	const accountType = "Member"
+	if !ac.VerifyPassword(accountType, id, password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedUser, err := ac.UpdateProfileChangeUsername(accountType, id, userName)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("User update error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, updatedUser)
 }
 func (ac *AuthAccount) MemberProfileChangePassword(ctx *gin.Context, id uint, password, newPassword string) {
+	const accountType = "Member"
+	if !ac.VerifyPassword(accountType, id, password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	err := ac.UpdatePassword(accountType, id, newPassword)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("User update error: %v", err)})
+		return
+	}
 }
