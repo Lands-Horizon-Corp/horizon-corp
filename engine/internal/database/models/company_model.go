@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -116,7 +116,7 @@ func (m *ModelResource) ValidateCompanyRequest(req *CompanyRequest) error {
 	return nil
 }
 
-func (m *ModelResource) CompanyFilterForAdmin(filters managers.PaginatedRequest) (managers.FilterPages[Company], error) {
+func (m *ModelResource) CompanyFilterForAdmin(filters filter.PaginatedRequest) (filter.FilterPages[Company], error) {
 	db := m.db.Client
 	return m.CompanyDB.GetPaginatedResult(db, filters)
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
 	"github.com/gin-gonic/gin"
@@ -67,7 +67,7 @@ func (ts *TimesheetService) findall(ctx *gin.Context) {
 		return
 	}
 
-	var paginatedReq managers.PaginatedRequest
+	var paginatedReq filter.PaginatedRequest
 	if err := ts.helpers.DecodeBase64JSON(filterParam, &paginatedReq); err != nil {
 		fmt.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})

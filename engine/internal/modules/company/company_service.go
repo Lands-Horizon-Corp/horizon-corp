@@ -6,6 +6,7 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
 	"github.com/gin-gonic/gin"
@@ -56,7 +57,7 @@ func (as *CompanyService) SearchFilter(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
 		return
 	}
-	var paginatedReq managers.PaginatedRequest
+	var paginatedReq filter.PaginatedRequest
 	if err := as.helpers.DecodeBase64JSON(filterParam, &paginatedReq); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid filter parameter"})
 		return

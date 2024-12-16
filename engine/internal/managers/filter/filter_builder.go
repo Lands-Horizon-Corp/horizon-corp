@@ -1,99 +1,144 @@
 package filter
 
-type FilterMode string
+import (
+	"fmt"
+	"strings"
 
-const (
-	ModeEqual        FilterMode = "equal"
-	ModeNotEqual     FilterMode = "nequal"
-	ModeContains     FilterMode = "contains"
-	ModeNotContains  FilterMode = "ncontains"
-	ModeStartsWith   FilterMode = "startswith"
-	ModeEndsWith     FilterMode = "endswith"
-	ModeIsEmpty      FilterMode = "isempty"
-	ModeIsNotEmpty   FilterMode = "isnotempty"
-	ModeGreaterThan  FilterMode = "gt"
-	ModeGreaterEqual FilterMode = "gte"
-	ModeLessThan     FilterMode = "lt"
-	ModeLessEqual    FilterMode = "lte"
-	ModeRange        FilterMode = "range"
-	ModeBetween      FilterMode = "between"
-	ModeBefore       FilterMode = "before"
-	ModeAfter        FilterMode = "after"
-	ModeBooleanTrue  FilterMode = "true"
-	ModeBooleanFalse FilterMode = "false"
+	"gorm.io/gorm"
 )
 
-type FilterDataType string
-
-const (
-	DataTypeText     FilterDataType = "text"
-	DataTypeNumber   FilterDataType = "number"
-	DataTypeFloat    FilterDataType = "float"
-	DataTypeBoolean  FilterDataType = "boolean"
-	DataTypeDate     FilterDataType = "date"
-	DataTypeDatetime FilterDataType = "datetime"
-	DataTypeTime     FilterDataType = "time"
-)
-
-type FilterValue = any
-
-type RangeValue struct {
-	From FilterValue `json:"from"`
-	To   FilterValue `json:"to"`
-}
-
-type Filter interface {
-	GetField() string
-	GetMode() FilterMode
-	GetDataType() string
-	GetValue() FilterValue
-	IsMultiple() bool
-}
-
-type FilterStruct struct {
-	Field    string         `json:"field"`
-	Mode     FilterMode     `json:"mode"`
-	DataType FilterDataType `json:"dataType"`
-	Value    interface{}    `json:"value"`
-}
-
-func (f FilterStruct) GetField() string { return f.Field }
-
-func (f FilterStruct) GetMode() FilterMode { return f.Mode }
-
-func (f FilterStruct) GetDataType() string { return string(f.DataType) }
-
-func (f FilterStruct) GetValue() FilterValue { return f.Value }
-
-func (f FilterStruct) IsMultiple() bool {
-	switch f.Mode {
-	case ModeContains, ModeNotContains, ModeBetween, ModeRange, ModeStartsWith, ModeEndsWith:
-		switch f.Value.(type) {
-		case []interface{}, []string, []float64, []int, []bool, []RangeValue:
-			return true
+func ApplyFilters(db *gorm.DB, request PaginatedRequest) *gorm.DB {
+	if strings.ToLower(request.Logic) == "or" {
+		db = db.Where(func(tx *gorm.DB) *gorm.DB {
+			for i, filter := range request.Filters {
+				if i == 0 {
+					tx = applyFiltering(tx, filter)
+				} else {
+					tx = tx.Or(func(orTx *gorm.DB) *gorm.DB {
+						return applyFiltering(orTx, filter)
+					})
+				}
+			}
+			return tx
+		})
+	} else {
+		for _, filter := range request.Filters {
+			db = applyFiltering(db, filter)
 		}
 	}
-	return false
+	for _, preload := range request.Preloads {
+		db = db.Preload(preload)
+	}
+	return db
 }
 
-type Page struct {
-	Page      string `json:"page"`
-	PageIndex int    `json:"pageIndex"`
+func applyFiltering(db *gorm.DB, filter Filter) *gorm.DB {
+	value := filter.GetValue()
+	dataType := FilterDataType(filter.GetDataType())
+	if filter.IsMultiple() {
+		values, ok := toSlice(value)
+		if !ok {
+			return db
+		}
+
+		convertedValues := convertValues(dataType, values)
+		return db.Where(func(db *gorm.DB) *gorm.DB {
+			for i, v := range convertedValues {
+				if i == 0 {
+					db = filtering(db, filter, v)
+				} else {
+					db = db.Or(func(db *gorm.DB) *gorm.DB {
+						return filtering(db, filter, v)
+					})
+				}
+			}
+			return db
+		})
+	}
+	return filtering(db, filter, convertValue(dataType, value))
 }
 
-type FilterPages[T any] struct {
-	Data      []*T   `json:"data"`
-	PageIndex int    `json:"pageIndex"`
-	TotalPage int    `json:"totalPage"`
-	PageSize  int    `json:"pageSize"`
-	TotalSize int    `json:"totalSize"`
-	Pages     []Page `json:"pages"`
-}
+func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
+	field := sanitizeField(filter.GetField())
+	mode := filter.GetMode()
+	dataType := FilterDataType(filter.GetDataType())
 
-type PaginatedRequest struct {
-	Filters   []Filter `json:"filters"`
-	Preloads  []string `json:"preloads"`
-	PageIndex int      `json:"pageIndex"`
-	PageSize  int      `json:"pageSize"`
-	Logic     string   `json:"logic"`
+	switch mode {
+	case ModeEqual:
+		return db.Where(fmt.Sprintf("%s = ?", field), value)
+	case ModeNotEqual:
+		return db.Where(fmt.Sprintf("%s != ?", field), value)
+	case ModeContains:
+		if dataType != DataTypeText {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%%%v%%", value))
+	case ModeNotContains:
+		if dataType != DataTypeText {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s NOT LIKE ?", field), fmt.Sprintf("%%%v%%", value))
+	case ModeStartsWith:
+		if dataType != DataTypeText {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%v%%", value))
+	case ModeEndsWith:
+		if dataType != DataTypeText {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s LIKE ?", field), fmt.Sprintf("%%%v", value))
+	case ModeGreaterThan:
+		if !isComparable(dataType) {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s > ?", field), value)
+	case ModeGreaterEqual:
+		if !isComparable(dataType) {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s >= ?", field), value)
+	case ModeLessThan:
+		if !isComparable(dataType) {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s < ?", field), value)
+	case ModeLessEqual:
+		if !isComparable(dataType) {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s <= ?", field), value)
+	case ModeIsEmpty:
+		return db.Where(fmt.Sprintf("%s IS NULL OR %s = ?", field, field), "")
+	case ModeIsNotEmpty:
+		return db.Where(fmt.Sprintf("%s IS NOT NULL AND %s != ?", field, field), "")
+	case ModeRange, ModeBetween:
+		rangeVal, ok := value.(RangeValue)
+		if !ok {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", field), rangeVal.From, rangeVal.To)
+	case ModeBefore:
+		if !isComparable(dataType) {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s < ?", field), value)
+	case ModeAfter:
+		if !isComparable(dataType) {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s > ?", field), value)
+	case ModeBooleanTrue:
+		if dataType != DataTypeBoolean {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s = ?", field), true)
+	case ModeBooleanFalse:
+		if dataType != DataTypeBoolean {
+			return db
+		}
+		return db.Where(fmt.Sprintf("%s = ?", field), false)
+	default:
+		return db
+	}
 }
