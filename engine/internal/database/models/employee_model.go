@@ -51,6 +51,8 @@ type Employee struct {
 }
 
 type EmployeeResource struct {
+	AccountType string `json:"accountType"`
+
 	ID        uint   `json:"id"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -110,6 +112,7 @@ func (m *ModelResource) EmployeeToResource(employee *Employee) *EmployeeResource
 	}
 
 	return &EmployeeResource{
+		AccountType: "Employee",
 
 		ID:        employee.ID,
 		CreatedAt: employee.CreatedAt.Format(time.RFC3339),

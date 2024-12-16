@@ -17,13 +17,13 @@ type Company struct {
 	Longitude     float64 `gorm:"type:decimal(10,7)" json:"longitude"`
 	Latitude      float64 `gorm:"type:decimal(10,7)" json:"latitude"`
 	ContactNumber string  `gorm:"type:varchar(255);unique;not null" json:"contact_number"`
-	OwnerID       *uint   `gorm:"type:bigint;unsigned" json:"owner_id"`
 
 	// Relationship 0 to 1
+	OwnerID *uint  `gorm:"type:bigint;unsigned" json:"owner_id"`
 	Owner   *Owner `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"owner"`
-	MediaID *uint  `gorm:"type:bigint;unsigned" json:"media_id"`
 
 	// Relationship 0 to 1
+	MediaID         *uint  `gorm:"type:bigint;unsigned" json:"media_id"`
 	Media           *Media `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
 	IsAdminVerified bool   `gorm:"default:false" json:"is_admin_verified"`
 

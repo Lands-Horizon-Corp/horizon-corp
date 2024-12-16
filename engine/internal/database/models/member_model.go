@@ -52,6 +52,8 @@ type Member struct {
 }
 
 type MemberResource struct {
+	AccountType string `json:"accountType"`
+
 	ID        uint   `json:"id"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -88,6 +90,9 @@ func (m *ModelResource) MemberToResource(member *Member) *MemberResource {
 		return nil
 	}
 	return &MemberResource{
+
+		AccountType: "Member",
+
 		ID:        member.ID,
 		CreatedAt: member.CreatedAt.Format(time.RFC3339),
 		UpdatedAt: member.UpdatedAt.Format(time.RFC3339),

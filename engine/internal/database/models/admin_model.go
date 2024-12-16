@@ -44,9 +44,10 @@ type Admin struct {
 }
 
 type AdminResource struct {
-	ID        uint   `json:"id"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	AccountType string `json:"accountType"`
+	ID          uint   `json:"id"`
+	CreatedAt   string `json:"createdAt"`
+	UpdatedAt   string `json:"updatedAt"`
 
 	FirstName          string              `json:"firstName"`
 	LastName           string              `json:"lastName"`
@@ -96,10 +97,10 @@ func (m *ModelResource) AdminToResource(admin *Admin) *AdminResource {
 		return nil
 	}
 	return &AdminResource{
-
-		ID:        admin.ID,
-		CreatedAt: admin.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: admin.UpdatedAt.Format(time.RFC3339),
+		AccountType: "Admin",
+		ID:          admin.ID,
+		CreatedAt:   admin.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   admin.UpdatedAt.Format(time.RFC3339),
 
 		FirstName:          admin.FirstName,
 		LastName:           admin.LastName,

@@ -197,7 +197,7 @@ func (ac *AuthAccount) OwnerSendEmailVerification(ctx *gin.Context, id uint, ema
 }
 
 func (ac *AuthAccount) OwnerVerifyEmail(ctx *gin.Context, id uint) {
-	const accountType = "Member"
+	const accountType = "Owner"
 	updatedUser, err := ac.UpdateVerification(accountType, id, "email", true)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("AdminVerifyEmail: User update error: %v", err)})

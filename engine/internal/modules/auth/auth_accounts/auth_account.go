@@ -144,19 +144,35 @@ func (ap *AuthAccount) GetByID(accountType string, id uint) (interface{}, error)
 	case "Admin":
 		preloads := []string{"Media", "Role", "Gender"}
 		admin, err := ap.modelResource.AdminDB.FindByID(id, preloads...)
-		return ap.modelResource.AdminToResource(admin), err
+		if err != nil {
+			return nil, fmt.Errorf("failed to find Admin with ID %d: %w", id, err)
+		}
+		return ap.modelResource.AdminToResource(admin), nil
+
 	case "Owner":
-		preloads := []string{"Media", "Company", "Gender"}
+		preloads := []string{"Media", "Companies", "Gender"}
 		owner, err := ap.modelResource.OwnerDB.FindByID(id, preloads...)
-		return ap.modelResource.OwnerToResource(owner), err
+		if err != nil {
+			return nil, fmt.Errorf("failed to find Owner with ID %d: %w", id, err)
+		}
+		return ap.modelResource.OwnerToResource(owner), nil
+
 	case "Employee":
 		preloads := []string{"Media", "Branch", "Role", "Gender"}
 		employee, err := ap.modelResource.EmployeeDB.FindByID(id, preloads...)
-		return ap.modelResource.EmployeeToResource(employee), err
+		if err != nil {
+			return nil, fmt.Errorf("failed to find Employee with ID %d: %w", id, err)
+		}
+		return ap.modelResource.EmployeeToResource(employee), nil
+
 	case "Member":
 		preloads := []string{"Media", "Branch", "Role", "Gender"}
 		member, err := ap.modelResource.MemberDB.FindByID(id, preloads...)
-		return ap.modelResource.MemberToResource(member), err
+		if err != nil {
+			return nil, fmt.Errorf("failed to find Member with ID %d: %w", id, err)
+		}
+		return ap.modelResource.MemberToResource(member), nil
+
 	default:
 		return nil, errors.New("invalid account type")
 	}
@@ -466,7 +482,7 @@ func (ap *AuthAccount) UpdateVerification(accountType string, userID uint, verif
 		resource = ap.modelResource.AdminToResource(result)
 
 	case "Owner":
-		preloads = []string{"Media", "Company", "Gender"}
+		preloads = []string{"Media", "Companies", "Gender"}
 		owner := &models.Owner{}
 		switch verificationType {
 		case "email":

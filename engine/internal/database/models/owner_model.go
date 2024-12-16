@@ -39,7 +39,7 @@ type Owner struct {
 
 	// Relationship 0 to many
 	Footsteps []*Footstep `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
-	Companies []*Company  `gorm:"foreignKey:OwnerID" json:"companies"`
+	Companies []*Company  `gorm:"foreignKey:OwnerID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"companies"`
 
 	// Relationship 0 to many
 	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
@@ -47,6 +47,8 @@ type Owner struct {
 }
 
 type OwnerResource struct {
+	AccountType string `json:"accountType"`
+
 	ID        uint   `json:"id"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
@@ -81,9 +83,10 @@ func (m *ModelResource) OwnerToResource(owner *Owner) *OwnerResource {
 	}
 
 	return &OwnerResource{
-		ID:        owner.ID,
-		CreatedAt: owner.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: owner.UpdatedAt.Format(time.RFC3339),
+		AccountType: "Owner",
+		ID:          owner.ID,
+		CreatedAt:   owner.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   owner.UpdatedAt.Format(time.RFC3339),
 
 		FirstName:        owner.FirstName,
 		LastName:         owner.LastName,

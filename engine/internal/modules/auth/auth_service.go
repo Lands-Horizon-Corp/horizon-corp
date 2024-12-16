@@ -251,6 +251,7 @@ func (as AuthService) CurrentUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found."})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, user)
 }
 
