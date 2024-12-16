@@ -631,34 +631,39 @@ func (as AuthService) ProfileChangePassword(ctx *gin.Context) {
 }
 
 func (as *AuthService) RegisterRoutes() {
-	routes := as.engine.Client.Group("/api/v1/auth")
+	authRoutes := as.engine.Client.Group("/api/v1/auth")
 	{
-		routes.POST("/signup", as.SignUp)
-		routes.POST("/signin", as.SignIn)
-		routes.POST("/forgot-password", as.ForgotPassword)
-		routes.POST("/change-password", as.ChangePassword)
-		routes.GET("/verify-reset-link/:id", as.VerifyResetLink)
-		routes.POST("/signout", as.SignOut)
-		routes.Use(as.middle.AuthMiddleware())
+		// Public Auth Endpoints
+		authRoutes.POST("/signup", as.SignUp)
+		authRoutes.POST("/signin", as.SignIn)
+		authRoutes.POST("/forgot-password", as.ForgotPassword)
+		authRoutes.POST("/change-password", as.ChangePassword)
+		authRoutes.GET("/verify-reset-link/:id", as.VerifyResetLink)
+		authRoutes.POST("/signout", as.SignOut)
+
+		// Protected Auth Endpoints (Require Authentication)
+		authRoutes.Use(as.middle.AuthMiddleware())
 		{
-			routes.GET("/current-user", as.CurrentUser)
-			routes.POST("/new-password", as.NewPassword)
-			routes.POST("/skip-verification", as.SkipVerification)
-			routes.POST("/send-email-verification", as.SendEmailVerification)
-			routes.POST("/verify-email", as.VerifyEmail)
-			routes.POST("/send-contact-number-verification", as.SendContactNumberVerification)
-			routes.POST("/verify-contact-number", as.VerifyContactNumber)
+			authRoutes.GET("/current-user", as.CurrentUser)
+			authRoutes.POST("/new-password", as.NewPassword)
+			authRoutes.POST("/skip-verification", as.SkipVerification)
+			authRoutes.POST("/send-email-verification", as.SendEmailVerification)
+			authRoutes.POST("/verify-email", as.VerifyEmail)
+			authRoutes.POST("/send-contact-number-verification", as.SendContactNumberVerification)
+			authRoutes.POST("/verify-contact-number", as.VerifyContactNumber)
 		}
 	}
 
-	profileAuth := as.engine.Client.Group("/profile")
-	profileAuth.Use(as.middle.AuthMiddleware())
+	// Profile Routes Group (Protected)
+	profileRoutes := as.engine.Client.Group("/api/v1/profile")
+	profileRoutes.Use(as.middle.AuthMiddleware())
 	{
-		profileAuth.POST("/profile-picture", as.ProfilePicture)
-		profileAuth.POST("/account-setting", as.ProfileAccountSetting)
-		profileAuth.POST("/change-email", as.ProfileChangeEmail)
-		profileAuth.POST("/change-contact-number", as.ProfileChangeContactNumber)
-		profileAuth.POST("/change-username", as.ProfileChangeUsername)
-		profileAuth.POST("/change-password", as.ChangePassword)
+		profileRoutes.POST("/profile-picture", as.ProfilePicture)
+		profileRoutes.POST("/account-setting", as.ProfileAccountSetting)
+		profileRoutes.POST("/change-email", as.ProfileChangeEmail)
+		profileRoutes.POST("/change-contact-number", as.ProfileChangeContactNumber)
+		profileRoutes.POST("/change-username", as.ProfileChangeUsername)
+		profileRoutes.POST("/change-password", as.ChangePassword)
 	}
+
 }
