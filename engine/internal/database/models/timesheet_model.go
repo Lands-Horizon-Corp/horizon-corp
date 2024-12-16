@@ -79,7 +79,7 @@ func (m *ModelResource) ValidateTimeInRequest(req *TimeInRequest) error {
 	return nil
 }
 
-func (m *ModelResource) ValidateTimeOutRequest(req *TimeInRequest) error {
+func (m *ModelResource) ValidateTimeOutRequest(req *TimeOutRequest) error {
 	validate := validator.New()
 	err := validate.Struct(req)
 	if err != nil {

@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -220,6 +221,85 @@ func (r *ModelResource) OwnerUpdate(user *Owner, preloads []string) error {
 	return r.OwnerDB.Update(user, preloads)
 }
 func (m *ModelResource) OwnerSeeders() error {
-	m.logger.Info("Seeding Owner")
+	owners := []Owner{
+		{
+			FirstName:         "John",
+			LastName:          "Doe",
+			MiddleName:        "A.",
+			PermanentAddress:  "123 Main St, Springfield",
+			Description:       "A sample owner",
+			BirthDate:         time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
+			Username:          "johndoe",
+			Email:             "johndoe@example.com",
+			Password:          "password123",
+			ContactNumber:     "1234567890",
+			IsEmailVerified:   true,
+			IsContactVerified: true,
+			Status:            "Active",
+		},
+		{
+			FirstName:         "Jane",
+			LastName:          "Smith",
+			MiddleName:        "B.",
+			PermanentAddress:  "456 Elm St, Metropolis",
+			Description:       "Another sample owner",
+			BirthDate:         time.Date(1985, 5, 10, 0, 0, 0, 0, time.UTC),
+			Username:          "janesmith",
+			Email:             "janesmith@example.com",
+			Password:          "securepass456",
+			ContactNumber:     "9876543210",
+			IsEmailVerified:   false,
+			IsContactVerified: false,
+			Status:            "Pending",
+		},
+	}
+
+	for _, owner := range owners {
+		err := m.OwnerCreate(&owner)
+		if err != nil {
+			log.Printf("Error seeding owner %s: %v", owner.Email, err)
+		} else {
+			companies := []Company{
+				{
+					Name:            "Horizon Tech Solutions",
+					Description:     "A leading tech solutions provider.",
+					Address:         "123 Innovation Drive, Silicon Valley",
+					Longitude:       -122.4194,
+					Latitude:        37.7749,
+					ContactNumber:   "555-123-4567",
+					IsAdminVerified: true,
+					OwnerID:         &owner.ID,
+				},
+				{
+					Name:            "Green Earth Enterprises",
+					Description:     "Eco-friendly products and services.",
+					Address:         "456 Green Lane, Eco City",
+					Longitude:       -74.0060,
+					Latitude:        40.7128,
+					ContactNumber:   "555-987-6543",
+					IsAdminVerified: false,
+					OwnerID:         &owner.ID,
+				},
+				{
+					Name:            "Sky High Airlines",
+					Description:     "Premium airline services worldwide.",
+					Address:         "789 Skyway Ave, Airport City",
+					Longitude:       151.2093,
+					Latitude:        -33.8688,
+					ContactNumber:   "555-321-7890",
+					IsAdminVerified: true,
+					OwnerID:         &owner.ID,
+				},
+			}
+
+			for _, company := range companies {
+				err := m.CompanyDB.Create(&company)
+				if err != nil {
+					log.Printf("Error seeding company %s: %v", company.Name, err)
+				}
+			}
+			m.logger.Info("Companies seeded successfully")
+		}
+	}
 	return nil
 }
