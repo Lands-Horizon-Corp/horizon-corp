@@ -116,7 +116,7 @@ type Page struct {
 
 // FilterPages encapsulates paginated data and metadata.
 type FilterPages[T any] struct {
-	Data      []T    `json:"data"`
+	Data      []*T   `json:"data"` // Changed from []T to []*T
 	PageIndex int    `json:"pageIndex"`
 	TotalPage int    `json:"totalPage"`
 	PageSize  int    `json:"pageSize"`
@@ -158,8 +158,7 @@ func (r *Repository[T]) Create(entity *T) error {
 // FindByID retrieves an entity by its ID with optional preloads.
 func (r *Repository[T]) FindByID(id uint, preloads ...string) (*T, error) {
 	var entity T
-	query := r.DB.Client
-	query = r.applyPreloads(query, preloads)
+	query := r.applyPreloads(r.DB.Client, preloads)
 
 	result := query.First(&entity, id)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -169,10 +168,9 @@ func (r *Repository[T]) FindByID(id uint, preloads ...string) (*T, error) {
 }
 
 // FindAll retrieves all entities with optional preloads.
-func (r *Repository[T]) FindAll(preloads ...string) ([]T, error) {
-	var entities []T
-	query := r.DB.Client
-	query = r.applyPreloads(query, preloads)
+func (r *Repository[T]) FindAll(preloads ...string) ([]*T, error) { // Changed to []*T
+	var entities []*T // Changed from []T to []*T
+	query := r.applyPreloads(r.DB.Client, preloads)
 
 	result := query.Find(&entities)
 	if result.Error != nil {
@@ -349,9 +347,8 @@ func (r *Repository[T]) applySingleFilter(db *gorm.DB, filter Filter) *gorm.DB {
 	return db
 }
 
-// GetPaginatedResult executes the query with applied filters and returns paginated results.
 func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, request PaginatedRequest) (FilterPages[T], error) {
-	var results []T
+	var results []*T // []*T where T is models.Company
 	var totalSize int64
 
 	clientDB := r.DB.Client

@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -113,6 +114,11 @@ func (m *ModelResource) ValidateCompanyRequest(req *CompanyRequest) error {
 		return m.helpers.FormatValidationError(err)
 	}
 	return nil
+}
+
+func (m *ModelResource) CompanyFilterForAdmin(filters managers.PaginatedRequest) (managers.FilterPages[Company], error) {
+	db := m.db.Client
+	return m.CompanyDB.GetPaginatedResult(db, filters)
 }
 
 func (m *ModelResource) CompanySeeders() error {

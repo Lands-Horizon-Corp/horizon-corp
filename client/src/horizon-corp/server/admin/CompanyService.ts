@@ -11,7 +11,7 @@ import {
  * Service class to handle CRUD operations for companies.
  */
 export default class CompanyService {
-  private static readonly BASE_ENDPOINT = '/companies'
+  private static readonly BASE_ENDPOINT = '/company'
 
   /**
    * Retrieves all companies.

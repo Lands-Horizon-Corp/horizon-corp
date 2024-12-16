@@ -84,9 +84,6 @@ func (h *Controller[T, V, R]) GetAll(c *gin.Context) {
 		return
 	}
 	entityPtrs := make([]*T, len(entities))
-	for i := range entities {
-		entityPtrs[i] = &entities[i]
-	}
 	c.JSON(http.StatusOK, h.ResourceList(entityPtrs))
 }
 

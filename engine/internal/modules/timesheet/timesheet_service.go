@@ -82,12 +82,12 @@ func (ts *TimesheetService) findall(ctx *gin.Context) {
 	// filter here
 	// userClaims, err := ts.getUserClaims(ctx)
 	// if err != nil {
-	// 	ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+	// 	ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Companies not authenticated."})
 	// 	return
 	// }
 	// timesheet, err := ts.modelResource.TimesheetFindallForEmployee(userClaims.ID, paginatedReq)
 	// if err != nil {
-	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": "User not found."})
+	// 	ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Companies not found."})
 	// 	return
 	// }
 	// data := ts.modelResource.TimesheetToResourceList(timesheet.Data)
