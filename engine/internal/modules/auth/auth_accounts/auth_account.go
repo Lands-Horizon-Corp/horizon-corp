@@ -304,25 +304,25 @@ func (ap *AuthAccount) Delete(accountType string, id uint) error {
 func (ap *AuthAccount) FindByEmailUsernameOrContact(accountType, input string) (interface{}, error) {
 	switch accountType {
 	case "Admin":
-		user, err := ap.modelResource.AdminFindByEmailUsernameOrContact(accountType)
+		user, err := ap.modelResource.AdminFindByEmailUsernameOrContact(input)
 		if err != nil {
 			return nil, err
 		}
 		return ap.modelResource.AdminToResource(user), nil
 	case "Owner":
-		user, err := ap.modelResource.OwnerFindByEmailUsernameOrContact(accountType)
+		user, err := ap.modelResource.OwnerFindByEmailUsernameOrContact(input)
 		if err != nil {
 			return nil, err
 		}
 		return ap.modelResource.OwnerToResource(user), nil
 	case "Employee":
-		user, err := ap.modelResource.EmployeeFindByEmailUsernameOrContact(accountType)
+		user, err := ap.modelResource.EmployeeFindByEmailUsernameOrContact(input)
 		if err != nil {
 			return nil, err
 		}
 		return ap.modelResource.EmployeeToResource(user), nil
 	case "Member":
-		user, err := ap.modelResource.MemberFindByEmailUsernameOrContact(accountType)
+		user, err := ap.modelResource.MemberFindByEmailUsernameOrContact(input)
 		if err != nil {
 			return nil, err
 		}
@@ -459,8 +459,11 @@ func (ap *AuthAccount) UpdateVerification(accountType string, userID uint, verif
 		default:
 			return nil, fmt.Errorf("invalid verification type")
 		}
-		err = ap.modelResource.AdminUpdate(admin, preloads)
-		resource = ap.modelResource.AdminToResource(admin)
+		result, err := ap.modelResource.AdminDB.UpdateColumns(userID, *admin, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.AdminToResource(result)
 
 	case "Owner":
 		preloads = []string{"Media", "Company", "Gender"}
@@ -475,8 +478,11 @@ func (ap *AuthAccount) UpdateVerification(accountType string, userID uint, verif
 		default:
 			return nil, fmt.Errorf("invalid verification type")
 		}
-		err = ap.modelResource.OwnerUpdate(owner, preloads)
-		resource = ap.modelResource.OwnerToResource(owner)
+		result, err := ap.modelResource.OwnerDB.UpdateColumns(userID, *owner, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.OwnerToResource(result)
 
 	case "Employee":
 		preloads = []string{"Media", "Branch", "Role", "Gender"}
@@ -491,8 +497,12 @@ func (ap *AuthAccount) UpdateVerification(accountType string, userID uint, verif
 		default:
 			return nil, fmt.Errorf("invalid verification type")
 		}
-		err = ap.modelResource.EmployeeUpdate(employee, preloads)
-		resource = ap.modelResource.EmployeeToResource(employee)
+
+		result, err := ap.modelResource.EmployeeDB.UpdateColumns(userID, *employee, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.EmployeeToResource(result)
 
 	case "Member":
 		preloads = []string{"Media", "Branch", "Role", "Gender"}
@@ -507,16 +517,14 @@ func (ap *AuthAccount) UpdateVerification(accountType string, userID uint, verif
 		default:
 			return nil, fmt.Errorf("invalid verification type")
 		}
-		err = ap.modelResource.MemberUpdate(member, preloads)
-		resource = ap.modelResource.MemberToResource(member)
+		result, err := ap.modelResource.MemberDB.UpdateColumns(userID, *member, preloads)
+		if err != nil {
+			return nil, fmt.Errorf("invalid verification type")
+		}
+		resource = ap.modelResource.MemberToResource(result)
 
 	default:
 		return nil, fmt.Errorf("invalid account type")
 	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	return resource, nil
+	return resource, err
 }

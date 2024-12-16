@@ -417,6 +417,17 @@ func (as AuthService) VerifyContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
 		return
 	}
+
+	isValid, err := as.otpProvider.ValidateOTP(claims.AccountType, claims.ID, req.Otp, "sms")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("VerifyContactNumber: OTP validation error: %v", err)})
+		return
+	}
+	if !isValid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "VerifyContactNumber: Invalid or expired OTP"})
+		return
+	}
+
 	switch claims.AccountType {
 	case "Member":
 		as.authAccount.MemberVerifyContactNumber(ctx, claims.ID)
