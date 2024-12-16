@@ -510,16 +510,124 @@ func (as AuthService) ProfileAccountSetting(ctx *gin.Context) {
 	}
 }
 func (as AuthService) ProfileChangeEmail(ctx *gin.Context) {
+	var req *ChangeEmailRequest
 
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateChangeEmailRequest(*req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberProfileChangeEmail(ctx, claims.ID, req.Password, req.Email)
+	case "Admin":
+		as.authAccount.AdminProfileChangeEmail(ctx, claims.ID, req.Password, req.Email)
+	case "Owner":
+		as.authAccount.OwnerProfileChangeEmail(ctx, claims.ID, req.Password, req.Email)
+	case "Employee":
+		as.authAccount.EmployeeProfileChangeEmail(ctx, claims.ID, req.Password, req.Email)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 func (as AuthService) ProfileChangeContactNumber(ctx *gin.Context) {
+	var req *ChangeContactNumberRequest
 
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateChangeContactNumberRequest(*req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberProfileChangeContactNumber(ctx, claims.ID, req.Password, req.ContactNumber)
+	case "Admin":
+		as.authAccount.AdminProfileChangeContactNumber(ctx, claims.ID, req.Password, req.ContactNumber)
+	case "Owner":
+		as.authAccount.OwnerProfileChangeContactNumber(ctx, claims.ID, req.Password, req.ContactNumber)
+	case "Employee":
+		as.authAccount.EmployeeProfileChangeContactNumber(ctx, claims.ID, req.Password, req.ContactNumber)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 func (as AuthService) ProfileChangeUsername(ctx *gin.Context) {
+	var req *ChangeUsernameRequest
 
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateChangeUsernameRequest(*req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberProfileChangeUsername(ctx, claims.ID, req.Password, req.Username)
+	case "Admin":
+		as.authAccount.AdminProfileChangeUsername(ctx, claims.ID, req.Password, req.Username)
+	case "Owner":
+		as.authAccount.OwnerProfileChangeUsername(ctx, claims.ID, req.Password, req.Username)
+	case "Employee":
+		as.authAccount.EmployeeProfileChangeUsername(ctx, claims.ID, req.Password, req.Username)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 func (as AuthService) ProfileChangePassword(ctx *gin.Context) {
+	var req *ChangePasswordSettingRequest
 
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.authProvider.ValidateChangePasswordSetting(*req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	switch claims.AccountType {
+	case "Member":
+		as.authAccount.MemberProfileChangePassword(ctx, claims.ID, req.OldPassword, req.NewPassword)
+	case "Admin":
+		as.authAccount.AdminProfileChangePassword(ctx, claims.ID, req.OldPassword, req.NewPassword)
+	case "Owner":
+		as.authAccount.OwnerProfileChangePassword(ctx, claims.ID, req.OldPassword, req.NewPassword)
+	case "Employee":
+		as.authAccount.EmployeeProfileChangePassword(ctx, claims.ID, req.OldPassword, req.NewPassword)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
 func (as *AuthService) RegisterRoutes() {

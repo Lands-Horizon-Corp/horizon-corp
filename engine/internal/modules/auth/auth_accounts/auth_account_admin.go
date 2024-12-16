@@ -307,9 +307,9 @@ func (ac *AuthAccount) AdminProfileChangeUsername(ctx *gin.Context, id uint, pas
 	}
 	ctx.JSON(http.StatusOK, updatedUser)
 }
-func (ac *AuthAccount) AdminProfileChangePassword(ctx *gin.Context, id uint, password, newPassword string) {
+func (ac *AuthAccount) AdminProfileChangePassword(ctx *gin.Context, id uint, oldPassword, newPassword string) {
 	const accountType = "Admin"
-	if !ac.VerifyPassword(accountType, id, password) {
+	if !ac.VerifyPassword(accountType, id, oldPassword) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
 		return
 	}
