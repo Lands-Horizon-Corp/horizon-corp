@@ -27,7 +27,6 @@ import { CompanyResource } from '@/horizon-corp/types'
 import { toReadableDate, withCatchAsync } from '@/utils'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import TimeFilter from '@/components/data-table/data-table-filters/time-filter'
 
 export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[] =
     [
@@ -263,6 +262,7 @@ const companiesTableColumns: ColumnDef<CompanyResource>[] = [
             <DataTableColumnHeader {...props} isResizable title="Verified">
                 <ColumnActions {...props}>
                     <DataTableMultiSelectFilter<CompanyResource, boolean>
+                        mode="equal"
                         dataType="boolean"
                         field="isAdminVerified"
                         displayText="Verify Status"
@@ -276,7 +276,7 @@ const companiesTableColumns: ColumnDef<CompanyResource>[] = [
                                 value: false,
                             },
                         ]}
-                    ></DataTableMultiSelectFilter>
+                    />
                 </ColumnActions>
             </DataTableColumnHeader>
         ),
@@ -323,25 +323,76 @@ const companiesTableColumns: ColumnDef<CompanyResource>[] = [
             },
         }) => <div>{toReadableDate(createdAt)}</div>,
     },
-    {
-        id: 'UpdatedAt',
-        accessorKey: 'updatedAt',
-        header: (props) => (
-            <DataTableColumnHeader {...props} isResizable title="Date Updated">
-                <ColumnActions {...props}>
-                    <TimeFilter<CompanyResource>
-                        displayText="Updated Date"
-                        field="updatedAt"
-                    />
-                </ColumnActions>
-            </DataTableColumnHeader>
-        ),
-        cell: ({
-            row: {
-                original: { createdAt },
-            },
-        }) => <div>{toReadableDate(createdAt, "HH:mm aa")}</div>,
-    },
+    // {
+    //     id: 'UpdatedAt',
+    //     accessorKey: 'updatedAt',
+    //     header: (props) => (
+    //         <DataTableColumnHeader {...props} isResizable title="Date Updated">
+    //             <ColumnActions {...props}>
+    //                 <TimeFilter<CompanyResource>
+    //                     displayText="Updated Date"
+    //                     field="updatedAt"
+    //                 />
+    //             </ColumnActions>
+    //         </DataTableColumnHeader>
+    //     ),
+    //     cell: ({
+    //         row: {
+    //             original: { createdAt },
+    //         },
+    //     }) => <div>{toReadableDate(createdAt, 'HH:mm aa')}</div>,
+    // },
+    // {
+    //     id: 'UpdatedAts',
+    //     accessorKey: 'updatedAt',
+    //     header: (props) => (
+    //         <DataTableColumnHeader
+    //             {...props}
+    //             isResizable
+    //             title="Testing Lang Multi Select"
+    //         >
+    //             <ColumnActions {...props}>
+    //                 <DataTableMultiSelectFilter<
+    //                     CompanyResource,
+    //                     { from: Date; to: Date }
+    //                 >
+    //                     mode="range"
+    //                     dataType="time"
+    //                     field="updatedAt.haha"
+    //                     displayText="updated at test"
+    //                     multiSelectOptions={[
+    //                         {
+    //                             label: '09:00 AM - 12:00 PM',
+    //                             value: {
+    //                                 from: new Date(0, 0, 0, 9, 0, 0),
+    //                                 to: new Date(0, 0, 0, 12, 0, 0),
+    //                             },
+    //                         },
+    //                         {
+    //                             label: '02:00 PM - 04:00 PM',
+    //                             value: {
+    //                                 from: new Date(0, 0, 0, 14, 0, 0),
+    //                                 to: new Date(0, 0, 0, 16, 0, 0),
+    //                             },
+    //                         },
+    //                         {
+    //                             label: '08:30 AM - 11:00 AM',
+    //                             value: {
+    //                                 from: new Date(0, 0, 0, 8, 30, 0),
+    //                                 to: new Date(0, 0, 0, 11, 0, 0),
+    //                             },
+    //                         },
+    //                     ]}
+    //                 />
+    //             </ColumnActions>
+    //         </DataTableColumnHeader>
+    //     ),
+    //     cell: ({
+    //         row: {
+    //             original: { createdAt },
+    //         },
+    //     }) => <div>{toReadableDate(createdAt, 'HH:mm aa')}</div>,
+    // },
 ]
 
 export default companiesTableColumns

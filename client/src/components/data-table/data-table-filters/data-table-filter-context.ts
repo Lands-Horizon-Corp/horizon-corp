@@ -56,7 +56,7 @@ export const filterModeMap: {
         { value: 'lte', label: 'On or Before' },
         { value: 'range', label: 'Range' },
     ],
-    time : [
+    time: [
         { value: 'equal', label: 'On' },
         { value: 'nequal', label: 'Not On' },
         { value: 'before', label: 'Before' },
@@ -64,7 +64,7 @@ export const filterModeMap: {
         { value: 'gte', label: 'On or After' },
         { value: 'lte', label: 'On or Before' },
         { value: 'range', label: 'Range' },
-    ]
+    ],
 }
 
 export type TSearchFilter<T = unknown, TValue = T> = {

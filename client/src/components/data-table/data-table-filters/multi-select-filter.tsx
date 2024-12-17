@@ -3,18 +3,26 @@ import {
     useDataTableFilter,
     IFilterComponentProps,
     TColumnDataTypes,
+    filterModeMap,
 } from './data-table-filter-context'
 
 import MultiSelectFilter, {
     IMultiSelectOption,
 } from '@/components/multi-select-filter'
 
+type AllowedMode<T extends keyof typeof filterModeMap> =
+    (typeof filterModeMap)[T][number]['value']
+
 interface IDatatableMultiFilter<T, TValue> extends IFilterComponentProps<T> {
-    multiSelectOptions: IMultiSelectOption<TValue>[]
     dataType: TColumnDataTypes
+    mode: AllowedMode<
+        Extract<TColumnDataTypes, 'text' | 'number' | 'date' | 'time'>
+    >
+    multiSelectOptions: IMultiSelectOption<TValue>[]
 }
 
 const DataTableMultiSelectFilter = <TData, TValue>({
+    mode,
     field,
     dataType,
     displayText,
@@ -28,7 +36,7 @@ const DataTableMultiSelectFilter = <TData, TValue>({
 
     const filterVal: TSearchFilter<string, TValue[]> = filters[field] ?? {
         displayText,
-        mode: 'equal',
+        mode,
         to: undefined,
         from: undefined,
         dataType,
@@ -36,23 +44,30 @@ const DataTableMultiSelectFilter = <TData, TValue>({
     }
 
     return (
-        <MultiSelectFilter
-            value={
-                filterVal.value
-                    ? typeof filterVal.value === 'string'
-                        ? [filterVal.value]
-                        : filterVal.value
-                    : []
-            }
-            multiSelectOptions={multiSelectOptions}
-            setValues={(selected) =>
-                setFilter(field, {
-                    ...filterVal,
-                    value: selected,
-                })
-            }
-            clearValues={() => setFilter(field)}
-        />
+        <div
+            onKeyDown={(e) => e.stopPropagation()}
+            className="flex min-w-72 flex-col p-1"
+        >
+            <p className="text-sm">Filter</p>
+            <MultiSelectFilter
+                hideLabel
+                value={
+                    filterVal.value
+                        ? typeof filterVal.value === 'string'
+                            ? [filterVal.value]
+                            : filterVal.value
+                        : []
+                }
+                multiSelectOptions={multiSelectOptions}
+                setValues={(selected) =>
+                    setFilter(field, {
+                        ...filterVal,
+                        value: selected,
+                    })
+                }
+                clearValues={() => setFilter(field)}
+            />
+        </div>
     )
 }
 

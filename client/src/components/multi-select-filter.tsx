@@ -19,20 +19,33 @@ export interface IMultiSelectOption<TValue> {
 
 const MultiSelectFilter = <TValue,>({
     value,
+    hideLabel,
     multiSelectOptions,
     setValues,
     clearValues,
 }: {
     value: TValue[]
+    hideLabel?: boolean
     clearValues: () => void
     multiSelectOptions: IMultiSelectOption<TValue>[]
     setValues: (selectedValues: TValue[]) => void
 }) => {
-    const selectedValues = new Set(value)
+    const serialize = (val: TValue) =>
+        typeof val === 'object' && val !== null ? JSON.stringify(val) : val
+
+    const deserialize = (val: string) => {
+        try {
+            return JSON.parse(val) as TValue
+        } catch {
+            return val
+        }
+    }
+
+    const selectedValues = new Set(value.map((v) => serialize(v)))
 
     return (
         <div onKeyDown={(e) => e.stopPropagation()} className="space-y-2 p-1">
-            <p className="text-sm">Filter</p>
+            {!hideLabel && <p className="text-sm">Filter</p>}
             <Command className="w-fit bg-transparent">
                 <CommandInput placeholder="Search filters..." />
                 <CommandList>
@@ -41,18 +54,34 @@ const MultiSelectFilter = <TValue,>({
                     </CommandEmpty>
                     <CommandGroup>
                         {multiSelectOptions.map((option, i) => {
-                            const isSelected = selectedValues.has(option.value)
+                            const serializedValue = serialize(option.value)
+                            const isSelected =
+                                selectedValues.has(serializedValue)
+
                             return (
                                 <CommandItem
                                     key={`${option.label}-${i}`}
                                     onSelect={() => {
+                                        const updatedValues = new Set(
+                                            selectedValues
+                                        )
+
                                         if (isSelected) {
-                                            selectedValues.delete(option.value)
+                                            updatedValues.delete(
+                                                serializedValue
+                                            )
                                         } else {
-                                            selectedValues.add(option.value)
+                                            updatedValues.add(serializedValue)
                                         }
-                                        const filterValues =
-                                            Array.from(selectedValues)
+
+                                        const filterValues = Array.from(
+                                            updatedValues
+                                        ).map((v) =>
+                                            typeof v === 'string'
+                                                ? deserialize(v)
+                                                : v
+                                        ) as TValue[]
+
                                         setValues(
                                             filterValues.length
                                                 ? filterValues
@@ -68,7 +97,7 @@ const MultiSelectFilter = <TValue,>({
                                                 : 'opacity-50 [&_svg]:invisible'
                                         )}
                                     >
-                                        <CheckIcon className={cn('h-4 w-4')} />
+                                        <CheckIcon className="h-4 w-4" />
                                     </div>
                                     <span>{option.label}</span>
                                 </CommandItem>

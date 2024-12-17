@@ -1,14 +1,13 @@
 import { useMemo, useState } from 'react'
 
 import {
+    TFilterLogic,
     TFinalFilter,
     TSearchFilter,
     TFilterObject,
     IDataTableFilterState,
-    TFilterLogic,
 } from '../data-table-filters/data-table-filter-context'
 import useDebounce from '@/hooks/use-debounce'
-import logger from '@/helpers/loggers/logger'
 
 const useDatableFilterState = (options?: {
     debounceFinalFilterMs?: number
@@ -18,7 +17,6 @@ const useDatableFilterState = (options?: {
     const [filterLogic, setFilterLogic] = useState<TFilterLogic>('AND')
 
     const setFilter = (field: string, filter?: TSearchFilter) => {
-        logger.log('Sets ', field, filter)
         setFilters((prev) => ({ ...prev, [field]: filter }))
     }
 
@@ -63,26 +61,33 @@ const useDatableFilterState = (options?: {
 
             Object.entries(debouncedFilter).forEach(([key, value]) => {
                 if (!value || !value.value) {
-                    logger.log('Value failed', value)
+                    // logger.log('Value failed', value)
                     return
                 }
 
                 if (!value.mode || key === 'globalSearch') {
-                    logger.log('value mode, globalSearch failed', value.mode, key)
+                    // logger.log('value mode, globalSearch failed', value.mode, key)
                     return
                 }
 
                 if (
                     value.mode === 'range' &&
+                    !Array.isArray(value.value) &&
                     (value.from === undefined || value.to === undefined)
                 ) {
-                    logger.log('line 74 failed')
+                    // logger.log('line 80 failed -> invalid range from to', value.from, value.to )
                     return
                 } else if (
                     value.mode !== 'range' &&
                     value.value === undefined
                 ) {
-                    logger.log('line 80 failed')
+                    // logger.log('line 86 failed -> invalid value', value.value)
+                    return
+                } else if (
+                    Array.isArray(value.value) &&
+                    value.value.length === 0
+                ) {
+                    // logger.log('line 89 failed -> invalid multi select array', value.value)
                     return
                 }
 
@@ -91,7 +96,7 @@ const useDatableFilterState = (options?: {
                     mode: value.mode,
                     dataType: value.dataType,
                     value:
-                        value.mode === 'range'
+                        value.mode === 'range' && !Array.isArray(value.value)
                             ? { from: value.from, to: value.to }
                             : value.value,
                 })

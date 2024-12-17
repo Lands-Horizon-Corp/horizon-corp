@@ -1,11 +1,5 @@
-import TimePicker from '@/components/date-time-pickers/time-picker'
-import {
-    filterModeMap,
-    IFilterComponentProps,
-    TFilterModes,
-    TSearchFilter,
-    useDataTableFilter,
-} from './data-table-filter-context'
+import { useState } from 'react'
+
 import {
     Select,
     SelectContent,
@@ -15,8 +9,16 @@ import {
 } from '@/components/ui/select'
 import TimeRange from './time-range'
 import { Button } from '@/components/ui/button'
+import TimePicker from '@/components/date-time-pickers/time-picker'
+
+import {
+    TFilterModes,
+    TSearchFilter,
+    filterModeMap,
+    useDataTableFilter,
+    IFilterComponentProps,
+} from './data-table-filter-context'
 import logger from '@/helpers/loggers/logger'
-import { useState } from 'react'
 
 const TimePickerWithApply = ({
     value,
