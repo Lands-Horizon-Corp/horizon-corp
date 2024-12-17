@@ -24,7 +24,6 @@ export const CustomTableRow = TableRow.extend({
             rowheight: {
                 default: 60, // Default height for rows
                 renderHTML: (attributes) => {
-                    console.log('rowheight attribute:', attributes.rowheight)
                     if (!attributes.rowheight) return {}
                     return {
                         style: `height: ${attributes.rowheight}px;`,

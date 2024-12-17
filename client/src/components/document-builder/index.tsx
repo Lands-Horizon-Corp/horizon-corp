@@ -19,8 +19,11 @@ import DOMPurify from 'isomorphic-dompurify'
 import { useDocumentBuilderStore } from '@/store/document-builder-store'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
-import { Editor, Node, NodeViewRendererOptions, mergeAttributes } from '@tiptap/core'
-import { DOMSerializer } from 'prosemirror-model'
+import { Pagination } from './pagination'
+// import { Editor, Node, NodeViewRendererOptions, mergeAttributes } from '@tiptap/core'
+// import { DOMSerializer } from 'prosemirror-model'
+// import { PageNode, PaginationExtension } from './pagination'
+
 
 export type PageProps = {
     htmlTemplate: string
@@ -28,33 +31,33 @@ export type PageProps = {
 }
 
 
-export const CustomNode = Node.create({
-  name: 'customNode',
+// export const CustomNode = Node.create({
+//   name: 'customNode',
 
-  group: 'block',
+//   group: 'block',
 
-  content: 'inline*',
+//   content: 'inline*',
 
-  parseHTML() {
-    return [{ tag: 'div[data-type="customNode"]' }];
-  },
+//   parseHTML() {
+//     return [{ tag: 'div[data-type="customNode"]' }];
+//   },
 
-  renderHTML({ HTMLAttributes }) {
-    return ['div', { ...HTMLAttributes, 'data-type': 'customNode' }, 0];
-  },
+//   renderHTML({ HTMLAttributes }) {
+//     return ['div', { ...HTMLAttributes, 'data-type': 'customNode' }, 0];
+//   },
 
-  addNodeView() {
-    return ({ node }: NodeViewRendererOptions) => {
-      const dom = document.createElement('div');
-      dom.setAttribute('data-type', 'customNode');
-      dom.textContent = node.textContent || 'Hello, custom node!';
+//   addNodeView() {
+//     return ({ node }: NodeViewRendererOptions) => {
+//       const dom = document.createElement('div');
+//       dom.setAttribute('data-type', 'customNode');
+//       dom.textContent = node.textContent || 'Hello, custom node!';
 
-      return {
-        dom,
-      };
-    };
-  },
-});
+//       return {
+//         dom,
+//       };
+//     };
+//   },
+// });
 
 
 
@@ -74,6 +77,11 @@ export const DocumentBuilder = () => {
 
     const editor = useEditor({
         extensions: [
+            Pagination.configure({
+                pageHeight: 1056, 
+                pageWidth: 816,  
+                pageMargin: 96,   
+            }),
             StarterKit.configure({
                 bulletList: {
                     keepMarks: false,
@@ -89,16 +97,18 @@ export const DocumentBuilder = () => {
             TableRow,
             TableCell,
             TableHeader,
+            // PageNode,
+            // PaginationExtension,
             CustomTableCell,
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
             }),
-            CustomNode
+            
         ],
         content: pages[currentPage].htmlTemplate,
         onUpdate: ({ editor }) => {
-             handleAddOrSwitchPage(editor);
-            
+            //  handleAddOrSwitchPage(editor);
+            //   console.log(editor)
             // const contentHeight = editor.view.dom.scrollHeight
             // const { state } = editor
 
@@ -221,7 +231,7 @@ export const DocumentBuilder = () => {
         const sanitizedHTML = DOMPurify.sanitize(htmlContent)
         return (
             <div
-                className="tiptap ProseMirror table-toolbar-custom !w-full"
+                className=""
                 dangerouslySetInnerHTML={{ __html: sanitizedHTML }}
             />
         )
@@ -410,6 +420,7 @@ export const DocumentBuilder = () => {
     //     }
     // }
 
+
     if (!editor) {
         return null
     }
@@ -418,7 +429,10 @@ export const DocumentBuilder = () => {
             <div className="flex w-full">
                 <div className="relative w-full">
                     <DocumentBuilderTools editor={editor} />
-                    <div
+                    <div className=' !mt-10 flex justify-center gap-3 page relative mx-auto h-fit w-[8.5in] cursor-pointer overflow-hidden rounded-lg border-0 bg-white p-[1in] '>
+                    <EditorContent className='' editor={editor} />
+                    </div>
+                    {/* <div
                         ref={(el) => {
                             editorRef.current = el
                         }}
@@ -437,12 +451,12 @@ export const DocumentBuilder = () => {
                                             ? switchToPage(index, editor)
                                             : ''
                                     }
-                                    className={`page relative mx-auto h-[11in] w-[8.5in] cursor-pointer overflow-hidden rounded-lg border-0 bg-white p-[1in] ${
+                                    className={`page relative mx-auto h-fit w-[8.5in] cursor-pointer overflow-hidden rounded-lg border-0 bg-white p-[1in] ${
                                         isCurrentPage ? 'shadow-md' : ''
                                     }`}
                                 >
                                     {isCurrentPage ? (
-                                        <EditorContent className='border' editor={editor} />
+                                        <EditorContent className='border h-fit' editor={editor} />
                                     ) : (
                                         <NonEditableHTML
                                             htmlContent={page.htmlTemplate}
@@ -456,7 +470,7 @@ export const DocumentBuilder = () => {
                                 </div>
                             )
                         })}
-                    </div>
+                    </div> */}
                 </div>
                 <DocumenetSidePanel editor={editor} />
             </div>

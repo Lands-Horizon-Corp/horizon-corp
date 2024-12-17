@@ -35,20 +35,20 @@ import {
     FaDollarSign,
     FaBuilding,
     FaExchangeAlt,
-} from 'react-icons/fa' // Example icons
+} from 'react-icons/fa'
 import { MdAdd } from 'react-icons/md'
 const headers = ['Id', 'Name', 'Bday', 'Age', 'Gender']
 
 const Person: any[] = []
 
-for (let i = 1; i <= 5; i++) {
-    const randomYear = Math.floor(Math.random() * (2005 - 1970 + 1)) + 1970 // Random year between 1970 and 2005
-    const randomMonth = Math.floor(Math.random() * 12) + 1 // Random month between 1 and 12
-    const randomDay = Math.floor(Math.random() * 28) + 1 // Random day between 1 and 28
+for (let i = 1; i <= 50; i++) {
+    const randomYear = Math.floor(Math.random() * (2005 - 1970 + 1)) + 1970 
+    const randomMonth = Math.floor(Math.random() * 12) + 1 
+    const randomDay = Math.floor(Math.random() * 28) + 1    
     const bday = `${randomYear}-${String(randomMonth).padStart(2, '0')}-${String(randomDay).padStart(2, '0')}`
-    const age = new Date().getFullYear() - randomYear // Calculate age based on the year
-    const gender = Math.random() > 0.5 ? 'Male' : 'Female' // Random gender
-    const name = `Person ${i}` // Generate a placeholder name
+    const age = new Date().getFullYear() - randomYear 
+    const gender = Math.random() > 0.5 ? 'Male' : 'Female' 
+    const name = `Person ${i}`
 
     Person.push({
         id: i,
@@ -113,6 +113,7 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
     menuItems,
     editor,
 }) => {
+    
     const insertTable = (tableName: string) => () => {
         console.log(tableName)
         if (!tableName) return
@@ -166,7 +167,7 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
 const menuItems: SidebarMenuItem[] = [
     {
         label: 'Customers',
-        icon: <FaUsers />, // Icon for Customers
+        icon: <FaUsers />, 
         subItems: [
             {
                 label: 'Accounts',

@@ -35,6 +35,14 @@ const signatureRoute = createRoute({
 })
 
 
-const TestRoute = testRoute.addChildren([testLandingRoute, documentBuilderRoute, signatureRoute, TableRoute])
+
+const testPageRoute = createRoute({
+    getParentRoute: () => testRoute,
+    path: '/page',
+    component: React.lazy(() => import('./pages/testPaging')),
+})
+
+
+const TestRoute = testRoute.addChildren([testLandingRoute, documentBuilderRoute, signatureRoute, TableRoute, testPageRoute])
 
 export default TestRoute

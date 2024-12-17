@@ -26,11 +26,11 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { ReactNode, useState } from 'react'
-import Tbl from '@/modules/test/pages/tbl'
+// import Tbl from '@/modules/test/pages/tbl'
 
 interface InsertTableProps<TData> {
-    data?: TData[]
-    columns?: ColumnDef<TData>[]
+    data: TData[]
+    columns: ColumnDef<TData>[]
     filterPlaceholder?: string,
     trigger: ReactNode,
     Content: ReactNode,
@@ -43,31 +43,31 @@ export const InsertTable = <TData,>({
     trigger,
     Content
 }: InsertTableProps<TData>) => {
-    // const [sorting, setSorting] = useState<SortingState>([])
-    // const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-    // const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
-    //     {}
-    // )
-    // const [rowSelection, setRowSelection] = useState({})
+    const [sorting, setSorting] = useState<SortingState>([])
+    const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+    const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+        {}
+    )
+    const [rowSelection, setRowSelection] = useState({})
 
-    // const table = useReactTable({
-    //     data,
-    //     columns,
-    //     onSortingChange: setSorting,
-    //     onColumnFiltersChange: setColumnFilters,
-    //     getCoreRowModel: getCoreRowModel(),
-    //     getPaginationRowModel: getPaginationRowModel(),
-    //     getSortedRowModel: getSortedRowModel(),
-    //     getFilteredRowModel: getFilteredRowModel(),
-    //     onColumnVisibilityChange: setColumnVisibility,
-    //     onRowSelectionChange: setRowSelection,
-    //     state: {
-    //         sorting,
-    //         columnFilters,
-    //         columnVisibility,
-    //         rowSelection,
-    //     },
-    // })
+    const table = useReactTable({
+        data,
+        columns,
+        onSortingChange: setSorting,
+        onColumnFiltersChange: setColumnFilters,
+        getCoreRowModel: getCoreRowModel(),
+        getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
+        onColumnVisibilityChange: setColumnVisibility,
+        onRowSelectionChange: setRowSelection,
+        state: {
+            sorting,
+            columnFilters,
+            columnVisibility,
+            rowSelection,
+        },
+    })
 
     return (
         <Dialog>
@@ -137,7 +137,7 @@ export const InsertTable = <TData,>({
                                 ) : (
                                     <TableRow>
                                         <TableCell
-                                            colSpan={columns.length}
+                                            colSpan={columns?.length}
                                             className="h-24 text-center"
                                         >
                                             No results.

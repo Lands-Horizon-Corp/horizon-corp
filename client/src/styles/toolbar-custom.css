@@ -1,0 +1,33 @@
+.toolbar-custom {
+    @apply prose h-60 overflow-x-auto rounded-lg border p-3 py-0 text-sm focus:outline-none;
+}
+
+.toolbar-custom h1,
+.toolbar-custom h2,
+.toolbar-custom h3,
+.toolbar-custom h4,
+.toolbar-custom h5,
+.toolbar-custom h6,
+.toolbar-custom p,
+.toolbar-custom a,
+.toolbar-custom ul,
+.toolbar-custom ol,
+.toolbar-custom pre,
+.toolbar-custom code,
+.toolbar-custom strong,
+.toolbar-custom listItem,
+.toolbar-custom blockquote {
+    @apply text-black dark:text-white;
+}
+
+.toolbar-custom code {
+    @apply rounded bg-secondary/80 px-1 py-0.5 text-[0.95em] font-semibold;
+}
+
+.toolbar-custom pre {
+    @apply overflow-x-auto rounded-lg bg-secondary/70 p-4;
+}
+
+.toolbar-custom pre code {
+    @apply bg-transparent text-[0.9em] text-inherit;
+}

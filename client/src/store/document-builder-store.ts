@@ -64,7 +64,7 @@ const estimateNodeHeightWithToDOM = (node: ProseMirrorNode): number => {
     }
 
     // Add content if applicable
-    if (typeof content === 'string') {
+    if (typeof content === 'string' && dom) {
       dom.textContent = content;
     }
   } else if (toDOMResult instanceof HTMLElement) {
@@ -141,7 +141,7 @@ export const useDocumentBuilderStore = create<DocumentBuilderStore>((set, get) =
     {
       htmlTemplate: '<div>start Typing...</div>',
       style: '',
-      JsonPage: { type: 'doc', content: [{ type: 'text', text: 'hello' }] },
+      JsonPage: { type: 'doc', content: [{ type: 'text', text: '' }] },
     },
   ],
   currentPage: 0,
@@ -154,7 +154,7 @@ export const useDocumentBuilderStore = create<DocumentBuilderStore>((set, get) =
     const newPage: PageProps = {
       htmlTemplate: '',
       style: '',
-      JsonPage: { type: 'doc', content: [{ type: 'text', text: 'hello...' }] },
+      JsonPage: { type: 'doc', content: [{ type: 'text', text: '' }] },
     };
     const newPageIndex = get().pages.length;
     set((state) => ({
@@ -199,12 +199,9 @@ export const useDocumentBuilderStore = create<DocumentBuilderStore>((set, get) =
     const currentPageContent = editor.getJSON();
     const currentPageHeight = calculateContentHeight(editor, currentPageContent);
     const contentHeight = editor.view.dom.scrollHeight
-    console.log(currentPageHeight)
+
     if (contentHeight > height) {   
       const [currentContent, overflowContent] = splitContentByHeight(editor, currentPageContent, height);
-
-      console.log('currentContent', currentContent)
-      console.log('overflowContent', overflowContent)
 
       const updatedPages = [...pages];
 
