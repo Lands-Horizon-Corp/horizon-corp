@@ -8,6 +8,7 @@ import {
     TFilterLogic,
 } from '../data-table-filters/data-table-filter-context'
 import useDebounce from '@/hooks/use-debounce'
+import logger from '@/helpers/loggers/logger'
 
 const useDatableFilterState = (options?: {
     debounceFinalFilterMs?: number
@@ -17,6 +18,7 @@ const useDatableFilterState = (options?: {
     const [filterLogic, setFilterLogic] = useState<TFilterLogic>('AND')
 
     const setFilter = (field: string, filter?: TSearchFilter) => {
+        logger.log('Sets ', field, filter)
         setFilters((prev) => ({ ...prev, [field]: filter }))
     }
 
@@ -60,17 +62,29 @@ const useDatableFilterState = (options?: {
             const filteredFilter: TFinalFilter[] = []
 
             Object.entries(debouncedFilter).forEach(([key, value]) => {
-                if (!value || !value.value) return
+                if (!value || !value.value) {
+                    logger.log('Value failed', value)
+                    return
+                }
 
-                if (!value.mode || key === 'globalSearch') return
+                if (!value.mode || key === 'globalSearch') {
+                    logger.log('value mode, globalSearch failed', value.mode, key)
+                    return
+                }
 
                 if (
                     value.mode === 'range' &&
                     (value.from === undefined || value.to === undefined)
                 ) {
+                    logger.log('line 74 failed')
                     return
-                } else if (value.mode !== 'range' && value.value === undefined)
+                } else if (
+                    value.mode !== 'range' &&
+                    value.value === undefined
+                ) {
+                    logger.log('line 80 failed')
                     return
+                }
 
                 filteredFilter.push({
                     field: key,
@@ -86,6 +100,9 @@ const useDatableFilterState = (options?: {
             options?.onFilterChange?.()
 
             return { filters: filteredFilter, logic: filterLogic }
+
+            // WARNING: don't worry about this, if you remove this and follow the suggestion, infinite loop will happen
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [debouncedFilter, filterLogic])
 
     return {

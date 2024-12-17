@@ -27,6 +27,7 @@ import { CompanyResource } from '@/horizon-corp/types'
 import { toReadableDate, withCatchAsync } from '@/utils'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+import TimeFilter from '@/components/data-table/data-table-filters/time-filter'
 
 export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[] =
     [
@@ -321,6 +322,25 @@ const companiesTableColumns: ColumnDef<CompanyResource>[] = [
                 original: { createdAt },
             },
         }) => <div>{toReadableDate(createdAt)}</div>,
+    },
+    {
+        id: 'UpdatedAt',
+        accessorKey: 'updatedAt',
+        header: (props) => (
+            <DataTableColumnHeader {...props} isResizable title="Date Updated">
+                <ColumnActions {...props}>
+                    <TimeFilter<CompanyResource>
+                        displayText="Updated Date"
+                        field="updatedAt"
+                    />
+                </ColumnActions>
+            </DataTableColumnHeader>
+        ),
+        cell: ({
+            row: {
+                original: { createdAt },
+            },
+        }) => <div>{toReadableDate(createdAt, "HH:mm aa")}</div>,
     },
 ]
 

@@ -10,10 +10,17 @@ import {
 
 interface TimePickerProps {
     date: Date
+    disabled?: boolean
+    hideTimeFieldLabels?: boolean
     onChange: (updatedDate: Date) => void
 }
 
-const TimePicker: React.FC<TimePickerProps> = ({ date, onChange }) => {
+const TimePicker: React.FC<TimePickerProps> = ({
+    date,
+    disabled,
+    hideTimeFieldLabels,
+    onChange,
+}) => {
     const [hour, setHour] = useState<number>(date.getHours() % 12 || 12)
     const [minutes, setMinutes] = useState<number>(date.getMinutes())
     const [period, setPeriod] = useState<'AM' | 'PM'>(
@@ -40,7 +47,9 @@ const TimePicker: React.FC<TimePickerProps> = ({ date, onChange }) => {
         onSelect: (selectedValue: number | string) => void
     ) => (
         <div className="flex flex-col">
-            <div className="mb-2 text-sm">{label}</div>
+            {!hideTimeFieldLabels && (
+                <div className="mb-2 text-sm">{label}</div>
+            )}
             <Select
                 value={value.toString()}
                 onValueChange={(selectedValue) => {
@@ -51,7 +60,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ date, onChange }) => {
                     onSelect(parsedValue)
                 }}
             >
-                <SelectTrigger className="w-[80px]">
+                <SelectTrigger className="w-[80px]" disabled={disabled}>
                     {items.find((item) => item.value === value)?.label ||
                         'Select'}
                 </SelectTrigger>
@@ -71,7 +80,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ date, onChange }) => {
 
     return (
         <div className="flex flex-col items-center gap-y-2">
-            <div className="flex gap-x-4">
+            <div className="flex gap-x-1">
                 {renderSelect(
                     'Hour',
                     hour,

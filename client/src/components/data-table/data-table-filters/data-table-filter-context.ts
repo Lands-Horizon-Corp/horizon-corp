@@ -3,7 +3,7 @@ import { KeysOfOrString } from '@/types'
 
 export type TFilterLogic = 'AND' | 'OR'
 
-export type TColumnDataTypes = 'number' | 'text' | 'date' | 'boolean'
+export type TColumnDataTypes = 'number' | 'text' | 'date' | 'boolean' | 'time'
 
 export type TFilterModes =
     | 'equal'
@@ -56,6 +56,15 @@ export const filterModeMap: {
         { value: 'lte', label: 'On or Before' },
         { value: 'range', label: 'Range' },
     ],
+    time : [
+        { value: 'equal', label: 'On' },
+        { value: 'nequal', label: 'Not On' },
+        { value: 'before', label: 'Before' },
+        { value: 'after', label: 'After' },
+        { value: 'gte', label: 'On or After' },
+        { value: 'lte', label: 'On or Before' },
+        { value: 'range', label: 'Range' },
+    ]
 }
 
 export type TSearchFilter<T = unknown, TValue = T> = {
