@@ -27,8 +27,8 @@ import {
 
 import { LoadingCircleIcon, LocationPinOutlineIcon } from '../icons'
 
-import { useMapStore } from '@/store/map-store'
 import logger from '@/helpers/loggers/logger'
+import { cn } from '@/lib'
 
 const getLocationDescription = async (latlng: LatLngExpression) => {
     const { lat, lng } = latLng(latlng)
@@ -95,7 +95,7 @@ const CustomSearch = ({ onLocationFound }: TCustomSearchProps) => {
     const isResultEmpty = results.length === 0
 
     return (
-        <div className="absolute top-5 z-[100] w-[30rem]">
+        <div className="absolute top-5 z-[100] w-[90%] pr-16">
             <Input
                 type="text"
                 value={query}
@@ -179,7 +179,7 @@ const Maps = ({ handleMapCreated }: TMapProps) => {
 const MainMapContainer = ({
     disabledSearch = false,
     center,
-    zoom = 13,
+    zoom,
     zoomControl = false,
     className,
     style,
@@ -190,24 +190,14 @@ const MainMapContainer = ({
     children,
     multiplePins = false,
     viewOnly = false,
+    onCoordinatesChange,
+    disabledCoordinatesView = true,
 }: TMainMapProps) => {
+    console.log(zoom)
     const [_, setSearchedAddress] = useState('')
     const [selectedPins, setSelectedPins] = useState<Pin[]>([])
     const [map, setMap] = useState<L.Map | null>(null)
     const markerRefs = useRef<{ [key: string]: L.Marker }>({})
-
-    const setLatLng = useMapStore((state) => state.setMarkerPosition)
-    const setMarkers = useMapStore((state) => state.setMarkers)
-
-    const handleSetMarkers = useCallback(() => {
-        if (selectedPins && selectedPins.length > 0) {
-            setMarkers(selectedPins)
-        }
-    }, [setMarkers, selectedPins])
-
-    useEffect(() => {
-        handleSetMarkers()
-    }, [handleSetMarkers])
 
     const handleMapReady = (mapInstance: L.Map) => {
         setMap(mapInstance)
@@ -231,7 +221,6 @@ const MainMapContainer = ({
     const addMarker = useCallback(
         async (latLng: LatLngExpression) => {
             const { lat, lng } = latLng as L.LatLngLiteral
-            setLatLng({ x: lat, y: lng })
             const markerKey = `${lat},${lng}`
 
             if (markerRefs.current[markerKey])
@@ -247,29 +236,28 @@ const MainMapContainer = ({
 
     const handleLocationFound = useCallback(
         async (latLng: LatLngExpression) => {
-            if (!viewOnly) {
-                const newPin: Pin = { id: Date.now(), position: latLng }
-
-                setSelectedPins((prevPins) =>
-                    multiplePins ? [...prevPins, newPin] : [newPin]
-                )
-
-                if (!multiplePins && map) {
-                    map.eachLayer((layer: any) => {
-                        if (layer instanceof L.Marker) {
-                            map.removeLayer(layer)
-                        }
-                    })
-                }
-
-                addMarker(latLng)
-            }
+            const newPin: Pin = { id: Date.now(), position: latLng }
+            setSelectedPins((prevPins) =>
+                multiplePins ? [...prevPins, newPin] : [newPin]
+            )
+            addMarker(latLng)
         },
-        [addMarker, map, multiplePins]
+        [addMarker, multiplePins]
     )
 
+    useEffect(() => {
+        if (onCoordinatesChange) {
+            onCoordinatesChange(selectedPins)
+        }
+    }, [selectedPins])
+
     return (
-        <div className={`relative w-full p-5 pt-20 shadow-sm ${style ?? ''}`}>
+        <div
+            className={cn(
+                disabledSearch ? 'p-0' : 'relative w-full p-5 pt-20 shadow-sm',
+                className
+            )}
+        >
             {!disabledSearch && !viewOnly && (
                 <CustomSearch
                     map={map}
@@ -280,7 +268,7 @@ const MainMapContainer = ({
             <MapContainer
                 center={center}
                 zoom={zoom}
-                className={`-z-0 h-[500px] w-full min-w-[500px] rounded-lg ${className ?? ''}`}
+                className={`-z-0 h-full w-full rounded-lg`}
                 ref={setMap}
                 style={style}
                 zoomControl={zoomControl}
@@ -294,24 +282,26 @@ const MainMapContainer = ({
                 <ZoomControl position="bottomright" />
                 {children}
             </MapContainer>
-            <ul className="mt-4">
-                {selectedPins.map((pin) => {
-                    const { lat, lng } = pin.position as L.LatLngLiteral
-                    return (
-                        <div key={pin.id}>
-                            <li>
-                                Latitude: {lat}, Longitude: {lng}
-                            </li>
-                            <Button
-                                onClick={() => deletePin(pin.id)}
-                                variant="secondary"
-                            >
-                                Delete
-                            </Button>
-                        </div>
-                    )
-                })}
-            </ul>
+            {!disabledCoordinatesView && (
+                <ul className="mt-4">
+                    {selectedPins.map((pin) => {
+                        const { lat, lng } = pin.position as L.LatLngLiteral
+                        return (
+                            <div key={pin.id}>
+                                <li>
+                                    Latitude: {lat}, Longitude: {lng}
+                                </li>
+                                <Button
+                                    onClick={() => deletePin(pin.id)}
+                                    variant="secondary"
+                                >
+                                    Delete
+                                </Button>
+                            </div>
+                        )
+                    })}
+                </ul>
+            )}
         </div>
     )
 }
