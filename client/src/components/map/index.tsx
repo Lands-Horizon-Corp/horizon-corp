@@ -192,7 +192,7 @@ const MainMapContainer = ({
     multiplePins = false,
     viewOnly = false,
     onMultipleCoordinatesChange,
-    onCoordinatesClick,
+    onCoordinateClick,
     defaultMarkerPins = [],
     searchClassName,
 }: TMainMapProps) => {
@@ -264,8 +264,8 @@ const MainMapContainer = ({
                     return updatedPins
                 })
             } else {
-                if (onCoordinatesClick) {
-                    onCoordinatesClick(latLng)
+                if (onCoordinateClick) {
+                    onCoordinateClick(latLng)
                 }
                 setSelectedPins([newPin])
             }
@@ -275,7 +275,7 @@ const MainMapContainer = ({
             addMarker,
             multiplePins,
             onMultipleCoordinatesChange,
-            onCoordinatesClick,
+            onCoordinateClick,
         ]
     )
 
@@ -296,9 +296,8 @@ const MainMapContainer = ({
     return (
         <div
             className={cn(
-                viewOnly
-                    ? 'p-0'
-                    : 'relative flex h-full w-full flex-col gap-4 p-5 shadow-sm',
+                'relative flex size-full flex-col gap-4',
+                viewOnly ? 'p-0' : 'p-5 shadow-sm',
                 className
             )}
         >
@@ -313,7 +312,7 @@ const MainMapContainer = ({
             <MapContainer
                 center={center}
                 zoom={zoom}
-                className={`h-full w-full rounded-lg`}
+                className={`size-full flex-grow rounded-lg`}
                 ref={setMap}
                 style={style}
                 zoomControl={zoomControl}
