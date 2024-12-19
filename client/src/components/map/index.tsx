@@ -192,8 +192,9 @@ const MainMapContainer = ({
     viewOnly = false,
     onCoordinatesChange,
     disabledCoordinatesView = true,
+    defaultMarkerPins = []
 }: TMainMapProps) => {
-    console.log(zoom)
+
     const [_, setSearchedAddress] = useState('')
     const [selectedPins, setSelectedPins] = useState<Pin[]>([])
     const [map, setMap] = useState<L.Map | null>(null)
@@ -249,7 +250,21 @@ const MainMapContainer = ({
         if (onCoordinatesChange) {
             onCoordinatesChange(selectedPins)
         }
-    }, [selectedPins])
+    }, [selectedPins, onCoordinatesChange])
+
+  useEffect(() => {
+    if (map && defaultMarkerPins.length > 0) {
+      defaultMarkerPins.forEach(({ lat, lng }) => {
+        const latLng: LatLngExpression = { lat, lng };
+        const markerKey = `${lat},${lng}`;
+
+        if (!markerRefs.current[markerKey]) {
+          const marker = L.marker(latLng).addTo(map);
+          markerRefs.current[markerKey] = marker;
+        }
+      });
+    }
+  }, [map, defaultMarkerPins]);
 
     return (
         <div

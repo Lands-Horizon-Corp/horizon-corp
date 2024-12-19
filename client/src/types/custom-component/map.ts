@@ -31,7 +31,7 @@ export interface TMainMapProps extends Partial<MapContainerProps> {
     markerPosition?: { x: number; y: number }
     onCoordinatesChange?: (coords: Pin[]) => void;
     disabledCoordinatesView?: boolean,
-
+    defaultMarkerPins?: { lat: number; lng: number }[];
 }
 
 export interface TMapProps {
