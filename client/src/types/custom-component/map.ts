@@ -16,6 +16,7 @@ export interface Pin {
 export interface TCustomSearchProps extends TSearchableProps {
     onLocationFound: (latLng: LatLngExpression) => void
     map: L.Map | null
+    className?: string
 }
 
 export interface TLatLngExpressionWithDesc {
@@ -31,6 +32,7 @@ export interface TMainMapProps extends Partial<MapContainerProps> {
     onCoordinatesClick?: (coords: LatLngExpression) => void;
     onMultipleCoordinatesChange?: (coords: LatLngExpression[]) => void;
     defaultMarkerPins?: { lat: number; lng: number }[];
+    searchClassName?: string
 }
 
 export interface TMapProps {

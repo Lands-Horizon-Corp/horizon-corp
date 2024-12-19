@@ -14,7 +14,6 @@ import L, { LatLngExpression, latLng } from 'leaflet'
 
 import { Input } from '../ui/input'
 import LayerControl from './LayerControl'
-import { Button } from '../ui/button'
 
 import {
     TCustomSearchProps,
@@ -49,7 +48,7 @@ const MapWithClick = ({ onLocationFound }: TMapWithClickProps) => {
     return null
 }
 
-const CustomSearch = ({ onLocationFound }: TCustomSearchProps) => {
+const CustomSearch = ({ onLocationFound, className }: TCustomSearchProps) => {
     const [results, setResults] = useState<TLatLngExpressionWithDesc[]>([])
     const [query, setQuery] = useState('')
 
@@ -101,7 +100,10 @@ const CustomSearch = ({ onLocationFound }: TCustomSearchProps) => {
                 value={query}
                 onChange={handleInputChange}
                 placeholder="Search Google Maps"
-                className="rounded-lg border border-gray-300 px-4 py-2 focus:border-none focus:outline-none"
+                className={cn(
+                    'rounded-lg border border-gray-300 px-4 py-2 focus:border-none focus:outline-none',
+                    className ?? ''
+                )}
             />
             <div
                 className={`absolute z-[1000] flex w-[90%] flex-col space-y-2 bg-white/90 dark:bg-secondary/90 dark:text-white ${isResultEmpty ? 'hidden' : 'p-5'} rounded-lg`}
@@ -192,6 +194,7 @@ const MainMapContainer = ({
     onMultipleCoordinatesChange,
     onCoordinatesClick,
     defaultMarkerPins = [],
+    searchClassName,
 }: TMainMapProps) => {
     const [_, setSearchedAddress] = useState('')
     const [selectedPins, setSelectedPins] = useState<Pin[]>([])
@@ -278,7 +281,6 @@ const MainMapContainer = ({
 
     useEffect(() => {
         if (map && defaultMarkerPins.length > 0) {
-
             defaultMarkerPins.forEach(({ lat, lng }) => {
                 const latLng: LatLngExpression = { lat, lng }
                 const markerKey = `${lat},${lng}`
@@ -287,7 +289,6 @@ const MainMapContainer = ({
                     const marker = L.marker(latLng).addTo(map)
                     markerRefs.current[markerKey] = marker
                 }
-
             })
         }
     }, [map, defaultMarkerPins])
@@ -304,6 +305,7 @@ const MainMapContainer = ({
             {!viewOnly && (
                 <CustomSearch
                     map={map}
+                    className={searchClassName}
                     setSearchedAddress={setSearchedAddress}
                     onLocationFound={handleLocationFound}
                 />
