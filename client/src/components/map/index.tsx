@@ -190,23 +190,25 @@ const Maps = ({ handleMapCreated }: TMapProps) => {
     )
 }
 
-const MainMapContainer = ({
-    center,
+const Map = ({
     zoom,
-    zoomControl = false,
-    className,
     style,
-    scrollWheelZoom = true,
+    center,
     minZoom,
     maxZoom,
-    whenReady,
     children,
-    multiplePins = false,
-    viewOnly = false,
-    onMultipleCoordinatesChange,
-    onCoordinateClick,
-    defaultMarkerPins = [],
+    className,
+    hideControls,
     searchClassName,
+    viewOnly = false,
+    zoomControl = false,
+    multiplePins = false,
+    mapContainerClassName,
+    scrollWheelZoom = true,
+    defaultMarkerPins = [],
+    whenReady,
+    onCoordinateClick,
+    onMultipleCoordinatesChange,
 }: TMainMapProps) => {
     const [_, setSearchedAddress] = useState('')
     const [selectedPins, setSelectedPins] = useState<Pin[]>([])
@@ -216,21 +218,6 @@ const MainMapContainer = ({
     const handleMapReady = (mapInstance: L.Map) => {
         setMap(mapInstance)
     }
-
-    const deletePin = useCallback(
-        (id: number) => {
-            setSelectedPins((pins) => pins.filter((pin) => pin.id !== id))
-            const pin = selectedPins.find((pin) => pin.id === id)
-
-            if (pin) {
-                const { lat, lng } = pin.position as L.LatLngLiteral
-                const markerKey = `${lat},${lng}`
-                markerRefs.current[markerKey]?.remove()
-                delete markerRefs.current[markerKey]
-            }
-        },
-        [selectedPins]
-    )
 
     const addMarker = useCallback(
         async (latLng: LatLngExpression) => {
@@ -322,24 +309,27 @@ const MainMapContainer = ({
                 />
             )}
             <MapContainer
-                center={center}
                 zoom={zoom}
-                className={`size-full flex-grow rounded-lg`}
                 ref={setMap}
                 style={style}
-                zoomControl={zoomControl}
-                scrollWheelZoom={scrollWheelZoom}
+                center={center}
                 minZoom={minZoom}
                 maxZoom={maxZoom}
                 whenReady={whenReady}
+                zoomControl={zoomControl}
+                scrollWheelZoom={scrollWheelZoom}
+                className={cn(
+                    `size-full flex-grow rounded-lg`,
+                    mapContainerClassName
+                )}
             >
                 <Maps handleMapCreated={handleMapReady} />
                 <MapWithClick onLocationFound={handleLocationFound} />
-                <ZoomControl position="bottomright" />
+                {!hideControls && <ZoomControl position="bottomright" />}
                 {children}
             </MapContainer>
         </div>
     )
 }
 
-export default MainMapContainer
+export default Map
