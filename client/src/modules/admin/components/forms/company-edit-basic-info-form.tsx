@@ -1,5 +1,6 @@
 import z from 'zod'
 import { toast } from 'sonner'
+import { LatLngLiteral } from 'leaflet'
 import { useForm } from 'react-hook-form'
 import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -12,6 +13,14 @@ import {
     FormLabel,
 } from '@/components/ui/form'
 
+import { Input } from '@/components/ui/input'
+import MainMapContainer from '@/components/map'
+import { Button } from '@/components/ui/button'
+import TextEditor from '@/components/text-editor'
+import { Separator } from '@/components/ui/separator'
+import { LoadingSpinnerIcon } from '@/components/icons'
+import FormErrorMessage from '@/components/ui/form-error-message'
+
 import { cn } from '@/lib'
 import { withCatchAsync } from '@/utils'
 import { IBaseCompNoChild } from '@/types'
@@ -19,25 +28,21 @@ import { IForm } from '@/types/component/form'
 import { serverRequestErrExtractor } from '@/helpers'
 import { CompanyResource } from '@/horizon-corp/types'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import { Input } from '@/components/ui/input'
-import TextEditor from '@/components/text-editor'
-import MainMapContainer from '@/components/map'
-import logger from '@/helpers/loggers/logger'
 
 type TCompanyBasicInfo = Omit<CompanyResource, 'owner' | 'media' | 'branches'>
 
-interface Props
+interface CompanyEditBasicInfoFormProps
     extends IBaseCompNoChild,
         IForm<Partial<TCompanyBasicInfo>, CompanyResource, string> {
     companyId: number
 }
 
 const CompanyBasicInfoFormSchema = z.object({
-    name: z.string(),
-    description: z.string(),
-    address: z.string(),
-    longitude: z.number().optional(),
-    latitude: z.number().optional(),
+    name: z.string().min(1, 'Company name is required'),
+    description: z.string().min(1, 'Company description is required'),
+    address: z.string().min(1, 'Company address is required'),
+    longitude: z.coerce.number().optional(),
+    latitude: z.coerce.number().optional(),
     contactNumber: z.string(),
     isAdminVerified: z.boolean(),
 })
@@ -50,14 +55,27 @@ const CompanyEditBasicInfoForm = ({
     onError,
     onSuccess,
     onLoading,
-}: Props) => {
-    const form = useForm({
+}: CompanyEditBasicInfoFormProps) => {
+    const form = useForm<z.infer<typeof CompanyBasicInfoFormSchema>>({
         defaultValues,
         reValidateMode: 'onChange',
         resolver: zodResolver(CompanyBasicInfoFormSchema),
     })
 
-    const { isPending } = useMutation<
+    const hasChanges = form.formState.isDirty
+    const firstError = Object.values(form.formState.errors)[0]?.message
+
+    const defaultCenter = {
+        lat: form.getValues('latitude') ?? 14.58423341171918,
+        lng: form.getValues('longitude') ?? -239.01863962431653,
+    }
+
+    const {
+        isPending,
+        mutate: save,
+        error,
+        reset,
+    } = useMutation<
         CompanyResource,
         string,
         z.infer<typeof CompanyBasicInfoFormSchema>
@@ -86,19 +104,19 @@ const CompanyEditBasicInfoForm = ({
 
     return (
         <form
-            className={cn('', className)}
-            onSubmit={form.handleSubmit((data) => {})}
+            className={cn('flex flex-col gap-y-2', className)}
+            onSubmit={form.handleSubmit((data) => save(data))}
         >
             <Form {...form}>
                 <fieldset
                     disabled={readOnly || isPending}
-                    className="grid gap-x-4 gap-y-6 sm:grid-cols-2"
+                    className="grid gap-x-4 gap-y-4 sm:grid-cols-2"
                 >
                     <FormField
                         control={form.control}
                         name="name"
                         render={({ field }) => (
-                            <FormItem className="space-y-0">
+                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
@@ -120,7 +138,7 @@ const CompanyEditBasicInfoForm = ({
                         control={form.control}
                         name="address"
                         render={({ field }) => (
-                            <FormItem className="space-y-0">
+                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
@@ -208,24 +226,59 @@ const CompanyEditBasicInfoForm = ({
                             </FormItem>
                         )}
                     />
-                    <div className="col-span-2">
-                        <h4 className="text-sm font-normal text-foreground/60">
-                            Company Map Location
-                        </h4>
-                        <p className="text-sm mt-2 text-foreground/60">Use the map to set the coordinates of the company. Coordinates use to display your company&apos;s location to interactive map</p>
-                        <MainMapContainer
-                            zoom={13}
-                            center={{
-                                lat:
-                                    form.getValues('latitude') ??
-                                    14.58423341171918,
-                                lng:
-                                    form.getValues('longitude') ??
-                                    -239.01863962431653,
-                            }}
-                        />
-                    </div>
                 </fieldset>
+                <div className="">
+                    <h4 className="text-sm font-normal text-foreground/60">
+                        Company Map Location
+                    </h4>
+                    <p className="mt-2 text-sm text-foreground/60">
+                        Use the map to set the coordinates of the company.
+                        Coordinates use to display your company&apos;s location
+                        to interactive map
+                    </p>
+                    <MainMapContainer
+                        zoom={13}
+                        onCoordinateClick={(coord) => {
+                            const { lat, lng } = coord as LatLngLiteral
+                            if (!lat || !lng || isPending || readOnly) return
+
+                            form.setValue('latitude', lat, {
+                                shouldDirty: true,
+                            })
+                            form.setValue('longitude', lng, {
+                                shouldDirty: true,
+                            })
+                        }}
+                        className="min-h-[500px] p-0 py-2"
+                        center={defaultCenter}
+                    />
+                </div>
+                <FormErrorMessage errorMessage={firstError || error} />
+                {hasChanges && (
+                    <div>
+                        <Separator className="my-2 sm:my-4" />
+                        <div className="flex items-center justify-end gap-x-2">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => {
+                                    form.reset()
+                                    reset()
+                                }}
+                                className="w-full self-end px-8 sm:w-fit"
+                            >
+                                Reset
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={isPending}
+                                className="w-full self-end px-8 sm:w-fit"
+                            >
+                                {isPending ? <LoadingSpinnerIcon /> : 'Save'}
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </Form>
         </form>
     )

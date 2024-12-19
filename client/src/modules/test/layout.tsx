@@ -13,7 +13,7 @@ const TestLayout = () => {
             <MainMapContainer
                 center={defaultCenter}
                 zoom={defaultZoom}
-                className='flex-grow'
+                className='flex-grow !p-0'
                 onMultipleCoordinatesChange={(coor)=> console.log(coor)}
                 onCoordinatesClick={(coor)=> console.log(coor)}
                 // multiplePins

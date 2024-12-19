@@ -14,8 +14,8 @@ const CompanyEditPage = () => {
 
     return (
         <div className="flex w-full max-w-full flex-col items-center px-4 pb-6 sm:px-8">
-            <div className="w-full max-w-5xl space-y-4 rounded-xl border p-4">
-                Edit Company
+            <div className="w-full max-w-5xl space-y-4 p-4">
+                <h4 className="font-medium">Edit Company</h4>
                 <CompanyBasicInfoForm
                     companyId={companyId}
                     defaultValues={company}

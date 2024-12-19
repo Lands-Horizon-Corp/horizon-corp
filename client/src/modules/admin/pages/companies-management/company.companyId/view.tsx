@@ -99,7 +99,7 @@ const CompanyViewPage = () => {
                             <span className="inline-flex items-center gap-x-2 text-sm text-foreground/80">
                                 <LocationPinIcon /> {company.address}
                             </span>
-                            <div className="flex gap-x-4 text-sm text-foreground/50">
+                            <div className="flex gap-x-4 text-sm flex-wrap text-foreground/50">
                                 <span className="inline-flex items-center gap-x-2">
                                     <TelephoneIcon />
                                     {company.contactNumber}
