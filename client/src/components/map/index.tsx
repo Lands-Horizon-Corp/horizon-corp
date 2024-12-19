@@ -48,7 +48,11 @@ const MapWithClick = ({ onLocationFound }: TMapWithClickProps) => {
     return null
 }
 
-const CustomSearch = ({ onLocationFound, className }: TCustomSearchProps) => {
+const CustomSearch = ({
+    onLocationFound,
+    className,
+    map,
+}: TCustomSearchProps) => {
     const [results, setResults] = useState<TLatLngExpressionWithDesc[]>([])
     const [query, setQuery] = useState('')
 
@@ -90,8 +94,13 @@ const CustomSearch = ({ onLocationFound, className }: TCustomSearchProps) => {
     const handleOnLocationFound = (lat: number, lng: number) => {
         const latLng = new L.LatLng(lat, lng)
         onLocationFound(latLng)
+        if (map) {
+            map.setView(latLng, 15)
+        }
+        setResults([])
     }
-    const isResultEmpty = results.length === 0
+
+    const showSearchList = results.length > 0
 
     return (
         <div className="h-fit w-full">
@@ -106,7 +115,7 @@ const CustomSearch = ({ onLocationFound, className }: TCustomSearchProps) => {
                 )}
             />
             <div
-                className={`absolute z-[1000] flex w-[90%] flex-col space-y-2 bg-white/90 dark:bg-secondary/90 dark:text-white ${isResultEmpty ? 'hidden' : 'p-5'} rounded-lg`}
+                className={`absolute z-[1000] flex w-[90%] flex-col space-y-2 bg-white/90 dark:bg-secondary/90 dark:text-white ${!showSearchList ? 'hidden' : 'p-5'} rounded-lg`}
             >
                 {isPending ? (
                     <div className="flex w-full justify-center">
@@ -114,24 +123,22 @@ const CustomSearch = ({ onLocationFound, className }: TCustomSearchProps) => {
                     </div>
                 ) : (
                     <div>
-                        {results.length > 0 && (
+                        {showSearchList && (
                             <>
                                 {results.map((location, index) => (
                                     <div
                                         key={index}
                                         className="cursor-pointer hover:rounded-lg hover:bg-slate-200/40 focus:rounded-lg focus:bg-slate-200/40 focus:outline-none focus:ring-0"
-                                        onClick={() =>
+                                        onClick={() => {
                                             handleOnLocationFound(
                                                 parseFloat(location.lat),
                                                 parseFloat(location.lng)
                                             )
-                                        }
+                                        }}
                                         tabIndex={0}
                                         onKeyDown={(e) => {
-                                            if (
-                                                e.key === 'Enter' ||
-                                                e.key == ' '
-                                            ) {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault()
                                                 handleOnLocationFound(
                                                     parseFloat(location.lat),
                                                     parseFloat(location.lng)
