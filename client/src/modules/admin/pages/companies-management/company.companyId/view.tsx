@@ -75,7 +75,7 @@ const CompanyViewPage = () => {
         <div className="flex w-full max-w-full flex-col items-center px-4 pb-6 sm:px-8">
             <div className="flex w-full max-w-5xl flex-col items-center space-y-4">
                 <div className="flex w-full flex-col items-center space-y-4 overflow-clip rounded-xl bg-secondary">
-                    <div className="w-full flex-col items-center space-y-2 overflow-clip rounded-xl bg-popover">
+                    <div className="relative w-full flex-col items-center space-y-2 overflow-clip rounded-xl bg-popover">
                         <div className="h-[180px] w-full rounded-md bg-[url('/profile-cover.png')] bg-cover bg-center" />
                         <div className="relative w-full space-y-2.5 px-6 pb-6 pt-8">
                             <UserAvatar

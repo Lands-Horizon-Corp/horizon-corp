@@ -25,7 +25,7 @@ go.work.sum
 .env
 server/tmp/main
 server/main
-engine/tmp/main
+engine/tmp/*
 engine/main
 
 .env.development
