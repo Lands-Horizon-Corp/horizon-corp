@@ -1,38 +1,75 @@
-import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { useState } from 'react'
 
 import EcoopLogo from '@/components/ecoop-logo'
 import StepIndicator from '@/components/steps-indicator'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import VerifyForm from '@/modules/auth/components/forms/verify-form'
 
-import { UserBase, UserStatus } from '@/types'
-import { IBaseComp } from '@/types/component/base'
+import { withCatchAsync } from '@/lib'
+import { IBaseComp } from '@/types/component'
+import { UserData } from '@/horizon-corp/types'
+import { useMutation } from '@tanstack/react-query'
+import { serverRequestErrExtractor } from '@/helpers'
+import { useUserAuthStore } from '@/store/user-auth-store'
+import UserService from '@/horizon-corp/server/auth/UserService'
 
 interface Props extends IBaseComp {
     readOnly?: boolean
-    userData: UserBase
-    onVerifyComplete?: (newUserData: UserBase) => void
-    onVerifyChange?: (newUserData: UserBase) => void
+    userData: UserData
+
+    onSkip: () => void
+    onVerifyChange?: (newUserData: UserData) => void
+    onVerifyComplete?: (newUserData: UserData) => void
+}
+
+const countCompleted = (userData: UserData) => {
+    let completed = 0
+
+    if (userData.isEmailVerified) completed++
+    if (userData.isContactVerified) completed++
+
+    return completed
 }
 
 const VerifyRoot = ({
-    readOnly = false,
     userData,
+    readOnly = false,
+    onSkip,
     onVerifyChange,
     onVerifyComplete,
 }: Props) => {
-    const [step, setStep] = useState(1)
+    const { setCurrentUser } = useUserAuthStore()
+    const [userStoredData, setStoredUserData] = useState(userData)
 
-    useEffect(() => {
-        if (
-            (userData.validContactNumber && userData.validEmail) ||
-            userData.status === UserStatus.Verified
-        )
-            return onVerifyComplete?.(userData)
-    }, [userData])
+    const completedCount = countCompleted(userStoredData)
 
-    const handleOnSuccess = (userData: UserBase, nextStep: number) => {
-        onVerifyChange?.(userData)
-        setStep(nextStep)
+    const { mutate: handleSkip, isPending: isSkipping } = useMutation<
+        UserData,
+        string
+    >({
+        mutationKey: ['skip-verification'],
+        mutationFn: async () => {
+            const [error, response] = await withCatchAsync(
+                UserService.SkipVerification()
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                throw errorMessage
+            }
+
+            onSkip()
+            setCurrentUser(response.data)
+
+            return response.data
+        },
+    })
+
+    if (completedCount === 2) {
+        onVerifyComplete?.(userData)
+        return
     }
 
     return (
@@ -41,30 +78,37 @@ const VerifyRoot = ({
                 <EcoopLogo className="size-10" />
                 <StepIndicator
                     totalSteps={2}
-                    currentStep={step}
                     className="w-full"
+                    currentStep={completedCount + 1}
                 />
             </div>
-            {step === 1 && (
+            {!userStoredData.isContactVerified && !isSkipping && (
                 <VerifyForm
                     key="1"
-                    id={userData.id}
                     readOnly={readOnly}
                     verifyMode="mobile"
-                    onSuccess={(data) => handleOnSuccess(data, 2)}
-                />
-            )}
-            {step === 2 && (
-                <VerifyForm
-                    key="2"
-                    id={userData.id}
-                    verifyMode="email"
-                    readOnly={readOnly}
                     onSuccess={(data) => {
-                        onVerifyComplete?.(data)
+                        onVerifyChange?.(data)
+                        setStoredUserData(data)
                     }}
+                    onSkip={handleSkip}
                 />
             )}
+            {!userStoredData.isEmailVerified &&
+                userStoredData.isContactVerified &&
+                !isSkipping && (
+                    <VerifyForm
+                        key="2"
+                        verifyMode="email"
+                        readOnly={readOnly}
+                        onSuccess={(data) => {
+                            onVerifyChange?.(data)
+                            setStoredUserData(data)
+                        }}
+                        onSkip={handleSkip}
+                    />
+                )}
+            {isSkipping && <LoadingSpinner className="mx-auto" />}
         </div>
     )
 }

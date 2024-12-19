@@ -30,3 +30,11 @@ server/main
 .env.development
 .env.staging
 .env.production
+
+./server/tmp/*
+
+./client/stats.html
+client/stats.html
+
+./server/tmp/build-errors.log
+./client/bundle-analysis.html

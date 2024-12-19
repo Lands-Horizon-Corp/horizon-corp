@@ -5,10 +5,10 @@ import {
     DashboardIcon,
     NotificationIcon,
 } from '@/components/icons'
-import DynamicSidebar from '@/components/sidebar/dynamic-sidebar'
+import Sidebar from '@/components/sidebar'
 
-import { IBaseComp } from '@/types/component/base'
-import { TSidebarItem } from '@/types/component/sidebar'
+import { IBaseComp } from '@/types/component'
+import { TSidebarItem } from '@/components/sidebar/sidebar-types'
 
 const memberSidebarItems: TSidebarItem[] = [
     {
@@ -38,13 +38,13 @@ const memberSidebarItems: TSidebarItem[] = [
     },
 ]
 
-interface Props extends IBaseComp {}
-
-const MemberSidebar = ({ className }: Props) => {
+const MemberSidebar = ({ className }: IBaseComp) => {
     return (
-        <DynamicSidebar
-            sidebarItems={memberSidebarItems}
+        <Sidebar
+            enableCollapse
+            enableFocusBlur
             className={className}
+            items={memberSidebarItems}
         />
     )
 }

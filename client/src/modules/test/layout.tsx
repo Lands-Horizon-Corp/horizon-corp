@@ -1,11 +1,25 @@
+import MainMapContainer from '@/components/map'
 import { Outlet } from '@tanstack/react-router'
+import { LatLngExpression } from 'leaflet'
 
 const TestLayout = () => {
+    const defaultCenter: LatLngExpression = [14.5995, 120.9842]
+    const defaultZoom = 13
+
+    // if wanted to use current Position or List of Markers
+
     return (
-        <div className="grid min-h-[100dvh] grid-cols-[auto_1fr]">
-            <main>
-                <Outlet />
-            </main>
+        <div className="mx-auto flex flex-col h-[500px] w-[80%]">
+            <MainMapContainer
+                center={defaultCenter}
+                zoom={defaultZoom}
+                className='flex-grow'
+                onMultipleCoordinatesChange={(coor)=> console.log(coor)}
+                onCoordinatesClick={(coor)=> console.log(coor)}
+                // multiplePins
+                // viewOnly
+            />
+            <Outlet />
         </div>
     )
 }

@@ -1,40 +1,58 @@
 package repositories
 
 import (
+	"horizon/server/config"
+	"horizon/server/helpers"
 	"horizon/server/internal/models"
 
 	"gorm.io/gorm"
 )
 
 type OwnerRepository struct {
-	DB *gorm.DB
+	*Repository[models.Owner]
 }
 
 func NewOwnerRepository(db *gorm.DB) *OwnerRepository {
-	return &OwnerRepository{DB: db}
+	return &OwnerRepository{
+		Repository: NewRepository[models.Owner](db),
+	}
 }
 
-func (r *OwnerRepository) Create(owner *models.Owner) error {
-	return r.DB.Create(owner).Error
-}
-
-func (r *OwnerRepository) GetAll() ([]models.Owner, error) {
-	var owner []models.Owner
-	err := r.DB.Find(&owner).Error
-	return owner, err
-}
-
-func (r *OwnerRepository) GetByID(id uint) (models.Owner, error) {
+func (r *OwnerRepository) GetByEmail(email string) (*models.Owner, error) {
 	var owner models.Owner
-	err := r.DB.First(&owner, id).Error
-	return owner, err
+	err := r.DB.Preload("Media").Where("email = ?", email).First(&owner).Error
+	return &owner, handleDBError(err)
 }
 
-func (r *OwnerRepository) Update(id uint, owner *models.Owner) error {
-	owner.ID = id
-	return r.DB.Save(owner).Error
+func (r *OwnerRepository) GetByContactNumber(contactNumber string) (*models.Owner, error) {
+	var owner models.Owner
+	err := r.DB.Preload("Media").Where("contact_number = ?", contactNumber).First(&owner).Error
+	return &owner, handleDBError(err)
 }
 
-func (r *OwnerRepository) Delete(id uint) error {
-	return r.DB.Delete(&models.Owner{}, id).Error
+func (r *OwnerRepository) GetByUsername(username string) (*models.Owner, error) {
+	var owner models.Owner
+	err := r.DB.Preload("Media").Where("username = ?", username).First(&owner).Error
+	return &owner, handleDBError(err)
+}
+
+func (r *OwnerRepository) FindByEmailUsernameOrContact(input string) (*models.Owner, error) {
+	switch helpers.GetKeyType(input) {
+	case "contact":
+		return r.GetByContactNumber(input)
+	case "email":
+		return r.GetByEmail(input)
+	default:
+		return r.GetByUsername(input)
+	}
+}
+
+func (r *OwnerRepository) UpdatePassword(id uint, password string) error {
+	newPassword, err := config.HashPassword(password)
+	if err != nil {
+		return err
+	}
+	updated := &models.Owner{Password: newPassword}
+	_, err = r.Repository.UpdateColumns(id, *updated, []string{})
+	return err
 }

@@ -1,9 +1,8 @@
 import z from 'zod'
-import { useState } from 'react'
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { useRouter } from '@tanstack/react-router'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-import { BsPatchCheck } from 'react-icons/bs'
 
 import {
     Select,
@@ -23,15 +22,23 @@ import { Input } from '@/components/ui/input'
 import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { VerifiedPatchIcon } from '@/components/icons'
 import PasswordInput from '@/components/ui/password-input'
-import LoadingCircle from '@/components/loader/loading-circle'
-import FormErrorMessage from '@/modules/auth/components/form-error-message'
+import InputDatePicker from '@/components/input-date-picker'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
+import FormErrorMessage from '@/components/ui/form-error-message'
 
-import { cn } from '@/lib/utils'
+import { cn, withCatchAsync } from '@/lib/utils'
+import { serverRequestErrExtractor } from '@/helpers'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import useLoadingErrorState from '@/hooks/use-loading-error-state'
+import { signUpSchema } from '@/validations/form-validation/sign-up-schema'
+
 import { IAuthForm } from '@/types/auth/form-interface'
-import { signUpFormSchema } from '@/modules/auth/validations/sign-up-form'
+import { useUserAuthStore } from '@/store/user-auth-store'
+import { PhoneInput } from '@/components/contact-input/contact-input'
 
-type TSignUpForm = z.infer<typeof signUpFormSchema>
+type TSignUpForm = z.infer<typeof signUpSchema>
 
 const defaultValue: TSignUpForm = {
     acceptTerms: false,
@@ -39,33 +46,52 @@ const defaultValue: TSignUpForm = {
     password: '',
     contactNumber: '',
     email: '',
+    permanentAddress: '',
+    birthDate: new Date(),
     firstName: '',
     lastName: '',
     middleName: '',
     username: '',
-    mode: 'Member',
+    accountType: 'Member',
 }
-
-interface Props extends IAuthForm<TSignUpForm> {}
 
 const SignUpForm = ({
     className,
     readOnly,
     defaultValues = defaultValue,
-}: Props) => {
-    const [loading, setLoading] = useState(false)
+    onError,
+    onSuccess,
+}: IAuthForm<TSignUpForm>) => {
+    const router = useRouter()
+    const { setCurrentUser } = useUserAuthStore()
+    const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TSignUpForm>({
-        resolver: zodResolver(signUpFormSchema),
+        resolver: zodResolver(signUpSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
-        defaultValues,
+        values: defaultValues,
     })
 
-    function onFormSubmit(data: TSignUpForm) {
-        const parsedData = signUpFormSchema.parse(data)
-        // TODO: Logic
-        // remove code bellow
+    const onFormSubmit = async (data: TSignUpForm) => {
+        setError(null)
+        setLoading(true)
+
+        const [error, response] = await withCatchAsync(UserService.SignUp(data))
+
+        setLoading(false)
+
+        if (error) {
+            const errorMessage = serverRequestErrExtractor({ error })
+            onError?.(error)
+            setError(errorMessage)
+            toast.error(errorMessage)
+            return
+        }
+
+        setCurrentUser(response.data)
+        onSuccess?.(response.data)
+        router.navigate({ to: '/auth/verify' })
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -210,8 +236,35 @@ const SignUpForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="contactNumber"
+                        name="birthDate"
                         render={({ field }) => (
+                            <FormItem className="min-w-[277px]">
+                                <div className="flex items-center justify-end gap-x-4">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
+                                        Birth Date
+                                    </FormLabel>
+                                    <FormControl>
+                                        <InputDatePicker
+                                            id={field.name}
+                                            value={field.value}
+                                            onChange={field.onChange}
+                                            captionLayout="dropdown-buttons"
+                                            disabled={(date) =>
+                                                date > new Date()
+                                            }
+                                        />
+                                    </FormControl>
+                                </div>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="contactNumber"
+                        render={({ field, fieldState: { invalid, error } }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
                                     <FormLabel
@@ -222,14 +275,42 @@ const SignUpForm = ({
                                     </FormLabel>
                                     <FormControl>
                                         <div className="flex flex-1 items-center gap-x-2">
-                                            <Input
+                                            <PhoneInput
                                                 {...field}
-                                                id={field.name}
-                                                autoComplete="tel-country-code"
-                                                placeholder="Contact Number"
+                                                defaultCountry="PH"
                                             />
-                                            <BsPatchCheck className="size-8 text-primary" />
+                                            <VerifiedPatchIcon
+                                                className={cn(
+                                                    'size-8 text-primary delay-300 duration-300 ease-in-out',
+                                                    (invalid || error) &&
+                                                        'text-destructive'
+                                                )}
+                                            />
                                         </div>
+                                    </FormControl>
+                                </div>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="permanentAddress"
+                        render={({ field }) => (
+                            <FormItem className="min-w-[277px]">
+                                <div className="flex items-center justify-end gap-x-4">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="w-full max-w-[90px] text-right font-medium"
+                                    >
+                                        Permanent Address
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            autoComplete="street-address"
+                                            placeholder="Permanent Address"
+                                        />
                                     </FormControl>
                                 </div>
                             </FormItem>
@@ -285,7 +366,7 @@ const SignUpForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="mode"
+                        name="accountType"
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex w-full items-center justify-end gap-x-4">
@@ -350,9 +431,9 @@ const SignUpForm = ({
                     />
                 </fieldset>
                 <div className="mt-4 flex flex-col space-y-2">
-                    <FormErrorMessage errorMessage={firstError} />
+                    <FormErrorMessage errorMessage={firstError || error} />
                     <Button type="submit" disabled={loading || readOnly}>
-                        {loading ? <LoadingCircle /> : 'Submit'}
+                        {loading ? <LoadingSpinner /> : 'Submit'}
                     </Button>
                 </div>
             </form>

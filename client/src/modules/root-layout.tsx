@@ -1,18 +1,21 @@
 import { Outlet } from '@tanstack/react-router'
 
 import { Toaster } from '@/components/ui/sonner'
-import { VersionAndFeedBack } from '@/components/version'
 import CookieConsent from '@/components/cookie-consent'
-import ConnectionProvider from '@/components/providers/connection-provider'
+import ConfirmModal from '@/components/modals/confirm-modal'
+import ConnectionProvider from '@/providers/connection-provider'
+import useFetchCurrentUser from '@/hooks/use-fetch-current-user'
 
 const RootLayout = () => {
+    useFetchCurrentUser({ refetchOnWindowFocus: false })
+
     return (
         <div className="relative">
-            <VersionAndFeedBack />
             <Outlet />
             <Toaster richColors />
             <ConnectionProvider />
             <CookieConsent />
+            <ConfirmModal />
         </div>
     )
 }

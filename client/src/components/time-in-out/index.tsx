@@ -5,17 +5,21 @@ import { useCallback, useRef, useState } from 'react'
 import WebCam from '@/components/webcam'
 import { ClockIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import LoadingCircle from '@/components/loader/loading-circle'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import TimeInCounter from '@/components/time-in-out/time-in-counter'
 import RealtimeTimeText from '@/components/time-in-out/realtime-time-text'
 
 import { cn } from '@/lib/utils'
-import { UserBase } from '@/types'
-import { TTImeInEntry } from './time-in-bar'
-import { IBaseComp } from '@/types/component/base'
+import { IBaseComp } from '@/types/component'
+import { UserData } from '@/horizon-corp/types'
+
+export type TTImeInEntry = {
+    timeStart: Date
+    timeEnd?: Date
+}
 
 interface Props extends IBaseComp {
-    currentUser: UserBase
+    currentUser: UserData
     timeEntry?: TTImeInEntry
     message?: string
     onTimeInEntry: (timeEntry: TTImeInEntry) => void
@@ -48,9 +52,6 @@ const TimeInTimeOut = ({
         }
 
         if (!timeEntry) {
-            // todo create time in request
-            // backend checks if user already did some action 5 mins ago
-            // toast.warning(reqeust error message here)
             return setTimeout(() => {
                 onTimeInEntry({
                     timeStart: new Date('Mon, 07 Oct 2024 06:50:39 GMT'),
@@ -58,10 +59,6 @@ const TimeInTimeOut = ({
             }, 1000)
         }
 
-        // todo time out request
-        // backend checks if user already did some action 5 mins ago
-        // then show error here via toast
-        // toast.warning(reqeust error message here)
         return setTimeout(() => {
             onTimeOut({
                 timeStart: new Date('Mon, 07 Oct 2024 06:50:39 GMT'),
@@ -78,7 +75,7 @@ const TimeInTimeOut = ({
             <div className="flex flex-col items-center gap-y-6 px-4">
                 <p
                     style={{ fontFamily: 'cursive' }}
-                    className="text-center text-base italic text-foreground/60"
+                    className="text-center text-lg italic text-foreground/60"
                 >
                     "{message}"
                 </p>
@@ -109,7 +106,7 @@ const TimeInTimeOut = ({
                     variant={!timeEntry ? 'default' : 'outline'}
                 >
                     {loading ? (
-                        <LoadingCircle />
+                        <LoadingSpinner />
                     ) : timeEntry ? (
                         <>
                             <ClockIcon className="size-4" />

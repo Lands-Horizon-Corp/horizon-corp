@@ -1,6 +1,7 @@
-import { SoftwareUpdates, UpdateStatus } from '@/types/constants'
-import { TbGrowth } from 'react-icons/tb'
 import { FaBug } from 'react-icons/fa'
+import { TbGrowth } from 'react-icons/tb'
+
+import { SoftwareUpdates, UpdateStatus } from '@/types/constants'
 
 export const softwareUpdates: SoftwareUpdates = {
     name: 'e-Coop Beta',
@@ -10,7 +11,7 @@ export const softwareUpdates: SoftwareUpdates = {
     updates: [
         {
             text: 'Improved loading times by optimizing database queries.',
-            updateStatus: UpdateStatus.IMPROVEMENT,
+            updateStatus: UpdateStatus.GENERAL,
             Icon: <TbGrowth />,
         },
         {

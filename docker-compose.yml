@@ -4,6 +4,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    platform: linux/amd64
     env_file: ./.env
     volumes:
       - ./client:/client
@@ -11,36 +12,35 @@ services:
     ports:
       - "${CLIENT_FORWARD_PORT}:${CLIENT_PORT}"
     environment:
+      - "VITE_CLIENT_APP_ENV=${APP_ENV}"
       - "VITE_CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}"
       - "VITE_CLIENT_PORT=${CLIENT_PORT}"
       - "VITE_CLIENT_SERVER_URL=${CLIENT_SERVER_URL}"
       - "VITE_CLIENT_DOCUMENT_URL=${CLIENT_DOCUMENT_URL}"
-
-  vitepress:
-    build:
-      context: ./document
-      dockerfile: Dockerfile
-    ports:
-      - "${DOCUMENT_FORWARD_PORT}:${DOCUMENT_PORT}"
-    volumes:
-      - ./document:/document
-      - /document/node_modules
-    environment:
-      - "DOCUMENT_FORWARD_PORT=${DOCUMENT_FORWARD_PORT}"
-      - "DOCUMENT_PORT=${DOCUMENT_PORT}"
-      - "DOCUMENT_SERVER_URL=${DOCUMENT_SERVER_URL}"
+      - "VITE_CLIENT_SECRET_KEY=${CLIENT_SECRET_KEY}"
+      - "VITE_CLIENT_GOOGLE_API_KEY=${CLIENT_GOOGLE_API_KEY}"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
 
   server:
     restart: always
     build:
       context: ./server
       dockerfile: Dockerfile
+    platform: linux/amd64
     env_file: ./.env
     volumes:
       - ./server:/app
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:
+      - APP_ENV=${APP_ENV}
+      - APP_CLIENT_URL=${APP_CLIENT_URL}
       - APP_PORT=${APP_PORT}
       - APP_TOKEN=${APP_TOKEN}
       - LOG_LEVEL=${LOG_LEVEL}
@@ -58,13 +58,21 @@ services:
       - STORAGE_SECRET_KEY=${STORAGE_SECRET_KEY}
       - STORAGE_BUCKET_NAME=${STORAGE_BUCKET_NAME}
       - STORAGE_MAX_FILE_SIZE=${STORAGE_MAX_FILE_SIZE}
+      - CACHE_PASSWORD=${CACHE_PASSWORD}
+      - CACHE_PORT=${CACHE_PORT}
+      - CACHE_DB=${CACHE_DB}
+      - CACHE_URL=${CACHE_URL}
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
 
   db:
     container_name: lands-horizon-db
-    image: mysql:8.4
+    image: mysql:latest
     platform: linux/amd64
     restart: always
     env_file: ./.env
@@ -91,20 +99,58 @@ services:
       retries: 10
       start_period: 60s
       timeout: 20s
+    networks:
+      - app-network
 
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    platform: linux/amd64
-    env_file: ./.env
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
     ports:
-      - "8081:80"
+      - "${CACHE_PORT:-6379}:${CACHE_PORT:-6379}"
+    command: ["redis-server", "--requirepass", "${CACHE_PASSWORD}"]
     environment:
-      - PMA_HOST=db
-      - PMA_PORT=3306
-      - PMA_USER=${DB_USERNAME}
-      - PMA_PASSWORD=${DB_PASSWORD}
+      - REDIS_PASSWORD=${CACHE_PASSWORD}
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      retries: 3
+      timeout: 10s
+    networks:
+      - app-network
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: redisinsight
+    restart: always
+    ports:
+      - "5540:5540"
+    environment:
+      - REDISINSIGHT_REDIS_HOST=redis
+      - REDISINSIGHT_REDIS_PORT=${CACHE_PORT:-6379}
+      - REDISINSIGHT_REDIS_PASSWORD=${CACHE_PASSWORD}
     depends_on:
-      - db
+      - redis
+    networks:
+      - app-network
+    volumes:
+      - redis_insight_data:/data
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    platform: linux/amd64
+    ports:
+      - "${EMAIL_PORT:-1025}:${EMAIL_PORT:-1025}"
+      - "8025:8025"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8025"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - app-network
 
   flyway:
     build:
@@ -123,6 +169,24 @@ services:
       DB_CHARSET: ${DB_CHARSET}
       DB_PARSE_TIME: ${DB_PARSE_TIME}
     entrypoint: ["flyway", "migrate"]
+    networks:
+      - app-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
+    env_file: ./.env
+    ports:
+      - "8081:80"
+    environment:
+      - PMA_HOST=db
+      - PMA_PORT=3306
+      - PMA_USER=${DB_USERNAME}
+      - PMA_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      - app-network
 
   minio:
     image: minio/minio:latest
@@ -137,8 +201,16 @@ services:
     volumes:
       - minio_data:/data
     command: server /data --console-address ":38813"
+    networks:
+      - app-network
 
 volumes:
   db_data:
   minio_data:
   node_modules:
+  redis_data:
+  redis_insight_data:
+
+networks:
+  app-network:
+    driver: bridge

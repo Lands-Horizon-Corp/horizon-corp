@@ -1,8 +1,9 @@
 import z from 'zod'
-import { useState } from 'react'
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
+import { Link } from '@tanstack/react-router'
+import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useRouter } from '@tanstack/react-router'
 
 import {
     Select,
@@ -22,62 +23,71 @@ import { Input } from '@/components/ui/input'
 import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
 import PasswordInput from '@/components/ui/password-input'
-import LoadingCircle from '@/components/loader/loading-circle'
-import FormErrorMessage from '@/modules/auth/components/form-error-message'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
+import FormErrorMessage from '@/components/ui/form-error-message'
 
-import { cn } from '@/lib/utils'
-import { UserStatus } from '@/types'
+import { signInSchema } from '@/validations'
+import { cn, withCatchAsync } from '@/lib/utils'
+import { serverRequestErrExtractor } from '@/helpers'
+import UserService from '@/horizon-corp/server/auth/UserService'
+
+import { IBaseCompNoChild } from '@/types/component'
 import { IAuthForm } from '@/types/auth/form-interface'
-import { IBaseCompNoChild } from '@/types/component/base'
-import { signInFormSchema } from '@/modules/auth/validations/sign-in-form'
+import { SignInRequest, UserData } from '@/horizon-corp/types'
 
-type TSignIn = z.infer<typeof signInFormSchema>
+type TSignIn = z.infer<typeof signInSchema>
 
-interface Props extends IBaseCompNoChild, IAuthForm<Partial<TSignIn>> {}
+interface Props
+    extends IBaseCompNoChild,
+        IAuthForm<Partial<TSignIn>, UserData> {}
 
 const SignInForm = ({
     defaultValues,
     className,
     readOnly,
     onSuccess,
+    onError,
 }: Props) => {
-    const [loading, setLoading] = useState(false)
+    const { mutate, error, isPending } = useMutation<
+        UserData,
+        string,
+        SignInRequest
+    >({
+        mutationKey: ['sign-in-user'],
+        mutationFn: async (signInCredentials) => {
+            const [error, response] = await withCatchAsync(
+                UserService.SignIn(signInCredentials)
+            )
 
-    const router = useRouter()
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(error)
+                throw errorMessage
+            }
 
-    const form = useForm<TSignIn>({
-        resolver: zodResolver(signInFormSchema),
-        reValidateMode: 'onChange',
-        mode: 'onChange',
-        defaultValues: {
-            email: defaultValues?.email ?? '',
-            username: defaultValues?.username ?? '',
-            mode: defaultValues?.mode ?? 'Member',
-            password: '',
+            onSuccess?.(response.data)
+            return response.data
         },
     })
 
-    function onFormSubmit(data: TSignIn) {
-        const parsedData = signInFormSchema.parse(data)
-        // TODO: Logic
-        onSuccess?.({
-            id: '215',
-            username: 'Jervx',
-            validEmail: false,
-            validContactNumber: true,
-            status: UserStatus['Pending'],
-            profilePicture: {
-                url: 'https://mrwallpaper.com/images/hd/suit-rick-and-morty-phone-5divv4gzo6gowk46.jpg',
-            },
-        } as any)
-    }
+    const form = useForm<TSignIn>({
+        resolver: zodResolver(signInSchema),
+        reValidateMode: 'onChange',
+        mode: 'onChange',
+        defaultValues: {
+            key: defaultValues?.key ?? '',
+            password: '',
+            accountType: defaultValues?.accountType ?? 'Member',
+        },
+    })
 
     const firstError = Object.values(form.formState.errors)[0]?.message
 
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit(onFormSubmit)}
+                onSubmit={form.handleSubmit((data) => mutate(data))}
                 className={cn(
                     'flex w-full flex-col gap-y-4 sm:w-[390px]',
                     className
@@ -88,10 +98,13 @@ const SignInForm = ({
                     <p className="text-xl">Login to your account</p>
                 </div>
 
-                <fieldset disabled={loading || readOnly} className="space-y-4">
+                <fieldset
+                    disabled={isPending || readOnly}
+                    className="space-y-4"
+                >
                     <FormField
-                        name="email"
                         control={form.control}
+                        name="key"
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
                                 <div className="flex items-center justify-end gap-x-4">
@@ -99,40 +112,14 @@ const SignInForm = ({
                                         htmlFor={field.name}
                                         className="w-full max-w-[90px] text-right font-medium"
                                     >
-                                        Email
-                                    </FormLabel>
-                                    <FormControl>
-                                        <div className="flex-1 space-y-2">
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                autoComplete="on"
-                                                placeholder="Email"
-                                            />
-                                        </div>
-                                    </FormControl>
-                                </div>
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="username"
-                        render={({ field }) => (
-                            <FormItem className="min-w-[277px]">
-                                <div className="flex items-center justify-end gap-x-4">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full max-w-[90px] text-right font-medium"
-                                    >
-                                        Username
+                                        Key
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             id={field.name}
-                                            placeholder="Username"
-                                            autoComplete="username"
+                                            placeholder="Email, contact, or username"
+                                            autoComplete="off"
                                         />
                                     </FormControl>
                                 </div>
@@ -155,7 +142,7 @@ const SignInForm = ({
                                         <PasswordInput
                                             {...field}
                                             id="password-field"
-                                            autoComplete="current-password"
+                                            autoComplete="off"
                                             placeholder="Password"
                                         />
                                     </FormControl>
@@ -165,7 +152,7 @@ const SignInForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="mode"
+                        name="accountType"
                         render={({ field }) => (
                             <FormItem>
                                 <div className="flex w-full items-center justify-end gap-x-4">
@@ -206,19 +193,19 @@ const SignInForm = ({
                     />
                 </fieldset>
                 <div className="mt-6 flex flex-col space-y-2">
-                    <FormErrorMessage errorMessage={firstError} />
-                    <Button type="submit" disabled={loading || readOnly}>
-                        {loading ? <LoadingCircle /> : 'Login'}
+                    <FormErrorMessage errorMessage={firstError || error} />
+                    <Button type="submit" disabled={isPending || readOnly}>
+                        {isPending ? <LoadingSpinner /> : 'Login'}
                     </Button>
                     <Link
                         className="text-sm text-primary"
                         to="/auth/forgot-password"
                         search={{
-                            email: form.getValues('email'),
-                            mode: form.getValues('mode'),
+                            key: form.getValues('key'),
+                            accountType: form.getValues('accountType'),
                         }}
                     >
-                        Forgor Password
+                        Forgot Password
                     </Link>
                 </div>
             </form>

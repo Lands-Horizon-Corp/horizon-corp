@@ -1,17 +1,10 @@
-import React from 'react';
+import { useState } from 'react';
 import { RouterProvider } from '@tanstack/react-router';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import router from '@/root-route';
-import { ThemeProvider } from '@/components/providers/theme-provider';
-
-const TanStackRouterDevtoolsPanel =
-    process.env.NODE_ENV === 'production'
-        ? () => null
-        : React.lazy(() =>
-              import('@tanstack/router-devtools').then((res) => ({
-                  default: res.TanStackRouterDevtools,
-              }))
-          );
+import { ThemeProvider } from '@/providers/theme-provider';
 
 declare module '@tanstack/react-router' {
     interface Register {
@@ -20,14 +13,15 @@ declare module '@tanstack/react-router' {
 }
 
 const App = () => {
+    const [queryClient] = useState(new QueryClient());
+
     return (
-        <ThemeProvider>
-            <RouterProvider router={router} />
-            <TanStackRouterDevtoolsPanel
-                position="bottom-left"
-                router={router}
-            />
-        </ThemeProvider>
+        <QueryClientProvider client={queryClient}>
+            <ThemeProvider>
+                <RouterProvider router={router} />
+            </ThemeProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+        </QueryClientProvider>
     );
 };
 

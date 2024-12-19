@@ -29,7 +29,11 @@ type FileClient struct {
 
 // initializeFileClient sets up the singleton instance of FileClient.
 func initializeFileClient() *FileClient {
-	cfg, _ := config.LoadConfig()
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		panic(fmt.Sprintf("failed to load config: %v", err))
+	}
+
 	sess, err := session.NewSession(&aws.Config{
 		Endpoint:         aws.String(cfg.StorageEndpoint),
 		Region:           aws.String(cfg.StorageRegion),
@@ -91,7 +95,6 @@ func UploadFile(fileHeader *multipart.FileHeader) (*models.Media, error) {
 	if err := CreateBucketIfNotExists(); err != nil {
 		return nil, err
 	}
-
 	uploader := s3manager.NewUploaderWithClient(mc.Client)
 	result, err := uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(mc.cfg.StorageBucketName),

@@ -1,26 +1,30 @@
+import { useEffect, useState } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import { useEditor, EditorContent } from '@tiptap/react'
-import { useState } from 'react'
+
 import Toolbar from './toolbar'
-import { IBaseComp } from '@/types/component/base'
+
+import { cn } from '@/lib'
+import { IBaseComp } from '@/types'
 
 interface Props extends IBaseComp {
     content?: string
     spellCheck?: boolean
+    placeholder?: string
     showToolbar?: boolean
-    onChange: (content: string) => void
     isHeadingDisabled?: boolean
+    onChange: (content: string) => void
 }
 
 export type THeadingLevel = 1 | 2 | 3 | 4
 
 const TextEditor = ({
+    className,
     content = '',
-    className = '',
     spellCheck = true,
     showToolbar = true,
-    onChange,
     isHeadingDisabled = true,
+    onChange,
 }: Props) => {
     const [activeHeading, setActiveHeading] = useState<THeadingLevel | null>(
         null
@@ -39,13 +43,19 @@ const TextEditor = ({
         editorProps: {
             attributes: {
                 spellcheck: spellCheck ? 'true' : 'false',
-                class: `toolbar-custom ${className ?? ''} `,
+                class: `toolbar-custom ${cn('', className)} `,
             },
         },
         onUpdate({ editor }) {
             onChange(editor.getHTML())
         },
     })
+
+    useEffect(() => {
+        if (editor && content !== editor.getHTML()) {
+            editor.commands.setContent(content || '')
+        }
+    }, [content, editor])
 
     const toggleHeading = (level: THeadingLevel) => {
         editor?.chain().focus().toggleHeading({ level }).run()
@@ -55,10 +65,10 @@ const TextEditor = ({
         <div className="w-full space-y-2">
             {showToolbar && editor && (
                 <Toolbar
-                    isHeadingDisabled={isHeadingDisabled}
+                    editor={editor}
                     activeHeading={activeHeading}
                     toggleHeading={toggleHeading}
-                    editor={editor}
+                    isHeadingDisabled={isHeadingDisabled}
                 />
             )}
             <EditorContent editor={editor} />

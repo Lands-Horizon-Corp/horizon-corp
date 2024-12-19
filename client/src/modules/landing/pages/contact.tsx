@@ -1,18 +1,13 @@
-// Dependencies
 import z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { AiOutlineMessage } from 'react-icons/ai'
-import { MdOutlineEmail } from 'react-icons/md'
-import { IoCallOutline } from 'react-icons/io5'
-import { CgFacebook } from 'react-icons/cg'
 import { Link } from '@tanstack/react-router'
-
-// Libraries
+import { useMutation } from '@tanstack/react-query'
+import { serverRequestErrExtractor } from '@/helpers'
+import UseCooldown from '@/hooks/use-cooldown'
 import { contactFormSchema } from '@/modules/landing/validations/contact-form'
-import { cn } from '@/lib/utils'
+import { cn, withCatchAsync } from '@/lib/utils'
 
-// Components
 import {
     Form,
     FormControl,
@@ -24,7 +19,23 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 
+import {
+    LoadingCircleIcon,
+    MessageOutlineIcon,
+    EmailIcon,
+    TelephoneIcon,
+    FacebookIcon,
+} from '@/components/icons'
+
+import { PhoneInput } from '@/components/contact-input/contact-input'
+import FormErrorMessage from '@/components/ui/form-error-message'
+import ContactService from '@/horizon-corp/server/common/ContactService'
+import { toast } from 'sonner'
+
 type TContact = z.infer<typeof contactFormSchema>
+
+const contactInputClasses =
+    'rounded-[10px] border border-[#4D4C4C]/20 bg-white/50 dark:bg-secondary/70 focus:border-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 placeholder:text-[#838383]'
 
 const ContactPage = () => {
     const defaultValues = {
@@ -32,7 +43,7 @@ const ContactPage = () => {
         lastName: '',
         email: '',
         contactNumber: '',
-        message: '',
+        description: '',
     }
 
     const form = useForm<TContact>({
@@ -41,11 +52,37 @@ const ContactPage = () => {
         mode: 'onChange',
         defaultValues,
     })
+    const { startCooldown } = UseCooldown({
+        cooldownDuration: 12,
+        counterInterval: 1000,
+    })
 
-    const onSubmitContactForm = (data: TContact) => {
+    const { mutate: sendContactMessage, isPending } = useMutation<
+        void,
+        string,
+        TContact
+    >({
+        mutationKey: ['send-contact-message'],
+        mutationFn: async (contact: TContact) => {
+            if (!contact) return
+
+            const [error] = await withCatchAsync(ContactService.create(contact))
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                return
+            }
+
+            startCooldown()
+            form.reset()
+            toast.success(`Message was Already Sent!`)
+        },
+    })
+
+    const onSubmitContactForm = async (data: TContact) => {
         const parsedData = contactFormSchema.parse(data)
-        console.log(parsedData)
-        // TODO: Logic
+        sendContactMessage(parsedData)
     }
 
     const showFieldError = Object.values(form.formState.errors)[0]?.message
@@ -85,7 +122,7 @@ const ContactPage = () => {
                                                         <Input
                                                             id={field.name}
                                                             className={cn(
-                                                                'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
+                                                                contactInputClasses
                                                             )}
                                                             placeholder="First Name"
                                                             {...field}
@@ -113,7 +150,7 @@ const ContactPage = () => {
                                                         <Input
                                                             id={field.name}
                                                             className={cn(
-                                                                'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
+                                                                contactInputClasses
                                                             )}
                                                             placeholder="Last Name"
                                                             {...field}
@@ -142,7 +179,7 @@ const ContactPage = () => {
                                                     <Input
                                                         id={field.name}
                                                         className={cn(
-                                                            'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
+                                                            contactInputClasses
                                                         )}
                                                         placeholder="you@company.com"
                                                         {...field}
@@ -168,12 +205,8 @@ const ContactPage = () => {
                                             </FormLabel>
                                             <FormControl>
                                                 <div className="flex-1 space-y-2">
-                                                    <Input
-                                                        id={field.name}
-                                                        className={cn(
-                                                            'rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
-                                                        )}
-                                                        placeholder="09311784912"
+                                                    <PhoneInput
+                                                        placeholder="Enter a phone number"
                                                         {...field}
                                                     />
                                                 </div>
@@ -182,8 +215,9 @@ const ContactPage = () => {
                                     </FormItem>
                                 )}
                             />
+
                             <FormField
-                                name="message"
+                                name="description"
                                 control={form.control}
                                 render={({ field }) => (
                                     <FormItem className="">
@@ -199,7 +233,7 @@ const ContactPage = () => {
                                                     <Textarea
                                                         id={field.name}
                                                         className={cn(
-                                                            'max-h-[122px] min-h-[122px] rounded-[10px] border border-[#4D4C4C] bg-transparent placeholder:text-[#838383]'
+                                                            contactInputClasses
                                                         )}
                                                         placeholder="Leave us message..."
                                                         {...field}
@@ -211,17 +245,22 @@ const ContactPage = () => {
                                 )}
                             />
                             {showFieldError && (
-                                <span className="mt-2 rounded-md bg-destructive/10 py-2 text-center text-sm text-destructive">
-                                    {showFieldError}
-                                </span>
+                                <FormErrorMessage
+                                    className="w-fit text-[12px]"
+                                    errorMessage={showFieldError}
+                                />
                             )}
                             <div className="bg- flex flex-col space-y-2">
                                 <Button
+                                    disabled={isPending}
                                     type="submit"
                                     className="mt-6 bg-[#34C759] hover:bg-[#38b558]"
                                 >
-                                    {/* {loading ? <LoadingCircle /> : 'Send Message'} */}
-                                    Send Message
+                                    {isPending ? (
+                                        <LoadingCircleIcon className="animate-spin" />
+                                    ) : (
+                                        'Send Message'
+                                    )}
                                 </Button>
                             </div>
                         </form>
@@ -238,19 +277,19 @@ const ContactPage = () => {
                                 </p>
                             </div>
                             <div className="flex space-x-2">
-                                <AiOutlineMessage className="self-center" />
+                                <MessageOutlineIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     start a live chat
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
-                                <MdOutlineEmail className="self-center" />
+                                <EmailIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     shoot us an email
                                 </Link>
                             </div>
                             <div className="flex space-x-2">
-                                <CgFacebook className="self-center" />
+                                <FacebookIcon className="self-center" />
                                 <Link className="text-sm font-semibold" to="/">
                                     Message us on Facebook
                                 </Link>
@@ -266,7 +305,7 @@ const ContactPage = () => {
                                 </p>
                             </div>
                             <div className="flex space-x-2">
-                                <IoCallOutline className="self-center" />
+                                <TelephoneIcon className="self-center" />
                                 <Link
                                     className="text-sm font-semibold underline"
                                     to="/"

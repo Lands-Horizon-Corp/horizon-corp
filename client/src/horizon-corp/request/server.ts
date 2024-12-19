@@ -14,9 +14,8 @@ export default class UseServer {
         baseURL: UseServer.getDefaultUrl(),
         headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${UseServer.getApiKey()}`, // Set the API key in headers
         },
-        withCredentials: true, // Set to true if credentials are needed
+        withCredentials: true,
     })
 
     /**
@@ -24,12 +23,12 @@ export default class UseServer {
      *
      * @returns {string | undefined} - The Horizon corp API key.
      */
-    private static getApiKey(): string | undefined {
-        return (
-            import.meta.env.VITE_HORIZON_CORP_API_KEY ||
-            process.env.HORIZON_CORP_API_KEY
-        ) // Support for various environments
-    }
+    // private static getApiKey(): string | undefined {
+    //     return (
+    //         import.meta.env.VITE_HORIZON_CORP_API_KEY ||
+    //         process.env.HORIZON_CORP_API_KEY
+    //     ) // Support for various environments
+    // }
 
     /**
      * Retrieves the default base URL based on the environment.

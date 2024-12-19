@@ -1,29 +1,35 @@
-import * as handlebars from 'handlebars'
-import otpVerication from '../assets/email-templates/account-otp-verication.html?raw'
-import accountVerification from '../assets/email-templates/account-verication.html?raw'
+import otpVerificationRaw from '../assets/email-templates/account-otp-verification.html?raw'
+import accountVerificationRaw from '../assets/email-templates/account-verification.html?raw'
+import accountChangepasswordRaw from '../assets/email-templates/account-change-password.html?raw'
+import DOMPurify from 'isomorphic-dompurify';
+import logger from '@/helpers/loggers/logger';
 
-type Templates = 'otp' | 'verification'
+// Define the types of templates available
+type Templates = 'otp' | 'verification' | 'changePassword'
 
+// Precompile the Handlebars templates
 const TEMPLATE_MAP: Record<Templates, string> = {
-    otp: otpVerication,
-    verification: accountVerification,
+  otp: otpVerificationRaw,
+  verification: accountVerificationRaw,
+  changePassword: accountChangepasswordRaw,
 }
 
-export const getTemplates = async (template: Templates) => {
-    const templateFile = TEMPLATE_MAP[template]
-    if (!templateFile) {
-        throw new Error(`${template} is not a valid template`)
-    }
-    return await getEmailTemplate(templateFile)
-}
-
-const getEmailTemplate = async (templateFile: string) => {
-    try {
-        const compiledTemplate = handlebars.compile(templateFile)
-        // to do - add params
-        return compiledTemplate({})
-    } catch (error) {
-        console.error('Error generating email template:', error)
-        throw new Error('Failed to generate email template')
-    }
+/**
+ * Retrieves and generates the email content based on the template type.
+ * @param template - The type of template to use ('otp' or 'verification').
+ * @param params - An object containing parameters to inject into the template.
+ * @returns The generated email content as a string.
+ * @throws Will throw an error if the template type is invalid or generation fails.
+ */
+export const getEmailContent = (template: Templates): string => {
+  const compiledTemplate = TEMPLATE_MAP[template]
+  if (!compiledTemplate) {
+    throw new Error(`"${template}" is not a valid template type.`)
+  }
+  try {
+    return DOMPurify.sanitize(compiledTemplate)
+  } catch (error) {
+    logger.error('Error generating email content:', error)
+    throw new Error('Failed to generate email content.')
+  }
 }

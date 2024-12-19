@@ -4,11 +4,11 @@
 
 ## Features
 
--   **HTTP Methods**: Supports `GET`, `POST`, `PUT`, and `DELETE` requests.
--   **Automatic Retries**: Retries failed requests based on customizable conditions.
--   **Error Logging**: Logs errors to a specified endpoint.
--   **Customizable Headers**: Automatically includes an API key in the request headers.
--   **Request/Response Interceptors**: Allows adding custom logic for requests and responses.
+- **HTTP Methods**: Supports `GET`, `POST`, `PUT`, and `DELETE` requests.
+- **Automatic Retries**: Retries failed requests based on customizable conditions.
+- **Error Logging**: Logs errors to a specified endpoint.
+- **Customizable Headers**: Automatically includes an API key in the request headers.
+- **Request/Response Interceptors**: Allows adding custom logic for requests and responses.
 
 ## Installation
 
@@ -32,13 +32,13 @@ const server = new UseServer()
 
 The `UseServer` class automatically retrieves the `HORIZON_CORP_API_KEY` from your environment variables. Depending on your framework, set the environment variable as follows:
 
--   **Vite**: In your `.env` file:
+- **Vite**: In your `.env` file:
 
     ```plaintext
     VITE_HORIZON_CORP_API_KEY=your_api_key_here
     ```
 
--   **Node.js Express**: In your `.env` file:
+- **Node.js Express**: In your `.env` file:
 
     ```plaintext
     HORIZON_CORP_API_KEY=your_api_key_here

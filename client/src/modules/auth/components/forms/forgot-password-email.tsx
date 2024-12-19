@@ -1,9 +1,7 @@
 import z from 'zod'
-import { useState } from 'react'
+import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-
-import { AiOutlineKey } from 'react-icons/ai'
 
 import {
     Form,
@@ -19,47 +17,60 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import { KeyIcon } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import LoadingCircle from '@/components/loader/loading-circle'
-import FormErrorMessage from '@/modules/auth/components/form-error-message'
+import FormErrorMessage from '@/components/ui/form-error-message'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { cn } from '@/lib/utils'
+import { cn, withCatchAsync } from '@/lib/utils'
+import { serverRequestErrExtractor } from '@/helpers'
 import { IAuthForm } from '@/types/auth/form-interface'
-import { memberTypeSchema, emailSchema } from '@/modules/auth/validations'
+import { userAccountTypeSchema } from '@/validations/common'
+import UserService from '@/horizon-corp/server/auth/UserService'
+import useLoadingErrorState from '@/hooks/use-loading-error-state'
 
-const emailFormSchema = z.object({
-    email: emailSchema,
-    mode: memberTypeSchema,
+const forgotPasswordFormSchema = z.object({
+    key: z.string().min(1, 'key is required'),
+    accountType: userAccountTypeSchema,
 })
 
-export type TForgotPasswordEmail = z.infer<typeof emailFormSchema>
-
-interface Props extends IAuthForm<TForgotPasswordEmail> {
-    onSuccess: (responseData: TForgotPasswordEmail) => void
-}
+export type TForgotPasswordEmail = z.infer<typeof forgotPasswordFormSchema>
 
 const ForgotPasswordEmail = ({
     readOnly,
     className,
+    defaultValues = { key: '', accountType: 'Member' },
+    onError,
     onSuccess,
-    defaultValues = { email: '', mode: 'Member' },
-}: Props) => {
-    const [loading, setLoading] = useState(false)
+}: IAuthForm<TForgotPasswordEmail, TForgotPasswordEmail>) => {
+    const { loading, setLoading, error, setError } = useLoadingErrorState()
 
     const form = useForm<TForgotPasswordEmail>({
-        resolver: zodResolver(emailFormSchema),
+        resolver: zodResolver(forgotPasswordFormSchema),
         reValidateMode: 'onChange',
         mode: 'onChange',
         defaultValues,
     })
 
-    function onFormSubmit(data: TForgotPasswordEmail) {
-        const parsedData = emailFormSchema.parse(data)
-        // TODO: Logic to create a reset entry and will return
-        // authService.resetViaEmail(email, accountType) // return uuid string
-        // modify code bellow
-        onSuccess?.(parsedData)
+    const onFormSubmit = async (data: TForgotPasswordEmail) => {
+        setError(null)
+        setLoading(true)
+
+        const [error] = await withCatchAsync(UserService.ForgotPassword(data))
+
+        setLoading(false)
+
+        if (error) {
+            const errorMessage = serverRequestErrExtractor({ error })
+            onError?.(error)
+            setError(errorMessage)
+            toast.error(errorMessage)
+            return
+        }
+
+        onSuccess?.(data)
+        toast.success(`Password reset link was sent to ${data.key}`)
     }
 
     const firstError = Object.values(form.formState.errors)[0]?.message
@@ -75,9 +86,9 @@ const ForgotPasswordEmail = ({
             >
                 <div className="flex flex-col items-center gap-y-4 py-4 text-center">
                     <div className="relative p-8">
-                        <AiOutlineKey className="size-[53px] text-[#FF7E47]" />
-                        <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20"></div>
-                        <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20"></div>
+                        <KeyIcon className="size-[53px] text-[#FF7E47]" />
+                        <div className="absolute inset-0 rounded-full bg-[#FF7E47]/20" />
+                        <div className="absolute inset-5 rounded-full bg-[#FF7E47]/20" />
                     </div>
                     <p className="text-xl font-medium">Forgot Password?</p>
                     <p className="text-sm text-foreground/70">
@@ -87,7 +98,7 @@ const ForgotPasswordEmail = ({
                 </div>
                 <fieldset disabled={loading || readOnly} className="space-y-4">
                     <FormField
-                        name="email"
+                        name="key"
                         control={form.control}
                         render={({ field }) => (
                             <FormItem className="min-w-[277px]">
@@ -95,15 +106,15 @@ const ForgotPasswordEmail = ({
                                     htmlFor={field.name}
                                     className="w-full text-right font-medium"
                                 >
-                                    Email Address
+                                    Key
                                 </FormLabel>
                                 <FormControl>
                                     <div className="flex-1 space-y-2">
                                         <Input
                                             {...field}
                                             id={field.name}
-                                            autoComplete="email"
-                                            placeholder="Enter your email address"
+                                            autoComplete="off"
+                                            placeholder="Enter email or contact"
                                         />
                                     </div>
                                 </FormControl>
@@ -112,7 +123,7 @@ const ForgotPasswordEmail = ({
                     />
                     <FormField
                         control={form.control}
-                        name="mode"
+                        name="accountType"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel
@@ -152,9 +163,9 @@ const ForgotPasswordEmail = ({
                 </fieldset>
 
                 <div className="mt-4 flex flex-col space-y-2">
-                    <FormErrorMessage errorMessage={firstError} />
+                    <FormErrorMessage errorMessage={firstError || error} />
                     <Button type="submit" disabled={loading || readOnly}>
-                        {loading ? <LoadingCircle /> : 'Confirm Email'}
+                        {loading ? <LoadingSpinner /> : 'Confirm Email'}
                     </Button>
                 </div>
             </form>

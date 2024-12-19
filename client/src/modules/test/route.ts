@@ -15,6 +15,12 @@ const testLandingRoute = createRoute({
     component: React.lazy(() => import('./pages/upload')),
 })
 
-const TestRoute = testRoute.addChildren([testLandingRoute])
+const testTableRoute = createRoute({
+    getParentRoute: () => testRoute,
+    path: '/table',
+    component: React.lazy(() => import('./pages/tbl')),
+})
+
+const TestRoute = testRoute.addChildren([testLandingRoute, testTableRoute])
 
 export default TestRoute

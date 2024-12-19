@@ -1,75 +1,70 @@
-import z from 'zod'
-import { useState } from 'react'
-import { useRouter } from '@tanstack/react-router'
+import { toast } from 'sonner'
+import { useCallback, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useRouter, useSearch } from '@tanstack/react-router'
 
 import SignInForm from '../components/forms/sign-in-form'
-import AccountCancelled from '../components/account-cancelled'
-
-import { UserBase, UserStatus } from '@/types'
-import { emailSchema, memberTypeSchema } from '../validations'
-import { useSearch } from '@tanstack/react-router'
+import GuestGuard from '@/components/wrappers/guest-guard'
 import AuthPageWrapper from '../components/auth-page-wrapper'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-export const SignInPageSearchSchema = z.object({
-    email: z.string().optional().default('').or(emailSchema),
-    mode: z
-        .string()
-        .optional()
-        .default('Member')
-        .pipe(memberTypeSchema)
-        .catch('Member'),
-})
+import { UserData } from '@/horizon-corp/types'
+import { isUserHasUnverified } from '@/helpers'
+import { useUserAuthStore } from '@/store/user-auth-store'
 
 const SignInPage = () => {
     const router = useRouter()
+    const queryClient = useQueryClient()
+
+    const { currentUser, authStatus, setCurrentUser } = useUserAuthStore()
+
     const prefilledValues = useSearch({ from: '/auth/sign-in' })
-    const [userData, setUserData] = useState<null | UserBase>(null)
 
-    const onSignInSuccess = (userData: UserBase) => {
-        const { validContactNumber, validEmail, status } = userData
-        if (status === UserStatus['Not allowed']) return setUserData(userData)
+    const onSignInSuccess = useCallback(
+        (userData: UserData) => {
+            setCurrentUser(userData)
 
-        if (
-            status === UserStatus.Pending &&
-            (!validContactNumber || !validEmail)
-        ) {
-            router.navigate({ to: '/auth/verify' })
-        }
+            const { status } = userData
 
-        if (status === UserStatus.Verified) {
-            // TODO
-            // Navigate to respective page
-            // owner
-            // member
-            // admin
-            // employee
-        }
-    }
+            queryClient.setQueryData(['current-user'], userData)
 
-    const handleOnCancelBack = () => {
-        // TODO:
-        // Sign Out user since he/she is restricted
-        // unset userData
-        setUserData(null)
-    }
+            if (status === 'Not Allowed') {
+                toast.error(
+                    'Your account has been canceled, and you can no longer log in.'
+                )
+                router.navigate({ to: '/auth/verify' })
+                return
+            }
+
+            if (!userData.isSkipVerification && isUserHasUnverified(userData)) {
+                toast.warning('Your account is pending approval')
+                router.navigate({ to: '/auth/verify' })
+                return
+            }
+        },
+        [queryClient, router, setCurrentUser]
+    )
+
+    useEffect(() => {
+        if (!currentUser) return
+        onSignInSuccess(currentUser)
+    }, [currentUser, onSignInSuccess])
 
     return (
-        <div className="flex min-h-full flex-col items-center justify-center">
-            <AuthPageWrapper>
-                {!userData && (
-                    <SignInForm
-                        defaultValues={prefilledValues}
-                        onSuccess={onSignInSuccess}
-                    />
-                )}
-                {userData && (
-                    <AccountCancelled
-                        userData={userData}
-                        onBack={handleOnCancelBack}
-                    />
-                )}
-            </AuthPageWrapper>
-        </div>
+        <GuestGuard>
+            <div className="flex min-h-full flex-col items-center justify-center">
+                <AuthPageWrapper>
+                    {!currentUser && (
+                        <SignInForm
+                            defaultValues={prefilledValues}
+                            onSuccess={onSignInSuccess}
+                        />
+                    )}
+                    {currentUser && <LoadingSpinner />}
+                    {authStatus === 'loading' && <LoadingSpinner />}
+                </AuthPageWrapper>
+            </div>
+        </GuestGuard>
     )
 }
 

@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types/component/base'
+import { IBaseCompNoChild } from '@/types/component'
 import { format } from 'date-fns'
 import { useCallback, useEffect, useState } from 'react'
 
