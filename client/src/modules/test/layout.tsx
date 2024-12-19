@@ -14,8 +14,10 @@ const TestLayout = () => {
                 center={defaultCenter}
                 zoom={defaultZoom}
                 className='flex-grow'
+                onCoordinateClick={(coor)=> console.log(coor)}
                 onMultipleCoordinatesChange={(coor)=> console.log(coor)}
-                onCoordinatesClick={(coor)=> console.log(coor)}
+                viewOnly
+                hideControls
                 // multiplePins
                 // viewOnly
             />
