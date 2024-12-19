@@ -108,6 +108,11 @@ const CustomSearch = ({
                 type="text"
                 value={query}
                 onChange={handleInputChange}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault()
+                    }
+                }}
                 placeholder="Search Google Maps"
                 className={cn(
                     'rounded-lg border border-gray-300 px-4 py-2 focus:border-none focus:outline-none',
