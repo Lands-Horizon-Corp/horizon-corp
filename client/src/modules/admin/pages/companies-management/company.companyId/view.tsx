@@ -21,6 +21,7 @@ import { cn } from '@/lib'
 import { companyLoader } from './route'
 import { toReadableDate } from '@/utils'
 import { OwnerResource } from '@/horizon-corp/types/profile'
+import MainMapContainer from '@/components/map'
 
 const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
     const AccountBadge = useMemo(() => {
@@ -75,45 +76,70 @@ const CompanyViewPage = () => {
         <div className="flex w-full max-w-full flex-col items-center px-4 pb-6 sm:px-8">
             <div className="flex w-full max-w-5xl flex-col items-center space-y-4">
                 <div className="flex w-full flex-col items-center space-y-4 overflow-clip rounded-xl bg-secondary">
-                    <div className="relative w-full flex-col items-center space-y-2 overflow-clip rounded-xl bg-popover">
+                    <div className="relative w-full flex-col items-center overflow-clip rounded-xl bg-popover">
                         <div className="h-[180px] w-full rounded-md bg-[url('/profile-cover.png')] bg-cover bg-center" />
-                        <div className="relative w-full space-y-2.5 px-6 pb-6 pt-8">
+                        <div className="relative z-10 w-full space-y-2.5">
                             <UserAvatar
                                 src={company.media?.downloadURL ?? ''}
                                 className={cn(
-                                    'absolute -top-28 size-36 border-2 border-primary',
+                                    'absolute -top-28 z-20 size-36 border-2 border-primary',
                                     !company.isAdminVerified &&
                                         'border-amber-600'
                                 )}
                             />
-                            <span className="flex items-center gap-x-2">
-                                <h3 className="text-lg font-medium">
-                                    {company.name}
-                                </h3>
-                                {company.isAdminVerified ? (
-                                    <BadgeCheckFillIcon className="text-primary" />
-                                ) : (
-                                    <BadgeQuestionFillIcon className="text-amber-500" />
-                                )}
-                            </span>
-                            <span className="inline-flex items-center gap-x-2 text-sm text-foreground/80">
-                                <LocationPinIcon /> {company.address}
-                            </span>
-                            <div className="flex gap-x-4 text-sm flex-wrap text-foreground/50">
-                                <span className="inline-flex items-center gap-x-2">
-                                    <TelephoneIcon />
-                                    {company.contactNumber}
+                            <div className="pointer-events-none relative z-10 !my-0 space-y-2.5 px-6 pb-4 pt-8 sm:pb-6">
+                                <div className="pointer-events-none absolute right-0 top-0 -z-10 m-0 hidden h-full w-full bg-gradient-to-r from-popover from-[10%] to-transparent sm:block" />
+                                <span className="pointer-events-auto z-50 flex items-center gap-x-2">
+                                    <h3 className="text-lg font-medium">
+                                        {company.name}
+                                    </h3>
+                                    {company.isAdminVerified ? (
+                                        <BadgeCheckFillIcon className="text-primary" />
+                                    ) : (
+                                        <BadgeQuestionFillIcon className="text-amber-500" />
+                                    )}
                                 </span>
-                                <span className="inline-flex items-center gap-x-2">
-                                    <CalendarIcon />
-                                    {toReadableDate(company.createdAt)}
+                                <span className="pointer-events-auto m-0 inline-flex items-center gap-x-2 text-sm text-foreground/80">
+                                    <LocationPinIcon /> {company.address}
                                 </span>
-                                <span className="inline-flex items-center gap-x-2">
-                                    <StoreIcon />
-                                    {company.branches?.length ??
-                                        0} Branch
-                                </span>
+                                <div className="pointer-events-auto flex flex-wrap gap-x-4 text-sm text-foreground/50">
+                                    <span className="inline-flex items-center gap-x-2">
+                                        <TelephoneIcon />
+                                        {company.contactNumber}
+                                    </span>
+                                    <span className="inline-flex items-center gap-x-2">
+                                        <CalendarIcon />
+                                        {toReadableDate(company.createdAt)}
+                                    </span>
+                                    <span className="inline-flex items-center gap-x-2">
+                                        <StoreIcon />
+                                        {company.branches?.length ??
+                                            0} Branch
+                                    </span>
+                                </div>
                             </div>
+                            {company.latitude && company.longitude && (
+                                <div className="right-0 top-0 !-z-10 mt-5 h-[200px] w-full sm:absolute sm:!mt-0 sm:h-full sm:w-[200px] md:w-[400px]">
+                                    <MainMapContainer
+                                        viewOnly
+                                        zoom={13}
+                                        hideControls
+                                        className="z-10 rounded-none p-0"
+                                        mapContainerClassName="sm:rounded-none"
+                                        center={{
+                                            lng: company.longitude,
+                                            lat: company.latitude,
+                                        }}
+                                        defaultMarkerPins={[
+                                            {
+                                                lng: company.longitude,
+                                                lat: company.latitude,
+                                            },
+                                        ]}
+                                    />
+                                    <div className="pointer-events-none absolute left-0 top-0 z-20 hidden h-full w-[50%] bg-gradient-to-r from-popover to-transparent sm:block"></div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -147,7 +173,9 @@ const CompanyViewPage = () => {
                         Company&apos;s Description
                         <QuestionCircleFillIcon className="inline text-foreground/20" />
                     </h3>
-                    <p className="text-foreground/70">{company.description}</p>
+                    <p className="text-sm text-foreground/70 sm:text-base">
+                        {company.description}
+                    </p>
                 </div>
                 <Separator className="w-full" />
                 <div className="w-full space-y-4">
