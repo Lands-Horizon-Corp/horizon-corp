@@ -192,7 +192,7 @@ const MainMapContainer = ({
     multiplePins = false,
     viewOnly = false,
     onMultipleCoordinatesChange,
-    onCoordinatesClick,
+    onCoordinateClick,
     defaultMarkerPins = [],
     searchClassName,
 }: TMainMapProps) => {
@@ -264,8 +264,8 @@ const MainMapContainer = ({
                     return updatedPins
                 })
             } else {
-                if (onCoordinatesClick) {
-                    onCoordinatesClick(latLng)
+                if (onCoordinateClick) {
+                    onCoordinateClick(latLng)
                 }
                 setSelectedPins([newPin])
             }
@@ -275,7 +275,7 @@ const MainMapContainer = ({
             addMarker,
             multiplePins,
             onMultipleCoordinatesChange,
-            onCoordinatesClick,
+            onCoordinateClick,
         ]
     )
 

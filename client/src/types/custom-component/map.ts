@@ -29,7 +29,7 @@ export interface TMainMapProps extends Partial<MapContainerProps> {
     multiplePins?: boolean
     viewOnly?: boolean
     markerPosition?: { x: number; y: number }
-    onCoordinatesClick?: (coords: LatLngExpression) => void;
+    onCoordinateClick?: (coords: LatLngExpression) => void;
     onMultipleCoordinatesChange?: (coords: LatLngExpression[]) => void;
     defaultMarkerPins?: { lat: number; lng: number }[];
     searchClassName?: string
