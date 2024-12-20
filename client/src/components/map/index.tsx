@@ -206,13 +206,13 @@ const Map = ({
     mapContainerClassName,
     scrollWheelZoom = true,
     defaultMarkerPins = [],
+    hideLayersControl = false,
     whenReady,
     onCoordinateClick,
     onMultipleCoordinatesChange,
-    hideLayersControl = false
 }: TMainMapProps) => {
-    const [_, setSearchedAddress] = useState('')
-    const [selectedPins, setSelectedPins] = useState<Pin[]>([])
+    const [, setSearchedAddress] = useState('')
+    const [, setSelectedPins] = useState<Pin[]>([])
     const [map, setMap] = useState<L.Map | null>(null)
     const markerRefs = useRef<{ [key: string]: L.Marker }>({})
 
@@ -295,20 +295,20 @@ const Map = ({
 
     useEffect(() => {
         if (map) {
-          const container = map.getContainer();
-          const layersControlElement = container.querySelector(
-            '.leaflet-control-layers.leaflet-control'
-          ) as HTMLElement | null;
-    
-          if (layersControlElement) {
-            if (hideLayersControl) {
-              layersControlElement.classList.add('hidden');
-            } else {
-              layersControlElement.classList.remove('hidden');
+            const container = map.getContainer()
+            const layersControlElement = container.querySelector(
+                '.leaflet-control-layers.leaflet-control'
+            ) as HTMLElement | null
+
+            if (layersControlElement) {
+                if (hideLayersControl) {
+                    layersControlElement.classList.add('hidden')
+                } else {
+                    layersControlElement.classList.remove('hidden')
+                }
             }
-          }
         }
-      }, [map, hideLayersControl]);
+    }, [map, hideLayersControl])
 
     return (
         <div
