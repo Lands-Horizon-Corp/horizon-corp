@@ -202,6 +202,7 @@ const MainMapContainer = ({
     onCoordinateClick,
     defaultMarkerPins = [],
     searchClassName,
+    hideLayersControl = false
 }: TMainMapProps) => {
     const [_, setSearchedAddress] = useState('')
     const [selectedPins, setSelectedPins] = useState<Pin[]>([])
@@ -299,6 +300,23 @@ const MainMapContainer = ({
             })
         }
     }, [map, defaultMarkerPins])
+
+    useEffect(() => {
+        if (map) {
+          const container = map.getContainer();
+          const layersControlElement = container.querySelector(
+            '.leaflet-control-layers.leaflet-control'
+          ) as HTMLElement | null;
+    
+          if (layersControlElement) {
+            if (hideLayersControl) {
+              layersControlElement.classList.add('hidden');
+            } else {
+              layersControlElement.classList.remove('hidden');
+            }
+          }
+        }
+      }, [map, hideLayersControl]);
 
     return (
         <div
