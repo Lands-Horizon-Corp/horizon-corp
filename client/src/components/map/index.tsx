@@ -212,6 +212,7 @@ const Map = ({
     onMultipleCoordinatesChange,
 }: TMainMapProps) => {
     const [, setSearchedAddress] = useState('')
+    const [, setSelectedPins] = useState<Pin[]>([])
     const [map, setMap] = useState<L.Map | null>(null)
     const markerRefs = useRef<{ [key: string]: L.Marker }>({})
 
