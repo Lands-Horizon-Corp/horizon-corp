@@ -12,8 +12,9 @@ import {
     BadgeQuestionFillIcon,
     QuestionCircleFillIcon,
     BadgeExclamationFillIcon,
+    PencilOutlineIcon,
 } from '@/components/icons'
-import { Button } from '@/components/ui/button'
+import MainMapContainer from '@/components/map'
 import UserAvatar from '@/components/user-avatar'
 import { Separator } from '@/components/ui/separator'
 
@@ -21,7 +22,8 @@ import { cn } from '@/lib'
 import { companyLoader } from './route'
 import { toReadableDate } from '@/utils'
 import { OwnerResource } from '@/horizon-corp/types/profile'
-import MainMapContainer from '@/components/map'
+import CompanyAcceptBar from '@/modules/admin/components/company-accept-bar'
+import { Link } from '@tanstack/react-router'
 
 const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
     const AccountBadge = useMemo(() => {
@@ -117,6 +119,16 @@ const CompanyViewPage = () => {
                                             0} Branch
                                     </span>
                                 </div>
+                                <p>
+                                    <Link
+                                        params={{ companyId }}
+                                        to="/admin/companies-management/$companyId/edit"
+                                        className="pointer-events-auto text-sm underline hover:text-blue-400"
+                                    >
+                                        <PencilOutlineIcon className="mr-2 inline" />
+                                        Edit
+                                    </Link>
+                                </p>
                             </div>
                             {company.latitude && company.longitude && (
                                 <div className="right-0 top-0 !-z-10 mt-5 h-[200px] w-full sm:absolute sm:!mt-0 sm:h-full sm:w-[200px] md:w-[400px]">
@@ -144,29 +156,7 @@ const CompanyViewPage = () => {
                     </div>
                 </div>
                 {!company.isAdminVerified && (
-                    <div className="flex w-full items-center justify-between gap-x-4 rounded-xl border px-4 py-2.5">
-                        <span className="text-xs text-amber-600 dark:text-amber-400/80">
-                            By default, new companies need&apos;s approval
-                            before they can operate. This company need&apos;s
-                            approval.
-                        </span>
-                        <div className="flex">
-                            <Button
-                                size="sm"
-                                variant="destructive"
-                                className="h-fit rounded-none py-2 text-xs first:rounded-l-lg"
-                            >
-                                Decline
-                            </Button>
-                            <Button
-                                size="sm"
-                                variant="secondary"
-                                className="h-fit rounded-none py-2 text-xs last:rounded-r-lg hover:text-primary"
-                            >
-                                Approve
-                            </Button>
-                        </div>
-                    </div>
+                    <CompanyAcceptBar company={company} />
                 )}
                 <div className="w-full space-y-4">
                     <h3 className="flex items-center gap-x-2 font-medium">

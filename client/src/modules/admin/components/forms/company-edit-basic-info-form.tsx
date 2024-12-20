@@ -238,6 +238,8 @@ const CompanyEditBasicInfoForm = ({
                     </p>
                     <MainMapContainer
                         zoom={13}
+                        center={defaultCenter}
+                        defaultMarkerPins={[defaultCenter]}
                         onCoordinateClick={(coord) => {
                             const { lat, lng } = coord as LatLngLiteral
                             if (!lat || !lng || isPending || readOnly) return
@@ -250,7 +252,6 @@ const CompanyEditBasicInfoForm = ({
                             })
                         }}
                         className="min-h-[500px] p-0 py-2"
-                        center={defaultCenter}
                     />
                 </div>
                 <FormErrorMessage errorMessage={firstError || error} />
