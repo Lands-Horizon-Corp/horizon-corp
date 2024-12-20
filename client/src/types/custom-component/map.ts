@@ -33,6 +33,7 @@ export interface TMainMapProps extends Partial<MapContainerProps> {
     onMultipleCoordinatesChange?: (coords: LatLngExpression[]) => void
     defaultMarkerPins?: { lat: number; lng: number }[]
     searchClassName?: string
+    hideLayersControl?: boolean 
     mapContainerClassName?: string
 }
 
