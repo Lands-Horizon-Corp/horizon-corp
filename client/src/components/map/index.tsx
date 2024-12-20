@@ -206,12 +206,12 @@ const Map = ({
     mapContainerClassName,
     scrollWheelZoom = true,
     defaultMarkerPins = [],
+    hideLayersControl = false,
     whenReady,
     onCoordinateClick,
     onMultipleCoordinatesChange,
 }: TMainMapProps) => {
-    const [_, setSearchedAddress] = useState('')
-    const [selectedPins, setSelectedPins] = useState<Pin[]>([])
+    const [, setSearchedAddress] = useState('')
     const [map, setMap] = useState<L.Map | null>(null)
     const markerRefs = useRef<{ [key: string]: L.Marker }>({})
 
@@ -291,6 +291,23 @@ const Map = ({
             })
         }
     }, [map, defaultMarkerPins])
+
+    useEffect(() => {
+        if (map) {
+            const container = map.getContainer()
+            const layersControlElement = container.querySelector(
+                '.leaflet-control-layers.leaflet-control'
+            ) as HTMLElement | null
+
+            if (layersControlElement) {
+                if (hideLayersControl) {
+                    layersControlElement.classList.add('hidden')
+                } else {
+                    layersControlElement.classList.remove('hidden')
+                }
+            }
+        }
+    }, [map, hideLayersControl])
 
     return (
         <div
