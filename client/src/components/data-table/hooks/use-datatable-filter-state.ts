@@ -10,8 +10,9 @@ import {
 import useDebounce from '@/hooks/use-debounce'
 
 const useDatableFilterState = (options?: {
-    debounceFinalFilterMs?: number
     onFilterChange?: () => void
+    debounceFinalFilterMs?: number
+    defaultFilter?: TFilterObject
 }): IDataTableFilterState => {
     const [filters, setFilters] = useState<TFilterObject>({})
     const [filterLogic, setFilterLogic] = useState<TFilterLogic>('AND')
@@ -47,7 +48,7 @@ const useDatableFilterState = (options?: {
     }
 
     const resetFilter = () => {
-        setFilters({})
+        setFilters(options?.defaultFilter ?? {})
     }
 
     const debouncedFilter = useDebounce(

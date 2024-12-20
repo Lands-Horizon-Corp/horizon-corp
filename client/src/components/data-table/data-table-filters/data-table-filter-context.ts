@@ -73,6 +73,7 @@ export type TSearchFilter<T = unknown, TValue = T> = {
     value?: TValue
     mode: TFilterModes
     displayText: string
+    isStaticFilter? : boolean
     dataType: TColumnDataTypes
 }
 
