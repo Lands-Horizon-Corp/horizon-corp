@@ -3,13 +3,14 @@ import {
     createRoute,
     lazyRouteComponent,
 } from '@tanstack/react-router'
+import { queryOptions } from '@tanstack/react-query'
 
 import CompanyErrorPage from './error'
-import { companyIdPathSchema } from './route-schemas'
 import { adminCompaniesManagement } from '../route'
+import { companyIdPathSchema } from './route-schemas'
 import { CompanyResource } from '@/horizon-corp/types'
-import { queryOptions } from '@tanstack/react-query'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+import AdminCompanyBranchRoute from './branches/route'
 
 // pre-loader of company desu
 export const companyLoader = (companyId: number) =>
@@ -22,7 +23,7 @@ export const companyLoader = (companyId: number) =>
         retry: 0,
     })
 
-const adminCompanyId = createRoute({
+export const adminCompanyId = createRoute({
     getParentRoute: () => adminCompaniesManagement,
     path: '$companyId',
     params: {
@@ -61,6 +62,7 @@ const AdminCompanyIdRoute = adminCompanyId.addChildren([
     adminCompanyViewRoute,
     adminCompanyEditRoute,
     adminCompanyIndexRoute,
+    AdminCompanyBranchRoute
 ])
 
 export default AdminCompanyIdRoute

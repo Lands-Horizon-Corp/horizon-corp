@@ -1,12 +1,12 @@
 import {
+    redirect,
     createRoute,
     lazyRouteComponent,
-    redirect,
 } from '@tanstack/react-router'
 
 import { adminRoute } from '../../route'
-import AdminCompanyIdRoute from './company.companyId/route'
-import CompanyErrorPage from './company.companyId/error'
+import CompanyErrorPage from './companyId/error'
+import AdminCompanyIdRoute from './companyId/route'
 
 export const adminCompaniesManagement = createRoute({
     getParentRoute: () => adminRoute,
