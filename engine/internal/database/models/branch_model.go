@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -118,6 +119,16 @@ func (m *ModelResource) ValidateBranchRequest(req *BranchRequest) error {
 		return m.helpers.FormatValidationError(err)
 	}
 	return nil
+}
+
+func (m *ModelResource) BranchFilterForAdmin(filters string) (filter.FilterPages[Branch], error) {
+	db := m.db.Client
+	return m.BranchDB.GetPaginatedResult(db, filters)
+}
+
+func (m *ModelResource) BranchFilterForOwner(filters string, ownerId uint) (filter.FilterPages[Branch], error) {
+	db := m.db.Client.Where("owner_id = ?", ownerId)
+	return m.BranchDB.GetPaginatedResult(db, filters)
 }
 
 func (m *ModelResource) BranchSeeders() error {

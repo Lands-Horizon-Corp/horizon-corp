@@ -21,6 +21,8 @@ type CompanyService struct {
 	tokenProvider *providers.TokenService
 	helpers       *helpers.HelpersFunction
 	modelResource *models.ModelResource
+
+	companyExport *CompanyExport
 }
 
 func NewCompanyService(
@@ -31,6 +33,7 @@ func NewCompanyService(
 	tokenProvider *providers.TokenService,
 	helpers *helpers.HelpersFunction,
 	modelResource *models.ModelResource,
+	companyExport *CompanyExport,
 ) *CompanyService {
 	controller := managers.NewController(
 		models.CompanyDB,
@@ -48,6 +51,7 @@ func NewCompanyService(
 		tokenProvider: tokenProvider,
 		helpers:       helpers,
 		modelResource: modelResource,
+		companyExport: companyExport,
 	}
 }
 
@@ -86,7 +90,17 @@ func (as *CompanyService) SearchFilter(ctx *gin.Context) {
 }
 
 func (as *CompanyService) ExportAll(ctx *gin.Context) {
-	fmt.Println("Export all")
+	excelBytes, err := as.companyExport.ExportAll()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Excel export error"})
+		return
+	}
+	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	ctx.Header("Content-Disposition", "attachment; filename=users_export.xlsx")
+	ctx.Header("Content-Length", fmt.Sprintf("%d", len(excelBytes)))
+
+	// Send the Excel file
+	ctx.Data(http.StatusOK, "application/octet-stream", excelBytes)
 }
 
 func (as *CompanyService) ExportAllFiltered(ctx *gin.Context) {
