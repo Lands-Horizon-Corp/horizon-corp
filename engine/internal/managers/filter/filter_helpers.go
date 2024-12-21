@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // ----------------------
@@ -166,4 +168,26 @@ func toSnakeCase(input string) string {
 	spaceRe := regexp.MustCompile(`\s+`)
 	input = spaceRe.ReplaceAllString(input, " ")
 	return strings.ToLower(strings.ReplaceAll(input, " ", "_"))
+}
+
+func getTimeCastSyntax(db *gorm.DB) func(string) string {
+	switch db.Dialector.Name() {
+	case "postgres":
+		return func(field string) string {
+			return fmt.Sprintf("CAST(%s AS TIME)", field)
+		}
+	case "mysql":
+		return func(field string) string {
+			return fmt.Sprintf("TIME(%s)", field)
+		}
+	case "sqlite":
+		return func(field string) string {
+			return fmt.Sprintf("TIME(%s)", field)
+		}
+	default:
+		// Default generic CAST
+		return func(field string) string {
+			return fmt.Sprintf("CAST(%s AS TIME)", field)
+		}
+	}
 }

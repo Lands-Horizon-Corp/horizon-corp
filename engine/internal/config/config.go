@@ -58,6 +58,15 @@ type AppConfig struct {
 	EmailPassword string
 
 	ContactNumber string
+
+	AdminEmail       string
+	AdminPassword    string
+	OwnerEmail       string
+	OwnerPassword    string
+	MemberEmail      string
+	MemberPassword   string
+	EmployeeEmail    string
+	EmployeePassword string
 }
 
 func NewAppConfig() *AppConfig {
@@ -165,6 +174,16 @@ func NewAppConfig() *AppConfig {
 
 		// Contact
 		ContactNumber: os.Getenv("CONTACT_NUMBER"),
+
+		// Accounts
+		AdminEmail:       os.Getenv("ADMIN_EMAIL"),
+		AdminPassword:    os.Getenv("ADMIN_PASSWORD"),
+		OwnerEmail:       os.Getenv("OWNER_EMAIL"),
+		OwnerPassword:    os.Getenv("OWNER_PASSWORD"),
+		MemberEmail:      os.Getenv("MEMBER_EMAIL"),
+		MemberPassword:   os.Getenv("MEMBER_PASSWORD"),
+		EmployeeEmail:    os.Getenv("EMPLOYEE_EMAIL"),
+		EmployeePassword: os.Getenv("EMPLOYEE_PASSWORD"),
 	}
 }
 

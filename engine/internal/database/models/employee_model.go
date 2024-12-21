@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -244,6 +245,49 @@ func (r *ModelResource) EmployeeUpdate(user *Employee, preloads []string) error 
 }
 
 func (m *ModelResource) EmployeeSeeders() error {
-	m.logger.Info("Seeding Employee")
+	media, err := m.storage.UploadFromURL("https://s3.ap-southeast-2.amazonaws.com/horizon.assets/ecoop-logo.png")
+	if err != nil {
+		log.Printf("Error uploading ecoop url")
+		return err
+	}
+	uploaded := &Media{
+		FileName:   media.FileName,
+		FileSize:   media.FileSize,
+		FileType:   media.FileType,
+		StorageKey: media.StorageKey,
+		URL:        media.URL,
+		BucketName: media.BucketName,
+	}
+	if err := m.MediaDB.Create(uploaded); err != nil {
+		log.Printf("Error saving ecoop url")
+		return err
+	}
+	employees := []Employee{
+		{
+			FirstName:         "Lands",
+			LastName:          "Horizon",
+			MiddleName:        "ecoop",
+			PermanentAddress:  "123 Main St, Springfield",
+			Description:       "Super administrator",
+			BirthDate:         time.Date(1985, 7, 12, 0, 0, 0, 0, time.UTC),
+			Username:          "alicej",
+			Email:             m.cfg.EmployeeEmail,
+			Password:          m.cfg.EmployeePassword,
+			ContactNumber:     "5551234567",
+			IsEmailVerified:   true,
+			IsContactVerified: true,
+			Status:            "Verified",
+			MediaID:           &uploaded.ID,
+		},
+	}
+	for _, employee := range employees {
+		err := m.EmployeeCreate(&employee)
+		if err != nil {
+			log.Printf("Error seeding employee %s: %v", employee.Email, err)
+		} else {
+			log.Printf("employee %s seeded successfully", employee.Email)
+		}
+	}
+
 	return nil
 }

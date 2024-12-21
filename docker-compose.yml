@@ -66,6 +66,14 @@ services:
       - CACHE_PORT=${CACHE_PORT}
       - CACHE_DB=${CACHE_DB}
       - CACHE_URL=${CACHE_URL}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - OWNER_EMAIL=${OWNER_EMAIL}
+      - OWNER_PASSWORD=${OWNER_PASSWORD}
+      - MEMBER_EMAIL=${MEMBER_EMAIL}
+      - MEMBER_PASSWORD=${MEMBER_PASSWORD}
+      - EMPLOYEE_EMAIL=${EMPLOYEE_EMAIL}
+      - EMPLOYEE_PASSWORD=${EMPLOYEE_PASSWORD}
     depends_on:
       db:
         condition: service_healthy

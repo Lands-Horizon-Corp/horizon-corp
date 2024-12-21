@@ -1,6 +1,7 @@
 package models
 
 import (
+	"log"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -79,6 +80,41 @@ func (m *ModelResource) ValidateGenderRequest(req *GenderRequest) error {
 }
 
 func (m *ModelResource) GenderSeeders() error {
-	m.logger.Info("Seeding Gender")
+	m.logger.Info("Seeding Genders")
+
+	// Define predefined genders
+	predefinedGenders := []GenderRequest{
+		{
+			Name:        "Male",
+			Description: "Male gender",
+		},
+		{
+			Name:        "Female",
+			Description: "Female gender",
+		},
+		{
+			Name:        "Other",
+			Description: "Other gender identities",
+		},
+		{
+			Name:        "Prefer Not to Say",
+			Description: "Prefer not to disclose gender",
+		},
+	}
+
+	for _, genderReq := range predefinedGenders {
+
+		gender := &Gender{
+			Name:        genderReq.Name,
+			Description: genderReq.Description,
+		}
+
+		err := m.GenderDB.Create(gender)
+		if err != nil {
+			log.Printf("Error seeding gender %s: %v", gender.Name, err)
+		}
+	}
+
+	m.logger.Info("Gender seeding completed")
 	return nil
 }

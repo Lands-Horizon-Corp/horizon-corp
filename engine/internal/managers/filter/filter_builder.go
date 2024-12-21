@@ -3,6 +3,7 @@ package filter
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -14,8 +15,6 @@ func ApplyFilters(db *gorm.DB, request PaginatedRequest) *gorm.DB {
 	}
 
 	if strings.ToLower(request.Logic) == "or" {
-		fmt.Println("helo 2")
-
 		// Group OR conditions
 		var orConditions *gorm.DB
 		for i, filter := range request.Filters {
@@ -71,6 +70,26 @@ func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 	field := sanitizeField(filter.GetField())
 	mode := filter.GetMode()
 	dataType := FilterDataType(filter.GetDataType())
+
+	if dataType == DataTypeTime {
+		castTime := getTimeCastSyntax(db)
+		field = castTime(field)
+
+		switch v := value.(type) {
+		case string:
+			parsedTime, err := time.Parse("15:04:05", v)
+			if err != nil {
+				fmt.Printf("Invalid time format for value: %v\n", v)
+				return db
+			}
+			value = parsedTime.Format("15:04:05")
+		case time.Time:
+			value = v.Format("15:04:05")
+		default:
+			fmt.Printf("Unsupported type for DataTypeTime: %T\n", v)
+			return db
+		}
+	}
 
 	if dataType == DataTypeText {
 		field = fmt.Sprintf("LOWER(%s)", field)

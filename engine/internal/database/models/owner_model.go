@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"time"
 
@@ -221,6 +222,24 @@ func (r *ModelResource) OwnerUpdate(user *Owner, preloads []string) error {
 	return r.OwnerDB.Update(user, preloads)
 }
 func (m *ModelResource) OwnerSeeders() error {
+	media, err := m.storage.UploadFromURL("https://s3.ap-southeast-2.amazonaws.com/horizon.assets/ecoop-logo.png")
+	if err != nil {
+		log.Printf("Error uploading ecoop url")
+		return err
+	}
+
+	uploaded := &Media{
+		FileName:   media.FileName,
+		FileSize:   media.FileSize,
+		FileType:   media.FileType,
+		StorageKey: media.StorageKey,
+		URL:        media.URL,
+		BucketName: media.BucketName,
+	}
+	if err := m.MediaDB.Create(uploaded); err != nil {
+		log.Printf("Error saving ecoop url")
+		return err
+	}
 	owners := []Owner{
 		{
 			FirstName:         "John",
@@ -230,27 +249,13 @@ func (m *ModelResource) OwnerSeeders() error {
 			Description:       "A sample owner",
 			BirthDate:         time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC),
 			Username:          "johndoe",
-			Email:             "johndoe@example.com",
-			Password:          "password123",
+			Email:             m.cfg.OwnerEmail,
+			Password:          m.cfg.OwnerPassword,
 			ContactNumber:     "1234567890",
 			IsEmailVerified:   true,
 			IsContactVerified: true,
 			Status:            "Verified",
-		},
-		{
-			FirstName:         "Jane",
-			LastName:          "Smith",
-			MiddleName:        "B.",
-			PermanentAddress:  "456 Elm St, Metropolis",
-			Description:       "Another sample owner",
-			BirthDate:         time.Date(1985, 5, 10, 0, 0, 0, 0, time.UTC),
-			Username:          "janesmith",
-			Email:             "janesmith@example.com",
-			Password:          "securepass456",
-			ContactNumber:     "9876543210",
-			IsEmailVerified:   false,
-			IsContactVerified: false,
-			Status:            "Pending",
+			MediaID:           &uploaded.ID,
 		},
 	}
 
@@ -261,7 +266,7 @@ func (m *ModelResource) OwnerSeeders() error {
 		} else {
 			companies := []Company{
 				{
-					Name:            "Horizon Tech Solutions",
+					Name:            fmt.Sprintf("%s %s", "Horizon Tech Solutions", owner.FirstName),
 					Description:     "A leading tech solutions provider.",
 					Address:         "123 Innovation Drive, Silicon Valley",
 					Longitude:       -122.4194,
@@ -271,7 +276,7 @@ func (m *ModelResource) OwnerSeeders() error {
 					OwnerID:         &owner.ID,
 				},
 				{
-					Name:            "Green Earth Enterprises",
+					Name:            fmt.Sprintf("%s %s", "Green Earth Enterprises", owner.FirstName),
 					Description:     "Eco-friendly products and services.",
 					Address:         "456 Green Lane, Eco City",
 					Longitude:       -74.0060,
@@ -281,7 +286,7 @@ func (m *ModelResource) OwnerSeeders() error {
 					OwnerID:         &owner.ID,
 				},
 				{
-					Name:            "Sky High Airlines",
+					Name:            fmt.Sprintf("%s %s", "Sky High Airlines", owner.FirstName),
 					Description:     "Premium airline services worldwide.",
 					Address:         "789 Skyway Ave, Airport City",
 					Longitude:       151.2093,

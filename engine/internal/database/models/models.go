@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
@@ -21,6 +22,7 @@ type MigrateItem struct {
 }
 
 type ModelResource struct {
+	cfg           *config.AppConfig
 	db            *providers.DatabaseService
 	storage       *providers.StorageProvider
 	logger        *providers.LoggerService
@@ -44,6 +46,7 @@ type ModelResource struct {
 }
 
 func NewModelResource(
+	cfg *config.AppConfig,
 	db *providers.DatabaseService,
 	storage *providers.StorageProvider,
 	logger *providers.LoggerService,
@@ -52,6 +55,7 @@ func NewModelResource(
 
 ) (*ModelResource, error) {
 	modelResource := &ModelResource{
+		cfg:           cfg,
 		db:            db,
 		storage:       storage,
 		logger:        logger,
