@@ -71,6 +71,7 @@ func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 	mode := filter.GetMode()
 	dataType := FilterDataType(filter.GetDataType())
 
+	// Handle DataTypeTime as before
 	if dataType == DataTypeTime {
 		castTime := getTimeCastSyntax(db)
 		field = castTime(field)
@@ -87,6 +88,91 @@ func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 			value = v.Format("15:04:05")
 		default:
 			fmt.Printf("Unsupported type for DataTypeTime: %T\n", v)
+			return db
+		}
+	}
+
+	// Handle DataTypeDate to ignore time and search the entire day
+	if dataType == DataTypeDate {
+		var dateValue time.Time
+		switch v := value.(type) {
+		case string:
+			parsedDate, err := time.Parse("2006-01-02", v)
+			if err != nil {
+				fmt.Printf("Invalid date format for value: %v\n", v)
+				return db
+			}
+			dateValue = parsedDate
+		case time.Time:
+			dateValue = v
+		default:
+			fmt.Printf("Unsupported type for DataTypeDate: %T\n", v)
+			return db
+		}
+
+		startOfDay := time.Date(dateValue.Year(), dateValue.Month(), dateValue.Day(), 0, 0, 0, 0, dateValue.Location())
+		endOfDay := time.Date(dateValue.Year(), dateValue.Month(), dateValue.Day(), 23, 59, 59, 999999999, dateValue.Location())
+
+		if mode == ModeEqual || mode == ModeNotEqual {
+			if mode == ModeEqual {
+				return db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", field), startOfDay, endOfDay)
+			} else {
+				return db.Where(fmt.Sprintf("%s NOT BETWEEN ? AND ?", field), startOfDay, endOfDay)
+			}
+		}
+
+		switch mode {
+		case ModeGreaterThan, ModeAfter:
+			return db.Where(fmt.Sprintf("%s > ?", field), endOfDay)
+		case ModeGreaterEqual:
+			return db.Where(fmt.Sprintf("%s >= ?", field), startOfDay)
+		case ModeLessThan, ModeBefore:
+			return db.Where(fmt.Sprintf("%s < ?", field), startOfDay)
+		case ModeLessEqual:
+			return db.Where(fmt.Sprintf("%s <= ?", field), endOfDay)
+		case ModeRange, ModeBetween:
+			rangeVal, ok := value.(RangeValue)
+			if !ok {
+				return db
+			}
+			// Assume rangeVal.From and rangeVal.To are dates
+			var fromDate, toDate time.Time
+			switch fv := rangeVal.From.(type) {
+			case string:
+				parsedFrom, err := time.Parse("2006-01-02", fv)
+				if err != nil {
+					fmt.Printf("Invalid date format for range from: %v\n", fv)
+					return db
+				}
+				fromDate = parsedFrom
+			case time.Time:
+				fromDate = fv
+			default:
+				fmt.Printf("Unsupported type for range.From in DataTypeDate: %T\n", fv)
+				return db
+			}
+			switch tv := rangeVal.To.(type) {
+			case string:
+				parsedTo, err := time.Parse("2006-01-02", tv)
+				if err != nil {
+					fmt.Printf("Invalid date format for range to: %v\n", tv)
+					return db
+				}
+				toDate = parsedTo
+			case time.Time:
+				toDate = tv
+			default:
+				fmt.Printf("Unsupported type for range.To in DataTypeDate: %T\n", tv)
+				return db
+			}
+
+			// Define the full range for the 'to' date
+			startOfFromDay := time.Date(fromDate.Year(), fromDate.Month(), fromDate.Day(), 0, 0, 0, 0, fromDate.Location())
+			endOfToDay := time.Date(toDate.Year(), toDate.Month(), toDate.Day(), 23, 59, 59, 999999999, toDate.Location())
+
+			return db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", field), startOfFromDay, endOfToDay)
+		default:
+			// For other modes, you can define behavior as needed
 			return db
 		}
 	}

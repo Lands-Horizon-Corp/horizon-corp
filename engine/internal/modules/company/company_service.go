@@ -1,6 +1,7 @@
 package company
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
@@ -84,6 +85,22 @@ func (as *CompanyService) SearchFilter(ctx *gin.Context) {
 	})
 }
 
+func (as *CompanyService) ExportAll(ctx *gin.Context) {
+	fmt.Println("Export all")
+}
+
+func (as *CompanyService) ExportAllFiltered(ctx *gin.Context) {
+	fmt.Println("Export all filtered")
+}
+
+func (as *CompanyService) ExportSelected(ctx *gin.Context) {
+	fmt.Println("Export all selected")
+}
+
+func (as *CompanyService) ExportCurrentPage(ctx *gin.Context) {
+	fmt.Println("Export all current page")
+}
+
 func (as *CompanyService) RegisterRoutes() {
 	routes := as.engine.Client.Group("/api/v1/company")
 	routes.Use(as.middle.AuthMiddleware())
@@ -94,5 +111,11 @@ func (as *CompanyService) RegisterRoutes() {
 		routes.GET("/:id", as.controller.GetByID)
 		routes.PUT("/:id", as.controller.Update)
 		routes.DELETE("/:id", as.controller.Delete)
+
+		// Export routes
+		routes.GET("/export", as.ExportAll)
+		routes.GET("/export-search", as.ExportAllFiltered)
+		routes.POST("/export-selected", as.ExportSelected)
+		routes.GET("/export-current-page/:page", as.ExportCurrentPage)
 	}
 }

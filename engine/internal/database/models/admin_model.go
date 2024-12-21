@@ -231,6 +231,7 @@ func (m *ModelResource) AdminSeeders() error {
 		log.Printf("Error saving ecoop url")
 		return err
 	}
+
 	admins := []Admin{
 		{
 			FirstName:         "Lands",

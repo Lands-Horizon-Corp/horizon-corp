@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"reflect"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers" // Adjust the import path as needed
@@ -22,11 +23,38 @@ func NewRepository[T any](db *providers.DatabaseService) *Repository[T] {
 	return &Repository[T]{DB: db}
 }
 
-// Create adds a new entity to the database.
-func (r *Repository[T]) Create(entity *T) error {
+func (r *Repository[T]) Create(entity *T, preloads ...string) error {
+	// Create the entity in the database
 	if err := r.DB.Client.Create(entity).Error; err != nil {
 		return fmt.Errorf("failed to create entity: %w", err)
 	}
+
+	// If no preloads are specified, return early
+	if len(preloads) == 0 {
+		return nil
+	}
+
+	// Use reflection to retrieve the primary key (assumed to be "ID" of type uint)
+	v := reflect.ValueOf(entity).Elem()
+	idField := v.FieldByName("ID")
+	if !idField.IsValid() {
+		return fmt.Errorf("entity does not have an 'ID' field for preloading")
+	}
+
+	if idField.Kind() != reflect.Uint && idField.Kind() != reflect.Uint32 && idField.Kind() != reflect.Uint64 {
+		return fmt.Errorf("entity 'ID' field is not of type uint")
+	}
+
+	id := idField.Uint()
+
+	// Apply preloads using the existing applyPreloads method
+	query := r.applyPreloads(r.DB.Client, preloads)
+
+	// Retrieve the created entity with preloads and update the original entity in place
+	if err := query.First(entity, id).Error; err != nil {
+		return fmt.Errorf("failed to preload associations: %w", err)
+	}
+
 	return nil
 }
 
@@ -68,6 +96,39 @@ func (r *Repository[T]) Update(entity *T, preloads []string) error {
 	}
 
 	return nil
+}
+
+func (r *Repository[T]) UpdateByID(id uint, updates *T, preloads ...string) (*T, error) {
+	var entity T
+	db := r.DB.Client
+
+	// Apply preloads
+	for _, preload := range preloads {
+		db = db.Preload(preload)
+	}
+
+	// Find the existing entity by ID
+	if err := db.First(&entity, id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("entity with ID %d not found: %w", id, err)
+		}
+		return nil, fmt.Errorf("failed to retrieve entity: %w", err)
+	}
+
+	// Update the entity with the provided updates
+	if err := db.Model(&entity).Updates(updates).Error; err != nil {
+		return nil, fmt.Errorf("failed to update entity: %w", err)
+	}
+
+	// Optionally, reload the entity with preloads
+	for _, preload := range preloads {
+		db = db.Preload(preload)
+	}
+	if err := db.First(&entity, id).Error; err != nil {
+		return nil, fmt.Errorf("failed to reload updated entity: %w", err)
+	}
+
+	return &entity, nil
 }
 
 // Delete removes an entity by its ID.

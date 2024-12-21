@@ -113,6 +113,7 @@ func (m *ModelResource) ValidateCompanyRequest(req *CompanyRequest) error {
 	if err != nil {
 		return m.helpers.FormatValidationError(err)
 	}
+
 	return nil
 }
 
