@@ -1,4 +1,3 @@
-
 import { downloadFile } from '@/horizon-corp/helpers'
 import UseServer from '../../request/server'
 import {
@@ -14,16 +13,32 @@ export default class CompanyService {
   private static readonly BASE_ENDPOINT = '/company'
 
   /**
-   * Retrieves all companies.
+   * Retrieves all companies with optional preloads.
    *
+   * @param {string[]} [preloads] - Optional array of relations to preload.
    * @returns {Promise<CompanyResource[]>} - A promise that resolves to an array of company resources.
    */
-  public static async getAll(): Promise<CompanyResource[]> {
-    const response = await UseServer.get<CompanyResource[]>(
-      CompanyService.BASE_ENDPOINT
-    )
+  public static async getAll(preloads?: string[]): Promise<CompanyResource[]> {
+    const query = preloads ? `?preloads=${preloads.join(',')}` : ''
+    const endpoint = `${CompanyService.BASE_ENDPOINT}${query}`
+    const response = await UseServer.get<CompanyResource[]>(endpoint)
     return response.data
   }
+
+  /**
+   * Retrieves a company by its ID with optional preloads.
+   *
+   * @param {number} id - The ID of the company to retrieve.
+   * @param {string[]} [preloads] - Optional array of relations to preload.
+   * @returns {Promise<CompanyResource>} - A promise that resolves to the company resource.
+   */
+  public static async getById(id: number, preloads?: string[]): Promise<CompanyResource> {
+    const query = preloads ? `?preloads=${preloads.join(',')}` : ''
+    const endpoint = `${CompanyService.BASE_ENDPOINT}/${id}${query}`
+    const response = await UseServer.get<CompanyResource>(endpoint)
+    return response.data
+  }
+
   /**
    * Creates a new company.
    *
@@ -52,17 +67,20 @@ export default class CompanyService {
   }
 
   /**
-   * Updates an existing company by its ID.
+   * Updates an existing company by its ID with optional preloads.
    *
    * @param {number} id - The ID of the company to update.
    * @param {CompanyRequest} companyData - The updated data for the company.
+   * @param {string[]} [preloads] - Optional array of relations to preload.
    * @returns {Promise<CompanyResource>} - A promise that resolves to the updated company resource.
    */
   public static async update(
     id: number,
-    companyData: CompanyRequest
+    companyData: CompanyRequest,
+    preloads?: string[]
   ): Promise<CompanyResource> {
-    const endpoint = `${CompanyService.BASE_ENDPOINT}/${id}`
+    const query = preloads ? `?preloads=${preloads.join(',')}` : ''
+    const endpoint = `${CompanyService.BASE_ENDPOINT}/${id}${query}`
     const response = await UseServer.put<CompanyRequest, CompanyResource>(
       endpoint,
       companyData
@@ -71,30 +89,23 @@ export default class CompanyService {
   }
 
   /**
-   * Retrieves a company by its ID.
+   * Filters companies based on provided filters with optional preloads.
    *
-   * @param {number} id - The ID of the company to retrieve.
-   * @returns {Promise<CompanyResource>} - A promise that resolves to the company resource.
+   * @param {string} [filters] - The filters to apply for exporting companies.
+   * @param {string[]} [preloads] - Optional array of relations to preload.
+   * @returns {Promise<CompanyPaginatedResource>} - A promise that resolves to paginated company resources.
    */
-  public static async getById(id: number): Promise<CompanyResource> {
-    const endpoint = `${CompanyService.BASE_ENDPOINT}/${id}`
-    const response = await UseServer.get<CompanyResource>(endpoint)
-    return response.data
-  }
-
-  /**
- * Retrieves all companies.
- *
- * @returns {Promise<CompanyResource>} - A promise that resolves to an array of company resources.
- */
   public static async filter(
-    filters?: string
+    filters?: string,
+    preloads?: string[]
   ): Promise<CompanyPaginatedResource> {
-    const url = `${CompanyService.BASE_ENDPOINT}/search?filter=${filters}`
+    const queryFilters = filters ? `filter=${encodeURIComponent(filters)}` : ''
+    const queryPreloads = preloads ? `preloads=${preloads.join(',')}` : ''
+    const query = [queryFilters, queryPreloads].filter(Boolean).join('&')
+    const url = `${CompanyService.BASE_ENDPOINT}/search?${query}`
     const response = await UseServer.get<CompanyPaginatedResource>(url)
     return response.data
   }
-
 
   /**
    * Exports all companies.
@@ -113,7 +124,7 @@ export default class CompanyService {
    * @returns {Promise<void>} - A promise that resolves when the export is complete.
    */
   public static async exportAllFiltered(filters?: string): Promise<void> {
-    const url = `${CompanyService.BASE_ENDPOINT}/export-search?filter=${filters || ''}`
+    const url = `${CompanyService.BASE_ENDPOINT}/export-search?filter=${encodeURIComponent(filters || '')}`
     await downloadFile(url, 'filtered_companies_export.xlsx')
   }
 
@@ -139,5 +150,4 @@ export default class CompanyService {
     const url = `${CompanyService.BASE_ENDPOINT}/export-current-page/${page}`
     await downloadFile(url, `current_page_companies_${page}_export.xlsx`)
   }
-
 }
