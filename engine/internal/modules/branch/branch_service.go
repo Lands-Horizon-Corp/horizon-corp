@@ -65,14 +65,11 @@ func (ts *BranchService) getUserClaims(ctx *gin.Context) (*providers.UserClaims,
 }
 
 func (as *BranchService) SearchFilter(ctx *gin.Context) {
-	// Retrieve the 'filter' query parameter
 	filterParam := ctx.Query("filter")
 	if filterParam == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
 		return
 	}
-
-	// Authenticate the user and retrieve their claims
 	userClaims, err := as.getUserClaims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
@@ -80,8 +77,6 @@ func (as *BranchService) SearchFilter(ctx *gin.Context) {
 	}
 
 	var branches filter.FilterPages[models.Branch]
-
-	// Determine which filter function to use based on account type
 	switch userClaims.AccountType {
 	case "Owner":
 		branches, err = as.modelResource.BranchFilterForOwner(filterParam, userClaims.ID)
