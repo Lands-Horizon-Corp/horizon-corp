@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -127,6 +130,137 @@ func (m *ModelResource) RoleToResourceList(roles []*Role) []*RoleResource {
 		roleResources = append(roleResources, m.RoleToResource(role))
 	}
 	return roleResources
+}
+
+// RoleToRecord converts a slice of Role pointers into CSV records and headers.
+func (m *ModelResource) RoleToRecord(roles []*Role) ([][]string, []string) {
+	// Convert Role structs to RoleResource structs
+	resources := m.RoleToResourceList(roles)
+	records := make([][]string, 0, len(resources))
+
+	for _, role := range resources {
+		// Basic Fields
+		id := strconv.Itoa(int(role.ID))
+		name := sanitizeCSVField(role.Name)
+		description := sanitizeCSVField(role.Description)
+		apiKey := sanitizeCSVField(role.ApiKey)
+		color := sanitizeCSVField(role.Color)
+		readRole := strconv.FormatBool(role.ReadRole)
+		writeRole := strconv.FormatBool(role.WriteRole)
+		updateRole := strconv.FormatBool(role.UpdateRole)
+		deleteRole := strconv.FormatBool(role.DeleteRole)
+		readErrorDetails := strconv.FormatBool(role.ReadErrorDetails)
+		writeErrorDetails := strconv.FormatBool(role.WriteErrorDetails)
+		updateErrorDetails := strconv.FormatBool(role.UpdateErrorDetails)
+		deleteErrorDetails := strconv.FormatBool(role.DeleteErrorDetails)
+		readGender := strconv.FormatBool(role.ReadGender)
+		writeGender := strconv.FormatBool(role.WriteGender)
+		updateGender := strconv.FormatBool(role.UpdateGender)
+		deleteGender := strconv.FormatBool(role.DeleteGender)
+		createdAt := sanitizeCSVField(role.CreatedAt)
+		updatedAt := sanitizeCSVField(role.UpdatedAt)
+
+		// Handle Related Entities
+
+		// Admins
+		admins := "N/A"
+		if len(role.Admins) > 0 {
+			adminNames := make([]string, 0, len(role.Admins))
+			for _, admin := range role.Admins {
+				fullName := fmt.Sprintf("%s %s", admin.FirstName, admin.LastName)
+				adminNames = append(adminNames, sanitizeCSVField(fullName))
+			}
+			admins = strings.Join(adminNames, "; ")
+		}
+
+		// Owners
+		owners := "N/A"
+		if len(role.Owners) > 0 {
+			ownerNames := make([]string, 0, len(role.Owners))
+			for _, owner := range role.Owners {
+				fullName := fmt.Sprintf("%s %s", owner.FirstName, owner.LastName)
+				ownerNames = append(ownerNames, sanitizeCSVField(fullName))
+			}
+			owners = strings.Join(ownerNames, "; ")
+		}
+
+		// Employees
+		employees := "N/A"
+		if len(role.Employees) > 0 {
+			employeeNames := make([]string, 0, len(role.Employees))
+			for _, emp := range role.Employees {
+				fullName := fmt.Sprintf("%s %s", emp.FirstName, emp.LastName)
+				employeeNames = append(employeeNames, sanitizeCSVField(fullName))
+			}
+			employees = strings.Join(employeeNames, "; ")
+		}
+
+		// Members
+		members := "N/A"
+		if len(role.Members) > 0 {
+			memberNames := make([]string, 0, len(role.Members))
+			for _, mem := range role.Members {
+				fullName := fmt.Sprintf("%s %s", mem.FirstName, mem.LastName)
+				memberNames = append(memberNames, sanitizeCSVField(fullName))
+			}
+			members = strings.Join(memberNames, "; ")
+		}
+
+		// Assemble the record
+		record := []string{
+			id,
+			name,
+			description,
+			apiKey,
+			color,
+			readRole,
+			writeRole,
+			updateRole,
+			deleteRole,
+			readErrorDetails,
+			writeErrorDetails,
+			updateErrorDetails,
+			deleteErrorDetails,
+			readGender,
+			writeGender,
+			updateGender,
+			deleteGender,
+			createdAt,
+			updatedAt,
+			admins,
+			owners,
+			employees,
+			members,
+		}
+		records = append(records, record)
+	}
+	headers := []string{
+		"ID",
+		"Name",
+		"Description",
+		"API Key",
+		"Color",
+		"Read Role",
+		"Write Role",
+		"Update Role",
+		"Delete Role",
+		"Read Error Details",
+		"Write Error Details",
+		"Update Error Details",
+		"Delete Error Details",
+		"Read Gender",
+		"Write Gender",
+		"Update Gender",
+		"Delete Gender",
+		"Created At",
+		"Updated At",
+		"Admins",
+		"Owners",
+		"Employees",
+		"Members",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateRoleRequest(req *RoleRequest) error {

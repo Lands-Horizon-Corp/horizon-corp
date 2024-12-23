@@ -3,6 +3,8 @@ package models
 import (
 	"errors"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -135,6 +137,108 @@ func (m *ModelResource) AdminToResourceList(admins []*Admin) []*AdminResource {
 		adminResources = append(adminResources, m.AdminToResource(admin))
 	}
 	return adminResources
+}
+
+func (m *ModelResource) AdminToRecord(admins []*Admin) ([][]string, []string) {
+	// Convert Admin structs to AdminResource structs
+	resource := m.AdminToResourceList(admins)
+	records := make([][]string, 0, len(resource))
+
+	for _, admin := range resource {
+		id := strconv.Itoa(int(admin.ID))
+		firstName := sanitizeCSVField(admin.FirstName)
+		lastName := sanitizeCSVField(admin.LastName)
+		middleName := sanitizeCSVField(admin.MiddleName)
+		permanentAddress := sanitizeCSVField(admin.PermanentAddress)
+		description := sanitizeCSVField(admin.Description)
+		birthDate := admin.BirthDate.Format("2006-01-02") // Format as YYYY-MM-DD
+		username := sanitizeCSVField(admin.Username)
+		email := sanitizeCSVField(admin.Email)
+		contactNumber := sanitizeCSVField(admin.ContactNumber)
+		isEmailVerified := strconv.FormatBool(admin.IsEmailVerified)
+		isContactVerified := strconv.FormatBool(admin.IsContactVerified)
+		isSkipVerification := strconv.FormatBool(admin.IsSkipVerification)
+		status := sanitizeCSVField(string(admin.Status))
+		createdAt := sanitizeCSVField(admin.CreatedAt)
+		updatedAt := sanitizeCSVField(admin.UpdatedAt)
+
+		// Handle Media
+		mediaURL := "N/A"
+		if admin.Media != nil {
+			mediaURL = sanitizeCSVField(admin.Media.URL)
+		}
+
+		// Handle Role
+		roleName := "N/A"
+		if admin.Role != nil {
+			roleName = sanitizeCSVField(admin.Role.Name) // Assuming Role has a Name field
+		}
+
+		// Handle Gender
+		genderName := "N/A"
+		if admin.Gender != nil {
+			genderName = sanitizeCSVField(admin.Gender.Name) // Assuming Gender has a Name field
+		}
+
+		// Handle Footsteps
+		footsteps := "N/A"
+		if len(admin.Footsteps) > 0 {
+			footstepDescriptions := make([]string, 0, len(admin.Footsteps))
+			for _, footstep := range admin.Footsteps {
+				footstepDescriptions = append(footstepDescriptions, sanitizeCSVField(footstep.Description))
+			}
+			footsteps = strings.Join(footstepDescriptions, "; ")
+		}
+
+		record := []string{
+			id,
+			firstName,
+			lastName,
+			middleName,
+			permanentAddress,
+			description,
+			birthDate,
+			username,
+			email,
+			contactNumber,
+			isEmailVerified,
+			isContactVerified,
+			isSkipVerification,
+			status,
+			roleName,
+			genderName,
+			mediaURL,
+			footsteps,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"First Name",
+		"Last Name",
+		"Middle Name",
+		"Permanent Address",
+		"Description",
+		"Birth Date",
+		"Username",
+		"Email",
+		"Contact Number",
+		"Is Email Verified",
+		"Is Contact Verified",
+		"Is Skip Verification",
+		"Status",
+		"Role",
+		"Gender",
+		"Media URL",
+		"Footsteps",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateAdminRequest(req *AdminRequest) error {

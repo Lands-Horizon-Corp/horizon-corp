@@ -2,6 +2,9 @@ package models
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -156,6 +159,141 @@ func (m *ModelResource) MemberToResourceList(members []*Member) []*MemberResourc
 		memberResources = append(memberResources, m.MemberToResource(member))
 	}
 	return memberResources
+}
+
+// MemberToRecord converts a slice of Member pointers into CSV records and headers.
+func (m *ModelResource) MemberToRecord(members []*Member) ([][]string, []string) {
+	// Convert Member structs to MemberResource structs
+	resources := m.MemberToResourceList(members)
+	records := make([][]string, 0, len(resources))
+
+	for _, member := range resources {
+		// Basic Fields
+		id := strconv.Itoa(int(member.ID))
+		accountType := sanitizeCSVField(member.AccountType)
+		firstName := sanitizeCSVField(member.FirstName)
+		lastName := sanitizeCSVField(member.LastName)
+		middleName := sanitizeCSVField(member.MiddleName)
+		permanentAddress := sanitizeCSVField(member.PermanentAddress)
+		description := sanitizeCSVField(member.Description)
+		birthDate := member.BirthDate.Format("2006-01-02") // Format as YYYY-MM-DD
+		username := sanitizeCSVField(member.Username)
+		email := sanitizeCSVField(member.Email)
+		contactNumber := sanitizeCSVField(member.ContactNumber)
+		isEmailVerified := strconv.FormatBool(member.IsEmailVerified)
+		isContactVerified := strconv.FormatBool(member.IsContactVerified)
+		isSkipVerification := strconv.FormatBool(member.IsSkipVerification)
+		status := sanitizeCSVField(string(member.Status))
+
+		// Longitude and Latitude
+		longitude := "N/A"
+		if member.Longitude != nil {
+			longitude = fmt.Sprintf("%.6f", *member.Longitude)
+		}
+		latitude := "N/A"
+		if member.Latitude != nil {
+			latitude = fmt.Sprintf("%.6f", *member.Latitude)
+		}
+
+		createdAt := sanitizeCSVField(member.CreatedAt)
+		updatedAt := sanitizeCSVField(member.UpdatedAt)
+
+		// Handle Media
+		mediaURL := "N/A"
+		if member.Media != nil {
+			mediaURL = sanitizeCSVField(member.Media.URL)
+		}
+
+		// Handle Branch
+		branchName := "N/A"
+		if member.Branch != nil {
+			branchName = sanitizeCSVField(member.Branch.Name)
+		}
+
+		// Handle Role
+		roleName := "N/A"
+		if member.Role != nil {
+			roleName = sanitizeCSVField(member.Role.Name) // Assuming Role has a Name field
+		}
+
+		// Handle Gender
+		genderName := "N/A"
+		if member.Gender != nil {
+			genderName = sanitizeCSVField(member.Gender.Name) // Assuming Gender has a Name field
+		}
+
+		// Handle Footsteps
+		footsteps := "N/A"
+		if len(member.Footsteps) > 0 {
+			fsEntries := make([]string, 0, len(member.Footsteps))
+			for _, fs := range member.Footsteps {
+				activity := sanitizeCSVField(fs.Activity)
+				description := sanitizeCSVField(fs.Description)
+				// Combine Activity and Description
+				fsEntry := fmt.Sprintf("Activity: %s; Description: %s", activity, description)
+				fsEntries = append(fsEntries, fsEntry)
+			}
+			footsteps = strings.Join(fsEntries, "; ")
+		}
+
+		// Assemble the record
+		record := []string{
+			id,
+			accountType,
+			firstName,
+			lastName,
+			middleName,
+			permanentAddress,
+			description,
+			birthDate,
+			username,
+			email,
+			contactNumber,
+			isEmailVerified,
+			isContactVerified,
+			isSkipVerification,
+			status,
+			longitude,
+			latitude,
+			mediaURL,
+			branchName,
+			roleName,
+			genderName,
+			footsteps,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"Account Type",
+		"First Name",
+		"Last Name",
+		"Middle Name",
+		"Permanent Address",
+		"Description",
+		"Birth Date",
+		"Username",
+		"Email",
+		"Contact Number",
+		"Is Email Verified",
+		"Is Contact Verified",
+		"Is Skip Verification",
+		"Status",
+		"Longitude",
+		"Latitude",
+		"Media URL",
+		"Branch Name",
+		"Role",
+		"Gender",
+		"Footsteps",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateMemberRequest(req *MemberRequest) error {

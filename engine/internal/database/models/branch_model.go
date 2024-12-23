@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
@@ -101,6 +104,95 @@ func (m *ModelResource) BranchToResourceList(branch []*Branch) []*BranchResource
 		branchResources = append(branchResources, m.BranchToResource(branch))
 	}
 	return branchResources
+}
+
+// BranchToRecord converts a slice of Branch pointers into CSV records and headers.
+func (m *ModelResource) BranchToRecord(branches []*Branch) ([][]string, []string) {
+	// Convert Branch structs to BranchResource structs
+	resource := m.BranchToResourceList(branches)
+	records := make([][]string, 0, len(resource))
+
+	for _, branch := range resource {
+		id := strconv.Itoa(int(branch.ID))
+		name := sanitizeCSVField(branch.Name)
+		address := sanitizeCSVField(branch.Address)
+		longitude := fmt.Sprintf("%.6f", branch.Longitude)
+		latitude := fmt.Sprintf("%.6f", branch.Latitude)
+		email := sanitizeCSVField(branch.Email)
+		contactNumber := sanitizeCSVField(branch.ContactNumber)
+		isAdminVerified := strconv.FormatBool(branch.IsAdminVerified)
+		createdAt := sanitizeCSVField(branch.CreatedAt)
+		updatedAt := sanitizeCSVField(branch.UpdatedAt)
+
+		// Handle Media
+		mediaURL := "N/A"
+		if branch.Media != nil {
+			mediaURL = sanitizeCSVField(branch.Media.URL)
+		}
+
+		// Handle Company
+		companyName := "N/A"
+		if branch.Company != nil {
+			companyName = sanitizeCSVField(branch.Company.Name)
+		}
+
+		// Handle Employees
+		employeeNames := "N/A"
+		if len(branch.Employees) > 0 {
+			empNames := make([]string, 0, len(branch.Employees))
+			for _, emp := range branch.Employees {
+				empNames = append(empNames, sanitizeCSVField(emp.FirstName))
+			}
+			employeeNames = strings.Join(empNames, "; ")
+		}
+
+		// Handle Members
+		memberNames := "N/A"
+		if len(branch.Members) > 0 {
+			memNames := make([]string, 0, len(branch.Members))
+			for _, mem := range branch.Members {
+				memNames = append(memNames, sanitizeCSVField(mem.FirstName))
+			}
+			memberNames = strings.Join(memNames, "; ")
+		}
+
+		record := []string{
+			id,
+			name,
+			address,
+			longitude,
+			latitude,
+			email,
+			contactNumber,
+			isAdminVerified,
+			mediaURL,
+			companyName,
+			employeeNames,
+			memberNames,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"Name",
+		"Address",
+		"Longitude",
+		"Latitude",
+		"Email",
+		"Contact Number",
+		"Is Admin Verified",
+		"Media URL",
+		"Company Name",
+		"Employees",
+		"Members",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateBranchRequest(req *BranchRequest) error {

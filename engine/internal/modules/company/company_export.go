@@ -3,35 +3,40 @@ package company
 import (
 	"net/http"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
 )
 
 type CompanyExport struct {
-	db *providers.DatabaseService
+	db             *providers.DatabaseService
+	modelsResource *models.ModelResource
 }
 
-func NewCompanyExport(db *providers.DatabaseService) *CompanyExport {
+func NewCompanyExport(
+	db *providers.DatabaseService,
+	modelsResource *models.ModelResource,
+) *CompanyExport {
 	return &CompanyExport{
-		db: db,
+		db:             db,
+		modelsResource: modelsResource,
 	}
 }
 
-func (ce *CompanyExport) ExportAll(c *gin.Context) {
+func (ce *CompanyExport) ExportAll(ctx *gin.Context) {
+	company, err := ce.modelsResource.CompanyDB.FindAll()
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to export CSV: %v", err)
+		return
+	}
+	record, headers := ce.modelsResource.CompanyToRecord(company)
 	csvManager := managers.NewCSVManager()
 	csvManager.SetFileName("sample.csv")
-	csvManager.SetHeaders([]string{"Name", "Age", "Email", "Country"})
-	records := [][]string{
-		{"John Doe", "30", "john.doe@example.com", "USA"},
-		{"Jane Smith", "25", "jane.smith@example.com", "Canada"},
-		{"Bob Johnson", "40", "bob.johnson@example.com", "UK"},
-		{"Alice Williams", "28", "alice.williams@example.com", "Australia"},
-		{"Michael Brown", "35", "michael.brown@example.com", "New Zealand"},
-	}
-	csvManager.AddRecords(records)
-	if err := csvManager.WriteCSV(c); err != nil {
-		c.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
+	csvManager.SetHeaders(headers)
+	csvManager.AddRecords(record)
+	if err := csvManager.WriteCSV(ctx); err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
 		return
 	}
 }

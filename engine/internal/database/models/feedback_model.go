@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -56,6 +57,45 @@ func (m *ModelResource) FeedbackToResourceList(feedbacks []*Feedback) []*Feedbac
 		feedbackResources = append(feedbackResources, m.FeedbackToResource(feedback))
 	}
 	return feedbackResources
+}
+
+// FeedbackToRecord converts a slice of Feedback pointers into CSV records and headers.
+func (m *ModelResource) FeedbackToRecord(feedbacks []*Feedback) ([][]string, []string) {
+	// Convert Feedback structs to FeedbackResource structs
+	resource := m.FeedbackToResourceList(feedbacks)
+	records := make([][]string, 0, len(resource))
+
+	for _, feedback := range resource {
+		// Basic Fields
+		id := strconv.Itoa(int(feedback.ID))
+		email := sanitizeCSVField(feedback.Email)
+		description := sanitizeCSVField(feedback.Description)
+		feedbackType := sanitizeCSVField(feedback.FeedbackType)
+		createdAt := sanitizeCSVField(feedback.CreatedAt)
+		updatedAt := sanitizeCSVField(feedback.UpdatedAt)
+
+		// Assemble the record
+		record := []string{
+			id,
+			email,
+			description,
+			feedbackType,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"Email",
+		"Description",
+		"Feedback Type",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateFeedbackRequest(req *FeedbackRequest) error {

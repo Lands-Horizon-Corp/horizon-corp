@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
@@ -97,6 +100,77 @@ func (m *ModelResource) CompanyToResourceList(companies []*Company) []*CompanyRe
 		companyResources = append(companyResources, m.CompanyToResource(company))
 	}
 	return companyResources
+}
+
+func (m *ModelResource) CompanyToRecord(company []*Company) ([][]string, []string) {
+	resource := m.CompanyToResourceList(company)
+	records := make([][]string, 0, len(resource))
+
+	for _, company := range resource {
+		id := strconv.Itoa(int(company.ID))
+		name := sanitizeCSVField(company.Name)
+		description := sanitizeCSVField(company.Description)
+		address := sanitizeCSVField(company.Address)
+		longitude := fmt.Sprintf("%.6f", company.Longitude)
+		latitude := fmt.Sprintf("%.6f", company.Latitude)
+		contactNumber := sanitizeCSVField(company.ContactNumber)
+		isAdminVerified := strconv.FormatBool(company.IsAdminVerified)
+		createdAt := sanitizeCSVField(company.CreatedAt)
+		updatedAt := sanitizeCSVField(company.UpdatedAt)
+
+		// Handle Owner
+		ownerName := "N/A"
+		if company.Owner != nil {
+			ownerName = sanitizeCSVField(company.Owner.FirstName)
+		}
+
+		// Handle Media
+		mediaURL := "N/A"
+		if company.Media != nil {
+			mediaURL = sanitizeCSVField(company.Media.URL)
+		}
+
+		// Handle Branches
+		branchAddresses := []string{}
+		for _, branch := range company.Branches {
+			branchAddresses = append(branchAddresses, sanitizeCSVField(branch.Address))
+		}
+		branches := strings.Join(branchAddresses, "; ")
+
+		record := []string{
+			id,
+			name,
+			description,
+			address,
+			longitude,
+			latitude,
+			contactNumber,
+			ownerName,
+			mediaURL,
+			isAdminVerified,
+			branches,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+	headers := []string{
+		"ID",
+		"Name",
+		"Description",
+		"Address",
+		"Longitude",
+		"Latitude",
+		"Contact Number",
+		"Owner Name",
+		"Media URL",
+		"Is Admin Verified",
+		"Branches",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateCompanyRequest(req *CompanyRequest) error {

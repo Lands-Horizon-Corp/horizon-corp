@@ -1,6 +1,9 @@
 package models
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -103,6 +106,138 @@ func (m *ModelResource) MediaToResourceList(mediaList []*Media) []*MediaResource
 		mediaResources = append(mediaResources, m.MediaToResource(media))
 	}
 	return mediaResources
+}
+
+// MediaToRecord converts a slice of Media pointers into CSV records and headers.
+func (m *ModelResource) MediaToRecord(mediaList []*Media) ([][]string, []string) {
+	// Convert Media structs to MediaResource structs
+	resources := m.MediaToResourceList(mediaList)
+	records := make([][]string, 0, len(resources))
+
+	for _, media := range resources {
+		// Basic Fields
+		id := strconv.Itoa(int(media.ID))
+		fileName := sanitizeCSVField(media.FileName)
+		fileSize := strconv.FormatInt(media.FileSize, 10)
+		fileType := sanitizeCSVField(media.FileType)
+		storageKey := sanitizeCSVField(media.StorageKey)
+		url := sanitizeCSVField(media.URL)
+		key := sanitizeCSVField(media.Key)
+		bucketName := sanitizeCSVField(media.BucketName)
+		downloadURL := sanitizeCSVField(media.DownloadURL)
+		createdAt := sanitizeCSVField(media.CreatedAt)
+		updatedAt := sanitizeCSVField(media.UpdatedAt)
+
+		// Handle Related Entities
+
+		// Employees
+		employees := "N/A"
+		if len(media.Employees) > 0 {
+			employeeNames := make([]string, 0, len(media.Employees))
+			for _, emp := range media.Employees {
+				fullName := fmt.Sprintf("%s %s", emp.FirstName, emp.LastName)
+				employeeNames = append(employeeNames, sanitizeCSVField(fullName))
+			}
+			employees = strings.Join(employeeNames, "; ")
+		}
+
+		// Members
+		members := "N/A"
+		if len(media.Members) > 0 {
+			memberNames := make([]string, 0, len(media.Members))
+			for _, mem := range media.Members {
+				fullName := fmt.Sprintf("%s %s", mem.FirstName, mem.LastName)
+				memberNames = append(memberNames, sanitizeCSVField(fullName))
+			}
+			members = strings.Join(memberNames, "; ")
+		}
+
+		// Owners
+		owners := "N/A"
+		if len(media.Owners) > 0 {
+			ownerNames := make([]string, 0, len(media.Owners))
+			for _, own := range media.Owners {
+				fullName := fmt.Sprintf("%s %s", own.FirstName, own.LastName)
+				ownerNames = append(ownerNames, sanitizeCSVField(fullName))
+			}
+			owners = strings.Join(ownerNames, "; ")
+		}
+
+		// Admins
+		admins := "N/A"
+		if len(media.Admins) > 0 {
+			adminNames := make([]string, 0, len(media.Admins))
+			for _, adm := range media.Admins {
+				fullName := fmt.Sprintf("%s %s", adm.FirstName, adm.LastName)
+				adminNames = append(adminNames, sanitizeCSVField(fullName))
+			}
+			admins = strings.Join(adminNames, "; ")
+		}
+
+		// Companies
+		companies := "N/A"
+		if len(media.Companies) > 0 {
+			companyNames := make([]string, 0, len(media.Companies))
+			for _, comp := range media.Companies {
+				companyNames = append(companyNames, sanitizeCSVField(comp.Name))
+			}
+			companies = strings.Join(companyNames, "; ")
+		}
+
+		// Branches
+		branches := "N/A"
+		if len(media.Branches) > 0 {
+			branchNames := make([]string, 0, len(media.Branches))
+			for _, branch := range media.Branches {
+				branchNames = append(branchNames, sanitizeCSVField(branch.Name))
+			}
+			branches = strings.Join(branchNames, "; ")
+		}
+
+		// Assemble the record
+		record := []string{
+			id,
+			fileName,
+			fileSize,
+			fileType,
+			storageKey,
+			url,
+			key,
+			bucketName,
+			downloadURL,
+			createdAt,
+			updatedAt,
+			employees,
+			members,
+			owners,
+			admins,
+			companies,
+			branches,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"File Name",
+		"File Size",
+		"File Type",
+		"Storage Key",
+		"URL",
+		"Key",
+		"Bucket Name",
+		"Download URL",
+		"Created At",
+		"Updated At",
+		"Employees",
+		"Members",
+		"Owners",
+		"Admins",
+		"Companies",
+		"Branches",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateMediaRequest(req *MediaRequest) error {
