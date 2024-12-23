@@ -20,4 +20,3 @@ export interface CompanyResource {
 }
 
 export type CompanyPaginatedResource = FilterPages<CompanyResource>
-
