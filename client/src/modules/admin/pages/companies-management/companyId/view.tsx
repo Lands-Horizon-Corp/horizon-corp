@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { useParams } from '@tanstack/react-router'
+import { useParams, Link } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 
 import {
@@ -19,11 +19,11 @@ import UserAvatar from '@/components/user-avatar'
 import { Separator } from '@/components/ui/separator'
 
 import { cn } from '@/lib'
-import { companyLoader } from './route'
 import { toReadableDate } from '@/utils'
 import { OwnerResource } from '@/horizon-corp/types/profile'
 import CompanyAcceptBar from '@/modules/admin/components/company-accept-bar'
-import { Link } from '@tanstack/react-router'
+
+import { companyLoader } from '@/hooks/api-hooks/use-company'
 
 const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
     const AccountBadge = useMemo(() => {

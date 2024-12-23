@@ -1,8 +1,7 @@
 import z from 'zod'
-import { toast } from 'sonner'
+import { useEffect } from 'react'
 import { LatLngLiteral } from 'leaflet'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
@@ -22,25 +21,26 @@ import { LoadingSpinnerIcon } from '@/components/icons'
 import FormErrorMessage from '@/components/ui/form-error-message'
 
 import { cn } from '@/lib'
-import { withCatchAsync } from '@/utils'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { serverRequestErrExtractor } from '@/helpers'
 import { CompanyResource } from '@/horizon-corp/types'
-import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+import { useUpdateCompany } from '@/hooks/api-hooks/use-company'
 
 type TCompanyBasicInfo = Omit<CompanyResource, 'owner' | 'media' | 'branches'>
 
 interface CompanyEditBasicInfoFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<TCompanyBasicInfo>, CompanyResource, string> {
+        IForm<TCompanyBasicInfo, CompanyResource, string> {
     companyId: number
 }
 
 const CompanyBasicInfoFormSchema = z.object({
     name: z.string().min(1, 'Company name is required'),
-    description: z.string().min(1, 'Company description is required'),
-    address: z.string().min(1, 'Company address is required'),
+    description: z
+        .string()
+        .min(1, 'Company description is required')
+        .optional(),
+    address: z.string().min(1, 'Company address is required').optional(),
     longitude: z.coerce.number().optional(),
     latitude: z.coerce.number().optional(),
     contactNumber: z.string(),
@@ -75,37 +75,21 @@ const CompanyEditBasicInfoForm = ({
         mutate: save,
         error,
         reset,
-    } = useMutation<
-        CompanyResource,
-        string,
-        z.infer<typeof CompanyBasicInfoFormSchema>
-    >({
-        mutationKey: ['admin', 'company', companyId],
-        mutationFn: async (data) => {
-            onLoading?.(true)
+    } = useUpdateCompany((data) => {
+        onSuccess?.(data)
+        form.reset(data)
+    }, onError)
 
-            const [error, response] = await withCatchAsync(
-                CompanyService.update(companyId, data)
-            )
-
-            onLoading?.(false)
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                if (onError) onError?.(errorMessage)
-                else toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            onSuccess?.(response)
-            return response
-        },
-    })
+    useEffect(() => {
+        onLoading?.(isPending)
+    }, [isPending, onLoading])
 
     return (
         <form
             className={cn('flex flex-col gap-y-2', className)}
-            onSubmit={form.handleSubmit((data) => save(data))}
+            onSubmit={form.handleSubmit((data) =>
+                save({ id: companyId, data })
+            )}
         >
             <Form {...form}>
                 <fieldset

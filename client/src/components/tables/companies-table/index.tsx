@@ -3,9 +3,8 @@ import {
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
-import { toast } from 'sonner'
 import { useCallback, useMemo } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -18,10 +17,9 @@ import companyColumns, { companyGlobalSearchTargets } from './columns'
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
-import { withCatchAsync, toBase64 } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
+import { CompanyResource } from '@/horizon-corp/types'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import { CompanyPaginatedResource, CompanyResource } from '@/horizon-corp/types'
+import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
 
 const CompaniesTable = ({
     className,
@@ -74,36 +72,7 @@ const CompaniesTable = ({
         isPending,
         isRefetching,
         refetch,
-    } = useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['table', 'company', filterState.finalFilters, pagination],
-        queryFn: async () => {
-            const [error, result] = await withCatchAsync(
-                CompanyService.filter(
-                    toBase64({
-                        preloads: ['Media', 'Owner'],
-                        ...pagination,
-                        ...filterState.finalFilters,
-                    })
-                )
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            return result
-        },
-        initialData: {
-            data: [],
-            pages: [],
-            totalSize: 0,
-            totalPage: 1,
-            ...pagination,
-        },
-        retry: 1,
-    })
+    } = useFilteredPaginatedCompanies(filterState, pagination)
 
     const handleRowSelectionChange = createHandleRowSelectionChange(data)
 

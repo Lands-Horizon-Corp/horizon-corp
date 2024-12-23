@@ -3,25 +3,12 @@ import {
   createRoute,
   lazyRouteComponent,
 } from '@tanstack/react-router'
-import { queryOptions } from '@tanstack/react-query'
 
 import CompanyErrorPage from './error'
 import { adminCompaniesManagement } from '../route'
 import { companyIdPathSchema } from './route-schemas'
-import { CompanyResource } from '@/horizon-corp/types'
-import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 import AdminCompanyBranchRoute from './branches/route'
-
-// pre-loader of company desu
-export const companyLoader = (companyId: number) =>
-  queryOptions<CompanyResource>({
-    queryKey: ['company', companyId],
-    queryFn: async () => {
-      const data = await CompanyService.getById(companyId, ["Owner", "Owner.Media", "Media"])
-      return data
-    },
-    retry: 0,
-  })
+import { companyLoader } from '@/hooks/api-hooks/use-company'
 
 export const adminCompanyId = createRoute({
   getParentRoute: () => adminCompaniesManagement,

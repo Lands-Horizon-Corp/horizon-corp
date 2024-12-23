@@ -2,8 +2,7 @@ import { useParams } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 
 import CompanyBasicInfoForm from '@/modules/admin/components/forms/company-edit-basic-info-form'
-
-import { companyLoader } from './route'
+import { companyLoader } from '@/hooks/api-hooks/use-company'
 
 const CompanyEditPage = () => {
     const { companyId } = useParams({
