@@ -4,7 +4,7 @@ import {
     getSortedRowModel,
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -26,6 +26,7 @@ const CompaniesTable = ({
     className,
     onSelectData,
 }: TableProps<CompanyResource>) => {
+    const queryClient = useQueryClient()
     const {
         sorting,
         setSorting,
@@ -129,8 +130,19 @@ const CompaniesTable = ({
                         isLoading: isPending || isRefetching,
                     }}
                     deleteActionProps={{
-                        isLoading: false,
-                        onClick: () => {},
+                        onDeleteSuccess: () =>
+                            queryClient.invalidateQueries({
+                                queryKey: [
+                                    'company',
+                                    'table',
+                                    filterState.finalFilters,
+                                    pagination,
+                                ],
+                            }),
+                        onDelete: (selectedData) =>
+                            CompanyService.deleteMany(
+                                selectedData.map((data) => data.id)
+                            ),
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
