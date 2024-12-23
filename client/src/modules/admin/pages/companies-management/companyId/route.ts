@@ -17,7 +17,7 @@ export const companyLoader = (companyId: number) =>
   queryOptions<CompanyResource>({
     queryKey: ['company', companyId],
     queryFn: async () => {
-      const data = await CompanyService.getById(companyId, ["Owner"])
+      const data = await CompanyService.getById(companyId, ["Owner", "Owner.Media"])
       return data
     },
     retry: 0,

@@ -61,6 +61,9 @@ func (r *Repository[T]) Create(entity *T, preloads ...string) error {
 // FindByID retrieves an entity by its ID with optional preloads.
 func (r *Repository[T]) FindByID(id uint, preloads ...string) (*T, error) {
 	var entity T
+	fmt.Println("hello world --------")
+	fmt.Println(preloads)
+	fmt.Println("hello world --------")
 	query := r.applyPreloads(r.DB.Client, preloads)
 
 	result := query.First(&entity, id)
