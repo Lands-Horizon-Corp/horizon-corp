@@ -108,10 +108,6 @@ func (as *CompanyService) ExportSelected(ctx *gin.Context) {
 	fmt.Println("Export all selected")
 }
 
-func (as *CompanyService) ExportCurrentPage(ctx *gin.Context) {
-	fmt.Println("Export all current page")
-}
-
 func (as *CompanyService) RegisterRoutes() {
 	routes := as.engine.Client.Group("/api/v1/company")
 	routes.Use(as.middle.AuthMiddleware())
