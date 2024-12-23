@@ -179,4 +179,17 @@ export default class BranchService {
     // Make the DELETE request with the payload
     await UseServer.delete<void>(endpoint, payload)
   }
+
+
+  /**
+ * Verifies a branch by its ID.
+ *
+ * @param {number} id - The ID of the branch to verify.
+ * @returns {Promise<BranchResource>} - A promise that resolves to the verified branch resource.
+ */
+  public static async verify(id: number): Promise<BranchResource> {
+    const endpoint = `${BranchService.BASE_ENDPOINT}/verify/${id}`;
+    const response = await UseServer.post<void, BranchResource>(endpoint);
+    return response.data;
+  }
 }

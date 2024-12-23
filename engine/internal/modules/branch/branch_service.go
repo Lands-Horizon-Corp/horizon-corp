@@ -1,8 +1,10 @@
 package branch
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
@@ -11,6 +13,7 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type BranchService struct {
@@ -135,6 +138,41 @@ func (bs *BranchService) SearchFilter(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
+func (as *BranchService) Verify(ctx *gin.Context) {
+	userClaims, err := as.getUserClaims(ctx)
+	if err != nil {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	if userClaims.AccountType != "Admin" {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	idParam := ctx.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	preloads := ctx.QueryArray("preloads")
+	branch := &models.Branch{
+		IsAdminVerified: true,
+	}
+	result, err := as.modelResource.BranchDB.UpdateColumns(uint(id), *branch, preloads)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Entity not found"})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	ctx.JSON(http.StatusOK, as.modelResource.BranchToResource(result))
+}
+
 func (bs *BranchService) ExportAll(ctx *gin.Context) {
 	userClaims, err := bs.getUserClaims(ctx)
 	if err != nil {
@@ -234,6 +272,7 @@ func (bs *BranchService) RegisterRoutes() {
 		routes.PUT("/:id", bs.controller.Update)
 		routes.DELETE("/:id", bs.controller.Delete)
 		routes.DELETE("/bulk-delete", bs.controller.DeleteMany)
+		routes.POST("/verify/:id", bs.Verify)
 
 		// Export routes
 		routes.GET("/export", bs.ExportAll)

@@ -1,7 +1,10 @@
 package company
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
@@ -9,6 +12,7 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type CompanyService struct {
@@ -50,6 +54,21 @@ func NewCompanyService(
 	}
 }
 
+func (ts *CompanyService) getUserClaims(ctx *gin.Context) (*providers.UserClaims, error) {
+	claims, exists := ctx.Get("claims")
+	if !exists {
+		ts.tokenProvider.ClearTokenCookie(ctx)
+		return nil, fmt.Errorf("claims not found in context")
+	}
+
+	userClaims, ok := claims.(*providers.UserClaims)
+	if !ok {
+		ts.tokenProvider.ClearTokenCookie(ctx)
+		return nil, fmt.Errorf("failed to cast claims to *auth.UserClaims")
+	}
+	return userClaims, nil
+}
+
 func (as *CompanyService) SearchFilter(ctx *gin.Context) {
 	filterParam := ctx.Query("filter")
 	if filterParam == "" {
@@ -82,6 +101,41 @@ func (as *CompanyService) SearchFilter(ctx *gin.Context) {
 		"totalSize": companies.TotalSize,
 		"pages":     companies.Pages,
 	})
+}
+
+func (as *CompanyService) Verify(ctx *gin.Context) {
+
+	userClaims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	if userClaims.AccountType != "Admin" {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	idParam := ctx.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	preloads := ctx.QueryArray("preloads")
+	company := &models.Company{
+		IsAdminVerified: true,
+	}
+	result, err := as.modelResource.CompanyDB.UpdateColumns(uint(id), *company, preloads)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Entity not found"})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	ctx.JSON(http.StatusOK, as.modelResource.CompanyToResource(result))
 }
 
 func (as *CompanyService) ExportAll(ctx *gin.Context) {
@@ -156,6 +210,7 @@ func (as *CompanyService) RegisterRoutes() {
 		routes.PUT("/:id", as.controller.Update)
 		routes.DELETE("/:id", as.controller.Delete)
 		routes.DELETE("/bulk-delete", as.controller.DeleteMany)
+		routes.POST("/verify/:id", as.Verify)
 
 		// Export routes
 		routes.GET("/export", as.ExportAll)
