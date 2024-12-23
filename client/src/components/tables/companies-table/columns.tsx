@@ -1,18 +1,18 @@
 import { toast } from 'sonner'
-import { useRouter } from '@tanstack/react-router'
 import { useMutation } from '@tanstack/react-query'
 import { ColumnDef, Row } from '@tanstack/react-table'
+import { useRouter, Link } from '@tanstack/react-router'
 
-import { Badge } from '@/components/ui/badge'
-import UserAvatar from '@/components/user-avatar'
-import { Checkbox } from '@/components/ui/checkbox'
-import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import {
     BadgeCheckFillIcon,
     BadgeCheckIcon,
     BadgeQuestionIcon,
     PushPinSlashIcon,
 } from '@/components/icons'
+import { Badge } from '@/components/ui/badge'
+import UserAvatar from '@/components/user-avatar'
+import { Checkbox } from '@/components/ui/checkbox'
+import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
@@ -27,6 +27,7 @@ import { CompanyResource } from '@/horizon-corp/types'
 import { toReadableDate, withCatchAsync } from '@/utils'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[] =
     [
@@ -37,13 +38,17 @@ export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[]
         { field: 'isAdminVerified', displayText: 'Verify Status' },
     ]
 
+interface ICompaniesTableActionProps {
+    row: Row<CompanyResource>
+    onDeleteSuccess?: () => void
+    onCompanyUpdate?: () => void
+}
+
 const CompaniesTableAction = ({
     row,
     onDeleteSuccess,
-}: {
-    row: Row<CompanyResource>
-    onDeleteSuccess?: () => void
-}) => {
+    onCompanyUpdate,
+}: ICompaniesTableActionProps) => {
     const company = row.original
 
     const router = useRouter()
@@ -53,7 +58,7 @@ const CompaniesTableAction = ({
         void,
         string
     >({
-        mutationKey: ['delete', 'company', company.id],
+        mutationKey: ['company', 'delete', company.id],
         mutationFn: async () => {
             const [error] = await withCatchAsync(
                 CompanyService.delete(company.id)
@@ -69,6 +74,25 @@ const CompaniesTableAction = ({
             onDeleteSuccess?.()
         },
     })
+
+    const { mutate: approveCompany, isPending: isApprovingCompany } =
+        useMutation<void, string>({
+            mutationKey: ['company', 'approve', company.id],
+            mutationFn: async () => {
+                const [error] = await withCatchAsync(
+                    CompanyService.verify(company.id)
+                )
+
+                if (error) {
+                    const errorMessage = serverRequestErrExtractor({ error })
+                    toast.error(errorMessage)
+                    throw errorMessage
+                }
+
+                toast.success('Company approved')
+                onCompanyUpdate?.()
+            },
+        })
 
     return (
         <RowActionsGroup
@@ -105,8 +129,22 @@ const CompaniesTableAction = ({
             otherActions={
                 <>
                     {!company.isAdminVerified && (
-                        <DropdownMenuItem>
-                            <BadgeCheckIcon className="mr-2" /> Approve
+                        <DropdownMenuItem
+                            onClick={() => {
+                                onOpen({
+                                    title: 'Approve Company',
+                                    description:
+                                        'Are you sure you want to approve this company? Approval will enable them to begin their operations.',
+                                    onConfirm: () => approveCompany(),
+                                })
+                            }}
+                        >
+                            {isApprovingCompany ? (
+                                <LoadingSpinner />
+                            ) : (
+                                <BadgeCheckIcon className="mr-2" />
+                            )}{' '}
+                            Approve
                         </DropdownMenuItem>
                     )}
                 </>
@@ -115,11 +153,9 @@ const CompaniesTableAction = ({
     )
 }
 
-const companiesTableColumns = ({
-    onDeleteSuccess,
-}: {
-    onDeleteSuccess?: () => void
-}): ColumnDef<CompanyResource>[] => {
+const companiesTableColumns = (
+    props: Omit<ICompaniesTableActionProps, 'row'>
+): ColumnDef<CompanyResource>[] => {
     return [
         {
             id: 'select',
@@ -142,10 +178,7 @@ const companiesTableColumns = ({
             ),
             cell: ({ row }) => (
                 <div className="flex w-fit items-center gap-x-1 px-0">
-                    <CompaniesTableAction
-                        row={row}
-                        onDeleteSuccess={onDeleteSuccess}
-                    />
+                    <CompaniesTableAction row={row} {...props} />
                     <Checkbox
                         checked={row.getIsSelected()}
                         onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -173,9 +206,19 @@ const companiesTableColumns = ({
             ),
             cell: ({
                 row: {
-                    original: { name },
+                    original: { id, name },
                 },
-            }) => <div>{name}</div>,
+            }) => (
+                <div onClick={(e) => e.stopPropagation()}>
+                    <Link
+                        params={{ companyId: id }}
+                        to="/admin/companies-management/$companyId/view"
+                        className="hover:underline"
+                    >
+                        {name}
+                    </Link>
+                </div>
+            ),
         },
         {
             id: 'Logo',

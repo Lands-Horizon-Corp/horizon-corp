@@ -4,7 +4,7 @@ import {
     getSortedRowModel,
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
@@ -28,15 +28,22 @@ const CompaniesTable = ({
     onSelectData,
 }: TableProps<CompanyResource>) => {
     const queryClient = useQueryClient()
+
+    const invalidateTableData = useCallback(
+        () =>
+            queryClient.invalidateQueries({
+                queryKey: ['table', 'company'],
+            }),
+        [queryClient]
+    )
+
     const columns = useMemo(
         () =>
             companyColumns({
-                onDeleteSuccess: () =>
-                    queryClient.invalidateQueries({
-                        queryKey: ['table', 'company'],
-                    }),
+                onDeleteSuccess: invalidateTableData,
+                onCompanyUpdate: invalidateTableData,
             }),
-        [queryClient]
+        [invalidateTableData]
     )
 
     const {
