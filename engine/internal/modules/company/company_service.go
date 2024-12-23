@@ -233,15 +233,15 @@ func (as *CompanyService) RegisterRoutes() {
 	routes := as.engine.Client.Group("/api/v1/company")
 	routes.Use(as.middle.AuthMiddleware())
 	{
-		routes.GET("/search", as.SearchFilter)
 		routes.POST("/", as.controller.Create)
 		routes.GET("/", as.controller.GetAll)
 		routes.GET("/:id", as.controller.GetByID)
 		routes.PUT("/:id", as.controller.Update)
-		routes.DELETE("/:id", as.controller.Delete)
-		routes.DELETE("/bulk-delete", as.controller.DeleteMany)
-		routes.POST("/verify/:id", as.Verify)
 
+		routes.POST("/verify/:id", as.middle.AuthMiddlewareAdminOnly(), as.Verify)
+		routes.GET("/search", as.middle.AuthMiddlewareAdminOnly(), as.SearchFilter)
+		routes.DELETE("/bulk-delete", as.middle.AuthMiddlewareAdminOnly(), as.controller.DeleteMany)
+		routes.DELETE("/:id", as.middle.AuthMiddlewareAdminOnly(), as.controller.Delete)
 		// Export routes
 		routes.GET("/export", as.ExportAll)
 		routes.GET("/export-search", as.ExportAllFiltered)

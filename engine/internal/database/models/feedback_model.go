@@ -4,6 +4,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -98,6 +99,16 @@ func (m *ModelResource) FeedbackToRecord(feedbacks []*Feedback) ([][]string, []s
 	return records, headers
 }
 
+func (m *ModelResource) FeedbackFilterForAdmin(filters string) (filter.FilterPages[Feedback], error) {
+	db := m.db.Client
+	return m.FeedbackDB.GetPaginatedResult(db, filters)
+}
+
+func (m *ModelResource) FeedbackFilterForAdminRecord(filters string) ([]*Feedback, error) {
+	db := m.db.Client
+	return m.FeedbackDB.GetFilteredResults(db, filters)
+}
+
 func (m *ModelResource) ValidateFeedbackRequest(req *FeedbackRequest) error {
 	validate := validator.New()
 	err := validate.Struct(req)
@@ -108,6 +119,52 @@ func (m *ModelResource) ValidateFeedbackRequest(req *FeedbackRequest) error {
 }
 
 func (m *ModelResource) FeedbackSeeders() error {
-	m.logger.Info("Seeding Feedback")
+	feedbacks := []Feedback{
+		{
+			Email:        "user1@example.com",
+			Description:  "Found a bug in the login page.",
+			FeedbackType: "bug",
+			Model: gorm.Model{
+				CreatedAt: time.Now().AddDate(0, 0, -20),
+				UpdatedAt: time.Now().AddDate(0, 0, -18),
+			},
+		},
+		{
+			Email:        "user2@example.com",
+			Description:  "Can we have a dark mode feature?",
+			FeedbackType: "feature",
+			Model: gorm.Model{
+				CreatedAt: time.Now().AddDate(0, 0, -19),
+				UpdatedAt: time.Now().AddDate(0, 0, -17),
+			},
+		},
+		{
+			Email:        "user3@example.com",
+			Description:  "The website is very user-friendly!",
+			FeedbackType: "general",
+			Model: gorm.Model{
+				CreatedAt: time.Now().AddDate(0, 0, -18),
+				UpdatedAt: time.Now().AddDate(0, 0, -16),
+			},
+		},
+	}
+
+	for i := 4; i <= 20; i++ {
+		feedbacks = append(feedbacks, Feedback{
+			Email:        "user" + strconv.Itoa(i) + "@example.com",
+			Description:  "Sample feedback description for user " + strconv.Itoa(i) + ".",
+			FeedbackType: []string{"bug", "feature", "general"}[i%3],
+			Model: gorm.Model{
+				CreatedAt: time.Now().AddDate(0, 0, -i),
+				UpdatedAt: time.Now().AddDate(0, 0, -i+1),
+			},
+		})
+	}
+
+	if err := m.db.Client.Create(&feedbacks).Error; err != nil {
+		return err
+	}
+
+	m.logger.Info("Feedback seeding completed successfully.")
 	return nil
 }

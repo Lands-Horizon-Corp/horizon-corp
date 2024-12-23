@@ -63,36 +63,6 @@ export default class FeedbackService {
     await UseServer.delete<void>(endpoint)
   }
 
-  /**
-   * Updates an existing feedback by its ID with optional preloads.
-   *
-   * @param {number} id - The ID of the feedback to update.
-   * @param {FeedbackRequest} feedbackData - The updated data for the feedback.
-   * @param {string[]} [preloads] - Optional array of relations to preload.
-   * @returns {Promise<FeedbackResource>} - A promise that resolves to the updated feedback resource.
-   */
-  public static async update(
-    id: number,
-    feedbackData: FeedbackRequest,
-    preloads?: string[]
-  ): Promise<FeedbackResource> {
-    // Construct each preload as a separate 'preloads' query parameter
-    const preloadParams = preloads?.map(preload => `preloads=${encodeURIComponent(preload)}`).join('&') || '';
-    const separator = preloadParams ? '?' : '';
-    const endpoint = `${FeedbackService.BASE_ENDPOINT}/${id}${separator}${preloadParams}`;
-
-    // Make the PUT request with necessary headers
-    const response = await UseServer.put<FeedbackRequest, FeedbackResource>(
-      endpoint,
-      feedbackData,
-      {
-        headers: {
-          'Authorization': `Bearer YOUR_TOKEN`, // Replace with actual token if needed
-        },
-      }
-    )
-    return response.data
-  }
 
   /**
    * Filters feedbacks based on provided filters with optional preloads.
