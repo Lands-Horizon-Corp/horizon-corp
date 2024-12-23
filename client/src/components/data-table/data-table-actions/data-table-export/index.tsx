@@ -1,6 +1,6 @@
 import { toast } from 'sonner'
-import { PaginationState, Table } from '@tanstack/react-table'
 import { useQuery } from '@tanstack/react-query'
+import { PaginationState, Table } from '@tanstack/react-table'
 
 import {
     DropdownMenu,
@@ -26,9 +26,9 @@ export interface IDataTableExportProps<TData> {
     pagination: PaginationState
 
     exportAll?: () => Promise<void>
-    exportCurrentPage?: (pageIndex: number) => Promise<void>
     exportSelected?: (rowsSelected: TData[]) => Promise<void>
     exportAllFiltered?: (base64Filter: string) => Promise<void>
+    exportCurrentPage?: (rowsSelected: TData[]) => Promise<void>
 }
 
 const DataTableExport = <TData,>({
@@ -53,10 +53,10 @@ const DataTableExport = <TData,>({
         toast.error(message ?? 'Export Failed!')
 
     const { refetch: exportSelectedData, isFetching: isExportingSelected } =
-        useQuery<void, string>({
+        useQuery<boolean, string>({
             queryKey: ['export', selectedData],
             queryFn: async () => {
-                if (!exportSelected) return
+                if (!exportSelected) return false
 
                 const [error] = await withCatchAsync(
                     exportSelected(selectedData)
@@ -69,6 +69,7 @@ const DataTableExport = <TData,>({
                 }
 
                 onSuccessToast()
+                return true
             },
             enabled: false,
         })
@@ -97,23 +98,23 @@ const DataTableExport = <TData,>({
     })
 
     const { refetch: exportAllData, isFetching: isExportingAll } = useQuery<
-        void,
-        string,
-        TData[]
+        boolean,
+        string
     >({
         queryKey: ['export', 'all'],
         queryFn: async () => {
-            if (!exportAll) return
+            if (!exportAll) return false
 
             const [error] = await withCatchAsync(exportAll?.())
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 onFailedToast(errorMessage)
-                throw errorMessage
+                throw new Error(errorMessage)
             }
 
             onSuccessToast()
+            return true
         },
         enabled: false,
     })
@@ -121,25 +122,22 @@ const DataTableExport = <TData,>({
     const {
         refetch: exportCurrentPageData,
         isFetching: isExportingCurrentPage,
-    } = useQuery<void, string, TData[]>({
-        queryKey: ['export', /* filter ,*/ pagination],
-
+    } = useQuery<boolean, string>({
+        queryKey: ['export', 'currentPage', pagination],
         queryFn: async () => {
-            if (!exportCurrentPage) return
-
+            if (!exportCurrentPage) return false
+            const rows = table.getCoreRowModel().rows
+            const originalData = rows.map((row) => row.original)
             const [error] = await withCatchAsync(
-                /* not sure I think this should have a filter since the page result will also affected by filters 
-                and also pageSize is important so the server knows how many row in current page desyo*/
-                exportCurrentPage?.(pagination.pageIndex)
+                exportCurrentPage(originalData)
             )
-
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 onFailedToast(errorMessage)
-                throw errorMessage
+                throw new Error(errorMessage)
             }
-
             onSuccessToast()
+            return true
         },
         enabled: false,
     })
@@ -160,7 +158,7 @@ const DataTableExport = <TData,>({
                     disabled={disabled || isLoading || forceDisabled}
                     className="gap-x-1 rounded-md"
                 >
-                    <ExportIcon className="size-4 mr-2" />
+                    <ExportIcon className="mr-2 size-4" />
                     {isLoading ? <LoadingSpinner /> : 'Export'}
                 </Button>
             </DropdownMenuTrigger>
@@ -204,7 +202,6 @@ const DataTableExport = <TData,>({
                         >
                             <CsvIcon className="mr-2 size-4 text-emerald-600" />
                             <span>Export Current Page</span>
-                            {/* With ID's */}
                         </DropdownMenuItem>
                     )}
                 </DropdownMenuGroup>

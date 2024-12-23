@@ -125,8 +125,8 @@ const CompaniesTable = ({
                     }}
                     table={table}
                     refreshActionProps={{
-                        isLoading: isPending || isRefetching,
                         onClick: () => refetch(),
+                        isLoading: isPending || isRefetching,
                     }}
                     deleteActionProps={{
                         isLoading: false,
@@ -140,10 +140,13 @@ const CompaniesTable = ({
                         disabled: isPending || isRefetching,
                         exportAll: CompanyService.exportAll,
                         exportAllFiltered: CompanyService.exportAllFiltered,
-                        exportCurrentPage: CompanyService.exportCurrentPage,
+                        exportCurrentPage: (ids) =>
+                            CompanyService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
                         exportSelected: (ids) =>
                             CompanyService.exportSelected(
-                                ids.map(({ id }) => id)
+                                ids.map((data) => data.id)
                             ),
                     }}
                     filterLogicProps={{
