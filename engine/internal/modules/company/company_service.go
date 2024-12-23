@@ -1,7 +1,6 @@
 package company
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
@@ -105,8 +104,7 @@ func (as *CompanyService) ExportAllFiltered(ctx *gin.Context) {
 }
 
 func (as *CompanyService) ExportSelected(ctx *gin.Context) {
-	fmt.Println("Export all selected")
-	// GetFilteredResults
+	as.companyExport.ExportSelected(ctx)
 }
 
 func (as *CompanyService) RegisterRoutes() {

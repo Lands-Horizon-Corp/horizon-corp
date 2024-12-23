@@ -98,6 +98,22 @@ func (r *Repository[T]) Update(entity *T, preloads []string) error {
 	return nil
 }
 
+// GetAllByIDs retrieves all entities by a slice of IDs with optional preloads.
+func (r *Repository[T]) GetAllByIDs(ids []uint, preloads ...string) ([]*T, error) {
+	if len(ids) == 0 {
+		return nil, fmt.Errorf("no IDs provided for retrieval")
+	}
+	var entities []*T
+	query := r.applyPreloads(r.DB.Client, preloads).Where("id IN ?", ids)
+
+	result := query.Find(&entities)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to retrieve entities: %w", result.Error)
+	}
+
+	return entities, nil
+}
+
 func (r *Repository[T]) UpdateByID(id uint, updates *T, preloads ...string) (*T, error) {
 	var entity T
 	db := r.DB.Client

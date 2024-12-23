@@ -136,10 +136,15 @@ export default class CompanyService {
    * @returns {Promise<void>} - A promise that resolves when the export is complete.
    */
   public static async exportSelected(ids: number[]): Promise<void> {
-    const query = ids.map((id) => `ids=${id}`).join('&')
+    if (ids.length === 0) {
+      throw new Error('No company IDs provided for export.')
+    }
+
+    const query = ids.map((id) => `ids=${encodeURIComponent(id)}`).join('&')
     const url = `${CompanyService.BASE_ENDPOINT}/export-selected?${query}`
     await downloadFile(url, 'selected_companies_export.csv')
   }
+
 
   /**
    * Deletes multiple companies by their IDs.
