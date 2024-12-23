@@ -125,7 +125,7 @@ export default class CompanyService {
    */
   public static async exportAllFiltered(filters?: string): Promise<void> {
     const url = `${CompanyService.BASE_ENDPOINT}/export-search?filter=${encodeURIComponent(filters || '')}`
-    await downloadFile(url, 'filtered_companies_export.xlsx')
+    await downloadFile(url, 'filtered_companies_export.csv')
   }
 
   /**
@@ -137,6 +137,6 @@ export default class CompanyService {
   public static async exportSelected(ids: number[]): Promise<void> {
     const query = ids.map((id) => `ids=${id}`).join('&')
     const url = `${CompanyService.BASE_ENDPOINT}/export-selected?${query}`
-    await downloadFile(url, 'selected_companies_export.xlsx')
+    await downloadFile(url, 'selected_companies_export.csv')
   }
 }

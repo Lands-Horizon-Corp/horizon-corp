@@ -1,6 +1,7 @@
 package company
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
@@ -10,29 +11,29 @@ import (
 )
 
 type CompanyExport struct {
-	db             *providers.DatabaseService
-	modelsResource *models.ModelResource
+	db            *providers.DatabaseService
+	modelResource *models.ModelResource
 }
 
 func NewCompanyExport(
 	db *providers.DatabaseService,
-	modelsResource *models.ModelResource,
+	modelResource *models.ModelResource,
 ) *CompanyExport {
 	return &CompanyExport{
-		db:             db,
-		modelsResource: modelsResource,
+		db:            db,
+		modelResource: modelResource,
 	}
 }
 
 func (ce *CompanyExport) ExportAll(ctx *gin.Context) {
-	company, err := ce.modelsResource.CompanyDB.FindAll()
+	company, err := ce.modelResource.CompanyDB.FindAll()
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "Failed to export CSV: %v", err)
 		return
 	}
-	record, headers := ce.modelsResource.CompanyToRecord(company)
+	record, headers := ce.modelResource.CompanyToRecord(company)
 	csvManager := managers.NewCSVManager()
-	csvManager.SetFileName("sample.csv")
+	csvManager.SetFileName("company-export-all.csv")
 	csvManager.SetHeaders(headers)
 	csvManager.AddRecords(record)
 	if err := csvManager.WriteCSV(ctx); err != nil {
@@ -41,8 +42,30 @@ func (ce *CompanyExport) ExportAll(ctx *gin.Context) {
 	}
 }
 
-func (ce *CompanyExport) ExportAllFiltered() {
-
+func (ce *CompanyExport) ExportAllFiltered(ctx *gin.Context) {
+	filterParam := ctx.Query("filter")
+	if filterParam == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
+		return
+	}
+	company, err := ce.modelResource.CompanyFilterForAdminRecord(filterParam)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Companies not found."})
+		return
+	}
+	record, headers := ce.modelResource.CompanyToRecord(company)
+	fmt.Println("------")
+	fmt.Println(record)
+	fmt.Println(headers)
+	fmt.Println("------")
+	csvManager := managers.NewCSVManager()
+	csvManager.SetFileName("company-export-all-filtered.csv")
+	csvManager.SetHeaders(headers)
+	csvManager.AddRecords(record)
+	if err := csvManager.WriteCSV(ctx); err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
+		return
+	}
 }
 
 func (ce *CompanyExport) ExportSelected() {

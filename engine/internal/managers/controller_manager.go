@@ -2,7 +2,6 @@ package managers
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"reflect"
 	"strconv"
@@ -56,7 +55,6 @@ func (h *Controller[T, V, R]) Create(c *gin.Context) {
 
 	entity, err := h.mapToEntity(&req)
 	if err != nil {
-		fmt.Println("Mapping Error:", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to map create data"})
 		return
 	}

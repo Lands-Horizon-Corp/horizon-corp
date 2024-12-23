@@ -101,11 +101,12 @@ func (as *CompanyService) ExportAll(ctx *gin.Context) {
 }
 
 func (as *CompanyService) ExportAllFiltered(ctx *gin.Context) {
-	fmt.Println("Export all filtered")
+	as.companyExport.ExportAllFiltered(ctx)
 }
 
 func (as *CompanyService) ExportSelected(ctx *gin.Context) {
 	fmt.Println("Export all selected")
+	// GetFilteredResults
 }
 
 func (as *CompanyService) RegisterRoutes() {
@@ -122,6 +123,6 @@ func (as *CompanyService) RegisterRoutes() {
 		// Export routes
 		routes.GET("/export", as.ExportAll)
 		routes.GET("/export-search", as.ExportAllFiltered)
-		routes.POST("/export-selected", as.ExportSelected)
+		routes.GET("/export-selected", as.ExportSelected)
 	}
 }

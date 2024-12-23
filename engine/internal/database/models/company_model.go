@@ -195,6 +195,10 @@ func (m *ModelResource) CompanyFilterForAdmin(filters string) (filter.FilterPage
 	db := m.db.Client
 	return m.CompanyDB.GetPaginatedResult(db, filters)
 }
+func (m *ModelResource) CompanyFilterForAdminRecord(filters string) ([]*Company, error) {
+	db := m.db.Client
+	return m.CompanyDB.GetFilteredResults(db, filters)
+}
 
 func (m *ModelResource) CompanySeeders() error {
 	m.logger.Info("Seeding Company")
