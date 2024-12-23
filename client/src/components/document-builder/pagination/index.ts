@@ -23,9 +23,9 @@ const createPageBreak = (pos: number) => {
     pageBreak.className = 'page-break';
     pageBreak.style.height = '20px';
     pageBreak.style.width = '100%';
-    pageBreak.style.borderTop = '1px dashed #ccc';
-    pageBreak.style.marginTop = '10px';
-    pageBreak.style.marginBottom = '10px';
+    pageBreak.style.borderTop = '2px dashed #ccc';
+    pageBreak.style.marginTop = '20px';
+    pageBreak.style.marginBottom = '20px';
     pageBreak.style.pageBreakAfter = 'always';
     return pageBreak;
   });
@@ -80,68 +80,20 @@ export const Pagination = Extension.create<PaginationOptions>({
             const options = pluginKey.getState(state);
             const { pageHeight, pageMargin } = options;
 
-            console.log('currentHeight', currentHeight)
-          
             doc.descendants((node: Node, pos: number) => {
-              // Check if the editor and view are initialized
               if (!this.editor || !this.editor.view || this.editor.view.isDestroyed) {
-                // console.log('Editor or editor view is not initialized or has been destroyed.');
                 return;
               }
           
-              // Ensure the position is within bounds
               if (pos < 0 || pos > doc.content.size) {
-                // console.log(Invalid position ${pos});
                 return;
               }
           
-              // Delay execution to ensure DOM is stable
               const dom = this.editor.view.nodeDOM(pos);
               if (!dom || !(dom instanceof HTMLElement)) {
-                // console.log(nodeDOM is null for position ${pos}. Skipping node processing.);
                 return;
               }
-        
-            //   // Handle tables specifically
-            //   // if (node.type.name === 'table') {
-            //   //   const tableRows = Array.from(dom.querySelectorAll('tr'));
-            //   //   let tableHeight = 0;
-            //   //   let remainingHeight = pageHeight - currentHeight - 2 * pageMargin;
-        
-            //   //   let fragment = document.createElement('table');
-            //   //   fragment.innerHTML = '<tbody></tbody>';
-            //   //   let tbody = fragment.querySelector('tbody')!;
-                
-            //   //   for (let row of tableRows) {
-            //   //     const rowHeight = row.offsetHeight || 0;
-        
-            //   //     if (tableHeight + rowHeight > remainingHeight) {
-            //   //       if (tbody.children.length > 0) {
-            //   //         decorations.push(Decoration.widget(pos, () => fragment));
-            //   //         decorations.push(createPageBreak(pos));
-            //   //       }
-        
-            //   //       currentHeight = 0;
-            //   //       remainingHeight = pageHeight - 2 * pageMargin;
-            //   //       tableHeight = 0;
-        
-            //   //       fragment = document.createElement('table');
-            //   //       fragment.innerHTML = '<tbody></tbody>';
-            //   //       tbody = fragment.querySelector('tbody')!;
-            //   //     }
-        
-            //   //     tbody.appendChild(row.cloneNode(true));
-            //   //     tableHeight += rowHeight;
-            //   //   }
-        
-            //   //   if (tbody.children.length > 0) {
-            //   //     decorations.push(Decoration.widget(pos, () => fragment));
-            //   //   }
-        
-            //   //   currentHeight += tableHeight;
-            //   //   return;
-            //   // }
-        
+
               if (['tableRow', 'tableCell', 'tableHeader'].includes(node.type.name)) {
                 currentHeight = 0
                 return;
@@ -156,8 +108,6 @@ export const Pagination = Extension.create<PaginationOptions>({
               }
               currentHeight += nodeHeight;
             });
-
-            // console.log('decorations', decorations)
              return DecorationSet.create(doc, decorations);
           }
         },

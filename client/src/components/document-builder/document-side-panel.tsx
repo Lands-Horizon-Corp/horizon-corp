@@ -1,7 +1,6 @@
 import { Editor } from '@tiptap/react'
 import React from 'react'
 import ReactDOMServer from 'react-dom/server'
-import { Button } from '../ui/button'
 import {
     Sidebar,
     SidebarContent,
@@ -9,21 +8,14 @@ import {
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
-    SidebarHeader,
     SidebarMenu,
-    SidebarMenuAction,
     SidebarMenuButton,
     SidebarMenuItem,
     SidebarMenuSub,
     SidebarMenuSubItem,
 } from '@/components/ui/sidebar'
-import {
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
-    DropdownMenuItem,
-} from '@radix-ui/react-dropdown-menu'
-import { ChevronDown, Home, MoreHorizontal, Table2Icon } from 'lucide-react'
+
+import { Table2Icon } from 'lucide-react'
 import {
     Collapsible,
     CollapsibleContent,
@@ -42,12 +34,12 @@ const headers = ['Id', 'Name', 'Bday', 'Age', 'Gender']
 const Person: any[] = []
 
 for (let i = 1; i <= 50; i++) {
-    const randomYear = Math.floor(Math.random() * (2005 - 1970 + 1)) + 1970 
-    const randomMonth = Math.floor(Math.random() * 12) + 1 
-    const randomDay = Math.floor(Math.random() * 28) + 1    
+    const randomYear = Math.floor(Math.random() * (2005 - 1970 + 1)) + 1970
+    const randomMonth = Math.floor(Math.random() * 12) + 1
+    const randomDay = Math.floor(Math.random() * 28) + 1
     const bday = `${randomYear}-${String(randomMonth).padStart(2, '0')}-${String(randomDay).padStart(2, '0')}`
-    const age = new Date().getFullYear() - randomYear 
-    const gender = Math.random() > 0.5 ? 'Male' : 'Female' 
+    const age = new Date().getFullYear() - randomYear
+    const gender = Math.random() > 0.5 ? 'Male' : 'Female'
     const name = `Person ${i}`
 
     Person.push({
@@ -113,9 +105,7 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
     menuItems,
     editor,
 }) => {
-    
     const insertTable = (tableName: string) => () => {
-        console.log(tableName)
         if (!tableName) return
         if (tableName === 'Accounts') {
             editor?.commands.insertContent(generateTableHTML(headers, Person))
@@ -167,7 +157,7 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
 const menuItems: SidebarMenuItem[] = [
     {
         label: 'Customers',
-        icon: <FaUsers />, 
+        icon: <FaUsers />,
         subItems: [
             {
                 label: 'Accounts',
@@ -188,7 +178,7 @@ const menuItems: SidebarMenuItem[] = [
     },
     {
         label: 'Accounts',
-        icon: <FaDollarSign />, // Icon for Accounts
+        icon: <FaDollarSign />,
         subItems: [
             {
                 label: 'Transactions',
@@ -209,7 +199,7 @@ const menuItems: SidebarMenuItem[] = [
     },
     {
         label: 'Loans',
-        icon: <FaExchangeAlt />, // Icon for Loans
+        icon: <FaExchangeAlt />,
         subItems: [
             {
                 label: 'Loan Payments',
@@ -230,7 +220,7 @@ const menuItems: SidebarMenuItem[] = [
     },
     {
         label: 'Cards',
-        icon: <FaCreditCard />, // Icon for Cards
+        icon: <FaCreditCard />,
         subItems: [
             {
                 label: 'Card Transactions',
@@ -251,7 +241,7 @@ const menuItems: SidebarMenuItem[] = [
     },
     {
         label: 'Branches',
-        icon: <FaBuilding />, // Icon for Branches
+        icon: <FaBuilding />,
         subItems: [
             {
                 label: 'Employees',
@@ -278,14 +268,20 @@ interface DocumenetSidePanelProps {
 
 const DocumenetSidePanel = ({ editor }: DocumenetSidePanelProps) => {
     return (
-        <Sidebar side="right" className="pt-14">
+        <Sidebar side="right" className="">
             <SidebarGroup>
-            <SidebarGroupLabel> <Table2Icon className='mr-2' size={18} /> Tables</SidebarGroupLabel>
-             <SidebarGroupContent>
-             <SidebarContent className="">
-                <SidebarMenuContainer editor={editor} menuItems={menuItems} />
-            </SidebarContent>
-             </SidebarGroupContent>
+                <SidebarGroupLabel>
+                    {' '}
+                    <Table2Icon className="mr-2" size={18} /> Tables
+                </SidebarGroupLabel>
+                <SidebarGroupContent>
+                    <SidebarContent className="">
+                        <SidebarMenuContainer
+                            editor={editor}
+                            menuItems={menuItems}
+                        />
+                    </SidebarContent>
+                </SidebarGroupContent>
             </SidebarGroup>
             <SidebarFooter />
         </Sidebar>

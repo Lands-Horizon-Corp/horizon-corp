@@ -1,6 +1,6 @@
 import { cn } from '@/lib'
 import { Editor } from '@tiptap/react'
-import { Table2, SplitIcon, MoreHorizontal } from 'lucide-react'
+import { Table2, SplitIcon } from 'lucide-react'
 import {
     CgBorderAll,
     CgBorderLeft,
@@ -42,7 +42,6 @@ import {
     DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
 import { SidebarTrigger } from '../ui/sidebar'
-import { HiDocumentPlus, HiTrash } from 'react-icons/hi2'
 import { useDocumentBuilderStore } from '@/store/document-builder-store'
 
 interface TableToolBarProps extends React.ComponentProps<'div'> {
@@ -78,8 +77,6 @@ export const ReportBuilderToolbar = ({
         setActiveHeading(level)
     }
 
-   
-
     if (!editor) {
         return null
     }
@@ -98,7 +95,6 @@ export const ReportBuilderToolbar = ({
                         dimensions={dimensions}
                         handleInputChange={handleInputChange}
                     />
-                    <PagingToolbar editor={editor} />
                     <TextAlignTool editor={editor} />
                     <Toolbar
                         isHeadingDisabled={false}
@@ -114,35 +110,6 @@ export const ReportBuilderToolbar = ({
     )
 }
 
-interface PageToolBarProps {
-    editor: Editor;
-}
-
-const PagingToolbar = ({editor}: PageToolBarProps) => {
-    const { currentPage, addPage, deletePage } = useDocumentBuilderStore()
-
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger>
-                <Button variant="ghost" className={cn('px-2.5')}>
-                    <HiDocumentPlus size={19} />
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="[&>div>img]:mr-2 [&>div]:text-xs">
-                <DropdownMenuLabel>Page</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => addPage(editor)}>
-                    <HiDocumentPlus size={19} className="mr-2" />
-                    Add Page
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => deletePage(currentPage)}>
-                    <HiTrash size={19} className="mr-2" />
-                    Delete Page
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
-}
 
 interface TableToolsProps {
     editor: Editor | null
@@ -162,7 +129,7 @@ export const TableToolbar = ({
         return null
     }
 
-    const { height, setHeight, pages} = useDocumentBuilderStore()
+    const { height, setHeight } = useDocumentBuilderStore()
 
     const handleHeightOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target
@@ -178,11 +145,10 @@ export const TableToolbar = ({
             withHeaderRow: true,
         })
     }
-    // console.log('pages',nd pages)
 
     const handleTableHeight = (height: number) => {
         editor?.chain().focus().updateAttributes('tableRow', {
-            rowHeight: height, // Dynamically set based on user input
+            rowHeight: height, 
           }).run()
     }
 

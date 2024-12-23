@@ -40,7 +40,6 @@ const createHtmlFromJson = (jsonContent: JSONContent) => {
 };
 
 
-// Helper function to estimate the height of a ProseMirrorNode
 const estimateNodeHeightWithToDOM = (node: ProseMirrorNode): number => {
   if (!node || !node.type?.spec?.toDOM) {
     console.log('No toDOM method available');
@@ -86,14 +85,12 @@ const estimateNodeHeightWithToDOM = (node: ProseMirrorNode): number => {
 
   const height = wrapper.getBoundingClientRect().height;
 
-  // Clean up the temporary element
   document.body.removeChild(wrapper);
 
   return height;
 };
 
 
-// Split content by height
 export const splitContentByHeight = (
   editor: Editor,
   content: JSONContent,

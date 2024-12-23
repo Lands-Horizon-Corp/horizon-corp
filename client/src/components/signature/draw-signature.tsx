@@ -44,8 +44,7 @@ const DrawSignature = ({
                 clearOnResize={true}
                 velocityFilterWeight={isFullScreenMode ? 0 : 0.9}
                 canvasProps={{
-                    className:
-                        'sigCanvas w-full h-full rounded-lg border dark:bg-secondary',
+                    className: 'sigCanvas w-full h-full rounded-lg border dark:bg-secondary',
                     width: dimensions.width,
                     height: dimensions.height,
                 }}
