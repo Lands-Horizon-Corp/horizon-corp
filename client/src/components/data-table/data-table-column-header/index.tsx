@@ -8,7 +8,6 @@ import ColumnResizeHandle from './column-drag-resize'
 import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib/utils'
-import { TColumnDataTypes } from '../data-table-filters/data-table-filter-context'
 
 interface DataTableColumnHeaderProps<TData, TValue>
     extends React.HTMLAttributes<HTMLDivElement> {
@@ -18,7 +17,6 @@ interface DataTableColumnHeaderProps<TData, TValue>
     isResizable?: boolean
     column: Column<TData, TValue>
     header: Header<TData, TValue>
-    dataType?: TColumnDataTypes
 }
 
 const DataTableColumnHeader = <TData, TValue>({
@@ -35,7 +33,7 @@ const DataTableColumnHeader = <TData, TValue>({
             id: header.column.id,
         })
 
-    const style: CSSProperties = {
+    const style : CSSProperties = {
         opacity: isDragging ? 0.8 : 1,
         position: 'relative',
         transform: CSS.Translate.toString(transform),

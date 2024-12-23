@@ -28,7 +28,6 @@ export default class UserService {
         data: SignUpRequest
     ): Promise<AxiosResponse<UserData>> {
         const endpoint = `${UserService.BASE_ENDPOINT}/signup`
-        data.birthDate = new Date()
         data.emailTemplate = getEmailContent('otp')
         data.contactTemplate = getSMSContent('contactNumber')
         return await UseServer.post<SignUpRequest, UserData>(endpoint, data)

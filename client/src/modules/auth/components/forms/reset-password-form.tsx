@@ -16,7 +16,8 @@ import { Button } from '@/components/ui/button'
 import PasswordInput from '@/components/ui/password-input'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { cn, withCatchAsync } from '@/lib/utils'
+import { cn } from '@/lib/utils'
+import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 

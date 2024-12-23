@@ -1,6 +1,9 @@
 import { createContext, useContext } from 'react'
+import { KeysOfOrString } from '@/types'
 
-export type TColumnDataTypes = 'number' | 'text' | 'date' | 'enum'
+export type TFilterLogic = 'AND' | 'OR'
+
+export type TColumnDataTypes = 'number' | 'text' | 'date' | 'boolean' | 'time'
 
 export type TFilterModes =
     | 'equal'
@@ -20,7 +23,7 @@ export type TFilterModes =
     | 'after'
 
 export const filterModeMap: {
-    [K in Exclude<TColumnDataTypes, 'enum'>]: {
+    [K in Exclude<TColumnDataTypes, 'boolean'>]: {
         value: TFilterModes
         label: string
     }[]
@@ -53,17 +56,35 @@ export const filterModeMap: {
         { value: 'lte', label: 'On or Before' },
         { value: 'range', label: 'Range' },
     ],
+    time: [
+        { value: 'equal', label: 'On' },
+        { value: 'nequal', label: 'Not On' },
+        { value: 'before', label: 'Before' },
+        { value: 'after', label: 'After' },
+        { value: 'gte', label: 'On or After' },
+        { value: 'lte', label: 'On or Before' },
+        { value: 'range', label: 'Range' },
+    ],
 }
 
 export type TSearchFilter<T = unknown, TValue = T> = {
-    dataType: TColumnDataTypes
+    to?: TValue
+    from?: TValue
     value?: TValue
     mode: TFilterModes
-    from?: TValue
-    to?: TValue
+    displayText: string
+    isStaticFilter? : boolean
+    dataType: TColumnDataTypes
 }
 
-export type FilterObject<T = unknown, TValue = T> = {
+export type TFinalFilter<T = unknown, TValue = T> = {
+    field: string | keyof T
+    value: TValue | { from: TValue; to: TValue }
+} & Omit<TSearchFilter, 'value' | 'from' | 'to' | 'displayText'>
+
+export type TFilterPayload = { filters: TFinalFilter[]; logic: TFilterLogic }
+
+export type TFilterObject<T = unknown, TValue = T> = {
     [key: string]: TSearchFilter<T, TValue> | undefined
 }
 
@@ -72,14 +93,22 @@ export interface IDataTableFilterState<
     TField = string,
     TValue = T,
 > {
-    filters: FilterObject<T, TValue>
+    filterLogic: TFilterLogic
+    filters: TFilterObject<T, TValue>
+    finalFilters: TFilterPayload
+    setFilterLogic: (newFilterLogic: TFilterLogic) => void
     setFilter: (field: TField, filter?: TSearchFilter<TValue, TValue>) => void
     bulkSetFilter: (
-        field: TField[],
+        field: { field: TField; displayText: string }[],
         filterValue?: TSearchFilter<TValue, TValue>
     ) => void
     resetFilter: () => void
     removeFilter: (field: TField) => void
+}
+
+export interface IFilterComponentProps<T> {
+    field: KeysOfOrString<T>
+    displayText: string
 }
 
 const DataTableFilterContext = createContext<
@@ -88,12 +117,12 @@ const DataTableFilterContext = createContext<
 
 export const useDataTableFilter = <
     T = unknown,
-    TData = string,
+    TField = string,
     TValue = T,
 >() => {
     const context = useContext(DataTableFilterContext) as IDataTableFilterState<
         T,
-        TData,
+        TField,
         TValue
     >
 

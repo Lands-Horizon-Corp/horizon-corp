@@ -21,12 +21,11 @@ const documentBuilderRoute = createRoute({
     component: React.lazy(() => import('./pages/document')),
 })
 
-const TableRoute = createRoute({
-    getParentRoute: () => testRoute,
-    path: '/tbl',
-    component: React.lazy(() => import('./pages/tbl')),
-})
-
+// const TableRoute = createRoute({
+//     getParentRoute: () => testRoute,
+//     path: '/tbl',
+//     component: React.lazy(() => import('./pages/tbl')),
+// })
 
 const signatureRoute = createRoute({
     getParentRoute: () => testRoute,
@@ -43,6 +42,6 @@ const testPageRoute = createRoute({
 })
 
 
-const TestRoute = testRoute.addChildren([testLandingRoute, documentBuilderRoute, signatureRoute, TableRoute, testPageRoute])
+const TestRoute = testRoute.addChildren([testLandingRoute, documentBuilderRoute, signatureRoute, testPageRoute])
 
 export default TestRoute

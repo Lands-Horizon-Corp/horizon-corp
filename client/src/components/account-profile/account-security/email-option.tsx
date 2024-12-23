@@ -7,8 +7,8 @@ import { useMutation } from '@tanstack/react-query'
 import {
     CheckIcon,
     CloseIcon,
-    PatchCheckIcon,
-    PatchMinusIcon,
+    BadgeCheckFillIcon,
+    BadgeMinusFillIcon,
 } from '@/components/icons'
 import {
     Form,
@@ -25,7 +25,8 @@ import FormErrorMessage from '@/components/ui/form-error-message'
 import VerifyContactBar from '../verify-notice/verify-contact-bar'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { cn, withCatchAsync } from '@/lib'
+import { cn } from '@/lib'
+import { withCatchAsync } from '@/utils'
 import { emailSchema } from '@/validations/common'
 import { serverRequestErrExtractor } from '@/helpers'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -119,12 +120,12 @@ const EmailOption = ({ email, verified, onSave }: Props) => {
                                             <span className="inline-flex items-center text-xs text-foreground/50">
                                                 {!verified ? (
                                                     <>
-                                                        <PatchMinusIcon className="mr-1 inline-block text-orange-500" />{' '}
+                                                        <BadgeMinusFillIcon className="mr-1 inline-block text-orange-500" />{' '}
                                                         Not verified
                                                     </>
                                                 ) : (
                                                     <>
-                                                        <PatchCheckIcon className="mr-1 inline-block text-primary" />{' '}
+                                                        <BadgeCheckFillIcon className="mr-1 inline-block text-primary" />{' '}
                                                         Verified
                                                     </>
                                                 )}

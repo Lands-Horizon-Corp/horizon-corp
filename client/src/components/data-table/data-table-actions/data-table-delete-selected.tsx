@@ -2,13 +2,14 @@ import { Table } from '@tanstack/react-table'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { TrashBinIcon } from '@/components/icons'
+import { TrashIcon } from '@/components/icons'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib'
+import { IBaseCompNoChild } from '@/types'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 
-interface Props<T> {
+export interface IDataTableDeleteSelectedProps<T> extends IBaseCompNoChild {
     table: Table<T>
     disabled?: boolean
     isLoading?: boolean
@@ -20,9 +21,10 @@ const DataTableDeleteSelected = <T,>({
     table,
     disabled,
     isLoading,
-    canDelete = false,
+    className,
+    canDelete = true,
     onClick,
-}: Props<T>) => {
+}: IDataTableDeleteSelectedProps<T>) => {
     const { onOpen } = useConfirmModalStore()
 
     const selectedRows = table
@@ -43,22 +45,18 @@ const DataTableDeleteSelected = <T,>({
                 })
             }
             size="icon"
-            variant="secondary"
-            className={cn(
-                'relative',
-                !(isLoading || isDisabled) &&
-                    'text-rose-400/80 hover:text-rose-400'
-            )}
+            variant="destructive"
+            className={cn('relative', className)}
         >
             {isLoading ? (
                 <LoadingSpinner />
             ) : (
                 <span className="inline-flex items-center gap-x-2">
-                    <TrashBinIcon className="inline" />
+                    <TrashIcon className="inline" />
                     {selectedRows.length > 0 && (
                         <Badge
                             variant="secondary"
-                            className="absolute left-[-10%] top-0 w-fit -translate-x-1/2 -translate-y-1/2 text-xs animate-in fade-in dark:bg-popover/60"
+                            className="absolute -right-[0%] top-0 size-fit w-fit -translate-y-1/2 translate-x-1/2 px-1.5 text-xs animate-in fade-in dark:bg-popover/60"
                         >
                             {selectedRows.length}
                         </Badge>

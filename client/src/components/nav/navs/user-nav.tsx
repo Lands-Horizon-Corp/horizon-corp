@@ -6,13 +6,15 @@ import NavProfileMenu from '@/components/nav/nav-components/nav-profile-menu'
 
 import { useUserAuthStore } from '@/store/user-auth-store'
 import SidebarMobileToggle from '@/components/sidebar/sidebar-mobile-toggle'
+import PageBreadCrumb from '@/components/pages-breadcrumbs'
 
-const UserNav = () => {
+const UserNav = ({ homeUrl }: { homeUrl?: string }) => {
     const { currentUser } = useUserAuthStore()
     return (
         <RootNav className="pointer-events-none relative justify-between lg:px-4">
             <NavContainer className="pointer-events-auto">
                 <SidebarMobileToggle className="md:hidden" />
+                <PageBreadCrumb homeUrl={homeUrl} className="hidden md:block" />
             </NavContainer>
             <NavContainer className="pointer-events-auto">
                 {currentUser &&

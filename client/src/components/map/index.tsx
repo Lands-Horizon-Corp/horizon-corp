@@ -14,7 +14,6 @@ import L, { LatLngExpression, latLng } from 'leaflet'
 
 import { Input } from '../ui/input'
 import LayerControl from './LayerControl'
-import { Button } from '../ui/button'
 
 import {
     TCustomSearchProps,
@@ -27,8 +26,8 @@ import {
 
 import { LoadingCircleIcon, LocationPinOutlineIcon } from '../icons'
 
-import { useMapStore } from '@/store/map-store'
 import logger from '@/helpers/loggers/logger'
+import { cn } from '@/lib'
 
 const getLocationDescription = async (latlng: LatLngExpression) => {
     const { lat, lng } = latLng(latlng)
@@ -49,7 +48,11 @@ const MapWithClick = ({ onLocationFound }: TMapWithClickProps) => {
     return null
 }
 
-const CustomSearch = ({ onLocationFound }: TCustomSearchProps) => {
+const CustomSearch = ({
+    onLocationFound,
+    className,
+    map,
+}: TCustomSearchProps) => {
     const [results, setResults] = useState<TLatLngExpressionWithDesc[]>([])
     const [query, setQuery] = useState('')
 
@@ -91,20 +94,33 @@ const CustomSearch = ({ onLocationFound }: TCustomSearchProps) => {
     const handleOnLocationFound = (lat: number, lng: number) => {
         const latLng = new L.LatLng(lat, lng)
         onLocationFound(latLng)
+        if (map) {
+            map.setView(latLng, 15)
+        }
+        setResults([])
     }
-    const isResultEmpty = results.length === 0
+
+    const showSearchList = results.length > 0
 
     return (
-        <div className="absolute top-5 z-[100] w-[30rem]">
+        <div className="h-fit w-full">
             <Input
                 type="text"
                 value={query}
                 onChange={handleInputChange}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault()
+                    }
+                }}
                 placeholder="Search Google Maps"
-                className="rounded-lg border border-gray-300 px-4 py-2 focus:border-none focus:outline-none"
+                className={cn(
+                    'rounded-lg border border-gray-300 px-4 py-2 focus:border-none focus:outline-none',
+                    className ?? ''
+                )}
             />
             <div
-                className={`mt-1 flex flex-col space-y-2 bg-white/90 dark:bg-secondary/90 dark:text-white ${isResultEmpty ? '' : 'p-5'} rounded-lg`}
+                className={`absolute z-[1000] flex w-[90%] flex-col space-y-2 bg-white/90 dark:bg-secondary/90 dark:text-white ${!showSearchList ? 'hidden' : 'p-5'} rounded-lg`}
             >
                 {isPending ? (
                     <div className="flex w-full justify-center">
@@ -112,24 +128,22 @@ const CustomSearch = ({ onLocationFound }: TCustomSearchProps) => {
                     </div>
                 ) : (
                     <div>
-                        {results.length > 0 && (
+                        {showSearchList && (
                             <>
                                 {results.map((location, index) => (
                                     <div
                                         key={index}
                                         className="cursor-pointer hover:rounded-lg hover:bg-slate-200/40 focus:rounded-lg focus:bg-slate-200/40 focus:outline-none focus:ring-0"
-                                        onClick={() =>
+                                        onClick={() => {
                                             handleOnLocationFound(
                                                 parseFloat(location.lat),
                                                 parseFloat(location.lng)
                                             )
-                                        }
+                                        }}
                                         tabIndex={0}
                                         onKeyDown={(e) => {
-                                            if (
-                                                e.key === 'Enter' ||
-                                                e.key == ' '
-                                            ) {
+                                            if (e.key === 'Enter') {
+                                                e.preventDefault()
                                                 handleOnLocationFound(
                                                     parseFloat(location.lat),
                                                     parseFloat(location.lng)
@@ -176,144 +190,164 @@ const Maps = ({ handleMapCreated }: TMapProps) => {
     )
 }
 
-const MainMapContainer = ({
-    disabledSearch = false,
-    center,
-    zoom = 13,
-    zoomControl = false,
-    className,
+const Map = ({
+    zoom,
     style,
-    scrollWheelZoom = true,
+    center,
     minZoom,
     maxZoom,
-    whenReady,
     children,
-    multiplePins = false,
+    className,
+    hideControls,
+    searchClassName,
     viewOnly = false,
+    zoomControl = false,
+    multiplePins = false,
+    mapContainerClassName,
+    scrollWheelZoom = true,
+    defaultMarkerPins = [],
+    hideLayersControl = false,
+    whenReady,
+    onCoordinateClick,
+    onMultipleCoordinatesChange,
 }: TMainMapProps) => {
-    const [_, setSearchedAddress] = useState('')
-    const [selectedPins, setSelectedPins] = useState<Pin[]>([])
+    const [, setSearchedAddress] = useState('')
+    const [, setSelectedPins] = useState<Pin[]>([])
     const [map, setMap] = useState<L.Map | null>(null)
     const markerRefs = useRef<{ [key: string]: L.Marker }>({})
-
-    const setLatLng = useMapStore((state) => state.setMarkerPosition)
-    const setMarkers = useMapStore((state) => state.setMarkers)
-
-    const handleSetMarkers = useCallback(() => {
-        if (selectedPins && selectedPins.length > 0) {
-            setMarkers(selectedPins)
-        }
-    }, [setMarkers, selectedPins])
-
-    useEffect(() => {
-        handleSetMarkers()
-    }, [handleSetMarkers])
 
     const handleMapReady = (mapInstance: L.Map) => {
         setMap(mapInstance)
     }
 
-    const deletePin = useCallback(
-        (id: number) => {
-            setSelectedPins((pins) => pins.filter((pin) => pin.id !== id))
-            const pin = selectedPins.find((pin) => pin.id === id)
-
-            if (pin) {
-                const { lat, lng } = pin.position as L.LatLngLiteral
-                const markerKey = `${lat},${lng}`
-                markerRefs.current[markerKey]?.remove()
-                delete markerRefs.current[markerKey]
-            }
-        },
-        [selectedPins]
-    )
-
     const addMarker = useCallback(
         async (latLng: LatLngExpression) => {
             const { lat, lng } = latLng as L.LatLngLiteral
-            setLatLng({ x: lat, y: lng })
             const markerKey = `${lat},${lng}`
 
-            if (markerRefs.current[markerKey])
+            if (!multiplePins) {
+                Object.values(markerRefs.current).forEach((marker) =>
+                    marker.remove()
+                )
+                markerRefs.current = {}
+                setSelectedPins([])
+            }
+
+            if (markerRefs.current[markerKey]) {
                 markerRefs.current[markerKey].remove()
+            }
 
             const marker = L.marker(latLng).addTo(map as L.Map)
             markerRefs.current[markerKey] = marker
+
             const address = await getLocationDescription(latLng)
             marker.bindPopup(address).openPopup()
         },
-        [map]
+        [map, multiplePins]
     )
 
     const handleLocationFound = useCallback(
         async (latLng: LatLngExpression) => {
-            if (!viewOnly) {
-                const newPin: Pin = { id: Date.now(), position: latLng }
+            const newPin: Pin = { id: Date.now(), position: latLng }
 
-                setSelectedPins((prevPins) =>
-                    multiplePins ? [...prevPins, newPin] : [newPin]
-                )
+            if (multiplePins) {
+                setSelectedPins((prevPins) => {
+                    const updatedPins = [...prevPins, newPin]
 
-                if (!multiplePins && map) {
-                    map.eachLayer((layer: any) => {
-                        if (layer instanceof L.Marker) {
-                            map.removeLayer(layer)
-                        }
-                    })
+                    if (onMultipleCoordinatesChange) {
+                        const newSelectedPositions = updatedPins.map(
+                            (pin) => pin.position
+                        )
+                        onMultipleCoordinatesChange(newSelectedPositions)
+                    }
+
+                    return updatedPins
+                })
+            } else {
+                if (onCoordinateClick) {
+                    onCoordinateClick(latLng)
                 }
-
-                addMarker(latLng)
+                setSelectedPins([newPin])
             }
+            addMarker(latLng)
         },
-        [addMarker, map, multiplePins]
+        [
+            addMarker,
+            multiplePins,
+            onMultipleCoordinatesChange,
+            onCoordinateClick,
+        ]
     )
 
+    useEffect(() => {
+        if (map && defaultMarkerPins.length > 0) {
+            defaultMarkerPins.forEach(({ lat, lng }) => {
+                const latLng: LatLngExpression = { lat, lng }
+                const markerKey = `${lat},${lng}`
+
+                if (!markerRefs.current[markerKey]) {
+                    const marker = L.marker(latLng).addTo(map)
+                    markerRefs.current[markerKey] = marker
+                }
+            })
+        }
+    }, [map, defaultMarkerPins])
+
+    useEffect(() => {
+        if (map) {
+            const container = map.getContainer()
+            const layersControlElement = container.querySelector(
+                '.leaflet-control-layers.leaflet-control'
+            ) as HTMLElement | null
+
+            if (layersControlElement) {
+                if (hideLayersControl) {
+                    layersControlElement.classList.add('hidden')
+                } else {
+                    layersControlElement.classList.remove('hidden')
+                }
+            }
+        }
+    }, [map, hideLayersControl])
+
     return (
-        <div className={`relative w-full p-5 pt-20 shadow-sm ${style ?? ''}`}>
-            {!disabledSearch && !viewOnly && (
+        <div
+            className={cn(
+                'relative flex size-full flex-col gap-4',
+                viewOnly ? 'p-0' : 'p-5 shadow-sm',
+                className
+            )}
+        >
+            {!viewOnly && (
                 <CustomSearch
                     map={map}
+                    className={searchClassName}
                     setSearchedAddress={setSearchedAddress}
                     onLocationFound={handleLocationFound}
                 />
             )}
             <MapContainer
-                center={center}
                 zoom={zoom}
-                className={`-z-0 h-[500px] w-full min-w-[500px] rounded-lg ${className ?? ''}`}
                 ref={setMap}
                 style={style}
-                zoomControl={zoomControl}
-                scrollWheelZoom={scrollWheelZoom}
+                center={center}
                 minZoom={minZoom}
                 maxZoom={maxZoom}
                 whenReady={whenReady}
+                zoomControl={zoomControl}
+                scrollWheelZoom={scrollWheelZoom}
+                className={cn(
+                    `size-full flex-grow rounded-lg`,
+                    mapContainerClassName
+                )}
             >
                 <Maps handleMapCreated={handleMapReady} />
                 <MapWithClick onLocationFound={handleLocationFound} />
-                <ZoomControl position="bottomright" />
+                {!hideControls && <ZoomControl position="bottomright" />}
                 {children}
             </MapContainer>
-            <ul className="mt-4">
-                {selectedPins.map((pin) => {
-                    const { lat, lng } = pin.position as L.LatLngLiteral
-                    return (
-                        <div key={pin.id}>
-                            <li>
-                                Latitude: {lat}, Longitude: {lng}
-                            </li>
-                            <Button
-                                onClick={() => deletePin(pin.id)}
-                                variant="secondary"
-                            >
-                                Delete
-                            </Button>
-                        </div>
-                    )
-                })}
-            </ul>
         </div>
     )
 }
 
-export default MainMapContainer
+export default Map

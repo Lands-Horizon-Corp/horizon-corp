@@ -11,8 +11,8 @@ const AdminLayout = () => {
             <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] md:grid-cols-[auto_1fr]">
                 <SidebarProvider>
                     <AdminSidebar />
-                    <main className="ecoop-scroll max-h-screen overflow-y-scroll">
-                        <UserNav />
+                    <main className="ecoop-scroll relative max-h-screen overflow-y-scroll">
+                        <UserNav homeUrl='/admin' />
                         <Outlet />
                     </main>
                 </SidebarProvider>

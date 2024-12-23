@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import TextEditor from '@/components/text-editor'
 import { Separator } from '@/components/ui/separator'
-import InputDatePicker from '@/components/input-date-picker'
+import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
@@ -27,7 +27,9 @@ import {
     lastNameSchema,
     middleNameSchema,
 } from '@/validations/common'
-import { cn, withCatchAsync } from '@/lib'
+
+import { cn } from '@/lib'
+import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { AccountSettingRequest, UserData } from '@/horizon-corp/types'
 import ProfileService from '@/horizon-corp/server/auth/ProfileService'

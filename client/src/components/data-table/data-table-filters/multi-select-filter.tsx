@@ -1,50 +1,73 @@
-import { TSearchFilter, useDataTableFilter } from './data-table-filter-context'
+import {
+    TSearchFilter,
+    useDataTableFilter,
+    IFilterComponentProps,
+    TColumnDataTypes,
+    filterModeMap,
+} from './data-table-filter-context'
 
 import MultiSelectFilter, {
     IMultiSelectOption,
 } from '@/components/multi-select-filter'
 
-const DataTableMultiSelectFilter = <TData,>({
+type AllowedMode<T extends keyof typeof filterModeMap> =
+    (typeof filterModeMap)[T][number]['value']
+
+interface IDatatableMultiFilter<T, TValue> extends IFilterComponentProps<T> {
+    dataType: TColumnDataTypes
+    mode: AllowedMode<
+        Extract<TColumnDataTypes, 'text' | 'number' | 'date' | 'time'>
+    >
+    multiSelectOptions: IMultiSelectOption<TValue>[]
+}
+
+const DataTableMultiSelectFilter = <TData, TValue>({
+    mode,
+    field,
+    dataType,
+    displayText,
     multiSelectOptions,
-    accessorKey,
-}: {
-    accessorKey: keyof TData
-    multiSelectOptions: IMultiSelectOption[]
-}) => {
+}: IDatatableMultiFilter<TData, TValue>) => {
     const { filters, setFilter } = useDataTableFilter<
         string,
-        keyof TData,
-        string[]
+        typeof field,
+        TValue[]
     >()
 
-    const filterVal: TSearchFilter<string, string[]> = filters[
-        accessorKey as string
-    ] ?? {
-        dataType: 'date',
-        mode: 'equal',
-        value: undefined,
-        from: undefined,
+    const filterVal: TSearchFilter<string, TValue[]> = filters[field] ?? {
+        displayText,
+        mode,
         to: undefined,
+        from: undefined,
+        dataType,
+        value: undefined,
     }
 
     return (
-        <MultiSelectFilter
-            value={
-                filterVal.value
-                    ? typeof filterVal.value === 'string'
-                        ? [filterVal.value]
-                        : filterVal.value
-                    : []
-            }
-            multiSelectOptions={multiSelectOptions}
-            setValues={(selected) =>
-                setFilter(accessorKey, {
-                    ...filterVal,
-                    value: selected,
-                })
-            }
-            clearValues={() => setFilter(accessorKey)}
-        />
+        <div
+            onKeyDown={(e) => e.stopPropagation()}
+            className="flex min-w-72 flex-col p-1"
+        >
+            <p className="text-sm">Filter</p>
+            <MultiSelectFilter
+                hideLabel
+                value={
+                    filterVal.value
+                        ? typeof filterVal.value === 'string'
+                            ? [filterVal.value]
+                            : filterVal.value
+                        : []
+                }
+                multiSelectOptions={multiSelectOptions}
+                setValues={(selected) =>
+                    setFilter(field, {
+                        ...filterVal,
+                        value: selected,
+                    })
+                }
+                clearValues={() => setFilter(field)}
+            />
+        </div>
     )
 }
 

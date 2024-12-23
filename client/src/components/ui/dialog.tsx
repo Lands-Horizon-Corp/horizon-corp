@@ -52,7 +52,7 @@ const DialogContent = React.forwardRef<
         <DialogPortal>
             <DialogOverlay
                 className={cn(
-                    'bg-black/30 dark:bg-background/70',
+                    'bg-black/30 dark:bg-background/60',
                     overlayClassName
                 )}
             />

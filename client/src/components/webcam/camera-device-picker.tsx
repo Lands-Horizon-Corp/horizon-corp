@@ -11,8 +11,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { CameraIcon, RefreshIcon } from '@/components/icons'
 
+import { cn } from '@/lib/utils'
+import { withCatchAsync } from "@/utils"
 import { IBaseComp } from '@/types/component'
-import { cn, withCatchAsync } from '@/lib/utils'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 interface Props extends IBaseComp {

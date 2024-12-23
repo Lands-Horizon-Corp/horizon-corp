@@ -13,7 +13,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import ResetPasswordForm from '@/modules/auth/components/forms/reset-password-form'
 
-import { withCatchAsync } from '@/lib'
+import { withCatchAsync } from "@/utils"
 import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/server/auth/UserService'
 

@@ -6,7 +6,7 @@ import StepIndicator from '@/components/steps-indicator'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import VerifyForm from '@/modules/auth/components/forms/verify-form'
 
-import { withCatchAsync } from '@/lib'
+import { withCatchAsync } from "@/utils"
 import { IBaseComp } from '@/types/component'
 import { UserData } from '@/horizon-corp/types'
 import { useMutation } from '@tanstack/react-query'

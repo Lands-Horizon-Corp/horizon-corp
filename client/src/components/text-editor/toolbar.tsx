@@ -69,6 +69,7 @@ const Toolbar = ({
                 <TextStrikethroughLightIcon className="size-4" />
             </Toggle>
             <Toggle
+                type="button"
                 pressed={editor.isActive('code')}
                 onClick={() => editor.chain().focus().toggleCode().run()}
             >
@@ -106,6 +107,7 @@ const Toolbar = ({
                 <ListOrderedIcon className="size-4" />
             </Toggle>
             <Button
+                type="button"
                 variant={'ghost'}
                 onClick={() => editor.chain().focus().toggleCodeBlock().run()}
                 className={editor.isActive('codeBlock') ? 'is-active' : ''}
@@ -113,6 +115,7 @@ const Toolbar = ({
                 <CodeBlockIcon className="size-4" />
             </Button>
             <Button
+                type="button"
                 variant={'ghost'}
                 onClick={() => editor.chain().focus().toggleBlockquote().run()}
                 className={editor.isActive('blockquote') ? 'is-active' : ''}
@@ -120,12 +123,14 @@ const Toolbar = ({
                 <BlockQuoteIcon className="size-4" />
             </Button>
             <Button
+                type="button"
                 variant={'ghost'}
                 onClick={() => editor.chain().focus().undo().run()}
             >
                 <UndoIcon className="size-4" />
             </Button>
             <Button
+                type="button"
                 variant={'ghost'}
                 onClick={() => editor.chain().focus().redo().run()}
             >

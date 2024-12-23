@@ -11,7 +11,7 @@ import ActionTooltip from '@/components/action-tooltip'
 import ProfileUploadOption from './profile-upload-option'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { withCatchAsync } from '@/lib'
+import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { MediaResource, UserData } from '@/horizon-corp/types'
 import { base64ImagetoFile } from '@/helpers/picture-crop-helper'

@@ -19,7 +19,7 @@ import { CheckIcon, CloseIcon } from '@/components/icons'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { withCatchAsync } from '@/lib'
+import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { userNameSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'

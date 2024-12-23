@@ -13,7 +13,7 @@ import {
     serverRequestErrExtractor,
     getUsersAccountTypeRedirectPage,
 } from '@/helpers'
-import { withCatchAsync } from '@/lib'
+import { withCatchAsync } from "@/utils"
 import { useUserAuthStore } from '@/store/user-auth-store'
 import UserService from '@/horizon-corp/server/auth/UserService'
 

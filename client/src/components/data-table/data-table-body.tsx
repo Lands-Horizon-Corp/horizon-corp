@@ -8,12 +8,14 @@ type TTargetGroup = 'left' | 'right'
 
 const DataTableBody = <TData,>({
     rows,
+    colCount,
     targetGroup,
     rowClassName,
 }: {
     rows: Row<TData>[]
     targetGroup?: TTargetGroup
     rowClassName?: string
+    colCount?: number
 }) => {
     const getVisibleCells = (row: Row<TData>, targetGroup?: TTargetGroup) => {
         switch (targetGroup) {
@@ -36,7 +38,7 @@ const DataTableBody = <TData,>({
                         row.toggleSelected()
                     }}
                     className={cn(
-                        'h-14 w-fit bg-background/90 align-middle hover:bg-secondary/90 data-[state=selected]:bg-secondary dark:bg-secondary/90 dark:hover:bg-popover/95 dark:data-[state=selected]:bg-popover',
+                        'h-14 w-fit bg-background/90 align-middle cursor-pointer hover:bg-secondary/90 data-[state=selected]:bg-secondary dark:bg-secondary/90 dark:hover:bg-popover/95 dark:data-[state=selected]:bg-popover',
                         rowClassName
                     )}
                     data-state={row.getIsSelected() && 'selected'}
@@ -56,12 +58,9 @@ const DataTableBody = <TData,>({
             ))}
             {rows.length === 0 && (
                 <TableRow>
-                    <TableCell
-                        colSpan={rows.length || 0}
-                        className="h-24 text-center"
-                    >
+                    <TableCell colSpan={colCount} className="h-24 text-center">
                         <span className="w-full text-center text-xs text-foreground/60">
-                            no data
+                            🫥 no data
                         </span>
                     </TableCell>
                 </TableRow>

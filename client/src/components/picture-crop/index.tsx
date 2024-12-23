@@ -21,7 +21,8 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { getCroppedImg } from '@/helpers'
 
-import { cn, withCatchAsync } from '@/lib'
+import { cn } from '@/lib'
+import { withCatchAsync } from '@/utils'
 import { IBaseCompNoChild } from '@/types'
 
 interface Props extends IBaseCompNoChild {
