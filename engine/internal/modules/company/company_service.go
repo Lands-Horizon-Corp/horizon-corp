@@ -89,18 +89,15 @@ func (as *CompanyService) SearchFilter(ctx *gin.Context) {
 	})
 }
 
-func (as *CompanyService) ExportAll(ctx *gin.Context) {
-	excelBytes, err := as.companyExport.ExportAll()
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Excel export error"})
-		return
-	}
-	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-	ctx.Header("Content-Disposition", "attachment; filename=users_export.xlsx")
-	ctx.Header("Content-Length", fmt.Sprintf("%d", len(excelBytes)))
+type User struct {
+	ID    int
+	Name  string
+	Email string
+	Age   int
+}
 
-	// Send the Excel file
-	ctx.Data(http.StatusOK, "application/octet-stream", excelBytes)
+func (as *CompanyService) ExportAll(ctx *gin.Context) {
+	as.companyExport.ExportAll(ctx)
 }
 
 func (as *CompanyService) ExportAllFiltered(ctx *gin.Context) {
@@ -130,6 +127,5 @@ func (as *CompanyService) RegisterRoutes() {
 		routes.GET("/export", as.ExportAll)
 		routes.GET("/export-search", as.ExportAllFiltered)
 		routes.POST("/export-selected", as.ExportSelected)
-		routes.GET("/export-current-page/:page", as.ExportCurrentPage)
 	}
 }

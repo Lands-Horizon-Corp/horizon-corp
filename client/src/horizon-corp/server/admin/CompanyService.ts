@@ -114,7 +114,7 @@ export default class CompanyService {
    */
   public static async exportAll(): Promise<void> {
     const url = `${CompanyService.BASE_ENDPOINT}/export`
-    await downloadFile(url, 'all_companies_export.xlsx')
+    await downloadFile(url, 'all_companies_export.csv')
   }
 
   /**
@@ -138,16 +138,5 @@ export default class CompanyService {
     const query = ids.map((id) => `ids=${id}`).join('&')
     const url = `${CompanyService.BASE_ENDPOINT}/export-selected?${query}`
     await downloadFile(url, 'selected_companies_export.xlsx')
-  }
-
-  /**
-   * Exports the current page of companies.
-   *
-   * @param {number} page - The page number to export.
-   * @returns {Promise<void>} - A promise that resolves when the export is complete.
-   */
-  public static async exportCurrentPage(page: number): Promise<void> {
-    const url = `${CompanyService.BASE_ENDPOINT}/export-current-page/${page}`
-    await downloadFile(url, `current_page_companies_${page}_export.xlsx`)
   }
 }
