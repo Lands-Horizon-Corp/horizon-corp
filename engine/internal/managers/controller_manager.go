@@ -10,6 +10,10 @@ import (
 	"gorm.io/gorm"
 )
 
+type DeleteManyRequest struct {
+	IDs []uint `json:"ids" binding:"required,min=1"`
+}
+
 // T = Model
 // V = Validator
 // R = Resource
@@ -164,4 +168,23 @@ func (h *Controller[T, V, R]) mapToEntity(validator *V) (*T, error) {
 	}
 
 	return &entity, nil
+}
+
+func (h *Controller[T, V, R]) DeleteMany(c *gin.Context) {
+	var req DeleteManyRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.Repo.DeleteMany(req.IDs); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": "One or more entities not found"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Entities deleted successfully"})
 }

@@ -139,6 +139,25 @@ func (r *Repository[T]) Delete(id uint) error {
 	return nil
 }
 
+func (r *Repository[T]) DeleteMany(ids []uint) error {
+	if len(ids) == 0 {
+		return fmt.Errorf("no IDs provided for deletion")
+	}
+
+	// Perform the deletion using GORM's Delete with a WHERE IN clause
+	result := r.DB.Client.Delete(new(T), "id IN ?", ids)
+	if result.Error != nil {
+		return fmt.Errorf("failed to delete entities: %w", result.Error)
+	}
+
+	// Optionally, you can check how many records were deleted
+	if result.RowsAffected != int64(len(ids)) {
+		return fmt.Errorf("expected to delete %d entities, but deleted %d", len(ids), result.RowsAffected)
+	}
+
+	return nil
+}
+
 // applyPreloads applies preloads to the GORM query.
 func (r *Repository[T]) applyPreloads(query *gorm.DB, preloads []string) *gorm.DB {
 	for _, preload := range preloads {

@@ -1,3 +1,4 @@
+// services/CompanyService.ts
 import { downloadFile } from '@/horizon-corp/helpers'
 import UseServer from '../../request/server'
 import {
@@ -138,5 +139,21 @@ export default class CompanyService {
     const query = ids.map((id) => `ids=${id}`).join('&')
     const url = `${CompanyService.BASE_ENDPOINT}/export-selected?${query}`
     await downloadFile(url, 'selected_companies_export.csv')
+  }
+
+  /**
+   * Deletes multiple companies by their IDs.
+   *
+   * @param {number[]} ids - The IDs of the companies to delete.
+   * @returns {Promise<void>} - A promise that resolves when the deletion is complete.
+   */
+  public static async deleteMany(ids: number[]): Promise<void> {
+    const endpoint = `${CompanyService.BASE_ENDPOINT}/bulk-delete`
+
+    // Construct the request payload
+    const payload = { ids }
+
+    // Make the DELETE request with the payload
+    await UseServer.delete<void>(endpoint, payload)
   }
 }

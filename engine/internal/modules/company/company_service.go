@@ -119,6 +119,7 @@ func (as *CompanyService) RegisterRoutes() {
 		routes.GET("/:id", as.controller.GetByID)
 		routes.PUT("/:id", as.controller.Update)
 		routes.DELETE("/:id", as.controller.Delete)
+		routes.DELETE("/bulk-delete", as.controller.DeleteMany)
 
 		// Export routes
 		routes.GET("/export", as.ExportAll)
