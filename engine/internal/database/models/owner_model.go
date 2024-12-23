@@ -274,6 +274,7 @@ func (m *ModelResource) OwnerSeeders() error {
 					ContactNumber:   "555-123-4567",
 					IsAdminVerified: true,
 					OwnerID:         &owner.ID,
+					MediaID:         &uploaded.ID,
 				},
 				{
 					Name:            fmt.Sprintf("%s %s", "Green Earth Enterprises", owner.FirstName),
@@ -284,6 +285,7 @@ func (m *ModelResource) OwnerSeeders() error {
 					ContactNumber:   "555-987-6543",
 					IsAdminVerified: false,
 					OwnerID:         &owner.ID,
+					MediaID:         &uploaded.ID,
 				},
 				{
 					Name:            fmt.Sprintf("%s %s", "Sky High Airlines", owner.FirstName),
@@ -294,6 +296,7 @@ func (m *ModelResource) OwnerSeeders() error {
 					ContactNumber:   "555-321-7890",
 					IsAdminVerified: true,
 					OwnerID:         &owner.ID,
+					MediaID:         &uploaded.ID,
 				},
 			}
 
