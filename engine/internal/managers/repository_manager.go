@@ -61,9 +61,6 @@ func (r *Repository[T]) Create(entity *T, preloads ...string) error {
 // FindByID retrieves an entity by its ID with optional preloads.
 func (r *Repository[T]) FindByID(id uint, preloads ...string) (*T, error) {
 	var entity T
-	fmt.Println("hello world --------")
-	fmt.Println(preloads)
-	fmt.Println("hello world --------")
 	query := r.applyPreloads(r.DB.Client, preloads)
 
 	result := query.First(&entity, id)
@@ -270,4 +267,18 @@ func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, req string) (filter.Filt
 		TotalSize: int(totalSize),
 		Pages:     pages,
 	}, nil
+}
+
+func (r *Repository[T]) FindWithQuery(query *gorm.DB) ([]*T, error) {
+	var entities []*T
+
+	result := query.Find(&entities)
+	if result.Error != nil {
+		return nil, fmt.Errorf("failed to retrieve entities: %w", result.Error)
+	}
+
+	if result.RowsAffected == 0 {
+		return []*T{}, nil
+	}
+	return entities, nil
 }

@@ -223,6 +223,25 @@ func (m *ModelResource) BranchFilterForOwner(filters string, ownerId uint) (filt
 	return m.BranchDB.GetPaginatedResult(db, filters)
 }
 
+func (m *ModelResource) BranchFilterForAdminRecord(filters string) ([]*Branch, error) {
+	db := m.db.Client
+	return m.BranchDB.GetFilteredResults(db, filters)
+}
+
+func (m *ModelResource) BranchFilterForOwnerRecord(filters string, ownerId uint) ([]*Branch, error) {
+	db := m.db.Client.Where("owner_id = ?", ownerId)
+	return m.BranchDB.GetFilteredResults(db, filters)
+}
+
+func (m *ModelResource) BranchGetAllForAdmin() ([]*Branch, error) {
+	return m.BranchDB.FindAll()
+}
+
+func (m *ModelResource) BranchGetAllForOwner(id uint) ([]*Branch, error) {
+	db := m.db.Client.Where("owner_id = ?", id)
+	return m.BranchDB.FindWithQuery(db)
+}
+
 func (m *ModelResource) BranchSeeders() error {
 	m.logger.Info("Seeding Branch")
 	return nil

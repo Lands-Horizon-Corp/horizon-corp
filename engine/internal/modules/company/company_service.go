@@ -20,8 +20,6 @@ type CompanyService struct {
 	tokenProvider *providers.TokenService
 	helpers       *helpers.HelpersFunction
 	modelResource *models.ModelResource
-
-	companyExport *CompanyExport
 }
 
 func NewCompanyService(
@@ -32,7 +30,6 @@ func NewCompanyService(
 	tokenProvider *providers.TokenService,
 	helpers *helpers.HelpersFunction,
 	modelResource *models.ModelResource,
-	companyExport *CompanyExport,
 ) *CompanyService {
 	controller := managers.NewController(
 		models.CompanyDB,
@@ -50,7 +47,6 @@ func NewCompanyService(
 		tokenProvider: tokenProvider,
 		helpers:       helpers,
 		modelResource: modelResource,
-		companyExport: companyExport,
 	}
 }
 
@@ -88,23 +84,65 @@ func (as *CompanyService) SearchFilter(ctx *gin.Context) {
 	})
 }
 
-type User struct {
-	ID    int
-	Name  string
-	Email string
-	Age   int
-}
-
 func (as *CompanyService) ExportAll(ctx *gin.Context) {
-	as.companyExport.ExportAll(ctx)
+	company, err := as.modelResource.CompanyDB.FindAll()
+	if err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to export CSV: %v", err)
+		return
+	}
+	record, headers := as.modelResource.CompanyToRecord(company)
+	csvManager := managers.NewCSVManager()
+	csvManager.SetFileName("company-export-all.csv")
+	csvManager.SetHeaders(headers)
+	csvManager.AddRecords(record)
+	if err := csvManager.WriteCSV(ctx); err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
+		return
+	}
 }
 
 func (as *CompanyService) ExportAllFiltered(ctx *gin.Context) {
-	as.companyExport.ExportAllFiltered(ctx)
+	filterParam := ctx.Query("filter")
+	if filterParam == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
+		return
+	}
+	company, err := as.modelResource.CompanyFilterForAdminRecord(filterParam)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Companies not found."})
+		return
+	}
+	record, headers := as.modelResource.CompanyToRecord(company)
+	csvManager := managers.NewCSVManager()
+	csvManager.SetFileName("company-export-all-filtered.csv")
+	csvManager.SetHeaders(headers)
+	csvManager.AddRecords(record)
+	if err := csvManager.WriteCSV(ctx); err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
+		return
+	}
 }
 
 func (as *CompanyService) ExportSelected(ctx *gin.Context) {
-	as.companyExport.ExportSelected(ctx)
+	ids, err := as.helpers.ParseIDsFromQuery(ctx, "ids")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	company, err := as.modelResource.CompanyDB.GetAllByIDs(ids)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve companies."})
+		return
+	}
+	record, headers := as.modelResource.CompanyToRecord(company)
+	csvManager := managers.NewCSVManager()
+	csvManager.SetFileName("company-export-all-filtered.csv")
+	csvManager.SetHeaders(headers)
+	csvManager.AddRecords(record)
+	if err := csvManager.WriteCSV(ctx); err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
+		return
+	}
 }
 
 func (as *CompanyService) RegisterRoutes() {
