@@ -73,7 +73,7 @@ export type TSearchFilter<T = unknown, TValue = T> = {
     value?: TValue
     mode: TFilterModes
     displayText: string
-    isStaticFilter? : boolean
+    isStaticFilter?: boolean
     dataType: TColumnDataTypes
 }
 
@@ -106,9 +106,13 @@ export interface IDataTableFilterState<
     removeFilter: (field: TField) => void
 }
 
-export interface IFilterComponentProps<T> {
+export interface IFilterComponentProps<
+    T,
+    F extends keyof typeof filterModeMap = 'text',
+> {
     field: KeysOfOrString<T>
     displayText: string
+    defaultMode? : (typeof filterModeMap)[F][number]['value']
 }
 
 const DataTableFilterContext = createContext<

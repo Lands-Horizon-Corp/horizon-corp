@@ -42,7 +42,7 @@ const TimePickerWithApply = ({
     )
 }
 
-const TimeFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
+const TimeFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentProps<T, 'time'>) => {
     const { filters, setFilter } = useDataTableFilter<Date, typeof field>()
 
     const filterModeOptions = filterModeMap['time']
@@ -53,7 +53,7 @@ const TimeFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
         from: undefined,
         dataType: 'time',
         value: undefined,
-        mode: filterModeOptions[0].value,
+        mode: defaultMode ?? filterModeOptions[0].value,
     }
 
     return (

@@ -17,7 +17,11 @@ import {
 } from './data-table-filter-context'
 import NumberRange from './number-range'
 
-const NumberFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
+const NumberFilter = <T,>({
+    field,
+    displayText,
+    defaultMode,
+}: IFilterComponentProps<T, 'number'>) => {
     const filterModeOptions = filterModeMap['number']
     const { filters, setFilter } = useDataTableFilter<number, typeof field>()
 
@@ -27,7 +31,7 @@ const NumberFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
         from: undefined,
         value: undefined,
         dataType: 'number',
-        mode: filterModeOptions[0].value,
+        mode: defaultMode ?? filterModeOptions[0].value,
     }
 
     return (

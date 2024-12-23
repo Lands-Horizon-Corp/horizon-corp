@@ -163,7 +163,11 @@ const companiesTableColumns = ({
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Name">
                     <ColumnActions {...props}>
-                        <TextFilter displayText="Name" field="name" />
+                        <TextFilter
+                            field="name"
+                            displayText="Name"
+                            defaultMode="contains"
+                        />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
@@ -197,7 +201,11 @@ const companiesTableColumns = ({
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Address">
                     <ColumnActions {...props}>
-                        <TextFilter displayText="Address" field="address" />
+                        <TextFilter
+                            field="address"
+                            displayText="Address"
+                            defaultMode="contains"
+                        />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
