@@ -11,7 +11,7 @@ const DocumentBuilderTools = ({ editor }: TableToolBarProps) => {
     const { open } = useSidebar()
 
     return (
-        <div className="fixed z-10 mt-2 flex h-14 w-full items-center justify-center dark:bg-black">
+        <div className="fixed z-10 mt-2 flex h-14 w-full items-center justify-center bg-transparent">
             <div className='px-5 w-fit bg-white dark:bg-secondary h-full shadow-md rounded-lg'>
                 <ReportBuilderToolbar className="grow" editor={editor} />
             </div>

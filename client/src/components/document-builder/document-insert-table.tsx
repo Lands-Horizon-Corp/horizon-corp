@@ -26,14 +26,15 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { ReactNode, useState } from 'react'
+import CompaniesTable from '../tables/companies-table'
 // import Tbl from '@/modules/test/pages/tbl'
 
 interface InsertTableProps<TData> {
-    data: TData[]
+    data?: TData[]
     columns: ColumnDef<TData>[]
     filterPlaceholder?: string,
     trigger: ReactNode,
-    Content: ReactNode,
+    Content?: ReactNode,
 }
 
 export const InsertTable = <TData,>({
@@ -74,8 +75,8 @@ export const InsertTable = <TData,>({
             <DialogTrigger asChild>
               {trigger}
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-                <div className="w-full hidden">
+            <DialogContent className="max-w-fit">
+                {/* <div className="w-full hidden">
                     <div className="flex items-center py-4">
                         <Input
                             placeholder={filterPlaceholder}
@@ -165,7 +166,8 @@ export const InsertTable = <TData,>({
                             Next
                         </Button>
                     </div>
-                </div>
+                </div> */}
+                <CompaniesTable></CompaniesTable>
                 <div className='w-full'>
                  {Content}         
                 </div>

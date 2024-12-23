@@ -29,6 +29,8 @@ import {
     FaExchangeAlt,
 } from 'react-icons/fa'
 import { MdAdd } from 'react-icons/md'
+import InsertTable from './document-insert-table'
+import companiesTableColumns from '../tables/companies-table/columns'
 const headers = ['Id', 'Name', 'Bday', 'Age', 'Gender']
 
 const Person: any[] = []
@@ -138,11 +140,18 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
                                             {' '}
                                             {subItem.label}
                                         </span>
-                                        <MdAdd
-                                            size={18}
-                                            onClick={insertTable(subItem.label)}
-                                            className="ease-in-out hover:scale-105"
-                                        />
+                                        <InsertTable
+                                        columns={companiesTableColumns}
+                                        trigger={
+                                                <MdAdd
+                                                    size={18}
+                                                    onClick={insertTable(
+                                                        subItem.label
+                                                    )}
+                                                    className="ease-in-out hover:scale-105"
+                                                />
+                                            }
+                                        ></InsertTable>
                                     </SidebarMenuSubItem>
                                 </SidebarMenuSub>
                             ))}

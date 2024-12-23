@@ -80,11 +80,11 @@ export const DocumentBuilder = () => {
     return (
         <SidebarProvider>
             <div className="flex w-full h-full">
-                <div className="relative w-full bg-secondary">
+                <div className="relative w-full bg-secondary dark:bg-black">
                     <DocumentBuilderTools editor={editor} />
                     <div className="h-full w-full justify-center pt-20">
                         <EditorContent
-                            className="page relative mx-auto mb-20 shadow-ls bg-white dark:text-white flex min-h-[11.5in] h-fit max-h-fit w-[8.5in] cursor-pointer justify-center gap-3 overflow-hidden rounded-lg p-[1in] text-start"
+                            className="page relative mx-auto mb-20 shadow-ls bg-white dark:bg-secondary dark:text-white flex min-h-[11.5in] h-fit max-h-fit w-[8.5in] cursor-pointer justify-center gap-3 overflow-hidden rounded-lg p-[1in] text-start"
                             editor={editor}
                         />
                     </div>
