@@ -139,6 +139,16 @@ func (as *CompanyService) Verify(ctx *gin.Context) {
 }
 
 func (as *CompanyService) ExportAll(ctx *gin.Context) {
+	userClaims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	if userClaims.AccountType != "Admin" {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
 	company, err := as.modelResource.CompanyDB.FindAll()
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "Failed to export CSV: %v", err)
@@ -156,6 +166,16 @@ func (as *CompanyService) ExportAll(ctx *gin.Context) {
 }
 
 func (as *CompanyService) ExportAllFiltered(ctx *gin.Context) {
+	userClaims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	if userClaims.AccountType != "Admin" {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
 	filterParam := ctx.Query("filter")
 	if filterParam == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
@@ -178,6 +198,16 @@ func (as *CompanyService) ExportAllFiltered(ctx *gin.Context) {
 }
 
 func (as *CompanyService) ExportSelected(ctx *gin.Context) {
+	userClaims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	if userClaims.AccountType != "Admin" {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
 	ids, err := as.helpers.ParseIDsFromQuery(ctx, "ids")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
