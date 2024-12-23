@@ -4,7 +4,8 @@ import {
     getSortedRowModel,
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -13,7 +14,7 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import columns, { companyGlobalSearchTargets } from './columns'
+import companyColumns, { companyGlobalSearchTargets } from './columns'
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
@@ -27,6 +28,17 @@ const CompaniesTable = ({
     onSelectData,
 }: TableProps<CompanyResource>) => {
     const queryClient = useQueryClient()
+    const columns = useMemo(
+        () =>
+            companyColumns({
+                onDeleteSuccess: () =>
+                    queryClient.invalidateQueries({
+                        queryKey: ['table', 'company'],
+                    }),
+            }),
+        [queryClient]
+    )
+
     const {
         sorting,
         setSorting,
@@ -56,7 +68,7 @@ const CompaniesTable = ({
         isRefetching,
         refetch,
     } = useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['company', 'table', filterState.finalFilters, pagination],
+        queryKey: ['table', 'company', filterState.finalFilters, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 CompanyService.filter(
@@ -132,12 +144,7 @@ const CompaniesTable = ({
                     deleteActionProps={{
                         onDeleteSuccess: () =>
                             queryClient.invalidateQueries({
-                                queryKey: [
-                                    'company',
-                                    'table',
-                                    filterState.finalFilters,
-                                    pagination,
-                                ],
+                                queryKey: ['table', 'company'],
                             }),
                         onDelete: (selectedData) =>
                             CompanyService.deleteMany(
