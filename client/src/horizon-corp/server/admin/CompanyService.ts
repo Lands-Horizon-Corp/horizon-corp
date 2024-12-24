@@ -5,7 +5,9 @@ import {
   CompanyResource,
   CompanyRequest,
   CompanyPaginatedResource,
+  MediaRequest,
 } from '../../types'
+import { AxiosResponse } from 'axios';
 
 /**
  * Service class to handle CRUD operations for companies.
@@ -191,4 +193,18 @@ export default class CompanyService {
     const response = await UseServer.post<void, CompanyResource>(endpoint);
     return response.data;
   }
+
+
+  // POST - /profile/profile-picture
+  //  * @param {string[]} [preloads] - Optional array of relations to preload.
+  public static async ProfilePicture(
+    data: MediaRequest, preloads: string[] = ["Media"]
+  ): Promise<AxiosResponse<CompanyResource>> {
+    const preloadParams = preloads?.map(preload => `preloads=${encodeURIComponent(preload)}`).join('&') || '';
+    const separator = preloadParams ? '?' : '';
+    const endpoint = `${CompanyService.BASE_ENDPOINT}/profile-picture${separator}${preloadParams}`;
+    return await UseServer.post<MediaRequest, CompanyResource>(endpoint, data)
+  }
+
+
 }
