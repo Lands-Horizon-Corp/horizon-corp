@@ -153,6 +153,7 @@ const CompanyEditBasicInfoForm = ({
                                 </FormLabel>
                                 <FormControl>
                                     <TextEditor
+                                        
                                         content={field.value}
                                         onChange={field.onChange}
                                         className="!max-w-none"

@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import DOMPurify from 'isomorphic-dompurify'
 import { useParams, Link } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 
@@ -13,6 +14,7 @@ import {
     QuestionCircleFillIcon,
     BadgeExclamationFillIcon,
     PencilOutlineIcon,
+    TrashIcon,
 } from '@/components/icons'
 import MainMapContainer from '@/components/map'
 import UserAvatar from '@/components/user-avatar'
@@ -68,6 +70,7 @@ const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
 }
 
 const CompanyViewPage = () => {
+
     const { companyId } = useParams({
         from: '/admin/companies-management/$companyId/view',
     })
@@ -119,7 +122,7 @@ const CompanyViewPage = () => {
                                             0} Branch
                                     </span>
                                 </div>
-                                <p>
+                                <div className="flex items-center flex-wrap gap-x-3">
                                     <Link
                                         params={{ companyId }}
                                         to="/admin/companies-management/$companyId/edit"
@@ -128,7 +131,15 @@ const CompanyViewPage = () => {
                                         <PencilOutlineIcon className="mr-2 inline" />
                                         Edit
                                     </Link>
-                                </p>
+                                    <Link
+                                        params={{ companyId }}
+                                        to="/admin/companies-management/$companyId/edit"
+                                        className="pointer-events-auto text-sm underline hover:text-destructive"
+                                    >
+                                        <TrashIcon className="mr-2 inline" />
+                                        Delete
+                                    </Link>
+                                </div>
                             </div>
                             {company.latitude && company.longitude && (
                                 <div className="right-0 top-0 !-z-10 mt-5 h-[200px] w-full sm:absolute sm:!mt-0 sm:h-full sm:w-[200px] md:w-[400px]">
@@ -163,9 +174,17 @@ const CompanyViewPage = () => {
                         Company&apos;s Description
                         <QuestionCircleFillIcon className="inline text-foreground/20" />
                     </h3>
-                    <p className="text-sm text-foreground/70 sm:text-base">
-                        {company.description}
-                    </p>
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(
+                                company.description &&
+                                    company.description.length > 0
+                                    ? company.description
+                                    : '<i>No Description</i>'
+                            ),
+                        }}
+                        className="prose !max-w-full rounded-xl bg-secondary p-4 text-sm text-foreground/70 prose-p:text-foreground/80 prose-strong:text-foreground dark:bg-popover sm:text-sm"
+                    ></div>
                 </div>
                 <Separator className="w-full" />
                 <div className="w-full space-y-4">
