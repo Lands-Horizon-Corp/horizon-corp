@@ -163,12 +163,12 @@ const CompanyViewPage = () => {
                                 </div>
                             </div>
                             {company.latitude && company.longitude && (
-                                <div className="right-0 top-0 !-z-10 mt-5 h-[200px] w-full sm:absolute sm:!mt-0 sm:h-full sm:w-[200px] md:w-[400px]">
+                                <div className="select-none right-0 top-0 !-z-10 mt-5 h-[200px] w-full sm:absolute sm:!mt-0 sm:h-full sm:w-[200px] md:w-[500px]">
                                     <MainMapContainer
                                         viewOnly
                                         zoom={13}
                                         hideControls
-                                        className="z-10 rounded-none p-0"
+                                        className="pointer-events-nonee z-10 rounded-none p-0"
                                         mapContainerClassName="sm:rounded-none"
                                         center={{
                                             lng: company.longitude,
@@ -181,6 +181,7 @@ const CompanyViewPage = () => {
                                             },
                                         ]}
                                     />
+                                    <div className="absolute left-0 top-0 z-20 hidden h-full w-full sm:block"></div>
                                     <div className="pointer-events-none absolute left-0 top-0 z-20 hidden h-full w-[50%] bg-gradient-to-r from-popover to-transparent sm:block"></div>
                                 </div>
                             )}
