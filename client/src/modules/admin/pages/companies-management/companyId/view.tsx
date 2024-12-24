@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import DOMPurify from 'isomorphic-dompurify'
-import { useParams, Link } from '@tanstack/react-router'
+import { useParams, Link, useRouter } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 
 import {
@@ -25,7 +25,10 @@ import { toReadableDate } from '@/utils'
 import { OwnerResource } from '@/horizon-corp/types/profile'
 import CompanyAcceptBar from '@/modules/admin/components/company-accept-bar'
 
-import { companyLoader } from '@/hooks/api-hooks/use-company'
+import { companyLoader, useDeleteCompany } from '@/hooks/api-hooks/use-company'
+import useConfirmModalStore from '@/store/confirm-modal-store'
+import { Button } from '@/components/ui/button'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
     const AccountBadge = useMemo(() => {
@@ -70,12 +73,18 @@ const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
 }
 
 const CompanyViewPage = () => {
+    const router = useRouter()
+    const { onOpen } = useConfirmModalStore()
 
     const { companyId } = useParams({
         from: '/admin/companies-management/$companyId/view',
     })
 
     const { data: company } = useSuspenseQuery(companyLoader(companyId))
+
+    const { mutate: deleteCompany, isPending: isDeleting } = useDeleteCompany({
+        onSuccess: () => router.navigate({ to: '/admin/companies-management' }),
+    })
 
     return (
         <div className="flex w-full max-w-full flex-col items-center px-4 pb-6 sm:px-8">
@@ -122,7 +131,7 @@ const CompanyViewPage = () => {
                                             0} Branch
                                     </span>
                                 </div>
-                                <div className="flex items-center flex-wrap gap-x-3">
+                                <div className="flex flex-wrap items-center gap-x-3">
                                     <Link
                                         params={{ companyId }}
                                         to="/admin/companies-management/$companyId/edit"
@@ -131,14 +140,26 @@ const CompanyViewPage = () => {
                                         <PencilOutlineIcon className="mr-2 inline" />
                                         Edit
                                     </Link>
-                                    <Link
-                                        params={{ companyId }}
-                                        to="/admin/companies-management/$companyId/edit"
-                                        className="pointer-events-auto text-sm underline hover:text-destructive"
+                                    <Button
+                                        disabled={isDeleting}
+                                        onClick={() =>
+                                            onOpen({
+                                                title: 'Delete Company',
+                                                description:
+                                                    'Are you sure to delete this company?',
+                                                onConfirm: () =>
+                                                    deleteCompany(companyId),
+                                            })
+                                        }
+                                        className="pointer-events-auto w-fit bg-transparent p-0 text-sm underline hover:bg-transparent hover:text-destructive"
                                     >
-                                        <TrashIcon className="mr-2 inline" />
+                                        {isDeleting ? (
+                                            <LoadingSpinner />
+                                        ) : (
+                                            <TrashIcon className="mr-2 inline" />
+                                        )}
                                         Delete
-                                    </Link>
+                                    </Button>
                                 </div>
                             </div>
                             {company.latitude && company.longitude && (

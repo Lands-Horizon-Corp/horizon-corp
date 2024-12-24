@@ -1,5 +1,3 @@
-import { toast } from 'sonner'
-import { useMutation } from '@tanstack/react-query'
 import { ColumnDef, Row } from '@tanstack/react-table'
 import { useRouter, Link } from '@tanstack/react-router'
 
@@ -13,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import UserAvatar from '@/components/user-avatar'
 import { Checkbox } from '@/components/ui/checkbox'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
@@ -22,12 +21,14 @@ import ColumnActions from '@/components/data-table/data-table-column-header/colu
 import DataTableMultiSelectFilter from '@/components/data-table/data-table-filters/multi-select-filter'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
-import { serverRequestErrExtractor } from '@/helpers'
+import { toReadableDate } from '@/utils'
 import { CompanyResource } from '@/horizon-corp/types'
-import { toReadableDate, withCatchAsync } from '@/utils'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import LoadingSpinner from '@/components/spinners/loading-spinner'
+
+import {
+    useApproveCompany,
+    useDeleteCompany,
+} from '@/hooks/api-hooks/use-company'
 
 export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[] =
     [
@@ -54,44 +55,14 @@ const CompaniesTableAction = ({
     const router = useRouter()
     const { onOpen } = useConfirmModalStore()
 
-    const { isPending: isDeletingCompany, mutate: deleteCompany } = useMutation<
-        void,
-        string
-    >({
-        mutationKey: ['company', 'delete', company.id],
-        mutationFn: async () => {
-            const [error] = await withCatchAsync(
-                CompanyService.delete(company.id)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            toast.success('Company deleted')
-            onDeleteSuccess?.()
-        },
-    })
+    const { isPending: isDeletingCompany, mutate: deleteCompany } =
+        useDeleteCompany({
+            onSuccess: onDeleteSuccess,
+        })
 
     const { mutate: approveCompany, isPending: isApprovingCompany } =
-        useMutation<void, string>({
-            mutationKey: ['company', 'approve', company.id],
-            mutationFn: async () => {
-                const [error] = await withCatchAsync(
-                    CompanyService.verify(company.id)
-                )
-
-                if (error) {
-                    const errorMessage = serverRequestErrExtractor({ error })
-                    toast.error(errorMessage)
-                    throw errorMessage
-                }
-
-                toast.success('Company approved')
-                onCompanyUpdate?.()
-            },
+        useApproveCompany({
+            onSuccess: onCompanyUpdate,
         })
 
     return (
@@ -103,7 +74,7 @@ const CompaniesTableAction = ({
                     onOpen({
                         title: 'Delete Company',
                         description: 'Are you sure to delete this company?',
-                        onConfirm: () => deleteCompany(),
+                        onConfirm: () => deleteCompany(company.id),
                     }),
             }}
             onEdit={{
@@ -135,7 +106,7 @@ const CompaniesTableAction = ({
                                     title: 'Approve Company',
                                     description:
                                         'Are you sure you want to approve this company? Approval will enable them to begin their operations.',
-                                    onConfirm: () => approveCompany(),
+                                    onConfirm: () => approveCompany(company.id),
                                 })
                             }}
                         >

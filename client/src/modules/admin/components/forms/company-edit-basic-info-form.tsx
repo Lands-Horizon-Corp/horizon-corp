@@ -75,10 +75,13 @@ const CompanyEditBasicInfoForm = ({
         mutate: save,
         error,
         reset,
-    } = useUpdateCompany((data) => {
-        onSuccess?.(data)
-        form.reset(data)
-    }, onError)
+    } = useUpdateCompany({
+        onSuccess: (data) => {
+            onSuccess?.(data)
+            form.reset(data)
+        },
+        onError,
+    })
 
     useEffect(() => {
         onLoading?.(isPending)
@@ -153,7 +156,6 @@ const CompanyEditBasicInfoForm = ({
                                 </FormLabel>
                                 <FormControl>
                                     <TextEditor
-                                        
                                         content={field.value}
                                         onChange={field.onChange}
                                         className="!max-w-none"
