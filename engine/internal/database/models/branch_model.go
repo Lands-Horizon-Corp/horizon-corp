@@ -218,14 +218,14 @@ func (m *ModelResource) BranchFilterForAdmin(filters string) (filter.FilterPages
 	return m.BranchDB.GetPaginatedResult(db, filters)
 }
 
-func (m *ModelResource) BranchFilterForOwner(filters string, ownerId uint) (filter.FilterPages[Branch], error) {
-	db := m.db.Client.Where("owner_id = ?", ownerId)
-	return m.BranchDB.GetPaginatedResult(db, filters)
-}
-
 func (m *ModelResource) BranchFilterForAdminRecord(filters string) ([]*Branch, error) {
 	db := m.db.Client
 	return m.BranchDB.GetFilteredResults(db, filters)
+}
+
+func (m *ModelResource) BranchFilterForOwner(filters string, ownerId uint) (filter.FilterPages[Branch], error) {
+	db := m.db.Client.Where("owner_id = ?", ownerId)
+	return m.BranchDB.GetPaginatedResult(db, filters)
 }
 
 func (m *ModelResource) BranchFilterForOwnerRecord(filters string, ownerId uint) ([]*Branch, error) {

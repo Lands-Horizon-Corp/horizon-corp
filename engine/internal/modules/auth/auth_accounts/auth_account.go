@@ -896,45 +896,74 @@ func (ap *AuthAccount) VerifyPassword(accountType string, userID uint, password 
 	}
 }
 
-func (ap *AuthAccount) AccountFootstep(accountType string, userID uint, action, description string) {
+func (ap *AuthAccount) AccountFootstep(accountType string, userID uint, action, description string) (*models.Footstep, error) {
+	type UserDetail struct {
+		FirstName  string
+		MiddleName string
+		LastName   string
+	}
+
+	var userDetail *UserDetail
+
+	fetchUserDetail := func(accountType string, userID uint) (*UserDetail, error) {
+		switch accountType {
+		case "Admin":
+			admin, err := ap.modelResource.AdminDB.FindByID(userID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to find Admin with ID %d: %w", userID, err)
+			}
+			return &UserDetail{admin.FirstName, admin.MiddleName, admin.LastName}, nil
+		case "Owner":
+			owner, err := ap.modelResource.OwnerDB.FindByID(userID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to find Owner with ID %d: %w", userID, err)
+			}
+			return &UserDetail{owner.FirstName, owner.MiddleName, owner.LastName}, nil
+		case "Employee":
+			employee, err := ap.modelResource.EmployeeDB.FindByID(userID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to find Employee with ID %d: %w", userID, err)
+			}
+			return &UserDetail{employee.FirstName, employee.MiddleName, employee.LastName}, nil
+		case "Member":
+			member, err := ap.modelResource.MemberDB.FindByID(userID)
+			if err != nil {
+				return nil, fmt.Errorf("failed to find Member with ID %d: %w", userID, err)
+			}
+			return &UserDetail{member.FirstName, member.MiddleName, member.LastName}, nil
+		default:
+			return nil, fmt.Errorf("invalid account type")
+		}
+	}
+
+	var err error
+	userDetail, err = fetchUserDetail(accountType, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	description = fmt.Sprintf("%s (Name: %s %s %s)", description, userDetail.FirstName, userDetail.MiddleName, userDetail.LastName)
+
+	model := &models.Footstep{
+		AccountType: accountType,
+		Description: description,
+		Activity:    action,
+	}
 	switch accountType {
 	case "Admin":
-		// user, err := ap.modelResource.AdminDB.FindByID(userID)
-		// if err != nil {
-		// 	return false
-		// }
-		// if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
-		// 	return false
-		// }
-		// return true
+		model.AdminID = &userID
 	case "Owner":
-		// user, err := ap.modelResource.OwnerDB.FindByID(userID)
-		// if err != nil {
-		// 	return false
-		// }
-		// if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
-		// 	return false
-		// }
-		// return true
-
+		model.OwnerID = &userID
 	case "Employee":
-		// user, err := ap.modelResource.EmployeeDB.FindByID(userID)
-		// if err != nil {
-		// 	return false
-		// }
-		// if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
-		// 	return false
-		// }
-		// return true
-
+		model.EmployeeID = &userID
 	case "Member":
-		// user, err := ap.modelResource.MemberDB.FindByID(userID)
-		// if err != nil {
-		// 	return false
-		// }
-		// if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
-		// 	return false
-		// }
-		// return true
+		model.MemberID = &userID
+	default:
+		return nil, fmt.Errorf("invalid account type")
 	}
+	if err := ap.modelResource.FootstepDB.Create(model); err != nil {
+		return nil, fmt.Errorf("failed to create Footstep: %w", err)
+	}
+
+	return model, nil
 }
