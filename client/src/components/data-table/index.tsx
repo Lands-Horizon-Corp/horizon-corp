@@ -210,22 +210,24 @@ const DataTable = <TData,>({
         syncFooterRowHeights()
     }, [syncHeaderRowHeights, syncRowHeights, syncFooterRowHeights])
 
+    const tableRows = table.getRowModel().rows
+
     useEffect(() => {
         syncHeights()
-
         const handleResize = () => syncHeights()
         window.addEventListener('resize', handleResize)
-
         return () => {
             window.removeEventListener('resize', handleResize)
         }
-    }, [syncHeights])
+    }, [syncHeights, tableRows])
 
     const sensors = useSensors(
         useSensor(MouseSensor, {}),
         useSensor(TouchSensor, {}),
         useSensor(KeyboardSensor, {})
     )
+
+    const currentRowsLength = table.getRowModel().rows.length
 
     return (
         <DndContext
@@ -238,14 +240,14 @@ const DataTable = <TData,>({
                 className={cn(
                     'relative z-10 flex rounded-xl border dark:bg-secondary',
                     isScrollable
-                        ? 'ecoop-scroll max-h-full overflow-y-scroll'
-                        : 'h-fit max-h-none overflow-clip min-h-fit',
+                        ? 'ecoop-scroll max-h-full flex-1 overflow-y-scroll [&::-webkit-scrollbar]:w-1.5'
+                        : 'h-fit max-h-none min-h-fit overflow-clip',
                     className
                 )}
             >
                 <>
                     {table.getLeftHeaderGroups().length > 0 &&
-                        table.getRowCount() > 0 && (
+                        currentRowsLength > 0 && (
                             <div className="ecoop-scroll sticky left-[0%] z-50 h-fit w-fit border-r dark:border-popover/80">
                                 <UITable
                                     ref={leftTableRef}
@@ -298,6 +300,7 @@ const DataTable = <TData,>({
                                 <DataTableBody
                                     rowClassName={rowClassName}
                                     rows={table.getRowModel().rows}
+                                    colCount={table.getAllColumns().length}
                                 />
                                 <DataTableFooter
                                     table={table}
@@ -309,7 +312,7 @@ const DataTable = <TData,>({
                         </div>
                     )}
                     {table.getRightHeaderGroups().length > 0 &&
-                        table.getRowCount() > 0 && (
+                        currentRowsLength > 0 && (
                             <div className="ecoop-scroll sticky right-0 z-50 h-fit w-fit border-l dark:border-popover/80">
                                 <UITable
                                     ref={rightTableRef}

@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import {
     Select,
     SelectContent,
@@ -5,30 +7,51 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import TimeRange from './time-range'
 import { Button } from '@/components/ui/button'
+import TimePicker from '@/components/date-time-pickers/time-picker'
 
-import DateRange from './date-range'
-
-import { isDate } from '@/helpers'
 import {
     TFilterModes,
-    filterModeMap,
     TSearchFilter,
+    filterModeMap,
     useDataTableFilter,
     IFilterComponentProps,
 } from './data-table-filter-context'
-import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
+import logger from '@/helpers/loggers/logger'
 
-const DateFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentProps<T, 'date'>) => {
+const TimePickerWithApply = ({
+    value,
+    onChange,
+}: {
+    value: Date
+    onChange: (newDate: Date) => void
+}) => {
+    const [time, setTime] = useState<Date>(value)
+
+    return (
+        <>
+            <TimePicker
+                date={time}
+                onChange={(newTime) => {
+                    setTime(newTime)
+                }}
+            />
+            <Button onClick={() => onChange(time)}>Apply</Button>
+        </>
+    )
+}
+
+const TimeFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentProps<T, 'time'>) => {
     const { filters, setFilter } = useDataTableFilter<Date, typeof field>()
 
-    const filterModeOptions = filterModeMap['date']
+    const filterModeOptions = filterModeMap['time']
 
     const filterVal: TSearchFilter<Date> = filters[field] ?? {
         displayText,
         to: undefined,
         from: undefined,
-        dataType: 'date',
+        dataType: 'time',
         value: undefined,
         mode: defaultMode ?? filterModeOptions[0].value,
     }
@@ -63,45 +86,35 @@ const DateFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentPro
                     ))}
                 </SelectContent>
             </Select>
-            {filterVal.mode !== 'range' ? (
-                <InputDatePicker
-                    fromYear={1960}
-                    captionLayout="dropdown"
-                    value={
-                        isDate(filterVal.value) ? filterVal.value : undefined
-                    }
-                    onChange={(newDate) => {
-                        if (!newDate) return
+            {filters[field]?.mode !== 'range' ? (
+                <TimePickerWithApply
+                    value={filterVal.value ?? new Date(0, 0, 0, 0, 0, 0)}
+                    onChange={(newTime) => {
                         setFilter(field, {
                             ...filterVal,
-                            value: newDate,
+                            value: newTime,
                             from: undefined,
                             to: undefined,
                         })
                     }}
                 />
             ) : (
-                <DateRange
-                    modal
-                    withTimePick
-                    fromYear={1960}
-                    captionLayout="dropdown-buttons"
-                    value={
-                        {
-                            from: filterVal.from,
-                            to: filterVal.to,
-                            value: undefined,
-                        } as unknown as DateRange
-                    }
-                    onChange={(val) =>
-                        setFilter(field, {
-                            ...filterVal,
-                            from: val.from,
-                            to: val.to,
-                            value: undefined,
-                        })
-                    }
-                />
+                <>
+                    <TimeRange
+                        baseDate={new Date(0, 0, 0, 0, 0, 0)}
+                        value={{ from: filterVal.from, to: filterVal.to }}
+                        onChange={(newTimeRange) => {
+                            setFilter(field, {
+                                ...filterVal,
+                                from: newTimeRange.from,
+                                to: newTimeRange.to,
+                                value: undefined,
+                            })
+
+                            logger.log('Set time range', newTimeRange)
+                        }}
+                    />
+                </>
             )}
             <Button
                 size="sm"
@@ -115,4 +128,4 @@ const DateFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentPro
     )
 }
 
-export default DateFilter
+export default TimeFilter
