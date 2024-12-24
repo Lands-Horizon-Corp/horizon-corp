@@ -47,7 +47,7 @@ const Toolbar = ({
                     <ToolbarItalicIcon className="size-4" />
                 </Toggle>
             </ActionTooltip>
-            <ActionTooltip align="center" side="top" tooltipContent="italic">
+            <ActionTooltip align="center" side="top" tooltipContent="bold">
                 <Toggle
                     pressed={editor.isActive('Bold"')}
                     onClick={() => editor.chain().focus().toggleBold().run()}
@@ -95,7 +95,7 @@ const Toolbar = ({
             <ActionTooltip
                 align="center"
                 side="top"
-                tooltipContent="bullet List"
+                tooltipContent="bullet list"
             >
                 <Toggle
                     pressed={editor.isActive('bulletList')}
@@ -109,7 +109,7 @@ const Toolbar = ({
             <ActionTooltip
                 align="center"
                 side="top"
-                tooltipContent="ordered List"
+                tooltipContent="ordered list"
             >
                 <Toggle
                     onClick={() =>
@@ -125,7 +125,7 @@ const Toolbar = ({
             <ActionTooltip
                 align="center"
                 side="top"
-                tooltipContent="code Block"
+                tooltipContent="code block"
             >
                 <Button
                     type="button"
