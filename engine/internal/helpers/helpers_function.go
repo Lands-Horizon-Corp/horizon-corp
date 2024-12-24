@@ -6,10 +6,12 @@ import (
 	"net/mail"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/google/uuid"
 )
@@ -174,4 +176,22 @@ func (hf *HelpersFunction) isValidKey(key string) bool {
 func (hf *HelpersFunction) isValidUsername(username string) bool {
 	re := regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 	return re.MatchString(username)
+}
+
+func (hf *HelpersFunction) ParseIDsFromQuery(ctx *gin.Context, paramName string) ([]uint, error) {
+	idsParam := ctx.QueryArray(paramName)
+	if len(idsParam) == 0 {
+		return nil, errors.New("no IDs provided")
+	}
+
+	ids := make([]uint, 0, len(idsParam))
+	for _, idStr := range idsParam {
+		id, err := strconv.ParseUint(idStr, 10, 64)
+		if err != nil {
+			return nil, fmt.Errorf("invalid ID: %s", idStr)
+		}
+		ids = append(ids, uint(id))
+	}
+
+	return ids, nil
 }

@@ -1,6 +1,7 @@
 package models
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -64,6 +65,49 @@ func (m *ModelResource) ContactToResourceList(contacts []*Contact) []*ContactRes
 		contactResources = append(contactResources, m.ContactToResource(contact))
 	}
 	return contactResources
+}
+
+// ContactToRecord converts a slice of Contact pointers into CSV records and headers.
+func (m *ModelResource) ContactToRecord(contacts []*Contact) ([][]string, []string) {
+	// Convert Contact structs to ContactResource structs
+	resource := m.ContactToResourceList(contacts)
+	records := make([][]string, 0, len(resource))
+
+	for _, contact := range resource {
+		id := strconv.Itoa(int(contact.ID))
+		firstName := sanitizeCSVField(contact.FirstName)
+		lastName := sanitizeCSVField(contact.LastName)
+		email := sanitizeCSVField(contact.Email)
+		contactNumber := sanitizeCSVField(contact.ContactNumber)
+		description := sanitizeCSVField(contact.Description)
+		createdAt := sanitizeCSVField(contact.CreatedAt)
+		updatedAt := sanitizeCSVField(contact.UpdatedAt)
+
+		record := []string{
+			id,
+			firstName,
+			lastName,
+			email,
+			contactNumber,
+			description,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"First Name",
+		"Last Name",
+		"Email",
+		"Contact Number",
+		"Description",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateContactRequest(req *ContactRequest) error {

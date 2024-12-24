@@ -1,7 +1,10 @@
 package models
 
 import (
+	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -68,6 +71,91 @@ func (m *ModelResource) GenderToResourceList(genders []*Gender) []*GenderResourc
 		genderResources = append(genderResources, m.GenderToResource(gender))
 	}
 	return genderResources
+}
+
+// GenderToRecord converts a slice of Gender pointers into CSV records and headers.
+func (m *ModelResource) GenderToRecord(genders []*Gender) ([][]string, []string) {
+	// Convert Gender structs to GenderResource structs
+	resource := m.GenderToResourceList(genders)
+	records := make([][]string, 0, len(resource))
+
+	for _, gender := range resource {
+		// Basic Fields
+		id := strconv.Itoa(int(gender.ID))
+		name := sanitizeCSVField(gender.Name)
+		description := sanitizeCSVField(gender.Description)
+		createdAt := sanitizeCSVField(gender.CreatedAt)
+		updatedAt := sanitizeCSVField(gender.UpdatedAt)
+
+		// Handle Related Entities
+		employees := "N/A"
+		if len(gender.Employees) > 0 {
+			employeeNames := make([]string, 0, len(gender.Employees))
+			for _, emp := range gender.Employees {
+				fullName := fmt.Sprintf("%s %s", emp.FirstName, emp.LastName)
+				employeeNames = append(employeeNames, sanitizeCSVField(fullName))
+			}
+			employees = strings.Join(employeeNames, "; ")
+		}
+
+		members := "N/A"
+		if len(gender.Members) > 0 {
+			memberNames := make([]string, 0, len(gender.Members))
+			for _, mem := range gender.Members {
+				fullName := fmt.Sprintf("%s %s", mem.FirstName, mem.LastName)
+				memberNames = append(memberNames, sanitizeCSVField(fullName))
+			}
+			members = strings.Join(memberNames, "; ")
+		}
+
+		owners := "N/A"
+		if len(gender.Owners) > 0 {
+			ownerNames := make([]string, 0, len(gender.Owners))
+			for _, own := range gender.Owners {
+				fullName := fmt.Sprintf("%s %s", own.FirstName, own.LastName)
+				ownerNames = append(ownerNames, sanitizeCSVField(fullName))
+			}
+			owners = strings.Join(ownerNames, "; ")
+		}
+
+		admins := "N/A"
+		if len(gender.Admins) > 0 {
+			adminNames := make([]string, 0, len(gender.Admins))
+			for _, adm := range gender.Admins {
+				fullName := fmt.Sprintf("%s %s", adm.FirstName, adm.LastName)
+				adminNames = append(adminNames, sanitizeCSVField(fullName))
+			}
+			admins = strings.Join(adminNames, "; ")
+		}
+
+		// Assemble the record
+		record := []string{
+			id,
+			name,
+			description,
+			createdAt,
+			updatedAt,
+			employees,
+			members,
+			owners,
+			admins,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"Name",
+		"Description",
+		"Created At",
+		"Updated At",
+		"Employees",
+		"Members",
+		"Owners",
+		"Admins",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateGenderRequest(req *GenderRequest) error {

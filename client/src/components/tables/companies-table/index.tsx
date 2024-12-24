@@ -3,8 +3,8 @@ import {
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
-import { toast } from 'sonner'
-import { useQuery } from '@tanstack/react-query'
+import { useCallback, useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -13,19 +13,37 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import columns, { companyGlobalSearchTargets } from './columns'
+import companyColumns, { companyGlobalSearchTargets } from './columns'
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
-import { withCatchAsync, toBase64 } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
+import { CompanyResource } from '@/horizon-corp/types'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import { CompanyPaginatedResource, CompanyResource } from '@/horizon-corp/types'
+import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
 
 const CompaniesTable = ({
     className,
     onSelectData,
 }: TableProps<CompanyResource>) => {
+    const queryClient = useQueryClient()
+
+    const invalidateTableData = useCallback(
+        () =>
+            queryClient.invalidateQueries({
+                queryKey: ['table', 'company'],
+            }),
+        [queryClient]
+    )
+
+    const columns = useMemo(
+        () =>
+            companyColumns({
+                onDeleteSuccess: invalidateTableData,
+                onCompanyUpdate: invalidateTableData,
+            }),
+        [invalidateTableData]
+    )
+
     const {
         sorting,
         setSorting,
@@ -54,36 +72,7 @@ const CompaniesTable = ({
         isPending,
         isRefetching,
         refetch,
-    } = useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['company', 'table', filterState.finalFilters, pagination],
-        queryFn: async () => {
-            const [error, result] = await withCatchAsync(
-                CompanyService.filter(
-                    toBase64({
-                        preloads: ['Media', 'Owner'],
-                        ...pagination,
-                        ...filterState.finalFilters,
-                    })
-                )
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            return result
-        },
-        initialData: {
-            data: [],
-            pages: [],
-            totalSize: 0,
-            totalPage: 1,
-            ...pagination,
-        },
-        retry: 1,
-    })
+    } = useFilteredPaginatedCompanies(filterState, pagination)
 
     const handleRowSelectionChange = createHandleRowSelectionChange(data)
 
@@ -125,12 +114,18 @@ const CompaniesTable = ({
                     }}
                     table={table}
                     refreshActionProps={{
-                        isLoading: isPending || isRefetching,
                         onClick: () => refetch(),
+                        isLoading: isPending || isRefetching,
                     }}
                     deleteActionProps={{
-                        isLoading: false,
-                        onClick: () => {},
+                        onDeleteSuccess: () =>
+                            queryClient.invalidateQueries({
+                                queryKey: ['table', 'company'],
+                            }),
+                        onDelete: (selectedData) =>
+                            CompanyService.deleteMany(
+                                selectedData.map((data) => data.id)
+                            ),
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
@@ -140,10 +135,13 @@ const CompaniesTable = ({
                         disabled: isPending || isRefetching,
                         exportAll: CompanyService.exportAll,
                         exportAllFiltered: CompanyService.exportAllFiltered,
-                        exportCurrentPage: CompanyService.exportCurrentPage,
+                        exportCurrentPage: (ids) =>
+                            CompanyService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
                         exportSelected: (ids) =>
                             CompanyService.exportSelected(
-                                ids.map(({ id }) => id)
+                                ids.map((data) => data.id)
                             ),
                     }}
                     filterLogicProps={{

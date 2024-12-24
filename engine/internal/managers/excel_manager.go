@@ -1,204 +1,105 @@
 package managers
 
 import (
-	"bytes"
-	"fmt"
-	"reflect"
+	"encoding/csv"
 
-	"github.com/xuri/excelize/v2"
+	"github.com/gin-gonic/gin"
 )
 
-// ExportExcelBuilder facilitates building and exporting Excel files.
-type ExportExcelBuilder struct {
-	sheets []Sheet
+// CSVManager manages CSV file creation with configurable parameters.
+type CSVManager struct {
+	FileName       string
+	Headers        []string
+	Records        [][]string
+	FilterFunc     func([]string) bool
+	TransformFunc  func([]string) []string
+	Delimiter      rune // Optional: Allow custom delimiter
+	UseCustomDelim bool // Flag to indicate if a custom delimiter is used
 }
 
-// Sheet represents a single sheet in the Excel file.
-type Sheet struct {
-	Name     string
-	Data     interface{}
-	Headers  []string
-	Filters  func(interface{}) bool
-	Styles   map[string]int // Cell address to style ID
-	AutoSize bool
-}
-
-// NewExportExcelBuilder initializes a new ExportExcelBuilder with default settings.
-func NewExportExcelBuilder() *ExportExcelBuilder {
-	return &ExportExcelBuilder{
-		sheets: []Sheet{},
-	}
-}
-
-// AddSheet adds a new sheet to the Excel file.
-func (b *ExportExcelBuilder) AddSheet(name string, data interface{}) *ExportExcelBuilder {
-	sheet := Sheet{
-		Name:     name,
-		Data:     data,
+// NewCSVManager initializes a new CSVManager with default settings.
+func NewCSVManager() *CSVManager {
+	return &CSVManager{
+		FileName: "output.csv",
 		Headers:  []string{},
-		AutoSize: true,
+		Records:  [][]string{},
 	}
-	b.sheets = append(b.sheets, sheet)
-	return b
 }
 
-// SetHeaders sets the headers for a specific sheet by name.
-func (b *ExportExcelBuilder) SetHeaders(sheetName string, headers []string) *ExportExcelBuilder {
-	for i, sheet := range b.sheets {
-		if sheet.Name == sheetName {
-			b.sheets[i].Headers = headers
-			break
-		}
-	}
-	return b
+// SetFileName sets the name of the CSV file.
+func (cm *CSVManager) SetFileName(name string) {
+	cm.FileName = name
 }
 
-// SetFilters sets a filter function for a specific sheet by name.
-func (b *ExportExcelBuilder) SetFilters(sheetName string, filter func(interface{}) bool) *ExportExcelBuilder {
-	for i, sheet := range b.sheets {
-		if sheet.Name == sheetName {
-			b.sheets[i].Filters = filter
-			break
-		}
-	}
-	return b
+// SetHeaders sets the header columns for the CSV.
+func (cm *CSVManager) SetHeaders(headers []string) {
+	cm.Headers = headers
 }
 
-// SetStyles sets cell styles for a specific sheet by name.
-func (b *ExportExcelBuilder) SetStyles(sheetName string, styles map[string]int) *ExportExcelBuilder {
-	for i, sheet := range b.sheets {
-		if sheet.Name == sheetName {
-			b.sheets[i].Styles = styles
-			break
-		}
-	}
-	return b
+// AddRecords appends multiple records to the CSV.
+func (cm *CSVManager) AddRecords(records [][]string) {
+	cm.Records = append(cm.Records, records...)
 }
 
-// EnableAutoSize toggles auto-sizing of columns for a specific sheet by name.
-func (b *ExportExcelBuilder) EnableAutoSize(sheetName string, enable bool) *ExportExcelBuilder {
-	for i, sheet := range b.sheets {
-		if sheet.Name == sheetName {
-			b.sheets[i].AutoSize = enable
-			break
-		}
-	}
-	return b
+// AddRecord appends a single record to the CSV.
+func (cm *CSVManager) AddRecord(record []string) {
+	cm.Records = append(cm.Records, record)
 }
 
-func (b *ExportExcelBuilder) CreateStyle(f *excelize.File, style *excelize.Style) (int, error) {
-	return f.NewStyle(style)
+// SetFilter sets a filter function to include only specific records.
+func (cm *CSVManager) SetFilter(filterFunc func([]string) bool) {
+	cm.FilterFunc = filterFunc
 }
 
-func (b *ExportExcelBuilder) Build() ([]byte, error) {
-	f := excelize.NewFile()
-	defaultSheetName := f.GetSheetName(0)
-	f.DeleteSheet(defaultSheetName)
+// SetTransform sets a transformation function to modify records.
+func (cm *CSVManager) SetTransform(transformFunc func([]string) []string) {
+	cm.TransformFunc = transformFunc
+}
 
-	for idx, sheet := range b.sheets {
-		if idx == 0 {
-			if existingSheetIndex, err := f.GetSheetIndex(sheet.Name); err == nil && existingSheetIndex > 0 {
-				f.SetSheetName(f.GetSheetName(existingSheetIndex), sheet.Name)
-			} else {
-				f.NewSheet(sheet.Name)
-			}
-		} else {
-			f.NewSheet(sheet.Name)
-		}
+// SetDelimiter sets a custom delimiter for the CSV.
+func (cm *CSVManager) SetDelimiter(delim rune) {
+	cm.Delimiter = delim
+	cm.UseCustomDelim = true
+}
 
-		data := reflect.ValueOf(sheet.Data)
-		if data.Kind() != reflect.Slice && data.Kind() != reflect.Array {
-			return nil, fmt.Errorf("data for sheet %s is not a slice or array", sheet.Name)
-		}
+// WriteCSV generates the CSV and writes it to the provided Gin context.
+func (cm *CSVManager) WriteCSV(c *gin.Context) error {
+	// Set the headers for the HTTP response
+	c.Header("Content-Description", "File Transfer")
+	c.Header("Content-Disposition", "attachment; filename="+cm.FileName)
+	c.Header("Content-Type", "text/csv")
 
-		var filteredData []interface{}
-		for i := 0; i < data.Len(); i++ {
-			item := data.Index(i).Interface()
-			if sheet.Filters == nil || sheet.Filters(item) {
-				filteredData = append(filteredData, item)
-			}
-		}
+	// Create a new CSV writer using Gin's ResponseWriter
+	writer := csv.NewWriter(c.Writer)
+	if cm.UseCustomDelim {
+		writer.Comma = cm.Delimiter
+	}
+	defer writer.Flush()
 
-		if len(sheet.Headers) > 0 {
-			for colIdx, header := range sheet.Headers {
-				cell, _ := excelize.CoordinatesToCellName(colIdx+1, 1)
-				if err := f.SetCellValue(sheet.Name, cell, header); err != nil {
-					return nil, err
-				}
-			}
-		} else {
-			if len(filteredData) > 0 {
-				itemType := reflect.TypeOf(filteredData[0])
-				if itemType.Kind() == reflect.Ptr {
-					itemType = itemType.Elem()
-				}
-				if itemType.Kind() == reflect.Struct {
-					for j := 0; j < itemType.NumField(); j++ {
-						field := itemType.Field(j)
-						cell, _ := excelize.CoordinatesToCellName(j+1, 1)
-						if err := f.SetCellValue(sheet.Name, cell, field.Name); err != nil {
-							return nil, err
-						}
-						sheet.Headers = append(sheet.Headers, field.Name)
-					}
-				}
-			}
-		}
-
-		for rowIdx, item := range filteredData {
-			v := reflect.ValueOf(item)
-			if v.Kind() == reflect.Ptr {
-				v = v.Elem()
-			}
-			if v.Kind() != reflect.Struct {
-				return nil, fmt.Errorf("data item is not a struct in sheet %s", sheet.Name)
-			}
-			for colIdx := 0; colIdx < v.NumField(); colIdx++ {
-				field := v.Field(colIdx)
-				var value interface{}
-				if field.CanInterface() {
-					value = field.Interface()
-				}
-				cell, _ := excelize.CoordinatesToCellName(colIdx+1, rowIdx+2)
-				if err := f.SetCellValue(sheet.Name, cell, value); err != nil {
-					return nil, err
-				}
-
-				if sheet.Styles != nil {
-					if styleID, exists := sheet.Styles[cell]; exists {
-						if err := f.SetCellStyle(sheet.Name, cell, cell, styleID); err != nil {
-							return nil, err
-						}
-					}
-				}
-			}
-		}
-
-		if sheet.AutoSize && len(sheet.Headers) > 0 {
-			for colIdx := range sheet.Headers {
-				colLetter, err := excelize.ColumnNumberToName(colIdx + 1)
-				if err != nil {
-					return nil, err
-				}
-				maxWidth := len(sheet.Headers[colIdx])
-				for rowIdx := range filteredData {
-					cell, _ := excelize.CoordinatesToCellName(colIdx+1, rowIdx+2)
-					cellValue, err := f.GetCellValue(sheet.Name, cell)
-					if err == nil && len(cellValue) > maxWidth {
-						maxWidth = len(cellValue)
-					}
-				}
-				if err := f.SetColWidth(sheet.Name, colLetter, colLetter, float64(maxWidth+2)); err != nil {
-					return nil, err
-				}
-			}
+	// Write the header if set
+	if len(cm.Headers) > 0 {
+		if err := writer.Write(cm.Headers); err != nil {
+			return err
 		}
 	}
 
-	var buffer bytes.Buffer
-	if err := f.Write(&buffer); err != nil {
-		return nil, err
+	// Iterate over the records
+	for _, record := range cm.Records {
+		// Apply filter if set
+		if cm.FilterFunc != nil && !cm.FilterFunc(record) {
+			continue
+		}
+
+		// Apply transformation if set
+		if cm.TransformFunc != nil {
+			record = cm.TransformFunc(record)
+		}
+
+		// Write the record
+		if err := writer.Write(record); err != nil {
+			return err
+		}
 	}
 
-	return buffer.Bytes(), nil
+	return nil
 }

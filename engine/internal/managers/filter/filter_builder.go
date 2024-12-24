@@ -28,7 +28,6 @@ func ApplyFilters(db *gorm.DB, request PaginatedRequest) *gorm.DB {
 			db = db.Where(orConditions)
 		}
 	} else {
-		fmt.Println("helo 1")
 		for _, filter := range request.Filters {
 			db = applyFiltering(db, filter)
 		}

@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -144,6 +146,133 @@ func (m *ModelResource) OwnerToResourceList(owners []*Owner) []*OwnerResource {
 		ownerResources = append(ownerResources, m.OwnerToResource(owner))
 	}
 	return ownerResources
+}
+
+// OwnerToRecord converts a slice of Owner pointers into CSV records and headers.
+func (m *ModelResource) OwnerToRecord(owners []*Owner) ([][]string, []string) {
+	// Convert Owner structs to OwnerResource structs
+	resources := m.OwnerToResourceList(owners)
+	records := make([][]string, 0, len(resources))
+
+	for _, owner := range resources {
+		// Basic Fields
+		id := strconv.Itoa(int(owner.ID))
+		accountType := sanitizeCSVField(owner.AccountType)
+		firstName := sanitizeCSVField(owner.FirstName)
+		lastName := sanitizeCSVField(owner.LastName)
+		middleName := sanitizeCSVField(owner.MiddleName)
+		permanentAddress := sanitizeCSVField(owner.PermanentAddress)
+		description := sanitizeCSVField(owner.Description)
+		birthDate := owner.BirthDate.Format("2006-01-02") // Format as YYYY-MM-DD
+		username := sanitizeCSVField(owner.Username)
+		email := sanitizeCSVField(owner.Email)
+		contactNumber := sanitizeCSVField(owner.ContactNumber)
+		isEmailVerified := strconv.FormatBool(owner.IsEmailVerified)
+		isContactVerified := strconv.FormatBool(owner.IsContactVerified)
+		isSkipVerification := strconv.FormatBool(owner.IsSkipVerification)
+		status := sanitizeCSVField(string(owner.Status))
+
+		createdAt := sanitizeCSVField(owner.CreatedAt)
+		updatedAt := sanitizeCSVField(owner.UpdatedAt)
+
+		// Handle Media
+		mediaURL := "N/A"
+		if owner.Media != nil {
+			mediaURL = sanitizeCSVField(owner.Media.URL)
+		}
+
+		// Handle Gender
+		genderName := "N/A"
+		if owner.Gender != nil {
+			genderName = sanitizeCSVField(owner.Gender.Name)
+		}
+
+		// Handle Role
+		roleName := "N/A"
+		if owner.Role != nil {
+			roleName = sanitizeCSVField(owner.Role.Name) // Assuming Role has a Name field
+		}
+
+		// Handle Footsteps
+		footsteps := "N/A"
+		if len(owner.Footsteps) > 0 {
+			fsEntries := make([]string, 0, len(owner.Footsteps))
+			for _, fs := range owner.Footsteps {
+				activity := sanitizeCSVField(fs.Activity)
+				description := sanitizeCSVField(fs.Description)
+				// Combine Activity and Description
+				fsEntry := fmt.Sprintf("Activity: %s; Description: %s", activity, description)
+				fsEntries = append(fsEntries, fsEntry)
+			}
+			footsteps = strings.Join(fsEntries, "; ")
+		}
+
+		// Handle Companies
+		companies := "N/A"
+		if len(owner.Companies) > 0 {
+			companyNames := make([]string, 0, len(owner.Companies))
+			for _, company := range owner.Companies {
+				companyNames = append(companyNames, sanitizeCSVField(company.Name))
+			}
+			companies = strings.Join(companyNames, "; ")
+		}
+
+		// Assemble the record
+		record := []string{
+			id,
+			accountType,
+			firstName,
+			lastName,
+			middleName,
+			permanentAddress,
+			description,
+			birthDate,
+			username,
+			email,
+			contactNumber,
+			isEmailVerified,
+			isContactVerified,
+			isSkipVerification,
+			status,
+			mediaURL,
+			genderName,
+			roleName,
+			footsteps,
+			companies,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"Account Type",
+		"First Name",
+		"Last Name",
+		"Middle Name",
+		"Permanent Address",
+		"Description",
+		"Birth Date",
+		"Username",
+		"Email",
+		"Contact Number",
+		"Is Email Verified",
+		"Is Contact Verified",
+		"Is Skip Verification",
+		"Status",
+		"Longitude",
+		"Latitude",
+		"Media URL",
+		"Gender",
+		"Role",
+		"Footsteps",
+		"Companies",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateOwnerRequest(req *OwnerRequest) error {

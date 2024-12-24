@@ -2,6 +2,8 @@ package models
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
@@ -68,6 +70,77 @@ func (m *ModelResource) TimesheetToResource(timesheet *Timesheet) *TimesheetReso
 		MediaOutID: timesheet.MediaOutID,
 		MediaOut:   m.MediaToResource(timesheet.MediaOut),
 	}
+}
+
+// TimesheetToRecord converts a slice of Timesheet pointers into CSV records and headers.
+func (m *ModelResource) TimesheetToRecord(timesheets []*Timesheet) ([][]string, []string) {
+	// Convert Timesheet structs to TimesheetResource structs
+	resource := m.TimesheetToResourceList(timesheets)
+	records := make([][]string, 0, len(resource))
+
+	for _, timesheet := range resource {
+		// Basic Fields
+		id := strconv.Itoa(int(timesheet.ID))
+		employeeID := strconv.Itoa(int(timesheet.EmployeeID))
+		createdAt := sanitizeCSVField(timesheet.CreatedAt)
+		updatedAt := sanitizeCSVField(timesheet.UpdatedAt)
+
+		// Employee Details
+		employeeName := "N/A"
+		if timesheet.Employee != nil {
+			employeeName = sanitizeCSVField(fmt.Sprintf("%s %s", timesheet.Employee.FirstName, timesheet.Employee.LastName))
+		}
+
+		// TimeIn and TimeOut
+		timeIn := "N/A"
+		if timesheet.TimeIn != nil {
+			timeIn = timesheet.TimeIn.Format(time.RFC3339)
+		}
+		timeOut := "N/A"
+		if timesheet.TimeOut != nil {
+			timeOut = timesheet.TimeOut.Format(time.RFC3339)
+		}
+
+		// MediaIn Details
+		mediaInURL := "N/A"
+		if timesheet.MediaIn != nil {
+			mediaInURL = sanitizeCSVField(timesheet.MediaIn.URL)
+		}
+
+		// MediaOut Details
+		mediaOutURL := "N/A"
+		if timesheet.MediaOut != nil {
+			mediaOutURL = sanitizeCSVField(timesheet.MediaOut.URL)
+		}
+
+		// Assemble the record
+		record := []string{
+			id,
+			employeeID,
+			employeeName,
+			timeIn,
+			mediaInURL,
+			timeOut,
+			mediaOutURL,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"Employee ID",
+		"Employee Name",
+		"Time In",
+		"Media In URL",
+		"Time Out",
+		"Media Out URL",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateTimeInRequest(req *TimeInRequest) error {

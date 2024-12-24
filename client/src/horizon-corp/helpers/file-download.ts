@@ -1,22 +1,43 @@
 import UseServer from "../request/server"
 
-export async function downloadFile(url: string, fileName: string): Promise<void> {
-  const response = await UseServer.get<Blob>(url, {
-    responseType: 'blob',
-  })
+/**
+ * Downloads a file from the specified URL.
+ *
+ * @param url - The URL to fetch the file from.
+ * @param fileName - (Optional) The desired name for the downloaded file. If not provided, the function will attempt to extract it from the response headers.
+ */
+export async function downloadFile(url: string, fileName?: string): Promise<void> {
+  try {
+    const response = await UseServer.get<Blob>(url, {
+      responseType: 'blob',
+    })
 
-  const blob = new Blob([response.data], { type: response.headers['content-type'] })
-  const downloadUrl = URL.createObjectURL(blob)
+    let finalFileName = fileName
+    const contentDisposition = response.headers['content-disposition']
+    if (!finalFileName && contentDisposition) {
+      const fileNameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)
+      if (fileNameMatch != null && fileNameMatch[1]) {
+        finalFileName = fileNameMatch[1].replace(/['"]/g, '')
+      }
+    }
 
-  // Generate timestamp
-  const timestamp = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14) // Format: YYYYMMDDHHMMSS
-  const fileNameWithTimestamp = `${fileName.replace(/\.[^/.]+$/, '')}_${timestamp}${fileName.match(/\.[^/.]+$/)?.[0] || ''}`
+    if (!finalFileName) {
+      finalFileName = 'downloaded-file'
+    }
+    const mimeType = response.headers['content-type'] || 'application/octet-stream'
 
-  const a = document.createElement('a')
-  a.href = downloadUrl
-  a.download = fileNameWithTimestamp
-  document.body.appendChild(a)
-  a.click()
-  document.body.removeChild(a)
-  URL.revokeObjectURL(downloadUrl)
+    const blob = new Blob([response.data], { type: mimeType })
+    const generatedURL = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = generatedURL
+    a.download = finalFileName
+    document.body.appendChild(a)
+    a.click()
+    // Clean up
+    window.URL.revokeObjectURL(generatedURL)
+    a.remove()
+  } catch (error) {
+    console.error('Error downloading the file:', error)
+    alert('Failed to download the file. Please try again.')
+  }
 }

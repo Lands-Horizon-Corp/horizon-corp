@@ -19,7 +19,7 @@ import {
 } from './data-table-filter-context'
 import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 
-const DateFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
+const DateFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentProps<T, 'date'>) => {
     const { filters, setFilter } = useDataTableFilter<Date, typeof field>()
 
     const filterModeOptions = filterModeMap['date']
@@ -30,7 +30,7 @@ const DateFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
         from: undefined,
         dataType: 'date',
         value: undefined,
-        mode: filterModeOptions[0].value,
+        mode: defaultMode ?? filterModeOptions[0].value,
     }
 
     return (

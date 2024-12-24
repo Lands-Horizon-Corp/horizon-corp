@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -94,6 +96,74 @@ func (m *ModelResource) FootstepToResourceList(footsteps []*Footstep) []*Footste
 		footstepResources = append(footstepResources, m.FootstepToResource(footstep))
 	}
 	return footstepResources
+}
+
+// FootstepToRecord converts a slice of Footstep pointers into CSV records and headers.
+func (m *ModelResource) FootstepToRecord(footsteps []*Footstep) ([][]string, []string) {
+	// Convert Footstep structs to FootstepResource structs
+	resource := m.FootstepToResourceList(footsteps)
+	records := make([][]string, 0, len(resource))
+
+	for _, footstep := range resource {
+		// Basic Fields
+		id := strconv.Itoa(int(footstep.ID))
+		accountType := sanitizeCSVField(footstep.AccountType)
+		description := sanitizeCSVField(footstep.Description)
+		activity := sanitizeCSVField(footstep.Activity)
+		createdAt := sanitizeCSVField(footstep.CreatedAt)
+		updatedAt := sanitizeCSVField(footstep.UpdatedAt)
+
+		// Handle Related Entities
+		adminName := "N/A"
+		if footstep.Admin != nil {
+			adminName = sanitizeCSVField(fmt.Sprintf("%s %s", footstep.Admin.FirstName, footstep.Admin.LastName))
+		}
+
+		employeeName := "N/A"
+		if footstep.Employee != nil {
+			employeeName = sanitizeCSVField(fmt.Sprintf("%s %s", footstep.Employee.FirstName, footstep.Employee.LastName))
+		}
+
+		ownerName := "N/A"
+		if footstep.Owner != nil {
+			ownerName = sanitizeCSVField(fmt.Sprintf("%s %s", footstep.Owner.FirstName, footstep.Owner.LastName))
+		}
+
+		memberName := "N/A"
+		if footstep.Member != nil {
+			memberName = sanitizeCSVField(fmt.Sprintf("%s %s", footstep.Member.FirstName, footstep.Member.LastName))
+		}
+
+		// Assemble the record
+		record := []string{
+			id,
+			accountType,
+			description,
+			activity,
+			adminName,
+			employeeName,
+			ownerName,
+			memberName,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"Account Type",
+		"Description",
+		"Activity",
+		"Admin Name",
+		"Employee Name",
+		"Owner Name",
+		"Member Name",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateFootstepRequest(req *FootstepRequest) error {

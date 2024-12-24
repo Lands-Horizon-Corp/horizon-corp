@@ -1,32 +1,40 @@
 package branch
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/server/middleware"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type BranchService struct {
 	controller    *managers.Controller[models.Branch, models.BranchRequest, models.BranchResource]
+	middle        *middleware.Middleware
 	db            *providers.DatabaseService
 	engine        *providers.EngineService
-	modelResource *models.ModelResource
-	middle        *middleware.Middleware
+	models        *models.ModelResource
 	tokenProvider *providers.TokenService
+	helpers       *helpers.HelpersFunction
+	modelResource *models.ModelResource
 }
 
 func NewBranchService(
 	db *providers.DatabaseService,
-	engine *providers.EngineService,
-	modelResource *models.ModelResource,
 	middle *middleware.Middleware,
+	engine *providers.EngineService,
+	models *models.ModelResource,
 	tokenProvider *providers.TokenService,
+	helpers *helpers.HelpersFunction,
+	modelResource *models.ModelResource,
 ) *BranchService {
 	controller := managers.NewController(
 		modelResource.BranchDB,
@@ -37,16 +45,15 @@ func NewBranchService(
 
 	return &BranchService{
 		controller:    controller,
+		middle:        middle,
 		db:            db,
 		engine:        engine,
-		modelResource: modelResource,
-		middle:        middle,
+		models:        models,
 		tokenProvider: tokenProvider,
+		helpers:       helpers,
+		modelResource: modelResource,
 	}
 }
-
-// BranchFilterForAdmin
-// BranchFilterForOwner
 
 func (ts *BranchService) getUserClaims(ctx *gin.Context) (*providers.UserClaims, error) {
 	claims, exists := ctx.Get("claims")
@@ -64,13 +71,36 @@ func (ts *BranchService) getUserClaims(ctx *gin.Context) (*providers.UserClaims,
 	return userClaims, nil
 }
 
-func (as *BranchService) SearchFilter(ctx *gin.Context) {
+func (bs *BranchService) GetAll(ctx *gin.Context) {
+	userClaims, err := bs.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	var branches []*models.Branch
+	switch userClaims.AccountType {
+	case "Owner":
+		branches, err = bs.modelResource.BranchGetAllForAdmin()
+	case "Admin":
+		branches, err = bs.modelResource.BranchGetAllForOwner(userClaims.ID)
+	default:
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions."})
+		return
+	}
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Branches not found."})
+		return
+	}
+	ctx.JSON(http.StatusOK, bs.modelResource.BranchToResourceList(branches))
+}
+
+func (bs *BranchService) SearchFilter(ctx *gin.Context) {
 	filterParam := ctx.Query("filter")
 	if filterParam == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
 		return
 	}
-	userClaims, err := as.getUserClaims(ctx)
+	userClaims, err := bs.getUserClaims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
 		return
@@ -79,9 +109,9 @@ func (as *BranchService) SearchFilter(ctx *gin.Context) {
 	var branches filter.FilterPages[models.Branch]
 	switch userClaims.AccountType {
 	case "Owner":
-		branches, err = as.modelResource.BranchFilterForOwner(filterParam, userClaims.ID)
+		branches, err = bs.modelResource.BranchFilterForOwner(filterParam, userClaims.ID)
 	case "Admin":
-		branches, err = as.modelResource.BranchFilterForAdmin(filterParam)
+		branches, err = bs.modelResource.BranchFilterForAdmin(filterParam)
 	default:
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions."})
 		return
@@ -91,7 +121,7 @@ func (as *BranchService) SearchFilter(ctx *gin.Context) {
 		return
 	}
 
-	data := as.modelResource.BranchToResourceList(branches.Data)
+	data := bs.modelResource.BranchToResourceList(branches.Data)
 	if data == nil {
 		data = []*models.BranchResource{}
 	}
@@ -108,15 +138,145 @@ func (as *BranchService) SearchFilter(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, response)
 }
 
-func (as *BranchService) RegisterRoutes() {
-	routes := as.engine.Client.Group("/api/v1/branch")
-	routes.Use(as.middle.AuthMiddleware())
+func (as *BranchService) Verify(ctx *gin.Context) {
+	userClaims, err := as.getUserClaims(ctx)
+	if err != nil {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	if userClaims.AccountType != "Admin" {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	idParam := ctx.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+	preloads := ctx.QueryArray("preloads")
+	branch := &models.Branch{
+		IsAdminVerified: true,
+	}
+	result, err := as.modelResource.BranchDB.UpdateColumns(uint(id), *branch, preloads)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Entity not found"})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+		return
+	}
+	ctx.JSON(http.StatusOK, as.modelResource.BranchToResource(result))
+}
+
+func (bs *BranchService) ExportAll(ctx *gin.Context) {
+	userClaims, err := bs.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	var branches []*models.Branch
+	switch userClaims.AccountType {
+	case "Owner":
+		branches, err = bs.modelResource.BranchGetAllForAdmin()
+	case "Admin":
+		branches, err = bs.modelResource.BranchGetAllForOwner(userClaims.ID)
+	default:
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions."})
+		return
+	}
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Branches not found."})
+		return
+	}
+	record, headers := bs.modelResource.BranchToRecord(branches)
+	csvManager := managers.NewCSVManager()
+	csvManager.SetFileName("branch-export-all.csv")
+	csvManager.SetHeaders(headers)
+	csvManager.AddRecords(record)
+	if err := csvManager.WriteCSV(ctx); err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
+		return
+	}
+}
+
+func (bs *BranchService) ExportAllFiltered(ctx *gin.Context) {
+	filterParam := ctx.Query("filter")
+	if filterParam == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
+		return
+	}
+	userClaims, err := bs.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	var branches []*models.Branch
+	switch userClaims.AccountType {
+	case "Owner":
+		branches, err = bs.modelResource.BranchFilterForOwnerRecord(filterParam, userClaims.ID)
+	case "Admin":
+		branches, err = bs.modelResource.BranchFilterForAdminRecord(filterParam)
+	default:
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions."})
+		return
+	}
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Branches not found."})
+		return
+	}
+	record, headers := bs.modelResource.BranchToRecord(branches)
+	csvManager := managers.NewCSVManager()
+	csvManager.SetFileName("branches-export-all-filtered.csv")
+	csvManager.SetHeaders(headers)
+	csvManager.AddRecords(record)
+	if err := csvManager.WriteCSV(ctx); err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
+		return
+	}
+}
+func (bs *BranchService) ExportSelected(ctx *gin.Context) {
+	ids, err := bs.helpers.ParseIDsFromQuery(ctx, "ids")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	branch, err := bs.modelResource.BranchDB.GetAllByIDs(ids)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve companies."})
+		return
+	}
+	record, headers := bs.modelResource.BranchToRecord(branch)
+	csvManager := managers.NewCSVManager()
+	csvManager.SetFileName("branch-export-all-filtered.csv")
+	csvManager.SetHeaders(headers)
+	csvManager.AddRecords(record)
+	if err := csvManager.WriteCSV(ctx); err != nil {
+		ctx.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
+		return
+	}
+}
+
+func (bs *BranchService) RegisterRoutes() {
+	routes := bs.engine.Client.Group("/api/v1/branch")
+	routes.Use(bs.middle.AuthMiddleware())
 	{
-		routes.GET("/search", as.SearchFilter)
-		routes.POST("/", as.controller.Create)
-		routes.GET("/", as.controller.GetAll)
-		routes.GET("/:id", as.controller.GetByID)
-		routes.PUT("/:id", as.controller.Update)
-		routes.DELETE("/:id", as.controller.Delete)
+		routes.GET("/search", bs.SearchFilter)
+		routes.POST("/", bs.controller.Create)
+		routes.GET("/", bs.GetAll)
+		routes.GET("/:id", bs.controller.GetByID)
+		routes.PUT("/:id", bs.controller.Update)
+		routes.DELETE("/:id", bs.controller.Delete)
+		routes.DELETE("/bulk-delete", bs.controller.DeleteMany)
+		routes.POST("/verify/:id", bs.Verify)
+
+		// Export routes
+		routes.GET("/export", bs.ExportAll)
+		routes.GET("/export-search", bs.ExportAllFiltered)
+		routes.GET("/export-selected", bs.ExportSelected)
 	}
 }

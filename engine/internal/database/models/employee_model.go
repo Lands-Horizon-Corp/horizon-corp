@@ -2,7 +2,10 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"log"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-playground/validator"
@@ -157,6 +160,157 @@ func (m *ModelResource) EmployeeToResourceList(employees []*Employee) []*Employe
 		employeeResources = append(employeeResources, m.EmployeeToResource(employee))
 	}
 	return employeeResources
+}
+
+// EmployeeToRecord converts a slice of Employee pointers into CSV records and headers.
+func (m *ModelResource) EmployeeToRecord(employees []*Employee) ([][]string, []string) {
+	// Convert Employee structs to EmployeeResource structs
+	resource := m.EmployeeToResourceList(employees)
+	records := make([][]string, 0, len(resource))
+
+	for _, employee := range resource {
+		// Basic Fields
+		id := strconv.Itoa(int(employee.ID))
+		firstName := sanitizeCSVField(employee.FirstName)
+		lastName := sanitizeCSVField(employee.LastName)
+		middleName := sanitizeCSVField(employee.MiddleName)
+		permanentAddress := sanitizeCSVField(employee.PermanentAddress)
+		description := sanitizeCSVField(employee.Description)
+		birthDate := employee.BirthDate.Format("2006-01-02") // Format as YYYY-MM-DD
+		username := sanitizeCSVField(employee.Username)
+		email := sanitizeCSVField(employee.Email)
+		contactNumber := sanitizeCSVField(employee.ContactNumber)
+		isEmailVerified := strconv.FormatBool(employee.IsEmailVerified)
+		isContactVerified := strconv.FormatBool(employee.IsContactVerified)
+		isSkipVerification := strconv.FormatBool(employee.IsSkipVerification)
+		status := sanitizeCSVField(string(employee.Status))
+
+		// Longitude and Latitude
+		longitude := "N/A"
+		if employee.Longitude != nil {
+			longitude = fmt.Sprintf("%.6f", *employee.Longitude)
+		}
+		latitude := "N/A"
+		if employee.Latitude != nil {
+			latitude = fmt.Sprintf("%.6f", *employee.Latitude)
+		}
+
+		createdAt := sanitizeCSVField(employee.CreatedAt)
+		updatedAt := sanitizeCSVField(employee.UpdatedAt)
+
+		// Handle Media
+		mediaURL := "N/A"
+		if employee.Media != nil {
+			mediaURL = sanitizeCSVField(employee.Media.URL)
+		}
+
+		// Handle Branch
+		branchName := "N/A"
+		if employee.Branch != nil {
+			branchName = sanitizeCSVField(employee.Branch.Name)
+		}
+
+		// Handle Role
+		roleName := "N/A"
+		if employee.Role != nil {
+			roleName = sanitizeCSVField(employee.Role.Name) // Assuming Role has a Name field
+		}
+
+		// Handle Gender
+		genderName := "N/A"
+		if employee.Gender != nil {
+			genderName = sanitizeCSVField(employee.Gender.Name) // Assuming Gender has a Name field
+		}
+
+		// Handle Timesheets
+		timesheets := "N/A"
+		if len(employee.Timesheets) > 0 {
+			tsEntries := make([]string, 0, len(employee.Timesheets))
+			for _, ts := range employee.Timesheets {
+				timeIn := "N/A"
+				if ts.TimeIn != nil {
+					timeIn = ts.TimeIn.Format(time.RFC3339)
+				}
+				timeOut := "N/A"
+				if ts.TimeOut != nil {
+					timeOut = ts.TimeOut.Format(time.RFC3339)
+				}
+				// Combine TimeIn and TimeOut
+				tsEntry := fmt.Sprintf("%s - %s", timeIn, timeOut)
+				tsEntries = append(tsEntries, sanitizeCSVField(tsEntry))
+			}
+			timesheets = strings.Join(tsEntries, "; ")
+		}
+
+		// Handle Footsteps
+		footsteps := "N/A"
+		if len(employee.Footsteps) > 0 {
+			fsDescriptions := make([]string, 0, len(employee.Footsteps))
+			for _, fs := range employee.Footsteps {
+				// Assuming FootstepResource has a Description field
+				fsDescriptions = append(fsDescriptions, sanitizeCSVField(fs.Description))
+			}
+			footsteps = strings.Join(fsDescriptions, "; ")
+		}
+
+		// Assemble the record
+		record := []string{
+			id,
+			firstName,
+			lastName,
+			middleName,
+			permanentAddress,
+			description,
+			birthDate,
+			username,
+			email,
+			contactNumber,
+			isEmailVerified,
+			isContactVerified,
+			isSkipVerification,
+			status,
+			longitude,
+			latitude,
+			mediaURL,
+			branchName,
+			roleName,
+			genderName,
+			timesheets,
+			footsteps,
+			createdAt,
+			updatedAt,
+		}
+		records = append(records, record)
+	}
+
+	headers := []string{
+		"ID",
+		"First Name",
+		"Last Name",
+		"Middle Name",
+		"Permanent Address",
+		"Description",
+		"Birth Date",
+		"Username",
+		"Email",
+		"Contact Number",
+		"Is Email Verified",
+		"Is Contact Verified",
+		"Is Skip Verification",
+		"Status",
+		"Longitude",
+		"Latitude",
+		"Media URL",
+		"Branch Name",
+		"Role",
+		"Gender",
+		"Timesheets",
+		"Footsteps",
+		"Created At",
+		"Updated At",
+	}
+
+	return records, headers
 }
 
 func (m *ModelResource) ValidateEmployeeRequest(req *EmployeeRequest) error {

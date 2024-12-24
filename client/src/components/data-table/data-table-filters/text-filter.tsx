@@ -16,19 +16,23 @@ import {
     useDataTableFilter,
 } from './data-table-filter-context'
 
-const TextFilter = <T,>({ field, displayText }: IFilterComponentProps<T>) => {
+const TextFilter = <T,>({
+    field,
+    displayText,
+    defaultMode,
+}: IFilterComponentProps<T, 'text'>) => {
     const { filters, setFilter } = useDataTableFilter<string, typeof field>()
+
+    const filterModeOptions = filterModeMap['text']
 
     const filterVal: TSearchFilter<string> = filters[field] ?? {
         value: '',
         displayText,
-        mode: 'equal',
         to: undefined,
         from: undefined,
         dataType: 'text',
+        mode: defaultMode ?? filterModeOptions[0].value,
     }
-
-    const filterModeOptions = filterModeMap['text']
 
     return (
         <div onKeyDown={(e) => e.stopPropagation()} className="space-y-2 p-1">

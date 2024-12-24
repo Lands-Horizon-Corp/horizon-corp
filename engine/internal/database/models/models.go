@@ -1,6 +1,8 @@
 package models
 
 import (
+	"strings"
+
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
@@ -94,4 +96,12 @@ func NewModelResource(
 	}
 
 	return modelResource, nil
+}
+
+func sanitizeCSVField(field string) string {
+	if strings.HasPrefix(field, "=") || strings.HasPrefix(field, "+") ||
+		strings.HasPrefix(field, "-") || strings.HasPrefix(field, "@") {
+		return "'" + field
+	}
+	return field
 }
