@@ -247,7 +247,7 @@ func (bs *BranchService) ExportSelected(ctx *gin.Context) {
 	}
 	branch, err := bs.modelResource.BranchDB.GetAllByIDs(ids)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve companies."})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve branches."})
 		return
 	}
 	record, headers := bs.modelResource.BranchToRecord(branch)
@@ -258,6 +258,43 @@ func (bs *BranchService) ExportSelected(ctx *gin.Context) {
 	if err := csvManager.WriteCSV(ctx); err != nil {
 		ctx.String(http.StatusInternalServerError, "Failed to generate CSV: %v", err)
 		return
+	}
+}
+
+func (as *BranchService) ProfilePicture(ctx *gin.Context) {
+	var req *models.MediaRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.modelResource.ValidateMediaRequest(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	switch claims.AccountType {
+	case "Admin":
+	case "Owner":
+		preloads := ctx.QueryArray("preloads")
+		branch := &models.Branch{MediaID: req.ID}
+		result, err := as.modelResource.BranchDB.UpdateColumns(claims.ID, *branch, preloads)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				ctx.JSON(http.StatusNotFound, gin.H{"error": "Entity not found"})
+			} else {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			}
+			return
+		}
+		ctx.JSON(http.StatusOK, as.modelResource.BranchToResource(result))
+
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
 }
 
@@ -273,6 +310,7 @@ func (bs *BranchService) RegisterRoutes() {
 		routes.DELETE("/:id", bs.controller.Delete)
 		routes.DELETE("/bulk-delete", bs.controller.DeleteMany)
 		routes.POST("/verify/:id", bs.Verify)
+		routes.POST("/profile-picture", bs.ProfilePicture)
 
 		// Export routes
 		routes.GET("/export", bs.ExportAll)

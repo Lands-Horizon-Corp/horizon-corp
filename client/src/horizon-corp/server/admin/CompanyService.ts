@@ -195,16 +195,22 @@ export default class CompanyService {
   }
 
 
-  // POST - /profile/profile-picture
-  //  * @param {string[]} [preloads] - Optional array of relations to preload.
+  /**
+   * Uploads a profile picture for the company.
+   * 
+   * @async
+   * @function
+   * @param {MediaRequest} data - The request payload containing the media information.
+   * @param {string[]} [preloads=["Media"]] - Optional array of relations to preload.
+   * @returns {Promise<AxiosResponse<CompanyResource>>} - The response containing the updated company resource.
+   */
   public static async ProfilePicture(
     data: MediaRequest, preloads: string[] = ["Media"]
   ): Promise<AxiosResponse<CompanyResource>> {
     const preloadParams = preloads?.map(preload => `preloads=${encodeURIComponent(preload)}`).join('&') || '';
     const separator = preloadParams ? '?' : '';
     const endpoint = `${CompanyService.BASE_ENDPOINT}/profile-picture${separator}${preloadParams}`;
-    return await UseServer.post<MediaRequest, CompanyResource>(endpoint, data)
+    return await UseServer.post<MediaRequest, CompanyResource>(endpoint, data);
   }
-
 
 }
