@@ -81,8 +81,8 @@ func NewModelResource(
 
 	modelResource.Models = []MigrateItem{
 		{Model: &Admin{}, Seeder: modelResource.AdminSeeders, ModelName: "Admin"},
-		{Model: &Branch{}, Seeder: modelResource.BranchSeeders, ModelName: "Branch"},
 		{Model: &Company{}, Seeder: modelResource.CompanySeeders, ModelName: "Company"},
+		{Model: &Branch{}, Seeder: modelResource.BranchSeeders, ModelName: "Branch"},
 		{Model: &Contact{}, Seeder: modelResource.ContactSeeders, ModelName: "Contact"},
 		{Model: &Employee{}, Seeder: modelResource.EmployeeSeeders, ModelName: "Employee"},
 		{Model: &Feedback{}, Seeder: modelResource.FeedbackSeeders, ModelName: "Feedback"},
