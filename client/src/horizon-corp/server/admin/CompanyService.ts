@@ -205,11 +205,11 @@ export default class CompanyService {
    * @returns {Promise<AxiosResponse<CompanyResource>>} - The response containing the updated company resource.
    */
   public static async ProfilePicture(
-    data: MediaRequest, preloads: string[] = ["Media"]
+    id: number, data: MediaRequest, preloads: string[] = ["Media"]
   ): Promise<AxiosResponse<CompanyResource>> {
     const preloadParams = preloads?.map(preload => `preloads=${encodeURIComponent(preload)}`).join('&') || '';
     const separator = preloadParams ? '?' : '';
-    const endpoint = `${CompanyService.BASE_ENDPOINT}/profile-picture${separator}${preloadParams}`;
+    const endpoint = `${CompanyService.BASE_ENDPOINT}/profile-picture/${id}${separator}${preloadParams}`;
     return await UseServer.post<MediaRequest, CompanyResource>(endpoint, data);
   }
 

@@ -245,12 +245,18 @@ func (as *CompanyService) ProfilePicture(ctx *gin.Context) {
 		return
 	}
 
+	idParam := ctx.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 	switch claims.AccountType {
 	case "Admin":
 	case "Owner":
 		preloads := ctx.QueryArray("preloads")
 		company := &models.Company{MediaID: req.ID}
-		result, err := as.modelResource.CompanyDB.UpdateColumns(claims.ID, *company, preloads)
+		result, err := as.modelResource.CompanyDB.UpdateColumns(uint(id), *company, preloads)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": "Entity not found"})
@@ -275,7 +281,7 @@ func (as *CompanyService) RegisterRoutes() {
 		routes.GET("/:id", as.controller.GetByID)
 		routes.PUT("/:id", as.controller.Update)
 
-		routes.POST("/profile-picture", as.ProfilePicture)
+		routes.POST("/profile-picture/:id", as.ProfilePicture)
 
 		routes.POST("/verify/:id", as.middle.AuthMiddlewareAdminOnly(), as.Verify)
 		routes.GET("/search", as.middle.AuthMiddlewareAdminOnly(), as.SearchFilter)

@@ -206,11 +206,11 @@ export default class BranchService {
      * @returns {Promise<AxiosResponse<BranchResource>>} - The response containing the updated company resource.
      */
   public static async ProfilePicture(
-    data: MediaRequest, preloads: string[] = ["Media"]
+    id: number, data: MediaRequest, preloads: string[] = ["Media"]
   ): Promise<AxiosResponse<BranchResource>> {
     const preloadParams = preloads?.map(preload => `preloads=${encodeURIComponent(preload)}`).join('&') || '';
     const separator = preloadParams ? '?' : '';
-    const endpoint = `${BranchService.BASE_ENDPOINT}/profile-picture${separator}${preloadParams}`;
+    const endpoint = `${BranchService.BASE_ENDPOINT}/profile-picture/${id}${separator}${preloadParams}`;
     return await UseServer.post<MediaRequest, BranchResource>(endpoint, data);
   }
 }

@@ -895,3 +895,46 @@ func (ap *AuthAccount) VerifyPassword(accountType string, userID uint, password 
 		return false
 	}
 }
+
+func (ap *AuthAccount) AccountFootstep(accountType string, userID uint, action, description string) {
+	switch accountType {
+	case "Admin":
+		// user, err := ap.modelResource.AdminDB.FindByID(userID)
+		// if err != nil {
+		// 	return false
+		// }
+		// if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
+		// 	return false
+		// }
+		// return true
+	case "Owner":
+		// user, err := ap.modelResource.OwnerDB.FindByID(userID)
+		// if err != nil {
+		// 	return false
+		// }
+		// if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
+		// 	return false
+		// }
+		// return true
+
+	case "Employee":
+		// user, err := ap.modelResource.EmployeeDB.FindByID(userID)
+		// if err != nil {
+		// 	return false
+		// }
+		// if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
+		// 	return false
+		// }
+		// return true
+
+	case "Member":
+		// user, err := ap.modelResource.MemberDB.FindByID(userID)
+		// if err != nil {
+		// 	return false
+		// }
+		// if !ap.cryptoHelpers.VerifyPassword(user.Password, password) {
+		// 	return false
+		// }
+		// return true
+	}
+}

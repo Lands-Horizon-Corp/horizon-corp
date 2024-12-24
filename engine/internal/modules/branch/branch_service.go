@@ -276,13 +276,19 @@ func (as *BranchService) ProfilePicture(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
 		return
 	}
+	idParam := ctx.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
 
 	switch claims.AccountType {
 	case "Admin":
 	case "Owner":
 		preloads := ctx.QueryArray("preloads")
 		branch := &models.Branch{MediaID: req.ID}
-		result, err := as.modelResource.BranchDB.UpdateColumns(claims.ID, *branch, preloads)
+		result, err := as.modelResource.BranchDB.UpdateColumns(uint(id), *branch, preloads)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				ctx.JSON(http.StatusNotFound, gin.H{"error": "Entity not found"})
@@ -310,7 +316,7 @@ func (bs *BranchService) RegisterRoutes() {
 		routes.DELETE("/:id", bs.controller.Delete)
 		routes.DELETE("/bulk-delete", bs.controller.DeleteMany)
 		routes.POST("/verify/:id", bs.Verify)
-		routes.POST("/profile-picture", bs.ProfilePicture)
+		routes.POST("/profile-picture/:id", bs.ProfilePicture)
 
 		// Export routes
 		routes.GET("/export", bs.ExportAll)
