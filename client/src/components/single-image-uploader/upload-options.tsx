@@ -4,15 +4,15 @@ import { useCallback, useRef } from 'react'
 
 import PictureDrop from './picture-drop'
 import WebCam from '@/components/webcam'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { CameraFillIcon } from '@/components/icons'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface Props {
     onPhotoChoose: (imageBase64: string) => void
 }
 
-const ProfileUploadoOption = ({ onPhotoChoose }: Props) => {
+const SingleImageUploadOption = ({ onPhotoChoose }: Props) => {
     const webcamRef = useRef<Webcam>(null)
 
     const onFileSelect = (files: FileList) => {
@@ -67,4 +67,4 @@ const ProfileUploadoOption = ({ onPhotoChoose }: Props) => {
     )
 }
 
-export default ProfileUploadoOption
+export default SingleImageUploadOption

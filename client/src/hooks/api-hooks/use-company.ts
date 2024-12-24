@@ -9,7 +9,11 @@ import {
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import { CompanyPaginatedResource, CompanyResource } from '@/horizon-corp/types'
+import {
+    CompanyPaginatedResource,
+    CompanyResource,
+    MediaRequest,
+} from '@/horizon-corp/types'
 
 interface IOperationCallbacks<TDataSuccess = unknown, TError = unknown> {
     onSuccess?: (data: TDataSuccess) => void
@@ -66,6 +70,43 @@ export const useUpdateCompany = ({
 
             onSuccess?.(response)
             return response
+        },
+    })
+}
+
+// update company logo
+export const useUpdateCompanyProfilePicture = ({
+    onSuccess,
+    onError,
+}: IOperationCallbacks<CompanyResource>) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<
+        void,
+        string,
+        { companyId: number; mediaResource: MediaRequest }
+    >({
+        mutationKey: ['company', 'update', 'logo'],
+        mutationFn: async ({ companyId, mediaResource }) => {
+            const [error, data] = await withCatchAsync(
+                CompanyService.ProfilePicture(companyId, mediaResource)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw new Error(errorMessage)
+            }
+
+            queryClient.invalidateQueries({ queryKey: ['company', 'table'] })
+            queryClient.invalidateQueries({ queryKey: ['company', companyId] })
+            queryClient.invalidateQueries({
+                queryKey: ['company', 'loader', companyId],
+            })
+
+            toast.success('Company Logo Updated')
+            onSuccess?.(data)
         },
     })
 }

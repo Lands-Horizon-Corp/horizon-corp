@@ -1,34 +1,34 @@
 import { useMemo } from 'react'
 import DOMPurify from 'isomorphic-dompurify'
-import { useParams, Link, useRouter } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
+import { useParams, Link, useRouter } from '@tanstack/react-router'
 
 import {
     StoreIcon,
+    TrashIcon,
     CalendarIcon,
     TelephoneIcon,
     LocationPinIcon,
+    PencilOutlineIcon,
     BadgeMinusFillIcon,
     BadgeCheckFillIcon,
     BadgeQuestionFillIcon,
     QuestionCircleFillIcon,
     BadgeExclamationFillIcon,
-    PencilOutlineIcon,
-    TrashIcon,
 } from '@/components/icons'
 import MainMapContainer from '@/components/map'
-import UserAvatar from '@/components/user-avatar'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import ImageDisplay from '@/components/image-display'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { cn } from '@/lib'
 import { toReadableDate } from '@/utils'
 import { OwnerResource } from '@/horizon-corp/types/profile'
 import CompanyAcceptBar from '@/modules/admin/components/company-accept-bar'
 
 import { companyLoader, useDeleteCompany } from '@/hooks/api-hooks/use-company'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import { Button } from '@/components/ui/button'
-import LoadingSpinner from '@/components/spinners/loading-spinner'
+import CompanyLogo from '@/modules/admin/components/company-logo'
 
 const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
     const AccountBadge = useMemo(() => {
@@ -57,7 +57,7 @@ const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
                     </p>
                 </div>
                 <div className="relative size-fit">
-                    <UserAvatar
+                    <ImageDisplay
                         fallback="-"
                         className="size-20"
                         src={owner.media?.downloadURL ?? ''}
@@ -93,14 +93,7 @@ const CompanyViewPage = () => {
                     <div className="relative w-full flex-col items-center overflow-clip rounded-xl bg-popover">
                         <div className="h-[180px] w-full rounded-md bg-[url('/profile-cover.png')] bg-cover bg-center" />
                         <div className="relative z-10 w-full space-y-2.5">
-                            <UserAvatar
-                                src={company.media?.downloadURL ?? ''}
-                                className={cn(
-                                    'absolute -top-28 z-20 size-36 border-2 border-primary',
-                                    !company.isAdminVerified &&
-                                        'border-amber-600'
-                                )}
-                            />
+                            <CompanyLogo company={company} />
                             <div className="pointer-events-none relative z-10 !my-0 space-y-2.5 px-6 pb-4 pt-8 sm:pb-6">
                                 <div className="pointer-events-none absolute right-0 top-0 -z-10 m-0 hidden h-full w-full bg-gradient-to-r from-popover from-[10%] to-transparent sm:block" />
                                 <span className="pointer-events-auto z-50 flex items-center gap-x-2">
@@ -163,7 +156,7 @@ const CompanyViewPage = () => {
                                 </div>
                             </div>
                             {company.latitude && company.longitude && (
-                                <div className="select-none right-0 top-0 !-z-10 mt-5 h-[200px] w-full sm:absolute sm:!mt-0 sm:h-full sm:w-[200px] md:w-[500px]">
+                                <div className="right-0 top-0 !-z-10 mt-5 h-[200px] w-full select-none sm:absolute sm:!mt-0 sm:h-full sm:w-[200px] md:w-[500px]">
                                     <MainMapContainer
                                         viewOnly
                                         zoom={13}
