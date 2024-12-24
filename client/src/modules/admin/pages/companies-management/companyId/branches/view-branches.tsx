@@ -1,6 +1,6 @@
 // import { useParams } from '@tanstack/react-router'
 
-import BranchesTable from '@/components/tables/branches-table'
+// import BranchesTable from '@/components/tables/branches-table'
 
 const CompanyBranchesPage = () => {
     // const { companyId } = useParams({
@@ -9,7 +9,7 @@ const CompanyBranchesPage = () => {
 
     return (
         <div className="flex w-full max-w-full flex-col items-center px-4 pb-6 sm:px-8">
-            <BranchesTable className="min-h-[90vh] w-full" />
+            {/* <BranchesTable className="min-h-[90vh] w-full" /> */}
         </div>
     )
 }

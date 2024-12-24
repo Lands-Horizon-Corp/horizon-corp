@@ -154,7 +154,7 @@ const CompanyViewPage = () => {
                                         className="pointer-events-auto w-fit bg-transparent p-0 text-sm underline hover:bg-transparent hover:text-destructive"
                                     >
                                         {isDeleting ? (
-                                            <LoadingSpinner />
+                                            <LoadingSpinner className="mr-2 inline" />
                                         ) : (
                                             <TrashIcon className="mr-2 inline" />
                                         )}

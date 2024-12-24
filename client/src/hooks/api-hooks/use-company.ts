@@ -95,7 +95,7 @@ export const useDeleteCompany = ({
             queryClient.invalidateQueries({ queryKey: ['company', companyId] })
             queryClient.removeQueries({
                 queryKey: ['company', 'loader', companyId],
-            }) 
+            })
 
             toast.success('Company deleted')
             onSuccess?.(undefined)
@@ -126,6 +126,9 @@ export const useApproveCompany = ({
 
             queryClient.invalidateQueries({ queryKey: ['company', 'table'] })
             queryClient.invalidateQueries({ queryKey: ['company', companyId] })
+            queryClient.invalidateQueries({
+                queryKey: ['company', 'loader', companyId],
+            })
 
             toast.success('Company approved')
             onSuccess?.(data)

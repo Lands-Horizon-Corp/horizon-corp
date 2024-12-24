@@ -1,11 +1,11 @@
+import { toast } from 'sonner'
+import { useRouter } from '@tanstack/react-router'
+
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 
 import { getUsersAccountTypeRedirectPage } from '@/helpers'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import { toast } from 'sonner'
-import logger from '@/helpers/loggers/logger'
-import { useRouter } from '@tanstack/react-router'
 
 const NavGetStarted = () => {
     const { navigate } = useRouter()

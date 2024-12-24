@@ -8,7 +8,7 @@ import { useUserAuthStore } from '@/store/user-auth-store'
 import SidebarMobileToggle from '@/components/sidebar/sidebar-mobile-toggle'
 import PageBreadCrumb from '@/components/pages-breadcrumbs'
 
-const UserNav = ({ homeUrl }: { homeUrl?: string }) => {
+const UserNav = ({ homeUrl }: { homeUrl?: `/${string}` }) => {
     const { currentUser } = useUserAuthStore()
     return (
         <RootNav className="pointer-events-none relative justify-between lg:px-4">
