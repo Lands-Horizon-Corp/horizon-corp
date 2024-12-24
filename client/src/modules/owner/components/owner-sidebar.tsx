@@ -119,7 +119,6 @@ const OwnerSidebar = ({ className }: IBaseComp) => {
     return (
         <Sidebar
             enableCollapse
-            enableFocusBlur
             className={className}
             items={ownerSidebarItem}
             logoRedirectUrl="/owner"

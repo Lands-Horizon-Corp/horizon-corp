@@ -42,7 +42,6 @@ const MemberSidebar = ({ className }: IBaseComp) => {
     return (
         <Sidebar
             enableCollapse
-            enableFocusBlur
             className={className}
             items={memberSidebarItems}
         />
