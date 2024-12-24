@@ -19,7 +19,7 @@ import (
 // sanitizeField ensures that the field name is safe to use in queries.
 // It allows only alphanumeric characters and underscores.
 func sanitizeField(field string) string {
-	allowed := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"
+	allowed := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_."
 	var sanitized strings.Builder
 	for _, char := range field {
 		if strings.ContainsRune(allowed, char) {
