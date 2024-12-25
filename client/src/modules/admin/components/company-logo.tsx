@@ -41,7 +41,6 @@ const CompanyLogo = ({ company }: Props) => {
             <ImageDisplay
                 className="size-36 border-4 border-popover shadow-sm"
                 src={company.media?.downloadURL}
-                fallback={company.name.charAt(0) ?? '-'}
             />
             <ActionTooltip tooltipContent="Change" align="center" side="right">
                 <Button

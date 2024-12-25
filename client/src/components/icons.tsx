@@ -114,6 +114,7 @@ import {
 } from 'react-icons/md'
 
 import {
+    BsImage as Image2Icon,
     BsZoomIn as ZoomInIcon,
     BsZoomOut as ZoomOutIcon,
     BsCameraFill as CameraFillIcon,
@@ -210,6 +211,7 @@ export {
     ExportIcon,
     ZoomInIcon,
     AdjustIcon,
+    Image2Icon,
     RefreshIcon,
     ArrowUpIcon,
     SidebarIcon,

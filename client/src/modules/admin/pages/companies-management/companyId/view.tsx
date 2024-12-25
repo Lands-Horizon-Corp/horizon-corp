@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import DOMPurify from 'isomorphic-dompurify'
 import { useSuspenseQuery } from '@tanstack/react-query'
-import { useParams, Link, useRouter } from '@tanstack/react-router'
+import { useParams, useRouter } from '@tanstack/react-router'
 
 import {
     StoreIcon,
@@ -125,17 +125,41 @@ const CompanyViewPage = () => {
                                             0} Branch
                                     </span>
                                 </div>
-                                <div className="flex flex-wrap items-center gap-x-3">
-                                    <Link
-                                        params={{ companyId }}
-                                        to="/admin/companies-management/$companyId/edit"
-                                        className="pointer-events-auto text-sm underline hover:text-blue-400"
+                                <div className="flex flex-wrap items-center">
+                                    <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        onClick={() =>
+                                            router.navigate({
+                                                to: '/admin/companies-management/$companyId/edit',
+                                                params: { companyId },
+                                            })
+                                        }
+                                        className="pointer-events-auto rounded-none text-foreground/80 hover:text-foreground first:rounded-l-md last:rounded-r-md"
                                     >
                                         <PencilOutlineIcon className="mr-2 inline" />
                                         Edit
-                                    </Link>
+                                    </Button>
                                     <Button
+                                        size="sm"
+                                        variant="secondary"
                                         disabled={isDeleting}
+                                        onClick={() =>
+                                            router.navigate({
+                                                to: '/admin/companies-management/$companyId/branches',
+                                                params: { companyId },
+                                            })
+                                        }
+                                        className="pointer-events-auto rounded-none text-foreground/80 hover:text-foreground first:rounded-l-md last:rounded-r-md"
+                                    >
+                                        <StoreIcon className="mr-2 inline" />
+                                        Branches
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        disabled={isDeleting}
+                                        hoverVariant="destructive"
                                         onClick={() =>
                                             onOpen({
                                                 title: 'Delete Company',
@@ -145,7 +169,7 @@ const CompanyViewPage = () => {
                                                     deleteCompany(companyId),
                                             })
                                         }
-                                        className="pointer-events-auto w-fit bg-transparent p-0 text-sm underline hover:bg-transparent hover:text-destructive"
+                                        className="pointer-events-auto rounded-none text-foreground/80 hover:text-foreground first:rounded-l-md last:rounded-r-md"
                                     >
                                         {isDeleting ? (
                                             <LoadingSpinner className="mr-2 inline" />

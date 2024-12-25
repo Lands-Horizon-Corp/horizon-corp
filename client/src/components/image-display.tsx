@@ -1,3 +1,4 @@
+import { Image2Icon } from '@/components/icons'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 import { cn } from '@/lib'
@@ -27,7 +28,7 @@ const ImageDisplay = ({
                 src={src ?? '-'}
             />
             <AvatarFallback className={fallbackClassName}>
-                {fallback}
+                {fallback ? fallback : <Image2Icon className='text-foreground/20 size-[50%]' />}
             </AvatarFallback>
             {children}
         </Avatar>

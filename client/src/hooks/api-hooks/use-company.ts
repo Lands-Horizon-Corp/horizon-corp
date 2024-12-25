@@ -1,20 +1,19 @@
-import { toast } from 'sonner'
 import {
-    queryOptions,
-    useMutation,
     useQuery,
+    useMutation,
+    queryOptions,
     useQueryClient,
 } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
+import {
+    MediaRequest,
+    CompanyResource,
+    CompanyPaginatedResource,
+} from '@/horizon-corp/types'
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import {
-    CompanyPaginatedResource,
-    CompanyResource,
-    MediaRequest,
-} from '@/horizon-corp/types'
-import logger from '@/helpers/loggers/logger'
 
 interface IOperationCallbacks<TDataSuccess = unknown, TError = unknown> {
     onSuccess?: (data: TDataSuccess) => void
@@ -99,8 +98,6 @@ export const useUpdateCompanyProfilePicture = ({
                 onError?.(errorMessage)
                 throw new Error(errorMessage)
             }
-
-            logger.log("new Data", data,'media', mediaResource)
 
             queryClient.invalidateQueries({ queryKey: ['company', 'table'] })
             queryClient.invalidateQueries({ queryKey: ['company', companyId] })
