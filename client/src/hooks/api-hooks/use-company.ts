@@ -11,14 +11,10 @@ import {
     CompanyResource,
     CompanyPaginatedResource,
 } from '@/horizon-corp/types'
+import { IOperationCallbacks } from './types'
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-
-interface IOperationCallbacks<TDataSuccess = unknown, TError = unknown> {
-    onSuccess?: (data: TDataSuccess) => void
-    onError?: (error: TError) => void
-}
 
 // Only used by path preloader
 export const companyLoader = (companyId: number) =>

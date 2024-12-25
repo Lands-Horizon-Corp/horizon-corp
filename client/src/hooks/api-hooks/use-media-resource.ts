@@ -2,19 +2,18 @@ import { toast } from 'sonner'
 import { useMutation } from '@tanstack/react-query'
 
 import { withCatchAsync } from '@/utils'
+import { IOperationCallbacks } from './types'
 import { MediaResource } from '@/horizon-corp/types'
 import { serverRequestErrExtractor } from '@/helpers'
 import MediaService from '@/horizon-corp/server/common/MediaService'
 
 export const useSinglePictureUpload = ({
     onUploadProgressChange,
-    onUploadSuccess,
-    onUploadError,
+    onSuccess,
+    onError,
 }: {
-    onUploadSuccess?: (data: MediaResource) => void
-    onUploadError?: (error: string) => void
     onUploadProgressChange?: (progress: number) => void
-}) => {
+} & IOperationCallbacks<MediaResource, string>) => {
     return useMutation<MediaResource, string, File>({
         mutationKey: ['upload-media-photo'],
         mutationFn: async (fileImage) => {
@@ -41,11 +40,11 @@ export const useSinglePictureUpload = ({
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
-                onUploadError?.(errorMessage)
+                onError?.(errorMessage)
                 throw errorMessage
             }
 
-            onUploadSuccess?.(data)
+            onSuccess?.(data)
             return data
         },
     })

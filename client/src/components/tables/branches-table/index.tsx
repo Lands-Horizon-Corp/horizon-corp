@@ -3,8 +3,8 @@ import {
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
-import { toast } from 'sonner'
-import { useQuery } from '@tanstack/react-query'
+import { useCallback, useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -13,18 +13,38 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import columns, { branchesGlobalSearchTargets } from './columns.tsxx'
+import branchColumns, { branchesGlobalSearchTargets } from './columns'
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
-import { withCatchAsync, toBase64 } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
-import CompanyService from '@/horizon-corp/server/admin/CompanyService'
-import { BranchPaginatedResource, BranchResource } from '@/horizon-corp/types'
+import { BranchResource } from '@/horizon-corp/types'
+import BranchService from '@/horizon-corp/server/admin/BranchService'
+import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
 
-type RootType = BranchResource
+const BranchesTable = ({
+    className,
+    onSelectData,
+    defaultFilter,
+}: TableProps<BranchResource>) => {
+    const queryClient = useQueryClient()
 
-const BranchesTable = ({ className, onSelectData }: TableProps<RootType>) => {
+    const invalidateTableData = useCallback(
+        () =>
+            queryClient.invalidateQueries({
+                queryKey: ['table', 'branch'],
+            }),
+        [queryClient]
+    )
+
+    const columns = useMemo(
+        () =>
+            branchColumns({
+                onDeleteSuccess: invalidateTableData,
+                onBranchUpdate: invalidateTableData,
+            }),
+        [invalidateTableData]
+    )
+
     const {
         sorting,
         setSorting,
@@ -39,12 +59,13 @@ const BranchesTable = ({ className, onSelectData }: TableProps<RootType>) => {
         createHandleRowSelectionChange,
         columnVisibility,
         setColumnVisibility,
-    } = useDataTableState<RootType>({
+    } = useDataTableState<BranchResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
     const filterState = useDatableFilterState({
+        defaultFilter,
         onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
     })
 
@@ -53,37 +74,7 @@ const BranchesTable = ({ className, onSelectData }: TableProps<RootType>) => {
         isPending,
         isRefetching,
         refetch,
-    } = useQuery<BranchPaginatedResource, string>({
-        queryKey: ['branches', 'table', filterState.finalFilters, pagination],
-        queryFn: async () => {
-            const [error, result] = await withCatchAsync(
-                CompanyService.filter(
-                    // REPLACE THIS SERVICE ONCE BRANCHSERVICE has been created
-                    toBase64({
-                        preloads: ['Media', 'Owner'],
-                        ...pagination,
-                        ...filterState.finalFilters,
-                    })
-                )
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            return result
-        },
-        initialData: {
-            data: [],
-            pages: [],
-            totalSize: 0,
-            totalPage: 1,
-            ...pagination,
-        },
-        retry: 1,
-    })
+    } = useFilteredPaginatedBranch(filterState, pagination)
 
     const handleRowSelectionChange = createHandleRowSelectionChange(data)
 
@@ -125,12 +116,18 @@ const BranchesTable = ({ className, onSelectData }: TableProps<RootType>) => {
                     }}
                     table={table}
                     refreshActionProps={{
-                        isLoading: isPending || isRefetching,
                         onClick: () => refetch(),
+                        isLoading: isPending || isRefetching,
                     }}
                     deleteActionProps={{
-                        isLoading: false,
-                        onClick: () => {},
+                        onDeleteSuccess: () =>
+                            queryClient.invalidateQueries({
+                                queryKey: ['table', 'branch'],
+                            }),
+                        onDelete: (selectedData) =>
+                            BranchService.deleteMany(
+                                selectedData.map((data) => data.id)
+                            ),
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
@@ -138,12 +135,15 @@ const BranchesTable = ({ className, onSelectData }: TableProps<RootType>) => {
                         isLoading: isPending,
                         filters: filterState.finalFilters,
                         disabled: isPending || isRefetching,
-                        exportAll: CompanyService.exportAll,
-                        exportAllFiltered: CompanyService.exportAllFiltered,
-                        exportCurrentPage: CompanyService.exportCurrentPage,
+                        exportAll: BranchService.exportAll,
+                        exportAllFiltered: BranchService.exportAllFiltered,
+                        exportCurrentPage: (ids) =>
+                            BranchService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
                         exportSelected: (ids) =>
-                            CompanyService.exportSelected(
-                                ids.map(({ id }) => id)
+                            BranchService.exportSelected(
+                                ids.map((data) => data.id)
                             ),
                     }}
                     filterLogicProps={{
