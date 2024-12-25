@@ -22,13 +22,14 @@ import { Separator } from '@/components/ui/separator'
 import ImageDisplay from '@/components/image-display'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { toReadableDate } from '@/utils'
-import { OwnerResource } from '@/horizon-corp/types/profile'
+import CompanyLogo from '@/modules/admin/components/company-logo'
 import CompanyAcceptBar from '@/modules/admin/components/company-accept-bar'
 
-import { companyLoader, useDeleteCompany } from '@/hooks/api-hooks/use-company'
+import { toReadableDate } from '@/utils'
+import { OwnerResource } from '@/horizon-corp/types/profile'
+
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import CompanyLogo from '@/modules/admin/components/company-logo'
+import { companyLoader, useDeleteCompany } from '@/hooks/api-hooks/use-company'
 
 const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
     const AccountBadge = useMemo(() => {

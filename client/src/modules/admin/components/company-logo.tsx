@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button'
 import { CameraFillIcon } from '@/components/icons'
 import ImageDisplay from '@/components/image-display'
 import ActionTooltip from '@/components/action-tooltip'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import SingleImageUploaderModal from '@/components/single-image-uploader/single-image-uploader-modal'
 
 import { IBaseCompNoChild } from '@/types'
 import { CompanyResource } from '@/horizon-corp/types'
 import { useUpdateCompanyProfilePicture } from '@/hooks/api-hooks/use-company'
-import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 interface Props extends IBaseCompNoChild {
     company: CompanyResource

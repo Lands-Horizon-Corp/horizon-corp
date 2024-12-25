@@ -14,6 +14,7 @@ import {
     CompanyResource,
     MediaRequest,
 } from '@/horizon-corp/types'
+import logger from '@/helpers/loggers/logger'
 
 interface IOperationCallbacks<TDataSuccess = unknown, TError = unknown> {
     onSuccess?: (data: TDataSuccess) => void
@@ -94,10 +95,12 @@ export const useUpdateCompanyProfilePicture = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                toast.error(`Failed to update company : ${errorMessage}`)
                 onError?.(errorMessage)
                 throw new Error(errorMessage)
             }
+
+            logger.log("new Data", data,'media', mediaResource)
 
             queryClient.invalidateQueries({ queryKey: ['company', 'table'] })
             queryClient.invalidateQueries({ queryKey: ['company', companyId] })

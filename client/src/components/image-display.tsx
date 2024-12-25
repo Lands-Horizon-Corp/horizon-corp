@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 import { cn } from '@/lib'
 import { IBaseComp } from '@/types'
@@ -6,6 +6,7 @@ import { IBaseComp } from '@/types'
 interface Props extends IBaseComp {
     src?: string
     fallback?: string
+    imageClassName?: string
     fallbackClassName?: string
 }
 
@@ -14,11 +15,17 @@ const ImageDisplay = ({
     fallback,
     children,
     className,
+    imageClassName,
     fallbackClassName,
 }: Props) => {
     return (
-        <Avatar className={cn('size-6', className)}>
-            <AvatarImage src={src ?? '-'} />
+        <Avatar
+            className={cn('size-6 bg-secondary dark:bg-popover', className)}
+        >
+            <AvatarImage
+                className={cn('object-cover', imageClassName)}
+                src={src ?? '-'}
+            />
             <AvatarFallback className={fallbackClassName}>
                 {fallback}
             </AvatarFallback>

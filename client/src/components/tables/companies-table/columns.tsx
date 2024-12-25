@@ -8,8 +8,8 @@ import {
     PushPinSlashIcon,
 } from '@/components/icons'
 import { Badge } from '@/components/ui/badge'
-import UserAvatar from '@/components/user-avatar'
 import { Checkbox } from '@/components/ui/checkbox'
+import ImageDisplay from '@/components/image-display'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
@@ -205,7 +205,7 @@ const companiesTableColumns = (
                 },
             }) => (
                 <div>
-                    <UserAvatar src={media?.downloadURL ?? ''} />
+                    <ImageDisplay src={media?.downloadURL} className="size-7" />
                 </div>
             ),
         },
