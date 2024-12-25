@@ -33,7 +33,7 @@ const SingleImageUpload = ({
         isPending: isUploadingPhoto,
         mutate: uploadPhoto,
     } = useSinglePictureUpload({
-        onUploadSuccess: onUploadComplete,
+        onSuccess: onUploadComplete,
         onUploadProgressChange: (progress) => setUploadMediaProgress(progress),
     })
 
