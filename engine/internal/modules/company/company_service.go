@@ -251,9 +251,8 @@ func (as *CompanyService) ProfilePicture(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
 		return
 	}
-	switch claims.AccountType {
-	case "Admin":
-	case "Owner":
+
+	if claims.AccountType == "Admin" || claims.AccountType == "Owner" {
 		preloads := ctx.QueryArray("preloads")
 		company := &models.Company{MediaID: req.ID}
 		result, err := as.modelResource.CompanyDB.UpdateColumns(uint(id), *company, preloads)
@@ -266,8 +265,7 @@ func (as *CompanyService) ProfilePicture(ctx *gin.Context) {
 			return
 		}
 		ctx.JSON(http.StatusOK, as.modelResource.CompanyToResource(result))
-
-	default:
+	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
 }

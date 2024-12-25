@@ -276,6 +276,7 @@ func (as *BranchService) ProfilePicture(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
 		return
 	}
+
 	idParam := ctx.Param("id")
 	id, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -283,9 +284,7 @@ func (as *BranchService) ProfilePicture(ctx *gin.Context) {
 		return
 	}
 
-	switch claims.AccountType {
-	case "Admin":
-	case "Owner":
+	if claims.AccountType == "Admin" || claims.AccountType == "Owner" {
 		preloads := ctx.QueryArray("preloads")
 		branch := &models.Branch{MediaID: req.ID}
 		result, err := as.modelResource.BranchDB.UpdateColumns(uint(id), *branch, preloads)
@@ -298,8 +297,7 @@ func (as *BranchService) ProfilePicture(ctx *gin.Context) {
 			return
 		}
 		ctx.JSON(http.StatusOK, as.modelResource.BranchToResource(result))
-
-	default:
+	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
 }
