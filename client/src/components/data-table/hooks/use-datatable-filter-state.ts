@@ -14,7 +14,9 @@ const useDatableFilterState = (options?: {
     debounceFinalFilterMs?: number
     defaultFilter?: TFilterObject
 }): IDataTableFilterState => {
-    const [filters, setFilters] = useState<TFilterObject>({})
+    const [filters, setFilters] = useState<TFilterObject>(
+        options?.defaultFilter ?? {}
+    )
     const [filterLogic, setFilterLogic] = useState<TFilterLogic>('AND')
 
     const setFilter = (field: string, filter?: TSearchFilter) => {
@@ -67,7 +69,7 @@ const useDatableFilterState = (options?: {
                 }
 
                 if (!value.mode || key === 'globalSearch') {
-                    // logger.log('value mode, globalSearch failed', value.mode, key)
+                    // logger.log( 'value mode, globalSearch failed', value.mode, key)
                     return
                 }
 
@@ -76,7 +78,7 @@ const useDatableFilterState = (options?: {
                     !Array.isArray(value.value) &&
                     (value.from === undefined || value.to === undefined)
                 ) {
-                    // logger.log('line 80 failed -> invalid range from to', value.from, value.to )
+                    // logger.log( 'line 80 failed -> invalid range from to', value.from, value.to)
                     return
                 } else if (
                     value.mode !== 'range' &&
@@ -88,7 +90,7 @@ const useDatableFilterState = (options?: {
                     Array.isArray(value.value) &&
                     value.value.length === 0
                 ) {
-                    // logger.log('line 89 failed -> invalid multi select array', value.value)
+                    // logger.log( 'line 89 failed -> invalid multi select array', value.value)
                     return
                 }
 
