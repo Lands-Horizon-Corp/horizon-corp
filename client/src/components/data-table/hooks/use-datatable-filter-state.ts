@@ -98,6 +98,7 @@ const useDatableFilterState = (options?: {
                     field: key,
                     mode: value.mode,
                     dataType: value.dataType,
+                    isStaticFilter : value.isStaticFilter,
                     value:
                         value.mode === 'range' && !Array.isArray(value.value)
                             ? { from: value.from, to: value.to }
