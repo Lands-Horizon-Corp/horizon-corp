@@ -215,7 +215,7 @@ export default class CompanyService {
      * @function
      * @param {MediaRequest} data - The request payload containing the media information.
      * @param {string[]} [preloads=["Media"]] - Optional array of relations to preload.
-     * @returns {Promise<AxiosResponse<CompanyResource>>} - The response containing the updated company resource.
+     * @returns {Promise<CompanyResource>} - The response containing the updated company resource.
      */
     public static async ProfilePicture(
         id: number,

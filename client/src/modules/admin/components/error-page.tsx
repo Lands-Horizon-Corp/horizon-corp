@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeftIcon } from '@/components/icons'
 import { allErrorMessageExtractor } from '@/helpers'
 
-const CompanyErrorPage = ({ error }: ErrorComponentProps) => {
+const ErrorPage = ({ error }: ErrorComponentProps) => {
     const router = useRouter()
 
     const errorMessage = allErrorMessageExtractor({ error })
@@ -25,4 +25,4 @@ const CompanyErrorPage = ({ error }: ErrorComponentProps) => {
     )
 }
 
-export default CompanyErrorPage
+export default ErrorPage

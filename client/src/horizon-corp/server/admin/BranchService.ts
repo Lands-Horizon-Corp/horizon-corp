@@ -7,7 +7,6 @@ import {
   BranchPaginatedResource,
   MediaRequest,
 } from '../../types'
-import { AxiosResponse } from 'axios';
 
 
 /**
@@ -203,14 +202,15 @@ export default class BranchService {
      * @function
      * @param {MediaRequest} data - The request payload containing the media information.
      * @param {string[]} [preloads=["Media"]] - Optional array of relations to preload.
-     * @returns {Promise<AxiosResponse<BranchResource>>} - The response containing the updated company resource.
+     * @returns {Promise<BranchResource>} - The response containing the updated company resource.
      */
   public static async ProfilePicture(
     id: number, data: MediaRequest, preloads: string[] = ["Media"]
-  ): Promise<AxiosResponse<BranchResource>> {
+  ): Promise<BranchResource> {
     const preloadParams = preloads?.map(preload => `preloads=${encodeURIComponent(preload)}`).join('&') || '';
     const separator = preloadParams ? '?' : '';
     const endpoint = `${BranchService.BASE_ENDPOINT}/profile-picture/${id}${separator}${preloadParams}`;
-    return await UseServer.post<MediaRequest, BranchResource>(endpoint, data);
+    const response = await UseServer.post<MediaRequest, BranchResource>(endpoint, data);
+    return response.data
   }
 }

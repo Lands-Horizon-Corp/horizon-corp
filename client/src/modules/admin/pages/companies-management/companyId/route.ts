@@ -4,10 +4,12 @@ import {
     lazyRouteComponent,
 } from '@tanstack/react-router'
 
-import CompanyErrorPage from './error'
+import ErrorPage from '@/modules/admin/components/error-page'
+
 import { adminCompaniesManagement } from '../route'
 import { companyIdPathSchema } from './route-schemas'
 import AdminCompanyBranchRoute from './branches/route'
+
 import { companyLoader } from '@/hooks/api-hooks/use-company'
 
 export const adminCompanyId = createRoute({
@@ -16,7 +18,7 @@ export const adminCompanyId = createRoute({
     params: {
         parse: companyIdPathSchema.parse,
     },
-    errorComponent: CompanyErrorPage,
+    errorComponent: ErrorPage,
     loader: async ({ context, params: { companyId } }) => {
         await context.queryClient.ensureQueryData(companyLoader(companyId))
     },

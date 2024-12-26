@@ -1,9 +1,9 @@
-import BranchesTable from '@/components/tables/branches-table'
 import { useParams } from '@tanstack/react-router'
+import BranchesTable from '@/components/tables/branches-table'
 
 const CompanyBranchesPage = () => {
     const { companyId } = useParams({
-        from: '/admin/companies-management/$companyId/branches',
+        from: '/admin/companies-management/$companyId/branch',
     })
 
     return (

@@ -1,5 +1,3 @@
-
-
 export interface BranchRequest {
   name: string;
   address?: string;

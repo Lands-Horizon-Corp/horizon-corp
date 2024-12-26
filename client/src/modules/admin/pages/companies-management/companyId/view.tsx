@@ -146,7 +146,7 @@ const CompanyViewPage = () => {
                                         disabled={isDeleting}
                                         onClick={() =>
                                             router.navigate({
-                                                to: '/admin/companies-management/$companyId/branches',
+                                                to: '/admin/companies-management/$companyId/branch',
                                                 params: { companyId },
                                             })
                                         }

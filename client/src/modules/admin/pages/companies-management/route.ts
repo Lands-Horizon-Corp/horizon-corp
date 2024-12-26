@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-router'
 
 import { adminRoute } from '../../route'
-import CompanyErrorPage from './companyId/error'
+import CompanyErrorPage from '../../components/error-page'
 import AdminCompanyIdRoute from './companyId/route'
 
 export const adminCompaniesManagement = createRoute({
