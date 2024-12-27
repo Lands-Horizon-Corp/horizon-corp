@@ -11,7 +11,7 @@ import {
     CompanyResource,
     CompanyPaginatedResource,
 } from '@/horizon-corp/types'
-import { IOperationCallbacks } from './types'
+import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
@@ -173,22 +173,22 @@ export const useApproveCompany = ({
     })
 }
 
-// Used by tables with filter + pagination
-export const useFilteredPaginatedCompanies = (
-    filterState: { finalFilters: Record<string, unknown> },
-    pagination: { pageIndex: number; pageSize: number }
-) => {
+export const useFilteredPaginatedCompanies = ({
+    filterPayload,
+    pagination = { pageSize: 10, pageIndex: 1 },
+    preloads = ['Media', 'Owner'],
+}: IFilterPaginatedHookProps = {}) => {
     return useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['table', 'company', filterState.finalFilters, pagination],
+        queryKey: ['table', 'company', filterPayload, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
-                CompanyService.filter(
-                    toBase64({
-                        preloads: ['Media', 'Owner'],
-                        ...pagination,
-                        ...filterState.finalFilters,
-                    })
-                )
+                CompanyService.getCompanies({
+                    filters: filterPayload
+                        ? toBase64(filterPayload)
+                        : undefined,
+                    preloads,
+                    pagination,
+                })
             )
 
             if (error) {

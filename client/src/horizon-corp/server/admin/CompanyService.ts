@@ -1,4 +1,6 @@
 // services/CompanyService.ts
+import qs from 'query-string'
+
 import { downloadFile } from '@/horizon-corp/helpers'
 import UseServer from '../../request/server'
 import {
@@ -105,34 +107,39 @@ export default class CompanyService {
     }
 
     /**
-     * Filters companies based on provided filters with optional preloads.
+     * Filters companies based on provided options with optional pagination.
      *
-     * @param {string} [filters] - The filters to apply for exporting companies.
-     * @param {string[]} [preloads] - Optional array of relations to preload.
+     * @param {Object} [props] - The options for filtering companies.
+     * @param {string} [props.filters] - The filters to apply for exporting companies.
+     * @param {string[]} [props.preloads] - Optional array of relations to preload.
+     * @param {Object} [props.pagination] - Pagination parameters.
+     * @param {number} props.pagination.pageIndex - The current page index.
+     * @param {number} props.pagination.pageSize - The number of items per page.
      * @returns {Promise<CompanyPaginatedResource>} - A promise that resolves to paginated company resources.
      */
-    public static async filter(
-        filters?: string,
+    public static async getCompanies(props?: {
+        filters?: string
         preloads?: string[]
-    ): Promise<CompanyPaginatedResource> {
-        // Construct 'filter' query parameter
-        const filterParams = filters
-            ? `filter=${encodeURIComponent(filters)}`
-            : ''
+        pagination?: { pageIndex: number; pageSize: number }
+    }): Promise<CompanyPaginatedResource> {
+        const { filters, preloads, pagination } = props || {}
 
-        // Construct each preload as a separate 'preloads' query parameter
-        const preloadParams =
-            preloads
-                ?.map((preload) => `preloads=${encodeURIComponent(preload)}`)
-                .join('&') || ''
+        const url = qs.stringifyUrl(
+            {
+                url: `${CompanyService.BASE_ENDPOINT}`,
+                query: {
+                    filter: filters,
+                    preloads,
+                    pageIndex: pagination?.pageIndex,
+                    pageSize: pagination?.pageSize,
+                },
+            },
+            { skipNull: true }
+        )
 
-        // Combine filter and preload parameters
-        const query = [filterParams, preloadParams].filter(Boolean).join('&')
+        // Output URL
+        // /api/v1/company?filter=eyJmaWx0ZXJzIjpbXSwibG9naWMiOiJBTkQifQ%3D%3D&pageIndex=0&pageSize=10&preloads=Media&preloads=Owner
 
-        // Construct the full endpoint URL
-        const url = `${CompanyService.BASE_ENDPOINT}/search${query ? `?${query}` : ''}`
-
-        // Make the GET request
         const response = await UseServer.get<CompanyPaginatedResource>(url)
         return response.data
     }

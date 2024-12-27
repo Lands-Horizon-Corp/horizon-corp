@@ -72,7 +72,10 @@ const CompaniesTable = ({
         isPending,
         isRefetching,
         refetch,
-    } = useFilteredPaginatedCompanies(filterState, pagination)
+    } = useFilteredPaginatedCompanies({
+        filterPayload: filterState.finalFilterPayload,
+        pagination,
+    })
 
     const handleRowSelectionChange = createHandleRowSelectionChange(data)
 
@@ -131,7 +134,7 @@ const CompaniesTable = ({
                     exportActionProps={{
                         pagination,
                         isLoading: isPending,
-                        filters: filterState.finalFilters,
+                        filters: filterState.finalFilterPayload,
                         disabled: isPending || isRefetching,
                         exportAll: CompanyService.exportAll,
                         exportAllFiltered: CompanyService.exportAllFiltered,
