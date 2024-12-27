@@ -74,7 +74,10 @@ const BranchesTable = ({
         isPending,
         isRefetching,
         refetch,
-    } = useFilteredPaginatedBranch(filterState, pagination)
+    } = useFilteredPaginatedBranch({
+        filterPayload: filterState.finalFilterPayload,
+        pagination,
+    })
 
     const handleRowSelectionChange = createHandleRowSelectionChange(data)
 
@@ -133,7 +136,7 @@ const BranchesTable = ({
                     exportActionProps={{
                         pagination,
                         isLoading: isPending,
-                        filters: filterState.finalFilters,
+                        filters: filterState.finalFilterPayload,
                         disabled: isPending || isRefetching,
                         exportAll: BranchService.exportAll,
                         exportAllFiltered: BranchService.exportAllFiltered,

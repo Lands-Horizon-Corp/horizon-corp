@@ -1,11 +1,21 @@
 import { toast } from 'sonner'
-import { queryOptions, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+    queryOptions,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from '@tanstack/react-query'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import BranchService from '@/horizon-corp/server/admin/BranchService'
-import { BranchPaginatedResource, BranchResource, MediaRequest } from '@/horizon-corp/types'
-import { IOperationCallbacks } from './types'
+import {
+    BranchPaginatedResource,
+    BranchRequest,
+    BranchResource,
+    MediaRequest,
+} from '@/horizon-corp/types'
+import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
 
 // for route pathParam loader
 export const branchLoader = (companyId: number) =>
@@ -34,7 +44,7 @@ export const useUpdateBranch = ({
         string,
         {
             id: number
-            data: Omit<BranchResource, 'id' | 'createdAt' | 'updatedAt'>
+            data: BranchRequest
         }
     >({
         mutationKey: ['branch', 'update'],
@@ -130,21 +140,22 @@ export const useDeleteBranch = ({
     })
 }
 
-export const useFilteredPaginatedBranch = (
-    filterState: { finalFilters: Record<string, unknown> },
-    pagination: { pageIndex: number; pageSize: number }
-) => {
+export const useFilteredPaginatedBranch = ({
+    filterPayload,
+    pagination = { pageSize: 10, pageIndex: 1 },
+    preloads = ['Media', 'Owner'],
+}: IFilterPaginatedHookProps = {}) => {
     return useQuery<BranchPaginatedResource, string>({
-        queryKey: ['table', 'branches', filterState.finalFilters, pagination],
+        queryKey: ['table', 'branches', filterPayload, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
-                BranchService.filter(
-                    toBase64({
-                        preloads: ['Media', 'Owner'],
-                        ...pagination,
-                        ...filterState.finalFilters,
-                    })
-                )
+                BranchService.getBranches({
+                    preloads,
+                    pagination,
+                    filters: filterPayload
+                        ? toBase64(filterPayload)
+                        : undefined,
+                })
             )
 
             if (error) {
