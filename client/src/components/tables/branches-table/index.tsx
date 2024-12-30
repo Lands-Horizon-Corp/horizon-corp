@@ -3,8 +3,7 @@ import {
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
-import { useCallback, useMemo } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMemo } from 'react'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -13,7 +12,10 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import branchColumns, { branchesGlobalSearchTargets } from './columns'
+import branchColumns, {
+    branchesGlobalSearchTargets,
+    IBranchesTableColumnProps,
+} from './columns'
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
@@ -21,28 +23,22 @@ import { BranchResource } from '@/horizon-corp/types'
 import BranchService from '@/horizon-corp/server/admin/BranchService'
 import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
 
+export interface BranchesTableProps
+    extends TableProps<BranchResource>,
+        IBranchesTableColumnProps {}
+
 const BranchesTable = ({
     className,
     onSelectData,
     defaultFilter,
-}: TableProps<BranchResource>) => {
-    const queryClient = useQueryClient()
-
-    const invalidateTableData = useCallback(
-        () =>
-            queryClient.invalidateQueries({
-                queryKey: ['table', 'branch'],
-            }),
-        [queryClient]
-    )
-
+    actionComponent,
+}: BranchesTableProps) => {
     const columns = useMemo(
         () =>
             branchColumns({
-                onDeleteSuccess: invalidateTableData,
-                onBranchUpdate: invalidateTableData,
+                actionComponent,
             }),
-        [invalidateTableData]
+        [actionComponent]
     )
 
     const {
@@ -123,10 +119,6 @@ const BranchesTable = ({
                         isLoading: isPending || isRefetching,
                     }}
                     deleteActionProps={{
-                        onDeleteSuccess: () =>
-                            queryClient.invalidateQueries({
-                                queryKey: ['table', 'branch'],
-                            }),
                         onDelete: (selectedData) =>
                             BranchService.deleteMany(
                                 selectedData.map((data) => data.id)

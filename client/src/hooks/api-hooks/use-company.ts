@@ -11,10 +11,10 @@ import {
     CompanyResource,
     CompanyPaginatedResource,
 } from '@/horizon-corp/types'
-import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
 
 // Only used by path preloader
 export const companyLoader = (companyId: number) =>
@@ -31,6 +31,53 @@ export const companyLoader = (companyId: number) =>
         retry: 0,
     })
 
+// approve company
+export const useApproveCompany = ({
+    onSuccess,
+    onError,
+}: IOperationCallbacks<CompanyResource, string>) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<void, string, number>({
+        mutationKey: ['company', 'approve'],
+        mutationFn: async (companyId) => {
+            const [error, data] = await withCatchAsync(
+                CompanyService.verify(companyId)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            queryClient.setQueryData<CompanyResource[]>(
+                ['company', 'table'],
+                (oldData) => {
+                    if (!oldData) return oldData
+                    return oldData.map((company) =>
+                        company.id === companyId ? data : company
+                    )
+                }
+            )
+
+            queryClient.setQueryData<CompanyResource>(
+                ['company', companyId],
+                data
+            )
+            queryClient.setQueryData<CompanyResource>(
+                ['company', 'loader', companyId],
+                data
+            )
+
+            toast.success('Company approved')
+            onSuccess?.(data)
+        },
+    })
+}
+
+// update company
 export const useUpdateCompany = ({
     onSuccess,
     onError,
@@ -58,11 +105,22 @@ export const useUpdateCompany = ({
                 throw errorMessage
             }
 
-            queryClient.invalidateQueries({ queryKey: ['company', 'table'] })
-            queryClient.invalidateQueries({ queryKey: ['company', id] })
-            queryClient.invalidateQueries({
-                queryKey: ['company', 'loader', id],
-            })
+            queryClient.setQueryData<CompanyResource[]>(
+                ['company', 'table'],
+                (oldData) => {
+                    if (!oldData) return oldData
+                    return oldData.map((company) =>
+                        company.id === id ? response : company
+                    )
+                }
+            )
+
+            queryClient.setQueryData<CompanyResource>(['company', id], response)
+
+            queryClient.setQueryData<CompanyResource>(
+                ['company', 'loader', id],
+                response
+            )
 
             onSuccess?.(response)
             return response
@@ -95,11 +153,24 @@ export const useUpdateCompanyProfilePicture = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.invalidateQueries({ queryKey: ['company', 'table'] })
-            queryClient.invalidateQueries({ queryKey: ['company', companyId] })
-            queryClient.invalidateQueries({
-                queryKey: ['company', 'loader', companyId],
-            })
+            queryClient.setQueryData<CompanyResource[]>(
+                ['company', 'table'],
+                (oldData) => {
+                    if (!oldData) return oldData
+                    return oldData.map((company) =>
+                        company.id === companyId ? data : company
+                    )
+                }
+            )
+
+            queryClient.setQueryData<CompanyResource>(
+                ['company', companyId],
+                data
+            )
+            queryClient.setQueryData<CompanyResource>(
+                ['company', companyId],
+                data
+            )
 
             toast.success('Company Logo Updated')
             onSuccess?.(data)
@@ -128,7 +199,13 @@ export const useDeleteCompany = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.invalidateQueries({ queryKey: ['company', 'table'] })
+            queryClient.setQueryData<CompanyResource[]>(
+                ['company', 'table'],
+                (oldData) => {
+                    if (!oldData) return oldData
+                    return oldData.filter((item) => item.id !== companyId)
+                }
+            )
             queryClient.invalidateQueries({ queryKey: ['company', companyId] })
             queryClient.removeQueries({
                 queryKey: ['company', 'loader', companyId],
@@ -136,39 +213,6 @@ export const useDeleteCompany = ({
 
             toast.success('Company deleted')
             onSuccess?.(undefined)
-        },
-    })
-}
-
-// approve company
-export const useApproveCompany = ({
-    onSuccess,
-    onError,
-}: IOperationCallbacks<CompanyResource, string>) => {
-    const queryClient = useQueryClient()
-
-    return useMutation<void, string, number>({
-        mutationKey: ['company', 'approve'],
-        mutationFn: async (companyId) => {
-            const [error, data] = await withCatchAsync(
-                CompanyService.verify(companyId)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                onError?.(errorMessage)
-                throw errorMessage
-            }
-
-            queryClient.invalidateQueries({ queryKey: ['company', 'table'] })
-            queryClient.invalidateQueries({ queryKey: ['company', companyId] })
-            queryClient.invalidateQueries({
-                queryKey: ['company', 'loader', companyId],
-            })
-
-            toast.success('Company approved')
-            onSuccess?.(data)
         },
     })
 }

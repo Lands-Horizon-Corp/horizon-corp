@@ -1,5 +1,7 @@
 import { useParams } from '@tanstack/react-router'
+
 import BranchesTable from '@/components/tables/branches-table'
+import BranchesTableAdminAction from '@/components/tables/branches-table/row-actions/branches-table-admin-action'
 
 const CompanyBranchesPage = () => {
     const { companyId } = useParams({
@@ -18,6 +20,9 @@ const CompanyBranchesPage = () => {
                         displayText: 'Company',
                     },
                 }}
+                actionComponent={({ row }) => (
+                    <BranchesTableAdminAction row={row} />
+                )}
                 className="min-h-[90vh] w-full"
             />
         </div>

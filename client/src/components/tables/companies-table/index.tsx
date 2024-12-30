@@ -1,10 +1,10 @@
+import { useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import {
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
-import { useCallback, useMemo } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar from '@/components/data-table/data-table-toolbar'
@@ -13,7 +13,10 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
-import companyColumns, { companyGlobalSearchTargets } from './columns'
+import companyColumns, {
+    companyGlobalSearchTargets,
+    ICompaniesTableColumnProps,
+} from './columns'
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
@@ -21,27 +24,23 @@ import { CompanyResource } from '@/horizon-corp/types'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
 
+export interface CompaniesTableProps
+    extends TableProps<CompanyResource>,
+        ICompaniesTableColumnProps {}
+
 const CompaniesTable = ({
     className,
     onSelectData,
-}: TableProps<CompanyResource>) => {
+    actionComponent,
+}: CompaniesTableProps) => {
     const queryClient = useQueryClient()
-
-    const invalidateTableData = useCallback(
-        () =>
-            queryClient.invalidateQueries({
-                queryKey: ['table', 'company'],
-            }),
-        [queryClient]
-    )
 
     const columns = useMemo(
         () =>
             companyColumns({
-                onDeleteSuccess: invalidateTableData,
-                onCompanyUpdate: invalidateTableData,
+                actionComponent,
             }),
-        [invalidateTableData]
+        [actionComponent]
     )
 
     const {

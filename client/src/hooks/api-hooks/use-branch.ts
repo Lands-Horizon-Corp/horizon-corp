@@ -1,19 +1,19 @@
-import { toast } from 'sonner'
 import {
-    queryOptions,
-    useMutation,
     useQuery,
+    useMutation,
+    queryOptions,
     useQueryClient,
 } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import BranchService from '@/horizon-corp/server/admin/BranchService'
 import {
-    BranchPaginatedResource,
+    MediaRequest,
     BranchRequest,
     BranchResource,
-    MediaRequest,
+    BranchPaginatedResource,
 } from '@/horizon-corp/types'
 import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
 
@@ -60,11 +60,20 @@ export const useUpdateBranch = ({
                 throw errorMessage
             }
 
-            queryClient.invalidateQueries({ queryKey: ['branch', 'table'] })
-            queryClient.invalidateQueries({ queryKey: ['branch', id] })
-            queryClient.invalidateQueries({
-                queryKey: ['branch', 'loader', id],
-            })
+            queryClient.setQueryData<BranchResource[]>(
+                ['branch', 'table'],
+                (oldData) => {
+                    if (!oldData) return oldData
+                    return oldData.map((branch) =>
+                        branch.id === id ? response : branch
+                    )
+                }
+            )
+            queryClient.setQueryData<BranchResource>(['branch', id], response)
+            queryClient.setQueryData<BranchResource>(
+                ['branch', 'loader', id],
+                response
+            )
 
             onSuccess?.(response)
             return response
@@ -97,11 +106,20 @@ export const useUpdateBranchProfilePicture = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.invalidateQueries({ queryKey: ['branch', 'table'] })
-            queryClient.invalidateQueries({ queryKey: ['branch', branchId] })
-            queryClient.invalidateQueries({
-                queryKey: ['branch', 'loader', branchId],
-            })
+            queryClient.setQueryData<BranchResource[]>(
+                ['branch', 'table'],
+                (oldData) => {
+                    if (!oldData) return oldData
+                    return oldData.map((branch) =>
+                        branch.id === branchId ? data : branch
+                    )
+                }
+            )
+            queryClient.setQueryData<BranchResource>(['branch', branchId], data)
+            queryClient.setQueryData<BranchResource>(
+                ['branch', 'loader', branchId],
+                data
+            )
 
             toast.success('Branch Logo Updated')
             onSuccess?.(data)
@@ -128,7 +146,13 @@ export const useDeleteBranch = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.invalidateQueries({ queryKey: ['branch', 'table'] })
+            queryClient.setQueryData<BranchResource[]>(
+                ['branch', 'table'],
+                (oldData) => {
+                    if (!oldData) return oldData
+                    return oldData.filter((branch) => branch.id !== branchId)
+                }
+            )
             queryClient.invalidateQueries({ queryKey: ['branch', branchId] })
             queryClient.removeQueries({
                 queryKey: ['branch', 'loader', branchId],
@@ -146,7 +170,7 @@ export const useFilteredPaginatedBranch = ({
     preloads = ['Media', 'Owner'],
 }: IFilterPaginatedHookProps = {}) => {
     return useQuery<BranchPaginatedResource, string>({
-        queryKey: ['table', 'branches', filterPayload, pagination],
+        queryKey: ['branch', 'table', filterPayload, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 BranchService.getBranches({
