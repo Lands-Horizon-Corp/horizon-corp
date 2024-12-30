@@ -25,7 +25,16 @@ import { IForm } from '@/types/component/form'
 import { BranchResource } from '@/horizon-corp/types'
 import { useUpdateBranch } from '@/hooks/api-hooks/use-branch'
 
-type TBranchBasicInfo = Omit<BranchResource, 'id' | 'media' | 'company' | 'employees' | 'members' | 'createdAt' | 'updatedAt'>
+type TBranchBasicInfo = Omit<
+    BranchResource,
+    | 'id'
+    | 'media'
+    | 'company'
+    | 'employees'
+    | 'members'
+    | 'createdAt'
+    | 'updatedAt'
+>
 
 interface BranchEditBasicInfoFormProps
     extends IBaseCompNoChild,
@@ -35,6 +44,7 @@ interface BranchEditBasicInfoFormProps
 
 const BranchBasicInfoFormSchema = z.object({
     name: z.string().min(1, 'Branch name is required'),
+    companyId: z.coerce.number(),
     address: z.string().min(1, 'Branch address is required').optional(),
     longitude: z.coerce.number().optional(),
     latitude: z.coerce.number().optional(),
@@ -86,9 +96,7 @@ const BranchEditBasicInfoForm = ({
     return (
         <form
             className={cn('flex flex-col gap-y-2', className)}
-            onSubmit={form.handleSubmit((data) =>
-                save({ id: branchId, data })
-            )}
+            onSubmit={form.handleSubmit((data) => save({ id: branchId, data }))}
         >
             <Form {...form}>
                 <fieldset
