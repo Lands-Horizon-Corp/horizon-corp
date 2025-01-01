@@ -30,10 +30,10 @@ import CompaniesTable from '../tables/companies-table'
 // import Tbl from '@/modules/test/pages/tbl'
 
 interface InsertTableProps<TData> {
-    data?: TData[]
+    data: TData[]
     columns: ColumnDef<TData>[]
     filterPlaceholder?: string,
-    trigger: ReactNode,
+    trigger?: ReactNode,
     Content?: ReactNode,
 }
 
@@ -70,6 +70,8 @@ export const InsertTable = <TData,>({
         },
     })
 
+
+    
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -167,7 +169,7 @@ export const InsertTable = <TData,>({
                         </Button>
                     </div>
                 </div> */}
-                <CompaniesTable></CompaniesTable>
+                {/* <CompaniesTable></CompaniesTable> */}
                 <div className='w-full'>
                  {Content}         
                 </div>

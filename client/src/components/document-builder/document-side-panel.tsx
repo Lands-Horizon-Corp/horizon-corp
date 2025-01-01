@@ -140,18 +140,12 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
                                             {' '}
                                             {subItem.label}
                                         </span>
-                                        <InsertTable
-                                        columns={companiesTableColumns}
-                                        trigger={
-                                                <MdAdd
-                                                    size={18}
-                                                    onClick={insertTable(
-                                                        subItem.label
-                                                    )}
-                                                    className="ease-in-out hover:scale-105"
-                                                />
-                                            }
-                                        ></InsertTable>
+
+                                        <MdAdd
+                                            size={18}
+                                            onClick={insertTable(subItem.label)}
+                                            className="ease-in-out hover:scale-105"
+                                        />
                                     </SidebarMenuSubItem>
                                 </SidebarMenuSub>
                             ))}
@@ -165,44 +159,24 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
 
 const menuItems: SidebarMenuItem[] = [
     {
-        label: 'Customers',
+        label: 'Companies Management',
         icon: <FaUsers />,
         subItems: [
             {
-                label: 'Accounts',
+                label: 'Companies',
                 icon: <FaDollarSign />,
                 onClick: () => console.log('Accounts clicked'),
-            },
-            {
-                label: 'Loans',
-                icon: <FaExchangeAlt />,
-                onClick: () => console.log('Loans clicked'),
-            },
-            {
-                label: 'Cards',
-                icon: <FaCreditCard />,
-                onClick: () => console.log('Cards clicked'),
             },
         ],
     },
     {
-        label: 'Accounts',
+        label: 'Members Management',
         icon: <FaDollarSign />,
         subItems: [
             {
-                label: 'Transactions',
+                label: 'Members',
                 icon: <FaExchangeAlt />,
                 onClick: () => console.log('Transactions clicked'),
-            },
-            {
-                label: 'Beneficiaries',
-                icon: <FaUsers />,
-                onClick: () => console.log('Beneficiaries clicked'),
-            },
-            {
-                label: 'Recurring Payments',
-                icon: <FaDollarSign />,
-                onClick: () => console.log('Recurring Payments clicked'),
             },
         ],
     },
