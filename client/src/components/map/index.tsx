@@ -313,7 +313,7 @@ const Map = ({
     return (
         <div
             className={cn(
-                'relative flex size-full flex-col gap-4',
+                'relative flex w-full flex-col gap-4',
                 viewOnly ? 'p-0' : 'p-5 shadow-sm',
                 className
             )}
