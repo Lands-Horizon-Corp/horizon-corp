@@ -1,20 +1,22 @@
 import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 
 import { adminCompanyId } from '../route'
+import AdminBranchIdRoute from './branchId/route'
 
-const adminCompanyBranchesRoute = createRoute({
+export const adminCompanyBranchRoute = createRoute({
     getParentRoute: () => adminCompanyId,
-    path: 'branches',
+    path: 'branch',
 })
 
 const adminCompanyBranchesIndexRoute = createRoute({
-    getParentRoute: () => adminCompanyBranchesRoute,
+    getParentRoute: () => adminCompanyBranchRoute,
     path: '/',
     component: lazyRouteComponent(() => import('./view-branches')),
 })
 
-const AdminCompanyBranchRoute = adminCompanyBranchesRoute.addChildren([
+const AdminCompanyBranchRoute = adminCompanyBranchRoute.addChildren([
     adminCompanyBranchesIndexRoute,
+    AdminBranchIdRoute,
 ])
 
 export default AdminCompanyBranchRoute

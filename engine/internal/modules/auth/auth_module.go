@@ -10,6 +10,7 @@ var Module = fx.Module(
 	fx.Provide(
 		auth_accounts.NewAuthAccount,
 		NewAuthProvider,
+		NewAuthFootstep,
 		NewAuthService,
 	),
 )

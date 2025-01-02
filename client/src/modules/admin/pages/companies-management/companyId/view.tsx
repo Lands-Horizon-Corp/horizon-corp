@@ -1,29 +1,35 @@
 import { useMemo } from 'react'
-import { useParams, Link } from '@tanstack/react-router'
+import DOMPurify from 'isomorphic-dompurify'
 import { useSuspenseQuery } from '@tanstack/react-query'
+import { useParams, useRouter } from '@tanstack/react-router'
 
 import {
     StoreIcon,
+    TrashIcon,
     CalendarIcon,
     TelephoneIcon,
     LocationPinIcon,
+    PencilOutlineIcon,
     BadgeMinusFillIcon,
     BadgeCheckFillIcon,
     BadgeQuestionFillIcon,
     QuestionCircleFillIcon,
     BadgeExclamationFillIcon,
-    PencilOutlineIcon,
 } from '@/components/icons'
 import MainMapContainer from '@/components/map'
-import UserAvatar from '@/components/user-avatar'
+import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import ImageDisplay from '@/components/image-display'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { cn } from '@/lib'
-import { toReadableDate } from '@/utils'
-import { OwnerResource } from '@/horizon-corp/types/profile'
+import CompanyLogo from '@/modules/admin/components/company-logo'
 import CompanyAcceptBar from '@/modules/admin/components/company-accept-bar'
 
-import { companyLoader } from '@/hooks/api-hooks/use-company'
+import { toReadableDate } from '@/utils'
+import { OwnerResource } from '@/horizon-corp/types/profile'
+
+import useConfirmModalStore from '@/store/confirm-modal-store'
+import { companyLoader, useDeleteCompany } from '@/hooks/api-hooks/use-company'
 
 const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
     const AccountBadge = useMemo(() => {
@@ -52,7 +58,7 @@ const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
                     </p>
                 </div>
                 <div className="relative size-fit">
-                    <UserAvatar
+                    <ImageDisplay
                         fallback="-"
                         className="size-20"
                         src={owner.media?.downloadURL ?? ''}
@@ -68,11 +74,18 @@ const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
 }
 
 const CompanyViewPage = () => {
+    const router = useRouter()
+    const { onOpen } = useConfirmModalStore()
+
     const { companyId } = useParams({
         from: '/admin/companies-management/$companyId/view',
     })
 
     const { data: company } = useSuspenseQuery(companyLoader(companyId))
+
+    const { mutate: deleteCompany, isPending: isDeleting } = useDeleteCompany({
+        onSuccess: () => router.navigate({ to: '/admin/companies-management' }),
+    })
 
     return (
         <div className="flex w-full max-w-full flex-col items-center px-4 pb-6 sm:px-8">
@@ -81,14 +94,7 @@ const CompanyViewPage = () => {
                     <div className="relative w-full flex-col items-center overflow-clip rounded-xl bg-popover">
                         <div className="h-[180px] w-full rounded-md bg-[url('/profile-cover.png')] bg-cover bg-center" />
                         <div className="relative z-10 w-full space-y-2.5">
-                            <UserAvatar
-                                src={company.media?.downloadURL ?? ''}
-                                className={cn(
-                                    'absolute -top-28 z-20 size-36 border-2 border-primary',
-                                    !company.isAdminVerified &&
-                                        'border-amber-600'
-                                )}
-                            />
+                            <CompanyLogo company={company} />
                             <div className="pointer-events-none relative z-10 !my-0 space-y-2.5 px-6 pb-4 pt-8 sm:pb-6">
                                 <div className="pointer-events-none absolute right-0 top-0 -z-10 m-0 hidden h-full w-full bg-gradient-to-r from-popover from-[10%] to-transparent sm:block" />
                                 <span className="pointer-events-auto z-50 flex items-center gap-x-2">
@@ -119,24 +125,68 @@ const CompanyViewPage = () => {
                                             0} Branch
                                     </span>
                                 </div>
-                                <p>
-                                    <Link
-                                        params={{ companyId }}
-                                        to="/admin/companies-management/$companyId/edit"
-                                        className="pointer-events-auto text-sm underline hover:text-blue-400"
+                                <div className="flex flex-wrap items-center">
+                                    <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        onClick={() =>
+                                            router.navigate({
+                                                to: '/admin/companies-management/$companyId/edit',
+                                                params: { companyId },
+                                            })
+                                        }
+                                        className="pointer-events-auto rounded-none text-foreground/80 hover:text-foreground first:rounded-l-md last:rounded-r-md"
                                     >
                                         <PencilOutlineIcon className="mr-2 inline" />
                                         Edit
-                                    </Link>
-                                </p>
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        disabled={isDeleting}
+                                        onClick={() =>
+                                            router.navigate({
+                                                to: '/admin/companies-management/$companyId/branch',
+                                                params: { companyId },
+                                            })
+                                        }
+                                        className="pointer-events-auto rounded-none text-foreground/80 hover:text-foreground first:rounded-l-md last:rounded-r-md"
+                                    >
+                                        <StoreIcon className="mr-2 inline" />
+                                        Branches
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        variant="secondary"
+                                        disabled={isDeleting}
+                                        hoverVariant="destructive"
+                                        onClick={() =>
+                                            onOpen({
+                                                title: 'Delete Company',
+                                                description:
+                                                    'Are you sure to delete this company?',
+                                                onConfirm: () =>
+                                                    deleteCompany(companyId),
+                                            })
+                                        }
+                                        className="pointer-events-auto rounded-none text-foreground/80 hover:text-foreground first:rounded-l-md last:rounded-r-md"
+                                    >
+                                        {isDeleting ? (
+                                            <LoadingSpinner className="mr-2 inline" />
+                                        ) : (
+                                            <TrashIcon className="mr-2 inline" />
+                                        )}
+                                        Delete
+                                    </Button>
+                                </div>
                             </div>
                             {company.latitude && company.longitude && (
-                                <div className="right-0 top-0 !-z-10 mt-5 h-[200px] w-full sm:absolute sm:!mt-0 sm:h-full sm:w-[200px] md:w-[400px]">
+                                <div className="right-0 top-0 !-z-10 mt-5 h-[200px] w-full select-none sm:absolute sm:!mt-0 sm:h-full sm:w-[200px] md:w-[500px]">
                                     <MainMapContainer
                                         viewOnly
                                         zoom={13}
                                         hideControls
-                                        className="z-10 rounded-none p-0"
+                                        className="pointer-events-nonee z-10 rounded-none p-0"
                                         mapContainerClassName="sm:rounded-none"
                                         center={{
                                             lng: company.longitude,
@@ -149,6 +199,7 @@ const CompanyViewPage = () => {
                                             },
                                         ]}
                                     />
+                                    <div className="absolute left-0 top-0 z-20 hidden h-full w-full sm:block"></div>
                                     <div className="pointer-events-none absolute left-0 top-0 z-20 hidden h-full w-[50%] bg-gradient-to-r from-popover to-transparent sm:block"></div>
                                 </div>
                             )}
@@ -163,9 +214,17 @@ const CompanyViewPage = () => {
                         Company&apos;s Description
                         <QuestionCircleFillIcon className="inline text-foreground/20" />
                     </h3>
-                    <p className="text-sm text-foreground/70 sm:text-base">
-                        {company.description}
-                    </p>
+                    <div
+                        dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(
+                                company.description &&
+                                    company.description.length > 0
+                                    ? company.description
+                                    : '<i>No Description</i>'
+                            ),
+                        }}
+                        className="prose !max-w-full rounded-xl bg-secondary p-4 text-sm text-foreground/70 prose-p:text-foreground/80 prose-strong:text-foreground dark:bg-popover sm:text-sm"
+                    ></div>
                 </div>
                 <Separator className="w-full" />
                 <div className="w-full space-y-4">

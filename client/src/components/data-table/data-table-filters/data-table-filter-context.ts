@@ -95,7 +95,7 @@ export interface IDataTableFilterState<
 > {
     filterLogic: TFilterLogic
     filters: TFilterObject<T, TValue>
-    finalFilters: TFilterPayload
+    finalFilterPayload: TFilterPayload
     setFilterLogic: (newFilterLogic: TFilterLogic) => void
     setFilter: (field: TField, filter?: TSearchFilter<TValue, TValue>) => void
     bulkSetFilter: (
@@ -112,7 +112,7 @@ export interface IFilterComponentProps<
 > {
     field: KeysOfOrString<T>
     displayText: string
-    defaultMode? : (typeof filterModeMap)[F][number]['value']
+    defaultMode?: (typeof filterModeMap)[F][number]['value']
 }
 
 const DataTableFilterContext = createContext<

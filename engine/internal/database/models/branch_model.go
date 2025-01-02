@@ -218,14 +218,14 @@ func (m *ModelResource) BranchFilterForAdmin(filters string) (filter.FilterPages
 	return m.BranchDB.GetPaginatedResult(db, filters)
 }
 
-func (m *ModelResource) BranchFilterForOwner(filters string, ownerId uint) (filter.FilterPages[Branch], error) {
-	db := m.db.Client.Where("owner_id = ?", ownerId)
-	return m.BranchDB.GetPaginatedResult(db, filters)
-}
-
 func (m *ModelResource) BranchFilterForAdminRecord(filters string) ([]*Branch, error) {
 	db := m.db.Client
 	return m.BranchDB.GetFilteredResults(db, filters)
+}
+
+func (m *ModelResource) BranchFilterForOwner(filters string, ownerId uint) (filter.FilterPages[Branch], error) {
+	db := m.db.Client.Where("owner_id = ?", ownerId)
+	return m.BranchDB.GetPaginatedResult(db, filters)
 }
 
 func (m *ModelResource) BranchFilterForOwnerRecord(filters string, ownerId uint) ([]*Branch, error) {
@@ -243,6 +243,54 @@ func (m *ModelResource) BranchGetAllForOwner(id uint) ([]*Branch, error) {
 }
 
 func (m *ModelResource) BranchSeeders() error {
-	m.logger.Info("Seeding Branch")
+	m.logger.Info("Seeding Branches")
+
+	// Retrieve all companies from the database
+	companies, err := m.CompanyDB.FindAll()
+	if err != nil {
+		return err
+	}
+
+	// Define branches for each company
+	branches := []Branch{
+		{
+			Name:            "Main Branch",
+			Address:         "123 Innovation Drive, Silicon Valley",
+			Longitude:       -122.4194,
+			Latitude:        37.7749,
+			Email:           "main@horizontech.com",
+			ContactNumber:   "555-123-0001",
+			IsAdminVerified: true,
+		},
+		{
+			Name:            "Eco Center",
+			Address:         "456 Green Lane, Eco City",
+			Longitude:       -74.0060,
+			Latitude:        40.7128,
+			Email:           "ecocenter@greenearth.com",
+			ContactNumber:   "555-987-0002",
+			IsAdminVerified: false,
+		},
+		{
+			Name:            "Sky High Headquarters",
+			Address:         "789 Skyway Ave, Airport City",
+			Longitude:       151.2093,
+			Latitude:        -33.8688,
+			Email:           "hq@skyhighairlines.com",
+			ContactNumber:   "555-321-0003",
+			IsAdminVerified: true,
+		},
+	}
+
+	// Seed branches for each company
+	for _, company := range companies {
+		for _, branchTemplate := range branches {
+			branch := branchTemplate
+			branch.CompanyID = &company.ID // Associate branch with the current company
+			m.BranchDB.Create(&branch)
+
+		}
+	}
+
 	return nil
 }

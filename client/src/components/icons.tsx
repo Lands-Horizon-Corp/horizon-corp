@@ -49,6 +49,7 @@ import {
 } from 'react-icons/lia'
 
 import {
+    PiPlus as PlusIcon,
     PiPushPin as PushPinIcon,
     PiUserList as UserListIcon,
     PiBuilding as BuildingIcon,
@@ -114,6 +115,7 @@ import {
 } from 'react-icons/md'
 
 import {
+    BsImage as Image2Icon,
     BsZoomIn as ZoomInIcon,
     BsZoomOut as ZoomOutIcon,
     BsCameraFill as CameraFillIcon,
@@ -181,6 +183,7 @@ import { GrPowerReset as PowerResetIcon } from 'react-icons/gr'
 
 import { VscLocation as LocationPinOutlineIcon } from 'react-icons/vsc'
 
+// Export section
 export {
     XIcon,
     CsvIcon,
@@ -188,6 +191,7 @@ export {
     KeyIcon,
     DevIcon,
     EyeIcon,
+    PlusIcon,
     UndoIcon,
     RedoIcon,
     UserIcon,
@@ -214,6 +218,7 @@ export {
     ExportIcon,
     ZoomInIcon,
     AdjustIcon,
+    Image2Icon,
     RefreshIcon,
     ArrowUpIcon,
     SidebarIcon,

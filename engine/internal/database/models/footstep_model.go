@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
 	"github.com/go-playground/validator"
 	"gorm.io/gorm"
 )
@@ -173,6 +174,75 @@ func (m *ModelResource) ValidateFootstepRequest(req *FootstepRequest) error {
 		return m.helpers.FormatValidationError(err)
 	}
 	return nil
+}
+
+func (m *ModelResource) FootstepFilterForSelf(accountType string, userID uint, filters string) (filter.FilterPages[Footstep], error) {
+	var column string
+	switch accountType {
+	case "owner":
+		column = "owner_id"
+	case "employee":
+		column = "employee_id"
+	case "admin":
+		column = "admin_id"
+	case "member":
+		column = "member_id"
+	default:
+		return filter.FilterPages[Footstep]{}, fmt.Errorf("invalid account type: %s", accountType)
+	}
+	db := m.db.Client.Where(fmt.Sprintf("%s = ?", column), userID)
+	return m.FootstepDB.GetPaginatedResult(db, filters)
+}
+
+func (m *ModelResource) FootstepFilterForSelfRecord(accountType string, userID uint, filters string) ([]*Footstep, error) {
+	var column string
+	switch accountType {
+	case "owner":
+		column = "owner_id"
+	case "employee":
+		column = "employee_id"
+	case "admin":
+		column = "admin_id"
+	case "member":
+		column = "member_id"
+	default:
+		return nil, fmt.Errorf("invalid account type: %s", accountType)
+	}
+
+	db := m.db.Client.Where(fmt.Sprintf("%s = ?", column), userID)
+	return m.FootstepDB.GetFilteredResults(db, filters)
+}
+
+func (m *ModelResource) FootstepFilterForPeers(accountType string, userID uint, filters string) (filter.FilterPages[Footstep], error) {
+	var db *gorm.DB
+
+	switch accountType {
+	case "owner":
+		// Owner can see all footsteps of members and employees where the owner's company has multiple branches
+		db = m.db.Client.Where("owner_id = ?", userID).
+			Or("employee_id IN (SELECT id FROM employees WHERE branch_id IN (SELECT id FROM branches WHERE company_id = (SELECT id FROM companies WHERE owner_id = ?)))", userID).
+			Or("member_id IN (SELECT id FROM members WHERE branch_id IN (SELECT id FROM branches WHERE company_id = (SELECT id FROM companies WHERE owner_id = ?)))", userID)
+
+	case "employee":
+		// Employee can see all footsteps of members and other employees on their branch and owners, but not their own footsteps
+		db = m.db.Client.Where("branch_id = (SELECT branch_id FROM employees WHERE id = ?)", userID).
+			Where("employee_id IS NULL OR employee_id != ?", userID).
+			Or("member_id IN (SELECT id FROM members WHERE branch_id = (SELECT branch_id FROM employees WHERE id = ?))", userID).
+			Or("owner_id IN (SELECT id FROM owners WHERE id IN (SELECT owner_id FROM companies WHERE id = (SELECT company_id FROM branches WHERE id = (SELECT branch_id FROM employees WHERE id = ?))))", userID)
+
+	case "admin":
+		// Admin can see all footsteps of employees, members, and owners but not their own footsteps
+		db = m.db.Client.Where("admin_id IS NULL OR admin_id != ?", userID)
+
+	case "member":
+		// Members cannot view footsteps through this function
+		return filter.FilterPages[Footstep]{}, fmt.Errorf("members do not have permission to filter footsteps")
+
+	default:
+		return filter.FilterPages[Footstep]{}, fmt.Errorf("invalid account type: %s", accountType)
+	}
+
+	return m.FootstepDB.GetPaginatedResult(db, filters)
 }
 
 func (m *ModelResource) FootstepSeeders() error {

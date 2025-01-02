@@ -229,6 +229,47 @@ func (as *CompanyService) ExportSelected(ctx *gin.Context) {
 	}
 }
 
+func (as *CompanyService) ProfilePicture(ctx *gin.Context) {
+	var req *models.MediaRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	if err := as.modelResource.ValidateMediaRequest(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: Validation error: %v", err)})
+		return
+	}
+	claims, err := as.getUserClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+
+	idParam := ctx.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID"})
+		return
+	}
+
+	if claims.AccountType == "Admin" || claims.AccountType == "Owner" {
+		preloads := ctx.QueryArray("preloads")
+		company := &models.Company{MediaID: req.ID}
+		result, err := as.modelResource.CompanyDB.UpdateColumns(uint(id), *company, preloads)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				ctx.JSON(http.StatusNotFound, gin.H{"error": "Entity not found"})
+			} else {
+				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			}
+			return
+		}
+		ctx.JSON(http.StatusOK, as.modelResource.CompanyToResource(result))
+	} else {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
+}
+
 func (as *CompanyService) RegisterRoutes() {
 	routes := as.engine.Client.Group("/api/v1/company")
 	routes.Use(as.middle.AuthMiddleware())
@@ -237,6 +278,8 @@ func (as *CompanyService) RegisterRoutes() {
 		routes.GET("/", as.controller.GetAll)
 		routes.GET("/:id", as.controller.GetByID)
 		routes.PUT("/:id", as.controller.Update)
+
+		routes.POST("/profile-picture/:id", as.ProfilePicture)
 
 		routes.POST("/verify/:id", as.middle.AuthMiddlewareAdminOnly(), as.Verify)
 		routes.GET("/search", as.middle.AuthMiddlewareAdminOnly(), as.SearchFilter)

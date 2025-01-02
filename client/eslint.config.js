@@ -23,9 +23,15 @@ export default tseslint.config(
       "no-console": ["warn", { "allow": ["warn", "error"] }],
       '@typescript-eslint/no-explicit-any': "warn",
       'react-refresh/only-export-components': [
-        'warn',
+        'off',
         { allowConstantExport: true },
       ],
+      "@typescript-eslint/no-empty-object-type": [
+        'warn',
+        {
+            'allowInterfaces': 'with-single-extends'
+        }
+      ]
     },
   },
 )

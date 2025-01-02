@@ -1,111 +1,46 @@
-import { toast } from 'sonner'
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 import { AdjustIcon } from '@/components/icons'
 import UserAvatar from '@/components/user-avatar'
 import { Progress } from '@/components/ui/progress'
 import PictureCrop from '@/components/picture-crop'
+import SingleImageUploadOption from './upload-options'
 import ActionTooltip from '@/components/action-tooltip'
-import ProfileUploadOption from './profile-upload-option'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { withCatchAsync } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
-import { MediaResource, UserData } from '@/horizon-corp/types'
+import { MediaResource } from '@/horizon-corp/types'
 import { base64ImagetoFile } from '@/helpers/picture-crop-helper'
-import MediaService from '@/horizon-corp/server/common/MediaService'
-import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import { useSinglePictureUpload } from '@/hooks/api-hooks/use-media-resource'
 
-interface IProfileUploadProps {
-    currentUser: UserData
-    onUploadComplete: (newUserData: UserData) => void
+export interface ISingleImageUploadProps {
+    defaultImage?: string
+    defaultFileName?: string
+    onUploadComplete: (mediaResource: MediaResource) => void
 }
 
-const ProfileUpload = ({
-    currentUser,
+const SingleImageUpload = ({
+    defaultFileName,
     onUploadComplete,
-}: IProfileUploadProps) => {
+}: ISingleImageUploadProps) => {
     const [reAdjust, setReAdjust] = useState(false)
     const [newImage, setNewImage] = useState<string | null>(null)
     const [croppedImage, setCroppedImage] = useState<string | null>(null)
     const [uploadMediaProgress, setUploadMediaProgress] = useState<number>(0)
 
     const {
-        data: newUserData,
-        isPending: isUpdatingUserProfile,
-        mutate: updateUserProfile,
-    } = useMutation<UserData, string, MediaResource>({
-        mutationKey: ['update-user-profile-photo'],
-        mutationFn: async (data) => {
-            const [error, response] = await withCatchAsync(
-                ProfileService.ProfilePicture(data)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            onUploadComplete(response.data)
-
-            return response.data
-        },
-    })
-
-    const {
         data: uploadedPhoto,
         isPending: isUploadingPhoto,
         mutate: uploadPhoto,
-    } = useMutation<MediaResource>({
-        mutationKey: ['upload-media-photo'],
-        mutationFn: async () => {
-            setUploadMediaProgress(0)
-
-            if (!croppedImage) {
-                toast.warning('Nothing to upload')
-                throw 'Nothing to upload'
-            }
-
-            const fileImage = base64ImagetoFile(
-                croppedImage,
-                `${currentUser.id}-profile.jpg`
-            )
-
-            if (!fileImage) {
-                toast.error('Sorry failed to process the cropped image')
-                throw 'Failed to convert image into file'
-            }
-
-            const [error, data] = await withCatchAsync(
-                MediaService.upload(fileImage, (progressEvent) => {
-                    if (!progressEvent.total) return
-
-                    const progress = Math.round(
-                        (progressEvent.loaded * 100) / progressEvent.total
-                    )
-
-                    setUploadMediaProgress(progress)
-                })
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            updateUserProfile(data)
-            return data
-        },
+    } = useSinglePictureUpload({
+        onSuccess: onUploadComplete,
+        onUploadProgressChange: (progress) => setUploadMediaProgress(progress),
     })
 
     return (
         <div className="space-y-4">
             {newImage === null && (
-                <ProfileUploadOption
+                <SingleImageUploadOption
                     onPhotoChoose={(base64Image) => setNewImage(base64Image)}
                 />
             )}
@@ -148,7 +83,7 @@ const ProfileUpload = ({
                             </Button>
                         </ActionTooltip>
                     </div>
-                    {(isUploadingPhoto || isUpdatingUserProfile) && (
+                    {isUploadingPhoto && (
                         <>
                             <Progress
                                 value={uploadMediaProgress}
@@ -157,13 +92,11 @@ const ProfileUpload = ({
                             <div className="flex items-center justify-center gap-x-1 text-center text-xs text-foreground/60">
                                 <LoadingSpinner className="size-2" />
                                 {isUploadingPhoto && 'uploading picture...'}
-                                {isUpdatingUserProfile &&
-                                    'saving user profile...'}
                             </div>
                         </>
                     )}
                     <fieldset
-                        disabled={isUploadingPhoto || isUpdatingUserProfile}
+                        disabled={isUploadingPhoto}
                         className="flex w-full items-center justify-center gap-x-2"
                     >
                         {!uploadedPhoto && !isUploadingPhoto && (
@@ -177,24 +110,20 @@ const ProfileUpload = ({
                                 Replace
                             </Button>
                         )}
-                        {!newUserData &&
-                            !isUpdatingUserProfile &&
-                            !isUploadingPhoto && (
-                                <Button
-                                    onClick={() =>
-                                        uploadedPhoto
-                                            ? updateUserProfile(uploadedPhoto)
-                                            : uploadPhoto()
-                                    }
-                                >
-                                    {!uploadedPhoto &&
-                                        !isUpdatingUserProfile &&
-                                        'Upload & Save'}
-                                    {!isUpdatingUserProfile &&
-                                        uploadedPhoto &&
-                                        'Retry'}
-                                </Button>
-                            )}
+                        {!uploadedPhoto && !isUploadingPhoto && (
+                            <Button
+                                onClick={() =>
+                                    uploadPhoto(
+                                        base64ImagetoFile(
+                                            croppedImage,
+                                            `${defaultFileName}.jpg`
+                                        ) as File
+                                    )
+                                }
+                            >
+                                Upload
+                            </Button>
+                        )}
                     </fieldset>
                 </div>
             )}
@@ -202,4 +131,4 @@ const ProfileUpload = ({
     )
 }
 
-export default ProfileUpload
+export default SingleImageUpload

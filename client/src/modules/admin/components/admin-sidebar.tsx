@@ -79,7 +79,6 @@ const AdminSidebar = ({ className }: IBaseComp) => {
     return (
         <Sidebar
             enableCollapse
-            enableFocusBlur
             className={className}
             logoRedirectUrl="/admin"
             items={adminSidebarItems}

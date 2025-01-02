@@ -1,3 +1,4 @@
+import { ReactNode } from 'react'
 import { Table } from '@tanstack/react-table'
 
 import DataTableRefreshButton, {
@@ -16,9 +17,12 @@ import DataTableDeleteSelected from '@/components/data-table/data-table-actions/
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { type IDataTableExportProps } from '@/components/data-table/data-table-actions/data-table-export'
-import { type IDataTableScrollableOptionProps } from './data-table-actions/data-table-options-menu/scroll-option'
 import { IDataTableFilterLogicOptionProps } from './data-table-actions/data-table-options-menu/filter-logic-option'
 import { type IDataTableDeleteSelectedProps } from '@/components/data-table/data-table-actions/data-table-delete-selected'
+import { type IDataTableScrollableOptionProps } from '@/components/data-table/data-table-actions/data-table-options-menu/scroll-option'
+import DataTableCreateAction, {
+    IDataTableCreateActionProps,
+} from './data-table-actions/data-table-create-action'
 
 export interface IDataTableToolbarProps<TData = unknown>
     extends IBaseCompNoChild {
@@ -29,15 +33,27 @@ export interface IDataTableToolbarProps<TData = unknown>
     filterLogicProps?: IDataTableFilterLogicOptionProps
     exportActionProps?: Omit<IDataTableExportProps<TData>, 'table'>
     deleteActionProps?: Omit<IDataTableDeleteSelectedProps<TData>, 'table'>
+    createActionProps?: IDataTableCreateActionProps
+    otherActionRight?: ReactNode
+    hideRefreshButton?: boolean
+    hideDeleteButton?: boolean
+    hideCreateButton?: boolean
+    hideExportButton?: boolean
 }
 
 const DataTableToolbar = <TData,>({
     table,
     scrollableProps,
+    hideCreateButton,
+    hideDeleteButton,
+    hideExportButton,
+    hideRefreshButton,
+    otherActionRight,
     filterLogicProps,
     globalSearchProps,
     deleteActionProps,
     exportActionProps,
+    createActionProps,
     refreshActionProps,
 }: IDataTableToolbarProps<TData>) => {
     return (
@@ -54,7 +70,7 @@ const DataTableToolbar = <TData,>({
                         className="rounded-none border first:rounded-l-md last:rounded-r-md"
                         table={table}
                     />
-                    {deleteActionProps && (
+                    {deleteActionProps && !hideDeleteButton && (
                         <DataTableDeleteSelected
                             table={table}
                             {...{
@@ -66,15 +82,17 @@ const DataTableToolbar = <TData,>({
                             }}
                         />
                     )}
-                    <DataTableRefreshButton
-                        {...{
-                            ...refreshActionProps,
-                            className: cn(
-                                'rounded-none border first:rounded-l-md last:rounded-r-md',
-                                refreshActionProps.className
-                            ),
-                        }}
-                    />
+                    {!hideRefreshButton && (
+                        <DataTableRefreshButton
+                            {...{
+                                ...refreshActionProps,
+                                className: cn(
+                                    'rounded-none border first:rounded-l-md last:rounded-r-md',
+                                    refreshActionProps.className
+                                ),
+                            }}
+                        />
+                    )}
                     <DataTableOptionsMenu
                         table={table}
                         scrollOption={scrollableProps}
@@ -83,7 +101,7 @@ const DataTableToolbar = <TData,>({
                     />
                 </div>
 
-                {exportActionProps && (
+                {exportActionProps && !hideExportButton && (
                     <>
                         <Separator
                             orientation="vertical"
@@ -95,6 +113,10 @@ const DataTableToolbar = <TData,>({
                         />
                     </>
                 )}
+                {createActionProps && !hideCreateButton && (
+                    <DataTableCreateAction {...createActionProps} />
+                )}
+                {otherActionRight}
             </div>
         </div>
     )

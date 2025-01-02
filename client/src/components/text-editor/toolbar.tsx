@@ -17,6 +17,7 @@ import {
 } from '@/components/icons'
 
 import { THeadingLevel } from '.'
+import ActionTooltip from '../action-tooltip'
 import { cn } from '@/lib'
 
 type Props = {
@@ -45,36 +46,45 @@ const Toolbar = ({
     }
     
     return (
-        <div className={cn('flex w-full min-w-fit flex-wrap space-x-2', className ?? className)}>
-            <Toggle
-                pressed={editor.isActive('italic')}
-                onClick={toggleItalic}
-                size="sm"
-                aria-label="Toggle italic"
-            >
-                <ToolbarItalicIcon className="size-4" />
-            </Toggle>
-            <Toggle
-                pressed={editor.isActive('bold')}
-                onClick={() => editor.chain().focus().toggleBold().run()}
-                size="sm"
-                aria-label="Toggle Bold"
-            >
-                <FaBoldIcon className="size-4" />
-            </Toggle>
-            <Toggle
-                pressed={editor.isActive('strike')}
-                onClick={() => editor.chain().focus().toggleStrike().run()}
-            >
-                <TextStrikethroughLightIcon className="size-4" />
-            </Toggle>
-            <Toggle
-                type="button"
-                pressed={editor.isActive('code')}
-                onClick={() => editor.chain().focus().toggleCode().run()}
-            >
-                <IoIosCodeIcon className="size-4" />
-            </Toggle>
+        <div className="flex w-full min-w-fit flex-wrap space-x-2">
+            <ActionTooltip align="center" side="top" tooltipContent="italic">
+                <Toggle
+                    pressed={editor.isActive('italic')}
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    size="sm"
+                    aria-label="Toggle italic"
+                >
+                    <ToolbarItalicIcon className="size-4" />
+                </Toggle>
+            </ActionTooltip>
+            <ActionTooltip align="center" side="top" tooltipContent="bold">
+                <Toggle
+                    pressed={editor.isActive('Bold"')}
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    size="sm"
+                    aria-label="Toggle Bold"
+                >
+                    <FaBoldIcon className="size-4" />
+                </Toggle>
+            </ActionTooltip>
+            <ActionTooltip align="center" side="top" tooltipContent="strike">
+                <Toggle
+                    pressed={editor.isActive('strike')}
+                    onClick={() => editor.chain().focus().toggleStrike().run()}
+                >
+                    <TextStrikethroughLightIcon className="size-4" />
+                </Toggle>
+            </ActionTooltip>
+            <ActionTooltip align="center" side="top" tooltipContent="code">
+                <Toggle
+                    type="button"
+                    pressed={editor.isActive('code')}
+                    onClick={() => editor.chain().focus().toggleCode().run()}
+                >
+                    <IoIosCodeIcon className="size-4" />
+                </Toggle>
+            </ActionTooltip>
+
             {!isHeadingDisabled &&
                 Array.from({ length: 4 }, (_, i) => {
                     const level = i + 1
@@ -92,50 +102,86 @@ const Toolbar = ({
                         </Toggle>
                     )
                 })}
-            <Toggle
-                pressed={editor.isActive('bulletList')}
-                onPressedChange={() =>
-                    editor.chain().focus().toggleBulletList().run()
-                }
+            <ActionTooltip
+                align="center"
+                side="top"
+                tooltipContent="bullet list"
             >
-                <ListBulletsBoldIcon className="size-4" />
-            </Toggle>
-            <Toggle
-                onClick={() => editor.chain().focus().toggleOrderedList().run()}
-                className={editor.isActive('orderedList') ? 'is-active' : ''}
+                <Toggle
+                    pressed={editor.isActive('bulletList')}
+                    onPressedChange={() =>
+                        editor.chain().focus().toggleBulletList().run()
+                    }
+                >
+                    <ListBulletsBoldIcon className="size-4" />
+                </Toggle>
+            </ActionTooltip>
+            <ActionTooltip
+                align="center"
+                side="top"
+                tooltipContent="ordered list"
             >
-                <ListOrderedIcon className="size-4" />
-            </Toggle>
-            <Button
-                type="button"
-                variant={'ghost'}
-                onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-                className={editor.isActive('codeBlock') ? 'is-active' : ''}
+                <Toggle
+                    onClick={() =>
+                        editor.chain().focus().toggleOrderedList().run()
+                    }
+                    className={
+                        editor.isActive('orderedList') ? 'is-active' : ''
+                    }
+                >
+                    <ListOrderedIcon className="size-4" />
+                </Toggle>
+            </ActionTooltip>
+            <ActionTooltip
+                align="center"
+                side="top"
+                tooltipContent="code block"
             >
-                <CodeBlockIcon className="size-4" />
-            </Button>
-            <Button
-                type="button"
-                variant={'ghost'}
-                onClick={() => editor.chain().focus().toggleBlockquote().run()}
-                className={editor.isActive('blockquote') ? 'is-active' : ''}
+                <Button
+                    type="button"
+                    variant={'ghost'}
+                    onClick={() =>
+                        editor.chain().focus().toggleCodeBlock().run()
+                    }
+                    className={editor.isActive('codeBlock') ? 'is-active' : ''}
+                >
+                    <CodeBlockIcon className="size-4" />
+                </Button>
+            </ActionTooltip>
+            <ActionTooltip
+                align="center"
+                side="top"
+                tooltipContent="block quote"
             >
-                <BlockQuoteIcon className="size-4" />
-            </Button>
-            <Button
-                type="button"
-                variant={'ghost'}
-                onClick={() => editor.chain().focus().undo().run()}
-            >
-                <UndoIcon className="size-4" />
-            </Button>
-            <Button
-                type="button"
-                variant={'ghost'}
-                onClick={() => editor.chain().focus().redo().run()}
-            >
-                <RedoIcon className="size-4" />
-            </Button>
+                <Button
+                    type="button"
+                    variant={'ghost'}
+                    onClick={() =>
+                        editor.chain().focus().toggleBlockquote().run()
+                    }
+                    className={editor.isActive('blockquote') ? 'is-active' : ''}
+                >
+                    <BlockQuoteIcon className="size-4" />
+                </Button>
+            </ActionTooltip>
+            <ActionTooltip align="center" side="top" tooltipContent="undo">
+                <Button
+                    type="button"
+                    variant={'ghost'}
+                    onClick={() => editor.chain().focus().undo().run()}
+                >
+                    <UndoIcon className="size-4" />
+                </Button>
+            </ActionTooltip>
+            <ActionTooltip align="center" side="top" tooltipContent="redo">
+                <Button
+                    type="button"
+                    variant={'ghost'}
+                    onClick={() => editor.chain().focus().redo().run()}
+                >
+                    <RedoIcon className="size-4" />
+                </Button>
+            </ActionTooltip>
         </div>
     )
 }

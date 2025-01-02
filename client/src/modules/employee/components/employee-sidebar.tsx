@@ -67,7 +67,6 @@ const EmployeeSidebar = ({ className }: IBaseComp) => {
     return (
         <Sidebar
             enableCollapse
-            enableFocusBlur
             className={className}
             logoRedirectUrl="/employee"
             items={employeeSidebarItems}

@@ -1,5 +1,7 @@
 package filter
 
+import "strings"
+
 type FilterMode string
 
 const (
@@ -57,7 +59,12 @@ type FilterStruct struct {
 	Value    interface{}    `json:"value"`
 }
 
-func (f FilterStruct) GetField() string { return toSnakeCase(f.Field) }
+func (f FilterStruct) GetField() string {
+	if strings.Contains(f.Field, ".") {
+		return f.Field
+	}
+	return toSnakeCase(f.Field)
+}
 
 func (f FilterStruct) GetMode() FilterMode { return f.Mode }
 

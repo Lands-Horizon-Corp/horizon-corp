@@ -1,9 +1,9 @@
-import { toast } from 'sonner'
-
 import { Button } from '@/components/ui/button'
 
 import { CompanyResource } from '@/horizon-corp/types'
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import { useApproveCompany } from '@/hooks/api-hooks/use-company'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 interface Props {
     company: CompanyResource
@@ -12,7 +12,7 @@ interface Props {
 const CompanyAcceptBar = ({ company }: Props) => {
     const { onOpen } = useConfirmModalStore()
 
-    // TODO: Add here company service accept once implemented
+    const { mutate: approve, isPending: isApproving } = useApproveCompany({})
 
     return (
         <div className="flex w-full items-center justify-between gap-x-4 rounded-xl border px-4 py-2.5">
@@ -21,29 +21,29 @@ const CompanyAcceptBar = ({ company }: Props) => {
                 can operate.
             </span>
             <div className="flex">
-                <Button
+                {/* <Button
                     size="sm"
                     variant="destructive"
                     className="h-fit rounded-none py-2 text-xs first:rounded-l-lg"
                 >
                     Decline
-                </Button>
+                </Button> */}
                 <Button
                     size="sm"
                     variant="secondary"
+                    disabled={isApproving}
                     onClick={() =>
                         onOpen({
-                            title: 'Accept Company',
+                            title: 'Approve Company',
                             confirmString: 'Approve',
                             content:
                                 "Are you sure you want to approve this company? This will enable them to start using E-Coop and start their company's operation.",
-                            onConfirm: () => {
-                                toast.info('Kunwari na accept hahaha')
-                            },
+                            onConfirm: () => approve(company.id),
                         })
                     }
-                    className="h-fit rounded-none py-2 text-xs last:rounded-r-lg hover:text-primary"
+                    className="h-fit  py-2 text-xs hover:text-primary"
                 >
+                    {isApproving && <LoadingSpinner />}
                     Approve
                 </Button>
             </div>

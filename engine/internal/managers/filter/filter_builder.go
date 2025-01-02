@@ -70,6 +70,35 @@ func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 	mode := filter.GetMode()
 	dataType := FilterDataType(filter.GetDataType())
 
+	if strings.Contains(field, ".") {
+
+		parts := strings.Split(field, ".")
+		if len(parts) != 2 {
+			fmt.Printf("Invalid field format: %s\n", field)
+			return db
+		}
+		tableAlias := toSnakeCase(parts[0]) // e.g., "Owner" -> "owner"
+		column := toSnakeCase(parts[1])
+		if db.Statement.Table == "" {
+			fmt.Println("Base table not set. Please set the table or model.")
+			return db
+		}
+
+		baseTable := db.Statement.Table
+		foreignKey := fmt.Sprintf("%s_id", tableAlias) // Default convention: "owner_id"
+
+		// Build the JOIN clause
+		joinClause := fmt.Sprintf(
+			"LEFT JOIN %s ON %s.id = %s.%s",
+			tableAlias,
+			tableAlias,
+			baseTable,
+			foreignKey,
+		)
+		db = db.Joins(joinClause)
+		field = fmt.Sprintf("%s.%s", tableAlias, column)
+	}
+
 	// Handle DataTypeTime as before
 	if dataType == DataTypeTime {
 		castTime := getTimeCastSyntax(db)
@@ -134,7 +163,6 @@ func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 			if !ok {
 				return db
 			}
-			// Assume rangeVal.From and rangeVal.To are dates
 			var fromDate, toDate time.Time
 			switch fv := rangeVal.From.(type) {
 			case string:
