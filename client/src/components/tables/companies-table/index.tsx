@@ -43,8 +43,9 @@ export interface CompaniesTableProps
 
 const CompaniesTable = ({
     className,
-    onSelectData,
     toolbarProps,
+    defaultFilter,
+    onSelectData,
     actionComponent,
 }: CompaniesTableProps) => {
     const queryClient = useQueryClient()
@@ -77,6 +78,7 @@ const CompaniesTable = ({
     })
 
     const filterState = useDatableFilterState({
+        defaultFilter,
         onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
     })
 

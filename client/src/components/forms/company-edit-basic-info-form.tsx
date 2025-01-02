@@ -17,14 +17,17 @@ import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
 import TextEditor from '@/components/text-editor'
 import { Separator } from '@/components/ui/separator'
-import { LoadingSpinnerIcon } from '@/components/icons'
 import FormErrorMessage from '@/components/ui/form-error-message'
+import { PhoneInput } from '@/components/contact-input/contact-input'
+import { LoadingSpinnerIcon, VerifiedPatchIcon } from '@/components/icons'
 
 import { cn } from '@/lib'
+import { contactNumberSchema } from '@/validations/common'
+import { useUpdateCompany } from '@/hooks/api-hooks/use-company'
+
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { CompanyResource } from '@/horizon-corp/types'
-import { useUpdateCompany } from '@/hooks/api-hooks/use-company'
 
 type TCompanyBasicInfo = Omit<CompanyResource, 'owner' | 'media' | 'branches'>
 
@@ -43,7 +46,7 @@ const CompanyBasicInfoFormSchema = z.object({
     address: z.string().min(1, 'Company address is required').optional(),
     longitude: z.coerce.number().optional(),
     latitude: z.coerce.number().optional(),
-    contactNumber: z.string(),
+    contactNumber: contactNumberSchema,
     isAdminVerified: z.boolean(),
 })
 
@@ -57,7 +60,15 @@ const CompanyEditBasicInfoForm = ({
     onLoading,
 }: CompanyEditBasicInfoFormProps) => {
     const form = useForm<z.infer<typeof CompanyBasicInfoFormSchema>>({
-        defaultValues,
+        defaultValues: {
+            name: '',
+            address: '',
+            contactNumber: '',
+            description: '',
+            latitude: 14.58423341171918,
+            longitude: 120.987654321,
+            ...defaultValues,
+        },
         reValidateMode: 'onChange',
         resolver: zodResolver(CompanyBasicInfoFormSchema),
     })
@@ -67,7 +78,7 @@ const CompanyEditBasicInfoForm = ({
 
     const defaultCenter = {
         lat: form.getValues('latitude') ?? 14.58423341171918,
-        lng: form.getValues('longitude') ?? -239.01863962431653,
+        lng: form.getValues('longitude') ?? 120.987654321,
     }
 
     const {
@@ -123,26 +134,35 @@ const CompanyEditBasicInfoForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="address"
-                        render={({ field }) => (
+                        name="contactNumber"
+                        render={({ field, fieldState: { invalid, error } }) => (
                             <FormItem className="col-span-2 space-y-0 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
                                 >
-                                    Company Address
+                                    Contact Number
                                 </FormLabel>
                                 <FormControl>
-                                    <Input
-                                        {...field}
-                                        id={field.name}
-                                        autoComplete="off"
-                                        placeholder="Address"
-                                    />
+                                    <div className="flex w-full flex-1 items-center gap-x-2">
+                                        <PhoneInput
+                                            {...field}
+                                            defaultCountry="PH"
+                                            className="w-full"
+                                        />
+                                        <VerifiedPatchIcon
+                                            className={cn(
+                                                'size-8 text-primary delay-300 duration-300 ease-in-out',
+                                                (invalid || error) &&
+                                                    'text-destructive'
+                                            )}
+                                        />
+                                    </div>
                                 </FormControl>
                             </FormItem>
                         )}
                     />
+
                     <FormField
                         control={form.control}
                         name="description"
@@ -159,6 +179,28 @@ const CompanyEditBasicInfoForm = ({
                                         content={field.value}
                                         onChange={field.onChange}
                                         className="!max-w-none"
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                            <FormItem className="col-span-2 space-y-0">
+                                <FormLabel
+                                    htmlFor={field.name}
+                                    className="text-right text-sm font-normal text-foreground/60"
+                                >
+                                    Company Address
+                                </FormLabel>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        id={field.name}
+                                        autoComplete="off"
+                                        placeholder="Address"
                                     />
                                 </FormControl>
                             </FormItem>

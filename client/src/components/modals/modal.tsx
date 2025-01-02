@@ -38,7 +38,7 @@ const Modal = ({
                 closeButtonClassName={closeButtonClassName}
                 overlayClassName={cn('backdrop-blur', overlayClassName)}
                 className={cn(
-                    'shadow-2 !rounded-2xl border font-inter',
+                    'shadow-2 !rounded-2xl border font-inter max-w-5xl max-h-[95vh] overflow-y-auto ecoop-scroll',
                     className
                 )}
             >

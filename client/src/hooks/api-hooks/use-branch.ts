@@ -32,6 +32,38 @@ export const branchLoader = (companyId: number) =>
         retry: 0,
     })
 
+// Create branch
+export const useCreateBranch = ({
+    onError,
+    onSuccess,
+}: IOperationCallbacks<BranchResource, string>) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<BranchResource, string, BranchRequest>({
+        mutationKey: ['branch', 'create'],
+        mutationFn: async (newBranchData) => {
+            const [error, data] = await withCatchAsync(
+                BranchService.create(newBranchData)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            queryClient.setQueryData(['branch', data.id], data)
+            queryClient.setQueryData(['branch', 'loader', data.id], data)
+
+            toast.success('Branch Created')
+            onSuccess?.(data)
+
+            return data
+        },
+    })
+}
+
 // Update branch
 export const useUpdateBranch = ({
     onSuccess,

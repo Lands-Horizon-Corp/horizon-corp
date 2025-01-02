@@ -10,6 +10,7 @@ import {
     MediaRequest,
     CompanyResource,
     CompanyPaginatedResource,
+    CompanyRequest,
 } from '@/horizon-corp/types'
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
@@ -30,6 +31,42 @@ export const companyLoader = (companyId: number) =>
         },
         retry: 0,
     })
+
+// create company
+export const useCreateCompany = ({
+    onError,
+    onSuccess,
+}: IOperationCallbacks<CompanyResource>) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<void, string, CompanyRequest>({
+        mutationKey: ['company', 'create'],
+        mutationFn: async (newCompanyData) => {
+            const [error, data] = await withCatchAsync(
+                CompanyService.create(newCompanyData)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            queryClient.setQueryData<CompanyResource>(
+                ['company', data.id],
+                data
+            )
+            queryClient.setQueryData<CompanyResource>(
+                ['company', 'loader', data.id],
+                data
+            )
+
+            toast.success('Company Created')
+            onSuccess?.(data)
+        },
+    })
+}
 
 // approve company
 export const useApproveCompany = ({

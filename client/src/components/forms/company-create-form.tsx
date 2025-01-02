@@ -6,90 +6,81 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
     Form,
-    FormItem,
-    FormField,
-    FormLabel,
     FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
 } from '@/components/ui/form'
 
 import { Input } from '@/components/ui/input'
 import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
+import TextEditor from '@/components/text-editor'
 import { Separator } from '@/components/ui/separator'
-import { LoadingSpinnerIcon } from '@/components/icons'
+import Modal, { IModalProps } from '@/components/modals/modal'
 import FormErrorMessage from '@/components/ui/form-error-message'
+import { PhoneInput } from '@/components/contact-input/contact-input'
+import { LoadingSpinnerIcon, VerifiedPatchIcon } from '@/components/icons'
 
 import { cn } from '@/lib'
+import { useCreateCompany } from '@/hooks/api-hooks/use-company'
+
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { BranchResource } from '@/horizon-corp/types'
-import { useUpdateBranch } from '@/hooks/api-hooks/use-branch'
+import { CompanyRequest, CompanyResource } from '@/horizon-corp/types'
+import { contactNumberSchema } from '@/validations/common'
 
-type TBranchBasicInfo = Omit<
-    BranchResource,
-    | 'id'
-    | 'media'
-    | 'company'
-    | 'employees'
-    | 'members'
-    | 'createdAt'
-    | 'updatedAt'
->
-
-interface BranchEditBasicInfoFormProps
+interface CompanyCreateFormProps
     extends IBaseCompNoChild,
-        IForm<TBranchBasicInfo, BranchResource, string> {
-    branchId: number
-}
+        IForm<CompanyRequest, CompanyResource> {}
 
-const BranchBasicInfoFormSchema = z.object({
-    name: z.string().min(1, 'Branch name is required'),
-    companyId: z.coerce.number(),
-    address: z.string().min(1, 'Branch address is required').optional(),
+const CompanyBasicInfoFormSchema = z.object({
+    name: z.string().min(1, 'Company name is required'),
+    description: z
+        .string()
+        .min(1, 'Company description is required')
+        .optional(),
+    address: z.string().min(1, 'Company address is required').optional(),
     longitude: z.coerce.number().optional(),
     latitude: z.coerce.number().optional(),
-    email: z.string().email('Invalid email address'),
-    contactNumber: z.string(),
-    isAdminVerified: z.boolean(),
+    contactNumber: contactNumberSchema,
 })
 
-const BranchEditBasicInfoForm = ({
+const CompanyCreateForm = ({
     readOnly,
-    branchId,
     className,
     defaultValues,
     onError,
     onSuccess,
     onLoading,
-}: BranchEditBasicInfoFormProps) => {
-    const form = useForm<z.infer<typeof BranchBasicInfoFormSchema>>({
+}: CompanyCreateFormProps) => {
+    const form = useForm<z.infer<typeof CompanyBasicInfoFormSchema>>({
         defaultValues: {
-            name: '',
-            email: '',
             address: '',
             contactNumber: '',
-            latitude: 14.5842,
-            longitude: 120.9876, 
+            description: '',
+            latitude: 14.58423341171918,
+            longitude: 120.987654321,
+            name: '',
             ...defaultValues,
         },
         reValidateMode: 'onChange',
-        resolver: zodResolver(BranchBasicInfoFormSchema),
+        resolver: zodResolver(CompanyBasicInfoFormSchema),
     })
 
-    const hasChanges = form.formState.isDirty
     const firstError = Object.values(form.formState.errors)[0]?.message
 
     const defaultCenter = {
         lat: form.getValues('latitude') ?? 14.58423341171918,
-        lng: form.getValues('longitude') ?? -239.01863962431653,
+        lng: form.getValues('longitude') ?? 120.987654321,
     }
 
     const {
-        error,
         isPending,
-        mutate: save,
+        mutate: create,
+        error,
         reset,
-    } = useUpdateBranch({
+    } = useCreateCompany({
         onSuccess: (data) => {
             onSuccess?.(data)
             form.reset(data)
@@ -104,7 +95,7 @@ const BranchEditBasicInfoForm = ({
     return (
         <form
             className={cn('flex flex-col gap-y-2', className)}
-            onSubmit={form.handleSubmit((data) => save({ id: branchId, data }))}
+            onSubmit={form.handleSubmit((data) => create(data))}
         >
             <Form {...form}>
                 <fieldset
@@ -120,13 +111,13 @@ const BranchEditBasicInfoForm = ({
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
                                 >
-                                    Branch Name
+                                    Company Name
                                 </FormLabel>
                                 <FormControl>
                                     <Input
                                         {...field}
                                         id={field.name}
-                                        placeholder="Branch Name"
+                                        placeholder="Company Name"
                                         autoComplete="off"
                                     />
                                 </FormControl>
@@ -135,14 +126,66 @@ const BranchEditBasicInfoForm = ({
                     />
                     <FormField
                         control={form.control}
-                        name="address"
-                        render={({ field }) => (
+                        name="contactNumber"
+                        render={({ field, fieldState: { invalid, error } }) => (
                             <FormItem className="col-span-2 space-y-0 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
                                 >
-                                    Branch Address
+                                    Contact Number
+                                </FormLabel>
+                                <FormControl>
+                                    <div className="flex w-full flex-1 items-center gap-x-2">
+                                        <PhoneInput
+                                            {...field}
+                                            defaultCountry="PH"
+                                            className="w-full"
+                                        />
+                                        <VerifiedPatchIcon
+                                            className={cn(
+                                                'size-8 text-primary delay-300 duration-300 ease-in-out',
+                                                (invalid || error) &&
+                                                    'text-destructive'
+                                            )}
+                                        />
+                                    </div>
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="description"
+                        render={({ field }) => (
+                            <FormItem className="col-span-2 space-y-1">
+                                <FormLabel
+                                    htmlFor={field.name}
+                                    className="text-right text-sm font-normal text-foreground/60"
+                                >
+                                    Description
+                                </FormLabel>
+                                <FormControl>
+                                    <TextEditor
+                                        content={field.value}
+                                        onChange={field.onChange}
+                                        className="!max-w-none"
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+
+                    <FormField
+                        control={form.control}
+                        name="address"
+                        render={({ field }) => (
+                            <FormItem className="col-span-2 space-y-0">
+                                <FormLabel
+                                    htmlFor={field.name}
+                                    className="text-right text-sm font-normal text-foreground/60"
+                                >
+                                    Company Address
                                 </FormLabel>
                                 <FormControl>
                                     <Input
@@ -155,53 +198,8 @@ const BranchEditBasicInfoForm = ({
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="email"
-                        render={({ field }) => (
-                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
-                                <FormLabel
-                                    htmlFor={field.name}
-                                    className="text-right text-sm font-normal text-foreground/60"
-                                >
-                                    Email
-                                </FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        id={field.name}
-                                        type="email"
-                                        autoComplete="off"
-                                        placeholder="Email"
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="contactNumber"
-                        render={({ field }) => (
-                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
-                                <FormLabel
-                                    htmlFor={field.name}
-                                    className="text-right text-sm font-normal text-foreground/60"
-                                >
-                                    Contact Number
-                                </FormLabel>
-                                <FormControl>
-                                    <Input
-                                        {...field}
-                                        id={field.name}
-                                        autoComplete="off"
-                                        placeholder="Contact Number"
-                                    />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
                     <h4 className="col-span-2 text-sm font-normal text-foreground/60">
-                        Branch Map Location
+                        Company Map Location
                     </h4>
                     <FormField
                         control={form.control}
@@ -252,10 +250,12 @@ const BranchEditBasicInfoForm = ({
                 </fieldset>
                 <div className="">
                     <h4 className="text-sm font-normal text-foreground/60">
-                        Branch Map Location
+                        Company Map Location
                     </h4>
                     <p className="mt-2 text-sm text-foreground/60">
-                        Use the map to set the coordinates of the branch.
+                        Use the map to set the coordinates of the company.
+                        Coordinates will display your company&apos;s location on
+                        the interactive map.
                     </p>
                     <MainMapContainer
                         zoom={13}
@@ -272,38 +272,49 @@ const BranchEditBasicInfoForm = ({
                                 shouldDirty: true,
                             })
                         }}
-                        className="min-h-[500px] p-0 py-2"
+                        className="min-h-[500px] w-full p-0 py-2"
                     />
                 </div>
                 <FormErrorMessage errorMessage={firstError || error} />
-                {hasChanges && (
-                    <div>
-                        <Separator className="my-2 sm:my-4" />
-                        <div className="flex items-center justify-end gap-x-2">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                onClick={() => {
-                                    form.reset()
-                                    reset()
-                                }}
-                                className="w-full self-end px-8 sm:w-fit"
-                            >
-                                Reset
-                            </Button>
-                            <Button
-                                type="submit"
-                                disabled={isPending}
-                                className="w-full self-end px-8 sm:w-fit"
-                            >
-                                {isPending ? <LoadingSpinnerIcon /> : 'Save'}
-                            </Button>
-                        </div>
+                <div>
+                    <Separator className="my-2 sm:my-4" />
+                    <div className="flex items-center justify-end gap-x-2">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => {
+                                form.reset()
+                                reset()
+                            }}
+                            className="w-full self-end px-8 sm:w-fit"
+                        >
+                            Reset
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={isPending}
+                            className="w-full self-end px-8 sm:w-fit"
+                        >
+                            {isPending ? <LoadingSpinnerIcon /> : 'Create'}
+                        </Button>
                     </div>
-                )}
+                </div>
             </Form>
         </form>
     )
 }
 
-export default BranchEditBasicInfoForm
+export const CompanyCreateFormModal = ({
+    title = 'Company Setup',
+    description = 'Create a new company',
+    formProps,
+    ...props
+}: IModalProps & { formProps?: Omit<CompanyCreateFormProps, 'className'> }) => {
+    return (
+        <Modal title={title} description={description} {...props}>
+            <CompanyCreateForm {...formProps} />
+        </Modal>
+    )
+}
+
+export default CompanyCreateForm

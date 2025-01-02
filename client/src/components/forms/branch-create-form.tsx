@@ -17,13 +17,14 @@ import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { LoadingSpinnerIcon } from '@/components/icons'
+import Modal, { IModalProps } from '@/components/modals/modal'
 import FormErrorMessage from '@/components/ui/form-error-message'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { BranchResource } from '@/horizon-corp/types'
-import { useUpdateBranch } from '@/hooks/api-hooks/use-branch'
+import { useCreateBranch } from '@/hooks/api-hooks/use-branch'
 
 type TBranchBasicInfo = Omit<
     BranchResource,
@@ -36,11 +37,9 @@ type TBranchBasicInfo = Omit<
     | 'updatedAt'
 >
 
-interface BranchEditBasicInfoFormProps
+interface BranchCreateFormProps
     extends IBaseCompNoChild,
-        IForm<TBranchBasicInfo, BranchResource, string> {
-    branchId: number
-}
+        IForm<TBranchBasicInfo, BranchResource, string> {}
 
 const BranchBasicInfoFormSchema = z.object({
     name: z.string().min(1, 'Branch name is required'),
@@ -53,15 +52,14 @@ const BranchBasicInfoFormSchema = z.object({
     isAdminVerified: z.boolean(),
 })
 
-const BranchEditBasicInfoForm = ({
+const BranchCreateForm = ({
     readOnly,
-    branchId,
     className,
     defaultValues,
     onError,
     onSuccess,
     onLoading,
-}: BranchEditBasicInfoFormProps) => {
+}: BranchCreateFormProps) => {
     const form = useForm<z.infer<typeof BranchBasicInfoFormSchema>>({
         defaultValues: {
             name: '',
@@ -69,27 +67,26 @@ const BranchEditBasicInfoForm = ({
             address: '',
             contactNumber: '',
             latitude: 14.5842,
-            longitude: 120.9876, 
+            longitude: 120.9876,
             ...defaultValues,
         },
         reValidateMode: 'onChange',
         resolver: zodResolver(BranchBasicInfoFormSchema),
     })
 
-    const hasChanges = form.formState.isDirty
     const firstError = Object.values(form.formState.errors)[0]?.message
 
     const defaultCenter = {
-        lat: form.getValues('latitude') ?? 14.58423341171918,
-        lng: form.getValues('longitude') ?? -239.01863962431653,
+        lat: form.getValues('latitude') ?? 14.5842,
+        lng: form.getValues('longitude') ?? 120.9876,
     }
 
     const {
         error,
         isPending,
-        mutate: save,
+        mutate: create,
         reset,
-    } = useUpdateBranch({
+    } = useCreateBranch({
         onSuccess: (data) => {
             onSuccess?.(data)
             form.reset(data)
@@ -104,7 +101,7 @@ const BranchEditBasicInfoForm = ({
     return (
         <form
             className={cn('flex flex-col gap-y-2', className)}
-            onSubmit={form.handleSubmit((data) => save({ id: branchId, data }))}
+            onSubmit={form.handleSubmit((data) => create(data))}
         >
             <Form {...form}>
                 <fieldset
@@ -276,34 +273,43 @@ const BranchEditBasicInfoForm = ({
                     />
                 </div>
                 <FormErrorMessage errorMessage={firstError || error} />
-                {hasChanges && (
-                    <div>
-                        <Separator className="my-2 sm:my-4" />
-                        <div className="flex items-center justify-end gap-x-2">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                onClick={() => {
-                                    form.reset()
-                                    reset()
-                                }}
-                                className="w-full self-end px-8 sm:w-fit"
-                            >
-                                Reset
-                            </Button>
-                            <Button
-                                type="submit"
-                                disabled={isPending}
-                                className="w-full self-end px-8 sm:w-fit"
-                            >
-                                {isPending ? <LoadingSpinnerIcon /> : 'Save'}
-                            </Button>
-                        </div>
-                    </div>
-                )}
+                <Separator className="my-2 sm:my-4" />
+                <div className="flex items-center justify-end gap-x-2">
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        onClick={() => {
+                            form.reset()
+                            reset()
+                        }}
+                        className="w-full self-end px-8 sm:w-fit"
+                    >
+                        Reset
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={isPending}
+                        className="w-full self-end px-8 sm:w-fit"
+                    >
+                        {isPending ? <LoadingSpinnerIcon /> : 'Create'}
+                    </Button>
+                </div>
             </Form>
         </form>
     )
 }
 
-export default BranchEditBasicInfoForm
+export const BranchCreateFormModal = ({
+    title = 'Create Branch',
+    description = 'Fill out the form to create a new branch.',
+    formProps,
+    ...props
+}: IModalProps & { formProps?: Omit<BranchCreateFormProps, 'className'> }) => {
+    return (
+        <Modal title={title} description={description} {...props}>
+            <BranchCreateForm {...formProps} />
+        </Modal>
+    )
+}
+
+export default BranchCreateForm

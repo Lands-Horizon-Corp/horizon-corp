@@ -6,7 +6,9 @@ import {
 import { useMemo } from 'react'
 
 import DataTable from '@/components/data-table'
-import DataTableToolbar from '@/components/data-table/data-table-toolbar'
+import DataTableToolbar, {
+    IDataTableToolbarProps,
+} from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
@@ -25,11 +27,23 @@ import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
 
 export interface BranchesTableProps
     extends TableProps<BranchResource>,
-        IBranchesTableColumnProps {}
+        IBranchesTableColumnProps {
+    toolbarProps?: Omit<
+        IDataTableToolbarProps<BranchResource>,
+        | 'table'
+        | 'refreshActionProps'
+        | 'globalSearchProps'
+        | 'scrollableProps'
+        | 'filterLogicProps'
+        | 'exportActionProps'
+        | 'deleteActionProps'
+    >
+}
 
 const BranchesTable = ({
     className,
     onSelectData,
+    toolbarProps,
     defaultFilter,
     actionComponent,
 }: BranchesTableProps) => {
@@ -145,6 +159,7 @@ const BranchesTable = ({
                         filterLogic: filterState.filterLogic,
                         setFilterLogic: filterState.setFilterLogic,
                     }}
+                    {...toolbarProps}
                 />
                 <DataTable
                     table={table}
