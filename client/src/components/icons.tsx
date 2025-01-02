@@ -49,6 +49,7 @@ import {
 } from 'react-icons/lia'
 
 import {
+    PiPlus as PlusIcon,
     PiPushPin as PushPinIcon,
     PiUserList as UserListIcon,
     PiBuilding as BuildingIcon,
@@ -178,6 +179,7 @@ import { GrPowerReset as PowerResetIcon } from 'react-icons/gr'
 
 import { VscLocation as LocationPinOutlineIcon } from 'react-icons/vsc'
 
+// Export section
 export {
     XIcon,
     CsvIcon,
@@ -185,6 +187,7 @@ export {
     KeyIcon,
     DevIcon,
     EyeIcon,
+    PlusIcon,
     UndoIcon,
     RedoIcon,
     UserIcon,

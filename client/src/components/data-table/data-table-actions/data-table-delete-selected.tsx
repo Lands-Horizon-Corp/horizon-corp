@@ -38,7 +38,7 @@ const DataTableDeleteSelected = <T,>({
     const isDisabled = !canDelete || selectedRows.length === 0 || disabled
 
     const { mutate: handleDelete, isPending: isDeleting } = useMutation({
-        mutationKey: ['company', 'table', 'delete', selectedRows],
+        mutationKey: ['table', 'delete', selectedRows],
         mutationFn: async () => {
             const [error] = await withCatchAsync(onDelete(selectedRows))
 

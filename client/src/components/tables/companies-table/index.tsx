@@ -1,13 +1,15 @@
-import { useMemo } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 import {
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
+import { useMemo } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
-import DataTableToolbar from '@/components/data-table/data-table-toolbar'
+import DataTableToolbar, {
+    IDataTableToolbarProps,
+} from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
@@ -26,11 +28,23 @@ import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
 
 export interface CompaniesTableProps
     extends TableProps<CompanyResource>,
-        ICompaniesTableColumnProps {}
+        ICompaniesTableColumnProps {
+    toolbarProps?: Omit<
+        IDataTableToolbarProps<CompanyResource>,
+        | 'table'
+        | 'refreshActionProps'
+        | 'globalSearchProps'
+        | 'scrollableProps'
+        | 'filterLogicProps'
+        | 'exportActionProps'
+        | 'deleteActionProps'
+    >
+}
 
 const CompaniesTable = ({
     className,
     onSelectData,
+    toolbarProps,
     actionComponent,
 }: CompaniesTableProps) => {
     const queryClient = useQueryClient()
@@ -122,7 +136,7 @@ const CompaniesTable = ({
                     deleteActionProps={{
                         onDeleteSuccess: () =>
                             queryClient.invalidateQueries({
-                                queryKey: ['table', 'company'],
+                                queryKey: ['company', 'table'],
                             }),
                         onDelete: (selectedData) =>
                             CompanyService.deleteMany(
@@ -150,6 +164,7 @@ const CompaniesTable = ({
                         filterLogic: filterState.filterLogic,
                         setFilterLogic: filterState.setFilterLogic,
                     }}
+                    {...toolbarProps}
                 />
                 <DataTable
                     table={table}

@@ -9,6 +9,11 @@ const AdminViewCompaniesPage = () => {
                 actionComponent={({ row }) => (
                     <CompaniesTableAdminAction row={row} />
                 )}
+                toolbarProps={{
+                    createActionProps: {
+                        onClick: () => {},
+                    },
+                }}
             />
         </div>
     )

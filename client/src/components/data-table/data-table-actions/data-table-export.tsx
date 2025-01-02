@@ -15,7 +15,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { TFilterPayload } from '../../data-table-filters/data-table-filter-context'
+import { TFilterPayload } from '../data-table-filters/data-table-filter-context'
 
 export interface IDataTableExportProps<TData> {
     table: Table<TData>
@@ -158,7 +158,7 @@ const DataTableExport = <TData,>({
                     disabled={disabled || isLoading || forceDisabled}
                     className="gap-x-1 rounded-md"
                 >
-                    <ExportIcon className="mr-2 size-4" />
+                    <ExportIcon className="mr-1 size-4" />
                     {isLoading ? <LoadingSpinner /> : 'Export'}
                 </Button>
             </DropdownMenuTrigger>
