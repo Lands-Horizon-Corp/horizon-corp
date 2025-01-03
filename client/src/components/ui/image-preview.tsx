@@ -47,6 +47,8 @@ import {
     ImagePreviewProps,
 } from '@/types/component/image-preview'
 
+import { useMatch } from '@tanstack/react-location';
+
 const ImagePreview = ImagePreviewPrimitive.Root
 
 const ImagePreviewPortal = ImagePreviewPrimitive.Portal
@@ -221,6 +223,11 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
     const [isDragging, setIsDragging] = useState(false)
     const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 })
     const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
+    const animationFrameId = useRef<number | null>(null);
+
+    console.log('startPosition', startPosition)
+    // console.log('isDragging', isDragging)
+    //  console.log('previewPosition', previewPosition)
 
     const onMouseDown = (e: React.MouseEvent<HTMLImageElement>) => {
         if (e.button !== 0 || scale <= 1) return
@@ -254,7 +261,15 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
             const newX = e.clientX - startPosition.x
             const newY = e.clientY - startPosition.y
 
-            setPreviewPosition({ x: newX, y: newY })
+            // Cancel previous animation frame request
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current)
+            }
+
+            // Use requestAnimationFrame to set state
+            animationFrameId.current = requestAnimationFrame(() => {
+                setPreviewPosition({ x: newX, y: newY })
+            })
 
             e.stopPropagation()
             e.preventDefault()
@@ -272,6 +287,11 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
         return () => {
             document.removeEventListener('mousemove', handleMouseMove)
             document.removeEventListener('mouseup', handleMouseUp)
+
+            // Clean up the animation frame request
+            if (animationFrameId.current) {
+                cancelAnimationFrame(animationFrameId.current)
+            }
         }
     }, [isDragging, startPosition])
 
@@ -294,7 +314,7 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
                     width: '100vw',
                     height: 'auto',
                     transform: `scale(${scale}) translate(${previewPosition.x}px, ${previewPosition.y}px) rotate(${rotateDegree}deg) ${flipScale}`,
-                    transition: 'transform 0.2s ease-in-out',
+                    transition: 'transform 0.1s ease-in-out',
                     cursor: isDragging ? 'grabbing' : 'move',
                 }}
                 onMouseDown={onMouseDown}
@@ -310,7 +330,7 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
                     <a
                         target="_blank"
                         href={media.url}
-                        className="py-1 text-xs"
+                        className="py-1 text-xs text-black dark:text-white"
                     >
                         Open in Browser
                     </a>
@@ -331,7 +351,7 @@ const ImagePreviewButtonAction = React.forwardRef<
     HTMLButtonElement,
     ImagePreviewButtonActionProps
 >(({ onClick, Icon, name, className, iconClassName, ...props }, ref) => {
-    const defaultIconStyles = '!size-4 text-white'
+    const defaultIconStyles = '!size-4 dark:text-white'
 
     return (
         <Button
@@ -489,7 +509,6 @@ const ImagePreviewContent = React.forwardRef<
             hideCloseButton = false,
             closeButtonClassName,
             overlayClassName,
-            children,
             Images,
             scaleInterval = 0.5,
             ...props
@@ -501,6 +520,10 @@ const ImagePreviewContent = React.forwardRef<
         const [rotateDegree, setRotateDegree] = useState(0)
         const [flipScale, setFlipScale] = useState('')
         const imageRef = useRef<HTMLImageElement | null>(null)
+        const match = useMatch();
+        const { id } = match?.params || {}; // Safely access `id` with default
+        console.log(id)
+        // /const navigate = useNavigate();
 
         const [downloadImage, setDownloadImage] = useState<DownloadProps>({
             fileName: Images[0]?.fileName || '',
@@ -607,7 +630,8 @@ const ImagePreviewContent = React.forwardRef<
         const isMultipleImage = Images.length > 1
 
         return (
-            <div>
+            <div className='h-full w-full'>
+                <h1 className=''>Hello world</h1>
                 <ImagePreviewPortal>
                     <ImagePreviewOverlay
                         className={cn(

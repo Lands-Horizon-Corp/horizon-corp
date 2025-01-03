@@ -31,6 +31,7 @@ import { PhoneInput } from '@/components/contact-input/contact-input'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import ContactService from '@/horizon-corp/server/common/ContactService'
 import { toast } from 'sonner'
+import { useMatch } from '@tanstack/react-location';
 
 type TContact = z.infer<typeof contactFormSchema>
 
@@ -45,6 +46,9 @@ const ContactPage = () => {
         contactNumber: '',
         description: '',
     }
+    const match = useMatch();
+        const { id } = match?.params || {}; // Safely access `id` with default
+        console.log(id)
 
     const form = useForm<TContact>({
         resolver: zodResolver(contactFormSchema),
