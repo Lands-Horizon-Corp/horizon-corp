@@ -24,9 +24,9 @@ import {
 import { Card } from './card'
 import { Button } from './button'
 import {
-    GrPowerResetIcon,
-    MdRotateLeftIcon,
-    MdRotateRightIcon,
+    PowerResetIcon,
+    RotateLeftIcon,
+    RotateRightIcon,
 } from '@/components/icons'
 
 // Utility Functions
@@ -47,7 +47,7 @@ import {
     ImagePreviewProps,
 } from '@/types/component/image-preview'
 
-import { useMatch, useNavigate } from '@tanstack/react-location';
+import { useMatch } from '@tanstack/react-location';
 
 const ImagePreview = ImagePreviewPrimitive.Root
 
@@ -57,83 +57,84 @@ type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 
 type CarouselOptions = UseCarouselParameters[0]
 
-const DownloadButton = React.forwardRef<HTMLButtonElement, DownloadProps>(
-    ({ fileName, fileType, imageRef, fileUrl, className, name }, ref) => {
-        const handleDownload = () => {
-            let downloadImage = imageRef?.current
+export const DownloadButton = React.forwardRef<
+    HTMLButtonElement,
+    DownloadProps
+>(({ fileName, fileType, imageRef, fileUrl, className, name }, ref) => {
+    const handleDownload = () => {
+        const downloadImage = imageRef?.current
 
-            // If imageRef is not provided, use the fileUrl directly
-            if (!downloadImage && fileUrl) {
-                const img = document.createElement('img')
-                img.src = fileUrl
-                img.crossOrigin = 'anonymous'
+        // If imageRef is not provided, use the fileUrl directly
+        if (!downloadImage && fileUrl) {
+            const img = document.createElement('img')
+            img.src = fileUrl
+            img.crossOrigin = 'anonymous'
 
-                img.onload = () => {
-                    const canvas = document.createElement('canvas')
-                    const context = canvas.getContext('2d')
-                    if (!context) return
+            img.onload = () => {
+                const canvas = document.createElement('canvas')
+                const context = canvas.getContext('2d')
+                if (!context) return
 
-                    canvas.width = img.naturalWidth
-                    canvas.height = img.naturalHeight
+                canvas.width = img.naturalWidth
+                canvas.height = img.naturalHeight
 
-                    context.drawImage(img, 0, 0)
+                context.drawImage(img, 0, 0)
 
-                    canvas.toBlob((blob) => {
-                        if (blob) {
-                            const url = URL.createObjectURL(blob)
-                            const link = document.createElement('a')
-                            link.href = url
-                            link.download = fileName
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const url = URL.createObjectURL(blob)
+                        const link = document.createElement('a')
+                        link.href = url
+                        link.download = fileName
 
-                            document.body.appendChild(link)
-                            link.click()
-                            document.body.removeChild(link)
-                            URL.revokeObjectURL(url)
-                        }
-                    }, fileType)
-                }
-                return
+                        document.body.appendChild(link)
+                        link.click()
+                        document.body.removeChild(link)
+                        URL.revokeObjectURL(url)
+                    }
+                }, fileType)
             }
-
-            if (!downloadImage) return
-
-            const canvas = document.createElement('canvas')
-            const context = canvas.getContext('2d')
-            if (!context) return
-
-            canvas.width = downloadImage.naturalWidth
-            canvas.height = downloadImage.naturalHeight
-
-            context.drawImage(downloadImage, 0, 0)
-
-            canvas.toBlob((blob) => {
-                if (blob) {
-                    const url = URL.createObjectURL(blob)
-                    const link = document.createElement('a')
-                    link.href = url
-                    link.download = fileName
-
-                    document.body.appendChild(link)
-                    link.click()
-                    document.body.removeChild(link)
-                    URL.revokeObjectURL(url)
-                }
-            }, fileType)
+            return
         }
 
-        return (
-            <ImagePreviewButtonAction
-                Icon={
-                    <DownloadIcon className="size-full cursor-pointer dark:text-white" />
-                }
-                name={name}
-                ref={ref}
-                className={className}
-                onClick={handleDownload}
-            />
-        )
+        if (!downloadImage) return
+
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d')
+        if (!context) return
+
+        canvas.width = downloadImage.naturalWidth
+        canvas.height = downloadImage.naturalHeight
+
+        context.drawImage(downloadImage, 0, 0)
+
+        canvas.toBlob((blob) => {
+            if (blob) {
+                const url = URL.createObjectURL(blob)
+                const link = document.createElement('a')
+                link.href = url
+                link.download = fileName
+
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                URL.revokeObjectURL(url)
+            }
+        }, fileType)
     }
-)
+
+    return (
+        <ImagePreviewButtonAction
+            Icon={
+                <DownloadIcon className="size-full cursor-pointer dark:text-white" />
+            }
+            name={name}
+            ref={ref}
+            className={className}
+            onClick={handleDownload}
+        />
+    )
+})
 
 DownloadButton.displayName = 'DownloadButton'
 
@@ -410,7 +411,7 @@ const ImagePreviewActions = React.forwardRef<
                 >
                     <ImagePreviewButtonAction
                         iconClassName="size-4"
-                        Icon={<GrPowerResetIcon />}
+                        Icon={<PowerResetIcon />}
                         name="reset"
                         onClick={handleResetActionState}
                     />
@@ -425,13 +426,13 @@ const ImagePreviewActions = React.forwardRef<
                         onClick={handleZoomOut}
                     />
                     <ImagePreviewButtonAction
-                        Icon={<MdRotateLeftIcon />}
+                        Icon={<RotateLeftIcon />}
                         name="rotate left"
                         iconClassName="size-4"
                         onClick={handleRotateLeft}
                     />
                     <ImagePreviewButtonAction
-                        Icon={<MdRotateRightIcon />}
+                        Icon={<RotateRightIcon />}
                         name="rotate right"
                         iconClassName="size-4"
                         onClick={handleRotateRight}
@@ -581,7 +582,7 @@ const ImagePreviewContent = React.forwardRef<
         }
 
         const handleZoomIn = () => {
-            if (scale < 3) setScale((prevScale) => prevScale + scaleInterval)
+            if (scale < 4) setScale((prevScale) => prevScale + scaleInterval)
         }
 
         const handleZoomOut = () => {

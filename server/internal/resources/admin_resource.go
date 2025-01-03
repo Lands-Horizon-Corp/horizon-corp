@@ -6,35 +6,53 @@ import (
 )
 
 type AdminResource struct {
-	AccountType        string             `json:"accountType"`
-	ID                 uint               `json:"id"`
-	FirstName          string             `json:"firstName"`
-	LastName           string             `json:"lastName"`
-	MiddleName         string             `json:"middleName"`
-	PermanentAddress   string             `json:"permanentAddress"`
-	Description        string             `json:"description"`
-	Birthdate          time.Time          `json:"birthdate"`
-	Username           string             `json:"username"`
-	Email              string             `json:"email"`
-	IsEmailVerified    bool               `json:"isEmailVerified"`
-	IsContactVerified  bool               `json:"isContactVerified"`
-	IsSkipVerification bool               `json:"isSkipVerification"`
-	ContactNumber      string             `json:"contactNumber"`
-	Media              *MediaResource     `json:"media,omitempty"`
-	Status             models.AdminStatus `json:"status"`
-	CreatedAt          string             `json:"createdAt"`
-	UpdatedAt          string             `json:"updatedAt"`
+	AccountType        string              `json:"accountType"`
+	ID                 uint                `json:"id"`
+	FirstName          string              `json:"firstName"`
+	LastName           string              `json:"lastName"`
+	MiddleName         string              `json:"middleName,omitempty"`
+	PermanentAddress   string              `json:"permanentAddress,omitempty"`
+	Description        string              `json:"description,omitempty"`
+	BirthDate          time.Time           `json:"birthDate"`
+	Username           string              `json:"username"`
+	Email              string              `json:"email"`
+	ContactNumber      string              `json:"contactNumber"`
+	IsEmailVerified    bool                `json:"isEmailVerified"`
+	IsContactVerified  bool                `json:"isContactVerified"`
+	IsSkipVerification bool                `json:"isSkipVerification"`
+	Status             models.AdminStatus  `json:"status"`
+	Media              *MediaResource      `json:"media,omitempty"`
+	Role               *RoleResource       `json:"role,omitempty"`
+	GenderID           *uint               `json:"genderId,omitempty"`
+	Gender             *GenderResource     `json:"gender,omitempty"`
+	Footsteps          []*FootstepResource `json:"footsteps,omitempty"` // Updated to slice of pointers
+
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 
-func ToResourceAdmin(admin models.Admin) AdminResource {
-	var mediaResource *MediaResource
-
-	if admin.MediaID != nil {
-		media := ToResourceMedia(admin.Media)
-		mediaResource = &media
+func ToResourceAdmin(admin *models.Admin) *AdminResource {
+	if admin == nil {
+		return nil
 	}
 
-	return AdminResource{
+	// Initialize optional nested resources
+	var mediaResource *MediaResource
+	if admin.Media != nil {
+		mediaResource = ToResourceMedia(admin.Media)
+	}
+
+	var roleResource *RoleResource
+	if admin.Role != nil {
+		roleResource = ToResourceRole(admin.Role)
+	}
+
+	var genderResource *GenderResource
+	if admin.Gender != nil {
+		genderResource = ToResourceGender(admin.Gender)
+	}
+
+	return &AdminResource{
 		AccountType:        "Admin",
 		ID:                 admin.ID,
 		FirstName:          admin.FirstName,
@@ -42,22 +60,26 @@ func ToResourceAdmin(admin models.Admin) AdminResource {
 		MiddleName:         admin.MiddleName,
 		PermanentAddress:   admin.PermanentAddress,
 		Description:        admin.Description,
-		Birthdate:          admin.Birthdate,
+		BirthDate:          admin.BirthDate,
 		Username:           admin.Username,
 		Email:              admin.Email,
+		ContactNumber:      admin.ContactNumber,
 		IsEmailVerified:    admin.IsEmailVerified,
 		IsContactVerified:  admin.IsContactVerified,
 		IsSkipVerification: admin.IsSkipVerification,
-		ContactNumber:      admin.ContactNumber,
-		Media:              mediaResource, // Set the media resource if exists
 		Status:             admin.Status,
+		Media:              mediaResource,
+		Role:               roleResource,
+		GenderID:           admin.GenderID,
+		Gender:             genderResource,
+		Footsteps:          ToResourceListFootsteps(admin.Footsteps),
 		CreatedAt:          admin.CreatedAt.Format(time.RFC3339),
 		UpdatedAt:          admin.UpdatedAt.Format(time.RFC3339),
 	}
 }
 
-func ToResourceListAdmins(admins []models.Admin) []AdminResource {
-	var resources []AdminResource
+func ToResourceListAdmins(admins []*models.Admin) []*AdminResource {
+	var resources []*AdminResource
 	for _, admin := range admins {
 		resources = append(resources, ToResourceAdmin(admin))
 	}

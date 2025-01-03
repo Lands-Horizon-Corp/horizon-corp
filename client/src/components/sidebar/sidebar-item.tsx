@@ -1,16 +1,13 @@
 import { FC, useState } from 'react'
 import { useLocation, useRouter } from '@tanstack/react-router'
 
-import type { TSidebarItem } from '@/types/component/sidebar'
+import type { TSidebarItem } from '@/components/sidebar/sidebar-types'
 import SidebarItemContent from '@/components/sidebar/sidebar-item-content'
 import SidebarItemWithTooltip from '@/components/sidebar/sidebar-with-tooltip-wrapper'
 
+import { concatParentUrl, sidebarRouteMatcher } from './sidebar-utils'
 import { cn } from '@/lib/utils'
-import {
-    concatParentUrl,
-    sidebarRouteMatcher,
-} from '@/components/sidebar/sidebar-utils'
-import { useSidebarExpandContext } from './sidebar-expand-context'
+import { useSidebarContext } from './sidebar-context'
 
 const SidebarItem: FC<TSidebarItem> = (props) => {
     const router = useRouter()
@@ -18,7 +15,7 @@ const SidebarItem: FC<TSidebarItem> = (props) => {
         select: (location) => location.pathname,
     })
 
-    const isExpanded = useSidebarExpandContext()
+    const { isExpanded } = useSidebarContext()
 
     const [isCollapsed, setIsCollapsed] = useState(props.isCollapseEnabled)
 

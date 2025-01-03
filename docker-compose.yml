@@ -4,6 +4,7 @@ services:
     build:
       context: ./client
       dockerfile: Dockerfile
+    platform: linux/amd64
     env_file: ./.env
     volumes:
       - ./client:/client
@@ -11,6 +12,7 @@ services:
     ports:
       - "${CLIENT_FORWARD_PORT}:${CLIENT_PORT}"
     environment:
+      - "VITE_CLIENT_APP_ENV=${APP_ENV}"
       - "VITE_CLIENT_FORWARD_PORT=${CLIENT_FORWARD_PORT}"
       - "VITE_CLIENT_PORT=${CLIENT_PORT}"
       - "VITE_CLIENT_SERVER_URL=${CLIENT_SERVER_URL}"
@@ -30,12 +32,14 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
+    platform: linux/amd64
     env_file: ./.env
     volumes:
       - ./server:/app
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:
+      - APP_ENV=${APP_ENV}
       - APP_CLIENT_URL=${APP_CLIENT_URL}
       - APP_PORT=${APP_PORT}
       - APP_TOKEN=${APP_TOKEN}
@@ -68,7 +72,7 @@ services:
 
   db:
     container_name: lands-horizon-db
-    image: mysql:8.4
+    image: mysql:latest
     platform: linux/amd64
     restart: always
     env_file: ./.env
@@ -97,6 +101,7 @@ services:
       timeout: 20s
     networks:
       - app-network
+
   redis:
     image: redis:latest
     container_name: redis
@@ -135,6 +140,7 @@ services:
 
   mailhog:
     image: mailhog/mailhog:latest
+    platform: linux/amd64
     ports:
       - "${EMAIL_PORT:-1025}:${EMAIL_PORT:-1025}"
       - "8025:8025"
@@ -145,6 +151,7 @@ services:
       retries: 5
     networks:
       - app-network
+
   flyway:
     build:
       context: ./migration
@@ -164,6 +171,7 @@ services:
     entrypoint: ["flyway", "migrate"]
     networks:
       - app-network
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     platform: linux/amd64
@@ -195,6 +203,7 @@ services:
     command: server /data --console-address ":38813"
     networks:
       - app-network
+
 volumes:
   db_data:
   minio_data:

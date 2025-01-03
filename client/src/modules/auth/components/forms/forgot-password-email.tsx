@@ -20,15 +20,15 @@ import {
 import { KeyIcon } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-import FormErrorMessage from '@/modules/auth/components/form-error-message'
 
 import { cn, withCatchAsync } from '@/lib/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { IAuthForm } from '@/types/auth/form-interface'
+import { userAccountTypeSchema } from '@/validations/common'
 import UserService from '@/horizon-corp/server/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
-import { userAccountTypeSchema } from '@/modules/auth/validations/common'
 
 const forgotPasswordFormSchema = z.object({
     key: z.string().min(1, 'key is required'),

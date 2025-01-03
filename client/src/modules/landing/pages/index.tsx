@@ -13,7 +13,6 @@ import { sampleMediaResourceList } from '@/modules/test/testSampleData'
 
 const LandingPage = () => {
     const { isOpen, setIsOpen } = useImagePreview()
-
     return (
         <div className="flex h-fit justify-center px-6 font-inter sm:px-8 lg:px-[60px] xl:px-[124px]">
             <div className="h-fit w-full max-w-[1240px]">

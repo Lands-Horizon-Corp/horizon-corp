@@ -40,10 +40,10 @@ func NewUserAuthService(
 }
 
 // GenerateUserToken generates a token for the specified user based on their account type
-func (s *UserAuthService) GenerateUserToken(user models.User, accountType string, expiration time.Duration) (string, error) {
+func (s *UserAuthService) GenerateUserToken(user *models.User, expiration time.Duration) (string, error) {
 	var token string
 	var err error
-	switch accountType {
+	switch user.AccountType {
 	case "Admin":
 		token, err = s.adminAuthService.GenerateAdminToken(repositories.ConvertUserToAdmin(user), expiration)
 	case "Employee":
@@ -53,7 +53,7 @@ func (s *UserAuthService) GenerateUserToken(user models.User, accountType string
 	case "Owner":
 		token, err = s.ownerAuthService.GenerateOwnerToken(repositories.ConvertUserToOwner(user), expiration)
 	default:
-		s.logger.Error("Invalid account type for token generation", zap.String("accountType", accountType))
+		s.logger.Error("Invalid account type for token generation", zap.String("accountType", user.AccountType))
 		return "", errors.New("invalid account type")
 	}
 

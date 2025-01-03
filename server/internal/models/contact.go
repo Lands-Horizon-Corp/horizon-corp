@@ -1,12 +1,14 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Contact struct {
 	gorm.Model
-	FirstName     string `json:"first_name" gorm:"unique;not null"`
-	LastName      string `json:"last_name" gorm:"unique;not null"`
-	Email         string `json:"email" gorm:"unique;not null"`
-	Description   string `json:"description,omitempty"`
-	ContactNumber string `json:"contact_number,omitempty"`
+	FirstName     string `gorm:"type:varchar(255);not null" json:"first_name"`
+	LastName      string `gorm:"type:varchar(255);not null" json:"last_name"`
+	Email         string `gorm:"type:varchar(255);unique;not null" json:"email"`
+	ContactNumber string `gorm:"type:varchar(15);not null" json:"contact_number"`
+	Description   string `gorm:"type:text" json:"description"`
 }

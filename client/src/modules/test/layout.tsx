@@ -1,31 +1,27 @@
-import { Link, Outlet } from '@tanstack/react-router'
-import {
-    ImagePreview,
-    ImagePreviewContent,
-} from '@/components/ui/image-preview'
-import { Button } from '@/components/ui/button'
-import { sampleMediaResourceList } from './testSampleData'
-import { useImagePreview } from '@/store/image-preview-store'
-import GalleryContainer from '@/components/image-preview/gallery'
+import MainMapContainer from '@/components/map'
+import { Outlet } from '@tanstack/react-router'
+import { LatLngExpression } from 'leaflet'
 
 const TestLayout = () => {
-    const { isOpen, setIsOpen } = useImagePreview()
+    const defaultCenter: LatLngExpression = [14.5995, 120.9842]
+    const defaultZoom = 13
+
+    // if wanted to use current Position or List of Markers
 
     return (
-        <div className="grid min-h-[100dvh] grid-cols-[auto_1fr]">
-            <main>
-                <Outlet />
-            </main>
-           <GalleryContainer/>
-            <div className="mx-auto h-[100vh] w-[80%]">
-                <Button onClick={() => setIsOpen(true)}>view</Button>
-                <ImagePreview
-                    open={isOpen}
-                    onOpenChange={() => setIsOpen(false)}
-                >
-                    <ImagePreviewContent Images={sampleMediaResourceList} />
-                </ImagePreview>
-            </div>
+        <div className="mx-auto flex flex-col h-[500px] w-[80%]">
+            <MainMapContainer
+                center={defaultCenter}
+                zoom={defaultZoom}
+                className='flex-grow'
+                onCoordinateClick={(coor)=> console.log(coor)}
+                onMultipleCoordinatesChange={(coor)=> console.log(coor)}
+                viewOnly
+                hideControls
+                // multiplePins
+                // viewOnly
+            />
+            <Outlet />
         </div>
     )
 }

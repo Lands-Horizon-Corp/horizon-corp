@@ -54,7 +54,6 @@ func (m *AuthMiddleware) Middleware() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-
 		user, err := m.useRepo.GetByID(claims.AccountType, claims.ID)
 		if err != nil {
 			m.tokenService.ClearTokenCookie(ctx)

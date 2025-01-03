@@ -4,7 +4,18 @@ export const axiosErrorMessageExtractor = (
     error: AxiosError<{ message?: string; error?: string }>
 ): string => {
     if (!error.response) {
-        return 'Network error. Please check your connection.'
+        if (!error.response) {
+            if (
+                error.code === 'ECONNREFUSED' ||
+                error.message.includes('Network Error')
+            ) {
+                return 'Network error. Connection refused. Please check if the server is running and accessible.'
+            }
+            if (error.message.includes('ERR_EMPTY_RESPONSE')) {
+                return 'The server did not send any data. Please check the server status.'
+            }
+            return 'Network error. Please check your connection.'
+        }
     }
     const { response } = error
 

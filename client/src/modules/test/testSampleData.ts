@@ -1,4 +1,4 @@
-import { MediaResource } from "@/horizon-corp/types";
+import { MediaResource } from '@/horizon-corp/types'
 
 export const sampleMediaResourceList: MediaResource[] = [
     {
@@ -61,5 +61,4 @@ export const sampleMediaResourceList: MediaResource[] = [
     //   updatedAt: "2024-10-27T08:45:00Z",
     //   downloadURL: "https://cdn.example.com/media/resources/document.pdf"
     // }
-  ];
-  
+]

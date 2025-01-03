@@ -1,6 +1,10 @@
 package auth_requests
 
-import "github.com/go-playground/validator/v10"
+import (
+	"horizon/server/internal/requests"
+
+	"github.com/go-playground/validator/v10"
+)
 
 type ChangeEmailRequest struct {
 	Email         string `json:"email" validate:"required,email,max=255"`
@@ -9,5 +13,9 @@ type ChangeEmailRequest struct {
 
 func (r *ChangeEmailRequest) Validate() error {
 	validate := validator.New()
-	return validate.Struct(r)
+	err := validate.Struct(r)
+	if err != nil {
+		return requests.FormatValidationError(err)
+	}
+	return nil
 }
