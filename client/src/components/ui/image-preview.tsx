@@ -508,7 +508,6 @@ const ImagePreviewContent = React.forwardRef<
             hideCloseButton = false,
             closeButtonClassName,
             overlayClassName,
-            children,
             Images,
             scaleInterval = 0.5,
             ...props
@@ -632,7 +631,7 @@ const ImagePreviewContent = React.forwardRef<
         return (
             <div className='h-full w-full'>
                 <h1 className=''>Hello world</h1>
-                {/* <ImagePreviewPortal>
+                <ImagePreviewPortal>
                     <ImagePreviewOverlay
                         className={cn(
                             'bg-black/30 dark:bg-background/70',
@@ -711,7 +710,7 @@ const ImagePreviewContent = React.forwardRef<
                             </ImagePreviewPrimitive.Close>
                         )}
                     </div>
-                </ImagePreviewPortal> */}
+                </ImagePreviewPortal>
             </div>
         )
     }
