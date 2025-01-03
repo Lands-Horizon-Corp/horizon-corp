@@ -3,6 +3,7 @@ package timesheet
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
@@ -72,7 +73,17 @@ func (ts *TimesheetService) findall(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Companies not authenticated."})
 		return
 	}
-	timesheet, err := ts.modelResource.TimesheetFindallForEmployee(userClaims.ID, filterParam)
+	pageIndexStr := ctx.Query("pageIndex")
+	pageSizeStr := ctx.Query("pageSize")
+	pageIndex, err := strconv.Atoi(pageIndexStr)
+	if err != nil {
+		pageIndex = 0
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		pageSize = 10
+	}
+	timesheet, err := ts.modelResource.TimesheetFindallForEmployee(userClaims.ID, filterParam, pageSize, pageIndex)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Companies not found."})
 		return

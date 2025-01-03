@@ -3,6 +3,7 @@ package feedback
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
@@ -72,7 +73,17 @@ func (fs *FeedbackService) SearchFilter(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "filter parameter is required"})
 		return
 	}
-	feedbacks, err := fs.modelResource.FeedbackFilterForAdmin(filterParam)
+	pageIndexStr := ctx.Query("pageIndex")
+	pageSizeStr := ctx.Query("pageSize")
+	pageIndex, err := strconv.Atoi(pageIndexStr)
+	if err != nil {
+		pageIndex = 0
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		pageSize = 10
+	}
+	feedbacks, err := fs.modelResource.FeedbackFilterForAdmin(filterParam, pageIndex, pageSize)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Feedbacks not found."})
 		return

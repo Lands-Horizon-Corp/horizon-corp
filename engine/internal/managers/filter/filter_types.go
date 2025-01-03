@@ -95,10 +95,13 @@ type FilterPages[T any] struct {
 	Pages     []Page `json:"pages"`
 }
 
+type FilterRequest struct {
+	Filters []FilterStruct `json:"filters"`
+	Logic   string         `json:"logic"`
+}
+
 type PaginatedRequest struct {
-	Filters   []FilterStruct `json:"filters"`
-	Preloads  []string       `json:"preloads"`
-	PageIndex int            `json:"pageIndex"`
-	PageSize  int            `json:"pageSize"`
-	Logic     string         `json:"logic"`
+	Filters  []FilterStruct `json:"filters"`
+	Preloads []string       `json:"preloads"`
+	Logic    string         `json:"logic"`
 }

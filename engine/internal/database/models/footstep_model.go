@@ -176,7 +176,7 @@ func (m *ModelResource) ValidateFootstepRequest(req *FootstepRequest) error {
 	return nil
 }
 
-func (m *ModelResource) FootstepFilterForSelf(accountType string, userID uint, filters string) (filter.FilterPages[Footstep], error) {
+func (m *ModelResource) FootstepFilterForSelf(accountType string, userID uint, filters string, pageSize, pageIndex int) (filter.FilterPages[Footstep], error) {
 	var column string
 	switch accountType {
 	case "owner":
@@ -191,7 +191,7 @@ func (m *ModelResource) FootstepFilterForSelf(accountType string, userID uint, f
 		return filter.FilterPages[Footstep]{}, fmt.Errorf("invalid account type: %s", accountType)
 	}
 	db := m.db.Client.Where(fmt.Sprintf("%s = ?", column), userID)
-	return m.FootstepDB.GetPaginatedResult(db, filters)
+	return m.FootstepDB.GetPaginatedResult(db, filters, pageSize, pageIndex)
 }
 
 func (m *ModelResource) FootstepFilterForSelfRecord(accountType string, userID uint, filters string) ([]*Footstep, error) {
@@ -213,7 +213,7 @@ func (m *ModelResource) FootstepFilterForSelfRecord(accountType string, userID u
 	return m.FootstepDB.GetFilteredResults(db, filters)
 }
 
-func (m *ModelResource) FootstepFilterForPeers(accountType string, userID uint, filters string) (filter.FilterPages[Footstep], error) {
+func (m *ModelResource) FootstepFilterForPeers(accountType string, userID uint, filters string, pageSize, pageIndex int) (filter.FilterPages[Footstep], error) {
 	var db *gorm.DB
 
 	switch accountType {
@@ -242,7 +242,7 @@ func (m *ModelResource) FootstepFilterForPeers(accountType string, userID uint, 
 		return filter.FilterPages[Footstep]{}, fmt.Errorf("invalid account type: %s", accountType)
 	}
 
-	return m.FootstepDB.GetPaginatedResult(db, filters)
+	return m.FootstepDB.GetPaginatedResult(db, filters, pageSize, pageIndex)
 }
 
 func (m *ModelResource) FootstepSeeders() error {

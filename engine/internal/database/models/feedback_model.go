@@ -99,9 +99,9 @@ func (m *ModelResource) FeedbackToRecord(feedbacks []*Feedback) ([][]string, []s
 	return records, headers
 }
 
-func (m *ModelResource) FeedbackFilterForAdmin(filters string) (filter.FilterPages[Feedback], error) {
+func (m *ModelResource) FeedbackFilterForAdmin(filters string, pageSize, pageIndex int) (filter.FilterPages[Feedback], error) {
 	db := m.db.Client
-	return m.FeedbackDB.GetPaginatedResult(db, filters)
+	return m.FeedbackDB.GetPaginatedResult(db, filters, pageSize, pageIndex)
 }
 
 func (m *ModelResource) FeedbackFilterForAdminRecord(filters string) ([]*Feedback, error) {

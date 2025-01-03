@@ -2,6 +2,7 @@ package auth
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers/filter"
@@ -65,7 +66,17 @@ func (af *AuthFootstep) Self(ctx *gin.Context) (filter.FilterPages[models.Footst
 	if filterParam == "" {
 		return filter.FilterPages[models.Footstep]{}, fmt.Errorf("filter parameter is required")
 	}
-	return af.modelResource.FootstepFilterForSelf(userClaims.AccountType, userClaims.ID, filterParam)
+	pageIndexStr := ctx.Query("pageIndex")
+	pageSizeStr := ctx.Query("pageSize")
+	pageIndex, err := strconv.Atoi(pageIndexStr)
+	if err != nil {
+		pageIndex = 0
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		pageSize = 10
+	}
+	return af.modelResource.FootstepFilterForSelf(userClaims.AccountType, userClaims.ID, filterParam, pageIndex, pageSize)
 }
 
 func (af *AuthFootstep) Peers(ctx *gin.Context) (filter.FilterPages[models.Footstep], error) {
@@ -77,5 +88,15 @@ func (af *AuthFootstep) Peers(ctx *gin.Context) (filter.FilterPages[models.Foots
 	if filterParam == "" {
 		return filter.FilterPages[models.Footstep]{}, fmt.Errorf("filter parameter is required")
 	}
-	return af.modelResource.FootstepFilterForPeers(userClaims.AccountType, userClaims.ID, filterParam)
+	pageIndexStr := ctx.Query("pageIndex")
+	pageSizeStr := ctx.Query("pageSize")
+	pageIndex, err := strconv.Atoi(pageIndexStr)
+	if err != nil {
+		pageIndex = 0
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		pageSize = 10
+	}
+	return af.modelResource.FootstepFilterForPeers(userClaims.AccountType, userClaims.ID, filterParam, pageSize, pageIndex)
 }

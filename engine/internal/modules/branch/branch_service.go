@@ -106,12 +106,23 @@ func (bs *BranchService) SearchFilter(ctx *gin.Context) {
 		return
 	}
 
+	pageIndexStr := ctx.Query("pageIndex")
+	pageSizeStr := ctx.Query("pageSize")
+	pageIndex, err := strconv.Atoi(pageIndexStr)
+	if err != nil {
+		pageIndex = 0
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		pageSize = 10
+	}
+
 	var branches filter.FilterPages[models.Branch]
 	switch userClaims.AccountType {
 	case "Owner":
-		branches, err = bs.modelResource.BranchFilterForOwner(filterParam, userClaims.ID)
+		branches, err = bs.modelResource.BranchFilterForOwner(filterParam, userClaims.ID, pageIndex, pageSize)
 	case "Admin":
-		branches, err = bs.modelResource.BranchFilterForAdmin(filterParam)
+		branches, err = bs.modelResource.BranchFilterForAdmin(filterParam, pageIndex, pageSize)
 	default:
 		ctx.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions."})
 		return

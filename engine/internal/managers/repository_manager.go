@@ -234,21 +234,21 @@ func (r *Repository[T]) GetFilteredResults(db *gorm.DB, req string) ([]*T, error
 	return results, nil
 }
 
-func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, req string) (filter.FilterPages[T], error) {
+func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, req string, pageSize, pageIndex int) (filter.FilterPages[T], error) {
 	var results []*T
 	var totalSize int64
-	filterReq, filteredDB, err := r.prepareFilteredDB(db, req)
+	_, filteredDB, err := r.prepareFilteredDB(db, req)
 	if err != nil {
 		return filter.FilterPages[T]{}, err
 	}
 	if err := filteredDB.Model(new(T)).Count(&totalSize).Error; err != nil {
 		return filter.FilterPages[T]{}, err
 	}
-	totalPages := int(math.Ceil(float64(totalSize) / float64(filterReq.PageSize)))
+	totalPages := int(math.Ceil(float64(totalSize) / float64(pageSize)))
 	if totalPages == 0 {
 		totalPages = 1
 	}
-	paginatedDB := filteredDB.Offset((filterReq.PageIndex - 1) * filterReq.PageSize).Limit(filterReq.PageSize)
+	paginatedDB := filteredDB.Offset((pageIndex - 1) * pageSize).Limit(pageSize)
 	if err := paginatedDB.Find(&results).Error; err != nil {
 		return filter.FilterPages[T]{}, fmt.Errorf("failed to retrieve paginated results: %w", err)
 	}
@@ -261,9 +261,9 @@ func (r *Repository[T]) GetPaginatedResult(db *gorm.DB, req string) (filter.Filt
 	}
 	return filter.FilterPages[T]{
 		Data:      results,
-		PageIndex: filterReq.PageIndex,
+		PageIndex: pageIndex,
 		TotalPage: totalPages,
-		PageSize:  filterReq.PageSize,
+		PageSize:  pageSize,
 		TotalSize: int(totalSize),
 		Pages:     pages,
 	}, nil

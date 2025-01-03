@@ -97,6 +97,9 @@ func (m *ModelResource) CompanyToResourceList(companies []*Company) []*CompanyRe
 	}
 	var companyResources []*CompanyResource
 	for _, company := range companies {
+		fmt.Println("--")
+		fmt.Println(company)
+		fmt.Println("--")
 		companyResources = append(companyResources, m.CompanyToResource(company))
 	}
 	return companyResources
@@ -191,9 +194,13 @@ func (m *ModelResource) ValidateCompanyRequest(req *CompanyRequest) error {
 	return nil
 }
 
-func (m *ModelResource) CompanyFilterForAdmin(filters string) (filter.FilterPages[Company], error) {
-	db := m.db.Client
-	return m.CompanyDB.GetPaginatedResult(db, filters)
+func (m *ModelResource) CompanyFilterForAdmin(filters string, pageSize, pageIndex int) (filter.FilterPages[Company], error) {
+
+	db := m.db.Client.Model(&Company{}).
+		Select("companies.*, COUNT(branches.id) as branches").
+		Joins("LEFT JOIN branches ON branches.company_id = companies.id").
+		Group("companies.id")
+	return m.CompanyDB.GetPaginatedResult(db, filters, pageSize, pageIndex)
 }
 func (m *ModelResource) CompanyFilterForAdminRecord(filters string) ([]*Company, error) {
 	db := m.db.Client

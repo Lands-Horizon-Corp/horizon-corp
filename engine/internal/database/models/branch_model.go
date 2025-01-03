@@ -213,9 +213,9 @@ func (m *ModelResource) ValidateBranchRequest(req *BranchRequest) error {
 	return nil
 }
 
-func (m *ModelResource) BranchFilterForAdmin(filters string) (filter.FilterPages[Branch], error) {
+func (m *ModelResource) BranchFilterForAdmin(filters string, pageSize, pageIndex int) (filter.FilterPages[Branch], error) {
 	db := m.db.Client
-	return m.BranchDB.GetPaginatedResult(db, filters)
+	return m.BranchDB.GetPaginatedResult(db, filters, pageSize, pageIndex)
 }
 
 func (m *ModelResource) BranchFilterForAdminRecord(filters string) ([]*Branch, error) {
@@ -223,9 +223,9 @@ func (m *ModelResource) BranchFilterForAdminRecord(filters string) ([]*Branch, e
 	return m.BranchDB.GetFilteredResults(db, filters)
 }
 
-func (m *ModelResource) BranchFilterForOwner(filters string, ownerId uint) (filter.FilterPages[Branch], error) {
+func (m *ModelResource) BranchFilterForOwner(filters string, ownerId uint, pageSize int, pageIndex int) (filter.FilterPages[Branch], error) {
 	db := m.db.Client.Where("owner_id = ?", ownerId)
-	return m.BranchDB.GetPaginatedResult(db, filters)
+	return m.BranchDB.GetPaginatedResult(db, filters, pageSize, pageIndex)
 }
 
 func (m *ModelResource) BranchFilterForOwnerRecord(filters string, ownerId uint) ([]*Branch, error) {

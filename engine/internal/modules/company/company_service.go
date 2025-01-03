@@ -76,7 +76,18 @@ func (as *CompanyService) SearchFilter(ctx *gin.Context) {
 		return
 	}
 
-	companies, err := as.modelResource.CompanyFilterForAdmin(filterParam)
+	pageIndexStr := ctx.Query("pageIndex")
+	pageSizeStr := ctx.Query("pageSize")
+	pageIndex, err := strconv.Atoi(pageIndexStr)
+	if err != nil {
+		pageIndex = 0
+	}
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil {
+		pageSize = 10
+	}
+
+	companies, err := as.modelResource.CompanyFilterForAdmin(filterParam, pageSize, pageIndex)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Companies not found."})
 		return
@@ -275,14 +286,13 @@ func (as *CompanyService) RegisterRoutes() {
 	routes.Use(as.middle.AuthMiddleware())
 	{
 		routes.POST("/", as.controller.Create)
-		routes.GET("/", as.controller.GetAll)
 		routes.GET("/:id", as.controller.GetByID)
 		routes.PUT("/:id", as.controller.Update)
 
 		routes.POST("/profile-picture/:id", as.ProfilePicture)
 
 		routes.POST("/verify/:id", as.middle.AuthMiddlewareAdminOnly(), as.Verify)
-		routes.GET("/search", as.middle.AuthMiddlewareAdminOnly(), as.SearchFilter)
+		routes.GET("", as.middle.AuthMiddlewareAdminOnly(), as.SearchFilter)
 		routes.DELETE("/bulk-delete", as.middle.AuthMiddlewareAdminOnly(), as.controller.DeleteMany)
 		routes.DELETE("/:id", as.middle.AuthMiddlewareAdminOnly(), as.controller.Delete)
 		// Export routes

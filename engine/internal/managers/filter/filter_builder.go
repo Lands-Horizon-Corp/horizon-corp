@@ -47,7 +47,6 @@ func applyFiltering(db *gorm.DB, filter Filter) *gorm.DB {
 		convertedValues := convertValues(dataType, values)
 
 		if len(convertedValues) > 0 {
-			// Build a dynamic OR condition string
 			fieldName := filter.GetField()
 			queryParts := []string{}
 			args := []interface{}{}
@@ -60,11 +59,9 @@ func applyFiltering(db *gorm.DB, filter Filter) *gorm.DB {
 		}
 	}
 
-	// Single value filtering
 	return filtering(db, filter, convertValue(dataType, value))
 }
 
-// filtering applies a filter condition based on the mode.
 func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 	field := sanitizeField(filter.GetField())
 	mode := filter.GetMode()
@@ -120,7 +117,6 @@ func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 		}
 	}
 
-	// Handle DataTypeDate to ignore time and search the entire day
 	if dataType == DataTypeDate {
 		var dateValue time.Time
 		switch v := value.(type) {
@@ -193,13 +189,11 @@ func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 				return db
 			}
 
-			// Define the full range for the 'to' date
 			startOfFromDay := time.Date(fromDate.Year(), fromDate.Month(), fromDate.Day(), 0, 0, 0, 0, fromDate.Location())
 			endOfToDay := time.Date(toDate.Year(), toDate.Month(), toDate.Day(), 23, 59, 59, 999999999, toDate.Location())
 
 			return db.Where(fmt.Sprintf("%s BETWEEN ? AND ?", field), startOfFromDay, endOfToDay)
 		default:
-			// For other modes, you can define behavior as needed
 			return db
 		}
 	}

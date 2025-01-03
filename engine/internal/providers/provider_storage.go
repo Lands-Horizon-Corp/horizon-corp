@@ -100,10 +100,6 @@ func (fc *StorageProvider) CreateBucketIfNotExists() error {
 		return fmt.Errorf("failed to create bucket %s: %w", fc.cfg.StorageBucketName, err)
 	}
 
-	fc.logger.Info("Waiting for bucket to exist",
-		zap.String("bucketName", fc.cfg.StorageBucketName),
-	)
-
 	if waitErr := fc.Client.WaitUntilBucketExists(&s3.HeadBucketInput{
 		Bucket: aws.String(fc.cfg.StorageBucketName),
 	}); waitErr != nil {
@@ -114,9 +110,6 @@ func (fc *StorageProvider) CreateBucketIfNotExists() error {
 		return fmt.Errorf("failed waiting for bucket %s to be created: %w", fc.cfg.StorageBucketName, waitErr)
 	}
 
-	fc.logger.Info("Bucket created successfully",
-		zap.String("bucketName", fc.cfg.StorageBucketName),
-	)
 	return nil
 }
 
@@ -141,19 +134,10 @@ func (fc *StorageProvider) UploadToS3(bucketName, key string, body io.Reader) (*
 		return nil, fmt.Errorf("unable to upload file to s3: %w", err)
 	}
 
-	fc.logger.Info("File uploaded successfully",
-		zap.String("bucketName", bucketName),
-		zap.String("key", key),
-		zap.String("location", result.Location),
-	)
 	return result, nil
 }
 
 func (fc *StorageProvider) UploadFile(fileHeader *multipart.FileHeader) (*Media, error) {
-	fc.logger.Info("Uploading multipart file",
-		zap.String("originalFileName", fileHeader.Filename),
-		zap.Int64("fileSize", fileHeader.Size),
-	)
 
 	file, err := fileHeader.Open()
 	if err != nil {
@@ -188,12 +172,6 @@ func (fc *StorageProvider) UploadFile(fileHeader *multipart.FileHeader) (*Media,
 		)
 		return nil, fmt.Errorf("unable to upload file: %w", err)
 	}
-
-	fc.logger.Info("Multipart file uploaded successfully",
-		zap.String("originalFileName", fileHeader.Filename),
-		zap.String("key", key),
-		zap.String("location", result.Location),
-	)
 
 	return &Media{
 		FileName:   fileHeader.Filename,
@@ -247,12 +225,6 @@ func (fc *StorageProvider) UploadLocalFile(localFilePath string) (*Media, error)
 		return nil, fmt.Errorf("unable to stat local file %s: %w", localFilePath, err)
 	}
 
-	fc.logger.Info("Local file uploaded successfully",
-		zap.String("localFilePath", localFilePath),
-		zap.String("key", key),
-		zap.String("location", result.Location),
-	)
-
 	return &Media{
 		FileName:   fileName,
 		FileSize:   fileInfo.Size(),
@@ -293,12 +265,6 @@ func (fc *StorageProvider) UploadFromURL(fileURL string) (*Media, error) {
 	}
 	key := fc.helpers.UniqueFileName(fileName)
 
-	fc.logger.Debug("Generated unique key for URL-based file",
-		zap.String("url", fileURL),
-		zap.String("fileName", fileName),
-		zap.String("key", key),
-	)
-
 	if err = fc.CreateBucketIfNotExists(); err != nil {
 		return nil, err
 	}
@@ -317,13 +283,6 @@ func (fc *StorageProvider) UploadFromURL(fileURL string) (*Media, error) {
 	if contentLength < 0 {
 		contentLength = 0
 	}
-
-	fc.logger.Info("File from URL uploaded successfully",
-		zap.String("url", fileURL),
-		zap.String("fileName", fileName),
-		zap.String("key", key),
-		zap.String("location", result.Location),
-	)
 
 	return &Media{
 		FileName:   fileName,
@@ -367,10 +326,6 @@ func (fc *StorageProvider) DeleteFile(key string) error {
 		return fmt.Errorf("failed waiting for file %s deletion: %w", key, waitErr)
 	}
 
-	fc.logger.Info("File deleted successfully",
-		zap.String("bucketName", fc.cfg.StorageBucketName),
-		zap.String("key", key),
-	)
 	return nil
 }
 
@@ -397,10 +352,5 @@ func (fc *StorageProvider) GeneratePresignedURL(key string) (string, error) {
 		return "", fmt.Errorf("unable to generate pre-signed URL for key %s: %w", key, err)
 	}
 
-	fc.logger.Info("Presigned URL generated successfully",
-		zap.String("bucketName", fc.cfg.StorageBucketName),
-		zap.String("key", key),
-		zap.String("url", urlStr),
-	)
 	return urlStr, nil
 }
