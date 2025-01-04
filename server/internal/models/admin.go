@@ -10,33 +10,33 @@ type Admin struct {
 	gorm.Model
 
 	// Fields
-	FirstName          string     `gorm:"type:varchar(255);not null" json:"first_name"`
-	LastName           string     `gorm:"type:varchar(255);not null" json:"last_name"`
-	MiddleName         string     `gorm:"type:varchar(255)" json:"middle_name"`
-	PermanentAddress   string     `gorm:"type:text" json:"permanent_address"`
-	Description        string     `gorm:"type:text" json:"description"`
-	BirthDate          time.Time  `gorm:"type:date" json:"birth_date"`
-	Username           string     `gorm:"type:varchar(255);unique;not null" json:"username"`
-	Email              string     `gorm:"type:varchar(255);unique;not null" json:"email"`
-	Password           string     `gorm:"type:varchar(255);not null" json:"password"`
-	ContactNumber      string     `gorm:"type:varchar(15);unique;not null" json:"contact_number"`
-	IsEmailVerified    bool       `gorm:"default:false" json:"is_email_verified"`
-	IsContactVerified  bool       `gorm:"default:false" json:"is_contact_verified"`
-	IsSkipVerification bool       `gorm:"default:false" json:"is_skip_verification"`
-	Status             UserStatus `gorm:"type:varchar(11);default:'Pending'" json:"status"`
+	FirstName          string     `json:"first_name" gorm:"type:varchar(255);not null"`
+	LastName           string     `json:"last_name" gorm:"type:varchar(255);not null"`
+	MiddleName         string     `json:"middle_name" gorm:"type:varchar(255)"`
+	PermanentAddress   string     `json:"permanent_address" gorm:"type:text"`
+	Description        string     `json:"description" gorm:"type:text"`
+	BirthDate          time.Time  `json:"birth_date" gorm:"type:date"`
+	Username           string     `json:"username" gorm:"type:varchar(255);unique;not null"`
+	Email              string     `json:"email" gorm:"type:varchar(255);unique;not null"`
+	Password           string     `json:"password" gorm:"type:varchar(255);not null"`
+	ContactNumber      string     `json:"contact_number" gorm:"type:varchar(15);unique;not null"`
+	IsEmailVerified    bool       `json:"is_email_verified" gorm:"default:false"`
+	IsContactVerified  bool       `json:"is_contact_verified" gorm:"default:false"`
+	IsSkipVerification bool       `json:"is_skip_verification" gorm:"default:false"`
+	Status             UserStatus `json:"status" gorm:"type:varchar(11);default:'Pending'"`
 
 	// Relationship 0 to 1
-	MediaID *uint  `gorm:"type:bigint;unsigned" json:"media_id"`
-	Media   *Media `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"media"`
+	MediaID *uint  `json:"media_id" gorm:"type:bigint;unsigned"`
+	Media   *Media `json:"media" gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 
 	// Relationship 0 to 1
-	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
-	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+	RoleID *uint `json:"role_id" gorm:"type:bigint;unsigned"`
+	Role   *Role `json:"role" gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
 	// Relationship 0 to 1
-	GenderID *uint   `gorm:"type:bigint;unsigned" json:"gender_id"`
-	Gender   *Gender `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
+	GenderID *uint   `json:"gender_id" gorm:"type:bigint;unsigned"`
+	Gender   *Gender `json:"gender" gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 
 	// Relationship 0 to many
-	Footsteps []*Footstep `gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
+	Footsteps []*Footstep `json:"footsteps,omitempty" gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
