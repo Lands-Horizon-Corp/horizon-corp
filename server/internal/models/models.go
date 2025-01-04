@@ -1,5 +1,7 @@
 package models
 
+import "github.com/golang-jwt/jwt"
+
 type UserStatus string
 
 const (
@@ -16,3 +18,9 @@ const (
 	MemberType   UserAccountType = "Member"
 	OwnerType    UserAccountType = "Owner"
 )
+
+type UserClaims struct {
+	ID          uint            `json:"id"`
+	AccountType UserAccountType `json:"accountType"`
+	jwt.StandardClaims
+}
