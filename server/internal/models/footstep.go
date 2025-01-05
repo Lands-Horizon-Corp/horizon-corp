@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -31,11 +31,11 @@ type Footstep struct {
 }
 
 type FootstepRepository struct {
-	*managers.Repository[Footstep]
+	*Repository[Footstep]
 }
 
-func NewFootstepRepository(db *gorm.DB) *FootstepRepository {
+func NewFootstepRepository(db *providers.DatabaseService) *FootstepRepository {
 	return &FootstepRepository{
-		Repository: managers.NewRepository[Footstep](db),
+		Repository: NewRepository[Footstep](db),
 	}
 }

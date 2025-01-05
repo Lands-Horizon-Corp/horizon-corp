@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -43,11 +43,11 @@ type Admin struct {
 }
 
 type AdminRepository struct {
-	*managers.Repository[Admin]
+	*Repository[Admin]
 }
 
-func NewAdminRepository(db *gorm.DB) *AdminRepository {
+func NewAdminRepository(db *providers.DatabaseService) *AdminRepository {
 	return &AdminRepository{
-		Repository: managers.NewRepository[Admin](db),
+		Repository: NewRepository[Admin](db),
 	}
 }

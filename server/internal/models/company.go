@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -30,11 +30,11 @@ type Company struct {
 }
 
 type CompanyRepository struct {
-	*managers.Repository[Company]
+	*Repository[Company]
 }
 
-func NewCompanyRepository(db *gorm.DB) *CompanyRepository {
+func NewCompanyRepository(db *providers.DatabaseService) *CompanyRepository {
 	return &CompanyRepository{
-		Repository: managers.NewRepository[Company](db),
+		Repository: NewRepository[Company](db),
 	}
 }

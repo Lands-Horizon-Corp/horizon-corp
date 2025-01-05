@@ -6,6 +6,6 @@ var Module = fx.Module(
 	"tags",
 	fx.Provide(
 		NewRecordTag,
-		NewRecordTag,
+		NewResourceTag,
 	),
 )

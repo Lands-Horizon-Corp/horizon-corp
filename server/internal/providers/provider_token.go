@@ -6,12 +6,17 @@ import (
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/rotisserie/eris"
 	"go.uber.org/zap"
 )
+
+type UserClaims struct {
+	ID          uint   `json:"id"`
+	AccountType string `json:"accountType"`
+	jwt.StandardClaims
+}
 
 type TokenService struct {
 	cfg    *config.AppConfig
@@ -31,7 +36,7 @@ func NewTokenProvider(
 	}
 }
 
-func (s *TokenService) GenerateToken(claims *models.UserClaims, expiration time.Duration) (string, error) {
+func (s *TokenService) GenerateToken(claims *UserClaims, expiration time.Duration) (string, error) {
 	if expiration == 0 {
 		expiration = 12 * time.Hour
 	}
@@ -53,13 +58,13 @@ func (s *TokenService) GenerateToken(claims *models.UserClaims, expiration time.
 	return tokenString, nil
 }
 
-func (s *TokenService) VerifyToken(tokenString string) (*models.UserClaims, error) {
+func (s *TokenService) VerifyToken(tokenString string) (*UserClaims, error) {
 	if tokenString == "" {
 		s.logger.Warn("Empty token provided")
 		return nil, eris.New("empty token")
 	}
 
-	token, err := jwt.ParseWithClaims(tokenString, &models.UserClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &UserClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			s.logger.Warn("Unexpected signing method", zap.String("method", token.Header["alg"].(string)))
 			return nil, eris.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -79,7 +84,7 @@ func (s *TokenService) VerifyToken(tokenString string) (*models.UserClaims, erro
 		return nil, eris.Wrap(err, "error parsing token")
 	}
 
-	claims, ok := token.Claims.(*models.UserClaims)
+	claims, ok := token.Claims.(*UserClaims)
 	if !ok || !token.Valid {
 		s.logger.Warn("Invalid token")
 		return nil, eris.New("invalid token")

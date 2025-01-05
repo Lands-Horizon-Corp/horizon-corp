@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -46,11 +46,11 @@ type Owner struct {
 }
 
 type OwnerRepository struct {
-	*managers.Repository[Owner]
+	*Repository[Owner]
 }
 
-func NewOwnerRepository(db *gorm.DB) *OwnerRepository {
+func NewOwnerRepository(db *providers.DatabaseService) *OwnerRepository {
 	return &OwnerRepository{
-		Repository: managers.NewRepository[Owner](db),
+		Repository: NewRepository[Owner](db),
 	}
 }

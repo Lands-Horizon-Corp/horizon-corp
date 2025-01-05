@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -15,11 +15,11 @@ type Feedback struct {
 }
 
 type FeedbackRepository struct {
-	*managers.Repository[Feedback]
+	*Repository[Feedback]
 }
 
-func NewFeedbackRepository(db *gorm.DB) *FeedbackRepository {
+func NewFeedbackRepository(db *providers.DatabaseService) *FeedbackRepository {
 	return &FeedbackRepository{
-		Repository: managers.NewRepository[Feedback](db),
+		Repository: NewRepository[Feedback](db),
 	}
 }

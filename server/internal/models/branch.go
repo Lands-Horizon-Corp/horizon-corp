@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -33,11 +33,11 @@ type Branch struct {
 }
 
 type BranchRepository struct {
-	*managers.Repository[Branch]
+	*Repository[Branch]
 }
 
-func NewBranchRepository(db *gorm.DB) *BranchRepository {
+func NewBranchRepository(db *providers.DatabaseService) *BranchRepository {
 	return &BranchRepository{
-		Repository: managers.NewRepository[Branch](db),
+		Repository: NewRepository[Branch](db),
 	}
 }

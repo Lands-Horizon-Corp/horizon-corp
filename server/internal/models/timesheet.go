@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -24,11 +24,11 @@ type Timesheet struct {
 }
 
 type TimesheetRepository struct {
-	*managers.Repository[Timesheet]
+	*Repository[Timesheet]
 }
 
-func NewTimesheetRepository(db *gorm.DB) *TimesheetRepository {
+func NewTimesheetRepository(db *providers.DatabaseService) *TimesheetRepository {
 	return &TimesheetRepository{
-		Repository: managers.NewRepository[Timesheet](db),
+		Repository: NewRepository[Timesheet](db),
 	}
 }

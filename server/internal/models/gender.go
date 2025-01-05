@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -20,11 +20,11 @@ type Gender struct {
 }
 
 type GenderRepository struct {
-	*managers.Repository[Gender]
+	*Repository[Gender]
 }
 
-func NewGenderRepository(db *gorm.DB) *GenderRepository {
+func NewGenderRepository(db *providers.DatabaseService) *GenderRepository {
 	return &GenderRepository{
-		Repository: managers.NewRepository[Gender](db),
+		Repository: NewRepository[Gender](db),
 	}
 }

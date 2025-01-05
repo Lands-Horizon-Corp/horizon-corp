@@ -2,8 +2,10 @@ package main
 
 import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/tags"
 	"go.uber.org/fx"
 )
 
@@ -12,11 +14,10 @@ func main() {
 		config.Module,
 		helpers.Module,
 		providers.Module,
-		// database.Module,
-		// modules.Module,
+		database.Module,
+		tags.Module,
 		// server.Module,
 		fx.Invoke(
-			// 	database.NewDatabaseMigration,
 			// 	modules.NewModuleServiceProvider,
 			providers.NewTerminalService,
 		),

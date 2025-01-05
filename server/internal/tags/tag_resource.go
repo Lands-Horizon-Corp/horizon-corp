@@ -10,30 +10,29 @@ import (
 	"github.com/rotisserie/eris"
 )
 
-type ResourceTag[T any] struct {
+type ResourceTag struct {
 	storage *providers.StorageProvider
 	tagKey  string
 }
 
-func NewResourceTag[T any](storage *providers.StorageProvider, tagKey string) *ResourceTag[T] {
+func NewResourceTag(storage *providers.StorageProvider, tagKey string) *ResourceTag {
 	if tagKey == "" {
 		tagKey = "resource"
 	}
-	return &ResourceTag[T]{storage: storage, tagKey: tagKey}
+	return &ResourceTag{storage: storage, tagKey: tagKey}
 }
 
-func (rt *ResourceTag[T]) TransformToStruct(data interface{}) (*T, error) {
+func (rt *ResourceTag) TransformToStruct(data interface{}, target interface{}) error {
 	resourceMap, err := rt.transformToMap(data)
 	if err != nil {
-		return nil, eris.Wrap(err, "failed to transform data to map")
+		return eris.Wrap(err, "failed to transform data to map")
 	}
 
-	resource := new(T)
-	if err := mapToStruct(resourceMap, resource); err != nil {
-		return nil, eris.Wrap(err, "failed to map resource data")
+	if err := mapToStruct(resourceMap, target); err != nil {
+		return eris.Wrap(err, "failed to map resource data")
 	}
 
-	return resource, nil
+	return nil
 }
 
 func mapToStruct(data map[string]interface{}, target interface{}) error {
@@ -44,7 +43,7 @@ func mapToStruct(data map[string]interface{}, target interface{}) error {
 	return json.Unmarshal(jsonBytes, target)
 }
 
-func (rt *ResourceTag[T]) transformToMap(data interface{}) (map[string]interface{}, error) {
+func (rt *ResourceTag) transformToMap(data interface{}) (map[string]interface{}, error) {
 	if data == nil {
 		return nil, nil
 	}
@@ -77,7 +76,7 @@ func (rt *ResourceTag[T]) transformToMap(data interface{}) (map[string]interface
 	return resource, nil
 }
 
-func (rt *ResourceTag[T]) processField(value reflect.Value, field reflect.StructField) (interface{}, error) {
+func (rt *ResourceTag) processField(value reflect.Value, field reflect.StructField) (interface{}, error) {
 	if value.Kind() == reflect.Ptr {
 		if value.IsNil() {
 			return nil, nil
@@ -101,7 +100,7 @@ func (rt *ResourceTag[T]) processField(value reflect.Value, field reflect.Struct
 	}
 }
 
-func (rt *ResourceTag[T]) processMedia(media models.Media) (map[string]interface{}, error) {
+func (rt *ResourceTag) processMedia(media models.Media) (map[string]interface{}, error) {
 	url, err := rt.storage.GeneratePresignedURL(media.StorageKey)
 	if err != nil {
 		return nil, eris.Wrap(err, "failed to generate presigned URL")
@@ -120,7 +119,7 @@ func (rt *ResourceTag[T]) processMedia(media models.Media) (map[string]interface
 	return mediaMap, nil
 }
 
-func (rt *ResourceTag[T]) processSlice(value reflect.Value, field reflect.StructField) ([]interface{}, error) {
+func (rt *ResourceTag) processSlice(value reflect.Value, field reflect.StructField) ([]interface{}, error) {
 	slice := make([]interface{}, value.Len())
 	for i := 0; i < value.Len(); i++ {
 		item := value.Index(i)
