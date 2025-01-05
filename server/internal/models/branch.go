@@ -41,3 +41,4 @@ func NewBranchRepository(db *providers.DatabaseService) *BranchRepository {
 		Repository: NewRepository[Branch](db),
 	}
 }
+func (r *BranchRepository) DatabaseSeeder() {}

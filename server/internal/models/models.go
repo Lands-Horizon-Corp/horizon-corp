@@ -8,7 +8,49 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/go-sql-driver/mysql"
 	"github.com/rotisserie/eris"
+	"go.uber.org/fx"
 	"gorm.io/gorm"
+)
+
+var Module = fx.Module(
+	"models",
+	fx.Provide(
+		NewAdminRepository,
+		NewBranchRepository,
+		NewCompanyRepository,
+		NewContactRepository,
+		NewEmployeeRepository,
+		NewFeedbackRepository,
+		NewFootstepRepository,
+		NewGenderRepository,
+		NewMediaRepository,
+		NewMemberRepository,
+		NewOwnerRepository,
+		NewRoleRepository,
+	),
+	fx.Invoke(func(
+		db *providers.DatabaseService,
+		logger *providers.LoggerService,
+	) {
+		err := db.Client.AutoMigrate(
+			&Admin{},
+			&Branch{},
+			&Company{},
+			&Contact{},
+			&Employee{},
+			&Feedback{},
+			&Footstep{},
+			&Gender{},
+			&Media{},
+			&Member{},
+			&Owner{},
+			&Role{},
+		)
+		if err != nil {
+			logger.Fatal("failed to migrate database")
+		}
+		logger.Info("Database migration completed successfully")
+	}),
 )
 
 type UserStatus string

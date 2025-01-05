@@ -95,6 +95,9 @@ func (ls *LoggerService) Warn(msg string, fields ...zap.Field) {
 func (ls *LoggerService) Debug(msg string, fields ...zap.Field) {
 	ls.Client.Debug(msg, fields...)
 }
+func (ls *LoggerService) Fatal(msg string, fields ...zap.Field) {
+	ls.Client.Fatal(msg, fields...)
+}
 
 func (ls *LoggerService) Sync() error {
 	err := ls.Client.Sync()

@@ -51,3 +51,5 @@ func NewAdminRepository(db *providers.DatabaseService) *AdminRepository {
 		Repository: NewRepository[Admin](db),
 	}
 }
+
+func (r *AdminRepository) DatabaseSeeder() {}
