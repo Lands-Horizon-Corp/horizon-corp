@@ -13,14 +13,12 @@ type RequestTag struct {
 	validator *validator.Validate
 }
 
-// NewRequestTag initializes a new RequestTag with custom validation rules.
 func NewRequestTag() *RequestTag {
 	v := validator.New()
 	v.RegisterValidation("request", validateRequestTag)
 	return &RequestTag{validator: v}
 }
 
-// validateRequestTag ensures the `request` tag is not empty for a struct field.
 func validateRequestTag(fl validator.FieldLevel) bool {
 	field, found := fl.Parent().Type().FieldByName(fl.FieldName())
 	if !found {
@@ -30,7 +28,6 @@ func validateRequestTag(fl validator.FieldLevel) bool {
 	return tagValue != ""
 }
 
-// Validate performs validation and returns detailed error messages.
 func (rt *RequestTag) Validate(input interface{}) error {
 	if err := rt.validator.Struct(input); err != nil {
 		if validationErrors, ok := err.(validator.ValidationErrors); ok {
@@ -41,7 +38,6 @@ func (rt *RequestTag) Validate(input interface{}) error {
 	return nil
 }
 
-// formatValidationErrors formats validation errors in a user-friendly manner.
 func formatValidationErrors(input interface{}, validationErrors validator.ValidationErrors) error {
 	inputType := reflect.TypeOf(input).Elem()
 	var errorMessages []string

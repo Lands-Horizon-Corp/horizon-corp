@@ -126,23 +126,35 @@ type ExampleStruct struct {
 	Age  int    `validate:"gte=18" request:"field_age"`
 }
 
+type Company struct {
+	Name          string   `json:"name" record:"true"`
+	Description   string   `json:"description" record:"true"`
+	Address       *string  `json:"address" record:"true"`
+	ContactNumber string   `json:"contactNumber" record:"true"`
+	IsVerified    bool     `json:"isVerified" record:"true"`
+	Longitude     *float64 `json:"longitude" record:"true"`
+}
+
 func main() {
-	// Create a new RequestTag instance
-	validator := tags.NewRequestTag()
+	rt := tags.NewRecordTag()
 
-	// Example struct with invalid data
-	data := ExampleStruct{
-		Name: "", // Invalid: required field
-		Age:  16, // Invalid: less than 18
+	address := "+123 Test St"
+	longitude := -122.4194
+	company := &Company{
+		Name:          "=Company Name",
+		Description:   "A test description",
+		Address:       &address,
+		ContactNumber: "-123456789",
+		IsVerified:    true,
+		Longitude:     &longitude,
 	}
 
-	// Perform validation
-	err := validator.Validate(&data)
+	values, headers, err := rt.ExtractFields(company)
 	if err != nil {
-		// Print detailed validation errors
-		fmt.Println("Validation failed:")
-		fmt.Println(err)
-	} else {
-		fmt.Println("Validation passed!")
+		fmt.Println("Error:", err)
+		return
 	}
+
+	fmt.Println("Headers:", headers)
+	fmt.Println("Values:", values)
 }
