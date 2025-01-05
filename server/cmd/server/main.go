@@ -8,7 +8,7 @@ import (
 )
 
 func TransformToStruct[T any](data interface{}) *T {
-	resourceMap := TransformToMap[any](data)
+	resourceMap := transformToMap[any](data)
 	fmt.Printf("Resource Map: %+v\n", resourceMap)
 
 	jsonBytes, err := json.Marshal(resourceMap)
@@ -26,7 +26,7 @@ func TransformToStruct[T any](data interface{}) *T {
 	return &resource
 }
 
-func TransformToMap[T any](data interface{}) map[string]interface{} {
+func transformToMap[T any](data interface{}) map[string]interface{} {
 	tagKey := "resource"
 	if data == nil {
 		return nil
@@ -60,7 +60,7 @@ func TransformToMap[T any](data interface{}) map[string]interface{} {
 				resource[tagValue] = nil
 			} else if value.Elem().Kind() == reflect.Struct {
 				fmt.Printf("Recursively transforming nested struct for field: %s\n", field.Name)
-				nestedMap := TransformToMap[T](value.Elem().Interface())
+				nestedMap := transformToMap[T](value.Elem().Interface())
 				fmt.Printf("Nested Map for %s: %+v\n", field.Name, nestedMap)
 				resource[tagValue] = nestedMap
 			} else {
@@ -79,7 +79,7 @@ func TransformToMap[T any](data interface{}) map[string]interface{} {
 			for j := 0; j < value.Len(); j++ {
 				item := value.Index(j).Interface()
 				if reflect.TypeOf(item).Kind() == reflect.Struct || (reflect.TypeOf(item).Kind() == reflect.Ptr && reflect.TypeOf(item).Elem().Kind() == reflect.Struct) {
-					slice = append(slice, TransformToMap[T](item))
+					slice = append(slice, transformToMap[T](item))
 				} else {
 					slice = append(slice, item)
 				}
@@ -89,7 +89,7 @@ func TransformToMap[T any](data interface{}) map[string]interface{} {
 		}
 
 		if value.Kind() == reflect.Struct {
-			nestedMap := TransformToMap[T](value.Interface())
+			nestedMap := transformToMap[T](value.Interface())
 			fmt.Printf("Transforming nested struct for field: %s\n", field.Name)
 			if nestedMap != nil {
 				resource[tagValue] = nestedMap
@@ -112,16 +112,8 @@ type Media struct {
 	URL string `json:"url" resource:"url"`
 }
 
-type AdminResource struct {
-	FirstName string     `json:"firstName"`
-	LastName  string     `json:"lastName"`
-	Footsteps []Footstep `json:"footsteps"`
-	CreatedAt string     `json:"createdAt"`
-	Media     *Media     `json:"media"`
-}
-
 type Admin struct {
-	FirstName string      `resource:"firstName"`
+	FirstName string      `json:"first_name" gorm:"type:varchar(255);not null" resource:"firstName" validate:"required,max=255"`
 	LastName  string      `resource:"lastName"`
 	Footsteps []*Footstep `resource:"footsteps"`
 	CreatedAt time.Time   `resource:"createdAt"`
@@ -140,7 +132,7 @@ func main() {
 		Media:     &Media{URL: "https://example.com/image.png"},
 	}
 
-	resource := TransformToStruct[AdminResource](admin)
+	resource := TransformToStruct[Admin](admin)
 
 	fmt.Printf("First Name: %s\n", resource.FirstName)
 	fmt.Printf("Last Name: %s\n", resource.LastName)
