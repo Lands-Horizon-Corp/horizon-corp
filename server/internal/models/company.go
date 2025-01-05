@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"gorm.io/gorm"
+)
 
 type Company struct {
 	gorm.Model
@@ -24,4 +27,14 @@ type Company struct {
 
 	// Relationship 0 to many
 	Branches []*Branch `gorm:"foreignKey:CompanyID" json:"branches"`
+}
+
+type CompanyRepository struct {
+	*managers.Repository[Company]
+}
+
+func NewCompanyRepository(db *gorm.DB) *CompanyRepository {
+	return &CompanyRepository{
+		Repository: managers.NewRepository[Company](db),
+	}
 }

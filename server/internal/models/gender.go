@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"gorm.io/gorm"
+)
 
 type Gender struct {
 	gorm.Model
@@ -14,4 +17,14 @@ type Gender struct {
 	Members   []*Member   `gorm:"foreignKey:GenderID" json:"members"`
 	Owners    []*Owner    `gorm:"foreignKey:GenderID" json:"owners"`
 	Admins    []*Admin    `gorm:"foreignKey:GenderID" json:"admins"`
+}
+
+type GenderRepository struct {
+	*managers.Repository[Gender]
+}
+
+func NewGenderRepository(db *gorm.DB) *GenderRepository {
+	return &GenderRepository{
+		Repository: managers.NewRepository[Gender](db),
+	}
 }

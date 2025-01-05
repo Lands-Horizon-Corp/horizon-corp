@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"gorm.io/gorm"
+)
 
 type Media struct {
 	gorm.Model
@@ -21,4 +24,14 @@ type Media struct {
 	Admins    []*Admin    `gorm:"foreignKey:MediaID" json:"admins"`
 	Companies []*Company  `gorm:"foreignKey:MediaID" json:"companies"`
 	Branches  []*Branch   `gorm:"foreignKey:MediaID" json:"branches"`
+}
+
+type MediaRepository struct {
+	*managers.Repository[Media]
+}
+
+func NewMediaRepository(db *gorm.DB) *MediaRepository {
+	return &MediaRepository{
+		Repository: managers.NewRepository[Media](db),
+	}
 }

@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"gorm.io/gorm"
 )
 
@@ -20,4 +21,14 @@ type Timesheet struct {
 	// Relationship 0 to 1
 	MediaOutID *uint  `gorm:"type:bigint;unsigned" json:"media_out_id"`
 	MediaOut   *Media `gorm:"foreignKey:MediaOutID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media_out"`
+}
+
+type TimesheetRepository struct {
+	*managers.Repository[Timesheet]
+}
+
+func NewTimesheetRepository(db *gorm.DB) *TimesheetRepository {
+	return &TimesheetRepository{
+		Repository: managers.NewRepository[Timesheet](db),
+	}
 }

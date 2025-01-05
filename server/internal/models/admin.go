@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"gorm.io/gorm"
 )
 
@@ -39,4 +40,14 @@ type Admin struct {
 
 	// Relationship 0 to many
 	Footsteps []*Footstep `json:"footsteps,omitempty" gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+}
+
+type AdminRepository struct {
+	*managers.Repository[Admin]
+}
+
+func NewAdminRepository(db *gorm.DB) *AdminRepository {
+	return &AdminRepository{
+		Repository: managers.NewRepository[Admin](db),
+	}
 }

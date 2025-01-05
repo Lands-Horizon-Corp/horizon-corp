@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"gorm.io/gorm"
+)
 
 type Role struct {
 	gorm.Model
@@ -30,4 +33,14 @@ type Role struct {
 	Owners    []*Owner    `gorm:"foreignKey:RoleID" json:"owners"`
 	Employees []*Employee `gorm:"foreignKey:RoleID" json:"employees"`
 	Members   []*Member   `gorm:"foreignKey:RoleID" json:"members"`
+}
+
+type RoleRepository struct {
+	*managers.Repository[Role]
+}
+
+func NewRoleRepository(db *gorm.DB) *RoleRepository {
+	return &RoleRepository{
+		Repository: managers.NewRepository[Role](db),
+	}
 }

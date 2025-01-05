@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"gorm.io/gorm"
 )
 
@@ -46,4 +47,14 @@ type Employee struct {
 	// Relationship 0 to many
 	Timesheets []*Timesheet `gorm:"foreignKey:EmployeeID" json:"timesheets"`
 	Footsteps  []*Footstep  `gorm:"foreignKey:EmployeeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
+}
+
+type EmployeeRepository struct {
+	*managers.Repository[Employee]
+}
+
+func NewEmployeeRepository(db *gorm.DB) *EmployeeRepository {
+	return &EmployeeRepository{
+		Repository: managers.NewRepository[Employee](db),
+	}
 }

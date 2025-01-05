@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"gorm.io/gorm"
 )
 
@@ -42,4 +43,14 @@ type Owner struct {
 	// Relationship 0 to many
 	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
 	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+}
+
+type OwnerRepository struct {
+	*managers.Repository[Owner]
+}
+
+func NewOwnerRepository(db *gorm.DB) *OwnerRepository {
+	return &OwnerRepository{
+		Repository: managers.NewRepository[Owner](db),
+	}
 }

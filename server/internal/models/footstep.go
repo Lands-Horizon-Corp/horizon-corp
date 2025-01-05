@@ -1,6 +1,9 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
+	"gorm.io/gorm"
+)
 
 type Footstep struct {
 	gorm.Model
@@ -25,4 +28,14 @@ type Footstep struct {
 	// Relationship 0 to 1
 	MemberID *uint   `gorm:"index" json:"member_id,omitempty"`
 	Member   *Member `gorm:"foreignKey:MemberID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member,omitempty"`
+}
+
+type FootstepRepository struct {
+	*managers.Repository[Footstep]
+}
+
+func NewFootstepRepository(db *gorm.DB) *FootstepRepository {
+	return &FootstepRepository{
+		Repository: managers.NewRepository[Footstep](db),
+	}
 }

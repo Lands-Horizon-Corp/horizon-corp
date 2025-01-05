@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/managers"
 	"gorm.io/gorm"
 )
 
@@ -47,4 +48,14 @@ type Member struct {
 
 	// Relationship 0 to many
 	Footsteps []*Footstep `gorm:"foreignKey:MemberID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"footsteps,omitempty"`
+}
+
+type MemberRepository struct {
+	*managers.Repository[Member]
+}
+
+func NewMemberRepository(db *gorm.DB) *MemberRepository {
+	return &MemberRepository{
+		Repository: managers.NewRepository[Member](db),
+	}
 }
