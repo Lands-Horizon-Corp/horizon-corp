@@ -8,6 +8,5 @@ var Module = fx.Module(
 		NewRecordTag,
 		NewRequestTag,
 		NewRecordTag,
-		NewSearchableTag,
 	),
 )
