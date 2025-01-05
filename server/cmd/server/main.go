@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"reflect"
 	"time"
+
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/tags"
 )
 
 func TransformToStruct[T any](data interface{}) *T {
@@ -113,32 +115,34 @@ type Media struct {
 }
 
 type Admin struct {
-	FirstName string      `json:"first_name" gorm:"type:varchar(255);not null" resource:"firstName" validate:"required,max=255"`
+	FirstName string      `json:"first_name" gorm:"type:varchar(255);not null" resource:"firstName" request:"firstName" validate:"required,max=255"`
 	LastName  string      `resource:"lastName"`
 	Footsteps []*Footstep `resource:"footsteps"`
 	CreatedAt time.Time   `resource:"createdAt"`
 	Media     *Media      `resource:"media"`
 }
+type ExampleStruct struct {
+	Name string `validate:"required" request:"field_name"`
+	Age  int    `validate:"gte=18" request:"field_age"`
+}
 
 func main() {
-	admin := &Admin{
-		FirstName: "John",
-		LastName:  "Doe",
-		Footsteps: []*Footstep{
-			{Action: "Login", Timestamp: time.Now().Format(time.RFC3339)},
-			{Action: "Logout", Timestamp: time.Now().Format(time.RFC3339)},
-		},
-		CreatedAt: time.Now(),
-		Media:     &Media{URL: "https://example.com/image.png"},
+	// Create a new RequestTag instance
+	validator := tags.NewRequestTag()
+
+	// Example struct with invalid data
+	data := ExampleStruct{
+		Name: "", // Invalid: required field
+		Age:  16, // Invalid: less than 18
 	}
 
-	resource := TransformToStruct[Admin](admin)
-
-	fmt.Printf("First Name: %s\n", resource.FirstName)
-	fmt.Printf("Last Name: %s\n", resource.LastName)
-	if resource.Media != nil {
-		fmt.Printf("Media URL: %s\n", resource.Media.URL)
+	// Perform validation
+	err := validator.Validate(&data)
+	if err != nil {
+		// Print detailed validation errors
+		fmt.Println("Validation failed:")
+		fmt.Println(err)
 	} else {
-		fmt.Println("Media is nil.")
+		fmt.Println("Validation passed!")
 	}
 }
