@@ -60,6 +60,7 @@ const CompaniesTable = ({
 
     const {
         sorting,
+        sortingState,
         setSorting,
         getRowIdFn,
         pagination,
@@ -68,10 +69,10 @@ const CompaniesTable = ({
         setColumnOrder,
         isScrollable,
         setIsScrollable,
-        rowSelectionState,
-        createHandleRowSelectionChange,
         columnVisibility,
         setColumnVisibility,
+        rowSelectionState,
+        createHandleRowSelectionChange,
     } = useDataTableState<CompanyResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
@@ -83,13 +84,14 @@ const CompaniesTable = ({
     })
 
     const {
-        data: { data, totalPage, pageSize, totalSize },
         isPending,
         isRefetching,
+        data: { data, totalPage, pageSize, totalSize },
         refetch,
     } = useFilteredPaginatedCompanies({
-        filterPayload: filterState.finalFilterPayload,
         pagination,
+        sort: sortingState,
+        filterPayload: filterState.finalFilterPayload,
     })
 
     const handleRowSelectionChange = createHandleRowSelectionChange(data)
@@ -108,8 +110,9 @@ const CompaniesTable = ({
             columnVisibility,
         },
         rowCount: pageSize,
-        pageCount: totalPage,
         manualSorting: true,
+        pageCount: totalPage,
+        enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
         getRowId: getRowIdFn,

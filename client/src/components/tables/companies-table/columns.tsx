@@ -21,7 +21,6 @@ import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters
 import { toReadableDate } from '@/utils'
 import { CompanyResource } from '@/horizon-corp/types'
 
-
 export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[] =
     [
         { field: 'name', displayText: 'Name' },
@@ -105,6 +104,7 @@ const companiesTableColumns = (
                     </Link>
                 </div>
             ),
+            enableMultiSort: true,
         },
         {
             id: 'Logo',
@@ -123,6 +123,7 @@ const companiesTableColumns = (
                     <ImageDisplay src={media?.downloadURL} className="size-7" />
                 </div>
             ),
+            enableSorting: false,
         },
         {
             id: 'address',
@@ -143,6 +144,7 @@ const companiesTableColumns = (
                     original: { address },
                 },
             }) => <div>{address}</div>,
+            enableMultiSort: true,
         },
         {
             id: 'branches',
@@ -162,9 +164,10 @@ const companiesTableColumns = (
                     original: { branches },
                 },
             }) => <div>{branches?.length ?? 0}</div>,
+            enableSorting: false,
         },
         {
-            id: 'owner',
+            id: 'Owner.username',
             accessorKey: 'owner.username',
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Owner">
@@ -189,6 +192,8 @@ const companiesTableColumns = (
                     )}
                 </div>
             ),
+            enableSorting: true,
+            enableMultiSort: true,
         },
         {
             id: 'Contact Number',
@@ -212,6 +217,7 @@ const companiesTableColumns = (
                     original: { contactNumber },
                 },
             }) => <div>{contactNumber}</div>,
+            enableMultiSort: true,
         },
         {
             id: 'Verify Status',
@@ -261,6 +267,7 @@ const companiesTableColumns = (
                     )}
                 </div>
             ),
+            enableMultiSort: true,
         },
         {
             id: 'Created At',
@@ -284,6 +291,7 @@ const companiesTableColumns = (
                     original: { createdAt },
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
+            enableMultiSort: true,
         },
     ]
 }

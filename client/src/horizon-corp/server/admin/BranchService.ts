@@ -121,15 +121,17 @@ export default class BranchService {
         filters?: string
         preloads?: string[]
         pagination?: { pageIndex: number; pageSize: number }
+        sort? : string
     }): Promise<BranchPaginatedResource> {
-        const { filters, preloads, pagination } = props || {}
+        const { filters, preloads, pagination, sort } = props || {}
 
         const url = qs.stringifyUrl(
             {
                 url: `${BranchService.BASE_ENDPOINT}`,
                 query: {
-                    filter: filters,
+                    sort,
                     preloads,
+                    filter: filters,
                     pageIndex: pagination?.pageIndex,
                     pageSize: pagination?.pageSize,
                 },

@@ -57,6 +57,7 @@ const BranchesTable = ({
 
     const {
         sorting,
+        sortingState,
         setSorting,
         getRowIdFn,
         pagination,
@@ -65,10 +66,10 @@ const BranchesTable = ({
         setColumnOrder,
         isScrollable,
         setIsScrollable,
-        rowSelectionState,
-        createHandleRowSelectionChange,
         columnVisibility,
         setColumnVisibility,
+        rowSelectionState,
+        createHandleRowSelectionChange,
     } = useDataTableState<BranchResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
@@ -80,13 +81,14 @@ const BranchesTable = ({
     })
 
     const {
-        data: { data, totalPage, pageSize, totalSize },
         isPending,
         isRefetching,
+        data: { data, totalPage, pageSize, totalSize },
         refetch,
     } = useFilteredPaginatedBranch({
-        filterPayload: filterState.finalFilterPayload,
         pagination,
+        sort: sortingState,
+        filterPayload: filterState.finalFilterPayload,
     })
 
     const handleRowSelectionChange = createHandleRowSelectionChange(data)

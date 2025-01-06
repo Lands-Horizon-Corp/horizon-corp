@@ -200,6 +200,7 @@ export const useFilteredPaginatedBranch = ({
     filterPayload,
     pagination = { pageSize: 10, pageIndex: 1 },
     preloads = ['Media', 'Owner'],
+    sort,
 }: IFilterPaginatedHookProps = {}) => {
     return useQuery<BranchPaginatedResource, string>({
         queryKey: ['branch', 'table', filterPayload, pagination],
@@ -208,9 +209,8 @@ export const useFilteredPaginatedBranch = ({
                 BranchService.getBranches({
                     preloads,
                     pagination,
-                    filters: filterPayload
-                        ? toBase64(filterPayload)
-                        : undefined,
+                    sort: sort && toBase64(sort),
+                    filters: filterPayload && toBase64(filterPayload),
                 })
             )
 

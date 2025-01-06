@@ -88,6 +88,7 @@ const branchesTableColumns = (
                     original: { name },
                 },
             }) => <div>{name}</div>,
+            enableMultiSort : true
         },
         {
             id: 'Logo',
@@ -106,6 +107,7 @@ const branchesTableColumns = (
                     <UserAvatar src={media?.downloadURL ?? ''} />
                 </div>
             ),
+            enableSorting : false
         },
         {
             id: 'address',
@@ -122,6 +124,7 @@ const branchesTableColumns = (
                     original: { address },
                 },
             }) => <div>{address}</div>,
+            enableMultiSort : true
         },
         {
             id: 'Contact Number',
@@ -145,6 +148,7 @@ const branchesTableColumns = (
                     original: { contactNumber },
                 },
             }) => <div>{contactNumber}</div>,
+            enableMultiSort : true
         },
         {
             id: 'Verify Status',
@@ -194,6 +198,7 @@ const branchesTableColumns = (
                     )}
                 </div>
             ),
+            enableMultiSort : true
         },
         {
             id: 'Created At',
@@ -217,6 +222,7 @@ const branchesTableColumns = (
                     original: { createdAt },
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
+            enableMultiSort : true
         },
     ]
 }

@@ -258,17 +258,17 @@ export const useFilteredPaginatedCompanies = ({
     filterPayload,
     pagination = { pageSize: 10, pageIndex: 1 },
     preloads = ['Media', 'Owner'],
+    sort,
 }: IFilterPaginatedHookProps = {}) => {
     return useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['table', 'company', filterPayload, pagination],
+        queryKey: ['company', 'table', filterPayload, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 CompanyService.getCompanies({
-                    filters: filterPayload
-                        ? toBase64(filterPayload)
-                        : undefined,
                     preloads,
                     pagination,
+                    sort: sort && toBase64(sort),
+                    filters: filterPayload && toBase64(filterPayload),
                 })
             )
 
