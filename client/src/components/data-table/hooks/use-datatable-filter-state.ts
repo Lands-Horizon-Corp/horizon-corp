@@ -5,16 +5,16 @@ import {
     TFinalFilter,
     TSearchFilter,
     TFilterObject,
-    IDataTableFilterState,
+    IFilterState,
     TFilterPayload,
-} from '../data-table-filters/data-table-filter-context'
+} from '../../../contexts/filter-context'
 import useDebounce from '@/hooks/use-debounce'
 
 const useDatableFilterState = (options?: {
     onFilterChange?: () => void
     debounceFinalFilterMs?: number
     defaultFilter?: TFilterObject
-}): IDataTableFilterState => {
+}): IFilterState => {
     const [filters, setFilters] = useState<TFilterObject>(
         options?.defaultFilter ?? {}
     )

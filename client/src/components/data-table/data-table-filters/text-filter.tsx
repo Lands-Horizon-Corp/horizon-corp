@@ -9,19 +9,19 @@ import { Button } from '@/components/ui/button'
 import { DebouncedInput } from '@/components/ui/debounced-input'
 
 import {
-    filterModeMap,
-    IFilterComponentProps,
+    useFilter,
     TFilterModes,
     TSearchFilter,
-    useDataTableFilter,
-} from './data-table-filter-context'
+    filterModeMap,
+    IFilterComponentProps,
+} from '@/contexts/filter-context'
 
 const TextFilter = <T,>({
     field,
     displayText,
     defaultMode,
 }: IFilterComponentProps<T, 'text'>) => {
-    const { filters, setFilter } = useDataTableFilter<string, typeof field>()
+    const { filters, setFilter } = useFilter<string, typeof field>()
 
     const filterModeOptions = filterModeMap['text']
 

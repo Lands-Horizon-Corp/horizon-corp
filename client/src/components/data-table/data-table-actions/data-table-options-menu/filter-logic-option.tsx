@@ -6,7 +6,7 @@ import {
     DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu'
 
-import { TFilterLogic } from '../../data-table-filters/data-table-filter-context'
+import { TFilterLogic } from '../../../../contexts/filter-context'
 
 export interface IDataTableFilterLogicOptionProps {
     filterLogic: TFilterLogic

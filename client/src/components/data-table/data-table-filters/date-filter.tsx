@@ -1,26 +1,21 @@
 import {
     Select,
-    SelectContent,
     SelectItem,
-    SelectTrigger,
     SelectValue,
+    SelectTrigger,
+    SelectContent,
 } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
+import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 
 import DateRange from './date-range'
 
 import { isDate } from '@/helpers'
-import {
-    TFilterModes,
-    filterModeMap,
-    TSearchFilter,
-    useDataTableFilter,
-    IFilterComponentProps,
-} from './data-table-filter-context'
-import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
+
+import { filterModeMap, IFilterComponentProps, TFilterModes, TSearchFilter, useFilter } from '@/contexts/filter-context'
 
 const DateFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentProps<T, 'date'>) => {
-    const { filters, setFilter } = useDataTableFilter<Date, typeof field>()
+    const { filters, setFilter } = useFilter<Date, typeof field>()
 
     const filterModeOptions = filterModeMap['date']
 
