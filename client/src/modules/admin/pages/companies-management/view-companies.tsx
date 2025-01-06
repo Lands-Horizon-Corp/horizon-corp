@@ -16,7 +16,7 @@ const AdminViewCompaniesPage = () => {
                 onOpenChange={(newState) => setCreateModal(newState)}
                 formProps={{
                     onSuccess : () => queryClient.invalidateQueries({
-                        queryKey : ['company', 'table']
+                        queryKey : ['company', 'resource-query']
                     })
                 }}
             />

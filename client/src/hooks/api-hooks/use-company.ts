@@ -57,6 +57,7 @@ export const useCreateCompany = ({
                 ['company', data.id],
                 data
             )
+
             queryClient.setQueryData<CompanyResource>(
                 ['company', 'loader', data.id],
                 data
@@ -89,13 +90,17 @@ export const useApproveCompany = ({
                 throw errorMessage
             }
 
-            queryClient.setQueryData<CompanyResource[]>(
-                ['company', 'table'],
+            queryClient.setQueriesData<CompanyPaginatedResource>(
+                { queryKey: ['company', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
-                    return oldData.map((company) =>
-                        company.id === companyId ? data : company
-                    )
+
+                    return {
+                        ...oldData,
+                        data: oldData.data.map((company) =>
+                            company.id === companyId ? data : company
+                        ),
+                    }
                 }
             )
 
@@ -142,13 +147,17 @@ export const useUpdateCompany = ({
                 throw errorMessage
             }
 
-            queryClient.setQueryData<CompanyResource[]>(
-                ['company', 'table'],
+            queryClient.setQueriesData<CompanyPaginatedResource>(
+                { queryKey: ['company', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
-                    return oldData.map((company) =>
-                        company.id === id ? response : company
-                    )
+
+                    return {
+                        ...oldData,
+                        data: oldData.data.map((company) =>
+                            company.id === id ? response : company
+                        ),
+                    }
                 }
             )
 
@@ -190,13 +199,17 @@ export const useUpdateCompanyProfilePicture = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.setQueryData<CompanyResource[]>(
-                ['company', 'table'],
+            queryClient.setQueriesData<CompanyPaginatedResource>(
+                { queryKey: ['company', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
-                    return oldData.map((company) =>
-                        company.id === companyId ? data : company
-                    )
+
+                    return {
+                        ...oldData,
+                        data: oldData.data.map((company) =>
+                            company.id === companyId ? data : company
+                        ),
+                    }
                 }
             )
 
@@ -236,13 +249,10 @@ export const useDeleteCompany = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.setQueryData<CompanyResource[]>(
-                ['company', 'table'],
-                (oldData) => {
-                    if (!oldData) return oldData
-                    return oldData.filter((item) => item.id !== companyId)
-                }
-            )
+            queryClient.invalidateQueries({
+                queryKey: ['company', 'resource-query'],
+            })
+
             queryClient.invalidateQueries({ queryKey: ['company', companyId] })
             queryClient.removeQueries({
                 queryKey: ['company', 'loader', companyId],
@@ -255,13 +265,13 @@ export const useDeleteCompany = ({
 }
 
 export const useFilteredPaginatedCompanies = ({
-    filterPayload,
-    pagination = { pageSize: 10, pageIndex: 1 },
-    preloads = ['Media', 'Owner'],
     sort,
+    filterPayload,
+    preloads = ['Media', 'Owner'],
+    pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps = {}) => {
     return useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['company', 'table', filterPayload, pagination],
+        queryKey: ['company', 'resource-query', filterPayload, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 CompanyService.getCompanies({

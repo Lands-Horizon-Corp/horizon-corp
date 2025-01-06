@@ -92,15 +92,19 @@ export const useUpdateBranch = ({
                 throw errorMessage
             }
 
-            queryClient.setQueryData<BranchResource[]>(
-                ['branch', 'table'],
+            queryClient.setQueriesData<BranchPaginatedResource>(
+                { queryKey: ['branch', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
-                    return oldData.map((branch) =>
-                        branch.id === id ? response : branch
-                    )
+                    return {
+                        ...oldData,
+                        data: oldData.data.map((branch) =>
+                            branch.id === id ? response : branch
+                        ),
+                    }
                 }
             )
+
             queryClient.setQueryData<BranchResource>(['branch', id], response)
             queryClient.setQueryData<BranchResource>(
                 ['branch', 'loader', id],
@@ -138,15 +142,19 @@ export const useUpdateBranchProfilePicture = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.setQueryData<BranchResource[]>(
-                ['branch', 'table'],
+            queryClient.setQueriesData<BranchPaginatedResource>(
+                { queryKey: ['branch', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
-                    return oldData.map((branch) =>
-                        branch.id === branchId ? data : branch
-                    )
+                    return {
+                        ...oldData,
+                        data: oldData.data.map((branch) =>
+                            branch.id === branchId ? data : branch
+                        ),
+                    }
                 }
             )
+
             queryClient.setQueryData<BranchResource>(['branch', branchId], data)
             queryClient.setQueryData<BranchResource>(
                 ['branch', 'loader', branchId],
@@ -178,13 +186,11 @@ export const useDeleteBranch = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.setQueryData<BranchResource[]>(
-                ['branch', 'table'],
-                (oldData) => {
-                    if (!oldData) return oldData
-                    return oldData.filter((branch) => branch.id !== branchId)
-                }
-            )
+            queryClient.invalidateQueries({
+                queryKey: ['branch', 'resource-query'],
+                exact: false,
+            })
+
             queryClient.invalidateQueries({ queryKey: ['branch', branchId] })
             queryClient.removeQueries({
                 queryKey: ['branch', 'loader', branchId],
@@ -203,7 +209,7 @@ export const useFilteredPaginatedBranch = ({
     sort,
 }: IFilterPaginatedHookProps = {}) => {
     return useQuery<BranchPaginatedResource, string>({
-        queryKey: ['branch', 'table', filterPayload, pagination],
+        queryKey: ['branch', 'resource-query', filterPayload, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 BranchService.getBranches({

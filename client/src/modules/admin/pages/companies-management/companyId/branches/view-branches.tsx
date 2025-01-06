@@ -21,7 +21,7 @@ const CompanyBranchesPage = () => {
                 formProps={{
                     onSuccess: () =>
                         queryClient.invalidateQueries({
-                            queryKey: ['branch', 'table'],
+                            queryKey: ['branch', 'resource-query'],
                         }),
                 }}
             />

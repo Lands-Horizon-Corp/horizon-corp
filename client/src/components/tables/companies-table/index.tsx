@@ -141,7 +141,7 @@ const CompaniesTable = ({
                     deleteActionProps={{
                         onDeleteSuccess: () =>
                             queryClient.invalidateQueries({
-                                queryKey: ['company', 'table'],
+                                queryKey: ['company', 'resource-query'],
                             }),
                         onDelete: (selectedData) =>
                             CompanyService.deleteMany(
