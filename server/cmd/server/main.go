@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/database"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
@@ -18,8 +19,8 @@ func main() {
 		database.Module,
 		tags.Module,
 		models.Module,
+		api.Module,
 		fx.Invoke(
-			// 	modules.NewModuleServiceProvider,
 			providers.NewTerminalService,
 		),
 	)
