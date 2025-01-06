@@ -10,7 +10,7 @@ import {
 } from '@/contexts/filter-context'
 import useDebounce from '@/hooks/use-debounce'
 
-const useDatableFilterState = (options?: {
+const useFilterState = (options?: {
     onFilterChange?: () => void
     debounceFinalFilterMs?: number
     defaultFilter?: TFilterObject
@@ -120,4 +120,4 @@ const useDatableFilterState = (options?: {
     }
 }
 
-export default useDatableFilterState
+export default useFilterState
