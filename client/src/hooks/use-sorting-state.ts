@@ -7,12 +7,9 @@ export interface ISortItem<T = unknown> {
     order: 'asc' | 'desc'
 }
 
-export interface ISortingState<T = unknown> {
-    sortingState: ISortItem<T>[]
-    setSortingState: React.Dispatch<React.SetStateAction<ISortItem<T>[]>>
-}
+export type TSortingState<T = unknown> = ISortItem<T>[]
 
-export const useSortingState = <T = unknown>(): ISortingState<T> => {
-    const [sortingState, setSortingState] = useState<ISortItem<T>[]>([])
+export const useSortingState = <T = unknown>() => {
+    const [sortingState, setSortingState] = useState<TSortingState<T>>([])
     return { sortingState, setSortingState }
 }

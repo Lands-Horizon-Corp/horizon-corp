@@ -53,13 +53,23 @@ const useDataTableState = <TData extends { id: string | number }>(
         }))
     }, [sortingState])
 
-    const setSorting = (newSortingState: SortingState) => {
-        setSortingState(
-            newSortingState.map((sortItem) => ({
+    const setSorting: OnChangeFn<SortingState> = (updaterOrValue) => {
+        setSortingState((prevSortingState) => {
+            const newSortingState =
+                typeof updaterOrValue === 'function'
+                    ? updaterOrValue(
+                          prevSortingState.map((sortItem) => ({
+                              id: sortItem.field,
+                              desc: sortItem.order === 'desc',
+                          }))
+                      )
+                    : updaterOrValue
+
+            return newSortingState.map((sortItem) => ({
                 field: sortItem.id,
                 order: sortItem.desc ? 'desc' : 'asc',
             }))
-        )
+        })
     }
 
     const getRowIdFn = useCallback((row: TData) => `${row.id}`, [])
