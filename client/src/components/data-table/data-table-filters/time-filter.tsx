@@ -12,12 +12,12 @@ import { Button } from '@/components/ui/button'
 import TimePicker from '@/components/date-time-pickers/time-picker'
 
 import {
+    useFilter,
     TFilterModes,
     TSearchFilter,
     filterModeMap,
-    useDataTableFilter,
     IFilterComponentProps,
-} from './data-table-filter-context'
+} from '@/contexts/filter-context'
 import logger from '@/helpers/loggers/logger'
 
 const TimePickerWithApply = ({
@@ -43,7 +43,7 @@ const TimePickerWithApply = ({
 }
 
 const TimeFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentProps<T, 'time'>) => {
-    const { filters, setFilter } = useDataTableFilter<Date, typeof field>()
+    const { filters, setFilter } = useFilter<Date, typeof field>()
 
     const filterModeOptions = filterModeMap['time']
 

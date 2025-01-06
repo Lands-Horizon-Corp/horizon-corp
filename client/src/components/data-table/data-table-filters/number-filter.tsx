@@ -5,17 +5,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import NumberRange from './number-range'
 import { Button } from '@/components/ui/button'
 import { DebouncedInput } from '@/components/ui/debounced-input'
 
-import {
-    filterModeMap,
-    IFilterComponentProps,
-    TFilterModes,
-    TSearchFilter,
-    useDataTableFilter,
-} from './data-table-filter-context'
-import NumberRange from './number-range'
+
+import { filterModeMap, IFilterComponentProps, TFilterModes, TSearchFilter, useFilter } from '@/contexts/filter-context'
 
 const NumberFilter = <T,>({
     field,
@@ -23,7 +18,7 @@ const NumberFilter = <T,>({
     defaultMode,
 }: IFilterComponentProps<T, 'number'>) => {
     const filterModeOptions = filterModeMap['number']
-    const { filters, setFilter } = useDataTableFilter<number, typeof field>()
+    const { filters, setFilter } = useFilter<number, typeof field>()
 
     const filterVal: TSearchFilter<number> = filters[field] ?? {
         displayText,

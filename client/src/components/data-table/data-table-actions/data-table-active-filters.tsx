@@ -7,10 +7,10 @@ import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { useDataTableFilter } from '../data-table-filters/data-table-filter-context'
+import { useFilter } from '@/contexts/filter-context'
 
 const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
-    const { filters, resetFilter, removeFilter } = useDataTableFilter()
+    const { filters, resetFilter, removeFilter } = useFilter()
 
     const mappedFilters = useMemo(() => {
         return Object.entries(filters)

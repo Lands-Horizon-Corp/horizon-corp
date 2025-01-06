@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import { createContext } from 'react'
 import { KeysOfOrString } from '@/types'
 
 export type TFilterLogic = 'AND' | 'OR'
@@ -88,7 +88,7 @@ export type TFilterObject<T = unknown, TValue = T> = {
     [key: string]: TSearchFilter<T, TValue> | undefined
 }
 
-export interface IDataTableFilterState<
+export interface IFilterState<
     T = unknown,
     TField = string,
     TValue = T,
@@ -115,28 +115,8 @@ export interface IFilterComponentProps<
     defaultMode?: (typeof filterModeMap)[F][number]['value']
 }
 
-const DataTableFilterContext = createContext<
-    IDataTableFilterState<unknown> | undefined
+const FilterContext = createContext<
+    IFilterState<unknown> | undefined
 >(undefined)
 
-export const useDataTableFilter = <
-    T = unknown,
-    TField = string,
-    TValue = T,
->() => {
-    const context = useContext(DataTableFilterContext) as IDataTableFilterState<
-        T,
-        TField,
-        TValue
-    >
-
-    if (!context) {
-        throw new Error(
-            'useDataTableFilter must be used within a DataTableFilterProvider'
-        )
-    }
-
-    return context
-}
-
-export default DataTableFilterContext
+export default FilterContext
