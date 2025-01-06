@@ -12,7 +12,6 @@ import DataTableToolbar, {
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
-import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
 import branchColumns, {
     branchesGlobalSearchTargets,
@@ -22,6 +21,7 @@ import branchColumns, {
 import { cn } from '@/lib'
 import { TableProps } from '../types'
 import { BranchResource } from '@/horizon-corp/types'
+import FilterContext from '@/contexts/filter-context/filter-context'
 import BranchService from '@/horizon-corp/server/admin/BranchService'
 import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
 
@@ -120,7 +120,7 @@ const BranchesTable = ({
     })
 
     return (
-        <DataTableFilterContext.Provider value={filterState}>
+        <FilterContext.Provider value={filterState}>
             <div className={cn('flex h-full flex-col gap-y-2', className)}>
                 <DataTableToolbar
                     globalSearchProps={{
@@ -171,7 +171,7 @@ const BranchesTable = ({
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>
-        </DataTableFilterContext.Provider>
+        </FilterContext.Provider>
     )
 }
 

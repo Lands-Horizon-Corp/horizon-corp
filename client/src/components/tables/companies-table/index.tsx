@@ -13,7 +13,6 @@ import DataTableToolbar, {
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
-import DataTableFilterContext from '@/components/data-table/data-table-filters/data-table-filter-context'
 
 import companyColumns, {
     companyGlobalSearchTargets,
@@ -23,6 +22,7 @@ import companyColumns, {
 import { cn } from '@/lib'
 import { TableProps } from '../types'
 import { CompanyResource } from '@/horizon-corp/types'
+import FilterContext from '@/contexts/filter-context/filter-context'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
 
@@ -123,7 +123,7 @@ const CompaniesTable = ({
     })
 
     return (
-        <DataTableFilterContext.Provider value={filterState}>
+        <FilterContext.Provider value={filterState}>
             <div className={cn('flex h-full flex-col gap-y-2', className)}>
                 <DataTableToolbar
                     globalSearchProps={{
@@ -178,7 +178,7 @@ const CompaniesTable = ({
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>
-        </DataTableFilterContext.Provider>
+        </FilterContext.Provider>
     )
 }
 
