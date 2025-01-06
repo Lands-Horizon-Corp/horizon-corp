@@ -15,7 +15,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { TFilterPayload } from '../../../contexts/filter-context'
+import { TFilterPayload } from '@/contexts/filter-context'
 
 export interface IDataTableExportProps<TData> {
     table: Table<TData>

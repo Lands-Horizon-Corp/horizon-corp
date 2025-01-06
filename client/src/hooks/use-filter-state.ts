@@ -3,11 +3,11 @@ import { useMemo, useState } from 'react'
 import {
     TFilterLogic,
     TFinalFilter,
+    IFilterState,
     TSearchFilter,
     TFilterObject,
-    IFilterState,
     TFilterPayload,
-} from '../../../contexts/filter-context'
+} from '@/contexts/filter-context'
 import useDebounce from '@/hooks/use-debounce'
 
 const useDatableFilterState = (options?: {
