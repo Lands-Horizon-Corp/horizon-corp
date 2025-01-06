@@ -12,7 +12,6 @@ import DataTableToolbar, {
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
-import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 
 import companyColumns, {
     companyGlobalSearchTargets,
@@ -22,6 +21,7 @@ import companyColumns, {
 import { cn } from '@/lib'
 import { TableProps } from '../types'
 import { CompanyResource } from '@/horizon-corp/types'
+import useDatableFilterState from '@/hooks/use-filter-state'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'

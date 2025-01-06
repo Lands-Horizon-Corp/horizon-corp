@@ -11,7 +11,6 @@ import DataTableToolbar, {
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
-import useDatableFilterState from '@/components/data-table/hooks/use-datatable-filter-state'
 
 import branchColumns, {
     branchesGlobalSearchTargets,
@@ -21,6 +20,7 @@ import branchColumns, {
 import { cn } from '@/lib'
 import { TableProps } from '../types'
 import { BranchResource } from '@/horizon-corp/types'
+import useFilterState from '@/hooks/use-filter-state'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import BranchService from '@/horizon-corp/server/admin/BranchService'
 import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
@@ -74,7 +74,7 @@ const BranchesTable = ({
         onSelectData,
     })
 
-    const filterState = useDatableFilterState({
+    const filterState = useFilterState({
         defaultFilter,
         onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
     })
