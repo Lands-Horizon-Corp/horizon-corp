@@ -32,6 +32,33 @@ export const companyLoader = (companyId: number) =>
         retry: 0,
     })
 
+// load/get company by id
+export const useCompany = ({
+    companyId,
+    onError,
+    onSuccess,
+}: { companyId: number } & IOperationCallbacks<CompanyResource, string>) => {
+    return useQuery<CompanyResource, string>({
+        queryKey: ['company', companyId],
+        queryFn: async () => {
+            const [error, data] = await withCatchAsync(
+                CompanyService.getById(companyId)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            onSuccess?.(data)
+            return data
+        },
+        enabled : companyId !== undefined && companyId !== null
+    })
+}
+
 // create company
 export const useCreateCompany = ({
     onError,

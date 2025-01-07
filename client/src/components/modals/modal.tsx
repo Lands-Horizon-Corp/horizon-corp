@@ -3,7 +3,6 @@ import * as DialogPrimitive from '@radix-ui/react-dialog'
 import {
     Dialog,
     DialogTitle,
-    DialogHeader,
     DialogContent,
     DialogDescription,
     DialogExtraProps,
@@ -20,6 +19,8 @@ export interface IModalProps
     title?: string
     description?: string
     footer?: React.ReactNode
+    titleClassName?: string
+    descriptionClassName?: string
 }
 
 const Modal = ({
@@ -28,8 +29,10 @@ const Modal = ({
     children,
     className,
     description,
+    titleClassName,
     overlayClassName,
     closeButtonClassName,
+    descriptionClassName,
     ...other
 }: IModalProps) => {
     return (
@@ -38,14 +41,14 @@ const Modal = ({
                 closeButtonClassName={closeButtonClassName}
                 overlayClassName={cn('backdrop-blur', overlayClassName)}
                 className={cn(
-                    'shadow-2 !rounded-2xl border font-inter max-w-5xl max-h-[95vh] overflow-y-auto ecoop-scroll',
+                    'shadow-2 ecoop-scroll max-h-[95vh] max-w-xl overflow-y-auto !rounded-2xl border font-inter',
                     className
                 )}
             >
-                <DialogHeader>
-                    <DialogTitle className="font-medium">{title}</DialogTitle>
-                </DialogHeader>
-                <DialogDescription className="mb-4">
+                <DialogTitle className={cn('font-medium', titleClassName)}>
+                    {title}
+                </DialogTitle>
+                <DialogDescription className={cn('mb-4', descriptionClassName)}>
                     {description}
                 </DialogDescription>
                 {children}

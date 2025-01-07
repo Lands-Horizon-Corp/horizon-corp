@@ -18,24 +18,17 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { LoadingSpinnerIcon } from '@/components/icons'
 import Modal, { IModalProps } from '@/components/modals/modal'
+import CompanyPicker from '@/components/pickers/company-picker'
 import FormErrorMessage from '@/components/ui/form-error-message'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { BranchResource } from '@/horizon-corp/types'
+import { contactNumberSchema } from '@/validations/common'
 import { useCreateBranch } from '@/hooks/api-hooks/use-branch'
+import { BranchResource, CompanyRequest } from '@/horizon-corp/types'
 
-type TBranchBasicInfo = Omit<
-    BranchResource,
-    | 'id'
-    | 'media'
-    | 'company'
-    | 'employees'
-    | 'members'
-    | 'createdAt'
-    | 'updatedAt'
->
+type TBranchBasicInfo = Partial<CompanyRequest>
 
 interface BranchCreateFormProps
     extends IBaseCompNoChild,
@@ -43,13 +36,16 @@ interface BranchCreateFormProps
 
 const BranchBasicInfoFormSchema = z.object({
     name: z.string().min(1, 'Branch name is required'),
-    companyId: z.coerce.number(),
+    companyId: z.coerce.number({ required_error: 'Company is required', invalid_type_error : 'Company ID is invalid' }),
     address: z.string().min(1, 'Branch address is required').optional(),
     longitude: z.coerce.number().optional(),
     latitude: z.coerce.number().optional(),
-    email: z.string().email('Invalid email address'),
-    contactNumber: z.string(),
-    isAdminVerified: z.boolean(),
+    email: z
+        .string()
+        .min(1, 'Email is required')
+        .email('Invalid email address'),
+    contactNumber: contactNumberSchema,
+    isAdminVerified: z.boolean().default(false),
 })
 
 const BranchCreateForm = ({
@@ -112,7 +108,7 @@ const BranchCreateForm = ({
                         control={form.control}
                         name="name"
                         render={({ field }) => (
-                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
+                            <FormItem className="col-span-2 space-y-1 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
@@ -134,7 +130,7 @@ const BranchCreateForm = ({
                         control={form.control}
                         name="address"
                         render={({ field }) => (
-                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
+                            <FormItem className="col-span-2 space-y-1 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
@@ -156,7 +152,7 @@ const BranchCreateForm = ({
                         control={form.control}
                         name="email"
                         render={({ field }) => (
-                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
+                            <FormItem className="col-span-2 space-y-1 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
@@ -179,7 +175,7 @@ const BranchCreateForm = ({
                         control={form.control}
                         name="contactNumber"
                         render={({ field }) => (
-                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
+                            <FormItem className="col-span-2 space-y-1 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
@@ -192,6 +188,29 @@ const BranchCreateForm = ({
                                         id={field.name}
                                         autoComplete="off"
                                         placeholder="Contact Number"
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="companyId"
+                        render={({ field }) => (
+                            <FormItem className="col-span-2 space-y-1 sm:col-span-1">
+                                <FormLabel
+                                    htmlFor={field.name}
+                                    className="text-right text-sm font-normal text-foreground/60"
+                                >
+                                    Company
+                                </FormLabel>
+                                <FormControl>
+                                    <CompanyPicker
+                                        value={field.value}
+                                        onSelect={(company) =>
+                                            field.onChange(company.id)
+                                        }
+                                        placeholder='Select company'
                                     />
                                 </FormControl>
                             </FormItem>
@@ -303,10 +322,11 @@ export const BranchCreateFormModal = ({
     title = 'Create Branch',
     description = 'Fill out the form to create a new branch.',
     formProps,
+    className,
     ...props
 }: IModalProps & { formProps?: Omit<BranchCreateFormProps, 'className'> }) => {
     return (
-        <Modal title={title} description={description} {...props}>
+        <Modal title={title} className={cn('sm:max-w-5xl', className)} description={description} {...props}>
             <BranchCreateForm {...formProps} />
         </Modal>
     )
