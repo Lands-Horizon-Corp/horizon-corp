@@ -16,10 +16,10 @@ const (
 type UserAccountType string
 
 const (
-	AdminType    UserAccountType = "Admin"
-	EmployeeType UserAccountType = "Employee"
-	MemberType   UserAccountType = "Member"
-	OwnerType    UserAccountType = "Owner"
+	AdminrAccountType    UserAccountType = "Admin"
+	EmployeerAccountType UserAccountType = "Employee"
+	MemberAccountType    UserAccountType = "Member"
+	OwnerrAccountType    UserAccountType = "Owner"
 )
 
 var Module = fx.Module(
