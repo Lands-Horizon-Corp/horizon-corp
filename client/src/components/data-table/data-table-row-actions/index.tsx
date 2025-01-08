@@ -45,6 +45,7 @@ const RowActionsGroup = ({ onDelete, onView, onEdit, otherActions }: Props) => {
             <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
                 <DropdownMenuLabel>Action</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {otherActions}
                 {onView && (
                     <DropdownMenuItem
                         disabled={!onView.isAllowed}
@@ -72,7 +73,6 @@ const RowActionsGroup = ({ onDelete, onView, onEdit, otherActions }: Props) => {
                         <TrashIcon className="mr-2" /> {onDelete.text}
                     </DropdownMenuItem>
                 )}
-                {otherActions}
             </DropdownMenuContent>
         </DropdownMenu>
     )

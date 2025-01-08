@@ -1,6 +1,6 @@
 import { useRouter } from '@tanstack/react-router'
 
-import { BadgeCheckIcon } from '@/components/icons'
+import { BadgeCheckIcon, StoreIcon } from '@/components/icons'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
@@ -92,6 +92,17 @@ const CompaniesTableAdminAction = ({
                             Approve
                         </DropdownMenuItem>
                     )}
+                    <DropdownMenuItem
+                        onClick={() => {
+                            router.navigate({
+                                to: '/admin/companies-management/$companyId/branch',
+                                params: { companyId: company.id },
+                            })
+                        }}
+                    >
+                        <StoreIcon className="mr-2" />
+                        Manage Branches
+                    </DropdownMenuItem>{' '}
                 </>
             }
         />
