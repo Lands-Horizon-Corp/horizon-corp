@@ -19,6 +19,9 @@ const CompanyBranchesPage = () => {
                 open={createModal}
                 onOpenChange={(newState) => setCreateModal(newState)}
                 formProps={{
+                    defaultValues: {
+                        companyId,
+                    },
                     onSuccess: () =>
                         queryClient.invalidateQueries({
                             queryKey: ['branch', 'resource-query'],
