@@ -24,20 +24,6 @@ const (
 
 var Module = fx.Module(
 	"models",
-	fx.Provide(
-	// NewAdminRepository,
-	// NewBranchRepository,
-	// NewCompanyRepository,
-	// NewContactRepository,
-	// NewEmployeeRepository,
-	// NewFeedbackRepository,
-	// NewFootstepRepository,
-	// NewGenderRepository,
-	// NewMediaRepository,
-	// NewMemberRepository,
-	// NewOwnerRepository,
-	// NewRoleRepository,
-	),
 	fx.Invoke(func(
 		db *providers.DatabaseService,
 		logger *providers.LoggerService,

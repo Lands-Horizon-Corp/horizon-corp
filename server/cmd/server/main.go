@@ -7,7 +7,7 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/tags"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/transformers"
 	"go.uber.org/fx"
 )
 
@@ -17,9 +17,9 @@ func main() {
 		helpers.Module,
 		providers.Module,
 		database.Module,
-		tags.Module,
 		models.Module,
 		api.Module,
+		transformers.Module,
 		fx.Invoke(
 			providers.NewTerminalService,
 		),
