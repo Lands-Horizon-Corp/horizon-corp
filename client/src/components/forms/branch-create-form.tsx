@@ -11,15 +11,16 @@ import {
     FormLabel,
     FormControl,
 } from '@/components/ui/form'
-
 import { Input } from '@/components/ui/input'
 import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import { LoadingSpinnerIcon } from '@/components/icons'
 import Modal, { IModalProps } from '@/components/modals/modal'
 import CompanyPicker from '@/components/pickers/company-picker'
 import FormErrorMessage from '@/components/ui/form-error-message'
+import { PhoneInput } from '@/components/contact-input/contact-input'
+import { LoadingSpinnerIcon, VerifiedPatchIcon } from '@/components/icons'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
@@ -36,7 +37,10 @@ interface BranchCreateFormProps
 
 const BranchBasicInfoFormSchema = z.object({
     name: z.string().min(1, 'Branch name is required'),
-    companyId: z.coerce.number({ required_error: 'Company is required', invalid_type_error : 'Company ID is invalid' }),
+    companyId: z.coerce.number({
+        required_error: 'Company is required',
+        invalid_type_error: 'Company ID is invalid',
+    }),
     address: z.string().min(1, 'Branch address is required').optional(),
     longitude: z.coerce.number().optional(),
     latitude: z.coerce.number().optional(),
@@ -138,7 +142,7 @@ const BranchCreateForm = ({
                                     Branch Address
                                 </FormLabel>
                                 <FormControl>
-                                    <Input
+                                    <Textarea
                                         {...field}
                                         id={field.name}
                                         autoComplete="off"
@@ -174,7 +178,7 @@ const BranchCreateForm = ({
                     <FormField
                         control={form.control}
                         name="contactNumber"
-                        render={({ field }) => (
+                        render={({ field, fieldState: { invalid, error } }) => (
                             <FormItem className="col-span-2 space-y-1 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
@@ -183,12 +187,20 @@ const BranchCreateForm = ({
                                     Contact Number
                                 </FormLabel>
                                 <FormControl>
-                                    <Input
-                                        {...field}
-                                        id={field.name}
-                                        autoComplete="off"
-                                        placeholder="Contact Number"
-                                    />
+                                    <div className="relative flex w-full flex-1 items-center gap-x-2">
+                                        <PhoneInput
+                                            {...field}
+                                            defaultCountry="PH"
+                                            className="w-full"
+                                        />
+                                        <VerifiedPatchIcon
+                                            className={cn(
+                                                'absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
+                                                (invalid || error) &&
+                                                    'text-destructive'
+                                            )}
+                                        />
+                                    </div>
                                 </FormControl>
                             </FormItem>
                         )}
@@ -210,7 +222,7 @@ const BranchCreateForm = ({
                                         onSelect={(company) =>
                                             field.onChange(company.id)
                                         }
-                                        placeholder='Select company'
+                                        placeholder="Select company"
                                     />
                                 </FormControl>
                             </FormItem>
@@ -326,7 +338,12 @@ export const BranchCreateFormModal = ({
     ...props
 }: IModalProps & { formProps?: Omit<BranchCreateFormProps, 'className'> }) => {
     return (
-        <Modal title={title} className={cn('sm:max-w-5xl', className)} description={description} {...props}>
+        <Modal
+            title={title}
+            className={cn('sm:max-w-5xl', className)}
+            description={description}
+            {...props}
+        >
             <BranchCreateForm {...formProps} />
         </Modal>
     )

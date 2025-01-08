@@ -29,6 +29,7 @@ import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { CompanyRequest, CompanyResource } from '@/horizon-corp/types'
 import { contactNumberSchema } from '@/validations/common'
+import { Textarea } from '../ui/textarea'
 
 interface CompanyCreateFormProps
     extends IBaseCompNoChild,
@@ -106,7 +107,7 @@ const CompanyCreateForm = ({
                         control={form.control}
                         name="name"
                         render={({ field }) => (
-                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
+                            <FormItem className="col-span-2 space-y-1 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
@@ -128,7 +129,7 @@ const CompanyCreateForm = ({
                         control={form.control}
                         name="contactNumber"
                         render={({ field, fieldState: { invalid, error } }) => (
-                            <FormItem className="col-span-2 space-y-0 sm:col-span-1">
+                            <FormItem className="col-span-2 space-y-1 sm:col-span-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
@@ -136,7 +137,7 @@ const CompanyCreateForm = ({
                                     Contact Number
                                 </FormLabel>
                                 <FormControl>
-                                    <div className="flex w-full flex-1 items-center gap-x-2">
+                                    <div className="relative flex w-full flex-1 items-center gap-x-2">
                                         <PhoneInput
                                             {...field}
                                             defaultCountry="PH"
@@ -144,7 +145,7 @@ const CompanyCreateForm = ({
                                         />
                                         <VerifiedPatchIcon
                                             className={cn(
-                                                'size-8 text-primary delay-300 duration-300 ease-in-out',
+                                                'absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
                                                 (invalid || error) &&
                                                     'text-destructive'
                                             )}
@@ -175,12 +176,11 @@ const CompanyCreateForm = ({
                             </FormItem>
                         )}
                     />
-
                     <FormField
                         control={form.control}
                         name="address"
                         render={({ field }) => (
-                            <FormItem className="col-span-2 space-y-0">
+                            <FormItem className="col-span-2 space-y-1">
                                 <FormLabel
                                     htmlFor={field.name}
                                     className="text-right text-sm font-normal text-foreground/60"
@@ -188,7 +188,7 @@ const CompanyCreateForm = ({
                                     Company Address
                                 </FormLabel>
                                 <FormControl>
-                                    <Input
+                                    <Textarea
                                         {...field}
                                         id={field.name}
                                         autoComplete="off"
@@ -305,13 +305,19 @@ const CompanyCreateForm = ({
 }
 
 export const CompanyCreateFormModal = ({
-    title = 'Company Setup',
-    description = 'Create a new company',
+    title = 'Company Create',
+    description = 'Setup a new company',
     formProps,
+    className,
     ...props
 }: IModalProps & { formProps?: Omit<CompanyCreateFormProps, 'className'> }) => {
     return (
-        <Modal title={title} description={description} {...props}>
+        <Modal
+            title={title}
+            className={cn('sm:max-w-5xl', className)}
+            description={description}
+            {...props}
+        >
             <CompanyCreateForm {...formProps} />
         </Modal>
     )
