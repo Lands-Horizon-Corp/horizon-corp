@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -74,14 +73,4 @@ type OwnerResource struct {
 	Role               *RoleResource       `json:"role"`
 	Footsteps          []*FootstepResource `json:"footsteps"`
 	Companies          []*CompanyResource  `json:"companies"`
-}
-
-type OwnerRepository struct {
-	*Repository[Owner]
-}
-
-func NewOwnerRepository(db *providers.DatabaseService) *OwnerRepository {
-	return &OwnerRepository{
-		Repository: NewRepository[Owner](db),
-	}
 }

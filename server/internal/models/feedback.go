@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -22,14 +21,4 @@ type FeedbackResource struct {
 	Email        string `json:"email"`
 	Description  string `json:"description"`
 	FeedbackType string `json:"feedbackType"`
-}
-
-type FeedbackRepository struct {
-	*Repository[Feedback]
-}
-
-func NewFeedbackRepository(db *providers.DatabaseService) *FeedbackRepository {
-	return &FeedbackRepository{
-		Repository: NewRepository[Feedback](db),
-	}
 }

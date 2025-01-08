@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -46,14 +45,4 @@ type FootstepResource struct {
 	Owner       *OwnerResource    `json:"owner"`
 	MemberID    *uint             `json:"memberID"`
 	Member      *MemberResource   `json:"member"`
-}
-
-type FootstepRepository struct {
-	*Repository[Footstep]
-}
-
-func NewFootstepRepository(db *providers.DatabaseService) *FootstepRepository {
-	return &FootstepRepository{
-		Repository: NewRepository[Footstep](db),
-	}
 }

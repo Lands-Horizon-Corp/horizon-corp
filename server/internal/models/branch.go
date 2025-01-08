@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -51,15 +50,3 @@ type BranchResource struct {
 	Employees       []*EmployeeResource `json:"employees"`
 	Members         []*MemberResource   `json:"members"`
 }
-
-type BranchRepository struct {
-	*Repository[Branch]
-}
-
-func NewBranchRepository(db *providers.DatabaseService) *BranchRepository {
-	return &BranchRepository{
-		Repository: NewRepository[Branch](db),
-	}
-}
-
-func (r *BranchRepository) DatabaseSeeder() {}

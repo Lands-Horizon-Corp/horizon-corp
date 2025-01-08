@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -26,14 +25,4 @@ type ContactResource struct {
 	Email         string `json:"email"`
 	ContactNumber string `json:"contactNumber"`
 	Description   string `json:"description"`
-}
-
-type ContactRepository struct {
-	*Repository[Contact]
-}
-
-func NewContactRepository(db *providers.DatabaseService) *ContactRepository {
-	return &ContactRepository{
-		Repository: NewRepository[Contact](db),
-	}
 }

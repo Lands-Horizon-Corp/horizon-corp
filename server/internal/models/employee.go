@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -81,14 +80,4 @@ type EmployeeResource struct {
 	Gender             *GenderResource      `json:"gender"`
 	Timesheets         []*TimesheetResource `json:"timesheets"`
 	Footsteps          []*FootstepResource  `json:"footsteps"`
-}
-
-type EmployeeRepository struct {
-	*Repository[Employee]
-}
-
-func NewEmployeeRepository(db *providers.DatabaseService) *EmployeeRepository {
-	return &EmployeeRepository{
-		Repository: NewRepository[Employee](db),
-	}
 }

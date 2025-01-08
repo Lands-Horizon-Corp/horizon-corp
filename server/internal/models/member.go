@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -82,14 +81,4 @@ type MemberResource struct {
 	Gender             *GenderResource `json:"gender"`
 
 	Footsteps []*FootstepResource `json:"footsteps"`
-}
-
-type MemberRepository struct {
-	*Repository[Member]
-}
-
-func NewMemberRepository(db *providers.DatabaseService) *MemberRepository {
-	return &MemberRepository{
-		Repository: NewRepository[Member](db),
-	}
 }

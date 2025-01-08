@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -61,14 +60,4 @@ type RoleResource struct {
 	Owners    []*OwnerResource    `json:"owners"`
 	Employees []*EmployeeResource `json:"employees"`
 	Members   []*MemberResource   `json:"members"`
-}
-
-type RoleRepository struct {
-	*Repository[Role]
-}
-
-func NewRoleRepository(db *providers.DatabaseService) *RoleRepository {
-	return &RoleRepository{
-		Repository: NewRepository[Role](db),
-	}
 }

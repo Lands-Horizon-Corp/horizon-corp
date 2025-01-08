@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -36,14 +35,4 @@ type TimesheetResource struct {
 	MediaIn    *MediaResource    `json:"mediaIn"`
 	MediaOutID *uint             `json:"mediaOutID"`
 	MediaOut   *MediaResource    `json:"mediaOut"`
-}
-
-type TimesheetRepository struct {
-	*Repository[Timesheet]
-}
-
-func NewTimesheetRepository(db *providers.DatabaseService) *TimesheetRepository {
-	return &TimesheetRepository{
-		Repository: NewRepository[Timesheet](db),
-	}
 }

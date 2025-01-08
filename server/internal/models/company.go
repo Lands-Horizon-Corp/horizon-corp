@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -46,14 +45,4 @@ type CompanyResource struct {
 	Media           *MediaResource    `json:"media"`
 	IsAdminVerified bool              `json:"isAdminVerified"`
 	Branches        []*BranchResource `json:"branches"`
-}
-
-type CompanyRepository struct {
-	*Repository[Company]
-}
-
-func NewCompanyRepository(db *providers.DatabaseService) *CompanyRepository {
-	return &CompanyRepository{
-		Repository: NewRepository[Company](db),
-	}
 }

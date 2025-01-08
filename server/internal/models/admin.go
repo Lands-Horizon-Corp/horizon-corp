@@ -3,7 +3,6 @@ package models
 import (
 	"time"
 
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"gorm.io/gorm"
 )
 
@@ -69,15 +68,3 @@ type AdminResource struct {
 	Gender             *GenderResource     `json:"gender"`
 	Footsteps          []*FootstepResource `json:"footsteps"`
 }
-
-type AdminRepository struct {
-	*Repository[Admin]
-}
-
-func NewAdminRepository(db *providers.DatabaseService) *AdminRepository {
-	return &AdminRepository{
-		Repository: NewRepository[Admin](db),
-	}
-}
-
-func (r *AdminRepository) DatabaseSeeder() {}
