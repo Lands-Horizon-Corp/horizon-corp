@@ -153,53 +153,54 @@ type MemberType struct {
 // History Models
 type MemberClassificationHistory struct {
 	gorm.Model
-	MemberClassificationID uint      `gorm:"not null"`
-	MemberID               uint      `gorm:"not null"`
+	MemberClassificationID *uint     `gorm:"type:bigint;unsigned" json:"member_classification_id"`
+	MemberID               uint      `gorm:"not null" json:"member_id"`
 	CreatedAt              time.Time `gorm:"autoCreateTime"`
 }
 
 type MemberGenderHistory struct {
 	gorm.Model
-	MemberClassificationID uint      `gorm:"not null"`
-	MemberID               uint      `gorm:"not null"`
+	MemberClassificationID *uint     `gorm:"type:bigint;unsigned" json:"member_classification_id"`
+	MemberID               uint      `gorm:"not null" json:"member_id"`
 	CreatedAt              time.Time `gorm:"autoCreateTime"`
 }
 
 type MemberCenterHistory struct {
 	gorm.Model
-	MemberClassificationID uint      `gorm:"not null"`
-	MemberID               uint      `gorm:"not null"`
+	MemberClassificationID *uint     `gorm:"type:bigint;unsigned" json:"member_classification_id"`
+	MemberID               uint      `gorm:"not null" json:"member_id"`
 	CreatedAt              time.Time `gorm:"autoCreateTime"`
 }
 
 type MemberGroupHistory struct {
 	gorm.Model
-	MemberClassificationID uint      `gorm:"not null"`
-	MemberID               uint      `gorm:"not null"`
+	MemberClassificationID *uint     `gorm:"type:bigint;unsigned" json:"member_classification_id"`
+	MemberID               uint      `gorm:"not null" json:"member_id"`
 	CreatedAt              time.Time `gorm:"autoCreateTime"`
 }
 
 type MemberEducationalAttainmentHistory struct {
 	gorm.Model
-	MemberClassificationID uint      `gorm:"not null"`
-	MemberID               uint      `gorm:"not null"`
+	MemberClassificationID *uint     `gorm:"type:bigint;unsigned" json:"member_classification_id"`
+	MemberID               uint      `gorm:"not null" json:"member_id"`
 	CreatedAt              time.Time `gorm:"autoCreateTime"`
 }
 
 type MemberOccupationHistory struct {
 	gorm.Model
-	MemberClassificationID uint      `gorm:"not null"`
-	MemberID               uint      `gorm:"not null"`
+	MemberClassificationID *uint     `gorm:"type:bigint;unsigned" json:"member_classification_id"`
+	MemberID               uint      `gorm:"not null" json:"member_id"`
 	CreatedAt              time.Time `gorm:"autoCreateTime"`
 }
 
 type MemberTypeHistory struct {
 	gorm.Model
-	MemberClassificationID uint      `gorm:"not null"`
-	MemberID               uint      `gorm:"not null"`
+	MemberClassificationID *uint     `gorm:"type:bigint;unsigned" json:"member_classification_id"`
+	MemberID               uint      `gorm:"not null" json:"member_id"`
 	CreatedAt              time.Time `gorm:"autoCreateTime"`
 }
 
+// MemberDescription
 // MemberDescription
 type MemberDescription struct {
 	gorm.Model
@@ -235,8 +236,8 @@ type ContactNumberReferences struct {
 type MemberWallet struct {
 	gorm.Model
 	MembersProfileID uint      `gorm:"not null" json:"members_profile_id"`
-	Debit            float64   `gorm:"type:decimal(12,2);default:0" json:"debit"`  // Increased precision
-	Credit           float64   `gorm:"type:decimal(12,2);default:0" json:"credit"` // Increased precision
+	Debit            float64   `gorm:"type:decimal(12,2);default:0" json:"debit"`
+	Credit           float64   `gorm:"type:decimal(12,2);default:0" json:"credit"`
 	Date             time.Time `gorm:"type:date" json:"date"`
 	Description      string    `gorm:"type:text" json:"description"`
 
@@ -292,13 +293,13 @@ type MemberJointAccounts struct {
 // MemberRelativeAccounts
 type MemberRelativeAccounts struct {
 	gorm.Model
-	MemberID           uint   `gorm:"not null" json:"member_id"`
-	RelativeMemberID   uint   `gorm:"not null" json:"relative_member_id"`
-	FamilyRelationship string `gorm:"type:varchar(255)" json:"family_relationship"`
-	Description        string `gorm:"type:text" json:"description"`
+	MembersProfileID        uint   `gorm:"not null" json:"members_profile_id"`
+	RelativeProfileMemberID uint   `gorm:"not null" json:"relative_member_id"`
+	FamilyRelationship      string `gorm:"type:varchar(255)" json:"family_relationship"`
+	Description             string `gorm:"type:text" json:"description"`
 
-	Member         *MemberProfile `gorm:"foreignKey:MemberID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member"`
-	RelativeMember *MemberProfile `gorm:"foreignKey:RelativeMemberID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"relative_member"`
+	MemberProfile                *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
+	RelativeProfileMemberProfile *MemberProfile `gorm:"foreignKey:RelativeProfileMemberID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"relative_member_profile"`
 }
 
 // MemberAddress
@@ -341,7 +342,6 @@ type MutualFundsHistory struct {
 	MembersProfile *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
 }
 
-// MemberAssets
 type MemberAssets struct {
 	gorm.Model
 	MembersProfileID uint      `gorm:"not null" json:"members_profile_id"`
