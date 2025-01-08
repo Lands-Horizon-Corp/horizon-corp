@@ -14,6 +14,16 @@ type Feedback struct {
 	FeedbackType string `gorm:"type:enum('bug', 'feature', 'general');not null" json:"feedback_type"`
 }
 
+type FeedbackResource struct {
+	ID        uint   `json:"id"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+
+	Email        string `json:"email"`
+	Description  string `json:"description"`
+	FeedbackType string `json:"feedbackType"`
+}
+
 type FeedbackRepository struct {
 	*Repository[Feedback]
 }
