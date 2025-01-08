@@ -52,9 +52,11 @@ var Module = fx.Module(
 			&Footstep{},
 			&Gender{},
 			&Media{},
-			&Member{},
 			&Owner{},
 			&Role{},
+
+			// Member
+			&Member{},
 			&MemberProfile{},
 			&MemberClassification{},
 			&MemberClassificationHistory{},
@@ -72,7 +74,7 @@ var Module = fx.Module(
 			&MemberTypeHistory{},
 			&MemberDescription{},
 			&MemberRecruits{},
-			&ContactNumberReferences{},
+			&MemberContactNumberReferences{},
 			&MemberWallet{},
 			&MemberIncome{},
 			&MemberExpenses{},
@@ -80,9 +82,10 @@ var Module = fx.Module(
 			&MemberJointAccounts{},
 			&MemberAddress{},
 			&MemberGovernmentBenefits{},
-			&MutualFundsHistory{},
+			&MemberMutualFundsHistory{},
 			&MemberAssets{},
 			&MemberRelativeAccounts{},
+			&MemberBranchRegistration{},
 		)
 		if err != nil {
 			logger.Fatal("failed to migrate database")

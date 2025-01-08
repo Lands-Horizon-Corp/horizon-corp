@@ -226,7 +226,7 @@ type MemberRecruits struct {
 }
 
 // ContactNumberReferences
-type ContactNumberReferences struct {
+type MemberContactNumberReferences struct {
 	gorm.Model
 	Name          string `gorm:"type:varchar(255);not null" json:"name"`
 	Description   string `gorm:"type:text" json:"description"`
@@ -333,7 +333,7 @@ type MemberGovernmentBenefits struct {
 }
 
 // MutualFundsHistory
-type MutualFundsHistory struct {
+type MemberMutualFundsHistory struct {
 	gorm.Model
 	MembersProfileID uint    `gorm:"not null" json:"members_profile_id"`
 	Description      string  `gorm:"type:text" json:"description"`
@@ -350,4 +350,21 @@ type MemberAssets struct {
 	Name             string    `gorm:"type:varchar(255);not null" json:"name"`
 
 	MembersProfile *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
+}
+
+type MemberBranchRegistration struct {
+	gorm.Model
+
+	// Fields
+	MemberID   uint       `gorm:"type:bigint;unsigned;not null" json:"member_id"`
+	BranchID   uint       `gorm:"type:bigint;unsigned;not null" json:"branch_id"`
+	Status     string     `gorm:"type:enum('Pending', 'Verified', 'Rejected');default:'Pending'" json:"status"`
+	Remarks    string     `gorm:"type:text" json:"remarks"`
+	VerifiedBy *uint      `gorm:"type:bigint;unsigned" json:"verified_by"`
+	VerifiedAt *time.Time `gorm:"type:datetime" json:"verified_at"`
+
+	// Relationships
+	Member   *Member   `gorm:"foreignKey:MemberID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member"`
+	Branch   *Branch   `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"branch"`
+	Employee *Employee `gorm:"foreignKey:VerifiedBy;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"employee,omitempty"`
 }
