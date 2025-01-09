@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberRelativeAccounts struct {
 	gorm.Model
@@ -22,4 +26,34 @@ type MemberRelativeAccountsResource struct {
 	Description                  string                 `json:"description"`
 	MemberProfile                *MemberProfileResource `json:"memberProfile,omitempty"`
 	RelativeProfileMemberProfile *MemberProfileResource `json:"relativeProfileMemberProfile,omitempty"`
+}
+
+func (m *ModelTransformer) MemberRelativeAccountsToResource(account *MemberRelativeAccounts) *MemberRelativeAccountsResource {
+	if account == nil {
+		return nil
+	}
+
+	return &MemberRelativeAccountsResource{
+		ID:                           account.ID,
+		CreatedAt:                    account.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:                    account.UpdatedAt.Format(time.RFC3339),
+		MembersProfileID:             account.MembersProfileID,
+		RelativeProfileMemberID:      account.RelativeProfileMemberID,
+		FamilyRelationship:           account.FamilyRelationship,
+		Description:                  account.Description,
+		MemberProfile:                m.MemberProfileToResource(account.MemberProfile),
+		RelativeProfileMemberProfile: m.MemberProfileToResource(account.RelativeProfileMemberProfile),
+	}
+}
+
+func (m *ModelTransformer) MemberRelativeAccountsToResourceList(accountList []*MemberRelativeAccounts) []*MemberRelativeAccountsResource {
+	if accountList == nil {
+		return nil
+	}
+
+	var accountResources []*MemberRelativeAccountsResource
+	for _, account := range accountList {
+		accountResources = append(accountResources, m.MemberRelativeAccountsToResource(account))
+	}
+	return accountResources
 }

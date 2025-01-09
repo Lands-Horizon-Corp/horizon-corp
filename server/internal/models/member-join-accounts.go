@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberJointAccounts struct {
 	gorm.Model
@@ -24,4 +28,35 @@ type MemberJointAccountsResource struct {
 	MiddleName         string                 `json:"middleName,omitempty"`
 	FamilyRelationship string                 `json:"familyRelationship,omitempty"`
 	MembersProfile     *MemberProfileResource `json:"membersProfile,omitempty"`
+}
+
+func (m *ModelTransformer) MemberJointAccountsToResource(account *MemberJointAccounts) *MemberJointAccountsResource {
+	if account == nil {
+		return nil
+	}
+
+	return &MemberJointAccountsResource{
+		ID:                 account.ID,
+		CreatedAt:          account.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:          account.UpdatedAt.Format(time.RFC3339),
+		MembersProfileID:   account.MembersProfileID,
+		Description:        account.Description,
+		FirstName:          account.FirstName,
+		LastName:           account.LastName,
+		MiddleName:         account.MiddleName,
+		FamilyRelationship: account.FamilyRelationship,
+		MembersProfile:     m.MemberProfileToResource(account.MembersProfile),
+	}
+}
+
+func (m *ModelTransformer) MemberJointAccountsToResourceList(accountList []*MemberJointAccounts) []*MemberJointAccountsResource {
+	if accountList == nil {
+		return nil
+	}
+
+	var accountResources []*MemberJointAccountsResource
+	for _, account := range accountList {
+		accountResources = append(accountResources, m.MemberJointAccountsToResource(account))
+	}
+	return accountResources
 }

@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberOccupation struct {
 	gorm.Model
@@ -16,4 +20,31 @@ type MemberOccupationResource struct {
 	Name        string                             `json:"name"`
 	Description string                             `json:"description"`
 	History     []*MemberOccupationHistoryResource `json:"history,omitempty"`
+}
+
+func (m *ModelTransformer) MemberOccupationToResource(occupation *MemberOccupation) *MemberOccupationResource {
+	if occupation == nil {
+		return nil
+	}
+
+	return &MemberOccupationResource{
+		ID:          occupation.ID,
+		CreatedAt:   occupation.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   occupation.UpdatedAt.Format(time.RFC3339),
+		Name:        occupation.Name,
+		Description: occupation.Description,
+		History:     m.MemberOccupationHistoryToResourceList(occupation.History),
+	}
+}
+
+func (m *ModelTransformer) MemberOccupationToResourceList(occupationList []*MemberOccupation) []*MemberOccupationResource {
+	if occupationList == nil {
+		return nil
+	}
+
+	var occupationResources []*MemberOccupationResource
+	for _, occupation := range occupationList {
+		occupationResources = append(occupationResources, m.MemberOccupationToResource(occupation))
+	}
+	return occupationResources
 }

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -29,4 +31,34 @@ type GenderResource struct {
 	Members     []*MemberResource   `json:"members"`
 	Owners      []*OwnerResource    `json:"owners"`
 	Admins      []*AdminResource    `json:"admins"`
+}
+
+func (m *ModelTransformer) GenderToResource(gender *Gender) *GenderResource {
+	if gender == nil {
+		return nil
+	}
+
+	return &GenderResource{
+		ID:          gender.ID,
+		CreatedAt:   gender.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   gender.UpdatedAt.Format(time.RFC3339),
+		Name:        gender.Name,
+		Description: gender.Description,
+		Employees:   m.EmployeeToResourceList(gender.Employees),
+		Members:     m.MemberToResourceList(gender.Members),
+		Owners:      m.OwnerToResourceList(gender.Owners),
+		Admins:      m.AdminToResourceList(gender.Admins),
+	}
+}
+
+func (m *ModelTransformer) GenderToResourceList(genderList []*Gender) []*GenderResource {
+	if genderList == nil {
+		return nil
+	}
+
+	var genderResources []*GenderResource
+	for _, gender := range genderList {
+		genderResources = append(genderResources, m.GenderToResource(gender))
+	}
+	return genderResources
 }

@@ -81,3 +81,53 @@ type EmployeeResource struct {
 	Timesheets         []*TimesheetResource `json:"timesheets"`
 	Footsteps          []*FootstepResource  `json:"footsteps"`
 }
+
+func (m *ModelTransformer) EmployeeToResource(employee *Employee) *EmployeeResource {
+	if employee == nil {
+		return nil
+	}
+
+	return &EmployeeResource{
+		AccountType:        "Employee", // Assuming the account type is always "Employee"
+		ID:                 employee.ID,
+		CreatedAt:          employee.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:          employee.UpdatedAt.Format(time.RFC3339),
+		FirstName:          employee.FirstName,
+		LastName:           employee.LastName,
+		MiddleName:         employee.MiddleName,
+		PermanentAddress:   employee.PermanentAddress,
+		Description:        employee.Description,
+		BirthDate:          employee.BirthDate,
+		Username:           employee.Username,
+		Email:              employee.Email,
+		IsEmailVerified:    employee.IsEmailVerified,
+		IsContactVerified:  employee.IsContactVerified,
+		IsSkipVerification: employee.IsSkipVerification,
+		ContactNumber:      employee.ContactNumber,
+		Status:             employee.Status,
+		Longitude:          employee.Longitude,
+		Latitude:           employee.Latitude,
+		MediaID:            employee.MediaID,
+		Media:              m.MediaToResource(employee.Media),
+		BranchID:           employee.BranchID,
+		Branch:             m.BranchToResource(employee.Branch),
+		RoleID:             employee.RoleID,
+		Role:               m.RoleToResource(employee.Role),
+		GenderID:           employee.GenderID,
+		Gender:             m.GenderToResource(employee.Gender),
+		Timesheets:         m.TimesheetToResourceList(employee.Timesheets),
+		Footsteps:          m.FootstepToResourceList(employee.Footsteps),
+	}
+}
+
+func (m *ModelTransformer) EmployeeToResourceList(employeeList []*Employee) []*EmployeeResource {
+	if employeeList == nil {
+		return nil
+	}
+
+	var employeeResources []*EmployeeResource
+	for _, employee := range employeeList {
+		employeeResources = append(employeeResources, m.EmployeeToResource(employee))
+	}
+	return employeeResources
+}

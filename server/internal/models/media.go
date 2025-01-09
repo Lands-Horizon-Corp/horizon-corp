@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -45,4 +47,47 @@ type MediaResource struct {
 	Admins    []*AdminResource    `json:"admins"`
 	Companies []*CompanyResource  `json:"companies"`
 	Branches  []*BranchResource   `json:"branches"`
+}
+
+func (m *ModelTransformer) MediaToResource(media *Media) *MediaResource {
+	if media == nil {
+		return nil
+	}
+	temporaryURL, err := m.storage.GeneratePresignedURL(media.StorageKey)
+	if err != nil {
+		return nil
+	}
+	return &MediaResource{
+		ID:        media.ID,
+		CreatedAt: media.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: media.UpdatedAt.Format(time.RFC3339),
+
+		FileName:    media.FileName,
+		FileSize:    media.FileSize,
+		FileType:    media.FileType,
+		StorageKey:  media.StorageKey,
+		URL:         media.URL,
+		Key:         media.Key,
+		BucketName:  media.BucketName,
+		DownloadURL: temporaryURL,
+		Employees:   m.EmployeeToResourceList(media.Employees),
+		Members:     m.MemberToResourceList(media.Members),
+		Owners:      m.OwnerToResourceList(media.Owners),
+		Admins:      m.AdminToResourceList(media.Admins),
+		Companies:   m.CompanyToResourceList(media.Companies),
+		Branches:    m.BranchToResourceList(media.Branches),
+	}
+}
+
+// MediaToResourceList implements Models.
+func (m *ModelTransformer) MediaToResourceList(mediaList []*Media) []*MediaResource {
+	if mediaList == nil {
+		return nil
+	}
+
+	var mediaResources []*MediaResource
+	for _, media := range mediaList {
+		mediaResources = append(mediaResources, m.MediaToResource(media))
+	}
+	return mediaResources
 }

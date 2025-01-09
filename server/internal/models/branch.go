@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -49,4 +51,41 @@ type BranchResource struct {
 	Company         *CompanyResource    `json:"company"`
 	Employees       []*EmployeeResource `json:"employees"`
 	Members         []*MemberResource   `json:"members"`
+}
+
+func (m *ModelTransformer) BranchToResource(branch *Branch) *BranchResource {
+	if branch == nil {
+		return nil
+	}
+
+	return &BranchResource{
+		ID:              branch.ID,
+		CreatedAt:       branch.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:       branch.UpdatedAt.Format(time.RFC3339),
+		Name:            branch.Name,
+		Address:         branch.Address,
+		Longitude:       branch.Longitude,
+		Latitude:        branch.Latitude,
+		Email:           branch.Email,
+		ContactNumber:   branch.ContactNumber,
+		IsAdminVerified: branch.IsAdminVerified,
+		MediaID:         branch.MediaID,
+		Media:           m.MediaToResource(branch.Media),
+		CompanyID:       branch.CompanyID,
+		Company:         m.CompanyToResource(branch.Company),
+		Employees:       m.EmployeeToResourceList(branch.Employees),
+		Members:         m.MemberToResourceList(branch.Members),
+	}
+}
+
+func (m *ModelTransformer) BranchToResourceList(branchList []*Branch) []*BranchResource {
+	if branchList == nil {
+		return nil
+	}
+
+	var branchResources []*BranchResource
+	for _, branch := range branchList {
+		branchResources = append(branchResources, m.BranchToResource(branch))
+	}
+	return branchResources
 }

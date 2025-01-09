@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -45,4 +47,40 @@ type CompanyResource struct {
 	Media           *MediaResource    `json:"media"`
 	IsAdminVerified bool              `json:"isAdminVerified"`
 	Branches        []*BranchResource `json:"branches"`
+}
+
+func (m *ModelTransformer) CompanyToResource(company *Company) *CompanyResource {
+	if company == nil {
+		return nil
+	}
+
+	return &CompanyResource{
+		ID:              company.ID,
+		CreatedAt:       company.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:       company.UpdatedAt.Format(time.RFC3339),
+		Name:            company.Name,
+		Description:     company.Description,
+		Address:         company.Address,
+		Longitude:       company.Longitude,
+		Latitude:        company.Latitude,
+		ContactNumber:   company.ContactNumber,
+		OwnerID:         company.OwnerID,
+		Owner:           m.OwnerToResource(company.Owner),
+		MediaID:         company.MediaID,
+		Media:           m.MediaToResource(company.Media),
+		IsAdminVerified: company.IsAdminVerified,
+		Branches:        m.BranchToResourceList(company.Branches),
+	}
+}
+
+func (m *ModelTransformer) CompanyToResourceList(companyList []*Company) []*CompanyResource {
+	if companyList == nil {
+		return nil
+	}
+
+	var companyResources []*CompanyResource
+	for _, company := range companyList {
+		companyResources = append(companyResources, m.CompanyToResource(company))
+	}
+	return companyResources
 }

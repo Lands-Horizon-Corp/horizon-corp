@@ -68,3 +68,48 @@ type AdminResource struct {
 	Gender             *GenderResource     `json:"gender"`
 	Footsteps          []*FootstepResource `json:"footsteps"`
 }
+
+func (m *ModelTransformer) AdminToResource(admin *Admin) *AdminResource {
+	if admin == nil {
+		return nil
+	}
+
+	return &AdminResource{
+		AccountType:        "Admin",
+		ID:                 admin.ID,
+		CreatedAt:          admin.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:          admin.UpdatedAt.Format(time.RFC3339),
+		FirstName:          admin.FirstName,
+		LastName:           admin.LastName,
+		MiddleName:         admin.MiddleName,
+		PermanentAddress:   admin.PermanentAddress,
+		Description:        admin.Description,
+		BirthDate:          admin.BirthDate,
+		Username:           admin.Username,
+		Email:              admin.Email,
+		ContactNumber:      admin.ContactNumber,
+		IsEmailVerified:    admin.IsEmailVerified,
+		IsContactVerified:  admin.IsContactVerified,
+		IsSkipVerification: admin.IsSkipVerification,
+		Status:             admin.Status,
+		MediaID:            admin.MediaID,
+		Media:              m.MediaToResource(admin.Media),
+		RoleID:             admin.RoleID,
+		Role:               m.RoleToResource(admin.Role),
+		GenderID:           admin.GenderID,
+		Gender:             m.GenderToResource(admin.Gender),
+		Footsteps:          m.FootstepToResourceList(admin.Footsteps),
+	}
+}
+
+func (m *ModelTransformer) AdminToResourceList(adminList []*Admin) []*AdminResource {
+	if adminList == nil {
+		return nil
+	}
+
+	var adminResources []*AdminResource
+	for _, admin := range adminList {
+		adminResources = append(adminResources, m.AdminToResource(admin))
+	}
+	return adminResources
+}

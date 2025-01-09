@@ -74,3 +74,50 @@ type OwnerResource struct {
 	Footsteps          []*FootstepResource `json:"footsteps"`
 	Companies          []*CompanyResource  `json:"companies"`
 }
+
+func (m *ModelTransformer) OwnerToResource(owner *Owner) *OwnerResource {
+	if owner == nil {
+		return nil
+	}
+
+	return &OwnerResource{
+		AccountType:        "Owner", // Assuming the account type is always "Owner"
+		ID:                 owner.ID,
+		CreatedAt:          owner.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:          owner.UpdatedAt.Format(time.RFC3339),
+		FirstName:          owner.FirstName,
+		LastName:           owner.LastName,
+		MiddleName:         owner.MiddleName,
+		PermanentAddress:   owner.PermanentAddress,
+		Description:        owner.Description,
+		BirthDate:          owner.BirthDate,
+		Username:           owner.Username,
+		Email:              owner.Email,
+		Password:           owner.Password,
+		ContactNumber:      owner.ContactNumber,
+		IsEmailVerified:    owner.IsEmailVerified,
+		IsContactVerified:  owner.IsContactVerified,
+		IsSkipVerification: owner.IsSkipVerification,
+		Status:             owner.Status,
+		MediaID:            owner.MediaID,
+		Media:              m.MediaToResource(owner.Media),
+		GenderID:           owner.GenderID,
+		Gender:             m.GenderToResource(owner.Gender),
+		RoleID:             owner.RoleID,
+		Role:               m.RoleToResource(owner.Role),
+		Footsteps:          m.FootstepToResourceList(owner.Footsteps),
+		Companies:          m.CompanyToResourceList(owner.Companies),
+	}
+}
+
+func (m *ModelTransformer) OwnerToResourceList(ownerList []*Owner) []*OwnerResource {
+	if ownerList == nil {
+		return nil
+	}
+
+	var ownerResources []*OwnerResource
+	for _, owner := range ownerList {
+		ownerResources = append(ownerResources, m.OwnerToResource(owner))
+	}
+	return ownerResources
+}

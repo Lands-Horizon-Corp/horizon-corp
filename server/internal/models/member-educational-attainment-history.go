@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberEducationalAttainmentHistory struct {
 	gorm.Model
@@ -18,4 +22,32 @@ type MemberEducationalAttainmentHistoryResource struct {
 	MemberEducationalAttainmentID uint                                 `json:"memberEducationalAttainmentID"`
 	MemberProfile                 *MemberProfileResource               `json:"memberProfile,omitempty"`
 	MemberEducationalAttainment   *MemberEducationalAttainmentResource `json:"memberEducationalAttainment,omitempty"`
+}
+
+func (m *ModelTransformer) MemberEducationalAttainmentHistoryToResource(history *MemberEducationalAttainmentHistory) *MemberEducationalAttainmentHistoryResource {
+	if history == nil {
+		return nil
+	}
+
+	return &MemberEducationalAttainmentHistoryResource{
+		ID:                            history.ID,
+		CreatedAt:                     history.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:                     history.UpdatedAt.Format(time.RFC3339),
+		MemberProfileID:               history.MemberProfileID,
+		MemberEducationalAttainmentID: history.MemberEducationalAttainmentID,
+		MemberProfile:                 m.MemberProfileToResource(history.MemberProfile),
+		MemberEducationalAttainment:   m.MemberEducationalAttainmentToResource(history.MemberEducationalAttainment),
+	}
+}
+
+func (m *ModelTransformer) MemberEducationalAttainmentHistoryToResourceList(historyList []*MemberEducationalAttainmentHistory) []*MemberEducationalAttainmentHistoryResource {
+	if historyList == nil {
+		return nil
+	}
+
+	var historyResources []*MemberEducationalAttainmentHistoryResource
+	for _, history := range historyList {
+		historyResources = append(historyResources, m.MemberEducationalAttainmentHistoryToResource(history))
+	}
+	return historyResources
 }

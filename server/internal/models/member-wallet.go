@@ -28,3 +28,33 @@ type MemberWalletResource struct {
 	Description      string                 `json:"description"`
 	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
 }
+
+func (m *ModelTransformer) MemberWalletToResource(wallet *MemberWallet) *MemberWalletResource {
+	if wallet == nil {
+		return nil
+	}
+
+	return &MemberWalletResource{
+		ID:               wallet.ID,
+		CreatedAt:        wallet.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:        wallet.UpdatedAt.Format(time.RFC3339),
+		MembersProfileID: wallet.MembersProfileID,
+		Debit:            wallet.Debit,
+		Credit:           wallet.Credit,
+		Date:             wallet.Date.Format("2006-01-02"),
+		Description:      wallet.Description,
+		MembersProfile:   m.MemberProfileToResource(wallet.MembersProfile),
+	}
+}
+
+func (m *ModelTransformer) MemberWalletToResourceList(walletList []*MemberWallet) []*MemberWalletResource {
+	if walletList == nil {
+		return nil
+	}
+
+	var walletResources []*MemberWalletResource
+	for _, wallet := range walletList {
+		walletResources = append(walletResources, m.MemberWalletToResource(wallet))
+	}
+	return walletResources
+}

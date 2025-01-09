@@ -36,3 +36,35 @@ type TimesheetResource struct {
 	MediaOutID *uint             `json:"mediaOutID"`
 	MediaOut   *MediaResource    `json:"mediaOut"`
 }
+
+func (m *ModelTransformer) TimesheetToResource(timesheet *Timesheet) *TimesheetResource {
+	if timesheet == nil {
+		return nil
+	}
+
+	return &TimesheetResource{
+		ID:         timesheet.ID,
+		CreatedAt:  timesheet.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:  timesheet.UpdatedAt.Format(time.RFC3339),
+		EmployeeID: timesheet.EmployeeID,
+		Employee:   m.EmployeeToResource(timesheet.Employee),
+		TimeIn:     timesheet.TimeIn,
+		TimeOut:    timesheet.TimeOut,
+		MediaInID:  timesheet.MediaInID,
+		MediaIn:    m.MediaToResource(timesheet.MediaIn),
+		MediaOutID: timesheet.MediaOutID,
+		MediaOut:   m.MediaToResource(timesheet.MediaOut),
+	}
+}
+
+func (m *ModelTransformer) TimesheetToResourceList(timesheetList []*Timesheet) []*TimesheetResource {
+	if timesheetList == nil {
+		return nil
+	}
+
+	var timesheetResources []*TimesheetResource
+	for _, timesheet := range timesheetList {
+		timesheetResources = append(timesheetResources, m.TimesheetToResource(timesheet))
+	}
+	return timesheetResources
+}

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -60,4 +62,48 @@ type RoleResource struct {
 	Owners    []*OwnerResource    `json:"owners"`
 	Employees []*EmployeeResource `json:"employees"`
 	Members   []*MemberResource   `json:"members"`
+}
+
+func (m *ModelTransformer) RoleToResource(role *Role) *RoleResource {
+	if role == nil {
+		return nil
+	}
+
+	return &RoleResource{
+		ID:                 role.ID,
+		CreatedAt:          role.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:          role.UpdatedAt.Format(time.RFC3339),
+		Name:               role.Name,
+		Description:        role.Description,
+		ApiKey:             role.ApiKey,
+		Color:              role.Color,
+		ReadRole:           role.ReadRole,
+		WriteRole:          role.WriteRole,
+		UpdateRole:         role.UpdateRole,
+		DeleteRole:         role.DeleteRole,
+		ReadErrorDetails:   role.ReadErrorDetails,
+		WriteErrorDetails:  role.WriteErrorDetails,
+		UpdateErrorDetails: role.UpdateErrorDetails,
+		DeleteErrorDetails: role.DeleteErrorDetails,
+		ReadGender:         role.ReadGender,
+		WriteGender:        role.WriteGender,
+		UpdateGender:       role.UpdateGender,
+		DeleteGender:       role.DeleteGender,
+		Admins:             m.AdminToResourceList(role.Admins),
+		Owners:             m.OwnerToResourceList(role.Owners),
+		Employees:          m.EmployeeToResourceList(role.Employees),
+		Members:            m.MemberToResourceList(role.Members),
+	}
+}
+
+func (m *ModelTransformer) RoleToResourceList(roleList []*Role) []*RoleResource {
+	if roleList == nil {
+		return nil
+	}
+
+	var roleResources []*RoleResource
+	for _, role := range roleList {
+		roleResources = append(roleResources, m.RoleToResource(role))
+	}
+	return roleResources
 }

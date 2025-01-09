@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberAddress struct {
 	gorm.Model
@@ -26,4 +30,36 @@ type MemberAddressResource struct {
 	Region           string                 `json:"region"`
 	Label            string                 `json:"label"`
 	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
+}
+
+func (m *ModelTransformer) MemberAddressToResource(address *MemberAddress) *MemberAddressResource {
+	if address == nil {
+		return nil
+	}
+
+	return &MemberAddressResource{
+		ID:               address.ID,
+		CreatedAt:        address.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:        address.UpdatedAt.Format(time.RFC3339),
+		MembersProfileID: address.MembersProfileID,
+		PostalCode:       address.PostalCode,
+		Province:         address.Province,
+		City:             address.City,
+		Barangay:         address.Barangay,
+		Region:           address.Region,
+		Label:            address.Label,
+		MembersProfile:   m.MemberProfileToResource(address.MembersProfile),
+	}
+}
+
+func (m *ModelTransformer) MemberAddressToResourceList(addressList []*MemberAddress) []*MemberAddressResource {
+	if addressList == nil {
+		return nil
+	}
+
+	var addressResources []*MemberAddressResource
+	for _, address := range addressList {
+		addressResources = append(addressResources, m.MemberAddressToResource(address))
+	}
+	return addressResources
 }

@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberEducationalAttainment struct {
 	gorm.Model
@@ -16,4 +20,31 @@ type MemberEducationalAttainmentResource struct {
 	Name        string                                        `json:"name"`
 	Description string                                        `json:"description"`
 	History     []*MemberEducationalAttainmentHistoryResource `json:"history,omitempty"`
+}
+
+func (m *ModelTransformer) MemberEducationalAttainmentToResource(attainment *MemberEducationalAttainment) *MemberEducationalAttainmentResource {
+	if attainment == nil {
+		return nil
+	}
+
+	return &MemberEducationalAttainmentResource{
+		ID:          attainment.ID,
+		CreatedAt:   attainment.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   attainment.UpdatedAt.Format(time.RFC3339),
+		Name:        attainment.Name,
+		Description: attainment.Description,
+		History:     m.MemberEducationalAttainmentHistoryToResourceList(attainment.History),
+	}
+}
+
+func (m *ModelTransformer) MemberEducationalAttainmentToResourceList(attainmentList []*MemberEducationalAttainment) []*MemberEducationalAttainmentResource {
+	if attainmentList == nil {
+		return nil
+	}
+
+	var attainmentResources []*MemberEducationalAttainmentResource
+	for _, attainment := range attainmentList {
+		attainmentResources = append(attainmentResources, m.MemberEducationalAttainmentToResource(attainment))
+	}
+	return attainmentResources
 }

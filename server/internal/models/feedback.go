@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -21,4 +23,31 @@ type FeedbackResource struct {
 	Email        string `json:"email"`
 	Description  string `json:"description"`
 	FeedbackType string `json:"feedbackType"`
+}
+
+func (m *ModelTransformer) FeedbackToResource(feedback *Feedback) *FeedbackResource {
+	if feedback == nil {
+		return nil
+	}
+
+	return &FeedbackResource{
+		ID:           feedback.ID,
+		CreatedAt:    feedback.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:    feedback.UpdatedAt.Format(time.RFC3339),
+		Email:        feedback.Email,
+		Description:  feedback.Description,
+		FeedbackType: feedback.FeedbackType,
+	}
+}
+
+func (m *ModelTransformer) FeedbackToResourceList(feedbackList []*Feedback) []*FeedbackResource {
+	if feedbackList == nil {
+		return nil
+	}
+
+	var feedbackResources []*FeedbackResource
+	for _, feedback := range feedbackList {
+		feedbackResources = append(feedbackResources, m.FeedbackToResource(feedback))
+	}
+	return feedbackResources
 }

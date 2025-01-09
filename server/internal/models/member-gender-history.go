@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberGenderHistory struct {
 	gorm.Model
@@ -18,4 +22,32 @@ type MemberGenderHistoryResource struct {
 	MemberGenderID  uint                   `json:"memberGenderID"`
 	MemberProfile   *MemberProfileResource `json:"memberProfile,omitempty"`
 	MemberGender    *MemberGenderResource  `json:"memberGender,omitempty"`
+}
+
+func (m *ModelTransformer) MemberGenderHistoryToResource(history *MemberGenderHistory) *MemberGenderHistoryResource {
+	if history == nil {
+		return nil
+	}
+
+	return &MemberGenderHistoryResource{
+		ID:              history.ID,
+		CreatedAt:       history.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:       history.UpdatedAt.Format(time.RFC3339),
+		MemberProfileID: history.MemberProfileID,
+		MemberGenderID:  history.MemberGenderID,
+		MemberProfile:   m.MemberProfileToResource(history.MemberProfile),
+		MemberGender:    m.MemberGenderToResource(history.MemberGender),
+	}
+}
+
+func (m *ModelTransformer) MemberGenderHistoryToResourceList(historyList []*MemberGenderHistory) []*MemberGenderHistoryResource {
+	if historyList == nil {
+		return nil
+	}
+
+	var historyResources []*MemberGenderHistoryResource
+	for _, history := range historyList {
+		historyResources = append(historyResources, m.MemberGenderHistoryToResource(history))
+	}
+	return historyResources
 }

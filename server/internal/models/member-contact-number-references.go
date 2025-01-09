@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberContactNumberReferences struct {
 	gorm.Model
@@ -16,4 +20,31 @@ type MemberContactNumberReferencesResource struct {
 	Name          string `json:"name"`
 	Description   string `json:"description"`
 	ContactNumber string `json:"contactNumber"`
+}
+
+func (m *ModelTransformer) MemberContactNumberReferencesToResource(reference *MemberContactNumberReferences) *MemberContactNumberReferencesResource {
+	if reference == nil {
+		return nil
+	}
+
+	return &MemberContactNumberReferencesResource{
+		ID:            reference.ID,
+		CreatedAt:     reference.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:     reference.UpdatedAt.Format(time.RFC3339),
+		Name:          reference.Name,
+		Description:   reference.Description,
+		ContactNumber: reference.ContactNumber,
+	}
+}
+
+func (m *ModelTransformer) MemberContactNumberReferencesToResourceList(referenceList []*MemberContactNumberReferences) []*MemberContactNumberReferencesResource {
+	if referenceList == nil {
+		return nil
+	}
+
+	var referenceResources []*MemberContactNumberReferencesResource
+	for _, reference := range referenceList {
+		referenceResources = append(referenceResources, m.MemberContactNumberReferencesToResource(reference))
+	}
+	return referenceResources
 }

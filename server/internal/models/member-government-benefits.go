@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberGovernmentBenefits struct {
 	gorm.Model
@@ -30,4 +34,38 @@ type MemberGovernmentBenefitsResource struct {
 	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
 	FrontMedia       *MediaResource         `json:"frontMedia,omitempty"`
 	BackMedia        *MediaResource         `json:"backMedia,omitempty"`
+}
+
+func (m *ModelTransformer) MemberGovernmentBenefitsToResource(benefit *MemberGovernmentBenefits) *MemberGovernmentBenefitsResource {
+	if benefit == nil {
+		return nil
+	}
+
+	return &MemberGovernmentBenefitsResource{
+		ID:               benefit.ID,
+		CreatedAt:        benefit.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:        benefit.UpdatedAt.Format(time.RFC3339),
+		MembersProfileID: benefit.MembersProfileID,
+		Country:          benefit.Country,
+		Name:             benefit.Name,
+		Description:      benefit.Description,
+		Value:            benefit.Value,
+		FrontMediaID:     benefit.FrontMediaID,
+		BackMediaID:      benefit.BackMediaID,
+		MembersProfile:   m.MemberProfileToResource(benefit.MembersProfile),
+		FrontMedia:       m.MediaToResource(benefit.FrontMedia),
+		BackMedia:        m.MediaToResource(benefit.BackMedia),
+	}
+}
+
+func (m *ModelTransformer) MemberGovernmentBenefitsToResourceList(benefitList []*MemberGovernmentBenefits) []*MemberGovernmentBenefitsResource {
+	if benefitList == nil {
+		return nil
+	}
+
+	var benefitResources []*MemberGovernmentBenefitsResource
+	for _, benefit := range benefitList {
+		benefitResources = append(benefitResources, m.MemberGovernmentBenefitsToResource(benefit))
+	}
+	return benefitResources
 }

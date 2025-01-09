@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberType struct {
 	gorm.Model
@@ -18,4 +22,32 @@ type MemberTypeResource struct {
 	Description string                       `json:"description"`
 	Prefix      string                       `json:"prefix"`
 	History     []*MemberTypeHistoryResource `json:"history,omitempty"`
+}
+
+func (m *ModelTransformer) MemberTypeToResource(memberType *MemberType) *MemberTypeResource {
+	if memberType == nil {
+		return nil
+	}
+
+	return &MemberTypeResource{
+		ID:          memberType.ID,
+		CreatedAt:   memberType.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   memberType.UpdatedAt.Format(time.RFC3339),
+		Name:        memberType.Name,
+		Description: memberType.Description,
+		Prefix:      memberType.Prefix,
+		History:     m.MemberTypeHistoryToResourceList(memberType.History),
+	}
+}
+
+func (m *ModelTransformer) MemberTypeToResourceList(memberTypeList []*MemberType) []*MemberTypeResource {
+	if memberTypeList == nil {
+		return nil
+	}
+
+	var memberTypeResources []*MemberTypeResource
+	for _, memberType := range memberTypeList {
+		memberTypeResources = append(memberTypeResources, m.MemberTypeToResource(memberType))
+	}
+	return memberTypeResources
 }

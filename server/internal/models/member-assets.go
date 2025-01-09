@@ -25,3 +25,32 @@ type MemberAssetsResource struct {
 	Name             string                 `json:"name"`
 	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
 }
+
+func (m *ModelTransformer) MemberAssetsToResource(asset *MemberAssets) *MemberAssetsResource {
+	if asset == nil {
+		return nil
+	}
+
+	return &MemberAssetsResource{
+		ID:               asset.ID,
+		CreatedAt:        asset.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:        asset.UpdatedAt.Format(time.RFC3339),
+		MembersProfileID: asset.MembersProfileID,
+		EntryDate:        asset.EntryDate.Format("2006-01-02"),
+		Description:      asset.Description,
+		Name:             asset.Name,
+		MembersProfile:   m.MemberProfileToResource(asset.MembersProfile),
+	}
+}
+
+func (m *ModelTransformer) MemberAssetsToResourceList(assetList []*MemberAssets) []*MemberAssetsResource {
+	if assetList == nil {
+		return nil
+	}
+
+	var assetResources []*MemberAssetsResource
+	for _, asset := range assetList {
+		assetResources = append(assetResources, m.MemberAssetsToResource(asset))
+	}
+	return assetResources
+}

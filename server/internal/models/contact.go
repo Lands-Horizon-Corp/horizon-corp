@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
@@ -25,4 +27,33 @@ type ContactResource struct {
 	Email         string `json:"email"`
 	ContactNumber string `json:"contactNumber"`
 	Description   string `json:"description"`
+}
+
+func (m *ModelTransformer) ContactToResource(contact *Contact) *ContactResource {
+	if contact == nil {
+		return nil
+	}
+
+	return &ContactResource{
+		ID:            contact.ID,
+		CreatedAt:     contact.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:     contact.UpdatedAt.Format(time.RFC3339),
+		FirstName:     contact.FirstName,
+		LastName:      contact.LastName,
+		Email:         contact.Email,
+		ContactNumber: contact.ContactNumber,
+		Description:   contact.Description,
+	}
+}
+
+func (m *ModelTransformer) ContactToResourceList(contactList []*Contact) []*ContactResource {
+	if contactList == nil {
+		return nil
+	}
+
+	var contactResources []*ContactResource
+	for _, contact := range contactList {
+		contactResources = append(contactResources, m.ContactToResource(contact))
+	}
+	return contactResources
 }

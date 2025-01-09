@@ -27,3 +27,33 @@ type MemberExpensesResource struct {
 	Description      string                 `json:"description"`
 	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
 }
+
+func (m *ModelTransformer) MemberExpensesToResource(expense *MemberExpenses) *MemberExpensesResource {
+	if expense == nil {
+		return nil
+	}
+
+	return &MemberExpensesResource{
+		ID:               expense.ID,
+		CreatedAt:        expense.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:        expense.UpdatedAt.Format(time.RFC3339),
+		MembersProfileID: expense.MembersProfileID,
+		Name:             expense.Name,
+		Amount:           expense.Amount,
+		Date:             expense.Date.Format("2006-01-02"),
+		Description:      expense.Description,
+		MembersProfile:   m.MemberProfileToResource(expense.MembersProfile),
+	}
+}
+
+func (m *ModelTransformer) MemberExpensesToResourceList(expensesList []*MemberExpenses) []*MemberExpensesResource {
+	if expensesList == nil {
+		return nil
+	}
+
+	var expensesResources []*MemberExpensesResource
+	for _, expense := range expensesList {
+		expensesResources = append(expensesResources, m.MemberExpensesToResource(expense))
+	}
+	return expensesResources
+}

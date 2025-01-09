@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type MemberProfile struct {
 	gorm.Model
@@ -8,7 +12,7 @@ type MemberProfile struct {
 	Description          string `gorm:"type:text" json:"description"`
 	Notes                string `gorm:"type:text" json:"notes"`
 	ContactNumber        string `gorm:"type:varchar(255);not null" json:"contact_number"`
-	OldReferenceID       string `gorm:"type:varchar(255)" json:"old_reference_id"`
+	OldferenceID         string `gorm:"type:varchar(255)" json:"old_reference_id"`
 	Status               string `gorm:"type:varchar(50);default:'pending'" json:"status"`
 	PassbookNumber       string `gorm:"type:varchar(255)" json:"passbook_number"`
 	IsClosed             bool   `gorm:"default:false" json:"is_closed"`
@@ -29,7 +33,7 @@ type MemberProfile struct {
 	MemberID     *uint       `gorm:"type:bigint;unsigned;index" json:"member_id"`
 	Member       *Member     `gorm:"foreignKey:MemberID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member"`
 
-	// Many-to-One Relationships
+	// one-to-one Relationships
 	MediaID                       *uint `gorm:"type:bigint;unsigned;index" json:"media_id"`
 	MemberClassificationID        *uint `gorm:"type:bigint;unsigned;index" json:"member_classification_id"`
 	MemberGenderID                *uint `gorm:"type:bigint;unsigned;index" json:"member_gender_id"`
@@ -37,6 +41,21 @@ type MemberProfile struct {
 
 	MemberClassification *MemberClassification `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_classification"`
 	MemberGender         *MemberGender         `gorm:"foreignKey:MemberGenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_gender"`
+
+	// zero-to-many Relationships
+	MemberDescription             []*MemberDescription             `gorm:"foreignKey:MembersProfileID" json:"member_description"`
+	MemberRecruits                []*MemberRecruits                `gorm:"foreignKey:MembersProfileID" json:"member_recruits"`
+	MemberContactNumberReferences []*MemberContactNumberReferences `gorm:"foreignKey:MembersProfileID" json:"member_contact_number_references"`
+	MemberWallets                 []*MemberWallet                  `gorm:"foreignKey:MembersProfileID" json:"member_wallets"`
+	MemberIncome                  []*MemberIncome                  `gorm:"foreignKey:MembersProfileID" json:"member_income"`
+	MemberExpenses                []*MemberExpenses                `gorm:"foreignKey:MembersProfileID" json:"member_expenses"`
+	MemberCloseRemarks            []*MemberCloseRemarks            `gorm:"foreignKey:MembersProfileID" json:"member_close_remarks"`
+	MemberJointAccounts           []*MemberJointAccounts           `gorm:"foreignKey:MembersProfileID" json:"member_joint_accounts"`
+	MemberRelativeAccounts        []*MemberRelativeAccounts        `gorm:"foreignKey:MembersProfileID" json:"member_relative_accounts"`
+	MemberAddress                 []*MemberAddress                 `gorm:"foreignKey:MembersProfileID" json:"member_address"`
+	MemberGovernmentBenefits      []*MemberGovernmentBenefits      `gorm:"foreignKey:MembersProfileID" json:"member_government_benefits"`
+	MemberMutualFundsHistory      []*MemberMutualFundsHistory      `gorm:"foreignKey:MembersProfileID" json:"member_mutual_funds_history"`
+	MemberAssets                  []*MemberAssets                  `gorm:"foreignKey:MembersProfileID" json:"member_assets"`
 }
 
 type MemberProfileResource struct {
@@ -70,4 +89,85 @@ type MemberProfileResource struct {
 	MemberGenderID                *uint                         `json:"memberGenderID,omitempty"`
 	MemberGender                  *MemberGenderResource         `json:"memberGender,omitempty"`
 	MemberEducationalAttainmentID *uint                         `json:"memberEducationalAttainmentID,omitempty"`
+
+	// Zero-to-Many Relationships
+	MemberDescriptions            []*MemberDescriptionResource             `json:"memberDescriptions,omitempty"`
+	MemberRecruits                []*MemberRecruitsResource                `json:"memberRecruits,omitempty"`
+	MemberContactNumberReferences []*MemberContactNumberReferencesResource `json:"memberContactNumberReferences,omitempty"`
+	MemberWallets                 []*MemberWalletResource                  `json:"memberWallets,omitempty"`
+	MemberIncome                  []*MemberIncomeResource                  `json:"memberIncome,omitempty"`
+	MemberExpenses                []*MemberExpensesResource                `json:"memberExpenses,omitempty"`
+	MemberCloseRemarks            []*MemberCloseRemarksResource            `json:"memberCloseRemarks,omitempty"`
+	MemberJointAccounts           []*MemberJointAccountsResource           `json:"memberJointAccounts,omitempty"`
+	MemberRelativeAccounts        []*MemberRelativeAccountsResource        `json:"memberRelativeAccounts,omitempty"`
+	MemberAddresses               []*MemberAddressResource                 `json:"memberAddresses,omitempty"`
+	MemberGovernmentBenefits      []*MemberGovernmentBenefitsResource      `json:"memberGovernmentBenefits,omitempty"`
+	MemberMutualFundsHistory      []*MemberMutualFundsHistoryResource      `json:"memberMutualFundsHistory,omitempty"`
+	MemberAssets                  []*MemberAssetsResource                  `json:"memberAssets,omitempty"`
+}
+
+func (m *ModelTransformer) MemberProfileToResource(profile *MemberProfile) *MemberProfileResource {
+	if profile == nil {
+		return nil
+	}
+
+	return &MemberProfileResource{
+		ID:                            profile.ID,
+		CreatedAt:                     profile.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:                     profile.UpdatedAt.Format(time.RFC3339),
+		Description:                   profile.Description,
+		Notes:                         profile.Notes,
+		ContactNumber:                 profile.ContactNumber,
+		OldReferenceID:                profile.OldferenceID,
+		Status:                        profile.Status,
+		PassbookNumber:                profile.PassbookNumber,
+		IsClosed:                      profile.IsClosed,
+		Occupation:                    profile.Occupation,
+		BusinessAddress:               profile.BusinessAddress,
+		BusinessContact:               profile.BusinessContact,
+		TinNumber:                     profile.TinNumber,
+		CivilStatus:                   profile.CivilStatus,
+		SSSNumber:                     profile.SSSNumber,
+		PagibigNumber:                 profile.PagibigNumber,
+		PhilhealthNumber:              profile.PhilhealthNumber,
+		IsMutualFundMember:            profile.IsMutualFundMember,
+		IsMicroFinanceMember:          profile.IsMicroFinanceMember,
+		MemberTypeID:                  profile.MemberTypeID,
+		MemberType:                    m.MemberTypeToResource(profile.MemberType),
+		MemberID:                      profile.MemberID,
+		Member:                        m.MemberToResource(profile.Member),
+		MediaID:                       profile.MediaID,
+		MemberClassificationID:        profile.MemberClassificationID,
+		MemberClassification:          m.MemberClassificationToResource(profile.MemberClassification),
+		MemberGenderID:                profile.MemberGenderID,
+		MemberGender:                  m.MemberGenderToResource(profile.MemberGender),
+		MemberEducationalAttainmentID: profile.MemberEducationalAttainmentID,
+
+		// Zero-to-Many Relationships
+		MemberDescriptions:            m.MemberDescriptionToResourceList(profile.MemberDescription),
+		MemberRecruits:                m.MemberRecruitsToResourceList(profile.MemberRecruits),
+		MemberContactNumberReferences: m.MemberContactNumberReferencesToResourceList(profile.MemberContactNumberReferences),
+		MemberWallets:                 m.MemberWalletToResourceList(profile.MemberWallets),
+		MemberIncome:                  m.MemberIncomeToResourceList(profile.MemberIncome),
+		MemberExpenses:                m.MemberExpensesToResourceList(profile.MemberExpenses),
+		MemberCloseRemarks:            m.MemberCloseRemarksToResourceList(profile.MemberCloseRemarks),
+		MemberJointAccounts:           m.MemberJointAccountsToResourceList(profile.MemberJointAccounts),
+		MemberRelativeAccounts:        m.MemberRelativeAccountsToResourceList(profile.MemberRelativeAccounts),
+		MemberAddresses:               m.MemberAddressToResourceList(profile.MemberAddress),
+		MemberGovernmentBenefits:      m.MemberGovernmentBenefitsToResourceList(profile.MemberGovernmentBenefits),
+		MemberMutualFundsHistory:      m.MemberMutualFundsHistoryToResourceList(profile.MemberMutualFundsHistory),
+		MemberAssets:                  m.MemberAssetsToResourceList(profile.MemberAssets),
+	}
+}
+
+func (m *ModelTransformer) MemberProfileToResourceList(profileList []*MemberProfile) []*MemberProfileResource {
+	if profileList == nil {
+		return nil
+	}
+
+	var profileResources []*MemberProfileResource
+	for _, profile := range profileList {
+		profileResources = append(profileResources, m.MemberProfileToResource(profile))
+	}
+	return profileResources
 }

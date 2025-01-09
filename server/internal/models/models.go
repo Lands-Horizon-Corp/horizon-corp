@@ -22,8 +22,23 @@ const (
 	OwnerrAccountType    UserAccountType = "Owner"
 )
 
+type ModelTransformer struct {
+	storage *providers.StorageProvider
+}
+
+func NewModelTransformer(
+	storage *providers.StorageProvider,
+) *ModelTransformer {
+	return &ModelTransformer{
+		storage: storage,
+	}
+}
+
 var Module = fx.Module(
 	"models",
+	fx.Provide(
+		NewModelTransformer,
+	),
 	fx.Invoke(func(
 		db *providers.DatabaseService,
 		logger *providers.LoggerService,

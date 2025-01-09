@@ -37,3 +37,42 @@ type MemberBranchRegistrationResource struct {
 	Branch             *BranchResource   `json:"branch,omitempty"`
 	VerifiedByEmployee *EmployeeResource `json:"verifiedByEmployee,omitempty"`
 }
+
+func (m *ModelTransformer) MemberBranchRegistrationToResource(registration *MemberBranchRegistration) *MemberBranchRegistrationResource {
+	if registration == nil {
+		return nil
+	}
+
+	var verifiedAt *string
+	if registration.VerifiedAt != nil {
+		verified := registration.VerifiedAt.Format(time.RFC3339)
+		verifiedAt = &verified
+	}
+
+	return &MemberBranchRegistrationResource{
+		ID:                 registration.ID,
+		CreatedAt:          registration.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:          registration.UpdatedAt.Format(time.RFC3339),
+		MemberID:           registration.MemberID,
+		BranchID:           registration.BranchID,
+		Status:             registration.Status,
+		Remarks:            registration.Remarks,
+		VerifiedBy:         registration.VerifiedBy,
+		VerifiedAt:         verifiedAt,
+		Member:             m.MemberToResource(registration.Member),
+		Branch:             m.BranchToResource(registration.Branch),
+		VerifiedByEmployee: m.EmployeeToResource(registration.Employee),
+	}
+}
+
+func (m *ModelTransformer) MemberBranchRegistrationToResourceList(registrationList []*MemberBranchRegistration) []*MemberBranchRegistrationResource {
+	if registrationList == nil {
+		return nil
+	}
+
+	var registrationResources []*MemberBranchRegistrationResource
+	for _, registration := range registrationList {
+		registrationResources = append(registrationResources, m.MemberBranchRegistrationToResource(registration))
+	}
+	return registrationResources
+}
