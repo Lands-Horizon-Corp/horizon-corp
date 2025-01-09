@@ -1,7 +1,5 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
@@ -25,11 +23,9 @@ import { LoadingCircleIcon } from '@/components/icons'
 import FormErrorMessage from '@/components/ui/form-error-message'
 
 import { cn } from '@/lib/utils'
-import { withCatchAsync } from '@/utils'
 import { UpdateStatus } from '@/types/constants'
 import { FeedbackFormSchema } from './validations'
-import { serverRequestErrExtractor } from '@/helpers'
-import { FeedbackService } from '@/horizon-corp/services/common'
+import { useCreateFeedback } from '@/hooks/api-hooks/use-feedback'
 
 type TFeedBack = z.infer<typeof FeedbackFormSchema>
 
@@ -47,28 +43,8 @@ const FeedbackForm = () => {
         defaultValues,
     })
 
-    const { mutate: sendFeedbackMessage, isPending } = useMutation<
-        void,
-        string,
-        TFeedBack
-    >({
-        mutationKey: ['send-feedback-message'],
-        mutationFn: async (feedbackRequest: TFeedBack) => {
-            if (!feedbackRequest) return
-
-            const [error] = await withCatchAsync(
-                FeedbackService.create(feedbackRequest)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                return
-            }
-
-            feedbackForm.reset()
-            toast.success(`Feedback Message was Already Sent!`)
-        },
+    const { mutate: sendFeedbackMessage, isPending } = useCreateFeedback({
+        onSuccess: () => feedbackForm.reset(),
     })
 
     const handleFeedBackSubmit = (data: TFeedBack) => {
