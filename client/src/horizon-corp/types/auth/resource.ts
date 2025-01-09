@@ -1,24 +1,6 @@
-import { AccountType, MediaResource } from '..'
+import { AccountType } from '..'
+import { IUserBase } from '../common'
 
-export type AccountStatus = 'Pending' | 'Verified' | 'Not Allowed'
-
-export interface UserData {
-    id: number
-    username: string
-    firstName: string
-    middleName?: string
-    lastName: string
-    permanentAddress: string
-    description: string
-    birthDate: Date
-    createdAt: Date
-    updatedAt: Date
-    email: string
-    contactNumber: string
+export interface UserData extends IUserBase {
     accountType: AccountType
-    status: AccountStatus
-    isEmailVerified: boolean
-    isContactVerified: boolean
-    isSkipVerification: boolean
-    media?: MediaResource
 }
