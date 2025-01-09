@@ -1,6 +1,4 @@
-import { MediaRequest } from '..'
-
-export type AccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
+import { AccountType, MediaRequest } from '..'
 
 export interface ChangePasswordRequest {
     otp?: string

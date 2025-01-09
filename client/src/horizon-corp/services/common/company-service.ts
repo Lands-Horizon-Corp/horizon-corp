@@ -28,15 +28,13 @@ export default class CompanyService {
         preloads?: string[]
     ): Promise<CompanyResource> {
         // Construct each preload as a separate 'preloads' query parameter
-        const preloadParams =
-            preloads
-                ?.map((preload) => `preloads=${encodeURIComponent(preload)}`)
-                .join('&') || ''
-        const separator = preloadParams ? '?' : ''
-        const endpoint = `${CompanyService.BASE_ENDPOINT}/${id}${separator}${preloadParams}`
+        const url = qs.stringifyUrl({
+            url: `${CompanyService.BASE_ENDPOINT}/${id}`,
+            query: { preloads },
+        })
 
         // Make the GET request with necessary headers
-        const response = await UseServer.get<CompanyResource>(endpoint, {
+        const response = await UseServer.get<CompanyResource>(url, {
             headers: {
                 Authorization: `Bearer YOUR_TOKEN`, // Replace with actual token if needed
             },
@@ -86,16 +84,14 @@ export default class CompanyService {
         preloads?: string[]
     ): Promise<CompanyResource> {
         // Construct each preload as a separate 'preloads' query parameter
-        const preloadParams =
-            preloads
-                ?.map((preload) => `preloads=${encodeURIComponent(preload)}`)
-                .join('&') || ''
-        const separator = preloadParams ? '?' : ''
-        const endpoint = `${CompanyService.BASE_ENDPOINT}/${id}${separator}${preloadParams}`
+        const url = qs.stringifyUrl({
+            url: `${CompanyService.BASE_ENDPOINT}/${id}`,
+            query: { preloads },
+        })
 
         // Make the PUT request with necessary headers
         const response = await UseServer.put<CompanyRequest, CompanyResource>(
-            endpoint,
+            url,
             companyData,
             {
                 headers: {

@@ -3,14 +3,24 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { OwnerResource } from '@/horizon-corp/types/profile'
-import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
+import { OwnerService } from '@/horizon-corp/services'
+
+import {
+    IApiPreloads,
+    IFilterPaginatedHookProps,
+    IOperationCallbacks,
+} from './types'
+import { OwnerPaginatedResource, OwnerResource } from '@/horizon-corp/types'
 
 // Load Specific owner by ID
 export const useOwner = ({
     ownerId,
     onError,
-}: Omit<IOperationCallbacks<OwnerResource, string>, 'onSuccess'> & {
+    preloads = ['Media'],
+}: Omit<
+    IOperationCallbacks<OwnerResource, string> & IApiPreloads,
+    'onSuccess'
+> & {
     ownerId: number
 }) => {
     const queryClient = useQueryClient()
@@ -18,9 +28,8 @@ export const useOwner = ({
     return useQuery<OwnerResource>({
         queryKey: ['owner', ownerId],
         queryFn: async () => {
-            // TODO: Replace below once OwnerService is implemented
             const [error, data] = await withCatchAsync(
-                OwnerService.getById(ownerId)
+                OwnerService.getById(ownerId, preloads)
             )
 
             if (error) {
@@ -30,6 +39,7 @@ export const useOwner = ({
                 throw errorMessage
             }
 
+            queryClient.setQueryData(['owner', ownerId], data)
             queryClient.setQueryData(['owner', 'loader', ownerId], data)
 
             return data
@@ -38,7 +48,7 @@ export const useOwner = ({
     })
 }
 
-// paginated/ filtered and sorted 
+// paginated/ filtered and sorted
 export const useFilteredPaginatedOwners = ({
     sort,
     filterPayload,

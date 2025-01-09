@@ -1,6 +1,8 @@
 import { GenderResource } from './gender'
 import { MediaResource } from './media'
 
+export type AccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
+
 export type AccountStatus = 'Pending' | 'Verified' | 'Not Allowed'
 
 export interface IUserBase extends ITimeStamps {

@@ -197,7 +197,7 @@ const CompanyCreateForm = ({
                                         onSelect={(company) =>
                                             field.onChange(company.id)
                                         }
-                                        placeholder="Select company"
+                                        placeholder="Select Owner"
                                     />
                                 </FormControl>
                             </FormItem>

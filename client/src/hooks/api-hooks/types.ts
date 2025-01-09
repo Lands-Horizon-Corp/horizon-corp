@@ -1,13 +1,16 @@
-import { TSortingState } from "@/hooks/use-sorting-state";
+import { TSortingState } from '@/hooks/use-sorting-state'
 
 export interface IOperationCallbacks<TDataSuccess = unknown, TError = unknown> {
     onSuccess?: (data: TDataSuccess) => void
     onError?: (error: TError) => void
 }
 
-export interface IFilterPaginatedHookProps {
-    preloads?: string[],
-    sort? : TSortingState
+export interface IFilterPaginatedHookProps extends IApiPreloads {
+    sort?: TSortingState
     filterPayload?: Record<string, unknown>
     pagination?: { pageIndex: number; pageSize: number }
+}
+
+export interface IApiPreloads {
+    preloads?: string[]
 }

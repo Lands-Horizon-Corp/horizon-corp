@@ -73,7 +73,7 @@ const AccountSettings = ({ currentUser, onSave }: Props) => {
             lastName,
             middleName,
             description,
-            permanentAddress,
+            permanentAddress: permanentAddress ?? '',
             birthDate: new Date(birthDate),
         },
     })

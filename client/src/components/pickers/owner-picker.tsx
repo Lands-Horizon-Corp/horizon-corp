@@ -18,11 +18,11 @@ import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
-import useFilterState from '@/hooks/use-filter-state'
 import { OwnerResource } from '@/horizon-corp/types'
+import useFilterState from '@/hooks/use-filter-state'
 
 interface Props {
-    value? : number
+    value?: number
     placeholder?: string
     onSelect?: (selectedOwner: OwnerResource) => void
 }
@@ -60,10 +60,7 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
                 searchPlaceHolder="Search owner name..."
                 isLoading={isPending || isLoading || isFetching}
                 onSelect={(selectedOwner) => {
-                    queryClient.setQueryData(
-                        ['owner', value],
-                        selectedOwner
-                    )
+                    queryClient.setQueryData(['owner', value], selectedOwner)
                     onSelect?.(selectedOwner)
                 }}
                 onOpenChange={setPickerState}
@@ -80,7 +77,7 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
                         <div className="flex items-center gap-x-2">
                             <ImageDisplay src={owner.media?.downloadURL} />
                             <span className="text-ellipsis text-foreground/80">
-                                {owner.name}
+                                {owner.firstName}
                             </span>
                         </div>
                         <span className="mr-2 font-mono text-xs italic text-foreground/40">
@@ -127,7 +124,7 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
                                 {placeholder}
                             </span>
                         ) : (
-                            <span>{owner.data?.name}</span>
+                            <span>{owner.data?.firstName}</span>
                         )}
                     </span>
                     <span className="mr-1 font-mono text-sm text-foreground/30">

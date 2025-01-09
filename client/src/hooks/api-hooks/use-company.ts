@@ -15,7 +15,11 @@ import {
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { CompanyService } from '@/horizon-corp/services'
-import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
+import {
+    IApiPreloads,
+    IFilterPaginatedHookProps,
+    IOperationCallbacks,
+} from './types'
 
 // Only used by path preloader
 export const companyLoader = (companyId: number) =>
@@ -35,14 +39,16 @@ export const companyLoader = (companyId: number) =>
 // load/get company by id
 export const useCompany = ({
     companyId,
+    preloads = ['Media', 'Owner', 'Owner.Media'],
     onError,
     onSuccess,
-}: { companyId: number } & IOperationCallbacks<CompanyResource, string>) => {
+}: { companyId: number } & IApiPreloads &
+    IOperationCallbacks<CompanyResource, string>) => {
     return useQuery<CompanyResource, string>({
         queryKey: ['company', companyId],
         queryFn: async () => {
             const [error, data] = await withCatchAsync(
-                CompanyService.getById(companyId)
+                CompanyService.getById(companyId, preloads)
             )
 
             if (error) {
@@ -55,7 +61,7 @@ export const useCompany = ({
             onSuccess?.(data)
             return data
         },
-        enabled : companyId !== undefined && companyId !== null
+        enabled: companyId !== undefined && companyId !== null,
     })
 }
 
