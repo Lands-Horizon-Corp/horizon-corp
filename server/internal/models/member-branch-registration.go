@@ -22,3 +22,18 @@ type MemberBranchRegistration struct {
 	Branch   *Branch   `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"branch"`
 	Employee *Employee `gorm:"foreignKey:VerifiedBy;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"employee,omitempty"`
 }
+
+type MemberBranchRegistrationResource struct {
+	ID                 uint              `json:"id"`
+	CreatedAt          string            `json:"createdAt"`
+	UpdatedAt          string            `json:"updatedAt"`
+	MemberID           uint              `json:"memberID"`
+	BranchID           uint              `json:"branchID"`
+	Status             string            `json:"status"`
+	Remarks            string            `json:"remarks"`
+	VerifiedBy         *uint             `json:"verifiedBy,omitempty"`
+	VerifiedAt         *string           `json:"verifiedAt,omitempty"`
+	Member             *MemberResource   `json:"member,omitempty"`
+	Branch             *BranchResource   `json:"branch,omitempty"`
+	VerifiedByEmployee *EmployeeResource `json:"verifiedByEmployee,omitempty"`
+}

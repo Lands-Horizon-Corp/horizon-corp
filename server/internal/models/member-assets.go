@@ -14,3 +14,14 @@ type MemberAssets struct {
 	Name             string         `gorm:"type:varchar(255);not null" json:"name"`
 	MembersProfile   *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
 }
+
+type MemberAssetsResource struct {
+	ID               uint                   `json:"id"`
+	CreatedAt        string                 `json:"createdAt"`
+	UpdatedAt        string                 `json:"updatedAt"`
+	MembersProfileID uint                   `json:"membersProfileID"`
+	EntryDate        string                 `json:"entryDate"`
+	Description      string                 `json:"description"`
+	Name             string                 `json:"name"`
+	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
+}

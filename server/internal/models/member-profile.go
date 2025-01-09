@@ -38,3 +38,36 @@ type MemberProfile struct {
 	MemberClassification *MemberClassification `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_classification"`
 	MemberGender         *MemberGender         `gorm:"foreignKey:MemberGenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_gender"`
 }
+
+type MemberProfileResource struct {
+	ID                            uint                          `json:"id"`
+	CreatedAt                     string                        `json:"createdAt"`
+	UpdatedAt                     string                        `json:"updatedAt"`
+	Description                   string                        `json:"description"`
+	Notes                         string                        `json:"notes"`
+	ContactNumber                 string                        `json:"contactNumber"`
+	OldReferenceID                string                        `json:"oldReferenceID,omitempty"`
+	Status                        string                        `json:"status"`
+	PassbookNumber                string                        `json:"passbookNumber,omitempty"`
+	IsClosed                      bool                          `json:"isClosed"`
+	Occupation                    string                        `json:"occupation,omitempty"`
+	BusinessAddress               string                        `json:"businessAddress,omitempty"`
+	BusinessContact               string                        `json:"businessContact,omitempty"`
+	TinNumber                     string                        `json:"tinNumber,omitempty"`
+	CivilStatus                   string                        `json:"civilStatus"`
+	SSSNumber                     string                        `json:"sssNumber,omitempty"`
+	PagibigNumber                 string                        `json:"pagibigNumber,omitempty"`
+	PhilhealthNumber              string                        `json:"philhealthNumber,omitempty"`
+	IsMutualFundMember            bool                          `json:"isMutualFundMember"`
+	IsMicroFinanceMember          bool                          `json:"isMicroFinanceMember"`
+	MemberTypeID                  *uint                         `json:"memberTypeID,omitempty"`
+	MemberType                    *MemberTypeResource           `json:"memberType,omitempty"`
+	MemberID                      *uint                         `json:"memberID,omitempty"`
+	Member                        *MemberResource               `json:"member,omitempty"`
+	MediaID                       *uint                         `json:"mediaID,omitempty"`
+	MemberClassificationID        *uint                         `json:"memberClassificationID,omitempty"`
+	MemberClassification          *MemberClassificationResource `json:"memberClassification,omitempty"`
+	MemberGenderID                *uint                         `json:"memberGenderID,omitempty"`
+	MemberGender                  *MemberGenderResource         `json:"memberGender,omitempty"`
+	MemberEducationalAttainmentID *uint                         `json:"memberEducationalAttainmentID,omitempty"`
+}

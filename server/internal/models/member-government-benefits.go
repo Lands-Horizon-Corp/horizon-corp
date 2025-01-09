@@ -15,3 +15,19 @@ type MemberGovernmentBenefits struct {
 	FrontMedia       *Media         `gorm:"foreignKey:FrontMediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"front_media,omitempty"`
 	BackMedia        *Media         `gorm:"foreignKey:BackMediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"back_media,omitempty"`
 }
+
+type MemberGovernmentBenefitsResource struct {
+	ID               uint                   `json:"id"`
+	CreatedAt        string                 `json:"createdAt"`
+	UpdatedAt        string                 `json:"updatedAt"`
+	MembersProfileID uint                   `json:"membersProfileID"`
+	Country          string                 `json:"country"`
+	Name             string                 `json:"name"`
+	Description      string                 `json:"description"`
+	Value            float64                `json:"value"`
+	FrontMediaID     *uint                  `json:"frontMediaID,omitempty"`
+	BackMediaID      *uint                  `json:"backMediaID,omitempty"`
+	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
+	FrontMedia       *MediaResource         `json:"frontMedia,omitempty"`
+	BackMedia        *MediaResource         `json:"backMedia,omitempty"`
+}

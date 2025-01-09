@@ -9,3 +9,13 @@ type MemberOccupationHistory struct {
 	MemberProfile      *MemberProfile    `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberOccupation   *MemberOccupation `gorm:"foreignKey:MemberOccupationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_occupation"`
 }
+
+type MemberOccupationHistoryResource struct {
+	ID                 uint                      `json:"id"`
+	CreatedAt          string                    `json:"createdAt"`
+	UpdatedAt          string                    `json:"updatedAt"`
+	MemberProfileID    uint                      `json:"memberProfileID"`
+	MemberOccupationID uint                      `json:"memberOccupationID"`
+	MemberProfile      *MemberProfileResource    `json:"memberProfile,omitempty"`
+	MemberOccupation   *MemberOccupationResource `json:"memberOccupation,omitempty"`
+}

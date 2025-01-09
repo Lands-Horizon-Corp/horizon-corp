@@ -9,3 +9,13 @@ type MemberCenterHistory struct {
 	MemberProfile   *MemberProfile `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberCenter    *MemberCenter  `gorm:"foreignKey:MemberCenterID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_center"`
 }
+
+type MemberCenterHistoryResource struct {
+	ID              uint                   `json:"id"`
+	CreatedAt       string                 `json:"createdAt"`
+	UpdatedAt       string                 `json:"updatedAt"`
+	MemberProfileID uint                   `json:"memberProfileID"`
+	MemberCenterID  uint                   `json:"memberCenterID"`
+	MemberProfile   *MemberProfileResource `json:"memberProfile,omitempty"`
+	MemberCenter    *MemberCenterResource  `json:"memberCenter,omitempty"`
+}

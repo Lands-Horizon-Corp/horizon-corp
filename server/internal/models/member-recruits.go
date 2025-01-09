@@ -16,3 +16,16 @@ type MemberRecruits struct {
 	MembersProfile            *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
 	MembersProfileRecruited   *MemberProfile `gorm:"foreignKey:MembersProfileRecruitedID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile_recruited"`
 }
+
+type MemberRecruitsResource struct {
+	ID                        uint                   `json:"id"`
+	CreatedAt                 string                 `json:"createdAt"`
+	UpdatedAt                 string                 `json:"updatedAt"`
+	MembersProfileID          uint                   `json:"membersProfileID"`
+	MembersProfileRecruitedID uint                   `json:"membersProfileRecruitedID"`
+	DateRecruited             string                 `json:"dateRecruited"`
+	Description               string                 `json:"description"`
+	Name                      string                 `json:"name"`
+	MembersProfile            *MemberProfileResource `json:"membersProfile,omitempty"`
+	MembersProfileRecruited   *MemberProfileResource `json:"membersProfileRecruited,omitempty"`
+}

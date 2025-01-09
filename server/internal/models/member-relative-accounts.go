@@ -11,3 +11,15 @@ type MemberRelativeAccounts struct {
 	MemberProfile                *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	RelativeProfileMemberProfile *MemberProfile `gorm:"foreignKey:RelativeProfileMemberID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"relative_member_profile"`
 }
+
+type MemberRelativeAccountsResource struct {
+	ID                           uint                   `json:"id"`
+	CreatedAt                    string                 `json:"createdAt"`
+	UpdatedAt                    string                 `json:"updatedAt"`
+	MembersProfileID             uint                   `json:"membersProfileID"`
+	RelativeProfileMemberID      uint                   `json:"relativeProfileMemberID"`
+	FamilyRelationship           string                 `json:"familyRelationship"`
+	Description                  string                 `json:"description"`
+	MemberProfile                *MemberProfileResource `json:"memberProfile,omitempty"`
+	RelativeProfileMemberProfile *MemberProfileResource `json:"relativeProfileMemberProfile,omitempty"`
+}

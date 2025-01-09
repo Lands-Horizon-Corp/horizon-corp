@@ -12,3 +12,16 @@ type MemberJointAccounts struct {
 	FamilyRelationship string         `gorm:"type:varchar(255)" json:"family_relationship"`
 	MembersProfile     *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
 }
+
+type MemberJointAccountsResource struct {
+	ID                 uint                   `json:"id"`
+	CreatedAt          string                 `json:"createdAt"`
+	UpdatedAt          string                 `json:"updatedAt"`
+	MembersProfileID   uint                   `json:"membersProfileID"`
+	Description        string                 `json:"description"`
+	FirstName          string                 `json:"firstName"`
+	LastName           string                 `json:"lastName"`
+	MiddleName         string                 `json:"middleName,omitempty"`
+	FamilyRelationship string                 `json:"familyRelationship,omitempty"`
+	MembersProfile     *MemberProfileResource `json:"membersProfile,omitempty"`
+}

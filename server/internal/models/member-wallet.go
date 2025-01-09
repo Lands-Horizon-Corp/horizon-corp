@@ -16,3 +16,15 @@ type MemberWallet struct {
 
 	MembersProfile *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
 }
+
+type MemberWalletResource struct {
+	ID               uint                   `json:"id"`
+	CreatedAt        string                 `json:"createdAt"`
+	UpdatedAt        string                 `json:"updatedAt"`
+	MembersProfileID uint                   `json:"membersProfileID"`
+	Debit            float64                `json:"debit"`
+	Credit           float64                `json:"credit"`
+	Date             string                 `json:"date"`
+	Description      string                 `json:"description"`
+	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
+}
