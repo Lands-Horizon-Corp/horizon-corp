@@ -200,8 +200,6 @@ type MemberTypeHistory struct {
 	CreatedAt              time.Time `gorm:"autoCreateTime"`
 }
 
-// MemberDescription
-// MemberDescription
 type MemberDescription struct {
 	gorm.Model
 	MembersProfileID uint      `gorm:"not null" json:"members_profile_id"`
