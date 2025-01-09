@@ -40,3 +40,5 @@ type Admin struct {
 	// Relationship 0 to many
 	Footsteps []*Footstep `json:"footsteps,omitempty" gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
+
+//
