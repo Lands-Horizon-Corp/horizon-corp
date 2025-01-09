@@ -2,13 +2,13 @@
 import qs from 'query-string'
 
 import { downloadFile } from '@/horizon-corp/helpers'
-import UseServer from '../../request/server'
+import UseServer from '@/horizon-corp/request/server'
 import {
-    BranchResource,
-    BranchRequest,
-    BranchPaginatedResource,
     MediaRequest,
-} from '../../types'
+    BranchRequest,
+    BranchResource,
+    BranchPaginatedResource,
+} from '@/horizon-corp/types'
 
 /**
  * Service class to handle CRUD operations for branches.
@@ -121,7 +121,7 @@ export default class BranchService {
         filters?: string
         preloads?: string[]
         pagination?: { pageIndex: number; pageSize: number }
-        sort? : string
+        sort?: string
     }): Promise<BranchPaginatedResource> {
         const { filters, preloads, pagination, sort } = props || {}
 

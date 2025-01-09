@@ -2,13 +2,13 @@
 import qs from 'query-string'
 
 import { downloadFile } from '@/horizon-corp/helpers'
-import UseServer from '../../request/server'
+import UseServer from '@/horizon-corp/request/server'
 import {
-    CompanyResource,
-    CompanyRequest,
-    CompanyPaginatedResource,
     MediaRequest,
-} from '../../types'
+    CompanyRequest,
+    CompanyResource,
+    CompanyPaginatedResource,
+} from '@/horizon-corp/types'
 
 /**
  * Service class to handle CRUD operations for companies.

@@ -5,7 +5,7 @@ import { withCatchAsync } from '@/utils'
 import { IOperationCallbacks } from './types'
 import { serverRequestErrExtractor } from '@/helpers'
 import { MediaResource, UserData } from '@/horizon-corp/types'
-import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 
 export const useUserUpdateProfilePicture = ({
     onError,

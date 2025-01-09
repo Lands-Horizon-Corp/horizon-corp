@@ -5,7 +5,7 @@ import { withCatchAsync } from '@/utils'
 import { IOperationCallbacks } from './types'
 import { MediaResource } from '@/horizon-corp/types'
 import { serverRequestErrExtractor } from '@/helpers'
-import MediaService from '@/horizon-corp/server/common/MediaService'
+import { MediaService } from '@/horizon-corp/services'
 
 export const useSinglePictureUpload = ({
     onUploadProgressChange,

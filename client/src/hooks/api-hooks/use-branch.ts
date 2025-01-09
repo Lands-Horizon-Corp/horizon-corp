@@ -8,13 +8,13 @@ import { toast } from 'sonner'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import BranchService from '@/horizon-corp/server/admin/BranchService'
 import {
     MediaRequest,
     BranchRequest,
     BranchResource,
     BranchPaginatedResource,
 } from '@/horizon-corp/types'
+import { BranchService } from '@/horizon-corp/services'
 import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
 
 // for route pathParam loader

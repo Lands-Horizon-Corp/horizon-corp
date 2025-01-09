@@ -14,7 +14,7 @@ import {
 } from '@/horizon-corp/types'
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import CompanyService from '@/horizon-corp/server/admin/CompanyService'
+import { CompanyService } from '@/horizon-corp/services'
 import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
 
 // Only used by path preloader

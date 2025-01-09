@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { withCatchAsync } from "@/utils"
 import { UserData } from '@/horizon-corp/types'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 const useFetchCurrentUser = (options?: {
     onUnauthorized?: () => void
