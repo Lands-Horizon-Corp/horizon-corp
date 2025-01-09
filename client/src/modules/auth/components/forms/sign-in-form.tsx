@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils'
 import { withCatchAsync } from "@/utils"
 import { signInSchema } from '@/validations'
 import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 import { IBaseCompNoChild } from '@/types/component'
 import { IAuthForm } from '@/types/auth/form-interface'

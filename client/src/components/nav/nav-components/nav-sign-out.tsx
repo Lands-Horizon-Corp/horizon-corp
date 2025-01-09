@@ -8,7 +8,7 @@ import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 const NavSignOut = () => {
     const router = useRouter()

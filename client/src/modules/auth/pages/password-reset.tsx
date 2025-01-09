@@ -15,7 +15,7 @@ import ResetPasswordForm from '@/modules/auth/components/forms/reset-password-fo
 
 import { withCatchAsync } from "@/utils"
 import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 export const PasswordResetPagePathSchema = z.object({
     resetId: z.string({ required_error: 'Missing Reset Link' }),

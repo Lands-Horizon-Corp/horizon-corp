@@ -29,7 +29,7 @@ import { useTheme } from '@/providers/theme-provider'
 import { serverRequestErrExtractor } from '@/helpers'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 interface Props extends IBaseCompNoChild {
     isExpanded: boolean

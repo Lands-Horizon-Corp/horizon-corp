@@ -1,11 +1,13 @@
-import { Button } from '@/components/ui/button'
+import { useState } from 'react'
+import { AxiosProgressEvent } from 'axios'
+
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import MediaService from '@/horizon-corp/server/common/MediaService'
+
 import { MediaResource } from '@/horizon-corp/types'
-import { AxiosProgressEvent } from 'axios'
-import { useState } from 'react'
+import { MediaService } from '@/horizon-corp/services/common'
 
 const UploadPage = () => {
     const [files, setFiles] = useState<File[]>([])

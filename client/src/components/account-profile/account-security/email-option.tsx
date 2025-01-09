@@ -31,7 +31,7 @@ import { emailSchema } from '@/validations/common'
 import { serverRequestErrExtractor } from '@/helpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChangeEmailRequest, UserData } from '@/horizon-corp/types'
-import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 
 interface Props {
     email: string

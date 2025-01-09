@@ -28,7 +28,7 @@ import { withCatchAsync } from "@/utils"
 import { serverRequestErrExtractor } from '@/helpers'
 import { IAuthForm } from '@/types/auth/form-interface'
 import { userAccountTypeSchema } from '@/validations/common'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 
 const forgotPasswordFormSchema = z.object({

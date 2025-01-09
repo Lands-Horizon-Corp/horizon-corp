@@ -19,7 +19,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { cn } from '@/lib/utils'
 import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 import { IAuthForm } from '@/types/auth/form-interface'
 import { ChangePasswordRequest } from '@/horizon-corp/types'

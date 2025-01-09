@@ -25,7 +25,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { cn } from '@/lib/utils'
 import { otpSchema } from '@/validations'
 import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 import { UserData } from '@/horizon-corp/types'
 import { IAuthForm } from '@/types/auth/form-interface'

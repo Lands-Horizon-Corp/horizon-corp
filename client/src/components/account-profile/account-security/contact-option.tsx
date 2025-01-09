@@ -30,7 +30,7 @@ import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { contactNumberSchema } from '@/validations/common'
-import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 import { ChangeContactNumberRequest, UserData } from '@/horizon-corp/types'
 
 interface Props {

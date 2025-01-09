@@ -8,7 +8,7 @@ import { withCatchAsync } from '@/utils'
 import UseCooldown from '@/hooks/use-cooldown'
 import { AccountType } from '@/horizon-corp/types'
 import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 type TSentTo = { key: string; accountType: AccountType }
 

@@ -29,7 +29,7 @@ import { withCatchAsync } from '@/utils'
 import { UpdateStatus } from '@/types/constants'
 import { FeedbackFormSchema } from './validations'
 import { serverRequestErrExtractor } from '@/helpers'
-import FeedbackService from '@/horizon-corp/server/common/FeedbackService'
+import { FeedbackService } from '@/horizon-corp/services/common'
 
 type TFeedBack = z.infer<typeof FeedbackFormSchema>
 

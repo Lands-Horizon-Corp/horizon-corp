@@ -15,7 +15,7 @@ import {
 } from '@/helpers'
 import { withCatchAsync } from "@/utils"
 import { useUserAuthStore } from '@/store/user-auth-store'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 const Verify = () => {
     const router = useRouter()

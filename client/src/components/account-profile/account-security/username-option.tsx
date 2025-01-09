@@ -24,7 +24,7 @@ import { serverRequestErrExtractor } from '@/helpers'
 import { userNameSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChangeUsernameRequest, UserData } from '@/horizon-corp/types'
-import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 
 interface Props {
     username: string

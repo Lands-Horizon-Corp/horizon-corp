@@ -6,32 +6,31 @@ import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
+    EmailIcon,
+    FacebookIcon,
+    TelephoneIcon,
     LoadingCircleIcon,
     MessageOutlineIcon,
-    EmailIcon,
-    TelephoneIcon,
-    FacebookIcon,
 } from '@/components/icons'
 import {
     Form,
-    FormControl,
-    FormField,
     FormItem,
     FormLabel,
+    FormField,
+    FormControl,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-
 import FormErrorMessage from '@/components/ui/form-error-message'
 import { PhoneInput } from '@/components/contact-input/contact-input'
-import ContactService from '@/horizon-corp/server/common/ContactService'
+import { contactFormSchema } from '@/modules/landing/validations/contact-form'
 
 import { cn } from '@/lib/utils'
-import { withCatchAsync } from "@/utils"
+import { withCatchAsync } from '@/utils'
 import UseCooldown from '@/hooks/use-cooldown'
 import { serverRequestErrExtractor } from '@/helpers'
-import { contactFormSchema } from '@/modules/landing/validations/contact-form'
+import { ContactService } from '@/horizon-corp/services/common'
 
 type TContact = z.infer<typeof contactFormSchema>
 

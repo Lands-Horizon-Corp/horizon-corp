@@ -12,7 +12,7 @@ import { UserData } from '@/horizon-corp/types'
 import { useMutation } from '@tanstack/react-query'
 import { serverRequestErrExtractor } from '@/helpers'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 
 interface Props extends IBaseComp {
     readOnly?: boolean

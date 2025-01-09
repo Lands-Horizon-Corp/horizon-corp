@@ -23,7 +23,7 @@ import { serverRequestErrExtractor } from '@/helpers'
 import { passwordSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { NewPasswordRequest } from '@/horizon-corp/types'
-import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 
 interface Props {
     onSave?: () => void

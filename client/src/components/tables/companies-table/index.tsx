@@ -22,8 +22,8 @@ import { cn } from '@/lib'
 import { TableProps } from '../types'
 import { CompanyResource } from '@/horizon-corp/types'
 import useDatableFilterState from '@/hooks/use-filter-state'
+import { CompanyService } from '@/horizon-corp/services/common'
 import FilterContext from '@/contexts/filter-context/filter-context'
-import CompanyService from '@/horizon-corp/server/admin/CompanyService'
 import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
 
 export interface CompaniesTableProps

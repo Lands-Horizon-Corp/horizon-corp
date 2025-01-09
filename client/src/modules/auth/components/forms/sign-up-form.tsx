@@ -31,7 +31,7 @@ import FormErrorMessage from '@/components/ui/form-error-message'
 import { cn } from '@/lib/utils'
 import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserService'
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 import { signUpSchema } from '@/validations/form-validation/sign-up-schema'
 

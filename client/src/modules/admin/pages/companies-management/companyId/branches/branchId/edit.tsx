@@ -2,7 +2,7 @@ import { useParams } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 
 import { branchLoader } from '@/hooks/api-hooks/use-branch'
-import BranchEditBasicInfoForm from '@/modules/admin/components/forms/branch-edit-basic-info-form'
+import { BranchEditBasicInfoForm } from '@/components/forms'
 
 const EditBranchPage = () => {
     const { branchId } = useParams({

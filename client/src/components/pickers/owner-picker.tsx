@@ -10,24 +10,24 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import MiniPaginationBar from '@/components/pagination-bars/mini-pagination-bar'
 
 import {
-    useCompany,
-    useFilteredPaginatedCompanies,
-} from '@/hooks/api-hooks/use-company'
+    useOwner,
+    useFilteredPaginatedOwners,
+} from '@/hooks/api-hooks/use-owner'
 
 import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
 import useFilterState from '@/hooks/use-filter-state'
-import { CompanyResource } from '@/horizon-corp/types'
+import { OwnerResource } from '@/horizon-corp/types'
 
 interface Props {
-    value: number
+    value? : number
     placeholder?: string
-    onSelect?: (selectedCompany: CompanyResource) => void
+    onSelect?: (selectedOwner: OwnerResource) => void
 }
 
-const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
+const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
     const queryClient = useQueryClient()
     const [pickerState, setPickerState] = useState(false)
     const [pagination, setPagination] = useState<PaginationState>({
@@ -44,12 +44,12 @@ const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
     })
 
     const { data, isPending, isLoading, isFetching } =
-        useFilteredPaginatedCompanies({
+        useFilteredPaginatedOwners({
             filterPayload: finalFilterPayload,
             pagination,
         })
 
-    const company = useCompany({ companyId: value as number })
+    const owner = useOwner({ ownerId: value as number })
 
     return (
         <>
@@ -57,14 +57,14 @@ const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
                 items={data.data}
                 open={pickerState}
                 listHeading={`Matched Results (${data.totalSize})`}
-                searchPlaceHolder="Search company name..."
+                searchPlaceHolder="Search owner name..."
                 isLoading={isPending || isLoading || isFetching}
-                onSelect={(selectedCompany) => {
+                onSelect={(selectedOwner) => {
                     queryClient.setQueryData(
-                        ['company', value],
-                        selectedCompany
+                        ['owner', value],
+                        selectedOwner
                     )
-                    onSelect?.(selectedCompany)
+                    onSelect?.(selectedOwner)
                 }}
                 onOpenChange={setPickerState}
                 onSearchChange={(searchValue) => {
@@ -75,16 +75,16 @@ const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
                         value: searchValue,
                     })
                 }}
-                renderItem={(company) => (
+                renderItem={(owner) => (
                     <div className="flex w-full items-center justify-between py-1">
                         <div className="flex items-center gap-x-2">
-                            <ImageDisplay src={company.media?.downloadURL} />
+                            <ImageDisplay src={owner.media?.downloadURL} />
                             <span className="text-ellipsis text-foreground/80">
-                                {company.name}
+                                {owner.name}
                             </span>
                         </div>
                         <span className="mr-2 font-mono text-xs italic text-foreground/40">
-                            #{company.id}
+                            #{owner.id}
                         </span>
                     </div>
                 )}
@@ -114,11 +114,11 @@ const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
                 <span className="justify-betweentext-sm inline-flex w-full items-center text-foreground/90">
                     <span className="inline-flex w-full items-center gap-x-2">
                         <div>
-                            {company.isFetching ? (
+                            {owner.isFetching ? (
                                 <LoadingSpinner />
                             ) : (
                                 <ImageDisplay
-                                    src={company.data?.media?.downloadURL}
+                                    src={owner.data?.media?.downloadURL}
                                 />
                             )}
                         </div>
@@ -127,7 +127,7 @@ const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
                                 {placeholder}
                             </span>
                         ) : (
-                            <span>{company.data?.name}</span>
+                            <span>{owner.data?.name}</span>
                         )}
                     </span>
                     <span className="mr-1 font-mono text-sm text-foreground/30">
@@ -140,4 +140,4 @@ const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
     )
 }
 
-export default CompanyPicker
+export default OwnerPicker

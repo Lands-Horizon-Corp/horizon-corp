@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { useParams } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 
+import { BranchCreateFormModal } from '@/components/forms'
 import BranchesTable from '@/components/tables/branches-table'
-import { BranchCreateFormModal } from '@/components/forms/branch-create-form'
 import BranchesTableAdminAction from '@/components/tables/branches-table/row-actions/branches-table-admin-action'
 
 const CompanyBranchesPage = () => {

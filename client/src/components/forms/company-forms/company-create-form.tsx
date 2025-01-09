@@ -16,7 +16,9 @@ import { Input } from '@/components/ui/input'
 import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
 import TextEditor from '@/components/text-editor'
+import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
+import OwnerPicker from '@/components/pickers/owner-picker'
 import Modal, { IModalProps } from '@/components/modals/modal'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import { PhoneInput } from '@/components/contact-input/contact-input'
@@ -29,7 +31,6 @@ import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { CompanyRequest, CompanyResource } from '@/horizon-corp/types'
 import { contactNumberSchema } from '@/validations/common'
-import { Textarea } from '../ui/textarea'
 
 interface CompanyCreateFormProps
     extends IBaseCompNoChild,
@@ -41,10 +42,13 @@ const CompanyBasicInfoFormSchema = z.object({
         .string()
         .min(1, 'Company description is required')
         .optional(),
-    address: z.string().min(1, 'Company address is required').optional(),
-    longitude: z.coerce.number().optional(),
-    latitude: z.coerce.number().optional(),
     contactNumber: contactNumberSchema,
+    latitude: z.coerce.number().optional(),
+    longitude: z.coerce.number().optional(),
+    address: z.string().min(1, 'Company address is required').optional(),
+    ownerId: z.coerce
+        .number({ invalid_type_error: 'Invalid Owner' })
+        .optional(),
 })
 
 const CompanyCreateForm = ({
@@ -171,6 +175,29 @@ const CompanyCreateForm = ({
                                         content={field.value}
                                         onChange={field.onChange}
                                         className="!max-w-none"
+                                    />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="ownerId"
+                        render={({ field }) => (
+                            <FormItem className="col-span-2 space-y-1 sm:col-span-1">
+                                <FormLabel
+                                    htmlFor={field.name}
+                                    className="text-right text-sm font-normal text-foreground/60"
+                                >
+                                    Company Owner
+                                </FormLabel>
+                                <FormControl>
+                                    <OwnerPicker
+                                        value={field.value}
+                                        onSelect={(company) =>
+                                            field.onChange(company.id)
+                                        }
+                                        placeholder="Select company"
                                     />
                                 </FormControl>
                             </FormItem>

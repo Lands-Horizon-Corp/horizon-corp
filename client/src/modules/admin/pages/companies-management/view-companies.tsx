@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 
+import { CompanyCreateFormModal } from '@/components/forms'
 import CompaniesTable from '@/components/tables/companies-table'
-import { CompanyCreateFormModal } from '@/components/forms/company-create-form'
 import CompaniesTableAdminAction from '@/components/tables/companies-table/row-actions/companies-table-admin-action'
 
 const AdminViewCompaniesPage = () => {

@@ -32,7 +32,7 @@ import { cn } from '@/lib'
 import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { AccountSettingRequest, UserData } from '@/horizon-corp/types'
-import ProfileService from '@/horizon-corp/server/auth/ProfileService'
+import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 
 const AccountSettingsFormSchema = z.object({
     lastName: lastNameSchema,
