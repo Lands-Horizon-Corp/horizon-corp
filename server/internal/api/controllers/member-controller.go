@@ -19,6 +19,7 @@ package controllers
 //	Employee: Can retrieve the specified member application.
 // 	Owner: Can retrieve the specified member application.
 // 	Member: Can retrieve only their own member application, not applications belonging to others.
+// 					This will return if member a url link QR Code for instant or easy verification for employee
 
 // PUT: /member-application/:id
 // Verifiy member application:
@@ -28,7 +29,7 @@ package controllers
 // 		 Member: not allowed
 
 // POST: /member-application
-// Create a new member:
+// Create a member application:
 //     Admin: Must assign both company and branch (uses AdminCreateMemberApplicationRequest).
 //     Owner: Must assign a branch only (uses OwnerCreateMemberApplicationRequest).
 //     Employee: No need to assign; simply create (uses CreateMemberApplicationRequest).
