@@ -16,7 +16,7 @@ package controllers
 // Upload a new file.
 
 // DELETE: /:id
-// Delete a specific file by its ID.
+// Delete a specific file by its ID and the ID was the same as the current user id logged in.
 
 // PUT: /:id
 // Update a file's name and description only.

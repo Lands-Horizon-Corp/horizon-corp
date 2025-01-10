@@ -12,6 +12,11 @@ type Branch struct {
 	// Fields
 	Name            string  `gorm:"type:varchar(255);unsigned" json:"name"`
 	Address         string  `gorm:"type:varchar(500)" json:"address"`
+	PostalCode      string  `gorm:"type:varchar(20)" json:"postal_code"`
+	Province        string  `gorm:"type:varchar(255)" json:"province"`
+	City            string  `gorm:"type:varchar(255)" json:"city"`
+	Barangay        string  `gorm:"type:varchar(255)" json:"barangay"`
+	Region          string  `gorm:"type:varchar(255)" json:"region"`
 	Longitude       float64 `gorm:"type:decimal(10,7)" json:"longitude"`
 	Latitude        float64 `gorm:"type:decimal(10,7)" json:"latitude"`
 	Email           string  `gorm:"type:varchar(255);unsigned" json:"email"`
@@ -34,12 +39,17 @@ type Branch struct {
 }
 
 type BranchResource struct {
-	ID        uint   `json:"id"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	ID         uint   `json:"id"`
+	CreatedAt  string `json:"createdAt"`
+	UpdatedAt  string `json:"updatedAt"`
+	Name       string `json:"name"`
+	Address    string `json:"address"`
+	PostalCode string `json:"postalCode"`
+	Province   string `json:"province"`
+	City       string `json:"city"`
+	Barangay   string `json:"barangay"`
+	Region     string `json:"region"`
 
-	Name            string              `json:"name"`
-	Address         string              `json:"address"`
 	Longitude       float64             `json:"longitude"`
 	Latitude        float64             `json:"latitude"`
 	Email           string              `json:"email"`
@@ -59,11 +69,17 @@ func (m *ModelTransformer) BranchToResource(branch *Branch) *BranchResource {
 	}
 
 	return &BranchResource{
-		ID:              branch.ID,
-		CreatedAt:       branch.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:       branch.UpdatedAt.Format(time.RFC3339),
-		Name:            branch.Name,
-		Address:         branch.Address,
+		ID:         branch.ID,
+		CreatedAt:  branch.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:  branch.UpdatedAt.Format(time.RFC3339),
+		Name:       branch.Name,
+		Address:    branch.Address,
+		PostalCode: branch.PostalCode,
+		Province:   branch.Province,
+		City:       branch.City,
+		Barangay:   branch.Barangay,
+		Region:     branch.Region,
+
 		Longitude:       branch.Longitude,
 		Latitude:        branch.Latitude,
 		Email:           branch.Email,

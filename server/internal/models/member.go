@@ -24,12 +24,11 @@ type Member struct {
 	Status            string    `gorm:"type:varchar(50);default:'Pending'" json:"status"`
 
 	// Nullable Foreign Keys
-	MediaID  *uint   `gorm:"type:bigint;unsigned;index" json:"media_id"`
-	Media    *Media  `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
-	BranchID *uint   `gorm:"type:bigint;unsigned;index" json:"branch_id"`
-	Branch   *Branch `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"branch"`
-	RoleID   *uint   `gorm:"type:bigint;unsigned;index" json:"role_id"`
-	Role     *Role   `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+	MediaID *uint  `gorm:"type:bigint;unsigned;index" json:"media_id"`
+	Media   *Media `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
+
+	RoleID *uint `gorm:"type:bigint;unsigned;index" json:"role_id"`
+	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 
 	GenderID *uint   `gorm:"type:bigint;unsigned;index" json:"gender_id"`
 	Gender   *Gender `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
@@ -61,7 +60,6 @@ type MemberResource struct {
 	ContactNumber      string                 `json:"contactNumber"`
 	Status             string                 `json:"status"`
 	Media              *MediaResource         `json:"media,omitempty"`
-	Branch             *BranchResource        `json:"branch,omitempty"`
 	Longitude          *float64               `json:"longitude,omitempty"`
 	Latitude           *float64               `json:"latitude,omitempty"`
 	Role               *RoleResource          `json:"role,omitempty"`
@@ -92,13 +90,13 @@ func (m *ModelTransformer) MemberToResource(member *Member) *MemberResource {
 		ContactNumber:     member.ContactNumber,
 		Status:            member.Status,
 		Media:             m.MediaToResource(member.Media),
-		Branch:            m.BranchToResource(member.Branch),
-		Longitude:         member.Longitude,
-		Latitude:          member.Latitude,
-		Role:              m.RoleToResource(member.Role),
-		Gender:            m.GenderToResource(member.Gender),
-		Footsteps:         m.FootstepToResourceList(member.Footsteps),
-		MemberProfile:     m.MemberProfileToResource(member.MemberProfile),
+
+		Longitude:     member.Longitude,
+		Latitude:      member.Latitude,
+		Role:          m.RoleToResource(member.Role),
+		Gender:        m.GenderToResource(member.Gender),
+		Footsteps:     m.FootstepToResourceList(member.Footsteps),
+		MemberProfile: m.MemberProfileToResource(member.MemberProfile),
 	}
 }
 func (m *ModelTransformer) MemberToResourceList(memberList []*Member) []*MemberResource {

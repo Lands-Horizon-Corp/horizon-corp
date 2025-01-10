@@ -33,6 +33,10 @@ type MemberProfile struct {
 	MemberID     *uint       `gorm:"type:bigint;unsigned;index" json:"member_id"`
 	Member       *Member     `gorm:"foreignKey:MemberID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member"`
 
+	// Verified By
+	VerifiedByEmployeeID *uint     `gorm:"type:bigint;unsigned;index" json:"verified_by_employee_id"`
+	VerifiedByEmployee   *Employee `gorm:"foreignKey:VerifiedByEmployeeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"verified_by_employee"`
+
 	// one-to-one Relationships
 	MediaID                       *uint `gorm:"type:bigint;unsigned;index" json:"media_id"`
 	MemberClassificationID        *uint `gorm:"type:bigint;unsigned;index" json:"member_classification_id"`
@@ -59,6 +63,9 @@ type MemberProfile struct {
 	MemberGovernmentBenefits      []*MemberGovernmentBenefits      `gorm:"foreignKey:MembersProfileID" json:"member_government_benefits"`
 	MemberMutualFundsHistory      []*MemberMutualFundsHistory      `gorm:"foreignKey:MembersProfileID" json:"member_mutual_funds_history"`
 	MemberAssets                  []*MemberAssets                  `gorm:"foreignKey:MembersProfileID" json:"member_assets"`
+
+	BranchID *uint   `gorm:"type:bigint;unsigned;index" json:"branch_id"`
+	Branch   *Branch `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"branch"`
 }
 
 type MemberProfileResource struct {
@@ -92,6 +99,11 @@ type MemberProfileResource struct {
 	MemberGenderID         *uint                         `json:"memberGenderID,omitempty"`
 	MemberGender           *MemberGenderResource         `json:"memberGender,omitempty"`
 
+	VerifiedByEmployeeID *uint             `json:"verifiedByEmployeeID,omitempty"`
+	VerifiedByEmployee   *EmployeeResource `json:"verifiedByEmployee,omitempty"`
+
+	BranchID       *uint                 `json:"branchID,omitempty"`
+	Branch         *BranchResource       `json:"branch,omitempty"`
 	MemberCenterID *uint                 `json:"memberCenterID,omitempty"`
 	MemberCenter   *MemberCenterResource `json:"memberCenter,omitempty"`
 
@@ -150,7 +162,11 @@ func (m *ModelTransformer) MemberProfileToResource(profile *MemberProfile) *Memb
 		MemberGender:                  m.MemberGenderToResource(profile.MemberGender),
 		MemberCenterID:                profile.MemberCenterID,
 		MemberCenter:                  m.MemberCenterToResource(profile.MemberCenter),
+		VerifiedByEmployeeID:          profile.VerifiedByEmployeeID,
+		VerifiedByEmployee:            m.EmployeeToResource(profile.VerifiedByEmployee),
 		MemberEducationalAttainmentID: profile.MemberEducationalAttainmentID,
+		BranchID:                      profile.BranchID,
+		Branch:                        m.BranchToResource(profile.Branch),
 
 		// Zero-to-Many Relationships
 		MemberDescriptions:            m.MemberDescriptionToResourceList(profile.MemberDescription),
