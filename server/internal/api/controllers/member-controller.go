@@ -14,6 +14,12 @@ package controllers
 //     Owner: Can get all member applications from all of its branch
 //     Member: not allowed
 
+// GET: /member-application/:id
+// 	Admin: Can retrieve the specified member application.
+//	Employee: Can retrieve the specified member application.
+// 	Owner: Can retrieve the specified member application.
+// 	Member: Can retrieve only their own member application, not applications belonging to others.
+
 // PUT: /member-application/:id
 // Verifiy member application:
 //     Admin: Can verify but must assign employee

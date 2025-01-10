@@ -4,6 +4,9 @@ package controllers
 // Retrieve all my media files along with the total size of all media.
 // Supports filtering with or without pagination. Results can be converted to records.
 
+// GET: /:id
+// Retrieve current media
+
 // GET: /team
 // Retrieve media files based on role:
 //     Member: Access not allowed.

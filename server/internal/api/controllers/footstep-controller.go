@@ -4,6 +4,9 @@ package controllers
 // Supports filtering for pagination or no pagination. Results can be converted to records.
 // Retrieve only my footsteps.
 
+// GET /:id
+// get current footstep
+
 // GET: /team
 // Supports filtering for pagination or no pagination. Results can be converted to records.
 //     If the user is an admin, they can retrieve members, employees, and owners from all branches.

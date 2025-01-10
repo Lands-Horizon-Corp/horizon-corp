@@ -7,6 +7,9 @@ package controllers
 //     Owner: All of it's branches
 //     Member: only current branch
 
+// GET /:id
+// get current branch
+
 // GET: /member-application
 // Retrieve branches with optional filtering for pagination or no pagination. Results can be converted to records.
 // Can can get all close to radius or place based on PostalCode, Province, City, Barangay, Region
