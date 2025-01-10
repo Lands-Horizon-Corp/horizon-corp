@@ -10,16 +10,16 @@ type Admin struct {
 	gorm.Model
 
 	// Fields
-	FirstName          string     `json:"first_name" gorm:"type:varchar(255);not null"`
-	LastName           string     `json:"last_name" gorm:"type:varchar(255);not null"`
+	FirstName          string     `json:"first_name" gorm:"type:varchar(255);unsigned"`
+	LastName           string     `json:"last_name" gorm:"type:varchar(255);unsigned"`
 	MiddleName         string     `json:"middle_name" gorm:"type:varchar(255)"`
 	PermanentAddress   string     `json:"permanent_address" gorm:"type:text"`
 	Description        string     `json:"description" gorm:"type:text"`
 	BirthDate          time.Time  `json:"birth_date" gorm:"type:date"`
-	Username           string     `json:"username" gorm:"type:varchar(255);unique;not null"`
-	Email              string     `json:"email" gorm:"type:varchar(255);unique;not null"`
-	Password           string     `json:"password" gorm:"type:varchar(255);not null"`
-	ContactNumber      string     `json:"contact_number" gorm:"type:varchar(15);unique;not null"`
+	Username           string     `json:"username" gorm:"type:varchar(255);unique;unsigned"`
+	Email              string     `json:"email" gorm:"type:varchar(255);unique;unsigned"`
+	Password           string     `json:"password" gorm:"type:varchar(255);unsigned"`
+	ContactNumber      string     `json:"contact_number" gorm:"type:varchar(15);unique;unsigned"`
 	IsEmailVerified    bool       `json:"is_email_verified" gorm:"default:false"`
 	IsContactVerified  bool       `json:"is_contact_verified" gorm:"default:false"`
 	IsSkipVerification bool       `json:"is_skip_verification" gorm:"default:false"`

@@ -11,7 +11,7 @@ type MemberProfile struct {
 
 	Description          string `gorm:"type:text" json:"description"`
 	Notes                string `gorm:"type:text" json:"notes"`
-	ContactNumber        string `gorm:"type:varchar(255);not null" json:"contact_number"`
+	ContactNumber        string `gorm:"type:varchar(255);unsigned" json:"contact_number"`
 	OldferenceID         string `gorm:"type:varchar(255)" json:"old_reference_id"`
 	Status               string `gorm:"type:varchar(50);default:'pending'" json:"status"`
 	PassbookNumber       string `gorm:"type:varchar(255)" json:"passbook_number"`
@@ -42,6 +42,9 @@ type MemberProfile struct {
 	MemberClassification *MemberClassification `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_classification"`
 	MemberGender         *MemberGender         `gorm:"foreignKey:MemberGenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_gender"`
 
+	MemberCenterID *uint         `gorm:"type:bigint;unsigned;index" json:"member_center_id"`
+	MemberCenter   *MemberCenter `gorm:"foreignKey:MemberCenterID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_center"`
+
 	// zero-to-many Relationships
 	MemberDescription             []*MemberDescription             `gorm:"foreignKey:MembersProfileID" json:"member_description"`
 	MemberRecruits                []*MemberRecruits                `gorm:"foreignKey:MembersProfileID" json:"member_recruits"`
@@ -59,36 +62,40 @@ type MemberProfile struct {
 }
 
 type MemberProfileResource struct {
-	ID                            uint                          `json:"id"`
-	CreatedAt                     string                        `json:"createdAt"`
-	UpdatedAt                     string                        `json:"updatedAt"`
-	Description                   string                        `json:"description"`
-	Notes                         string                        `json:"notes"`
-	ContactNumber                 string                        `json:"contactNumber"`
-	OldReferenceID                string                        `json:"oldReferenceID,omitempty"`
-	Status                        string                        `json:"status"`
-	PassbookNumber                string                        `json:"passbookNumber,omitempty"`
-	IsClosed                      bool                          `json:"isClosed"`
-	Occupation                    string                        `json:"occupation,omitempty"`
-	BusinessAddress               string                        `json:"businessAddress,omitempty"`
-	BusinessContact               string                        `json:"businessContact,omitempty"`
-	TinNumber                     string                        `json:"tinNumber,omitempty"`
-	CivilStatus                   string                        `json:"civilStatus"`
-	SSSNumber                     string                        `json:"sssNumber,omitempty"`
-	PagibigNumber                 string                        `json:"pagibigNumber,omitempty"`
-	PhilhealthNumber              string                        `json:"philhealthNumber,omitempty"`
-	IsMutualFundMember            bool                          `json:"isMutualFundMember"`
-	IsMicroFinanceMember          bool                          `json:"isMicroFinanceMember"`
-	MemberTypeID                  *uint                         `json:"memberTypeID,omitempty"`
-	MemberType                    *MemberTypeResource           `json:"memberType,omitempty"`
-	MemberID                      *uint                         `json:"memberID,omitempty"`
-	Member                        *MemberResource               `json:"member,omitempty"`
-	MediaID                       *uint                         `json:"mediaID,omitempty"`
-	MemberClassificationID        *uint                         `json:"memberClassificationID,omitempty"`
-	MemberClassification          *MemberClassificationResource `json:"memberClassification,omitempty"`
-	MemberGenderID                *uint                         `json:"memberGenderID,omitempty"`
-	MemberGender                  *MemberGenderResource         `json:"memberGender,omitempty"`
-	MemberEducationalAttainmentID *uint                         `json:"memberEducationalAttainmentID,omitempty"`
+	ID                     uint                          `json:"id"`
+	CreatedAt              string                        `json:"createdAt"`
+	UpdatedAt              string                        `json:"updatedAt"`
+	Description            string                        `json:"description"`
+	Notes                  string                        `json:"notes"`
+	ContactNumber          string                        `json:"contactNumber"`
+	OldReferenceID         string                        `json:"oldReferenceID,omitempty"`
+	Status                 string                        `json:"status"`
+	PassbookNumber         string                        `json:"passbookNumber,omitempty"`
+	IsClosed               bool                          `json:"isClosed"`
+	Occupation             string                        `json:"occupation,omitempty"`
+	BusinessAddress        string                        `json:"businessAddress,omitempty"`
+	BusinessContact        string                        `json:"businessContact,omitempty"`
+	TinNumber              string                        `json:"tinNumber,omitempty"`
+	CivilStatus            string                        `json:"civilStatus"`
+	SSSNumber              string                        `json:"sssNumber,omitempty"`
+	PagibigNumber          string                        `json:"pagibigNumber,omitempty"`
+	PhilhealthNumber       string                        `json:"philhealthNumber,omitempty"`
+	IsMutualFundMember     bool                          `json:"isMutualFundMember"`
+	IsMicroFinanceMember   bool                          `json:"isMicroFinanceMember"`
+	MemberTypeID           *uint                         `json:"memberTypeID,omitempty"`
+	MemberType             *MemberTypeResource           `json:"memberType,omitempty"`
+	MemberID               *uint                         `json:"memberID,omitempty"`
+	Member                 *MemberResource               `json:"member,omitempty"`
+	MediaID                *uint                         `json:"mediaID,omitempty"`
+	MemberClassificationID *uint                         `json:"memberClassificationID,omitempty"`
+	MemberClassification   *MemberClassificationResource `json:"memberClassification,omitempty"`
+	MemberGenderID         *uint                         `json:"memberGenderID,omitempty"`
+	MemberGender           *MemberGenderResource         `json:"memberGender,omitempty"`
+
+	MemberCenterID *uint                 `json:"memberCenterID,omitempty"`
+	MemberCenter   *MemberCenterResource `json:"memberCenter,omitempty"`
+
+	MemberEducationalAttainmentID *uint `json:"memberEducationalAttainmentID,omitempty"`
 
 	// Zero-to-Many Relationships
 	MemberDescriptions            []*MemberDescriptionResource             `json:"memberDescriptions,omitempty"`
@@ -141,6 +148,8 @@ func (m *ModelTransformer) MemberProfileToResource(profile *MemberProfile) *Memb
 		MemberClassification:          m.MemberClassificationToResource(profile.MemberClassification),
 		MemberGenderID:                profile.MemberGenderID,
 		MemberGender:                  m.MemberGenderToResource(profile.MemberGender),
+		MemberCenterID:                profile.MemberCenterID,
+		MemberCenter:                  m.MemberCenterToResource(profile.MemberCenter),
 		MemberEducationalAttainmentID: profile.MemberEducationalAttainmentID,
 
 		// Zero-to-Many Relationships

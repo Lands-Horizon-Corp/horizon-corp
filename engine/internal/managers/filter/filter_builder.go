@@ -253,7 +253,7 @@ func filtering(db *gorm.DB, filter Filter, value FilterValue) *gorm.DB {
 	case ModeIsEmpty:
 		return db.Where(fmt.Sprintf("%s IS NULL OR %s = ?", field, field), "")
 	case ModeIsNotEmpty:
-		return db.Where(fmt.Sprintf("%s IS NOT NULL AND %s != ?", field, field), "")
+		return db.Where(fmt.Sprintf("%s IS unsigned AND %s != ?", field, field), "")
 	case ModeRange, ModeBetween:
 		rangeVal, ok := value.(RangeValue)
 		if !ok {

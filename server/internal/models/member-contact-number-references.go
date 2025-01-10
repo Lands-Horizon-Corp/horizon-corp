@@ -8,9 +8,11 @@ import (
 
 type MemberContactNumberReferences struct {
 	gorm.Model
-	Name          string `gorm:"type:varchar(255);not null" json:"name"`
+	Name          string `gorm:"type:varchar(255);unsigned" json:"name"`
 	Description   string `gorm:"type:text" json:"description"`
-	ContactNumber string `gorm:"type:varchar(255);not null" json:"contact_number"`
+	ContactNumber string `gorm:"type:varchar(255);unsigned" json:"contact_number"`
+
+	MembersProfileID uint `gorm:"unsigned" json:"members_profile_id"`
 }
 
 type MemberContactNumberReferencesResource struct {

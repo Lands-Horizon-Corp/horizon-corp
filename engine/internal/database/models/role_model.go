@@ -13,9 +13,9 @@ import (
 type Role struct {
 	gorm.Model
 
-	Name        string `gorm:"type:varchar(255);unique;not null" json:"name"`
+	Name        string `gorm:"type:varchar(255);unique;unsigned" json:"name"`
 	Description string `gorm:"type:text" json:"description"`
-	ApiKey      string `gorm:"type:varchar(255);unique;not null" json:"api_key"`
+	ApiKey      string `gorm:"type:varchar(255);unique;unsigned" json:"api_key"`
 	Color       string `gorm:"type:varchar(255)" json:"color"`
 
 	ReadRole   bool `gorm:"default:false" json:"read_role"`

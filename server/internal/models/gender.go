@@ -10,7 +10,7 @@ type Gender struct {
 	gorm.Model
 
 	// Fields
-	Name        string `gorm:"type:varchar(255);unique;not null" json:"name"`
+	Name        string `gorm:"type:varchar(255);unique;unsigned" json:"name"`
 	Description string `gorm:"type:text" json:"description"`
 
 	// Relationship 0 to many

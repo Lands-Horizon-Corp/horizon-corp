@@ -8,9 +8,9 @@ import (
 
 type MemberGovernmentBenefits struct {
 	gorm.Model
-	MembersProfileID uint           `gorm:"not null" json:"members_profile_id"`
-	Country          string         `gorm:"type:varchar(255);not null" json:"country"`
-	Name             string         `gorm:"type:varchar(255);not null" json:"name"`
+	MembersProfileID uint           `gorm:"unsigned" json:"members_profile_id"`
+	Country          string         `gorm:"type:varchar(255);unsigned" json:"country"`
+	Name             string         `gorm:"type:varchar(255);unsigned" json:"name"`
 	Description      string         `gorm:"type:text" json:"description"`
 	Value            float64        `gorm:"type:decimal(10,2)" json:"value"`
 	FrontMediaID     *uint          `gorm:"type:bigint;unsigned" json:"front_media_id"`

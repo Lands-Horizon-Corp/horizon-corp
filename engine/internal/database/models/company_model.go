@@ -15,12 +15,12 @@ type Company struct {
 	gorm.Model
 
 	// Fields
-	Name          string  `gorm:"type:varchar(255);not null" json:"name"`
+	Name          string  `gorm:"type:varchar(255);unsigned" json:"name"`
 	Description   string  `gorm:"type:text" json:"description"`
 	Address       string  `gorm:"type:varchar(500)" json:"address"`
 	Longitude     float64 `gorm:"type:decimal(10,7)" json:"longitude"`
 	Latitude      float64 `gorm:"type:decimal(10,7)" json:"latitude"`
-	ContactNumber string  `gorm:"type:varchar(255);not null" json:"contact_number"`
+	ContactNumber string  `gorm:"type:varchar(255);unsigned" json:"contact_number"`
 
 	// Relationship 0 to 1
 	OwnerID *uint  `gorm:"type:bigint;unsigned" json:"owner_id"`

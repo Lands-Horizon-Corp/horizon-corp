@@ -13,9 +13,9 @@ type Feedback struct {
 	gorm.Model
 
 	// Fields
-	Email        string `gorm:"type:varchar(255);not null" json:"email"`
-	Description  string `gorm:"type:text;not null" json:"description"`
-	FeedbackType string `gorm:"type:enum('bug', 'feature', 'general');not null" json:"feedback_type"`
+	Email        string `gorm:"type:varchar(255);unsigned" json:"email"`
+	Description  string `gorm:"type:text;unsigned" json:"description"`
+	FeedbackType string `gorm:"type:enum('bug', 'feature', 'general');unsigned" json:"feedback_type"`
 }
 
 type FeedbackResource struct {

@@ -8,9 +8,9 @@ import (
 
 type MemberEducationalAttainment struct {
 	gorm.Model
-	Name        string                                `gorm:"size:255;not null"`
+	Name        string                                `gorm:"size:255;unsigned"`
 	Description string                                `gorm:"size:500"`
-	History     []*MemberEducationalAttainmentHistory `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+	History     []*MemberEducationalAttainmentHistory `gorm:"foreignKey:MemberEducationalAttainmentID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
 }
 
 type MemberEducationalAttainmentResource struct {

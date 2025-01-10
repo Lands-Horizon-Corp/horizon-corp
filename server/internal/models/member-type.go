@@ -8,10 +8,12 @@ import (
 
 type MemberType struct {
 	gorm.Model
-	Name        string               `gorm:"size:255;not null"`
-	Description string               `gorm:"size:500"`
-	Prefix      string               `gorm:"size:100"`
-	History     []*MemberTypeHistory `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+	Name        string `gorm:"size:255;unsigned"`
+	Description string `gorm:"size:500"`
+	Prefix      string `gorm:"size:100"`
+
+	MembersProfile *MemberProfile       `gorm:"foreignKey:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
+	History        []*MemberTypeHistory `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
 }
 
 type MemberTypeResource struct {

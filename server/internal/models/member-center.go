@@ -8,9 +8,9 @@ import (
 
 type MemberCenter struct {
 	gorm.Model
-	Name        string                 `gorm:"size:255;not null"`
+	Name        string                 `gorm:"size:255;unsigned"`
 	Description string                 `gorm:"size:500"`
-	History     []*MemberCenterHistory `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+	History     []*MemberCenterHistory `gorm:"foreignKey:MemberCenterID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
 }
 
 type MemberCenterResource struct {

@@ -9,18 +9,18 @@ import (
 type Member struct {
 	gorm.Model
 
-	FirstName         string    `gorm:"type:varchar(255);not null;index" json:"first_name"`
-	LastName          string    `gorm:"type:varchar(255);not null;index" json:"last_name"`
+	FirstName         string    `gorm:"type:varchar(255);unsigned;index" json:"first_name"`
+	LastName          string    `gorm:"type:varchar(255);unsigned;index" json:"last_name"`
 	MiddleName        string    `gorm:"type:varchar(255)" json:"middle_name"`
 	PermanentAddress  string    `gorm:"type:text" json:"permanent_address"`
 	Description       string    `gorm:"type:text" json:"description"`
-	BirthDate         time.Time `gorm:"type:date;not null" json:"birth_date"`
-	Username          string    `gorm:"type:varchar(255);unique;not null" json:"username"`
-	Email             string    `gorm:"type:varchar(255);unique;not null" json:"email"`
-	Password          string    `gorm:"type:varchar(255);not null" json:"password"`
+	BirthDate         time.Time `gorm:"type:date;unsigned" json:"birth_date"`
+	Username          string    `gorm:"type:varchar(255);unique;unsigned" json:"username"`
+	Email             string    `gorm:"type:varchar(255);unique;unsigned" json:"email"`
+	Password          string    `gorm:"type:varchar(255);unsigned" json:"password"`
 	IsEmailVerified   bool      `gorm:"default:false" json:"is_email_verified"`
 	IsContactVerified bool      `gorm:"default:false" json:"is_contact_verified"`
-	ContactNumber     string    `gorm:"type:varchar(255);unique;not null" json:"contact_number"`
+	ContactNumber     string    `gorm:"type:varchar(255);unique;unsigned" json:"contact_number"`
 	Status            string    `gorm:"type:varchar(50);default:'Pending'" json:"status"`
 
 	// Nullable Foreign Keys

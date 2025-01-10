@@ -8,9 +8,9 @@ import (
 
 type MemberOccupation struct {
 	gorm.Model
-	Name        string                     `gorm:"size:255;not null"`
+	Name        string                     `gorm:"size:255;unsigned"`
 	Description string                     `gorm:"size:500"`
-	History     []*MemberOccupationHistory `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+	History     []*MemberOccupationHistory `gorm:"foreignKey:MemberOccupationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
 }
 
 type MemberOccupationResource struct {

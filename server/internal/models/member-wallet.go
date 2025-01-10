@@ -8,7 +8,7 @@ import (
 
 type MemberWallet struct {
 	gorm.Model
-	MembersProfileID uint      `gorm:"not null" json:"members_profile_id"`
+	MembersProfileID uint      `gorm:"unsigned" json:"members_profile_id"`
 	Debit            float64   `gorm:"type:decimal(12,2);default:0" json:"debit"`
 	Credit           float64   `gorm:"type:decimal(12,2);default:0" json:"credit"`
 	Date             time.Time `gorm:"type:date" json:"date"`

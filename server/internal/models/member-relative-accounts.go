@@ -8,8 +8,8 @@ import (
 
 type MemberRelativeAccounts struct {
 	gorm.Model
-	MembersProfileID             uint           `gorm:"not null" json:"members_profile_id"`
-	RelativeProfileMemberID      uint           `gorm:"not null" json:"relative_member_id"`
+	MembersProfileID             uint           `gorm:"unsigned" json:"members_profile_id"`
+	RelativeProfileMemberID      uint           `gorm:"unsigned" json:"relative_member_id"`
 	FamilyRelationship           string         `gorm:"type:varchar(255)" json:"family_relationship"`
 	Description                  string         `gorm:"type:text" json:"description"`
 	MemberProfile                *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`

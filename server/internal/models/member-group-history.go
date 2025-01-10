@@ -8,8 +8,8 @@ import (
 
 type MemberGroupHistory struct {
 	gorm.Model
-	MemberProfileID uint           `gorm:"not null" json:"member_profile_id"`
-	MemberGroupID   uint           `gorm:"type:bigint;unsigned;not null" json:"member_group_id"`
+	MemberProfileID uint           `gorm:"unsigned" json:"member_profile_id"`
+	MemberGroupID   uint           `gorm:"type:bigint;unsigned;unsigned" json:"member_group_id"`
 	MemberProfile   *MemberProfile `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberGroup     *MemberGroup   `gorm:"foreignKey:MemberGroupID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_group"`
 }

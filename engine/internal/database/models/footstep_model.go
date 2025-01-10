@@ -14,9 +14,9 @@ type Footstep struct {
 	gorm.Model
 
 	// Fields
-	AccountType string `gorm:"type:varchar(11);not null" json:"account_type"`
+	AccountType string `gorm:"type:varchar(11);unsigned" json:"account_type"`
 	Description string `gorm:"type:varchar(1000)" json:"description,omitempty"`
-	Activity    string `gorm:"type:varchar(255);not null" json:"activity"`
+	Activity    string `gorm:"type:varchar(255);unsigned" json:"activity"`
 
 	// Relationship 0 to 1
 	AdminID *uint  `gorm:"index" json:"admin_id,omitempty"`

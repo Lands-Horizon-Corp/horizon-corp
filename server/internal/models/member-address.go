@@ -8,7 +8,7 @@ import (
 
 type MemberAddress struct {
 	gorm.Model
-	MembersProfileID uint           `gorm:"not null" json:"members_profile_id"`
+	MembersProfileID uint           `gorm:"unsigned" json:"members_profile_id"`
 	PostalCode       string         `gorm:"type:varchar(20)" json:"postal_code"`
 	Province         string         `gorm:"type:varchar(255)" json:"province"`
 	City             string         `gorm:"type:varchar(255)" json:"city"`
