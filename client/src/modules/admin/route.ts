@@ -46,6 +46,13 @@ const adminSettingsRoute = createRoute({
     component: lazyRouteComponent(() => import('./pages/settings')),
 })
 
+const adminFeedbacksRoute = createRoute({
+    getParentRoute: () => adminRoute,
+    path: 'feedbacks',
+    component: lazyRouteComponent(() => import('./pages/feedbacks')),
+
+})
+
 const AdminRoute = adminRoute.addChildren([
     adminLandingRoute,
     adminDashboardRoute,
@@ -57,6 +64,7 @@ const AdminRoute = adminRoute.addChildren([
     adminSettingsRoute,
     adminNotificationsRoute,
     adminFootstepTrackingRoute,
+    adminFeedbacksRoute
 ])
 
 export default AdminRoute

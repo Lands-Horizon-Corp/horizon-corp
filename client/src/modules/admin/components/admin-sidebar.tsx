@@ -29,11 +29,6 @@ export const adminSidebarItems: TSidebarItem[] = [
                 url: '/view-members',
                 Icon: UserIcon,
             },
-            {
-                text: 'Feedbacks',
-                url: '/feedbacks',
-                Icon: FeedbackIcon,
-            },
         ],
     },
     {
@@ -45,11 +40,6 @@ export const adminSidebarItems: TSidebarItem[] = [
                 text: 'View Companies',
                 url: '/view-companies',
                 Icon: BuildingBranchIcon,
-            },
-            {
-                text: 'Feedbacks',
-                url: '/feedbacks',
-                Icon: FeedbackIcon,
             },
         ],
     },
@@ -67,6 +57,11 @@ export const adminSidebarItems: TSidebarItem[] = [
         text: 'Notifications',
         url: '/admin/notifications',
         Icon: NotificationIcon,
+    },
+    {
+        text: 'Feedbacks',
+        url: '/admin/feedbacks',
+        Icon: FeedbackIcon,
     },
     {
         text: 'Settings',
