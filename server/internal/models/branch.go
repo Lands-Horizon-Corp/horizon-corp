@@ -35,7 +35,7 @@ type Branch struct {
 	Employees []*Employee `gorm:"foreignKey:BranchID" json:"employees"`
 
 	// Relationship 0 to many
-	Members []*Member `gorm:"foreignKey:BranchID" json:"members"`
+	MemberProfile []*MemberProfile `gorm:"foreignKey:BranchID" json:"members_profile"`
 }
 
 type BranchResource struct {
@@ -50,17 +50,17 @@ type BranchResource struct {
 	Barangay   string `json:"barangay"`
 	Region     string `json:"region"`
 
-	Longitude       float64             `json:"longitude"`
-	Latitude        float64             `json:"latitude"`
-	Email           string              `json:"email"`
-	ContactNumber   string              `json:"contactNumber"`
-	IsAdminVerified bool                `json:"isAdminVerified"`
-	MediaID         *uint               `json:"mediaID"`
-	Media           *MediaResource      `json:"media"`
-	CompanyID       *uint               `json:"companyID"`
-	Company         *CompanyResource    `json:"company"`
-	Employees       []*EmployeeResource `json:"employees"`
-	Members         []*MemberResource   `json:"members"`
+	Longitude       float64                  `json:"longitude"`
+	Latitude        float64                  `json:"latitude"`
+	Email           string                   `json:"email"`
+	ContactNumber   string                   `json:"contactNumber"`
+	IsAdminVerified bool                     `json:"isAdminVerified"`
+	MediaID         *uint                    `json:"mediaID"`
+	Media           *MediaResource           `json:"media"`
+	CompanyID       *uint                    `json:"companyID"`
+	Company         *CompanyResource         `json:"company"`
+	Employees       []*EmployeeResource      `json:"employees"`
+	MemberProfile   []*MemberProfileResource `json:"members"`
 }
 
 func (m *ModelTransformer) BranchToResource(branch *Branch) *BranchResource {
@@ -90,7 +90,7 @@ func (m *ModelTransformer) BranchToResource(branch *Branch) *BranchResource {
 		CompanyID:       branch.CompanyID,
 		Company:         m.CompanyToResource(branch.Company),
 		Employees:       m.EmployeeToResourceList(branch.Employees),
-		Members:         m.MemberToResourceList(branch.Members),
+		MemberProfile:   m.MemberProfileToResourceList(branch.MemberProfile),
 	}
 }
 
