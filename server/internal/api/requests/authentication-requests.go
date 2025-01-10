@@ -1,10 +1,6 @@
-package auth
+package requests
 
-import (
-	"time"
-
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/controllers/media"
-)
+import "time"
 
 type SignUpRequest struct {
 	AccountType      string              `json:"accountType" validate:"required,max=10"`
@@ -18,7 +14,7 @@ type SignUpRequest struct {
 	BirthDate        time.Time           `json:"birthDate" validate:"required"`
 	ContactNumber    string              `json:"contactNumber" validate:"required,max=15"`
 	PermanentAddress string              `json:"permanentAddress" validate:"required,max=500"`
-	Media            *media.MediaRequest `json:"media" validate:"omitempty"`
+	Media            *MediaCreateRequest `json:"media" validate:"omitempty"`
 	EmailTemplate    string              `json:"emailTemplate" validate:"required"`
 	ContactTemplate  string              `json:"contactTemplate" validate:"required"`
 }

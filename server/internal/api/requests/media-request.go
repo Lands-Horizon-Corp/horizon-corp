@@ -1,6 +1,6 @@
-package media
+package requests
 
-type MediaRequest struct {
+type MediaCreateRequest struct {
 	ID *uint `json:"id"`
 
 	FileName   string `json:"fileName" validate:"required,max=255"`
