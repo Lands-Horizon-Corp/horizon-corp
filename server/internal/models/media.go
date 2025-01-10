@@ -10,13 +10,14 @@ type Media struct {
 	gorm.Model
 
 	// Fields
-	FileName   string `gorm:"type:varchar(255);unsigned" json:"file_name"`
-	FileSize   int64  `gorm:"unsigned" json:"file_size"`
-	FileType   string `gorm:"type:varchar(50);unsigned" json:"file_type"`
-	StorageKey string `gorm:"type:varchar(255);unique;unsigned" json:"storage_key"`
-	URL        string `gorm:"type:varchar(255);unsigned" json:"url"`
-	Key        string `gorm:"type:varchar(255)" json:"key"`
-	BucketName string `gorm:"type:varchar(255)" json:"bucket_name"`
+	FileName    string `gorm:"type:varchar(255);unsigned" json:"file_name"`
+	FileSize    int64  `gorm:"unsigned" json:"file_size"`
+	FileType    string `gorm:"type:varchar(50);unsigned" json:"file_type"`
+	StorageKey  string `gorm:"type:varchar(255);unique;unsigned" json:"storage_key"`
+	URL         string `gorm:"type:varchar(255);unsigned" json:"url"`
+	Key         string `gorm:"type:varchar(255)" json:"key"`
+	BucketName  string `gorm:"type:varchar(255)" json:"bucket_name"`
+	Description string `json:"description" gorm:"type:text"`
 
 	// Relationship 0 to many
 	Employees []*Employee `gorm:"foreignKey:MediaID" json:"employees"`
@@ -31,6 +32,8 @@ type MediaResource struct {
 	ID        uint   `json:"id"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
+
+	Description string `json:"description"`
 
 	FileName    string `json:"fileName"`
 	FileSize    int64  `json:"fileSize"`
@@ -58,9 +61,10 @@ func (m *ModelTransformer) MediaToResource(media *Media) *MediaResource {
 		return nil
 	}
 	return &MediaResource{
-		ID:        media.ID,
-		CreatedAt: media.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: media.UpdatedAt.Format(time.RFC3339),
+		ID:          media.ID,
+		CreatedAt:   media.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:   media.UpdatedAt.Format(time.RFC3339),
+		Description: media.Description,
 
 		FileName:    media.FileName,
 		FileSize:    media.FileSize,
