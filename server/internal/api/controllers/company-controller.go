@@ -16,3 +16,9 @@ package controllers
 // DELETE: /:id
 // Admin: Allowed but if no members on branches, no branches, and no employees on branches.
 // Owner: Only own company but if no members on branches, no branches, and no employees on branches.
+
+// POST: /
+//     Admin: Can create company but need to assign owner
+//     Owner: Can create company and automaticall assign owner
+//     Employee: Not allowed
+//     Member: Only own company
