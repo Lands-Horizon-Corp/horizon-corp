@@ -22,12 +22,6 @@ package controllers
 // - Enforce pagination and filtering to improve performance on large datasets.
 // - Redact sensitive information based on the user's role.
 
-// GET: /member-application/:id
-// Admin: Can retrieve the specified member application.
-// Employee: Can retrieve the specified member application.
-// Owner: Can retrieve the specified member application.
-// Member: Can retrieve only their own member application, not applications belonging to others.
-//         The response includes a URL with a QR code for instant or easy verification by employees.
 //
 // Enhancements:
 // - Ensure the QR code contains a secure, expiring token to prevent misuse.

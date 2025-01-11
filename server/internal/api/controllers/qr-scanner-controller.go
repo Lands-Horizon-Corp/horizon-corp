@@ -1,8 +1,5 @@
 package controllers
 
-// POST: /code?=base64
+// GET: /
 // This QR will activate base on the JSON Data on the codes
-// - Verify Member status
-// - Verify Member application
-// - Verify Employee
-//
+// This will find a user - will give user id only
