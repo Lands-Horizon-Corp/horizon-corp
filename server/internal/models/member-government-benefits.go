@@ -3,34 +3,41 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberGovernmentBenefits struct {
-	gorm.Model
-	MembersProfileID uint           `gorm:"unsigned" json:"members_profile_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MembersProfileID uuid.UUID      `gorm:"unsigned" json:"members_profile_id"`
 	Country          string         `gorm:"type:varchar(255);unsigned" json:"country"`
 	Name             string         `gorm:"type:varchar(255);unsigned" json:"name"`
 	Description      string         `gorm:"type:text" json:"description"`
 	Value            float64        `gorm:"type:decimal(10,2)" json:"value"`
-	FrontMediaID     *uint          `gorm:"type:bigint;unsigned" json:"front_media_id"`
-	BackMediaID      *uint          `gorm:"type:bigint;unsigned" json:"back_media_id"`
+	FrontMediaID     *uuid.UUID     `gorm:"type:bigint;unsigned" json:"front_media_id"`
+	BackMediaID      *uuid.UUID     `gorm:"type:bigint;unsigned" json:"back_media_id"`
 	MembersProfile   *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
 	FrontMedia       *Media         `gorm:"foreignKey:FrontMediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"front_media,omitempty"`
 	BackMedia        *Media         `gorm:"foreignKey:BackMediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"back_media,omitempty"`
 }
 
 type MemberGovernmentBenefitsResource struct {
-	ID               uint                   `json:"id"`
-	CreatedAt        string                 `json:"createdAt"`
-	UpdatedAt        string                 `json:"updatedAt"`
-	MembersProfileID uint                   `json:"membersProfileID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MembersProfileID uuid.UUID              `json:"membersProfileID"`
 	Country          string                 `json:"country"`
 	Name             string                 `json:"name"`
 	Description      string                 `json:"description"`
 	Value            float64                `json:"value"`
-	FrontMediaID     *uint                  `json:"frontMediaID,omitempty"`
-	BackMediaID      *uint                  `json:"backMediaID,omitempty"`
+	FrontMediaID     *uuid.UUID             `json:"frontMediaID,omitempty"`
+	BackMediaID      *uuid.UUID             `json:"backMediaID,omitempty"`
 	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
 	FrontMedia       *MediaResource         `json:"frontMedia,omitempty"`
 	BackMedia        *MediaResource         `json:"backMedia,omitempty"`
@@ -42,9 +49,12 @@ func (m *ModelTransformer) MemberGovernmentBenefitsToResource(benefit *MemberGov
 	}
 
 	return &MemberGovernmentBenefitsResource{
-		ID:               benefit.ID,
-		CreatedAt:        benefit.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:        benefit.UpdatedAt.Format(time.RFC3339),
+
+		ID:        benefit.ID,
+		CreatedAt: benefit.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: benefit.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: benefit.DeletedAt.Time.Format(time.RFC3339),
+
 		MembersProfileID: benefit.MembersProfileID,
 		Country:          benefit.Country,
 		Name:             benefit.Name,

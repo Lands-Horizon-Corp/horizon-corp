@@ -3,11 +3,15 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Feedback struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
 	Email        string `gorm:"type:varchar(255);unsigned" json:"email"`
@@ -16,9 +20,10 @@ type Feedback struct {
 }
 
 type FeedbackResource struct {
-	ID        uint   `json:"id"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
 
 	Email        string `json:"email"`
 	Description  string `json:"description"`
@@ -31,9 +36,12 @@ func (m *ModelTransformer) FeedbackToResource(feedback *Feedback) *FeedbackResou
 	}
 
 	return &FeedbackResource{
-		ID:           feedback.ID,
-		CreatedAt:    feedback.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:    feedback.UpdatedAt.Format(time.RFC3339),
+
+		ID:        feedback.ID,
+		CreatedAt: feedback.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: feedback.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: feedback.DeletedAt.Time.Format(time.RFC3339),
+
 		Email:        feedback.Email,
 		Description:  feedback.Description,
 		FeedbackType: feedback.FeedbackType,

@@ -3,11 +3,15 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Employee struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
 	FirstName          string     `gorm:"type:varchar(255);unsigned" json:"first_name"`
@@ -28,20 +32,20 @@ type Employee struct {
 	Latitude           *float64   `gorm:"type:decimal(10,7)" json:"latitude"`
 
 	// Relationship 0 to 1
-	MediaID *uint  `gorm:"type:bigint;unsigned" json:"media_id"`
-	Media   *Media `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
+	MediaID *uuid.UUID `gorm:"type:bigint;unsigned" json:"media_id"`
+	Media   *Media     `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
 
 	// Relationship 0 to 1
-	BranchID *uint   `gorm:"type:bigint;unsigned" json:"branch_id"`
-	Branch   *Branch `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"branch"`
+	BranchID *uuid.UUID `gorm:"type:bigint;unsigned" json:"branch_id"`
+	Branch   *Branch    `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"branch"`
 
 	// Relationship 0 to 1
-	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
-	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+	RoleID *uuid.UUID `gorm:"type:bigint;unsigned" json:"role_id"`
+	Role   *Role      `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 
 	// Relationship 0 to 1
-	GenderID *uint   `gorm:"type:bigint;unsigned" json:"gender_id"`
-	Gender   *Gender `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
+	GenderID *uuid.UUID `gorm:"type:bigint;unsigned" json:"gender_id"`
+	Gender   *Gender    `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
 
 	// Relationship 0 to many
 	Timesheets []*Timesheet `gorm:"foreignKey:EmployeeID" json:"timesheets"`
@@ -52,10 +56,13 @@ type Employee struct {
 }
 
 type EmployeeResource struct {
-	AccountType        string                   `json:"accountType"`
-	ID                 uint                     `json:"id"`
-	CreatedAt          string                   `json:"createdAt"`
-	UpdatedAt          string                   `json:"updatedAt"`
+	AccountType string `json:"accountType"`
+
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
 	FirstName          string                   `json:"firstName"`
 	LastName           string                   `json:"lastName"`
 	MiddleName         string                   `json:"middleName"`
@@ -71,13 +78,13 @@ type EmployeeResource struct {
 	Status             UserStatus               `json:"status"`
 	Longitude          *float64                 `json:"longitude"`
 	Latitude           *float64                 `json:"latitude"`
-	MediaID            *uint                    `json:"mediaID"`
+	MediaID            *uuid.UUID               `json:"mediaID"`
 	Media              *MediaResource           `json:"media"`
-	BranchID           *uint                    `json:"branchID"`
+	BranchID           *uuid.UUID               `json:"branchID"`
 	Branch             *BranchResource          `json:"branch"`
-	RoleID             *uint                    `json:"roleID"`
+	RoleID             *uuid.UUID               `json:"roleID"`
 	Role               *RoleResource            `json:"role"`
-	GenderID           *uint                    `json:"genderID"`
+	GenderID           *uuid.UUID               `json:"genderID"`
 	Gender             *GenderResource          `json:"gender"`
 	Timesheets         []*TimesheetResource     `json:"timesheets"`
 	Footsteps          []*FootstepResource      `json:"footsteps"`
@@ -90,10 +97,13 @@ func (m *ModelTransformer) EmployeeToResource(employee *Employee) *EmployeeResou
 	}
 
 	return &EmployeeResource{
-		AccountType:        "Employee",
-		ID:                 employee.ID,
-		CreatedAt:          employee.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:          employee.UpdatedAt.Format(time.RFC3339),
+		AccountType: "Employee",
+
+		ID:        employee.ID,
+		CreatedAt: employee.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: employee.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: employee.DeletedAt.Time.Format(time.RFC3339),
+
 		FirstName:          employee.FirstName,
 		LastName:           employee.LastName,
 		MiddleName:         employee.MiddleName,

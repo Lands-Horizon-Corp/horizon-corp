@@ -3,11 +3,15 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Branch struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
 	Name            string  `gorm:"type:varchar(255);unsigned" json:"name"`
@@ -24,12 +28,12 @@ type Branch struct {
 	IsAdminVerified bool    `gorm:"default:false" json:"is_admin_verified"`
 
 	// Relationship 0 to 1
-	MediaID *uint  `gorm:"type:bigint;unsigned" json:"media_id"`
-	Media   *Media `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
+	MediaID *uuid.UUID `gorm:"type:bigint;unsigned" json:"media_id"`
+	Media   *Media     `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
 
 	// Relationship 0 to 1
-	CompanyID *uint    `gorm:"type:bigint;unsigned;unsigned" json:"company_id"`
-	Company   *Company `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
+	CompanyID *uuid.UUID `gorm:"type:bigint;unsigned;unsigned" json:"company_id"`
+	Company   *Company   `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 
 	// Relationship 0 to many
 	Employees []*Employee `gorm:"foreignKey:BranchID" json:"employees"`
@@ -39,9 +43,11 @@ type Branch struct {
 }
 
 type BranchResource struct {
-	ID         uint   `json:"id"`
-	CreatedAt  string `json:"createdAt"`
-	UpdatedAt  string `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
 	Name       string `json:"name"`
 	Address    string `json:"address"`
 	PostalCode string `json:"postalCode"`
@@ -55,9 +61,9 @@ type BranchResource struct {
 	Email           string                   `json:"email"`
 	ContactNumber   string                   `json:"contactNumber"`
 	IsAdminVerified bool                     `json:"isAdminVerified"`
-	MediaID         *uint                    `json:"mediaID"`
+	MediaID         *uuid.UUID               `json:"mediaID"`
 	Media           *MediaResource           `json:"media"`
-	CompanyID       *uint                    `json:"companyID"`
+	CompanyID       *uuid.UUID               `json:"companyID"`
 	Company         *CompanyResource         `json:"company"`
 	Employees       []*EmployeeResource      `json:"employees"`
 	MemberProfile   []*MemberProfileResource `json:"members"`
@@ -69,9 +75,12 @@ func (m *ModelTransformer) BranchToResource(branch *Branch) *BranchResource {
 	}
 
 	return &BranchResource{
-		ID:         branch.ID,
-		CreatedAt:  branch.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:  branch.UpdatedAt.Format(time.RFC3339),
+
+		ID:        branch.ID,
+		CreatedAt: branch.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: branch.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: branch.DeletedAt.Time.Format(time.RFC3339),
+
 		Name:       branch.Name,
 		Address:    branch.Address,
 		PostalCode: branch.PostalCode,

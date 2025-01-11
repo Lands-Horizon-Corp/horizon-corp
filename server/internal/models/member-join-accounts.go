@@ -3,12 +3,17 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberJointAccounts struct {
-	gorm.Model
-	MembersProfileID   uint           `gorm:"unsigned" json:"members_profile_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MembersProfileID   uuid.UUID      `gorm:"unsigned" json:"members_profile_id"`
 	Description        string         `gorm:"type:text" json:"description"`
 	FirstName          string         `gorm:"type:varchar(255);unsigned" json:"first_name"`
 	LastName           string         `gorm:"type:varchar(255);unsigned" json:"last_name"`
@@ -18,10 +23,12 @@ type MemberJointAccounts struct {
 }
 
 type MemberJointAccountsResource struct {
-	ID                 uint                   `json:"id"`
-	CreatedAt          string                 `json:"createdAt"`
-	UpdatedAt          string                 `json:"updatedAt"`
-	MembersProfileID   uint                   `json:"membersProfileID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MembersProfileID   uuid.UUID              `json:"membersProfileID"`
 	Description        string                 `json:"description"`
 	FirstName          string                 `json:"firstName"`
 	LastName           string                 `json:"lastName"`
@@ -36,9 +43,12 @@ func (m *ModelTransformer) MemberJointAccountsToResource(account *MemberJointAcc
 	}
 
 	return &MemberJointAccountsResource{
-		ID:                 account.ID,
-		CreatedAt:          account.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:          account.UpdatedAt.Format(time.RFC3339),
+
+		ID:        account.ID,
+		CreatedAt: account.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: account.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: account.DeletedAt.Time.Format(time.RFC3339),
+
 		MembersProfileID:   account.MembersProfileID,
 		Description:        account.Description,
 		FirstName:          account.FirstName,

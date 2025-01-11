@@ -3,11 +3,15 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberProfile struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	Description          string `gorm:"type:text" json:"description"`
 	Notes                string `gorm:"type:text" json:"notes"`
@@ -28,25 +32,25 @@ type MemberProfile struct {
 	IsMicroFinanceMember bool   `gorm:"default:false" json:"is_micro_finance_member"`
 
 	// Relationships
-	MemberTypeID *uint       `gorm:"type:bigint;unsigned;index" json:"member_type_id"`
+	MemberTypeID *uuid.UUID  `gorm:"type:bigint;unsigned;index" json:"member_type_id"`
 	MemberType   *MemberType `gorm:"foreignKey:MemberTypeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_type"`
-	MemberID     *uint       `gorm:"type:bigint;unsigned;index" json:"member_id"`
+	MemberID     *uuid.UUID  `gorm:"type:bigint;unsigned;index" json:"member_id"`
 	Member       *Member     `gorm:"foreignKey:MemberID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member"`
 
 	// Verified By
-	VerifiedByEmployeeID *uint     `gorm:"type:bigint;unsigned;index" json:"verified_by_employee_id"`
-	VerifiedByEmployee   *Employee `gorm:"foreignKey:VerifiedByEmployeeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"verified_by_employee"`
+	VerifiedByEmployeeID *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"verified_by_employee_id"`
+	VerifiedByEmployee   *Employee  `gorm:"foreignKey:VerifiedByEmployeeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"verified_by_employee"`
 
 	// one-to-one Relationships
-	MediaID                       *uint `gorm:"type:bigint;unsigned;index" json:"media_id"`
-	MemberClassificationID        *uint `gorm:"type:bigint;unsigned;index" json:"member_classification_id"`
-	MemberGenderID                *uint `gorm:"type:bigint;unsigned;index" json:"member_gender_id"`
-	MemberEducationalAttainmentID *uint `gorm:"type:bigint;unsigned;index" json:"member_educational_attainment_id"`
+	MediaID                       *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"media_id"`
+	MemberClassificationID        *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"member_classification_id"`
+	MemberGenderID                *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"member_gender_id"`
+	MemberEducationalAttainmentID *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"member_educational_attainment_id"`
 
 	MemberClassification *MemberClassification `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_classification"`
 	MemberGender         *MemberGender         `gorm:"foreignKey:MemberGenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_gender"`
 
-	MemberCenterID *uint         `gorm:"type:bigint;unsigned;index" json:"member_center_id"`
+	MemberCenterID *uuid.UUID    `gorm:"type:bigint;unsigned;index" json:"member_center_id"`
 	MemberCenter   *MemberCenter `gorm:"foreignKey:MemberCenterID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_center"`
 
 	// zero-to-many Relationships
@@ -64,14 +68,16 @@ type MemberProfile struct {
 	MemberMutualFundsHistory      []*MemberMutualFundsHistory      `gorm:"foreignKey:MembersProfileID" json:"member_mutual_funds_history"`
 	MemberAssets                  []*MemberAssets                  `gorm:"foreignKey:MembersProfileID" json:"member_assets"`
 
-	BranchID *uint   `gorm:"type:bigint;unsigned;index" json:"branch_id"`
-	Branch   *Branch `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"branch"`
+	BranchID *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"branch_id"`
+	Branch   *Branch    `gorm:"foreignKey:BranchID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"branch"`
 }
 
 type MemberProfileResource struct {
-	ID                     uint                          `json:"id"`
-	CreatedAt              string                        `json:"createdAt"`
-	UpdatedAt              string                        `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
 	Description            string                        `json:"description"`
 	Notes                  string                        `json:"notes"`
 	ContactNumber          string                        `json:"contactNumber"`
@@ -89,25 +95,25 @@ type MemberProfileResource struct {
 	PhilhealthNumber       string                        `json:"philhealthNumber,omitempty"`
 	IsMutualFundMember     bool                          `json:"isMutualFundMember"`
 	IsMicroFinanceMember   bool                          `json:"isMicroFinanceMember"`
-	MemberTypeID           *uint                         `json:"memberTypeID,omitempty"`
+	MemberTypeID           *uuid.UUID                    `json:"memberTypeID,omitempty"`
 	MemberType             *MemberTypeResource           `json:"memberType,omitempty"`
-	MemberID               *uint                         `json:"memberID,omitempty"`
+	MemberID               *uuid.UUID                    `json:"memberID,omitempty"`
 	Member                 *MemberResource               `json:"member,omitempty"`
-	MediaID                *uint                         `json:"mediaID,omitempty"`
-	MemberClassificationID *uint                         `json:"memberClassificationID,omitempty"`
+	MediaID                *uuid.UUID                    `json:"mediaID,omitempty"`
+	MemberClassificationID *uuid.UUID                    `json:"memberClassificationID,omitempty"`
 	MemberClassification   *MemberClassificationResource `json:"memberClassification,omitempty"`
-	MemberGenderID         *uint                         `json:"memberGenderID,omitempty"`
+	MemberGenderID         *uuid.UUID                    `json:"memberGenderID,omitempty"`
 	MemberGender           *MemberGenderResource         `json:"memberGender,omitempty"`
 
-	VerifiedByEmployeeID *uint             `json:"verifiedByEmployeeID,omitempty"`
+	VerifiedByEmployeeID *uuid.UUID        `json:"verifiedByEmployeeID,omitempty"`
 	VerifiedByEmployee   *EmployeeResource `json:"verifiedByEmployee,omitempty"`
 
-	BranchID       *uint                 `json:"branchID,omitempty"`
+	BranchID       *uuid.UUID            `json:"branchID,omitempty"`
 	Branch         *BranchResource       `json:"branch,omitempty"`
-	MemberCenterID *uint                 `json:"memberCenterID,omitempty"`
+	MemberCenterID *uuid.UUID            `json:"memberCenterID,omitempty"`
 	MemberCenter   *MemberCenterResource `json:"memberCenter,omitempty"`
 
-	MemberEducationalAttainmentID *uint `json:"memberEducationalAttainmentID,omitempty"`
+	MemberEducationalAttainmentID *uuid.UUID `json:"memberEducationalAttainmentID,omitempty"`
 
 	// Zero-to-Many Relationships
 	MemberDescriptions            []*MemberDescriptionResource             `json:"memberDescriptions,omitempty"`
@@ -131,9 +137,12 @@ func (m *ModelTransformer) MemberProfileToResource(profile *MemberProfile) *Memb
 	}
 
 	return &MemberProfileResource{
-		ID:                            profile.ID,
-		CreatedAt:                     profile.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:                     profile.UpdatedAt.Format(time.RFC3339),
+
+		ID:        profile.ID,
+		CreatedAt: profile.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: profile.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: profile.DeletedAt.Time.Format(time.RFC3339),
+
 		Description:                   profile.Description,
 		Notes:                         profile.Notes,
 		ContactNumber:                 profile.ContactNumber,

@@ -3,23 +3,30 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberClassificationHistory struct {
-	gorm.Model
-	MemberProfileID        uint                  `gorm:"unsigned" json:"member_profile_id"`
-	MemberClassificationID uint                  `gorm:"type:bigint;unsigned;unsigned" json:"member_classification_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MemberProfileID        uuid.UUID             `gorm:"unsigned" json:"member_profile_id"`
+	MemberClassificationID uuid.UUID             `gorm:"type:bigint;unsigned;unsigned" json:"member_classification_id"`
 	MemberProfile          *MemberProfile        `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberClassification   *MemberClassification `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_classification"`
 }
 
 type MemberClassificationHistoryResource struct {
-	ID                     uint                          `json:"id"`
-	CreatedAt              string                        `json:"createdAt"`
-	UpdatedAt              string                        `json:"updatedAt"`
-	MemberProfileID        uint                          `json:"memberProfileID"`
-	MemberClassificationID uint                          `json:"memberClassificationID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MemberProfileID        uuid.UUID                     `json:"memberProfileID"`
+	MemberClassificationID uuid.UUID                     `json:"memberClassificationID"`
 	MemberProfile          *MemberProfileResource        `json:"memberProfile,omitempty"`
 	MemberClassification   *MemberClassificationResource `json:"memberClassification,omitempty"`
 }
@@ -30,9 +37,11 @@ func (m *ModelTransformer) MemberClassificationHistoryToResource(history *Member
 	}
 
 	return &MemberClassificationHistoryResource{
-		ID:                     history.ID,
-		CreatedAt:              history.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:              history.UpdatedAt.Format(time.RFC3339),
+		ID:        history.ID,
+		CreatedAt: history.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: history.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: history.DeletedAt.Time.Format(time.RFC3339),
+
 		MemberProfileID:        history.MemberProfileID,
 		MemberClassificationID: history.MemberClassificationID,
 		MemberProfile:          m.MemberProfileToResource(history.MemberProfile),

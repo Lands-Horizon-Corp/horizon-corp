@@ -3,23 +3,30 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberOccupationHistory struct {
-	gorm.Model
-	MemberProfileID    uint              `gorm:"unsigned" json:"member_profile_id"`
-	MemberOccupationID uint              `gorm:"type:bigint;unsigned;unsigned" json:"member_occupation_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MemberProfileID    uuid.UUID         `gorm:"unsigned" json:"member_profile_id"`
+	MemberOccupationID uuid.UUID         `gorm:"type:bigint;unsigned;unsigned" json:"member_occupation_id"`
 	MemberProfile      *MemberProfile    `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberOccupation   *MemberOccupation `gorm:"foreignKey:MemberOccupationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_occupation"`
 }
 
 type MemberOccupationHistoryResource struct {
-	ID                 uint                      `json:"id"`
-	CreatedAt          string                    `json:"createdAt"`
-	UpdatedAt          string                    `json:"updatedAt"`
-	MemberProfileID    uint                      `json:"memberProfileID"`
-	MemberOccupationID uint                      `json:"memberOccupationID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MemberProfileID    uuid.UUID                 `json:"memberProfileID"`
+	MemberOccupationID uuid.UUID                 `json:"memberOccupationID"`
 	MemberProfile      *MemberProfileResource    `json:"memberProfile,omitempty"`
 	MemberOccupation   *MemberOccupationResource `json:"memberOccupation,omitempty"`
 }
@@ -30,9 +37,12 @@ func (m *ModelTransformer) MemberOccupationHistoryToResource(history *MemberOccu
 	}
 
 	return &MemberOccupationHistoryResource{
-		ID:                 history.ID,
-		CreatedAt:          history.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:          history.UpdatedAt.Format(time.RFC3339),
+
+		ID:        history.ID,
+		CreatedAt: history.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: history.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: history.DeletedAt.Time.Format(time.RFC3339),
+
 		MemberProfileID:    history.MemberProfileID,
 		MemberOccupationID: history.MemberOccupationID,
 		MemberProfile:      m.MemberProfileToResource(history.MemberProfile),

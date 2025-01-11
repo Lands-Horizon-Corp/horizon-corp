@@ -3,18 +3,22 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberBranchRegistration struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
-	MemberID   uint       `gorm:"type:bigint;unsigned;unsigned" json:"member_id"`
-	BranchID   uint       `gorm:"type:bigint;unsigned;unsigned" json:"branch_id"`
+	MemberID   uuid.UUID  `gorm:"type:bigint;unsigned;unsigned" json:"member_id"`
+	BranchID   uuid.UUID  `gorm:"type:bigint;unsigned;unsigned" json:"branch_id"`
 	Status     string     `gorm:"type:enum('Pending', 'Verified', 'Rejected');default:'Pending'" json:"status"`
 	Remarks    string     `gorm:"type:text" json:"remarks"`
-	VerifiedBy *uint      `gorm:"type:bigint;unsigned" json:"verified_by"`
+	VerifiedBy *uuid.UUID `gorm:"type:bigint;unsigned" json:"verified_by"`
 	VerifiedAt *time.Time `gorm:"type:datetime" json:"verified_at"`
 
 	// Relationships
@@ -24,14 +28,16 @@ type MemberBranchRegistration struct {
 }
 
 type MemberBranchRegistrationResource struct {
-	ID                 uint              `json:"id"`
-	CreatedAt          string            `json:"createdAt"`
-	UpdatedAt          string            `json:"updatedAt"`
-	MemberID           uint              `json:"memberID"`
-	BranchID           uint              `json:"branchID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MemberID           uuid.UUID         `json:"memberID"`
+	BranchID           uuid.UUID         `json:"branchID"`
 	Status             string            `json:"status"`
 	Remarks            string            `json:"remarks"`
-	VerifiedBy         *uint             `json:"verifiedBy,omitempty"`
+	VerifiedBy         *uuid.UUID        `json:"verifiedBy,omitempty"`
 	VerifiedAt         *string           `json:"verifiedAt,omitempty"`
 	Member             *MemberResource   `json:"member,omitempty"`
 	Branch             *BranchResource   `json:"branch,omitempty"`
@@ -50,9 +56,11 @@ func (m *ModelTransformer) MemberBranchRegistrationToResource(registration *Memb
 	}
 
 	return &MemberBranchRegistrationResource{
-		ID:                 registration.ID,
-		CreatedAt:          registration.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:          registration.UpdatedAt.Format(time.RFC3339),
+		ID:        registration.ID,
+		CreatedAt: registration.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: registration.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: registration.DeletedAt.Time.Format(time.RFC3339),
+
 		MemberID:           registration.MemberID,
 		BranchID:           registration.BranchID,
 		Status:             registration.Status,

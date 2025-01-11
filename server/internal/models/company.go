@@ -3,11 +3,15 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Company struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
 	Name          string  `gorm:"type:varchar(255);unsigned" json:"name"`
@@ -18,22 +22,23 @@ type Company struct {
 	ContactNumber string  `gorm:"type:varchar(255);unsigned" json:"contact_number"`
 
 	// Relationship 0 to 1
-	OwnerID *uint  `gorm:"type:bigint;unsigned" json:"owner_id"`
-	Owner   *Owner `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"owner"`
+	OwnerID *uuid.UUID `gorm:"type:bigint;unsigned" json:"owner_id"`
+	Owner   *Owner     `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"owner"`
 
 	// Relationship 0 to 1
-	MediaID         *uint  `gorm:"type:bigint;unsigned" json:"media_id"`
-	Media           *Media `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
-	IsAdminVerified bool   `gorm:"default:false" json:"is_admin_verified"`
+	MediaID         *uuid.UUID `gorm:"type:bigint;unsigned" json:"media_id"`
+	Media           *Media     `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
+	IsAdminVerified bool       `gorm:"default:false" json:"is_admin_verified"`
 
 	// Relationship 0 to many
 	Branches []*Branch `gorm:"foreignKey:CompanyID" json:"branches"`
 }
 
 type CompanyResource struct {
-	ID        uint   `json:"id"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
 
 	Name            string            `json:"name"`
 	Description     string            `json:"description"`
@@ -41,9 +46,9 @@ type CompanyResource struct {
 	Longitude       float64           `json:"longitude"`
 	Latitude        float64           `json:"latitude"`
 	ContactNumber   string            `json:"contactNumber"`
-	OwnerID         *uint             `json:"ownerID"`
+	OwnerID         *uuid.UUID        `json:"ownerID"`
 	Owner           *OwnerResource    `json:"owner"`
-	MediaID         *uint             `json:"mediaID"`
+	MediaID         *uuid.UUID        `json:"mediaID"`
 	Media           *MediaResource    `json:"media"`
 	IsAdminVerified bool              `json:"isAdminVerified"`
 	Branches        []*BranchResource `json:"branches"`
@@ -55,9 +60,11 @@ func (m *ModelTransformer) CompanyToResource(company *Company) *CompanyResource 
 	}
 
 	return &CompanyResource{
-		ID:              company.ID,
-		CreatedAt:       company.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:       company.UpdatedAt.Format(time.RFC3339),
+		ID:        company.ID,
+		CreatedAt: company.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: company.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: company.DeletedAt.Time.Format(time.RFC3339),
+
 		Name:            company.Name,
 		Description:     company.Description,
 		Address:         company.Address,

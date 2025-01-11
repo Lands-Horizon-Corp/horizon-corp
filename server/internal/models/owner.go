@@ -3,11 +3,15 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Owner struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
 	FirstName          string     `gorm:"type:varchar(255);unsigned" json:"first_name"`
@@ -26,11 +30,11 @@ type Owner struct {
 	Status             UserStatus `gorm:"type:varchar(11);default:'Pending'" json:"status"`
 
 	// Relationship 0 to 1
-	MediaID *uint  `gorm:"type:bigint;unsigned" json:"media_id"`
-	Media   *Media `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"media"`
+	MediaID *uuid.UUID `gorm:"type:bigint;unsigned" json:"media_id"`
+	Media   *Media     `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"media"`
 
 	// Relationship 0 to 1
-	GenderID *uint `gorm:"type:bigint;unsigned" json:"gender_id"`
+	GenderID *uuid.UUID `gorm:"type:bigint;unsigned" json:"gender_id"`
 
 	// Relationship 0 to 1
 	Gender *Gender `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
@@ -40,16 +44,17 @@ type Owner struct {
 	Companies []*Company  `gorm:"foreignKey:OwnerID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"companies"`
 
 	// Relationship 0 to many
-	RoleID *uint `gorm:"type:bigint;unsigned" json:"role_id"`
-	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+	RoleID *uuid.UUID `gorm:"type:bigint;unsigned" json:"role_id"`
+	Role   *Role      `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 }
 
 type OwnerResource struct {
 	AccountType string `json:"accountType"`
 
-	ID        uint   `json:"id"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
 
 	FirstName          string              `json:"firstName"`
 	LastName           string              `json:"lastName"`
@@ -65,11 +70,11 @@ type OwnerResource struct {
 	IsContactVerified  bool                `json:"isContactVerified"`
 	IsSkipVerification bool                `json:"isSkipVerification"`
 	Status             UserStatus          `json:"status"`
-	MediaID            *uint               `json:"mediaID"`
+	MediaID            *uuid.UUID          `json:"mediaID"`
 	Media              *MediaResource      `json:"media"`
-	GenderID           *uint               `json:"genderID"`
+	GenderID           *uuid.UUID          `json:"genderID"`
 	Gender             *GenderResource     `json:"gender"`
-	RoleID             *uint               `json:"roleID"`
+	RoleID             *uuid.UUID          `json:"roleID"`
 	Role               *RoleResource       `json:"role"`
 	Footsteps          []*FootstepResource `json:"footsteps"`
 	Companies          []*CompanyResource  `json:"companies"`
@@ -81,10 +86,13 @@ func (m *ModelTransformer) OwnerToResource(owner *Owner) *OwnerResource {
 	}
 
 	return &OwnerResource{
-		AccountType:        "Owner", // Assuming the account type is always "Owner"
-		ID:                 owner.ID,
-		CreatedAt:          owner.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:          owner.UpdatedAt.Format(time.RFC3339),
+		AccountType: "Owner",
+
+		ID:        owner.ID,
+		CreatedAt: owner.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: owner.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: owner.DeletedAt.Time.Format(time.RFC3339),
+
 		FirstName:          owner.FirstName,
 		LastName:           owner.LastName,
 		MiddleName:         owner.MiddleName,

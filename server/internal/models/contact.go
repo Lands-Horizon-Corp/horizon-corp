@@ -3,24 +3,29 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Contact struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
-	FirstName     string `gorm:"type:varchar(255);unsigned" json:"first_name"`
-	LastName      string `gorm:"type:varchar(255);unsigned" json:"last_name"`
-	Email         string `gorm:"type:varchar(255);unique;unsigned" json:"email"`
-	ContactNumber string `gorm:"type:varchar(15);unsigned" json:"contact_number"`
+	FirstName     string `gorm:"type:varchar(255);not null" json:"first_name"`
+	LastName      string `gorm:"type:varchar(255);not null" json:"last_name"`
+	Email         string `gorm:"type:varchar(255);unique;not null" json:"email"`
+	ContactNumber string `gorm:"type:varchar(15);not null" json:"contact_number"`
 	Description   string `gorm:"type:text" json:"description"`
 }
 
 type ContactResource struct {
-	ID        uint   `json:"id"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
 
 	FirstName     string `json:"firstName"`
 	LastName      string `json:"lastName"`
@@ -35,9 +40,11 @@ func (m *ModelTransformer) ContactToResource(contact *Contact) *ContactResource 
 	}
 
 	return &ContactResource{
-		ID:            contact.ID,
-		CreatedAt:     contact.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:     contact.UpdatedAt.Format(time.RFC3339),
+		ID:        contact.ID,
+		CreatedAt: contact.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: contact.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: contact.DeletedAt.Time.Format(time.RFC3339),
+
 		FirstName:     contact.FirstName,
 		LastName:      contact.LastName,
 		Email:         contact.Email,

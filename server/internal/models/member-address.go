@@ -3,12 +3,17 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberAddress struct {
-	gorm.Model
-	MembersProfileID uint           `gorm:"unsigned" json:"members_profile_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MembersProfileID uuid.UUID      `gorm:"unsigned" json:"members_profile_id"`
 	PostalCode       string         `gorm:"type:varchar(20)" json:"postal_code"`
 	Province         string         `gorm:"type:varchar(255)" json:"province"`
 	City             string         `gorm:"type:varchar(255)" json:"city"`
@@ -19,10 +24,12 @@ type MemberAddress struct {
 }
 
 type MemberAddressResource struct {
-	ID               uint                   `json:"id"`
-	CreatedAt        string                 `json:"createdAt"`
-	UpdatedAt        string                 `json:"updatedAt"`
-	MembersProfileID uint                   `json:"membersProfileID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MembersProfileID uuid.UUID              `json:"membersProfileID"`
 	PostalCode       string                 `json:"postalCode"`
 	Province         string                 `json:"province"`
 	City             string                 `json:"city"`
@@ -38,9 +45,12 @@ func (m *ModelTransformer) MemberAddressToResource(address *MemberAddress) *Memb
 	}
 
 	return &MemberAddressResource{
-		ID:               address.ID,
-		CreatedAt:        address.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:        address.UpdatedAt.Format(time.RFC3339),
+
+		ID:        address.ID,
+		CreatedAt: address.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: address.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: address.DeletedAt.Time.Format(time.RFC3339),
+
 		MembersProfileID: address.MembersProfileID,
 		PostalCode:       address.PostalCode,
 		Province:         address.Province,

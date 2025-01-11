@@ -3,12 +3,17 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberIncome struct {
-	gorm.Model
-	MembersProfileID uint           `gorm:"unsigned" json:"members_profile_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MembersProfileID uuid.UUID      `gorm:"unsigned" json:"members_profile_id"`
 	Name             string         `gorm:"type:varchar(255);unsigned" json:"name"`
 	Amount           float64        `gorm:"type:decimal(10,2);unsigned" json:"amount"`
 	Date             time.Time      `gorm:"type:date" json:"date"`
@@ -17,10 +22,12 @@ type MemberIncome struct {
 }
 
 type MemberIncomeResource struct {
-	ID               uint                   `json:"id"`
-	CreatedAt        string                 `json:"createdAt"`
-	UpdatedAt        string                 `json:"updatedAt"`
-	MembersProfileID uint                   `json:"membersProfileID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MembersProfileID uuid.UUID              `json:"membersProfileID"`
 	Name             string                 `json:"name"`
 	Amount           float64                `json:"amount"`
 	Date             string                 `json:"date"`
@@ -34,9 +41,12 @@ func (m *ModelTransformer) MemberIncomeToResource(income *MemberIncome) *MemberI
 	}
 
 	return &MemberIncomeResource{
-		ID:               income.ID,
-		CreatedAt:        income.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:        income.UpdatedAt.Format(time.RFC3339),
+
+		ID:        income.ID,
+		CreatedAt: income.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: income.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: income.DeletedAt.Time.Format(time.RFC3339),
+
 		MembersProfileID: income.MembersProfileID,
 		Name:             income.Name,
 		Amount:           income.Amount,

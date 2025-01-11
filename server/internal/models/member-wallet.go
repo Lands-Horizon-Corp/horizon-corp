@@ -3,12 +3,17 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberWallet struct {
-	gorm.Model
-	MembersProfileID uint      `gorm:"unsigned" json:"members_profile_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MembersProfileID uuid.UUID `gorm:"unsigned" json:"members_profile_id"`
 	Debit            float64   `gorm:"type:decimal(12,2);default:0" json:"debit"`
 	Credit           float64   `gorm:"type:decimal(12,2);default:0" json:"credit"`
 	Date             time.Time `gorm:"type:date" json:"date"`
@@ -18,10 +23,12 @@ type MemberWallet struct {
 }
 
 type MemberWalletResource struct {
-	ID               uint                   `json:"id"`
-	CreatedAt        string                 `json:"createdAt"`
-	UpdatedAt        string                 `json:"updatedAt"`
-	MembersProfileID uint                   `json:"membersProfileID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MembersProfileID uuid.UUID              `json:"membersProfileID"`
 	Debit            float64                `json:"debit"`
 	Credit           float64                `json:"credit"`
 	Date             string                 `json:"date"`
@@ -35,9 +42,12 @@ func (m *ModelTransformer) MemberWalletToResource(wallet *MemberWallet) *MemberW
 	}
 
 	return &MemberWalletResource{
-		ID:               wallet.ID,
-		CreatedAt:        wallet.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:        wallet.UpdatedAt.Format(time.RFC3339),
+
+		ID:        wallet.ID,
+		CreatedAt: wallet.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: wallet.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: wallet.DeletedAt.Time.Format(time.RFC3339),
+
 		MembersProfileID: wallet.MembersProfileID,
 		Debit:            wallet.Debit,
 		Credit:           wallet.Credit,

@@ -3,22 +3,29 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberMutualFundsHistory struct {
-	gorm.Model
-	MembersProfileID uint           `gorm:"unsigned" json:"members_profile_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MembersProfileID uuid.UUID      `gorm:"unsigned" json:"members_profile_id"`
 	Description      string         `gorm:"type:text" json:"description"`
 	Amount           float64        `gorm:"type:decimal(10,2);unsigned" json:"amount"`
 	MembersProfile   *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
 }
 
 type MemberMutualFundsHistoryResource struct {
-	ID               uint                   `json:"id"`
-	CreatedAt        string                 `json:"createdAt"`
-	UpdatedAt        string                 `json:"updatedAt"`
-	MembersProfileID uint                   `json:"membersProfileID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MembersProfileID uuid.UUID              `json:"membersProfileID"`
 	Description      string                 `json:"description"`
 	Amount           float64                `json:"amount"`
 	MembersProfile   *MemberProfileResource `json:"membersProfile,omitempty"`
@@ -30,9 +37,12 @@ func (m *ModelTransformer) MemberMutualFundsHistoryToResource(history *MemberMut
 	}
 
 	return &MemberMutualFundsHistoryResource{
-		ID:               history.ID,
-		CreatedAt:        history.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:        history.UpdatedAt.Format(time.RFC3339),
+
+		ID:        history.ID,
+		CreatedAt: history.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: history.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: history.DeletedAt.Time.Format(time.RFC3339),
+
 		MembersProfileID: history.MembersProfileID,
 		Description:      history.Description,
 		Amount:           history.Amount,

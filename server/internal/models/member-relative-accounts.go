@@ -3,13 +3,18 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberRelativeAccounts struct {
-	gorm.Model
-	MembersProfileID             uint           `gorm:"unsigned" json:"members_profile_id"`
-	RelativeProfileMemberID      uint           `gorm:"unsigned" json:"relative_member_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MembersProfileID             uuid.UUID      `gorm:"unsigned" json:"members_profile_id"`
+	RelativeProfileMemberID      uuid.UUID      `gorm:"unsigned" json:"relative_member_id"`
 	FamilyRelationship           string         `gorm:"type:varchar(255)" json:"family_relationship"`
 	Description                  string         `gorm:"type:text" json:"description"`
 	MemberProfile                *MemberProfile `gorm:"foreignKey:MembersProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
@@ -17,11 +22,13 @@ type MemberRelativeAccounts struct {
 }
 
 type MemberRelativeAccountsResource struct {
-	ID                           uint                   `json:"id"`
-	CreatedAt                    string                 `json:"createdAt"`
-	UpdatedAt                    string                 `json:"updatedAt"`
-	MembersProfileID             uint                   `json:"membersProfileID"`
-	RelativeProfileMemberID      uint                   `json:"relativeProfileMemberID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MembersProfileID             uuid.UUID              `json:"membersProfileID"`
+	RelativeProfileMemberID      uuid.UUID              `json:"relativeProfileMemberID"`
 	FamilyRelationship           string                 `json:"familyRelationship"`
 	Description                  string                 `json:"description"`
 	MemberProfile                *MemberProfileResource `json:"memberProfile,omitempty"`
@@ -34,9 +41,12 @@ func (m *ModelTransformer) MemberRelativeAccountsToResource(account *MemberRelat
 	}
 
 	return &MemberRelativeAccountsResource{
-		ID:                           account.ID,
-		CreatedAt:                    account.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:                    account.UpdatedAt.Format(time.RFC3339),
+
+		ID:        account.ID,
+		CreatedAt: account.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: account.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: account.DeletedAt.Time.Format(time.RFC3339),
+
 		MembersProfileID:             account.MembersProfileID,
 		RelativeProfileMemberID:      account.RelativeProfileMemberID,
 		FamilyRelationship:           account.FamilyRelationship,

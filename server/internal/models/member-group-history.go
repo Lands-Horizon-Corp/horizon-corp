@@ -3,23 +3,30 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberGroupHistory struct {
-	gorm.Model
-	MemberProfileID uint           `gorm:"unsigned" json:"member_profile_id"`
-	MemberGroupID   uint           `gorm:"type:bigint;unsigned;unsigned" json:"member_group_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MemberProfileID uuid.UUID      `gorm:"unsigned" json:"member_profile_id"`
+	MemberGroupID   uuid.UUID      `gorm:"type:bigint;unsigned;unsigned" json:"member_group_id"`
 	MemberProfile   *MemberProfile `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberGroup     *MemberGroup   `gorm:"foreignKey:MemberGroupID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_group"`
 }
 
 type MemberGroupHistoryResource struct {
-	ID              uint                   `json:"id"`
-	CreatedAt       string                 `json:"createdAt"`
-	UpdatedAt       string                 `json:"updatedAt"`
-	MemberProfileID uint                   `json:"memberProfileID"`
-	MemberGroupID   uint                   `json:"memberGroupID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MemberProfileID uuid.UUID              `json:"memberProfileID"`
+	MemberGroupID   uuid.UUID              `json:"memberGroupID"`
 	MemberProfile   *MemberProfileResource `json:"memberProfile,omitempty"`
 	MemberGroup     *MemberGroupResource   `json:"memberGroup,omitempty"`
 }
@@ -30,9 +37,12 @@ func (m *ModelTransformer) MemberGroupHistoryToResource(history *MemberGroupHist
 	}
 
 	return &MemberGroupHistoryResource{
-		ID:              history.ID,
-		CreatedAt:       history.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:       history.UpdatedAt.Format(time.RFC3339),
+
+		ID:        history.ID,
+		CreatedAt: history.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: history.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: history.DeletedAt.Time.Format(time.RFC3339),
+
 		MemberProfileID: history.MemberProfileID,
 		MemberGroupID:   history.MemberGroupID,
 		MemberProfile:   m.MemberProfileToResource(history.MemberProfile),

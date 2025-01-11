@@ -3,20 +3,27 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberClassification struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
 	Name        string                         `gorm:"size:255;unsigned"`
 	Description string                         `gorm:"size:500"`
 	History     []*MemberClassificationHistory `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
 }
 
 type MemberClassificationResource struct {
-	ID          uint                                   `json:"id"`
-	CreatedAt   string                                 `json:"createdAt"`
-	UpdatedAt   string                                 `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
 	Name        string                                 `json:"name"`
 	Description string                                 `json:"description"`
 	History     []*MemberClassificationHistoryResource `json:"history,omitempty"`
@@ -28,9 +35,12 @@ func (m *ModelTransformer) MemberClassificationToResource(classification *Member
 	}
 
 	return &MemberClassificationResource{
-		ID:          classification.ID,
-		CreatedAt:   classification.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   classification.UpdatedAt.Format(time.RFC3339),
+
+		ID:        classification.ID,
+		CreatedAt: classification.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: classification.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: classification.DeletedAt.Time.Format(time.RFC3339),
+
 		Name:        classification.Name,
 		Description: classification.Description,
 		History:     m.MemberClassificationHistoryToResourceList(classification.History),

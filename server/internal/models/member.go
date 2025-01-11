@@ -3,11 +3,15 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Member struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	FirstName         string    `gorm:"type:varchar(255);unsigned;index" json:"first_name"`
 	LastName          string    `gorm:"type:varchar(255);unsigned;index" json:"last_name"`
@@ -24,14 +28,14 @@ type Member struct {
 	Status            string    `gorm:"type:varchar(50);default:'Pending'" json:"status"`
 
 	// Nullable Foreign Keys
-	MediaID *uint  `gorm:"type:bigint;unsigned;index" json:"media_id"`
-	Media   *Media `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
+	MediaID *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"media_id"`
+	Media   *Media     `gorm:"foreignKey:MediaID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"media"`
 
-	RoleID *uint `gorm:"type:bigint;unsigned;index" json:"role_id"`
-	Role   *Role `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
+	RoleID *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"role_id"`
+	Role   *Role      `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 
-	GenderID *uint   `gorm:"type:bigint;unsigned;index" json:"gender_id"`
-	Gender   *Gender `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
+	GenderID *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"gender_id"`
+	Gender   *Gender    `gorm:"foreignKey:GenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"gender"`
 
 	// Location
 	Longitude *float64 `gorm:"type:decimal(10,7)" json:"longitude"`
@@ -43,9 +47,11 @@ type Member struct {
 }
 
 type MemberResource struct {
-	ID                 uint                   `json:"id"`
-	CreatedAt          string                 `json:"createdAt"`
-	UpdatedAt          string                 `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
 	FirstName          string                 `json:"firstName"`
 	LastName           string                 `json:"lastName"`
 	MiddleName         string                 `json:"middleName,omitempty"`
@@ -74,9 +80,12 @@ func (m *ModelTransformer) MemberToResource(member *Member) *MemberResource {
 	}
 
 	return &MemberResource{
-		ID:                member.ID,
-		CreatedAt:         member.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:         member.UpdatedAt.Format(time.RFC3339),
+
+		ID:        member.ID,
+		CreatedAt: member.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: member.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: member.DeletedAt.Time.Format(time.RFC3339),
+
 		FirstName:         member.FirstName,
 		LastName:          member.LastName,
 		MiddleName:        member.MiddleName,

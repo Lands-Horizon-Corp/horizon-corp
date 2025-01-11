@@ -3,12 +3,17 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberExpenses struct {
-	gorm.Model
-	MembersProfileID uint           `gorm:"unsigned" json:"members_profile_id"`
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	MembersProfileID uuid.UUID      `gorm:"unsigned" json:"members_profile_id"`
 	Name             string         `gorm:"type:varchar(255);unsigned" json:"name"`
 	Amount           float64        `gorm:"type:decimal(10,2);unsigned" json:"amount"`
 	Date             time.Time      `gorm:"type:date" json:"date"`
@@ -17,10 +22,12 @@ type MemberExpenses struct {
 }
 
 type MemberExpensesResource struct {
-	ID               uint                   `json:"id"`
-	CreatedAt        string                 `json:"createdAt"`
-	UpdatedAt        string                 `json:"updatedAt"`
-	MembersProfileID uint                   `json:"membersProfileID"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
+	MembersProfileID uuid.UUID              `json:"membersProfileID"`
 	Name             string                 `json:"name"`
 	Amount           float64                `json:"amount"`
 	Date             string                 `json:"date"`
@@ -34,9 +41,11 @@ func (m *ModelTransformer) MemberExpensesToResource(expense *MemberExpenses) *Me
 	}
 
 	return &MemberExpensesResource{
-		ID:               expense.ID,
-		CreatedAt:        expense.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:        expense.UpdatedAt.Format(time.RFC3339),
+		ID:        expense.ID,
+		CreatedAt: expense.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: expense.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: expense.DeletedAt.Time.Format(time.RFC3339),
+
 		MembersProfileID: expense.MembersProfileID,
 		Name:             expense.Name,
 		Amount:           expense.Amount,

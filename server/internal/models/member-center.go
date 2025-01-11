@@ -3,20 +3,27 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type MemberCenter struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
 	Name        string                 `gorm:"size:255;unsigned"`
 	Description string                 `gorm:"size:500"`
 	History     []*MemberCenterHistory `gorm:"foreignKey:MemberCenterID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
 }
 
 type MemberCenterResource struct {
-	ID          uint                           `json:"id"`
-	CreatedAt   string                         `json:"createdAt"`
-	UpdatedAt   string                         `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
 	Name        string                         `json:"name"`
 	Description string                         `json:"description"`
 	History     []*MemberCenterHistoryResource `json:"history,omitempty"`
@@ -28,9 +35,12 @@ func (m *ModelTransformer) MemberCenterToResource(center *MemberCenter) *MemberC
 	}
 
 	return &MemberCenterResource{
-		ID:          center.ID,
-		CreatedAt:   center.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   center.UpdatedAt.Format(time.RFC3339),
+
+		ID:        center.ID,
+		CreatedAt: center.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: center.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: center.DeletedAt.Time.Format(time.RFC3339),
+
 		Name:        center.Name,
 		Description: center.Description,
 		History:     m.MemberCenterHistoryToResourceList(center.History),

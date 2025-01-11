@@ -3,11 +3,15 @@ package models
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type Media struct {
-	gorm.Model
+	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	CreatedAt time.Time      `gorm:"autoCreateTime"`
+	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
+	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
 	FileName    string `gorm:"type:varchar(255);unsigned" json:"file_name"`
@@ -45,9 +49,11 @@ type Metadata struct {
 }
 
 type MediaResource struct {
-	ID          uint                `json:"id"`
-	CreatedAt   string              `json:"createdAt"`
-	UpdatedAt   string              `json:"updatedAt"`
+	ID        uuid.UUID `json:"id"`
+	CreatedAt string    `json:"createdAt"`
+	UpdatedAt string    `json:"updatedAt"`
+	DeletedAt string    `json:"deletedAt"`
+
 	Description string              `json:"description"`
 	FileName    string              `json:"fileName"`
 	FileSize    int64               `json:"fileSize"`
@@ -83,9 +89,12 @@ func (m *ModelTransformer) MediaToResource(media *Media) *MediaResource {
 	}
 
 	return &MediaResource{
-		ID:          media.ID,
-		CreatedAt:   media.CreatedAt.Format(time.RFC3339),
-		UpdatedAt:   media.UpdatedAt.Format(time.RFC3339),
+
+		ID:        media.ID,
+		CreatedAt: media.CreatedAt.Format(time.RFC3339),
+		UpdatedAt: media.UpdatedAt.Format(time.RFC3339),
+		DeletedAt: media.DeletedAt.Time.Format(time.RFC3339),
+
 		Description: media.Description,
 		FileName:    media.FileName,
 		FileSize:    media.FileSize,
