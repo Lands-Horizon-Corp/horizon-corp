@@ -24,6 +24,13 @@ type Gender struct {
 	Admins    []*Admin    `gorm:"foreignKey:GenderID" json:"admins"`
 }
 
+func (v *Gender) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type GenderResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`

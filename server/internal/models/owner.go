@@ -48,6 +48,13 @@ type Owner struct {
 	Role   *Role      `gorm:"foreignKey:RoleID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"role"`
 }
 
+func (v *Owner) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type OwnerResource struct {
 	AccountType string `json:"accountType"`
 

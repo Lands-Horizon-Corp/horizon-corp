@@ -19,6 +19,13 @@ type Feedback struct {
 	FeedbackType string `gorm:"type:enum('bug', 'feature', 'general');unsigned" json:"feedback_type"`
 }
 
+func (v *Feedback) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type FeedbackResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`

@@ -18,6 +18,13 @@ type MemberClassification struct {
 	History     []*MemberClassificationHistory `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
 }
 
+func (v *MemberClassification) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type MemberClassificationResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`

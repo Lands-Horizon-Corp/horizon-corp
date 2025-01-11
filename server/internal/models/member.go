@@ -46,6 +46,13 @@ type Member struct {
 	MemberProfile *MemberProfile `gorm:"foreignKey:MemberID" json:"member_profile"`
 }
 
+func (v *Member) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type MemberResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`

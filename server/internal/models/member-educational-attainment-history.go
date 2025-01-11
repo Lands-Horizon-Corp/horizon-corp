@@ -19,6 +19,13 @@ type MemberEducationalAttainmentHistory struct {
 	MemberEducationalAttainment   *MemberEducationalAttainment `gorm:"foreignKey:MemberEducationalAttainmentID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_educational_attainment"`
 }
 
+func (v *MemberEducationalAttainmentHistory) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type MemberEducationalAttainmentHistoryResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`

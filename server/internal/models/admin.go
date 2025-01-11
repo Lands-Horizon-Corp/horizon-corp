@@ -45,6 +45,13 @@ type Admin struct {
 	Footsteps []*Footstep `json:"footsteps,omitempty" gorm:"foreignKey:AdminID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
+func (v *Admin) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type AdminResource struct {
 	AccountType string `json:"accountType"`
 

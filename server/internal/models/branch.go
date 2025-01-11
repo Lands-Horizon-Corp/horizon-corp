@@ -42,6 +42,13 @@ type Branch struct {
 	MemberProfile []*MemberProfile `gorm:"foreignKey:BranchID" json:"members_profile"`
 }
 
+func (v *Branch) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type BranchResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`

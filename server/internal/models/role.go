@@ -40,6 +40,13 @@ type Role struct {
 	Members   []*Member   `gorm:"foreignKey:RoleID" json:"members"`
 }
 
+func (v *Role) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type RoleResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`

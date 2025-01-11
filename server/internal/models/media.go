@@ -39,6 +39,13 @@ type Media struct {
 	Branches  []*Branch   `gorm:"foreignKey:MediaID" json:"branches"`
 }
 
+func (v *Media) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 // Metadata structure
 type Metadata struct {
 	UploadedBy    string `json:"uploaded_by"`

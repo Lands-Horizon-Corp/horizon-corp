@@ -34,6 +34,13 @@ type Company struct {
 	Branches []*Branch `gorm:"foreignKey:CompanyID" json:"branches"`
 }
 
+func (v *Company) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type CompanyResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`

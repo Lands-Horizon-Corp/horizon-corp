@@ -21,6 +21,13 @@ type Contact struct {
 	Description   string `gorm:"type:text" json:"description"`
 }
 
+func (v *Contact) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type ContactResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`

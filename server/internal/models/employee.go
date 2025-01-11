@@ -55,6 +55,13 @@ type Employee struct {
 	VerifiedProfiles []*MemberProfile `gorm:"foreignKey:VerifiedByEmployeeID" json:"verified_profiles,omitempty"`
 }
 
+func (v *Employee) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type EmployeeResource struct {
 	AccountType string `json:"accountType"`
 

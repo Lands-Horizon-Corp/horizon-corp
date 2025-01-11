@@ -20,6 +20,13 @@ type MemberContactNumberReferences struct {
 	MembersProfileID uuid.UUID `gorm:"unsigned" json:"members_profile_id"`
 }
 
+func (v *MemberContactNumberReferences) BeforeCreate(tx *gorm.DB) (err error) {
+	if v.ID == uuid.Nil {
+		v.ID = uuid.New()
+	}
+	return
+}
+
 type MemberContactNumberReferencesResource struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt string    `json:"createdAt"`
