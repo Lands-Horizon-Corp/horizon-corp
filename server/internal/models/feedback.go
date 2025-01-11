@@ -8,7 +8,7 @@ import (
 )
 
 type Feedback struct {
-	ID        uuid.UUID      `gorm:"type:uuid;default:uuid_generate_v4();primary_key"`
+	ID        uuid.UUID      `gorm:"type:char(36);primary_key"`
 	CreatedAt time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
