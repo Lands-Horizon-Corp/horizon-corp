@@ -10,8 +10,11 @@ import (
 var Module = fx.Module(
 	"api",
 	fx.Provide(
+		// controllers
 		controllers.NewAdminController,
 		controllers.NewController,
+		controllers.NewAuthController,
+		controllers.NewProfileController,
 	),
 	fx.Provide(
 		middleware.NewMiddleware,
