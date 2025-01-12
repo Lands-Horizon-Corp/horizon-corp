@@ -1,5 +1,11 @@
 package controllers
 
+type AdminController struct{}
+
+func NewAdminController() *AdminController {
+	return &AdminController{}
+}
+
 // GET: /
 // Retrieve admins with optional filtering for pagination or no pagination. Results can be converted to records.
 //     Admin: Can retrieve all admins if admin  status is verified
