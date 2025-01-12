@@ -15,5 +15,6 @@ var Module = fx.Module(
 		NewOTPProvider,
 		NewTokenProvider,
 		NewWebSocketProvider,
+		NewQRProvider,
 	),
 )

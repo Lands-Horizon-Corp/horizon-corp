@@ -66,9 +66,11 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/microcosm-cc/bluemonday v1.0.27
+	github.com/skip2/go-qrcode v0.0.0-20200617195104-da1b6568686e
 	github.com/xuri/excelize/v2 v2.9.0
 	go.uber.org/fx v1.23.0
 	golang.org/x/crypto v0.30.0
+	golang.org/x/image v0.23.0
 	golang.org/x/text v0.21.0 // indirect
 	golang.org/x/time v0.8.0
 	gorm.io/driver/mysql v1.5.7

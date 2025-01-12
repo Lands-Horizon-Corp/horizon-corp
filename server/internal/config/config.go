@@ -18,6 +18,7 @@ type AppConfig struct {
 	AppTokenName   string
 	AppToken       []byte
 	AppForwardPort []byte
+	AppLogo        string
 	LogLevel       string
 
 	// AWS
@@ -133,6 +134,7 @@ func NewAppConfig() *AppConfig {
 		AppSeeder:    getEnv("APP_SEEDER", "horizon-corp-seed"),
 		AppTokenName: getEnv("APP_TOKEN_NAME", "horizon-corp"),
 		AppToken:     []byte(os.Getenv("APP_TOKEN")),
+		AppLogo:      getEnv("APP_LOGO", "https://s3.ap-southeast-2.amazonaws.com/horizon.assets/ecoop-logo.png"),
 		LogLevel:     getEnv("LOG_LEVEL", "info"),
 
 		// AWS

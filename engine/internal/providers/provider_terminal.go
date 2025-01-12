@@ -12,7 +12,12 @@ import (
 )
 
 // NewTerminalService initializes and displays terminal messages and checks database connectivity
-func NewTerminalService(cfg *config.AppConfig, lc fx.Lifecycle, db *DatabaseService, cache *CacheService) {
+func NewTerminalService(
+	cfg *config.AppConfig,
+	lc fx.Lifecycle,
+	db *DatabaseService,
+	cache *CacheService,
+) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			time.Sleep(3 * time.Second)
@@ -22,6 +27,7 @@ func NewTerminalService(cfg *config.AppConfig, lc fx.Lifecycle, db *DatabaseServ
 			printAppDetails(cfg, db, cache)
 			fmt.Println()
 			fmt.Println("≿━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━༺❀༻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━≾")
+
 			return nil
 		},
 	})
