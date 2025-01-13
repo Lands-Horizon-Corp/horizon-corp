@@ -27,15 +27,15 @@ services:
     networks:
       - app-network
 
-  engine:
+  server:
     restart: always
     build:
-      context: ./engine
+      context: ./server
       dockerfile: Dockerfile
     platform: linux/amd64
     env_file: ./.env
     volumes:
-      - ./engine:/app>
+      - ./server:/app>
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:

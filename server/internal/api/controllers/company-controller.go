@@ -9,20 +9,20 @@ func NewCompanyController() *CompanyController {
 }
 
 // GET: /
-// Retrieve branches with optional filtering for pagination or no pagination. Results can be converted to records.
+// Retrieve companyes with optional filtering for pagination or no pagination. Results can be converted to records.
 //
 //	Admin: Allowed
-//	Employee: Only the company of current branch
+//	Employee: Only the company of current company
 //	Owner: Only own company
 //	Member: Only own company
 //
-// Endpoint: GET /api/v1/branch
+// Endpoint: GET /api/v1/company
 func (c *CompanyController) Index(ctx *gin.Context) {}
 
 // GET: /api/v1/company/:id
 //
 //	Admin: Allowed
-//	Employee: Only the company of current branch
+//	Employee: Only the company of current company
 //	Owner: Only own company
 //	Member: Only own company
 //
@@ -37,7 +37,7 @@ func (c *CompanyController) Show(ctx *gin.Context) {}
 // Endpoint: POST /api/v1/company
 func (c *CompanyController) Store(ctx *gin.Context) {}
 
-// Update modifies the details of a specific branch by ID.
+// Update modifies the details of a specific company by ID.
 //
 // - Admin: Allowed.
 // - Owner: Allowed but only his company
@@ -47,9 +47,7 @@ func (c *CompanyController) Store(ctx *gin.Context) {}
 func (c *CompanyController) Update(ctx *gin.Context) {}
 
 // DELETE: /:id
-// Admin: Allowed but if no members on branches, no branches, and no employees on branches.
-// Owner: Only own company but if no members on branches, no branches, and no employees on branches.
-// Endpoint: DELETE /api/v1/branch/:id
+// Admin: Allowed but if no members on companyes, no companyes, and no employees on companyes.
+// Owner: Only own company but if no members on companyes, no companyes, and no employees on companyes.
+// Endpoint: DELETE /api/v1/company/:id
 func (c *CompanyController) Destroy(ctx *gin.Context) {}
-
-// Ad nearewst branch

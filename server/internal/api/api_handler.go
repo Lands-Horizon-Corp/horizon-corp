@@ -8,6 +8,23 @@ import (
 	"go.uber.org/fx"
 )
 
+var ControllerModule = fx.Module(
+	"controllers",
+	fx.Provide(
+		controllers.NewAdminController,
+		controllers.NewAuthController,
+		controllers.NewBranchController,
+		controllers.NewCompanyController,
+		controllers.NewContactController,
+		controllers.NewController,
+		controllers.NewFeedbackController,
+		controllers.NewFootstepController,
+		controllers.NewMediaController,
+		controllers.NewMemberController,
+		controllers.NewProfileController,
+	),
+)
+
 func NewAPIHandlerInvoke(
 	lc fx.Lifecycle,
 	cfg *config.AppConfig,
@@ -20,7 +37,13 @@ func NewAPIHandlerInvoke(
 	adminController *controllers.AdminController,
 	authController *controllers.AuthController,
 	branchController *controllers.BranchController,
+	companyController *controllers.CompanyController,
+	contactController *controllers.ContactController,
 	controller *controllers.Controller,
+	feedbackController *controllers.FeedbackController,
+	footstepController *controllers.FootstepController,
+	mediaController *controllers.MediaController,
+	memberController *controllers.MemberController,
 	profileController *controllers.ProfileController,
 
 ) {
@@ -65,10 +88,54 @@ func NewAPIHandlerInvoke(
 			branch.POST("/", branchController.Store)
 			branch.PUT("/:id", branchController.Update)
 			branch.DELETE("/:id", branchController.Destroy)
-
 			branch.GET("/nearest-branch", branchController.NearestBranch)
 			branch.GET("/nearest-company-branch/:id", branchController.NearestCompanyBranch)
-
+		}
+		company := v1.Group("/company")
+		{
+			company.GET("/", companyController.Index)
+			company.GET("/:id", companyController.Show)
+			company.POST("/", companyController.Store)
+			company.PUT("/:id", companyController.Update)
+			company.DELETE("/:id", companyController.Destroy)
+		}
+		contact := v1.Group("/contact")
+		{
+			contact.GET("/", contactController.Index)
+			contact.GET("/:id", contactController.Show)
+			contact.POST("/", contactController.Store)
+			contact.DELETE("/:id", contactController.Destroy)
+		}
+		feedback := v1.Group("/feedback")
+		{
+			feedback.GET("/", feedbackController.Index)
+			feedback.GET("/:id", feedbackController.Show)
+			feedback.POST("/", feedbackController.Store)
+			feedback.DELETE("/:id", feedbackController.Destroy)
+		}
+		footstep := v1.Group("/footstep")
+		{
+			footstep.GET("/", footstepController.Index)
+			footstep.GET("/:id", footstepController.Show)
+			footstep.GET("/team", footstepController.Team)
+		}
+		media := v1.Group("/media")
+		{
+			media.GET("/", mediaController.Index)
+			media.GET("/:id", mediaController.Show)
+			media.POST("/", mediaController.Store)
+			media.PUT("/:id", mediaController.Update)
+			media.DELETE("/:id", mediaController.Destroy)
+			media.GET("/team", mediaController.Team)
+		}
+		member := v1.Group("/member")
+		{
+			member.GET("/", memberController.Index)
+			member.GET("/:id", memberController.Show)
+			member.POST("/", memberController.Store)
+			member.PUT("/:id", memberController.Update)
+			member.DELETE("/:id", memberController.Destroy)
+			member.GET("/member-applications", memberController.Show)
 		}
 		profile := v1.Group("/profile")
 		{
@@ -79,6 +146,7 @@ func NewAPIHandlerInvoke(
 			profile.POST("/change-username", profileController.ProfileChangeUsername)
 			profile.POST("/change-password", profileController.ProfileChangePassword)
 		}
+
 	}
 	runServer(lc, cfg, engineService, logger)
 }
