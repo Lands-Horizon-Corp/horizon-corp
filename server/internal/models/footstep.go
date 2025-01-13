@@ -15,6 +15,7 @@ type Footstep struct {
 
 	// Fields
 	AccountType string    `gorm:"type:varchar(11);unsigned" json:"account_type"`
+	Module      string    `gorm:"type:varchar(255);unsigned" json:"module"`
 	Description string    `gorm:"type:varchar(1000)" json:"description,omitempty"`
 	Activity    string    `gorm:"type:varchar(255);unsigned" json:"activity"`
 	Latitude    *float64  `gorm:"type:decimal(10,7)" json:"latitude,omitempty"`
@@ -47,6 +48,7 @@ type FootstepResource struct {
 	DeletedAt string    `json:"deletedAt"`
 
 	AccountType string   `json:"accountType"`
+	Module      string   `json:"module"`
 	Description string   `json:"description"`
 	Activity    string   `json:"activity"`
 	Latitude    *float64 `json:"latitude,omitempty"`
@@ -76,6 +78,7 @@ func (m *ModelTransformer) FootstepToResource(footstep *Footstep) *FootstepResou
 		UpdatedAt: footstep.UpdatedAt.Format(time.RFC3339),
 		DeletedAt: footstep.DeletedAt.Time.Format(time.RFC3339),
 
+		Module:      footstep.Module,
 		AccountType: footstep.AccountType,
 		Description: footstep.Description,
 		Activity:    footstep.Activity,

@@ -19,6 +19,7 @@ func NewAPIHandlerInvoke(
 	// Controllers
 	adminController *controllers.AdminController,
 	authController *controllers.AuthController,
+	branchController *controllers.BranchController,
 	controller *controllers.Controller,
 	profileController *controllers.ProfileController,
 
@@ -30,6 +31,14 @@ func NewAPIHandlerInvoke(
 	router.GET("/ping", controller.Ping)
 	v1 := router.Group("/api/v1")
 	{
+		admin := v1.Group("/admin")
+		{
+			admin.GET("/", adminController.Index)
+			admin.GET("/:id", adminController.Show)
+			admin.POST("/", adminController.Store)
+			admin.PUT("/:id", adminController.Update)
+			admin.DELETE("/:id", adminController.Destroy)
+		}
 		auth := v1.Group("/auth")
 		{
 			auth.POST("/signup", authController.SignUp)
@@ -49,13 +58,17 @@ func NewAPIHandlerInvoke(
 				auth.POST("/verify-contact-number", authController.VerifyContactNumber)
 			}
 		}
-		admin := v1.Group("/admin")
+		branch := v1.Group("/branch")
 		{
-			admin.GET("/", adminController.Index)
-			admin.GET("/:id", adminController.Show)
-			admin.POST("/", adminController.Store)
-			admin.PUT("/:id", adminController.Update)
-			admin.DELETE("/:id", adminController.Destroy)
+			branch.GET("/", branchController.Index)
+			branch.GET("/:id", branchController.Show)
+			branch.POST("/", branchController.Store)
+			branch.PUT("/:id", branchController.Update)
+			branch.DELETE("/:id", branchController.Destroy)
+
+			branch.GET("/nearest-branch", branchController.NearestBranch)
+			branch.GET("/nearest-company-branch/:id", branchController.NearestCompanyBranch)
+
 		}
 		profile := v1.Group("/profile")
 		{

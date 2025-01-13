@@ -8,7 +8,7 @@ func NewAdminController() *AdminController {
 	return &AdminController{}
 }
 
-// GET: /admin
+// GET: /api/v1/admin
 // Retrieve admins with optional filtering for pagination or no pagination. Results can be converted to records.
 //
 //	Admin: Can retrieve all admins if admin  status is verified
@@ -19,7 +19,7 @@ func (c *AdminController) Index(ctx *gin.Context) {
 
 }
 
-// GET: /admin/:id
+// GET: /api/v1/admin/:id
 //
 //	Admin: if admin  status is verified
 //	Employee: not allowed
@@ -29,7 +29,7 @@ func (c *AdminController) Show(ctx *gin.Context) {
 
 }
 
-// POST: /admin
+// POST: /api/v1/admin
 //
 //	Admin: Can create admin and automatically verified and also if admin and the status is verified
 //	Employee: not allowed
@@ -39,7 +39,7 @@ func (c *AdminController) Store(ctx *gin.Context) {
 
 }
 
-// PUT: /:id
+// PUT: /api/v1/admin/:id
 //
 //	Admin: Can change status of admin but only if admin and the status is verified
 //	Employee: not allowed
@@ -49,7 +49,7 @@ func (c *AdminController) Update(ctx *gin.Context) {
 
 }
 
-// DELETE: /:id
+// DELETE:/api/v1/admin/:id
 // Verifiy admin
 //
 //	Admin: only if admin  status is verified
