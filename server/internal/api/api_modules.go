@@ -9,9 +9,23 @@ import (
 
 var Module = fx.Module(
 	"api",
-	ControllerModule,
+
 	fx.Provide(
+		controllers.NewAdminController,
+		controllers.NewAuthController,
+		controllers.NewBranchController,
+		controllers.NewCompanyController,
+		controllers.NewContactController,
+		controllers.NewController,
+		controllers.NewFeedbackController,
+		controllers.NewFootstepController,
+		controllers.NewGenderController,
+		controllers.NewMediaController,
+		controllers.NewMemberController,
 		controllers.NewProfileController,
+		controllers.NewQRScannerController,
+		controllers.NewTimesheetController,
+
 		// Handlers
 		middleware.NewMiddleware,
 		handlers.NewCurrentUser,

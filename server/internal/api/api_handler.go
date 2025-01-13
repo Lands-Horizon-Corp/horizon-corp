@@ -8,23 +8,6 @@ import (
 	"go.uber.org/fx"
 )
 
-var ControllerModule = fx.Module(
-	"controllers",
-	fx.Provide(
-		controllers.NewAdminController,
-		controllers.NewAuthController,
-		controllers.NewBranchController,
-		controllers.NewCompanyController,
-		controllers.NewContactController,
-		controllers.NewController,
-		controllers.NewFeedbackController,
-		controllers.NewFootstepController,
-		controllers.NewMediaController,
-		controllers.NewMemberController,
-		controllers.NewProfileController,
-	),
-)
-
 func NewAPIHandlerInvoke(
 	lc fx.Lifecycle,
 	cfg *config.AppConfig,
@@ -42,13 +25,17 @@ func NewAPIHandlerInvoke(
 	controller *controllers.Controller,
 	feedbackController *controllers.FeedbackController,
 	footstepController *controllers.FootstepController,
+	genderController *controllers.GenderController,
 	mediaController *controllers.MediaController,
 	memberController *controllers.MemberController,
 	profileController *controllers.ProfileController,
+	qrController *controllers.QRScannerController,
+	timesheetController *controllers.TimesheetController,
 
 ) {
 	router := engineService.Client
 	registerMiddleware(router, middle, cfg)
+
 	router.GET("/", controller.Index)
 	router.GET("/favicon.ico", controller.Favico)
 	router.GET("/ping", controller.Ping)
@@ -119,6 +106,14 @@ func NewAPIHandlerInvoke(
 			footstep.GET("/:id", footstepController.Show)
 			footstep.GET("/team", footstepController.Team)
 		}
+		gender := v1.Group("/gender")
+		{
+			gender.GET("/", genderController.Index)
+			gender.GET("/:id", genderController.Show)
+			gender.POST("/", genderController.Store)
+			gender.PUT("/:id", genderController.Update)
+			gender.DELETE("/:id", genderController.Destroy)
+		}
 		media := v1.Group("/media")
 		{
 			media.GET("/", mediaController.Index)
@@ -147,6 +142,20 @@ func NewAPIHandlerInvoke(
 			profile.POST("/change-password", profileController.ProfileChangePassword)
 		}
 
+		timesheet := v1.Group("/timesheet")
+		{
+			timesheet.GET("/", timesheetController.Index)
+			timesheet.GET("/current", timesheetController.Current)
+			timesheet.POST("/time-in", timesheetController.TimeIn)
+			timesheet.POST("/time-out", timesheetController.TimeOut)
+		}
+
+		qr := v1.Group("/qr")
+		{
+			qr.GET("/profile", qrController.Profile)
+			qr.GET("/find-profile", qrController.FindProfile)
+		}
 	}
+
 	runServer(lc, cfg, engineService, logger)
 }
