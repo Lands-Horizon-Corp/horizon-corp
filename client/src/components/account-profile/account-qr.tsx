@@ -3,12 +3,9 @@ import { useState } from 'react'
 import Modal from '@/components/modals/modal'
 import { QrCodeIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
-import QrCodeDownloadable from '../qr-code/qr-code-downloadable'
-import { QrCode } from '../qr-code'
+import { QrCode, QrCodeDownloadable } from '@/components/qr-code'
 
-// interface Props {}
-
-const AccountQr = () => {
+const AccountQr = ({ fileName = 'profile-qr' }: { fileName?: string }) => {
     const [toggle, setToggle] = useState(false)
 
     const stringContent = 'as0f97as09 f7as0f8 sa'
@@ -19,7 +16,7 @@ const AccountQr = () => {
                 size="icon"
                 variant="ghost"
                 onClick={() => setToggle((val) => !val)}
-                className="ml-2 absolute top-5 right-5 inline w-auto h-[40%] sm:h-[70%] bg-transparent text-foreground/60"
+                className="absolute right-5 top-5 ml-2 inline h-[40%] w-auto bg-transparent text-foreground/60 sm:h-[70%]"
             >
                 {!stringContent ? (
                     <QrCodeIcon className="size-full" />
@@ -33,14 +30,14 @@ const AccountQr = () => {
             <Modal
                 open={toggle}
                 title="Profile QR"
+                className="p-4 pb-8"
                 description="QR of account for easy processing/trasactions."
                 onOpenChange={(val) => setToggle(val)}
-                className="p-4 pb-8"
             >
                 <QrCodeDownloadable
-                    fileName="profile-qr"
+                    fileName={fileName}
                     value={stringContent}
-                    className="p-3 size-80"
+                    className="size-80 p-3"
                     containerClassName="mx-auto"
                 />
             </Modal>
