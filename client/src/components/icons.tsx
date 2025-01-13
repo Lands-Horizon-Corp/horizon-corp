@@ -27,6 +27,7 @@ import {
     LuImage as ImageIcon,
     LuFileX as FileXIcon,
     LuClock8 as ClockIcon,
+    LuQrCode as QrCodeIcon,
     LuCalendar as CalendarIcon,
     LuCameraOff as CameraOffIcon,
     LuListOrdered as ListOrderedIcon,
@@ -170,7 +171,10 @@ import {
     RiFlipHorizontalLine as FlipHorizontalLineIcon,
 } from 'react-icons/ri'
 
-import { FiCamera as CameraIcon } from 'react-icons/fi'
+import {
+    FiCamera as CameraIcon,
+    FiDownload as DownloadIcon,
+} from 'react-icons/fi'
 
 import { CgFacebook as FacebookIcon } from 'react-icons/cg'
 
@@ -206,6 +210,7 @@ export {
     StoreIcon,
     ResetIcon,
     ReloadIcon,
+    QrCodeIcon,
     DotBigIcon,
     CameraIcon,
     FaBoldIcon,
@@ -233,6 +238,7 @@ export {
     MessagesIcon,
     FeedbackIcon,
     BuildingIcon,
+    DownloadIcon,
     CalendarIcon,
     CodeBlockIcon,
     ArrowLeftIcon,
