@@ -10,6 +10,7 @@ import {
 
 import { UserData } from '@/horizon-corp/types'
 import UserProfilePicture from './profile-picture'
+import AccountQr from './account-qr'
 
 const AccountProfileBanner = ({
     currentUser,
@@ -28,6 +29,7 @@ const AccountProfileBanner = ({
                     className="absolute -top-28 left-4 z-20 size-32"
                 />
                 <p className="text-2xl font-medium">{currentUser.username}</p>
+                <AccountQr />
                 <span className="text-sm text-foreground/80">
                     {currentUser.firstName} {currentUser.lastName}
                 </span>
