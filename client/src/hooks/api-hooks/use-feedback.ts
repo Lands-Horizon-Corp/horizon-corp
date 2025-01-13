@@ -130,7 +130,7 @@ export const useFilteredPaginatedFeedbacks = ({
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps = {}) => {
     return useQuery<FeedbackPaginatedResource, string>({
-        queryKey: ['feedback', 'resource-query', filterPayload, pagination],
+        queryKey: ['feedback', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 FeedbackService.getFeedbacks({

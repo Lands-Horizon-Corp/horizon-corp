@@ -209,7 +209,7 @@ export const useFilteredPaginatedBranch = ({
     sort,
 }: IFilterPaginatedHookProps = {}) => {
     return useQuery<BranchPaginatedResource, string>({
-        queryKey: ['branch', 'resource-query', filterPayload, pagination],
+        queryKey: ['branch', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 BranchService.getBranches({
