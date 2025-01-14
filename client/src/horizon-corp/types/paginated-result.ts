@@ -3,7 +3,7 @@ interface Pages {
   pageIndex: string
 }
 
-export interface FilterPages<T> {
+export interface PaginatedResult<T> {
   data: T[],
   pageIndex: number
   totalPage: number

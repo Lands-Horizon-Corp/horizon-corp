@@ -1,4 +1,4 @@
-import { FilterPages } from "../table"
+import { PaginatedResult } from "../paginated-result"
 
 export interface FeedbackResource {
   id: number
@@ -10,4 +10,4 @@ export interface FeedbackResource {
 }
 
 
-export type FeedbackPaginatedResource = FilterPages<FeedbackResource>
+export type FeedbackPaginatedResource = PaginatedResult<FeedbackResource>
