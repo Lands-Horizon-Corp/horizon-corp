@@ -98,3 +98,29 @@ func (m *ModelTransformer) RoleToResourceList(roleList []*Role) []*RoleResource 
 	}
 	return roleResources
 }
+
+func (m *ModelRepository) RoleGetByID(id string, preloads ...string) (*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) RoleCreate(role *Role, preloads ...string) (*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.Create(role, preloads...)
+}
+func (m *ModelRepository) RoleUpdate(role *Role, preloads ...string) (*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.Update(role, preloads...)
+}
+func (m *ModelRepository) RoleUpdateByID(id string, column string, value interface{}, preloads ...string) (*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) RoleDeleteByID(id string) error {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) RoleGetAll(preloads ...string) ([]*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.GetAll(preloads...)
+}

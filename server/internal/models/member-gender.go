@@ -64,3 +64,29 @@ func (m *ModelTransformer) MemberGenderToResourceList(genderList []*MemberGender
 	}
 	return genderResources
 }
+
+func (m *ModelRepository) MemberGenderGetByID(id string, preloads ...string) (*MemberGender, error) {
+	repo := NewGenericRepository[MemberGender](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberGenderCreate(membergender *MemberGender, preloads ...string) (*MemberGender, error) {
+	repo := NewGenericRepository[MemberGender](m.db.Client)
+	return repo.Create(membergender, preloads...)
+}
+func (m *ModelRepository) MemberGenderUpdate(membergender *MemberGender, preloads ...string) (*MemberGender, error) {
+	repo := NewGenericRepository[MemberGender](m.db.Client)
+	return repo.Update(membergender, preloads...)
+}
+func (m *ModelRepository) MemberGenderUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberGender, error) {
+	repo := NewGenericRepository[MemberGender](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberGenderDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberGender](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberGenderGetAll(preloads ...string) ([]*MemberGender, error) {
+	repo := NewGenericRepository[MemberGender](m.db.Client)
+	return repo.GetAll(preloads...)
+}

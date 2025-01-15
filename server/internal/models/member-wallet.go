@@ -75,3 +75,29 @@ func (m *ModelTransformer) MemberWalletToResourceList(walletList []*MemberWallet
 	}
 	return walletResources
 }
+
+func (m *ModelRepository) MemberWalletGetByID(id string, preloads ...string) (*MemberWallet, error) {
+	repo := NewGenericRepository[MemberWallet](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberWalletCreate(memberwallet *MemberWallet, preloads ...string) (*MemberWallet, error) {
+	repo := NewGenericRepository[MemberWallet](m.db.Client)
+	return repo.Create(memberwallet, preloads...)
+}
+func (m *ModelRepository) MemberWalletUpdate(memberwallet *MemberWallet, preloads ...string) (*MemberWallet, error) {
+	repo := NewGenericRepository[MemberWallet](m.db.Client)
+	return repo.Update(memberwallet, preloads...)
+}
+func (m *ModelRepository) MemberWalletUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberWallet, error) {
+	repo := NewGenericRepository[MemberWallet](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberWalletDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberWallet](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberWalletGetAll(preloads ...string) ([]*MemberWallet, error) {
+	repo := NewGenericRepository[MemberWallet](m.db.Client)
+	return repo.GetAll(preloads...)
+}

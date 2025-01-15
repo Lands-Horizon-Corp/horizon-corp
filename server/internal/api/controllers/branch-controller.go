@@ -68,3 +68,5 @@ func (c *BranchController) NearestBranch(ctx *gin.Context) {}
 //
 // Endpoint: GET /api/v1/branch/nearest-company-branch/:id
 func (c *BranchController) NearestCompanyBranch(ctx *gin.Context) {}
+
+func (c *CompanyController) CurrentBranch(ctx *gin.Context) {}

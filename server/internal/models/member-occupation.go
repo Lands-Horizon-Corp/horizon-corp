@@ -65,3 +65,29 @@ func (m *ModelTransformer) MemberOccupationToResourceList(occupationList []*Memb
 	}
 	return occupationResources
 }
+
+func (m *ModelRepository) MemberOccupationGetByID(id string, preloads ...string) (*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberOccupationCreate(memberoccupation *MemberOccupation, preloads ...string) (*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.Create(memberoccupation, preloads...)
+}
+func (m *ModelRepository) MemberOccupationUpdate(memberoccupation *MemberOccupation, preloads ...string) (*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.Update(memberoccupation, preloads...)
+}
+func (m *ModelRepository) MemberOccupationUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberOccupationDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberOccupationGetAll(preloads ...string) ([]*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.GetAll(preloads...)
+}

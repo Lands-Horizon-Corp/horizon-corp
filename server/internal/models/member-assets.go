@@ -70,3 +70,29 @@ func (m *ModelTransformer) MemberAssetsToResourceList(assetList []*MemberAssets)
 	}
 	return assetResources
 }
+
+func (m *ModelRepository) MemberAssetsGetByID(id string, preloads ...string) (*MemberAssets, error) {
+	repo := NewGenericRepository[MemberAssets](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberAssetsCreate(memberassets *MemberAssets, preloads ...string) (*MemberAssets, error) {
+	repo := NewGenericRepository[MemberAssets](m.db.Client)
+	return repo.Create(memberassets, preloads...)
+}
+func (m *ModelRepository) MemberAssetsUpdate(memberassets *MemberAssets, preloads ...string) (*MemberAssets, error) {
+	repo := NewGenericRepository[MemberAssets](m.db.Client)
+	return repo.Update(memberassets, preloads...)
+}
+func (m *ModelRepository) MemberAssetsUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberAssets, error) {
+	repo := NewGenericRepository[MemberAssets](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberAssetsDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberAssets](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberAssetsGetAll(preloads ...string) ([]*MemberAssets, error) {
+	repo := NewGenericRepository[MemberAssets](m.db.Client)
+	return repo.GetAll(preloads...)
+}

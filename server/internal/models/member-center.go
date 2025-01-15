@@ -65,3 +65,29 @@ func (m *ModelTransformer) MemberCenterToResourceList(centerList []*MemberCenter
 	}
 	return centerResources
 }
+
+func (m *ModelRepository) MemberCenterGetByID(id string, preloads ...string) (*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberCenterCreate(membercenter *MemberCenter, preloads ...string) (*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.Create(membercenter, preloads...)
+}
+func (m *ModelRepository) MemberCenterUpdate(membercenter *MemberCenter, preloads ...string) (*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.Update(membercenter, preloads...)
+}
+func (m *ModelRepository) MemberCenterUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberCenterDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberCenterGetAll(preloads ...string) ([]*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.GetAll(preloads...)
+}

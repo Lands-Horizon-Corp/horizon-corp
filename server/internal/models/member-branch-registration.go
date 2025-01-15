@@ -91,3 +91,29 @@ func (m *ModelTransformer) MemberBranchRegistrationToResourceList(registrationLi
 	}
 	return registrationResources
 }
+
+func (m *ModelRepository) MemberBranchRegistrationGetByID(id string, preloads ...string) (*MemberBranchRegistration, error) {
+	repo := NewGenericRepository[MemberBranchRegistration](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberBranchRegistrationCreate(memberbranchregistration *MemberBranchRegistration, preloads ...string) (*MemberBranchRegistration, error) {
+	repo := NewGenericRepository[MemberBranchRegistration](m.db.Client)
+	return repo.Create(memberbranchregistration, preloads...)
+}
+func (m *ModelRepository) MemberBranchRegistrationUpdate(memberbranchregistration *MemberBranchRegistration, preloads ...string) (*MemberBranchRegistration, error) {
+	repo := NewGenericRepository[MemberBranchRegistration](m.db.Client)
+	return repo.Update(memberbranchregistration, preloads...)
+}
+func (m *ModelRepository) MemberBranchRegistrationUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberBranchRegistration, error) {
+	repo := NewGenericRepository[MemberBranchRegistration](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberBranchRegistrationDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberBranchRegistration](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberBranchRegistrationGetAll(preloads ...string) ([]*MemberBranchRegistration, error) {
+	repo := NewGenericRepository[MemberBranchRegistration](m.db.Client)
+	return repo.GetAll(preloads...)
+}

@@ -134,3 +134,29 @@ func (m *ModelTransformer) MediaToResourceList(mediaList []*Media) []*MediaResou
 	}
 	return mediaResources
 }
+
+func (m *ModelRepository) MediaGetByID(id string, preloads ...string) (*Media, error) {
+	repo := NewGenericRepository[Media](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MediaCreate(media *Media, preloads ...string) (*Media, error) {
+	repo := NewGenericRepository[Media](m.db.Client)
+	return repo.Create(media, preloads...)
+}
+func (m *ModelRepository) MediaUpdate(media *Media, preloads ...string) (*Media, error) {
+	repo := NewGenericRepository[Media](m.db.Client)
+	return repo.Update(media, preloads...)
+}
+func (m *ModelRepository) MediaUpdateByID(id string, column string, value interface{}, preloads ...string) (*Media, error) {
+	repo := NewGenericRepository[Media](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MediaDeleteByID(id string) error {
+	repo := NewGenericRepository[Media](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MediaGetAll(preloads ...string) ([]*Media, error) {
+	repo := NewGenericRepository[Media](m.db.Client)
+	return repo.GetAll(preloads...)
+}

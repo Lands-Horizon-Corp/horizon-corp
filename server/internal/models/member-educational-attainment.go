@@ -65,3 +65,29 @@ func (m *ModelTransformer) MemberEducationalAttainmentToResourceList(attainmentL
 	}
 	return attainmentResources
 }
+
+func (m *ModelRepository) MemberEducationalAttainmentGetByID(id string, preloads ...string) (*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberEducationalAttainmentCreate(membereducationalattainment *MemberEducationalAttainment, preloads ...string) (*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.Create(membereducationalattainment, preloads...)
+}
+func (m *ModelRepository) MemberEducationalAttainmentUpdate(membereducationalattainment *MemberEducationalAttainment, preloads ...string) (*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.Update(membereducationalattainment, preloads...)
+}
+func (m *ModelRepository) MemberEducationalAttainmentUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberEducationalAttainmentDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberEducationalAttainmentGetAll(preloads ...string) ([]*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.GetAll(preloads...)
+}

@@ -67,3 +67,29 @@ func (m *ModelTransformer) MemberClassificationHistoryToResourceList(historyList
 	}
 	return historyResources
 }
+
+func (m *ModelRepository) MemberClassificationHistoryGetByID(id string, preloads ...string) (*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberClassificationHistoryCreate(memberclassificationhistory *MemberClassificationHistory, preloads ...string) (*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.Create(memberclassificationhistory, preloads...)
+}
+func (m *ModelRepository) MemberClassificationHistoryUpdate(memberclassificationhistory *MemberClassificationHistory, preloads ...string) (*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.Update(memberclassificationhistory, preloads...)
+}
+func (m *ModelRepository) MemberClassificationHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberClassificationHistoryDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberClassificationHistoryGetAll(preloads ...string) ([]*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.GetAll(preloads...)
+}

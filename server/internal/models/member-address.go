@@ -80,3 +80,29 @@ func (m *ModelTransformer) MemberAddressToResourceList(addressList []*MemberAddr
 	}
 	return addressResources
 }
+
+func (m *ModelRepository) MemberAddressGetByID(id string, preloads ...string) (*MemberAddress, error) {
+	repo := NewGenericRepository[MemberAddress](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberAddressCreate(memberaddress *MemberAddress, preloads ...string) (*MemberAddress, error) {
+	repo := NewGenericRepository[MemberAddress](m.db.Client)
+	return repo.Create(memberaddress, preloads...)
+}
+func (m *ModelRepository) MemberAddressUpdate(memberaddress *MemberAddress, preloads ...string) (*MemberAddress, error) {
+	repo := NewGenericRepository[MemberAddress](m.db.Client)
+	return repo.Update(memberaddress, preloads...)
+}
+func (m *ModelRepository) MemberAddressUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberAddress, error) {
+	repo := NewGenericRepository[MemberAddress](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberAddressDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberAddress](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberAddressGetAll(preloads ...string) ([]*MemberAddress, error) {
+	repo := NewGenericRepository[MemberAddress](m.db.Client)
+	return repo.GetAll(preloads...)
+}

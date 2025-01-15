@@ -51,3 +51,5 @@ func (c *CompanyController) Update(ctx *gin.Context) {}
 // Owner: Only own company but if no members on companyes, no companyes, and no employees on companyes.
 // Endpoint: DELETE /api/v1/company/:id
 func (c *CompanyController) Destroy(ctx *gin.Context) {}
+
+func (c *CompanyController) CurrentCompany(ctx *gin.Context) {}

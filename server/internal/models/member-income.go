@@ -74,3 +74,29 @@ func (m *ModelTransformer) MemberIncomeToResourceList(incomeList []*MemberIncome
 	}
 	return incomeResources
 }
+
+func (m *ModelRepository) MemberIncomeGetByID(id string, preloads ...string) (*MemberIncome, error) {
+	repo := NewGenericRepository[MemberIncome](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberIncomeCreate(memberincome *MemberIncome, preloads ...string) (*MemberIncome, error) {
+	repo := NewGenericRepository[MemberIncome](m.db.Client)
+	return repo.Create(memberincome, preloads...)
+}
+func (m *ModelRepository) MemberIncomeUpdate(memberincome *MemberIncome, preloads ...string) (*MemberIncome, error) {
+	repo := NewGenericRepository[MemberIncome](m.db.Client)
+	return repo.Update(memberincome, preloads...)
+}
+func (m *ModelRepository) MemberIncomeUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberIncome, error) {
+	repo := NewGenericRepository[MemberIncome](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberIncomeDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberIncome](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberIncomeGetAll(preloads ...string) ([]*MemberIncome, error) {
+	repo := NewGenericRepository[MemberIncome](m.db.Client)
+	return repo.GetAll(preloads...)
+}

@@ -68,3 +68,29 @@ func (m *ModelTransformer) MemberEducationalAttainmentHistoryToResourceList(hist
 	}
 	return historyResources
 }
+
+func (m *ModelRepository) MemberEducationalAttainmentHistoryGetByID(id string, preloads ...string) (*MemberEducationalAttainmentHistory, error) {
+	repo := NewGenericRepository[MemberEducationalAttainmentHistory](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberEducationalAttainmentHistoryCreate(membereducationalattainmenthistory *MemberEducationalAttainmentHistory, preloads ...string) (*MemberEducationalAttainmentHistory, error) {
+	repo := NewGenericRepository[MemberEducationalAttainmentHistory](m.db.Client)
+	return repo.Create(membereducationalattainmenthistory, preloads...)
+}
+func (m *ModelRepository) MemberEducationalAttainmentHistoryUpdate(membereducationalattainmenthistory *MemberEducationalAttainmentHistory, preloads ...string) (*MemberEducationalAttainmentHistory, error) {
+	repo := NewGenericRepository[MemberEducationalAttainmentHistory](m.db.Client)
+	return repo.Update(membereducationalattainmenthistory, preloads...)
+}
+func (m *ModelRepository) MemberEducationalAttainmentHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberEducationalAttainmentHistory, error) {
+	repo := NewGenericRepository[MemberEducationalAttainmentHistory](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberEducationalAttainmentHistoryDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberEducationalAttainmentHistory](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberEducationalAttainmentHistoryGetAll(preloads ...string) ([]*MemberEducationalAttainmentHistory, error) {
+	repo := NewGenericRepository[MemberEducationalAttainmentHistory](m.db.Client)
+	return repo.GetAll(preloads...)
+}

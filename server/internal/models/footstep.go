@@ -108,3 +108,29 @@ func (m *ModelTransformer) FootstepToResourceList(footstepList []*Footstep) []*F
 	}
 	return footstepResources
 }
+
+func (m *ModelRepository) FootstepGetByID(id string, preloads ...string) (*Footstep, error) {
+	repo := NewGenericRepository[Footstep](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) FootstepCreate(footstep *Footstep, preloads ...string) (*Footstep, error) {
+	repo := NewGenericRepository[Footstep](m.db.Client)
+	return repo.Create(footstep, preloads...)
+}
+func (m *ModelRepository) FootstepUpdate(footstep *Footstep, preloads ...string) (*Footstep, error) {
+	repo := NewGenericRepository[Footstep](m.db.Client)
+	return repo.Update(footstep, preloads...)
+}
+func (m *ModelRepository) FootstepUpdateByID(id string, column string, value interface{}, preloads ...string) (*Footstep, error) {
+	repo := NewGenericRepository[Footstep](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) FootstepDeleteByID(id string) error {
+	repo := NewGenericRepository[Footstep](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) FootstepGetAll(preloads ...string) ([]*Footstep, error) {
+	repo := NewGenericRepository[Footstep](m.db.Client)
+	return repo.GetAll(preloads...)
+}

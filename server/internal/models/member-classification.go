@@ -65,3 +65,29 @@ func (m *ModelTransformer) MemberClassificationToResourceList(classificationList
 	}
 	return classificationResources
 }
+
+func (m *ModelRepository) MemberClassificationGetByID(id string, preloads ...string) (*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberClassificationCreate(memberclassification *MemberClassification, preloads ...string) (*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.Create(memberclassification, preloads...)
+}
+func (m *ModelRepository) MemberClassificationUpdate(memberclassification *MemberClassification, preloads ...string) (*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.Update(memberclassification, preloads...)
+}
+func (m *ModelRepository) MemberClassificationUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberClassificationDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberClassificationGetAll(preloads ...string) ([]*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.GetAll(preloads...)
+}

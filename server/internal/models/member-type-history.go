@@ -68,3 +68,29 @@ func (m *ModelTransformer) MemberTypeHistoryToResourceList(historyList []*Member
 	}
 	return historyResources
 }
+
+func (m *ModelRepository) MemberTypeHistoryGetByID(id string, preloads ...string) (*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberTypeHistoryCreate(membertypehistory *MemberTypeHistory, preloads ...string) (*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.Create(membertypehistory, preloads...)
+}
+func (m *ModelRepository) MemberTypeHistoryUpdate(membertypehistory *MemberTypeHistory, preloads ...string) (*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.Update(membertypehistory, preloads...)
+}
+func (m *ModelRepository) MemberTypeHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberTypeHistoryDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberTypeHistoryGetAll(preloads ...string) ([]*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.GetAll(preloads...)
+}

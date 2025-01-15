@@ -70,3 +70,29 @@ func (m *ModelTransformer) MemberTypeToResourceList(memberTypeList []*MemberType
 	}
 	return memberTypeResources
 }
+
+func (m *ModelRepository) MemberTypeGetByID(id string, preloads ...string) (*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberTypeCreate(membertype *MemberType, preloads ...string) (*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.Create(membertype, preloads...)
+}
+func (m *ModelRepository) MemberTypeUpdate(membertype *MemberType, preloads ...string) (*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.Update(membertype, preloads...)
+}
+func (m *ModelRepository) MemberTypeUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberTypeDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberTypeGetAll(preloads ...string) ([]*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.GetAll(preloads...)
+}

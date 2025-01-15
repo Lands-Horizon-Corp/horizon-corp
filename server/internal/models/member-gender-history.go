@@ -68,3 +68,29 @@ func (m *ModelTransformer) MemberGenderHistoryToResourceList(historyList []*Memb
 	}
 	return historyResources
 }
+
+func (m *ModelRepository) MemberGenderHistoryGetByID(id string, preloads ...string) (*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberGenderHistoryCreate(membergenderhistory *MemberGenderHistory, preloads ...string) (*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.Create(membergenderhistory, preloads...)
+}
+func (m *ModelRepository) MemberGenderHistoryUpdate(membergenderhistory *MemberGenderHistory, preloads ...string) (*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.Update(membergenderhistory, preloads...)
+}
+func (m *ModelRepository) MemberGenderHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberGenderHistoryDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberGenderHistoryGetAll(preloads ...string) ([]*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.GetAll(preloads...)
+}
