@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/broadcast"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/controllers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/middleware"
@@ -11,6 +12,10 @@ var Module = fx.Module(
 	"api",
 
 	fx.Provide(
+		// Broadcast
+		broadcast.NewNotificationBroadcast,
+
+		// Controllers
 		controllers.NewAdminController,
 		controllers.NewAuthController,
 		controllers.NewBranchController,

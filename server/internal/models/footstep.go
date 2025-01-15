@@ -14,14 +14,19 @@ type Footstep struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
-	AccountType string    `gorm:"type:varchar(11);unsigned" json:"account_type"`
-	Module      string    `gorm:"type:varchar(255);unsigned" json:"module"`
-	Description string    `gorm:"type:varchar(1000)" json:"description,omitempty"`
-	Activity    string    `gorm:"type:varchar(255);unsigned" json:"activity"`
-	Latitude    *float64  `gorm:"type:decimal(10,7)" json:"latitude,omitempty"`
-	Longitude   *float64  `gorm:"type:decimal(10,7)" json:"longitude,omitempty"`
-	Timestamp   time.Time `gorm:"type:timestamp" json:"timestamp"`
-	IsDeleted   bool      `gorm:"default:false" json:"is_deleted"`
+	AccountType    string    `gorm:"type:varchar(11);unsigned" json:"account_type"`
+	Module         string    `gorm:"type:varchar(255);unsigned" json:"module"`
+	Description    string    `gorm:"type:varchar(1000)" json:"description,omitempty"`
+	Activity       string    `gorm:"type:varchar(255);unsigned" json:"activity"`
+	Latitude       *float64  `gorm:"type:decimal(10,7)" json:"latitude,omitempty"`
+	Longitude      *float64  `gorm:"type:decimal(10,7)" json:"longitude,omitempty"`
+	Timestamp      time.Time `gorm:"type:timestamp" json:"timestamp"`
+	IsDeleted      bool      `gorm:"default:false" json:"is_deleted"`
+	IPAddress      string    `gorm:"type:varchar(45)" json:"ip_address"`
+	UserAgent      string    `gorm:"type:varchar(1000)" json:"user_agent"`
+	Referer        string    `gorm:"type:varchar(1000)" json:"referer"`
+	Location       string    `gorm:"type:varchar(255)" json:"location"`
+	AcceptLanguage string    `gorm:"type:varchar(255)" json:"accept_language"`
 
 	// Relationships
 	AdminID    *uuid.UUID `gorm:"index" json:"admin_id,omitempty"`
@@ -47,14 +52,19 @@ type FootstepResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	AccountType string   `json:"accountType"`
-	Module      string   `json:"module"`
-	Description string   `json:"description"`
-	Activity    string   `json:"activity"`
-	Latitude    *float64 `json:"latitude,omitempty"`
-	Longitude   *float64 `json:"longitude,omitempty"`
-	Timestamp   string   `json:"timestamp"`
-	IsDeleted   bool     `json:"isDeleted"`
+	AccountType    string   `json:"accountType"`
+	Module         string   `json:"module"`
+	Description    string   `json:"description"`
+	Activity       string   `json:"activity"`
+	Latitude       *float64 `json:"latitude,omitempty"`
+	Longitude      *float64 `json:"longitude,omitempty"`
+	Timestamp      string   `json:"timestamp"`
+	IsDeleted      bool     `json:"isDeleted"`
+	IPAddress      string   `json:"ipAddress"`
+	UserAgent      string   `json:"userAgent"`
+	Referer        string   `json:"referer"`
+	Location       string   `json:"location"`
+	AcceptLanguage string   `json:"acceptLanguage"`
 
 	AdminID    *uuid.UUID        `json:"adminID"`
 	Admin      *AdminResource    `json:"admin"`
@@ -72,28 +82,31 @@ func (m *ModelTransformer) FootstepToResource(footstep *Footstep) *FootstepResou
 	}
 
 	return &FootstepResource{
-
-		ID:        footstep.ID,
-		CreatedAt: footstep.CreatedAt.Format(time.RFC3339),
-		UpdatedAt: footstep.UpdatedAt.Format(time.RFC3339),
-		DeletedAt: footstep.DeletedAt.Time.Format(time.RFC3339),
-
-		Module:      footstep.Module,
-		AccountType: footstep.AccountType,
-		Description: footstep.Description,
-		Activity:    footstep.Activity,
-		Latitude:    footstep.Latitude,
-		Longitude:   footstep.Longitude,
-		Timestamp:   footstep.Timestamp.Format(time.RFC3339),
-		IsDeleted:   footstep.IsDeleted,
-		AdminID:     footstep.AdminID,
-		Admin:       m.AdminToResource(footstep.Admin),
-		EmployeeID:  footstep.EmployeeID,
-		Employee:    m.EmployeeToResource(footstep.Employee),
-		OwnerID:     footstep.OwnerID,
-		Owner:       m.OwnerToResource(footstep.Owner),
-		MemberID:    footstep.MemberID,
-		Member:      m.MemberToResource(footstep.Member),
+		ID:             footstep.ID,
+		CreatedAt:      footstep.CreatedAt.Format(time.RFC3339),
+		UpdatedAt:      footstep.UpdatedAt.Format(time.RFC3339),
+		DeletedAt:      footstep.DeletedAt.Time.Format(time.RFC3339),
+		Module:         footstep.Module,
+		AccountType:    footstep.AccountType,
+		Description:    footstep.Description,
+		Activity:       footstep.Activity,
+		Latitude:       footstep.Latitude,
+		Longitude:      footstep.Longitude,
+		Timestamp:      footstep.Timestamp.Format(time.RFC3339),
+		IsDeleted:      footstep.IsDeleted,
+		IPAddress:      footstep.IPAddress,
+		UserAgent:      footstep.UserAgent,
+		Referer:        footstep.Referer,
+		Location:       footstep.Location,
+		AcceptLanguage: footstep.AcceptLanguage,
+		AdminID:        footstep.AdminID,
+		Admin:          m.AdminToResource(footstep.Admin),
+		EmployeeID:     footstep.EmployeeID,
+		Employee:       m.EmployeeToResource(footstep.Employee),
+		OwnerID:        footstep.OwnerID,
+		Owner:          m.OwnerToResource(footstep.Owner),
+		MemberID:       footstep.MemberID,
+		Member:         m.MemberToResource(footstep.Member),
 	}
 }
 
