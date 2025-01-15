@@ -129,3 +129,34 @@ func (m *ModelTransformer) AdminToResourceList(adminList []*Admin) []*AdminResou
 	}
 	return adminResources
 }
+
+func (m *ModelRepository) AdminGetByID(id string, preloads ...string) (*Admin, error) {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) AdminGetByUsername(username string, preloads ...string) (*Admin, error) {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	return repo.GetByColumn("username", username, preloads...)
+}
+
+func (m *ModelRepository) AdminGetByEmail(email string, preloads ...string) (*Admin, error) {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	return repo.GetByColumn("email", email, preloads...)
+}
+
+func (m *ModelRepository) AdminGetByContactNumber(contact_number string, preloads ...string) (*Admin, error) {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	return repo.GetByColumn("contact_number", contact_number, preloads...)
+}
+
+func (r *ModelRepository) AdminFindByEmailUsernameOrContact(input string, preloads ...string) (*Admin, error) {
+	switch r.helpers.GetKeyType(input) {
+	case "contact":
+		return r.AdminGetByContactNumber(input)
+	case "email":
+		return r.AdminGetByEmail(input)
+	default:
+		return r.AdminGetByUsername(input, preloads...)
+	}
+}

@@ -1,8 +1,10 @@
 package models
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"go.uber.org/fx"
+	"gorm.io/gorm"
 )
 
 type UserStatus string
@@ -26,18 +28,20 @@ type ModelTransformer struct {
 	storage *providers.StorageProvider
 }
 
-func NewModelTransformer(
-	storage *providers.StorageProvider,
-) *ModelTransformer {
-	return &ModelTransformer{
-		storage: storage,
-	}
+type ModelRepository struct {
+	db      *providers.DatabaseService
+	helpers *helpers.HelpersFunction
 }
 
 var Module = fx.Module(
 	"models",
 	fx.Provide(
-		NewModelTransformer,
+		func(storage *providers.StorageProvider) *ModelTransformer {
+			return &ModelTransformer{storage: storage}
+		},
+		func(db *providers.DatabaseService, helpers *helpers.HelpersFunction) *ModelRepository {
+			return &ModelRepository{db: db, helpers: helpers}
+		},
 	),
 	fx.Invoke(func(
 		db *providers.DatabaseService,
@@ -94,3 +98,91 @@ var Module = fx.Module(
 		logger.Info("Database migration completed successfully")
 	}),
 )
+
+type GenericRepository[T any] struct {
+	db *gorm.DB
+}
+
+// NewGenericRepository creates a new generic repository instance
+func NewGenericRepository[T any](db *gorm.DB) *GenericRepository[T] {
+	return &GenericRepository[T]{db: db}
+}
+
+// GetByID fetches a record by ID with optional preloads
+func (r *GenericRepository[T]) GetByID(id string, preloads ...string) (*T, error) {
+	var entity T
+	query := r.db.Model(&entity).Where("id = ?", id)
+
+	for _, preload := range preloads {
+		query = query.Preload(preload)
+	}
+
+	if err := query.First(&entity).Error; err != nil {
+		return nil, err
+	}
+
+	return &entity, nil
+}
+
+// UpdateByID updates a specific column by ID
+func (r *GenericRepository[T]) UpdateByID(id string, column string, value interface{}) error {
+	if err := r.db.Model(new(T)).Where("id = ?", id).Update(column, value).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// DeleteByID deletes a record by ID
+func (r *GenericRepository[T]) DeleteByID(id string) error {
+	if err := r.db.Delete(new(T), id).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// Create inserts a new record
+func (r *GenericRepository[T]) Create(entity *T) error {
+	if err := r.db.Create(entity).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// GetAll fetches all records with optional preloads
+func (r *GenericRepository[T]) GetAll(preloads ...string) ([]*T, error) {
+	var entities []*T
+	query := r.db.Model(new(T))
+
+	for _, preload := range preloads {
+		query = query.Preload(preload)
+	}
+
+	if err := query.Find(&entities).Error; err != nil {
+		return nil, err
+	}
+
+	return entities, nil
+}
+
+// Update updates an existing record
+func (r *GenericRepository[T]) Update(entity *T) error {
+	if err := r.db.Save(entity).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *GenericRepository[T]) GetByColumn(column string, value interface{}, preloads ...string) (*T, error) {
+	var entity T
+	query := r.db.Model(&entity).Where(column+" = ?", value)
+
+	for _, preload := range preloads {
+		query = query.Preload(preload)
+	}
+
+	if err := query.First(&entity).Error; err != nil {
+		return nil, err
+	}
+
+	return &entity, nil
+}
