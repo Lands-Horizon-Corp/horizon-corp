@@ -66,7 +66,7 @@ func (c *BranchController) NearestBranch(ctx *gin.Context) {}
 //
 // - This returns all nearest and furthest branches based on the provided location parameters.
 //
-// Endpoint: GET /api/v1/branch/nearest-company-branch/:id
+// Endpoint: GET /api/v1/branch/:company-id/nearest-company-branch/:branch-id
 func (c *BranchController) NearestCompanyBranch(ctx *gin.Context) {}
 
 func (c *CompanyController) CurrentBranch(ctx *gin.Context) {}
