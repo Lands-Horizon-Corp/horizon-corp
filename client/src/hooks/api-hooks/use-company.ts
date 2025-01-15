@@ -201,6 +201,8 @@ export const useUpdateCompany = ({
                 response
             )
 
+            toast.success('Company updated')
+
             onSuccess?.(response)
             return response
         },
