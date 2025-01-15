@@ -18,7 +18,7 @@ import DataTableMultiSelectFilter from '@/components/data-table/data-table-filte
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
-import { MemberResource } from '@/horizon-corp/types'
+import { AccountStatus, MemberResource } from '@/horizon-corp/types'
 
 export const memberGlobalSearchTargets: IGlobalSearchTargets<MemberResource>[] =
     [
@@ -29,12 +29,12 @@ export const memberGlobalSearchTargets: IGlobalSearchTargets<MemberResource>[] =
         { field: 'isAdminVerified', displayText: 'Verify Status' },
     ]
 
-export interface ICompanyTableActionComponentProp {
+export interface IMemberTableActionComponentProp {
     row: Row<MemberResource>
 }
 
 export interface ICompaniesTableColumnProps {
-    actionComponent?: (props: ICompanyTableActionComponentProp) => ReactNode
+    actionComponent?: (props: IMemberTableActionComponentProp) => ReactNode
 }
 
 const companiesTableColumns = (
@@ -75,41 +75,10 @@ const companiesTableColumns = (
             maxSize: 80,
         },
         {
-            id: 'Name',
-            accessorKey: 'name',
-            header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
-                    <ColumnActions {...props}>
-                        <TextFilter
-                            field="firstName"
-                            displayText="Firstname"
-                            defaultMode="contains"
-                        />
-                    </ColumnActions>
-                </DataTableColumnHeader>
-            ),
-            cell: ({
-                row: {
-                    original: { firstName },
-                },
-            }) => (
-                <div onClick={(e) => e.stopPropagation()}>
-                    {/* <Link
-                        params={{ companyId: id }}
-                        to="/admin/companies-management/$companyId/view"
-                        className="hover:underline"
-                    > */}
-                    {firstName}
-                    {/* </Link> */}
-                </div>
-            ),
-            enableMultiSort: true,
-        },
-        {
-            id: 'Logo',
+            id: 'Media',
             accessorKey: 'media',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Logo">
+                <DataTableColumnHeader {...props} isResizable title="Picture">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -125,13 +94,84 @@ const companiesTableColumns = (
             enableSorting: false,
         },
         {
-            id: 'address',
+            id: 'Firstname',
+            accessorKey: 'firstName',
+            header: (props) => (
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="First Name"
+                >
+                    <ColumnActions {...props}>
+                        <TextFilter
+                            field="firstName"
+                            displayText="Firstname"
+                            defaultMode="contains"
+                        />
+                    </ColumnActions>
+                </DataTableColumnHeader>
+            ),
+            cell: ({
+                row: {
+                    original: { firstName },
+                },
+            }) => <div onClick={(e) => e.stopPropagation()}>{firstName}</div>,
+            enableMultiSort: true,
+        },
+        {
+            id: 'middleName',
+            accessorKey: 'middleName',
+            header: (props) => (
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Middle Name"
+                >
+                    <ColumnActions {...props}>
+                        <TextFilter
+                            field="middleName"
+                            displayText="Middle Name"
+                            defaultMode="contains"
+                        />
+                    </ColumnActions>
+                </DataTableColumnHeader>
+            ),
+            cell: ({
+                row: {
+                    original: { middleName },
+                },
+            }) => <div onClick={(e) => e.stopPropagation()}>{middleName}</div>,
+            enableMultiSort: true,
+        },
+        {
+            id: 'lastName',
+            accessorKey: 'lastName',
+            header: (props) => (
+                <DataTableColumnHeader {...props} isResizable title="Last Name">
+                    <ColumnActions {...props}>
+                        <TextFilter
+                            field="lastName"
+                            displayText="Last Name"
+                            defaultMode="contains"
+                        />
+                    </ColumnActions>
+                </DataTableColumnHeader>
+            ),
+            cell: ({
+                row: {
+                    original: { middleName },
+                },
+            }) => <div onClick={(e) => e.stopPropagation()}>{middleName}</div>,
+            enableMultiSort: true,
+        },
+        {
+            id: 'permanentAddress',
             accessorKey: 'permanentAddress',
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Address">
                     <ColumnActions {...props}>
                         <TextFilter
-                            field="address"
+                            field="permanentAddress"
                             displayText="Address"
                             defaultMode="contains"
                         />
@@ -146,7 +186,7 @@ const companiesTableColumns = (
             enableMultiSort: true,
         },
         {
-            id: 'Contact Number',
+            id: 'contactNumber',
             accessorKey: 'contactNumber',
             header: (props) => (
                 <DataTableColumnHeader
@@ -170,24 +210,31 @@ const companiesTableColumns = (
             enableMultiSort: true,
         },
         {
-            id: 'Verify Status',
-            accessorKey: 'isAdminVerified',
+            id: 'status',
+            accessorKey: 'status',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Verified">
+                <DataTableColumnHeader {...props} isResizable title="Status">
                     <ColumnActions {...props}>
-                        <DataTableMultiSelectFilter<MemberResource, boolean>
+                        <DataTableMultiSelectFilter<
+                            MemberResource,
+                            AccountStatus
+                        >
                             mode="equal"
-                            dataType="boolean"
-                            field="isAdminVerified"
-                            displayText="Verify Status"
+                            field="status"
+                            dataType="text"
+                            displayText="Status"
                             multiSelectOptions={[
                                 {
-                                    label: 'Verified',
-                                    value: true,
+                                    label: 'Pending',
+                                    value: 'Pending',
                                 },
                                 {
-                                    label: 'Not Verified',
-                                    value: false,
+                                    label: 'Verified',
+                                    value: 'Verified',
+                                },
+                                {
+                                    label: 'Not Allowed',
+                                    value: 'Not Allowed',
                                 },
                             ]}
                         />
@@ -230,7 +277,117 @@ const companiesTableColumns = (
             enableMultiSort: true,
         },
         {
-            id: 'Created At',
+            id: 'isEmailVerified',
+            accessorKey: 'isEmailVerified',
+            header: (props) => (
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Email Verified"
+                >
+                    <ColumnActions {...props}>
+                        <DataTableMultiSelectFilter<MemberResource, boolean>
+                            mode="equal"
+                            dataType="boolean"
+                            field="isEmailVerified"
+                            displayText="Email Verified"
+                            multiSelectOptions={[
+                                {
+                                    label: 'Verified',
+                                    value: true,
+                                },
+                                {
+                                    label: 'Not Verified',
+                                    value: false,
+                                },
+                            ]}
+                        />
+                    </ColumnActions>
+                </DataTableColumnHeader>
+            ),
+            cell: ({
+                row: {
+                    original: { isEmailVerified },
+                },
+            }) => (
+                <div>
+                    {isEmailVerified ? (
+                        <Badge
+                            className="flex w-fit items-center gap-x-1"
+                            variant="success"
+                        >
+                            <BadgeCheckFillIcon className="inline" /> Verified
+                        </Badge>
+                    ) : (
+                        <Badge
+                            className="flex w-fit items-center gap-x-1"
+                            variant="warning"
+                        >
+                            <BadgeQuestionIcon className="inline" /> Not
+                            Verified
+                        </Badge>
+                    )}
+                </div>
+            ),
+            enableMultiSort: true,
+        },
+        {
+            id: 'isContactVerified',
+            accessorKey: 'isContactVerified',
+            header: (props) => (
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Contact Verified"
+                >
+                    <ColumnActions {...props}>
+                        <DataTableMultiSelectFilter<MemberResource, boolean>
+                            mode="equal"
+                            dataType="boolean"
+                            field="isContactVerified"
+                            displayText="Contact Verified"
+                            multiSelectOptions={[
+                                {
+                                    label: 'Verified',
+                                    value: true,
+                                },
+                                {
+                                    label: 'Not Verified',
+                                    value: false,
+                                },
+                            ]}
+                        />
+                    </ColumnActions>
+                </DataTableColumnHeader>
+            ),
+            cell: ({
+                row: {
+                    original: { isContactVerified },
+                },
+            }) => (
+                <div>
+                    {isContactVerified ? (
+                        <Badge
+                            className="flex w-fit items-center gap-x-1"
+                            variant="success"
+                        >
+                            <BadgeCheckFillIcon className="inline" />
+                        </Badge>
+                    ) : (
+                        <Badge
+                            className="flex w-fit items-center gap-x-1"
+                            variant="warning"
+                        >
+                            <BadgeQuestionIcon className="inline" /> Not
+                            Verified
+                        </Badge>
+                    )}
+                </div>
+            ),
+            enableMultiSort: true,
+        },
+        {
+            id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
                 <DataTableColumnHeader

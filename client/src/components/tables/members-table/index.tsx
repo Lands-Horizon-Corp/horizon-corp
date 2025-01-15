@@ -22,9 +22,9 @@ import { cn } from '@/lib'
 import { TableProps } from '../types'
 import { MemberResource } from '@/horizon-corp/types'
 import useDatableFilterState from '@/hooks/use-filter-state'
-import { CompanyService } from '@/horizon-corp/services/common'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import { useFilteredPaginatedMembers } from '@/hooks/api-hooks/user-member'
+import MemberService from '@/horizon-corp/services/member/member-service'
 
 export interface MembersTableProps
     extends TableProps<MemberResource>,
@@ -144,7 +144,7 @@ const CompaniesTable = ({
                                 queryKey: ['company', 'resource-query'],
                             }),
                         onDelete: (selectedData) =>
-                            CompanyService.deleteMany(
+                            MemberService.deleteMany(
                                 selectedData.map((data) => data.id)
                             ),
                     }}
@@ -154,14 +154,14 @@ const CompaniesTable = ({
                         isLoading: isPending,
                         filters: filterState.finalFilterPayload,
                         disabled: isPending || isRefetching,
-                        exportAll: CompanyService.exportAll,
-                        exportAllFiltered: CompanyService.exportAllFiltered,
+                        exportAll: MemberService.exportAll,
+                        exportAllFiltered: MemberService.exportAllFiltered,
                         exportCurrentPage: (ids) =>
-                            CompanyService.exportSelected(
+                            MemberService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                         exportSelected: (ids) =>
-                            CompanyService.exportSelected(
+                            MemberService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                     }}

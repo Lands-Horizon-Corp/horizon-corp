@@ -1,11 +1,44 @@
-import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
+import { toast } from 'sonner'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
-import { toBase64, withCatchAsync } from "@/utils";
-import { IFilterPaginatedHookProps } from "./types";
-import { serverRequestErrExtractor } from "@/helpers";
-import { MemberPaginatedResource } from "@/horizon-corp/types";
-import MemberService from "@/horizon-corp/services/member/member-service";
+import { toBase64, withCatchAsync } from '@/utils'
+import { serverRequestErrExtractor } from '@/helpers'
+import { MemberPaginatedResource } from '@/horizon-corp/types'
+import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
+import MemberService from '@/horizon-corp/services/member/member-service'
+
+export const useDeleteMember = ({
+    onSuccess,
+    onError,
+}: IOperationCallbacks) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<void, string, number>({
+        mutationKey: ['member', 'delete'],
+        mutationFn: async (memberId) => {
+            const [error] = await withCatchAsync(MemberService.delete(memberId))
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw new Error(errorMessage)
+            }
+
+            queryClient.invalidateQueries({
+                queryKey: ['member', 'resource-query'],
+            })
+
+            queryClient.invalidateQueries({ queryKey: ['member', memberId] })
+            queryClient.removeQueries({
+                queryKey: ['member', 'loader', memberId],
+            })
+
+            toast.success('Member deleted')
+            onSuccess?.(undefined)
+        },
+    })
+}
 
 export const useFilteredPaginatedMembers = ({
     sort,
@@ -23,15 +56,15 @@ export const useFilteredPaginatedMembers = ({
                     sort: sort && toBase64(sort),
                     filters: filterPayload && toBase64(filterPayload),
                 })
-            );
+            )
 
             if (error) {
-                const errorMessage = serverRequestErrExtractor({ error });
-                toast.error(errorMessage);
-                throw errorMessage;
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                throw errorMessage
             }
 
-            return result;
+            return result
         },
         initialData: {
             data: [],
@@ -41,5 +74,5 @@ export const useFilteredPaginatedMembers = ({
             ...pagination,
         },
         retry: 1,
-    });
-};
+    })
+}
