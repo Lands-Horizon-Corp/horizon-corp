@@ -178,7 +178,11 @@ import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
 
 import { GrPowerReset as PowerResetIcon } from 'react-icons/gr'
 
-import { VscLocation as LocationPinOutlineIcon } from 'react-icons/vsc'
+import { VscLocation as LocationPinOutlineIcon, VscError as ErrorIcon  } from 'react-icons/vsc'
+
+import { BiErrorCircle as WarningIcon } from "react-icons/bi";
+
+import { SlOptions as OptionsIcon } from "react-icons/sl";
 
 // Export section
 export {
@@ -311,4 +315,7 @@ export {
     Rotate90DegreeRightIcon,
     BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
+    ErrorIcon,
+    WarningIcon,
+    OptionsIcon,
 }
