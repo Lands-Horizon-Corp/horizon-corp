@@ -70,9 +70,11 @@ type EmployeeResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	FirstName          string                   `json:"firstName"`
-	LastName           string                   `json:"lastName"`
-	MiddleName         string                   `json:"middleName"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	MiddleName string `json:"middleName"`
+	FullName   string `json:"fullName"`
+
 	PermanentAddress   string                   `json:"permanentAddress"`
 	Description        string                   `json:"description"`
 	BirthDate          time.Time                `json:"birthDate"`
@@ -111,9 +113,11 @@ func (m *ModelTransformer) EmployeeToResource(employee *Employee) *EmployeeResou
 		UpdatedAt: employee.UpdatedAt.Format(time.RFC3339),
 		DeletedAt: employee.DeletedAt.Time.Format(time.RFC3339),
 
-		FirstName:          employee.FirstName,
-		LastName:           employee.LastName,
-		MiddleName:         employee.MiddleName,
+		FirstName:  employee.FirstName,
+		LastName:   employee.LastName,
+		MiddleName: employee.MiddleName,
+		FullName:   employee.FirstName + " " + employee.MiddleName + " " + employee.LastName,
+
 		PermanentAddress:   employee.PermanentAddress,
 		Description:        employee.Description,
 		BirthDate:          employee.BirthDate,

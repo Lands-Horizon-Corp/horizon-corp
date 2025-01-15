@@ -63,9 +63,11 @@ type OwnerResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	FirstName          string              `json:"firstName"`
-	LastName           string              `json:"lastName"`
-	MiddleName         string              `json:"middleName"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	MiddleName string `json:"middleName"`
+	FullName   string `json:"fullName"`
+
 	PermanentAddress   string              `json:"permanentAddress"`
 	Description        string              `json:"description"`
 	BirthDate          time.Time           `json:"birthDate"`
@@ -100,9 +102,11 @@ func (m *ModelTransformer) OwnerToResource(owner *Owner) *OwnerResource {
 		UpdatedAt: owner.UpdatedAt.Format(time.RFC3339),
 		DeletedAt: owner.DeletedAt.Time.Format(time.RFC3339),
 
-		FirstName:          owner.FirstName,
-		LastName:           owner.LastName,
-		MiddleName:         owner.MiddleName,
+		FirstName:  owner.FirstName,
+		LastName:   owner.LastName,
+		MiddleName: owner.MiddleName,
+		FullName:   owner.FirstName + " " + owner.MiddleName + " " + owner.LastName,
+
 		PermanentAddress:   owner.PermanentAddress,
 		Description:        owner.Description,
 		BirthDate:          owner.BirthDate,

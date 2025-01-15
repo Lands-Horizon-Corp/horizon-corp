@@ -63,6 +63,7 @@ type AdminResource struct {
 	FirstName          string              `json:"firstName"`
 	LastName           string              `json:"lastName"`
 	MiddleName         string              `json:"middleName"`
+	FullName           string              `json:"fullName"`
 	PermanentAddress   string              `json:"permanentAddress"`
 	Description        string              `json:"description"`
 	BirthDate          time.Time           `json:"birthDate"`
@@ -95,9 +96,11 @@ func (m *ModelTransformer) AdminToResource(admin *Admin) *AdminResource {
 		UpdatedAt: admin.UpdatedAt.Format(time.RFC3339),
 		DeletedAt: admin.DeletedAt.Time.Format(time.RFC3339),
 
-		FirstName:          admin.FirstName,
-		LastName:           admin.LastName,
-		MiddleName:         admin.MiddleName,
+		FirstName:  admin.FirstName,
+		LastName:   admin.LastName,
+		MiddleName: admin.MiddleName,
+		FullName:   admin.FirstName + " " + admin.MiddleName + " " + admin.LastName,
+
 		PermanentAddress:   admin.PermanentAddress,
 		Description:        admin.Description,
 		BirthDate:          admin.BirthDate,

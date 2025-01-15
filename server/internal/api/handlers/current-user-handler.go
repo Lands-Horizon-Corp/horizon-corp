@@ -48,7 +48,7 @@ func (c *CurrentUser) Claims(ctx *gin.Context) (*providers.UserClaims, *UserInfo
 		IPAddress:      ctx.ClientIP(),
 		UserAgent:      ctx.GetHeader("User-Agent"),
 		Referer:        ctx.GetHeader("Referer"),
-		Location:       ctx.GetHeader("X-Location"), // Assume location is sent in a custom header.
+		Location:       ctx.GetHeader("X-Location"),
 		AcceptLanguage: ctx.GetHeader("Accept-Language"),
 	}
 

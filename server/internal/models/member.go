@@ -59,9 +59,11 @@ type MemberResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	FirstName          string                 `json:"firstName"`
-	LastName           string                 `json:"lastName"`
-	MiddleName         string                 `json:"middleName,omitempty"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	MiddleName string `json:"middleName,omitempty"`
+	FullName   string `json:"fullName"`
+
 	PermanentAddress   string                 `json:"permanentAddress,omitempty"`
 	Description        string                 `json:"description,omitempty"`
 	BirthDate          time.Time              `json:"birthDate"`
@@ -93,9 +95,11 @@ func (m *ModelTransformer) MemberToResource(member *Member) *MemberResource {
 		UpdatedAt: member.UpdatedAt.Format(time.RFC3339),
 		DeletedAt: member.DeletedAt.Time.Format(time.RFC3339),
 
-		FirstName:         member.FirstName,
-		LastName:          member.LastName,
-		MiddleName:        member.MiddleName,
+		FirstName:  member.FirstName,
+		LastName:   member.LastName,
+		MiddleName: member.MiddleName,
+		FullName:   member.FirstName + " " + member.MiddleName + " " + member.LastName,
+
 		PermanentAddress:  member.PermanentAddress,
 		Description:       member.Description,
 		BirthDate:         member.BirthDate,
