@@ -23,11 +23,13 @@ func NewAPIHandlerInvoke(
 	companyController *controllers.CompanyController,
 	contactController *controllers.ContactController,
 	controller *controllers.Controller,
+	employeeController *controllers.EmployeeController,
 	feedbackController *controllers.FeedbackController,
 	footstepController *controllers.FootstepController,
 	genderController *controllers.GenderController,
 	mediaController *controllers.MediaController,
 	memberController *controllers.MemberController,
+	ownerController *controllers.OwnerController,
 	profileController *controllers.ProfileController,
 	qrController *controllers.QRScannerController,
 	timesheetController *controllers.TimesheetController,
@@ -48,6 +50,7 @@ func NewAPIHandlerInvoke(
 			admin.POST("/", adminController.Store)
 			admin.PUT("/:id", adminController.Update)
 			admin.DELETE("/:id", adminController.Destroy)
+			admin.DELETE("/forgot-password", adminController.ForgotPassword)
 		}
 		auth := v1.Group("/auth")
 		{
@@ -130,8 +133,19 @@ func NewAPIHandlerInvoke(
 			member.POST("/", memberController.Store)
 			member.PUT("/:id", memberController.Update)
 			member.DELETE("/:id", memberController.Destroy)
-			member.GET("/member-applications", memberController.Show)
+			member.GET("/member-applications", memberController.MemberApplications)
 		}
+
+		owner := v1.Group("/owner")
+		{
+			owner.GET("/", ownerController.Index)
+			owner.GET("/:id", ownerController.Show)
+			owner.POST("/", ownerController.Store)
+			owner.PUT("/:id", ownerController.Update)
+			owner.DELETE("/:id", ownerController.Destroy)
+			owner.GET("/forgot-password", ownerController.ForgotPassword)
+		}
+
 		profile := v1.Group("/profile")
 		{
 			profile.POST("/profile-picture", profileController.ProfilePicture)

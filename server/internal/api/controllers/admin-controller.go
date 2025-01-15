@@ -59,3 +59,7 @@ func (c *AdminController) Update(ctx *gin.Context) {
 func (c *AdminController) Destroy(ctx *gin.Context) {
 
 }
+
+func (c *AdminController) ForgotPassword(ctx *gin.Context) {
+
+}
