@@ -90,8 +90,8 @@ const CompanyViewPage = () => {
     return (
         <div className="flex w-full max-w-full flex-col items-center px-4 pb-6 sm:px-8">
             <div className="flex w-full max-w-5xl flex-col items-center space-y-4">
-                <div className="flex w-full flex-col items-center space-y-4 overflow-clip rounded-xl bg-secondary">
-                    <div className="relative w-full flex-col items-center overflow-clip rounded-xl bg-popover">
+                <div className="flex w-full flex-col items-center space-y-4 overflow-clip rounded-xl bg-secondary dark:bg-popover">
+                    <div className="relative w-full flex-col items-center overflow-clip ">
                         <div className="h-[180px] w-full rounded-md bg-[url('/profile-cover.png')] bg-cover bg-center" />
                         <div className="relative z-10 w-full space-y-2.5">
                             <CompanyLogo company={company} />
@@ -186,7 +186,7 @@ const CompanyViewPage = () => {
                                         viewOnly
                                         zoom={13}
                                         hideControls
-                                        className="pointer-events-nonee z-10 rounded-none p-0"
+                                        className="pointer-events-nonee h-full pointer-events-none z-10 rounded-none p-0"
                                         mapContainerClassName="sm:rounded-none"
                                         center={{
                                             lng: company.longitude,
