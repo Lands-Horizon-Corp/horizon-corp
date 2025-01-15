@@ -1,6 +1,10 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
 
 type AuthController struct{}
 
@@ -10,18 +14,55 @@ func NewAuthController() *AuthController {
 
 // SignUp handles user registration.
 // Endpoint: POST /api/v1/auth/signup
+type SignUpRequest struct {
+	AccountType      string              `json:"accountType" validate:"required,max=10"`
+	FirstName        string              `json:"firstName" validate:"required,max=255"`
+	LastName         string              `json:"lastName" validate:"required,max=255"`
+	MiddleName       string              `json:"middleName" validate:"max=255"`
+	Username         string              `json:"username" validate:"max=255"`
+	Email            string              `json:"email" validate:"required,email,max=255"`
+	Password         string              `json:"password" validate:"required,min=8,max=255"`
+	ConfirmPassword  string              `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=Password"`
+	BirthDate        time.Time           `json:"birthDate" validate:"required"`
+	ContactNumber    string              `json:"contactNumber" validate:"required,max=15"`
+	PermanentAddress string              `json:"permanentAddress" validate:"required,max=500"`
+	Media            *MediaCreateRequest `json:"media" validate:"omitempty"`
+	EmailTemplate    string              `json:"emailTemplate" validate:"required"`
+	ContactTemplate  string              `json:"contactTemplate" validate:"required"`
+}
+
 func (as AuthController) SignUp(ctx *gin.Context) {}
 
 // SignIn handles user login.
 // Endpoint: POST /api/v1/auth/signin
+type SignInRequest struct {
+	Key         string `json:"key" validate:"required,max=255"`
+	Password    string `json:"password" validate:"required,min=8,max=255"`
+	AccountType string `json:"accountType" validate:"required"`
+}
+
 func (as AuthController) SignIn(ctx *gin.Context) {}
 
 // ForgotPassword handles password reset requests by sending a reset link.
 // Endpoint: POST /api/v1/auth/forgot-password
+
+type ForgotPasswordRequest struct {
+	Key             string `json:"key" validate:"required,max=255"`
+	AccountType     string `json:"accountType" validate:"required,max=10"`
+	EmailTemplate   string `json:"emailTemplate"`
+	ContactTemplate string `json:"contactTemplate"`
+}
+
 func (as AuthController) ForgotPassword(ctx *gin.Context) {}
 
 // ChangePassword handles changing the user's password.
 // Endpoint: POST /api/v1/auth/change-password
+type ChangePasswordRequest struct {
+	ResetID         string `json:"resetId" validate:"required,min=8,max=255"`
+	NewPassword     string `json:"newPassword" validate:"required,min=8,max=255"`
+	ConfirmPassword string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
+}
+
 func (as AuthController) ChangePassword(ctx *gin.Context) {}
 
 // VerifyResetLink verifies the reset link for password recovery.
@@ -38,6 +79,12 @@ func (as AuthController) CurrentUser(ctx *gin.Context) {}
 
 // NewPassword sets a new password for the user after verification.
 // Endpoint: POST /api/v1/auth/new-password (requires authentication)
+type NewPasswordRequest struct {
+	PreviousPassword string `json:"previousPassword" validate:"required,min=8,max=255"`
+	NewPassword      string `json:"newPassword" validate:"required,min=8,max=255"`
+	ConfirmPassword  string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
+}
+
 func (as AuthController) NewPassword(ctx *gin.Context) {}
 
 // SkipVerification allows skipping the verification process under certain conditions.
@@ -46,16 +93,34 @@ func (as AuthController) SkipVerification(ctx *gin.Context) {}
 
 // SendEmailVerification sends a verification email to the user.
 // Endpoint: POST /api/v1/auth/send-email-verification (requires authentication)
+type SendEmailVerificationRequest struct {
+	EmailTemplate string `json:"emailTemplate" validate:"required"`
+}
+
 func (as AuthController) SendEmailVerification(ctx *gin.Context) {}
 
 // VerifyEmail verifies the user's email address using the provided token.
 // Endpoint: POST /api/v1/auth/verify-email (requires authentication)
+type VerifyEmailRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
+}
+
 func (as AuthController) VerifyEmail(ctx *gin.Context) {}
 
 // SendContactNumberVerification sends a verification code to the user's contact number.
 // Endpoint: POST /api/v1/auth/send-contact-number-verification (requires authentication)
+
+type SendContactNumberVerificationRequest struct {
+	ContactTemplate string `json:"contactTemplate" validate:"required"`
+}
+
 func (as AuthController) SendContactNumberVerification(ctx *gin.Context) {}
 
 // VerifyContactNumber verifies the user's contact number using the provided code.
 // Endpoint: POST /api/v1/auth/verify-contact-number (requires authentication)
+
+type VerifyContactNumberRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
+}
+
 func (as AuthController) VerifyContactNumber(ctx *gin.Context) {}
