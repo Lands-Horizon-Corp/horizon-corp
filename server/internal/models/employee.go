@@ -151,3 +151,58 @@ func (m *ModelTransformer) EmployeeToResourceList(employeeList []*Employee) []*E
 	}
 	return employeeResources
 }
+
+func (m *ModelRepository) EmployeeGetByID(id string, preloads ...string) (*Employee, error) {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+func (m *ModelRepository) EmployeeGetByUsername(username string, preloads ...string) (*Employee, error) {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	return repo.GetByColumn("username", username, preloads...)
+}
+func (m *ModelRepository) EmployeeGetByEmail(email string, preloads ...string) (*Employee, error) {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	return repo.GetByColumn("email", email, preloads...)
+}
+func (m *ModelRepository) EmployeeGetByContactNumber(contact_number string, preloads ...string) (*Employee, error) {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	return repo.GetByColumn("contact_number", contact_number, preloads...)
+}
+func (m *ModelRepository) EmployeeFindByEmailUsernameOrContact(input string, preloads ...string) (*Employee, error) {
+	switch m.helpers.GetKeyType(input) {
+	case "contact":
+		return m.EmployeeGetByContactNumber(input, preloads...)
+	case "email":
+		return m.EmployeeGetByEmail(input, preloads...)
+	default:
+		return m.EmployeeGetByUsername(input, preloads...)
+	}
+}
+func (m *ModelRepository) EmployeeCreate(employee *Employee, preloads ...string) (*Employee, error) {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	return repo.Create(employee, preloads...)
+}
+func (m *ModelRepository) EmployeeUpdate(employee *Employee, preloads ...string) (*Employee, error) {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	return repo.Update(employee, preloads...)
+}
+func (m *ModelRepository) EmployeeUpdateByID(id string, column string, value interface{}, preloads ...string) (*Employee, error) {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) EmployeeDeleteByID(id string) error {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) EmployeeGetAll(preloads ...string) ([]*Employee, error) {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	return repo.GetAll(preloads...)
+}
+func (m *ModelRepository) EmployeeUpdatePassword(id string, password string) (*Employee, error) {
+	repo := NewGenericRepository[Employee](m.db.Client)
+	newPassword, err := m.cryptoHelpers.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+	return repo.UpdateByID(id, "password", newPassword)
+}

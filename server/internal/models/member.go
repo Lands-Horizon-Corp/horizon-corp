@@ -126,3 +126,58 @@ func (m *ModelTransformer) MemberToResourceList(memberList []*Member) []*MemberR
 	}
 	return memberResources
 }
+
+func (m *ModelRepository) MemberGetByID(id string, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+func (m *ModelRepository) MemberGetByUsername(username string, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetByColumn("username", username, preloads...)
+}
+func (m *ModelRepository) MemberGetByEmail(email string, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetByColumn("email", email, preloads...)
+}
+func (m *ModelRepository) MemberGetByContactNumber(contact_number string, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetByColumn("contact_number", contact_number, preloads...)
+}
+func (m *ModelRepository) MemberFindByEmailUsernameOrContact(input string, preloads ...string) (*Member, error) {
+	switch m.helpers.GetKeyType(input) {
+	case "contact":
+		return m.MemberGetByContactNumber(input, preloads...)
+	case "email":
+		return m.MemberGetByEmail(input, preloads...)
+	default:
+		return m.MemberGetByUsername(input, preloads...)
+	}
+}
+func (m *ModelRepository) MemberCreate(member *Member, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.Create(member, preloads...)
+}
+func (m *ModelRepository) MemberUpdate(member *Member, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.Update(member, preloads...)
+}
+func (m *ModelRepository) MemberUpdateByID(id string, column string, value interface{}, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberDeleteByID(id string) error {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberGetAll(preloads ...string) ([]*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetAll(preloads...)
+}
+func (m *ModelRepository) MemberUpdatePassword(id string, password string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	newPassword, err := m.cryptoHelpers.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+	return repo.UpdateByID(id, "password", newPassword)
+}

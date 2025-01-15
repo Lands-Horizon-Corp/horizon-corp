@@ -134,29 +134,53 @@ func (m *ModelRepository) AdminGetByID(id string, preloads ...string) (*Admin, e
 	repo := NewGenericRepository[Admin](m.db.Client)
 	return repo.GetByID(id, preloads...)
 }
-
 func (m *ModelRepository) AdminGetByUsername(username string, preloads ...string) (*Admin, error) {
 	repo := NewGenericRepository[Admin](m.db.Client)
 	return repo.GetByColumn("username", username, preloads...)
 }
-
 func (m *ModelRepository) AdminGetByEmail(email string, preloads ...string) (*Admin, error) {
 	repo := NewGenericRepository[Admin](m.db.Client)
 	return repo.GetByColumn("email", email, preloads...)
 }
-
 func (m *ModelRepository) AdminGetByContactNumber(contact_number string, preloads ...string) (*Admin, error) {
 	repo := NewGenericRepository[Admin](m.db.Client)
 	return repo.GetByColumn("contact_number", contact_number, preloads...)
 }
-
-func (r *ModelRepository) AdminFindByEmailUsernameOrContact(input string, preloads ...string) (*Admin, error) {
-	switch r.helpers.GetKeyType(input) {
+func (m *ModelRepository) AdminFindByEmailUsernameOrContact(input string, preloads ...string) (*Admin, error) {
+	switch m.helpers.GetKeyType(input) {
 	case "contact":
-		return r.AdminGetByContactNumber(input)
+		return m.AdminGetByContactNumber(input, preloads...)
 	case "email":
-		return r.AdminGetByEmail(input)
+		return m.AdminGetByEmail(input, preloads...)
 	default:
-		return r.AdminGetByUsername(input, preloads...)
+		return m.AdminGetByUsername(input, preloads...)
 	}
+}
+func (m *ModelRepository) AdminCreate(admin *Admin, preloads ...string) (*Admin, error) {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	return repo.Create(admin, preloads...)
+}
+func (m *ModelRepository) AdminUpdate(admin *Admin, preloads ...string) (*Admin, error) {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	return repo.Update(admin, preloads...)
+}
+func (m *ModelRepository) AdminUpdateByID(id string, column string, value interface{}, preloads ...string) (*Admin, error) {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) AdminDeleteByID(id string) error {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) AdminGetAll(preloads ...string) ([]*Admin, error) {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	return repo.GetAll(preloads...)
+}
+func (m *ModelRepository) AdminUpdatePassword(id string, password string) (*Admin, error) {
+	repo := NewGenericRepository[Admin](m.db.Client)
+	newPassword, err := m.cryptoHelpers.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+	return repo.UpdateByID(id, "password", newPassword)
 }

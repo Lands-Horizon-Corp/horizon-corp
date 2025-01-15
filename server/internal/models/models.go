@@ -29,8 +29,9 @@ type ModelTransformer struct {
 }
 
 type ModelRepository struct {
-	db      *providers.DatabaseService
-	helpers *helpers.HelpersFunction
+	db            *providers.DatabaseService
+	helpers       *helpers.HelpersFunction
+	cryptoHelpers *helpers.HelpersCryptography
 }
 
 var Module = fx.Module(
@@ -39,8 +40,8 @@ var Module = fx.Module(
 		func(storage *providers.StorageProvider) *ModelTransformer {
 			return &ModelTransformer{storage: storage}
 		},
-		func(db *providers.DatabaseService, helpers *helpers.HelpersFunction) *ModelRepository {
-			return &ModelRepository{db: db, helpers: helpers}
+		func(db *providers.DatabaseService, helpers *helpers.HelpersFunction, cryptoHelpers *helpers.HelpersCryptography) *ModelRepository {
+			return &ModelRepository{db: db, helpers: helpers, cryptoHelpers: cryptoHelpers}
 		},
 	),
 	fx.Invoke(func(
@@ -124,12 +125,35 @@ func (r *GenericRepository[T]) GetByID(id string, preloads ...string) (*T, error
 	return &entity, nil
 }
 
-// UpdateByID updates a specific column by ID
-func (r *GenericRepository[T]) UpdateByID(id string, column string, value interface{}) error {
-	if err := r.db.Model(new(T)).Where("id = ?", id).Update(column, value).Error; err != nil {
-		return err
+// GetByColumn fetches a record by a specific column
+func (r *GenericRepository[T]) GetByColumn(column string, value interface{}, preloads ...string) (*T, error) {
+	var entity T
+	query := r.db.Model(&entity).Where(column+" = ?", value)
+
+	for _, preload := range preloads {
+		query = query.Preload(preload)
 	}
-	return nil
+
+	if err := query.First(&entity).Error; err != nil {
+		return nil, err
+	}
+
+	return &entity, nil
+}
+
+func (r *GenericRepository[T]) UpdateByID(id string, column string, value interface{}, preloads ...string) (*T, error) {
+	var entity T
+	if err := r.db.Model(&entity).Where("id = ?", id).Update(column, value).Error; err != nil {
+		return nil, err
+	}
+	query := r.db.Where("id = ?", id)
+	for _, preload := range preloads {
+		query = query.Preload(preload)
+	}
+	if err := query.First(&entity).Error; err != nil {
+		return nil, err
+	}
+	return &entity, nil
 }
 
 // DeleteByID deletes a record by ID
@@ -140,12 +164,19 @@ func (r *GenericRepository[T]) DeleteByID(id string) error {
 	return nil
 }
 
-// Create inserts a new record
-func (r *GenericRepository[T]) Create(entity *T) error {
+// Create inserts a new record and returns the created entity
+func (r *GenericRepository[T]) Create(entity *T, preloads ...string) (*T, error) {
 	if err := r.db.Create(entity).Error; err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	query := r.db.Model(entity)
+	for _, preload := range preloads {
+		query = query.Preload(preload)
+	}
+	if err := query.First(entity).Error; err != nil {
+		return nil, err
+	}
+	return entity, nil
 }
 
 // GetAll fetches all records with optional preloads
@@ -164,25 +195,19 @@ func (r *GenericRepository[T]) GetAll(preloads ...string) ([]*T, error) {
 	return entities, nil
 }
 
-// Update updates an existing record
-func (r *GenericRepository[T]) Update(entity *T) error {
+func (r *GenericRepository[T]) Update(entity *T, preloads ...string) (*T, error) {
 	if err := r.db.Save(entity).Error; err != nil {
-		return err
+		return nil, err
 	}
-	return nil
-}
 
-func (r *GenericRepository[T]) GetByColumn(column string, value interface{}, preloads ...string) (*T, error) {
-	var entity T
-	query := r.db.Model(&entity).Where(column+" = ?", value)
-
+	query := r.db.Model(entity)
 	for _, preload := range preloads {
 		query = query.Preload(preload)
 	}
 
-	if err := query.First(&entity).Error; err != nil {
+	if err := query.First(entity).Error; err != nil {
 		return nil, err
 	}
 
-	return &entity, nil
+	return entity, nil
 }
