@@ -29,6 +29,8 @@ func (c *MemberController) Destroy(ctx *gin.Context) {}
 // Admin: GET all member applications
 func (c *MemberController) MemberApplications(ctx *gin.Context) {}
 
+func (c *MemberController) ForgotPassword(ctx *gin.Context) {}
+
 // GET: /
 // Retrieve members with optional filtering for pagination or no pagination. Results can be converted to records.
 //

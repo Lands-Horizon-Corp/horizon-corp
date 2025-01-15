@@ -96,6 +96,15 @@ func NewAPIHandlerInvoke(
 			contact.POST("/", contactController.Store)
 			contact.DELETE("/:id", contactController.Destroy)
 		}
+		employee := v1.Group("/employee")
+		{
+			employee.GET("/", employeeController.Index)
+			employee.GET("/:id", employeeController.Show)
+			employee.POST("/", employeeController.Store)
+			employee.DELETE("/:id", employeeController.Destroy)
+			employee.DELETE("/forgot-password", employeeController.ForgotPassword)
+		}
+
 		feedback := v1.Group("/feedback")
 		{
 			feedback.GET("/", feedbackController.Index)
@@ -134,6 +143,7 @@ func NewAPIHandlerInvoke(
 			member.PUT("/:id", memberController.Update)
 			member.DELETE("/:id", memberController.Destroy)
 			member.GET("/member-applications", memberController.MemberApplications)
+			member.GET("/forgot-password", memberController.ForgotPassword)
 		}
 
 		owner := v1.Group("/owner")
