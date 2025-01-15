@@ -17,6 +17,8 @@ type MemberEducationalAttainmentHistory struct {
 	MemberEducationalAttainmentID uuid.UUID                    `gorm:"type:bigint;unsigned;unsigned" json:"member_educational_attainment_id"`
 	MemberProfile                 *MemberProfile               `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberEducationalAttainment   *MemberEducationalAttainment `gorm:"foreignKey:MemberEducationalAttainmentID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_educational_attainment"`
+	CompanyID                     uuid.UUID                    `gorm:"unsigned" json:"company_id"`
+	Company                       *Company                     `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberEducationalAttainmentHistory) BeforeCreate(tx *gorm.DB) (err error) {

@@ -13,9 +13,13 @@ type MemberCenter struct {
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	Name        string                 `gorm:"size:255;unsigned"`
-	Description string                 `gorm:"size:500"`
-	History     []*MemberCenterHistory `gorm:"foreignKey:MemberCenterID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+	Name        string `gorm:"size:255;unsigned"`
+	Description string `gorm:"size:500"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
+
+	History []*MemberCenterHistory `gorm:"foreignKey:MemberCenterID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
 }
 
 func (v *MemberCenter) BeforeCreate(tx *gorm.DB) (err error) {

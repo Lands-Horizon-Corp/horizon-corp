@@ -17,6 +17,8 @@ type MemberGenderHistory struct {
 	MemberGenderID  uuid.UUID      `gorm:"type:bigint;unsigned;unsigned" json:"member_gender_id"`
 	MemberProfile   *MemberProfile `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberGender    *MemberGender  `gorm:"foreignKey:MemberGenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_gender"`
+	CompanyID       uuid.UUID      `gorm:"unsigned" json:"company_id"`
+	Company         *Company       `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberGenderHistory) BeforeCreate(tx *gorm.DB) (err error) {

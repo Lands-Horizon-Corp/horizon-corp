@@ -19,6 +19,9 @@ type MemberType struct {
 
 	MembersProfile *MemberProfile       `gorm:"foreignKey:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
 	History        []*MemberTypeHistory `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberType) BeforeCreate(tx *gorm.DB) (err error) {

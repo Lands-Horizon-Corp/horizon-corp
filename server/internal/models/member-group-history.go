@@ -36,6 +36,9 @@ type MemberGroupHistoryResource struct {
 	MemberGroupID   uuid.UUID              `json:"memberGroupID"`
 	MemberProfile   *MemberProfileResource `json:"memberProfile,omitempty"`
 	MemberGroup     *MemberGroupResource   `json:"memberGroup,omitempty"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (m *ModelTransformer) MemberGroupHistoryToResource(history *MemberGroupHistory) *MemberGroupHistoryResource {
