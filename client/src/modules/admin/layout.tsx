@@ -7,7 +7,7 @@ import { SidebarProvider } from '@/components/sidebar/sidebar-provider'
 
 const AdminLayout = () => {
     return (
-        // <AuthGuard allowedAccountTypes={['Admin']}>
+        <AuthGuard allowedAccountTypes={['Admin']}>
             <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] md:grid-cols-[auto_1fr]">
                 <SidebarProvider>
                     <AdminSidebar />
@@ -17,7 +17,7 @@ const AdminLayout = () => {
                     </main>
                 </SidebarProvider>
             </div>
-        // </AuthGuard>
+        </AuthGuard>
     )
 }
 
