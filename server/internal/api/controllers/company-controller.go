@@ -17,7 +17,9 @@ func NewCompanyController() *CompanyController {
 //	Member: Only own company
 //
 // Endpoint: GET /api/v1/company
-func (c *CompanyController) Index(ctx *gin.Context) {}
+func (c *CompanyController) Index(ctx *gin.Context) {
+	// Owner, Media
+}
 
 // GET: /api/v1/company/:id
 //
@@ -51,3 +53,6 @@ func (c *CompanyController) Update(ctx *gin.Context) {}
 // Owner: Only own company but if no members on companyes, no companyes, and no employees on companyes.
 // Endpoint: DELETE /api/v1/company/:id
 func (c *CompanyController) Destroy(ctx *gin.Context) {}
+
+// Endpoint: GET /api/v1/company/current
+func (c *CompanyController) CurrentCompany(ctx *gin.Context) {}

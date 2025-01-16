@@ -16,6 +16,9 @@ type MemberGroup struct {
 	Name        string                `gorm:"size:255;unsigned"`
 	Description string                `gorm:"size:500"`
 	History     []*MemberGroupHistory `gorm:"foreignKey:MemberGroupID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberGroup) BeforeCreate(tx *gorm.DB) (err error) {
@@ -64,4 +67,30 @@ func (m *ModelTransformer) MemberGroupToResourceList(groupList []*MemberGroup) [
 		groupResources = append(groupResources, m.MemberGroupToResource(group))
 	}
 	return groupResources
+}
+
+func (m *ModelRepository) MemberGroupGetByID(id string, preloads ...string) (*MemberGroup, error) {
+	repo := NewGenericRepository[MemberGroup](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberGroupCreate(membergroup *MemberGroup, preloads ...string) (*MemberGroup, error) {
+	repo := NewGenericRepository[MemberGroup](m.db.Client)
+	return repo.Create(membergroup, preloads...)
+}
+func (m *ModelRepository) MemberGroupUpdate(membergroup *MemberGroup, preloads ...string) (*MemberGroup, error) {
+	repo := NewGenericRepository[MemberGroup](m.db.Client)
+	return repo.Update(membergroup, preloads...)
+}
+func (m *ModelRepository) MemberGroupUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberGroup, error) {
+	repo := NewGenericRepository[MemberGroup](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberGroupDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberGroup](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberGroupGetAll(preloads ...string) ([]*MemberGroup, error) {
+	repo := NewGenericRepository[MemberGroup](m.db.Client)
+	return repo.GetAll(preloads...)
 }

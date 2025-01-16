@@ -74,3 +74,29 @@ func (m *ModelTransformer) MemberRelativeAccountsToResourceList(accountList []*M
 	}
 	return accountResources
 }
+
+func (m *ModelRepository) MemberRelativeAccountsGetByID(id string, preloads ...string) (*MemberRelativeAccounts, error) {
+	repo := NewGenericRepository[MemberRelativeAccounts](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberRelativeAccountsCreate(memberrelativeaccounts *MemberRelativeAccounts, preloads ...string) (*MemberRelativeAccounts, error) {
+	repo := NewGenericRepository[MemberRelativeAccounts](m.db.Client)
+	return repo.Create(memberrelativeaccounts, preloads...)
+}
+func (m *ModelRepository) MemberRelativeAccountsUpdate(memberrelativeaccounts *MemberRelativeAccounts, preloads ...string) (*MemberRelativeAccounts, error) {
+	repo := NewGenericRepository[MemberRelativeAccounts](m.db.Client)
+	return repo.Update(memberrelativeaccounts, preloads...)
+}
+func (m *ModelRepository) MemberRelativeAccountsUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberRelativeAccounts, error) {
+	repo := NewGenericRepository[MemberRelativeAccounts](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberRelativeAccountsDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberRelativeAccounts](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberRelativeAccountsGetAll(preloads ...string) ([]*MemberRelativeAccounts, error) {
+	repo := NewGenericRepository[MemberRelativeAccounts](m.db.Client)
+	return repo.GetAll(preloads...)
+}

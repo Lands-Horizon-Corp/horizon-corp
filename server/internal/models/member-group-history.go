@@ -36,6 +36,9 @@ type MemberGroupHistoryResource struct {
 	MemberGroupID   uuid.UUID              `json:"memberGroupID"`
 	MemberProfile   *MemberProfileResource `json:"memberProfile,omitempty"`
 	MemberGroup     *MemberGroupResource   `json:"memberGroup,omitempty"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (m *ModelTransformer) MemberGroupHistoryToResource(history *MemberGroupHistory) *MemberGroupHistoryResource {
@@ -67,4 +70,30 @@ func (m *ModelTransformer) MemberGroupHistoryToResourceList(historyList []*Membe
 		historyResources = append(historyResources, m.MemberGroupHistoryToResource(history))
 	}
 	return historyResources
+}
+
+func (m *ModelRepository) MemberGroupHistoryGetByID(id string, preloads ...string) (*MemberGroupHistory, error) {
+	repo := NewGenericRepository[MemberGroupHistory](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberGroupHistoryCreate(membergrouphistory *MemberGroupHistory, preloads ...string) (*MemberGroupHistory, error) {
+	repo := NewGenericRepository[MemberGroupHistory](m.db.Client)
+	return repo.Create(membergrouphistory, preloads...)
+}
+func (m *ModelRepository) MemberGroupHistoryUpdate(membergrouphistory *MemberGroupHistory, preloads ...string) (*MemberGroupHistory, error) {
+	repo := NewGenericRepository[MemberGroupHistory](m.db.Client)
+	return repo.Update(membergrouphistory, preloads...)
+}
+func (m *ModelRepository) MemberGroupHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberGroupHistory, error) {
+	repo := NewGenericRepository[MemberGroupHistory](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberGroupHistoryDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberGroupHistory](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberGroupHistoryGetAll(preloads ...string) ([]*MemberGroupHistory, error) {
+	repo := NewGenericRepository[MemberGroupHistory](m.db.Client)
+	return repo.GetAll(preloads...)
 }

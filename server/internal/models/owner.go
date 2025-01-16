@@ -63,9 +63,11 @@ type OwnerResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	FirstName          string              `json:"firstName"`
-	LastName           string              `json:"lastName"`
-	MiddleName         string              `json:"middleName"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	MiddleName string `json:"middleName"`
+	FullName   string `json:"fullName"`
+
 	PermanentAddress   string              `json:"permanentAddress"`
 	Description        string              `json:"description"`
 	BirthDate          time.Time           `json:"birthDate"`
@@ -100,9 +102,11 @@ func (m *ModelTransformer) OwnerToResource(owner *Owner) *OwnerResource {
 		UpdatedAt: owner.UpdatedAt.Format(time.RFC3339),
 		DeletedAt: owner.DeletedAt.Time.Format(time.RFC3339),
 
-		FirstName:          owner.FirstName,
-		LastName:           owner.LastName,
-		MiddleName:         owner.MiddleName,
+		FirstName:  owner.FirstName,
+		LastName:   owner.LastName,
+		MiddleName: owner.MiddleName,
+		FullName:   owner.FirstName + " " + owner.MiddleName + " " + owner.LastName,
+
 		PermanentAddress:   owner.PermanentAddress,
 		Description:        owner.Description,
 		BirthDate:          owner.BirthDate,
@@ -135,4 +139,59 @@ func (m *ModelTransformer) OwnerToResourceList(ownerList []*Owner) []*OwnerResou
 		ownerResources = append(ownerResources, m.OwnerToResource(owner))
 	}
 	return ownerResources
+}
+
+func (m *ModelRepository) OwnerGetByID(id string, preloads ...string) (*Owner, error) {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+func (m *ModelRepository) OwnerGetByUsername(username string, preloads ...string) (*Owner, error) {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	return repo.GetByColumn("username", username, preloads...)
+}
+func (m *ModelRepository) OwnerGetByEmail(email string, preloads ...string) (*Owner, error) {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	return repo.GetByColumn("email", email, preloads...)
+}
+func (m *ModelRepository) OwnerGetByContactNumber(contact_number string, preloads ...string) (*Owner, error) {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	return repo.GetByColumn("contact_number", contact_number, preloads...)
+}
+func (m *ModelRepository) OwnerFindByEmailUsernameOrContact(input string, preloads ...string) (*Owner, error) {
+	switch m.helpers.GetKeyType(input) {
+	case "contact":
+		return m.OwnerGetByContactNumber(input, preloads...)
+	case "email":
+		return m.OwnerGetByEmail(input, preloads...)
+	default:
+		return m.OwnerGetByUsername(input, preloads...)
+	}
+}
+func (m *ModelRepository) OwnerCreate(owner *Owner, preloads ...string) (*Owner, error) {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	return repo.Create(owner, preloads...)
+}
+func (m *ModelRepository) OwnerUpdate(owner *Owner, preloads ...string) (*Owner, error) {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	return repo.Update(owner, preloads...)
+}
+func (m *ModelRepository) OwnerUpdateByID(id string, column string, value interface{}, preloads ...string) (*Owner, error) {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) OwnerDeleteByID(id string) error {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) OwnerGetAll(preloads ...string) ([]*Owner, error) {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	return repo.GetAll(preloads...)
+}
+func (m *ModelRepository) OwnerUpdatePassword(id string, password string) (*Owner, error) {
+	repo := NewGenericRepository[Owner](m.db.Client)
+	newPassword, err := m.cryptoHelpers.HashPassword(password)
+	if err != nil {
+		return nil, err
+	}
+	return repo.UpdateByID(id, "password", newPassword)
 }

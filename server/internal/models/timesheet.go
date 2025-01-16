@@ -84,3 +84,29 @@ func (m *ModelTransformer) TimesheetToResourceList(timesheetList []*Timesheet) [
 	}
 	return timesheetResources
 }
+
+func (m *ModelRepository) TimesheetGetByID(id string, preloads ...string) (*Timesheet, error) {
+	repo := NewGenericRepository[Timesheet](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) TimesheetCreate(timesheet *Timesheet, preloads ...string) (*Timesheet, error) {
+	repo := NewGenericRepository[Timesheet](m.db.Client)
+	return repo.Create(timesheet, preloads...)
+}
+func (m *ModelRepository) TimesheetUpdate(timesheet *Timesheet, preloads ...string) (*Timesheet, error) {
+	repo := NewGenericRepository[Timesheet](m.db.Client)
+	return repo.Update(timesheet, preloads...)
+}
+func (m *ModelRepository) TimesheetUpdateByID(id string, column string, value interface{}, preloads ...string) (*Timesheet, error) {
+	repo := NewGenericRepository[Timesheet](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) TimesheetDeleteByID(id string) error {
+	repo := NewGenericRepository[Timesheet](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) TimesheetGetAll(preloads ...string) ([]*Timesheet, error) {
+	repo := NewGenericRepository[Timesheet](m.db.Client)
+	return repo.GetAll(preloads...)
+}

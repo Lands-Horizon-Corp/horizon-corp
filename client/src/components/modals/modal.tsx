@@ -11,13 +11,14 @@ import { Separator } from '@/components/ui/separator'
 
 import { cn } from '@/lib'
 import { IBaseComp } from '@/types'
+import { ReactNode } from 'react'
 
 export interface IModalProps
     extends IBaseComp,
         DialogPrimitive.DialogProps,
         DialogExtraProps {
-    title?: string
-    description?: string
+    title?: string | ReactNode
+    description?: string | ReactNode
     footer?: React.ReactNode
     titleClassName?: string
     descriptionClassName?: string
@@ -33,11 +34,13 @@ const Modal = ({
     overlayClassName,
     closeButtonClassName,
     descriptionClassName,
+    hideCloseButton,
     ...other
 }: IModalProps) => {
     return (
         <Dialog {...other}>
             <DialogContent
+                hideCloseButton={hideCloseButton}
                 closeButtonClassName={closeButtonClassName}
                 overlayClassName={cn('backdrop-blur', overlayClassName)}
                 className={cn(

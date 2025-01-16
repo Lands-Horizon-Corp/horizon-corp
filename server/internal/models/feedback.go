@@ -66,3 +66,29 @@ func (m *ModelTransformer) FeedbackToResourceList(feedbackList []*Feedback) []*F
 	}
 	return feedbackResources
 }
+
+func (m *ModelRepository) FeedbackGetByID(id string, preloads ...string) (*Feedback, error) {
+	repo := NewGenericRepository[Feedback](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) FeedbackCreate(feedback *Feedback, preloads ...string) (*Feedback, error) {
+	repo := NewGenericRepository[Feedback](m.db.Client)
+	return repo.Create(feedback, preloads...)
+}
+func (m *ModelRepository) FeedbackUpdate(feedback *Feedback, preloads ...string) (*Feedback, error) {
+	repo := NewGenericRepository[Feedback](m.db.Client)
+	return repo.Update(feedback, preloads...)
+}
+func (m *ModelRepository) FeedbackUpdateByID(id string, column string, value interface{}, preloads ...string) (*Feedback, error) {
+	repo := NewGenericRepository[Feedback](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) FeedbackDeleteByID(id string) error {
+	repo := NewGenericRepository[Feedback](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) FeedbackGetAll(preloads ...string) ([]*Feedback, error) {
+	repo := NewGenericRepository[Feedback](m.db.Client)
+	return repo.GetAll(preloads...)
+}

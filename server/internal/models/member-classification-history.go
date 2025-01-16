@@ -17,6 +17,9 @@ type MemberClassificationHistory struct {
 	MemberClassificationID uuid.UUID             `gorm:"type:bigint;unsigned;unsigned" json:"member_classification_id"`
 	MemberProfile          *MemberProfile        `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberClassification   *MemberClassification `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_classification"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberClassificationHistory) BeforeCreate(tx *gorm.DB) (err error) {
@@ -66,4 +69,30 @@ func (m *ModelTransformer) MemberClassificationHistoryToResourceList(historyList
 		historyResources = append(historyResources, m.MemberClassificationHistoryToResource(history))
 	}
 	return historyResources
+}
+
+func (m *ModelRepository) MemberClassificationHistoryGetByID(id string, preloads ...string) (*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberClassificationHistoryCreate(memberclassificationhistory *MemberClassificationHistory, preloads ...string) (*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.Create(memberclassificationhistory, preloads...)
+}
+func (m *ModelRepository) MemberClassificationHistoryUpdate(memberclassificationhistory *MemberClassificationHistory, preloads ...string) (*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.Update(memberclassificationhistory, preloads...)
+}
+func (m *ModelRepository) MemberClassificationHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberClassificationHistoryDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberClassificationHistoryGetAll(preloads ...string) ([]*MemberClassificationHistory, error) {
+	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
+	return repo.GetAll(preloads...)
 }

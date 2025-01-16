@@ -2,7 +2,7 @@ import { MediaResource } from "../media";
 import { CompanyResource } from "../company";
 import { EmployeeResource, MemberResource } from "../profile";
 
-import { FilterPages } from "../table";
+import { PaginatedResult } from "../paginated-result";
 
 export interface BranchResource {
   id: number;
@@ -21,4 +21,4 @@ export interface BranchResource {
   updatedAt: string;
 }
 
-export type BranchPaginatedResource = FilterPages<BranchResource>
+export type BranchPaginatedResource = PaginatedResult<BranchResource>

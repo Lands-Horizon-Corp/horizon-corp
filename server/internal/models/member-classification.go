@@ -16,6 +16,9 @@ type MemberClassification struct {
 	Name        string                         `gorm:"size:255;unsigned"`
 	Description string                         `gorm:"size:500"`
 	History     []*MemberClassificationHistory `gorm:"foreignKey:MemberClassificationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberClassification) BeforeCreate(tx *gorm.DB) (err error) {
@@ -64,4 +67,30 @@ func (m *ModelTransformer) MemberClassificationToResourceList(classificationList
 		classificationResources = append(classificationResources, m.MemberClassificationToResource(classification))
 	}
 	return classificationResources
+}
+
+func (m *ModelRepository) MemberClassificationGetByID(id string, preloads ...string) (*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberClassificationCreate(memberclassification *MemberClassification, preloads ...string) (*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.Create(memberclassification, preloads...)
+}
+func (m *ModelRepository) MemberClassificationUpdate(memberclassification *MemberClassification, preloads ...string) (*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.Update(memberclassification, preloads...)
+}
+func (m *ModelRepository) MemberClassificationUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberClassificationDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberClassificationGetAll(preloads ...string) ([]*MemberClassification, error) {
+	repo := NewGenericRepository[MemberClassification](m.db.Client)
+	return repo.GetAll(preloads...)
 }

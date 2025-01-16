@@ -1,6 +1,6 @@
 import { IUserBase } from '../common'
-import { FilterPages } from '../table'
+import { PaginatedResult } from '../paginated-result'
 
 export interface OwnerResource extends IUserBase {}
 
-export type OwnerPaginatedResource = FilterPages<OwnerResource>
+export type OwnerPaginatedResource = PaginatedResult<OwnerResource>

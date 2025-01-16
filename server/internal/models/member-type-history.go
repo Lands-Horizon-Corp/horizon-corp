@@ -17,6 +17,9 @@ type MemberTypeHistory struct {
 	MemberTypeID    uuid.UUID      `gorm:"type:bigint;unsigned;unsigned" json:"member_type_id"`
 	MemberProfile   *MemberProfile `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberType      *MemberType    `gorm:"foreignKey:MemberTypeID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_type"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberTypeHistory) BeforeCreate(tx *gorm.DB) (err error) {
@@ -67,4 +70,30 @@ func (m *ModelTransformer) MemberTypeHistoryToResourceList(historyList []*Member
 		historyResources = append(historyResources, m.MemberTypeHistoryToResource(history))
 	}
 	return historyResources
+}
+
+func (m *ModelRepository) MemberTypeHistoryGetByID(id string, preloads ...string) (*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberTypeHistoryCreate(membertypehistory *MemberTypeHistory, preloads ...string) (*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.Create(membertypehistory, preloads...)
+}
+func (m *ModelRepository) MemberTypeHistoryUpdate(membertypehistory *MemberTypeHistory, preloads ...string) (*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.Update(membertypehistory, preloads...)
+}
+func (m *ModelRepository) MemberTypeHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.UpdateByID(id, column, value, preloads...)
+}
+func (m *ModelRepository) MemberTypeHistoryDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberTypeHistoryGetAll(preloads ...string) ([]*MemberTypeHistory, error) {
+	repo := NewGenericRepository[MemberTypeHistory](m.db.Client)
+	return repo.GetAll(preloads...)
 }

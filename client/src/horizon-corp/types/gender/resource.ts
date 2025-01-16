@@ -1,4 +1,4 @@
-import { FilterPages } from "../table"
+import { PaginatedResult } from "../paginated-result"
 
 export interface GenderResource {
   id: number
@@ -9,4 +9,4 @@ export interface GenderResource {
 }
 
 
-export type GenderPaginatedResource = FilterPages<GenderResource>
+export type GenderPaginatedResource = PaginatedResult<GenderResource>
