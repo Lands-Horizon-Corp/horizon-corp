@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { NotificationsResource } from '@/horizon-corp/types'
 import { cn } from '@/lib'
 
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/popover'
 import { BellIcon } from 'lucide-react'
 import { Role } from '@/types'
-import { useNotifications } from '@/hooks/api-hooks/use-notifications'
+// import { useNotifications } from '@/hooks/api-hooks/use-notifications'
 
 enum NotificationGroup {
     all = 'all',
@@ -98,25 +98,119 @@ const NotificationsPopover = ({
 )
 
 interface NotificationProps {
-    userId: number;
-    role: Role;
+    userId: number
+    role: Role
     // fetchNotifications: (userId: number, role: Role) => Promise<NotificationsResource[]>;
 }
 
-const Notification = ({ userId, role }: NotificationProps) => {
-    
+const Notification = ({}: NotificationProps) => {
     const [selectedTab, setSelectedTab] = useState<NotificationGroupType>(
         NotificationGroup.all
     )
-  
-    const { data } = useNotifications({userId, role})
 
-    const [notifications, setNotifications] = useState<NotificationsResource[]>(data ?? [])
+    // const { data } = useNotifications({ userId, role })
 
-    useEffect(() => {
-        setNotifications(data ?? [])
-    }, [data])
-
+    const [notifications, setNotifications] = useState<NotificationsResource[]>(
+        [
+            {
+                id: 101,
+                type: 'error',
+                message: 'Database connection failed on Server #3.',
+                title: 'Critical System Alert',
+                createdAt: '2025-01-12T09:45:00Z',
+                actionUrl: '/admin/system/logs/101',
+                read: false,
+                priority: 'high',
+                userId: null,
+                category: 'System',
+            },
+            {
+                id: 102,
+                type: 'warning',
+                message: 'There are 5 pending user account approvals.',
+                title: 'Pending Approvals',
+                createdAt: '2025-01-12T08:30:00Z',
+                actionUrl: '/admin/users/pending-approvals',
+                read: false,
+                priority: 'medium',
+                userId: null,
+                category: 'User Management',
+            },
+            {
+                id: 103,
+                type: 'success',
+                message: 'Backup process completed successfully.',
+                title: 'Backup Complete',
+                createdAt: '2025-01-12T07:15:00Z',
+                actionUrl: '/admin/system/backup-logs',
+                read: true,
+                priority: 'low',
+                userId: null,
+                category: 'System',
+            },
+            {
+                id: 104,
+                type: 'info',
+                message: 'The weekly analytics report is ready for review.',
+                title: 'Analytics Report',
+                createdAt: '2025-01-11T22:00:00Z',
+                actionUrl: '/admin/reports/weekly',
+                read: false,
+                priority: 'medium',
+                userId: null,
+                category: 'Analytics',
+            },
+            {
+                id: 105,
+                type: 'error',
+                message: 'Payment processing failed for Invoice #5678.',
+                title: 'Payment Failure',
+                createdAt: '2025-01-12T05:00:00Z',
+                actionUrl: '/admin/payments/failure/5678',
+                read: false,
+                priority: 'high',
+                userId: 42,
+                category: 'Finance',
+            },
+            {
+                id: 106,
+                type: 'success',
+                message: "New user 'John Doe' has registered.",
+                title: 'New Registration',
+                createdAt: '2025-01-12T06:00:00Z',
+                actionUrl: '/admin/users/42',
+                read: true,
+                priority: 'low',
+                userId: 42,
+                category: 'User Management',
+            },
+            {
+                id: 107,
+                type: 'info',
+                message:
+                    'Version 2.5.0 of the application has been deployed successfully.',
+                title: 'Deployment Success',
+                createdAt: '2025-01-12T03:30:00Z',
+                actionUrl: '/admin/deployments/2.5.0',
+                read: true,
+                priority: 'low',
+                userId: null,
+                category: 'System',
+            },
+            {
+                id: 108,
+                type: 'warning',
+                message: 'The API usage limit is at 85%.',
+                title: 'API Usage Warning',
+                createdAt: '2025-01-11T21:15:00Z',
+                actionUrl: '/admin/api/usage',
+                read: false,
+                priority: 'medium',
+                userId: null,
+                category: 'System',
+            },
+        ]
+    )
 
     const [readNotifications, setReadNotifications] = useState<Set<number>>(
         new Set(
