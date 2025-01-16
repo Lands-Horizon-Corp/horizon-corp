@@ -33,12 +33,12 @@ export interface IMemberTableActionComponentProp {
     row: Row<MemberResource>
 }
 
-export interface ICompaniesTableColumnProps {
+export interface IMembersTableColumnProps {
     actionComponent?: (props: IMemberTableActionComponentProp) => ReactNode
 }
 
-const companiesTableColumns = (
-    opts?: ICompaniesTableColumnProps
+const membersTableColumns = (
+    opts?: IMembersTableColumnProps
 ): ColumnDef<MemberResource>[] => {
     return [
         {
@@ -413,4 +413,4 @@ const companiesTableColumns = (
     ]
 }
 
-export default companiesTableColumns
+export default membersTableColumns

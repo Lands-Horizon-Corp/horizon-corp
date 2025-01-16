@@ -13,9 +13,9 @@ import DataTableToolbar, {
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 
-import companyColumns, {
+import membersColumns, {
+    IMembersTableColumnProps,
     memberGlobalSearchTargets,
-    ICompaniesTableColumnProps,
 } from './columns'
 
 import { cn } from '@/lib'
@@ -28,7 +28,7 @@ import MemberService from '@/horizon-corp/services/member/member-service'
 
 export interface MembersTableProps
     extends TableProps<MemberResource>,
-        ICompaniesTableColumnProps {
+        IMembersTableColumnProps {
     toolbarProps?: Omit<
         IDataTableToolbarProps<MemberResource>,
         | 'table'
@@ -52,7 +52,7 @@ const CompaniesTable = ({
 
     const columns = useMemo(
         () =>
-            companyColumns({
+            membersColumns({
                 actionComponent,
             }),
         [actionComponent]
