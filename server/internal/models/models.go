@@ -209,15 +209,47 @@ func (r *GenericRepository[T]) Update(entity *T, preloads ...string) (*T, error)
 	if err := r.db.Save(entity).Error; err != nil {
 		return nil, err
 	}
-
 	query := r.db.Model(entity)
 	for _, preload := range preloads {
 		query = query.Preload(preload)
 	}
-
 	if err := query.First(entity).Error; err != nil {
 		return nil, err
 	}
-
 	return entity, nil
+}
+
+func (r *GenericRepository[T]) SaveWithChildren(
+	entity *T,
+	saveChildren func(*gorm.DB) error,
+	updateChildren func(*gorm.DB) error,
+	validateChanges func(*T) bool,
+) error {
+	return r.db.Transaction(func(tx *gorm.DB) error {
+		// Save the parent entity
+		if err := tx.Save(entity).Error; err != nil {
+			return err
+		}
+
+		// If there are no changes or parent ID is missing, skip saving/updating children
+		if validateChanges != nil && !validateChanges(entity) {
+			return nil
+		}
+
+		// Save children if parent ID is missing
+		if saveChildren != nil && validateChanges(entity) {
+			if err := saveChildren(tx); err != nil {
+				return err
+			}
+		}
+
+		// Update children if parent ID is provided
+		if updateChildren != nil && !validateChanges(entity) {
+			if err := updateChildren(tx); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
