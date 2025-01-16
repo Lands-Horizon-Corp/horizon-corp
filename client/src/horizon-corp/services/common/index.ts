@@ -6,3 +6,4 @@ export { default as ConnectionService } from './connection';
 export { default as CompanyService } from './company-service';
 export { default as ContactService } from './contact-service';
 export { default as FeedbackService } from './feedback-service';
+export { default as FootstepService } from './footstep-service';

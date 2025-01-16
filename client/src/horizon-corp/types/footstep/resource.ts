@@ -1,15 +1,34 @@
-import { AdminResource, EmployeeResource, MemberResource, OwnerResource } from "../profile";
+import {
+    AdminResource,
+    OwnerResource,
+    MemberResource,
+    EmployeeResource,
+} from '../profile'
+import { PaginatedResult } from '../paginated-result'
 
 export interface FootstepResource {
-  id: number;
-  description?: string;
-  activity: string;
-  accountType: string;
-  createdAt: string;
-  updatedAt: string;
+    id: string
+    createdAt: string
+    updatedAt: string
+    deletedAt: string
 
-  admin?: AdminResource;
-  employee?: EmployeeResource;
-  owner?: OwnerResource;
-  member?: MemberResource;
+    accountType: string
+    module: string
+    description: string
+    activity: string
+    latitude?: number
+    longitude?: number
+    timestamp: string
+    isDeleted: boolean
+
+    adminID?: string
+    admin?: AdminResource
+    employeeID?: string
+    employee?: EmployeeResource
+    ownerID?: string
+    owner?: OwnerResource
+    memberID?: string
+    member?: MemberResource
 }
+
+export type FootstepPaginatedResource = PaginatedResult<FootstepResource>

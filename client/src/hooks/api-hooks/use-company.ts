@@ -6,20 +6,21 @@ import {
 } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import {
-    MediaRequest,
-    CompanyResource,
-    CompanyPaginatedResource,
-    CompanyRequest,
-} from '@/horizon-corp/types'
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { CompanyService } from '@/horizon-corp/services'
+
 import {
     IApiPreloads,
-    IFilterPaginatedHookProps,
     IOperationCallbacks,
+    IFilterPaginatedHookProps,
 } from './types'
+import {
+    MediaRequest,
+    CompanyRequest,
+    CompanyResource,
+    CompanyPaginatedResource,
+} from '@/horizon-corp/types'
 
 // Only used by path preloader
 export const companyLoader = (companyId: number) =>
