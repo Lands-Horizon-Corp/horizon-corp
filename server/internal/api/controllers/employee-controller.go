@@ -1,11 +1,20 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/gin-gonic/gin"
+)
 
-type EmployeeController struct{}
+type EmployeeController struct {
+	repository *models.ModelRepository
+}
 
-func NewEmployeeController() *EmployeeController {
-	return &EmployeeController{}
+func NewEmployeeController(
+	repository *models.ModelRepository,
+) *EmployeeController {
+	return &EmployeeController{
+		repository: repository,
+	}
 }
 
 // GET :/

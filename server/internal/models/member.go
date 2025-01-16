@@ -159,6 +159,11 @@ func (m *ModelRepository) MemberFindByEmailUsernameOrContact(input string, prelo
 }
 func (m *ModelRepository) MemberCreate(member *Member, preloads ...string) (*Member, error) {
 	repo := NewGenericRepository[Member](m.db.Client)
+	newPassword, err := m.cryptoHelpers.HashPassword(member.Password)
+	if err != nil {
+		return nil, err
+	}
+	member.Password = newPassword
 	return repo.Create(member, preloads...)
 }
 func (m *ModelRepository) MemberUpdate(member *Member, preloads ...string) (*Member, error) {

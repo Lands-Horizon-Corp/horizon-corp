@@ -169,6 +169,11 @@ func (m *ModelRepository) OwnerFindByEmailUsernameOrContact(input string, preloa
 }
 func (m *ModelRepository) OwnerCreate(owner *Owner, preloads ...string) (*Owner, error) {
 	repo := NewGenericRepository[Owner](m.db.Client)
+	newPassword, err := m.cryptoHelpers.HashPassword(owner.Password)
+	if err != nil {
+		return nil, err
+	}
+	owner.Password = newPassword
 	return repo.Create(owner, preloads...)
 }
 func (m *ModelRepository) OwnerUpdate(owner *Owner, preloads ...string) (*Owner, error) {

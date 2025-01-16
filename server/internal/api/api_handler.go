@@ -28,6 +28,7 @@ func NewAPIHandlerInvoke(
 	footstepController *controllers.FootstepController,
 	genderController *controllers.GenderController,
 	mediaController *controllers.MediaController,
+	memberApplicationController *controllers.MemberApplicationController,
 	memberController *controllers.MemberController,
 	ownerController *controllers.OwnerController,
 	profileController *controllers.ProfileController,
@@ -134,6 +135,14 @@ func NewAPIHandlerInvoke(
 			media.PUT("/:id", mediaController.Update)
 			media.DELETE("/:id", mediaController.Destroy)
 			media.GET("/team", mediaController.Team)
+		}
+		memberApplication := v1.Group("/member-application")
+		{
+			memberApplication.GET("/", memberApplicationController.Index)
+			memberApplication.GET("/:id", memberApplicationController.Show)
+			memberApplication.POST("/", memberApplicationController.Store)
+			memberApplication.PUT("/:id", memberApplicationController.Update)
+			memberApplication.DELETE("/:id", memberApplicationController.Destroy)
 		}
 		member := v1.Group("/member")
 		{

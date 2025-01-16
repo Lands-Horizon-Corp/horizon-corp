@@ -161,6 +161,11 @@ func (m *ModelRepository) AdminFindByEmailUsernameOrContact(input string, preloa
 }
 func (m *ModelRepository) AdminCreate(admin *Admin, preloads ...string) (*Admin, error) {
 	repo := NewGenericRepository[Admin](m.db.Client)
+	newPassword, err := m.cryptoHelpers.HashPassword(admin.Password)
+	if err != nil {
+		return nil, err
+	}
+	admin.Password = newPassword
 	return repo.Create(admin, preloads...)
 }
 func (m *ModelRepository) AdminUpdate(admin *Admin, preloads ...string) (*Admin, error) {

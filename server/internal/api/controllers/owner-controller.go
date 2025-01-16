@@ -1,11 +1,20 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/gin-gonic/gin"
+)
 
-type OwnerController struct{}
+type OwnerController struct {
+	repository *models.ModelRepository
+}
 
-func NewOwnerController() *OwnerController {
-	return &OwnerController{}
+func NewOwnerController(
+	repository *models.ModelRepository,
+) *OwnerController {
+	return &OwnerController{
+		repository: repository,
+	}
 }
 
 // GET :/api/v1/owner/

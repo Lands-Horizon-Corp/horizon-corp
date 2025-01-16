@@ -1,11 +1,20 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/gin-gonic/gin"
+)
 
-type AdminController struct{}
+type AdminController struct {
+	repository *models.ModelRepository
+}
 
-func NewAdminController() *AdminController {
-	return &AdminController{}
+func NewAdminController(
+	repository *models.ModelRepository,
+) *AdminController {
+	return &AdminController{
+		repository: repository,
+	}
 }
 
 // GET: /api/v1/admin

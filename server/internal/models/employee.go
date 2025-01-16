@@ -184,6 +184,11 @@ func (m *ModelRepository) EmployeeFindByEmailUsernameOrContact(input string, pre
 }
 func (m *ModelRepository) EmployeeCreate(employee *Employee, preloads ...string) (*Employee, error) {
 	repo := NewGenericRepository[Employee](m.db.Client)
+	newPassword, err := m.cryptoHelpers.HashPassword(employee.Password)
+	if err != nil {
+		return nil, err
+	}
+	employee.Password = newPassword
 	return repo.Create(employee, preloads...)
 }
 func (m *ModelRepository) EmployeeUpdate(employee *Employee, preloads ...string) (*Employee, error) {

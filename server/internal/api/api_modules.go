@@ -27,6 +27,7 @@ var Module = fx.Module(
 		controllers.NewFootstepController,
 		controllers.NewGenderController,
 		controllers.NewMediaController,
+		controllers.NewMemberApplicationController,
 		controllers.NewMemberController,
 		controllers.NewOwnerController,
 		controllers.NewProfileController,
