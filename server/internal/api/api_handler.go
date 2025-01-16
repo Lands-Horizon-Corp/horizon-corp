@@ -151,7 +151,6 @@ func NewAPIHandlerInvoke(
 			member.POST("/", memberController.Store)
 			member.PUT("/:id", memberController.Update)
 			member.DELETE("/:id", memberController.Destroy)
-			member.GET("/member-applications", memberController.MemberApplications)
 			member.GET("/forgot-password", memberController.ForgotPassword)
 		}
 

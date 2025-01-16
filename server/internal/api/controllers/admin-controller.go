@@ -35,7 +35,7 @@ func (c *AdminController) Index(ctx *gin.Context) {
 //	Owner: not allowed
 //	Member: not allowed
 func (c *AdminController) Show(ctx *gin.Context) {
-
+	// if id or email or
 }
 
 // POST: /api/v1/admin

@@ -8,26 +8,15 @@ func NewMemberController() *MemberController {
 	return &MemberController{}
 }
 
-// Retrieve memberes with optional filtering for pagination or no pagination. Results can be converted to records.
-// Endpoint: GET /api/v1/member
 func (c *MemberController) Index(ctx *gin.Context) {}
 
-// Endpoint: GET /api/v1/member/:id
 func (c *MemberController) Show(ctx *gin.Context) {}
 
-// Endpoint: POST /api/v1/member
 func (c *MemberController) Store(ctx *gin.Context) {}
 
-// Endpoint: PUT /api/v1/member/:id
 func (c *MemberController) Update(ctx *gin.Context) {}
 
-// Endpoint: DELETE /api/v1/member/:id
 func (c *MemberController) Destroy(ctx *gin.Context) {}
-
-// Endpoint: GET /api/v1/member-applications/:id
-// Get all members applications
-// Admin: GET all member applications
-func (c *MemberController) MemberApplications(ctx *gin.Context) {}
 
 func (c *MemberController) ForgotPassword(ctx *gin.Context) {}
 

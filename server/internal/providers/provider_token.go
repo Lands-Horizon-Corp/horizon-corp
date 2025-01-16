@@ -13,7 +13,7 @@ import (
 )
 
 type UserClaims struct {
-	ID          uint   `json:"id"`
+	ID          string `json:"id"`
 	AccountType string `json:"accountType"`
 	jwt.StandardClaims
 }
@@ -95,17 +95,17 @@ func (s *TokenService) VerifyToken(tokenString string) (*UserClaims, error) {
 		return nil, eris.Errorf("invalid issuer: %s", claims.Issuer)
 	}
 
-	s.logger.Info("Token verified successfully", zap.Uint("userID", claims.ID))
+	s.logger.Info("Token verified successfully", zap.String("userID", claims.ID))
 	return claims, nil
 }
 
-func (s *TokenService) StoreToken(tokenString string, userId uint) error {
+func (s *TokenService) StoreToken(tokenString string, userId string) error {
 	expiration := 24 * time.Hour
 	if err := s.cache.Set(tokenString, userId, expiration); err != nil {
 		s.logger.Error("Error storing token in Redis", zap.Error(err))
 		return eris.Wrap(err, "error storing token in Redis")
 	}
-	s.logger.Info("Token reference stored successfully in Redis", zap.Uint("userId", userId))
+	s.logger.Info("Token reference stored successfully in Redis", zap.String("userId", userId))
 	return nil
 }
 

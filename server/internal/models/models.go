@@ -3,6 +3,8 @@ package models
 import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
+	"github.com/google/uuid"
+	"github.com/rotisserie/eris"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
@@ -111,6 +113,10 @@ func NewGenericRepository[T any](db *gorm.DB) *GenericRepository[T] {
 
 // GetByID fetches a record by ID with optional preloads
 func (r *GenericRepository[T]) GetByID(id string, preloads ...string) (*T, error) {
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, eris.Wrap(err, "invalid UUID")
+	}
+
 	var entity T
 	query := r.db.Model(&entity).Where("id = ?", id)
 
@@ -142,6 +148,10 @@ func (r *GenericRepository[T]) GetByColumn(column string, value interface{}, pre
 }
 
 func (r *GenericRepository[T]) UpdateByID(id string, column string, value interface{}, preloads ...string) (*T, error) {
+	if _, err := uuid.Parse(id); err != nil {
+		return nil, eris.Wrap(err, "invalid UUID")
+	}
+
 	var entity T
 	if err := r.db.Model(&entity).Where("id = ?", id).Update(column, value).Error; err != nil {
 		return nil, err

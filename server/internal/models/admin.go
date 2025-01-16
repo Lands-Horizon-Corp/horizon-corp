@@ -149,8 +149,10 @@ func (m *ModelRepository) AdminGetByContactNumber(contact_number string, preload
 	repo := NewGenericRepository[Admin](m.db.Client)
 	return repo.GetByColumn("contact_number", contact_number, preloads...)
 }
-func (m *ModelRepository) AdminFindByEmailUsernameOrContact(input string, preloads ...string) (*Admin, error) {
+func (m *ModelRepository) AdminSearch(input string, preloads ...string) (*Admin, error) {
 	switch m.helpers.GetKeyType(input) {
+	case "id":
+		return m.AdminGetByID(input, preloads...)
 	case "contact":
 		return m.AdminGetByContactNumber(input, preloads...)
 	case "email":

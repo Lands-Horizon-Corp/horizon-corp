@@ -172,8 +172,10 @@ func (m *ModelRepository) EmployeeGetByContactNumber(contact_number string, prel
 	repo := NewGenericRepository[Employee](m.db.Client)
 	return repo.GetByColumn("contact_number", contact_number, preloads...)
 }
-func (m *ModelRepository) EmployeeFindByEmailUsernameOrContact(input string, preloads ...string) (*Employee, error) {
+func (m *ModelRepository) EmployeeSearch(input string, preloads ...string) (*Employee, error) {
 	switch m.helpers.GetKeyType(input) {
+	case "id":
+		return m.EmployeeGetByID(input, preloads...)
 	case "contact":
 		return m.EmployeeGetByContactNumber(input, preloads...)
 	case "email":

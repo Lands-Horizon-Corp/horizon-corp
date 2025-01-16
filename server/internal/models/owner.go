@@ -157,8 +157,10 @@ func (m *ModelRepository) OwnerGetByContactNumber(contact_number string, preload
 	repo := NewGenericRepository[Owner](m.db.Client)
 	return repo.GetByColumn("contact_number", contact_number, preloads...)
 }
-func (m *ModelRepository) OwnerFindByEmailUsernameOrContact(input string, preloads ...string) (*Owner, error) {
+func (m *ModelRepository) OwnerSearch(input string, preloads ...string) (*Owner, error) {
 	switch m.helpers.GetKeyType(input) {
+	case "id":
+		return m.OwnerGetByID(input, preloads...)
 	case "contact":
 		return m.OwnerGetByContactNumber(input, preloads...)
 	case "email":

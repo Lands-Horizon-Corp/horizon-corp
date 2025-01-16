@@ -106,7 +106,9 @@ func (hf *HelpersFunction) SanitizeBody(body string) string {
 func (hf *HelpersFunction) GetKeyType(key string) string {
 
 	trimmedKey := strings.TrimSpace(key)
-
+	if hf.isValidUUID(key) {
+		return "id"
+	}
 	if trimmedKey == "" {
 		return "empty"
 	}
@@ -116,11 +118,15 @@ func (hf *HelpersFunction) GetKeyType(key string) string {
 	if hf.isValidKey(trimmedKey) {
 		return "key"
 	}
-
 	if hf.isValidUsername(trimmedKey) {
 		return "username"
 	}
 	return "unknown"
+}
+
+func (hf *HelpersFunction) isValidUUID(input string) bool {
+	_, err := uuid.Parse(input)
+	return err == nil
 }
 
 func (hf *HelpersFunction) isValidEmail(email string) bool {
