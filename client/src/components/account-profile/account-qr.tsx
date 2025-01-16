@@ -5,7 +5,7 @@ import { QrCodeIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import { QrCode, QrCodeDownloadable } from '@/components/qr-code'
 
-const AccountQr = ({ fileName = 'profile-qr' }: { fileName?: string }) => {
+const AccountQr = ({ fileName = 'profile-qr', qrLabel }: { fileName?: string, qrLabel? : string }) => {
     const [toggle, setToggle] = useState(false)
 
     const stringContent = 'as0f97as09 f7as0f8 sa'
@@ -36,8 +36,9 @@ const AccountQr = ({ fileName = 'profile-qr' }: { fileName?: string }) => {
             >
                 <QrCodeDownloadable
                     fileName={fileName}
+                    label={qrLabel}
                     value={stringContent}
-                    className="size-80 p-3"
+                    className="size-56 sm:size-64 p-3"
                     containerClassName="mx-auto"
                 />
             </Modal>

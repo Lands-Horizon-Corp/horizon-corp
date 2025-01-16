@@ -30,6 +30,7 @@ const AccountProfileBanner = ({
                 />
                 <p className="text-2xl font-medium">{currentUser.username}</p>
                 <AccountQr
+                    qrLabel={`${currentUser.firstName} ${currentUser.lastName}`}
                     fileName={`${currentUser.id}-${currentUser.firstName}-${currentUser.lastName}-profile-qr-${new Date().toISOString()}`}
                 />
                 <span className="text-sm text-foreground/80">

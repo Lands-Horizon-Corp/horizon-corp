@@ -17,14 +17,17 @@ import {
     useDownloadElement,
     UseDownloadOptions,
 } from '@/hooks/use-download-element'
+import { ReactNode } from '@tanstack/react-router'
 
 interface Props
     extends Omit<IQrCodeProps, 'children'>,
         Omit<UseDownloadOptions, 'fileType'> {
     containerClassName?: string
+    label? : string | ReactNode
 }
 
 const QrCodeDownloadable = ({
+    label,
     fileName,
     containerClassName,
     onError,
@@ -37,7 +40,10 @@ const QrCodeDownloadable = ({
 
     return (
         <div className={cn('w-fit space-y-2', containerClassName)}>
-            <QrCode ref={qrRef} {...other}></QrCode>
+            <div ref={qrRef} className={cn("rounded-xl overflow-clip bg-white text-black flex flex-col items-center", label && "pb-1")}>
+                <QrCode {...other} />
+                {label}
+            </div>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button

@@ -17,7 +17,7 @@ const QrCode = forwardRef<HTMLDivElement, IQrCodeProps>(
             <div
                 ref={qrRef}
                 className={cn(
-                    'relative flex size-48 flex-col items-center justify-center rounded-xl bg-white p-5',
+                    'size-48 rounded-xl bg-white p-5',
                     className
                 )}
             >
