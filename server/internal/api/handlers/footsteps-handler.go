@@ -31,7 +31,6 @@ func (f *FootstepHandler) Create(ctx *gin.Context, module, activity, description
 	var adminID, employeeID, ownerID, memberID *uuid.UUID
 	var preloads []string
 
-	// Determine account type and set the corresponding preload
 	switch claims.AccountType {
 	case "Admin":
 		admin, err := f.currentUser.Admin(ctx)
@@ -65,7 +64,6 @@ func (f *FootstepHandler) Create(ctx *gin.Context, module, activity, description
 		return nil, eris.New("invalid account type for footstep creation")
 	}
 
-	// Create the Footstep model
 	footstep := &models.Footstep{
 		ID:             uuid.New(),
 		AccountType:    claims.AccountType,
@@ -87,7 +85,6 @@ func (f *FootstepHandler) Create(ctx *gin.Context, module, activity, description
 		MemberID:       memberID,
 	}
 
-	// Save the Footstep with preloads
 	savedFootstep, err := f.currentUser.repository.FootstepCreate(footstep, preloads...)
 	if err != nil {
 		return nil, eris.Wrap(err, "failed to create footstep")

@@ -1,19 +1,26 @@
 package controllers
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/gin-gonic/gin"
 )
 
 type EmployeeController struct {
-	repository *models.ModelRepository
+	repository  *models.ModelRepository
+	footstep    *handlers.FootstepHandler
+	currentUser *handlers.CurrentUser
 }
 
 func NewEmployeeController(
 	repository *models.ModelRepository,
+	footstep *handlers.FootstepHandler,
+	currentUser *handlers.CurrentUser,
 ) *EmployeeController {
 	return &EmployeeController{
-		repository: repository,
+		repository:  repository,
+		footstep:    footstep,
+		currentUser: currentUser,
 	}
 }
 

@@ -1,13 +1,27 @@
 package controllers
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/gin-gonic/gin"
 )
 
-type AuthController struct{}
+type AuthController struct {
+	repository  *models.ModelRepository
+	footstep    *handlers.FootstepHandler
+	currentUser *handlers.CurrentUser
+}
 
-func NewAuthController() *AuthController {
-	return &AuthController{}
+func NewAuthController(
+	repository *models.ModelRepository,
+	footstep *handlers.FootstepHandler,
+	currentUser *handlers.CurrentUser,
+) *AuthController {
+	return &AuthController{
+		repository:  repository,
+		footstep:    footstep,
+		currentUser: currentUser,
+	}
 }
 
 // SignUp handles user registration.

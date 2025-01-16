@@ -1,11 +1,27 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/gin-gonic/gin"
+)
 
-type MemberController struct{}
+type MemberController struct {
+	repository  *models.ModelRepository
+	footstep    *handlers.FootstepHandler
+	currentUser *handlers.CurrentUser
+}
 
-func NewMemberController() *MemberController {
-	return &MemberController{}
+func NewMemberController(
+	repository *models.ModelRepository,
+	footstep *handlers.FootstepHandler,
+	currentUser *handlers.CurrentUser,
+) *MemberController {
+	return &MemberController{
+		repository:  repository,
+		footstep:    footstep,
+		currentUser: currentUser,
+	}
 }
 
 func (c *MemberController) Index(ctx *gin.Context) {}

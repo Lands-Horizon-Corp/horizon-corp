@@ -3,13 +3,27 @@ package controllers
 import (
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/gin-gonic/gin"
 )
 
-type ProfileController struct{}
+type ProfileController struct {
+	repository  *models.ModelRepository
+	footstep    *handlers.FootstepHandler
+	currentUser *handlers.CurrentUser
+}
 
-func NewProfileController() *ProfileController {
-	return &ProfileController{}
+func NewProfileController(
+	repository *models.ModelRepository,
+	footstep *handlers.FootstepHandler,
+	currentUser *handlers.CurrentUser,
+) *ProfileController {
+	return &ProfileController{
+		repository:  repository,
+		footstep:    footstep,
+		currentUser: currentUser,
+	}
 }
 
 func (as *ProfileController) ProfilePicture(ctx *gin.Context) {}

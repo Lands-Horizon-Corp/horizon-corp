@@ -1,19 +1,26 @@
 package controllers
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/gin-gonic/gin"
 )
 
 type OwnerController struct {
-	repository *models.ModelRepository
+	repository  *models.ModelRepository
+	footstep    *handlers.FootstepHandler
+	currentUser *handlers.CurrentUser
 }
 
 func NewOwnerController(
 	repository *models.ModelRepository,
+	footstep *handlers.FootstepHandler,
+	currentUser *handlers.CurrentUser,
 ) *OwnerController {
 	return &OwnerController{
-		repository: repository,
+		repository:  repository,
+		footstep:    footstep,
+		currentUser: currentUser,
 	}
 }
 

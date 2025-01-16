@@ -1,11 +1,27 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/gin-gonic/gin"
+)
 
-type MediaController struct{}
+type MediaController struct {
+	repository  *models.ModelRepository
+	footstep    *handlers.FootstepHandler
+	currentUser *handlers.CurrentUser
+}
 
-func NewMediaController() *MediaController {
-	return &MediaController{}
+func NewMediaController(
+	repository *models.ModelRepository,
+	footstep *handlers.FootstepHandler,
+	currentUser *handlers.CurrentUser,
+) *MediaController {
+	return &MediaController{
+		repository:  repository,
+		footstep:    footstep,
+		currentUser: currentUser,
+	}
 }
 
 // GET: /

@@ -1,11 +1,27 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/gin-gonic/gin"
+)
 
-type FeedbackController struct{}
+type FeedbackController struct {
+	repository  *models.ModelRepository
+	footstep    *handlers.FootstepHandler
+	currentUser *handlers.CurrentUser
+}
 
-func NewFeedbackController() *FeedbackController {
-	return &FeedbackController{}
+func NewFeedbackController(
+	repository *models.ModelRepository,
+	footstep *handlers.FootstepHandler,
+	currentUser *handlers.CurrentUser,
+) *FeedbackController {
+	return &FeedbackController{
+		repository:  repository,
+		footstep:    footstep,
+		currentUser: currentUser,
+	}
 }
 
 // GET: /api/v1/feedback

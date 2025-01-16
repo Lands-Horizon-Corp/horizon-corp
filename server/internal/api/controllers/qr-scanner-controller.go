@@ -1,11 +1,27 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/gin-gonic/gin"
+)
 
-type QRScannerController struct{}
+type QRScannerController struct {
+	repository  *models.ModelRepository
+	footstep    *handlers.FootstepHandler
+	currentUser *handlers.CurrentUser
+}
 
-func NewQRScannerController() *QRScannerController {
-	return &QRScannerController{}
+func NewQRScannerController(
+	repository *models.ModelRepository,
+	footstep *handlers.FootstepHandler,
+	currentUser *handlers.CurrentUser,
+) *QRScannerController {
+	return &QRScannerController{
+		repository:  repository,
+		footstep:    footstep,
+		currentUser: currentUser,
+	}
 }
 
 // GET: /api/v1/qr/profile

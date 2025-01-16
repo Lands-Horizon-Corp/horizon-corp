@@ -1,19 +1,26 @@
 package controllers
 
 import (
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/gin-gonic/gin"
 )
 
 type AdminController struct {
-	repository *models.ModelRepository
+	repository  *models.ModelRepository
+	footstep    *handlers.FootstepHandler
+	currentUser *handlers.CurrentUser
 }
 
 func NewAdminController(
 	repository *models.ModelRepository,
+	footstep *handlers.FootstepHandler,
+	currentUser *handlers.CurrentUser,
 ) *AdminController {
 	return &AdminController{
-		repository: repository,
+		repository:  repository,
+		footstep:    footstep,
+		currentUser: currentUser,
 	}
 }
 
