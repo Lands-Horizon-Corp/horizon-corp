@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
@@ -9,11 +11,13 @@ import (
 )
 
 type UserInfo struct {
-	IPAddress      string `json:"ipAddress"`
-	UserAgent      string `json:"userAgent"`
-	Referer        string `json:"referer"`
-	Location       string `json:"location"`
-	AcceptLanguage string `json:"acceptLanguage"`
+	IPAddress      string  `json:"ipAddress"`
+	UserAgent      string  `json:"userAgent"`
+	Referer        string  `json:"referer"`
+	Location       string  `json:"location"`
+	AcceptLanguage string  `json:"acceptLanguage"`
+	Latitude       float64 `json:"latitude"`
+	Longitude      float64 `json:"longitudde"`
 }
 
 type CurrentUser struct {
@@ -47,12 +51,31 @@ func (c *CurrentUser) Claims(ctx *gin.Context) (*providers.UserClaims, *UserInfo
 		return nil, nil, eris.New("failed to cast claims to *auth.UserClaims")
 	}
 
+	latStr := ctx.GetHeader("X-Latitude")
+	lonStr := ctx.GetHeader("X-Longitude")
+
+	var latitude, longitude *float64
+
+	if latStr != "" {
+		if lat, err := strconv.ParseFloat(latStr, 64); err == nil {
+			latitude = &lat
+		}
+	}
+
+	if lonStr != "" {
+		if lon, err := strconv.ParseFloat(lonStr, 64); err == nil {
+			longitude = &lon
+		}
+	}
+
 	userInfo := &UserInfo{
 		IPAddress:      ctx.ClientIP(),
 		UserAgent:      ctx.GetHeader("User-Agent"),
 		Referer:        ctx.GetHeader("Referer"),
 		Location:       ctx.GetHeader("X-Location"),
 		AcceptLanguage: ctx.GetHeader("Accept-Language"),
+		Latitude:       *latitude,
+		Longitude:      *longitude,
 	}
 
 	return userClaims, userInfo, nil
