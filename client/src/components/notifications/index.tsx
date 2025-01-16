@@ -109,7 +109,7 @@ const Notification = ({ userId, role }: NotificationProps) => {
         NotificationGroup.all
     )
   
-    const { data, isPending, isLoading, isFetching } = useNotifications({userId, role})
+    const { data } = useNotifications({userId, role})
 
     const [notifications, setNotifications] = useState<NotificationsResource[]>(data ?? [])
 
