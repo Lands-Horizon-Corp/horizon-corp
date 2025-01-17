@@ -26,7 +26,7 @@ export interface IUserBase extends ITimeStamps {
     genderId?: number
     gender?: IGenderResource
 
-    status: IAccountStatus
+    status: TAccountStatus
 
     isEmailVerified: boolean
     isContactVerified: boolean
