@@ -25,7 +25,7 @@ import { otpSchema } from '@/validations'
 import UseCooldown from '@/hooks/use-cooldown'
 import { UserData } from '@/horizon-corp/types'
 import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/services/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserServicex'
 
 type TVerifyMode = 'email' | 'mobile'
 
