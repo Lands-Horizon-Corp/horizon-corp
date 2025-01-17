@@ -3,13 +3,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
-    Select,
-    SelectItem,
-    SelectValue,
-    SelectTrigger,
-    SelectContent,
-} from '@/components/ui/select'
-import {
     Form,
     FormItem,
     FormLabel,
@@ -17,6 +10,13 @@ import {
     FormControl,
     FormMessage,
 } from '@/components/ui/form'
+import {
+    Select,
+    SelectItem,
+    SelectValue,
+    SelectTrigger,
+    SelectContent,
+} from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import EcoopLogo from '@/components/ecoop-logo'
 import { Button } from '@/components/ui/button'
@@ -25,6 +25,10 @@ import { VerifiedPatchIcon } from '@/components/icons'
 import PasswordInput from '@/components/ui/password-input'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import {
+    ChecklistTemplate,
+    ValueChecklistMeter,
+} from '@/components/value-checklist-indicator'
 import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 
 import { cn } from '@/lib/utils'
@@ -129,11 +133,24 @@ const SignUpForm = ({
                                     <FormControl>
                                         <PasswordInput
                                             {...field}
+                                            maxLength={50}
                                             id={field.name}
                                             placeholder="Password"
                                             autoComplete="new-password"
                                         />
                                     </FormControl>
+                                    <ValueChecklistMeter
+                                        value={field.value}
+
+                                        checkList={ChecklistTemplate[
+                                            'password-checklist'
+                                        ].concat([
+                                            {
+                                                regex: /^.{0,50}$/,
+                                                text: 'No more than 50 characters',
+                                            },
+                                        ])}
+                                    />
                                     <FormMessage className="text-xs" />
                                 </FormItem>
                             )}
