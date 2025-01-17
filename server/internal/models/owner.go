@@ -3,6 +3,7 @@ package models
 import (
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -14,20 +15,20 @@ type Owner struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
-	FirstName          string     `gorm:"type:varchar(255);unsigned" json:"first_name"`
-	LastName           string     `gorm:"type:varchar(255);unsigned" json:"last_name"`
-	MiddleName         string     `gorm:"type:varchar(255)" json:"middle_name"`
-	PermanentAddress   string     `gorm:"type:text" json:"permanent_address"`
-	Description        string     `gorm:"type:text" json:"description"`
-	BirthDate          time.Time  `gorm:"type:date" json:"birth_date"`
-	Username           string     `gorm:"type:varchar(255);unique;unsigned" json:"username"`
-	Email              string     `gorm:"type:varchar(255);unique;unsigned" json:"email"`
-	Password           string     `gorm:"type:varchar(255);unsigned" json:"password"`
-	ContactNumber      string     `gorm:"type:varchar(15);unique;unsigned" json:"contact_number"`
-	IsEmailVerified    bool       `gorm:"default:false" json:"is_email_verified"`
-	IsContactVerified  bool       `gorm:"default:false" json:"is_contact_verified"`
-	IsSkipVerification bool       `gorm:"default:false" json:"is_skip_verification"`
-	Status             UserStatus `gorm:"type:varchar(11);default:'Pending'" json:"status"`
+	FirstName          string               `gorm:"type:varchar(255);unsigned" json:"first_name"`
+	LastName           string               `gorm:"type:varchar(255);unsigned" json:"last_name"`
+	MiddleName         string               `gorm:"type:varchar(255)" json:"middle_name"`
+	PermanentAddress   string               `gorm:"type:text" json:"permanent_address"`
+	Description        string               `gorm:"type:text" json:"description"`
+	BirthDate          time.Time            `gorm:"type:date" json:"birth_date"`
+	Username           string               `gorm:"type:varchar(255);unique;unsigned" json:"username"`
+	Email              string               `gorm:"type:varchar(255);unique;unsigned" json:"email"`
+	Password           string               `gorm:"type:varchar(255);unsigned" json:"password"`
+	ContactNumber      string               `gorm:"type:varchar(15);unique;unsigned" json:"contact_number"`
+	IsEmailVerified    bool                 `gorm:"default:false" json:"is_email_verified"`
+	IsContactVerified  bool                 `gorm:"default:false" json:"is_contact_verified"`
+	IsSkipVerification bool                 `gorm:"default:false" json:"is_skip_verification"`
+	Status             providers.UserStatus `gorm:"type:varchar(11);default:'Pending'" json:"status"`
 
 	// Relationship 0 to 1
 	MediaID *uuid.UUID `gorm:"type:bigint;unsigned" json:"media_id"`
@@ -68,25 +69,25 @@ type OwnerResource struct {
 	MiddleName string `json:"middleName"`
 	FullName   string `json:"fullName"`
 
-	PermanentAddress   string              `json:"permanentAddress"`
-	Description        string              `json:"description"`
-	BirthDate          time.Time           `json:"birthDate"`
-	Username           string              `json:"username"`
-	Email              string              `json:"email"`
-	Password           string              `json:"password"`
-	ContactNumber      string              `json:"contactNumber"`
-	IsEmailVerified    bool                `json:"isEmailVerified"`
-	IsContactVerified  bool                `json:"isContactVerified"`
-	IsSkipVerification bool                `json:"isSkipVerification"`
-	Status             UserStatus          `json:"status"`
-	MediaID            *uuid.UUID          `json:"mediaID"`
-	Media              *MediaResource      `json:"media"`
-	GenderID           *uuid.UUID          `json:"genderID"`
-	Gender             *GenderResource     `json:"gender"`
-	RoleID             *uuid.UUID          `json:"roleID"`
-	Role               *RoleResource       `json:"role"`
-	Footsteps          []*FootstepResource `json:"footsteps"`
-	Companies          []*CompanyResource  `json:"companies"`
+	PermanentAddress   string               `json:"permanentAddress"`
+	Description        string               `json:"description"`
+	BirthDate          time.Time            `json:"birthDate"`
+	Username           string               `json:"username"`
+	Email              string               `json:"email"`
+	Password           string               `json:"password"`
+	ContactNumber      string               `json:"contactNumber"`
+	IsEmailVerified    bool                 `json:"isEmailVerified"`
+	IsContactVerified  bool                 `json:"isContactVerified"`
+	IsSkipVerification bool                 `json:"isSkipVerification"`
+	Status             providers.UserStatus `json:"status"`
+	MediaID            *uuid.UUID           `json:"mediaID"`
+	Media              *MediaResource       `json:"media"`
+	GenderID           *uuid.UUID           `json:"genderID"`
+	Gender             *GenderResource      `json:"gender"`
+	RoleID             *uuid.UUID           `json:"roleID"`
+	Role               *RoleResource        `json:"role"`
+	Footsteps          []*FootstepResource  `json:"footsteps"`
+	Companies          []*CompanyResource   `json:"companies"`
 }
 
 func (m *ModelTransformer) OwnerToResource(owner *Owner) *OwnerResource {

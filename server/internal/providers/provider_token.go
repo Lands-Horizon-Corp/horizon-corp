@@ -12,9 +12,18 @@ import (
 	"go.uber.org/zap"
 )
 
+type UserStatus string
+
+const (
+	PendingStatus    UserStatus = "Pending"
+	VerifiedStatus   UserStatus = "Verified"
+	NotAllowedStatus UserStatus = "Not allowed"
+)
+
 type UserClaims struct {
-	ID          string `json:"id"`
-	AccountType string `json:"accountType"`
+	ID          string     `json:"id"`
+	AccountType string     `json:"accountType"`
+	UserStatus  UserStatus `json:"userStatus"`
 	jwt.StandardClaims
 }
 

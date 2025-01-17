@@ -9,14 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserStatus string
-
-const (
-	PendingStatus    UserStatus = "Pending"
-	VerifiedStatus   UserStatus = "Verified"
-	NotAllowedStatus UserStatus = "Not allowed"
-)
-
 type UserAccountType string
 
 const (
