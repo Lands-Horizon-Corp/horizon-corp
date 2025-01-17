@@ -59,7 +59,7 @@ export const useCurrentUser = ({
 export const useSignIn = ({
     onError,
     onSuccess,
-}: IOperationCallbacks<IUserData>) => {
+}: IOperationCallbacks<IUserData, string>) => {
     const queryClient = useQueryClient()
 
     return useMutation<IUserData, string, ISignInRequest>({
@@ -166,7 +166,7 @@ export const useChangePassword = ({
 export const useSignOut = ({
     onError,
     onSuccess,
-}: IOperationCallbacks<void>) => {
+}: IOperationCallbacks<void> | undefined = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string>({

@@ -1,10 +1,10 @@
 import { AxiosError } from 'axios'
 import { useQuery } from '@tanstack/react-query'
 
-import { withCatchAsync } from "@/utils"
+import { withCatchAsync } from '@/utils'
 import { UserData } from '@/horizon-corp/types'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import UserService from '@/horizon-corp/services/auth/UserService'
+import AuthService from '@/server/api-service/auth-service'
 
 const useFetchCurrentUser = (options?: {
     onUnauthorized?: () => void
@@ -21,7 +21,7 @@ const useFetchCurrentUser = (options?: {
             if (!currentUser) setAuthStatus('loading')
 
             const [error, response] = await withCatchAsync(
-                UserService.CurrentUser()
+                AuthService.currentUser()
             )
 
             if (error) {
@@ -42,7 +42,7 @@ const useFetchCurrentUser = (options?: {
                 throw error
             }
 
-            const userData = response.data
+            const userData = response
             setCurrentUser(userData)
             setAuthStatus('authorized')
             options?.onSuccess?.(userData)
