@@ -1,5 +1,4 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -29,9 +28,6 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 
 import { cn } from '@/lib/utils'
-import { withCatchAsync } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/services/auth/UserServicex'
 import { PhoneInput } from '@/components/contact-input/contact-input'
 import { signUpSchema } from '@/validations/form-validation/sign-up-schema'
 
