@@ -28,8 +28,8 @@ func NewAPIHandlerInvoke(
 	footstepController *controllers.FootstepController,
 	genderController *controllers.GenderController,
 	mediaController *controllers.MediaController,
-	memberApplicationController *controllers.MemberApplicationController,
 	memberController *controllers.MemberController,
+	memberProfileController *controllers.MemberProfileController,
 	ownerController *controllers.OwnerController,
 	profileController *controllers.ProfileController,
 	qrController *controllers.QRScannerController,
@@ -136,14 +136,7 @@ func NewAPIHandlerInvoke(
 			media.DELETE("/:id", mediaController.Destroy)
 			media.GET("/team", mediaController.Team)
 		}
-		memberApplication := v1.Group("/member-application")
-		{
-			memberApplication.GET("/", memberApplicationController.Index)
-			memberApplication.GET("/:id", memberApplicationController.Show)
-			memberApplication.POST("/", memberApplicationController.Store)
-			memberApplication.PUT("/:id", memberApplicationController.Update)
-			memberApplication.DELETE("/:id", memberApplicationController.Destroy)
-		}
+
 		member := v1.Group("/member")
 		{
 			member.GET("/", memberController.Index)
@@ -152,6 +145,15 @@ func NewAPIHandlerInvoke(
 			member.PUT("/:id", memberController.Update)
 			member.DELETE("/:id", memberController.Destroy)
 			member.GET("/forgot-password", memberController.ForgotPassword)
+		}
+
+		memberProfile := v1.Group("/member-profile")
+		{
+			memberProfile.GET("/", memberProfileController.Index)
+			memberProfile.GET("/:id", memberProfileController.Show)
+			memberProfile.POST("/", memberProfileController.Store)
+			memberProfile.PUT("/:id", memberProfileController.Update)
+			memberProfile.DELETE("/:id", memberProfileController.Destroy)
 		}
 
 		owner := v1.Group("/owner")

@@ -6,40 +6,40 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type MemberApplicationController struct {
+type MemberProfileController struct {
 	repository  *models.ModelRepository
 	footstep    *handlers.FootstepHandler
 	currentUser *handlers.CurrentUser
 }
 
-func NewMemberApplicationController(
+func NewMemberProfileController(
 	repository *models.ModelRepository,
 	footstep *handlers.FootstepHandler,
 	currentUser *handlers.CurrentUser,
-) *MemberApplicationController {
-	return &MemberApplicationController{
+) *MemberProfileController {
+	return &MemberProfileController{
 		repository:  repository,
 		footstep:    footstep,
 		currentUser: currentUser,
 	}
 }
 
-func (c *MemberApplicationController) Index(ctx *gin.Context) {
+func (c *MemberProfileController) Index(ctx *gin.Context) {
 
 }
 
-func (c *MemberApplicationController) Show(ctx *gin.Context) {
+func (c *MemberProfileController) Show(ctx *gin.Context) {
 
 }
 
-func (c *MemberApplicationController) Store(ctx *gin.Context) {
+func (c *MemberProfileController) Store(ctx *gin.Context) {
 
 }
 
-func (c *MemberApplicationController) Update(ctx *gin.Context) {
+func (c *MemberProfileController) Update(ctx *gin.Context) {
 
 }
 
-func (c *MemberApplicationController) Destroy(ctx *gin.Context) {
+func (c *MemberProfileController) Destroy(ctx *gin.Context) {
 
 }
