@@ -111,6 +111,10 @@ func NewGenericRepository[T any](db *gorm.DB) *GenericRepository[T] {
 	return &GenericRepository[T]{db: db}
 }
 
+func (r *GenericRepository[T]) WithTransaction(tx *gorm.DB) *GenericRepository[T] {
+	return &GenericRepository[T]{db: tx}
+}
+
 // GetByID fetches a record by ID with optional preloads
 func (r *GenericRepository[T]) GetByID(id string, preloads ...string) (*T, error) {
 	if _, err := uuid.Parse(id); err != nil {

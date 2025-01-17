@@ -29,7 +29,6 @@ func NewAdminController(
 //
 //	Admin: Can retrieve all admins if admin  status is verified
 //	Employee: not allowed
-//	Owner: not allowed
 //	Member: not allowed
 func (c *AdminController) Index(ctx *gin.Context) {
 

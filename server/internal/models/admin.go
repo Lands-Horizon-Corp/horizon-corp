@@ -164,33 +164,6 @@ func (m *ModelRepository) AdminSearch(input string, preloads ...string) (*Admin,
 func (m *ModelRepository) AdminCreate(admin *Admin, preloads ...string) (*Admin, error) {
 	repo := NewGenericRepository[Admin](m.db.Client)
 
-	// Hash the password before saving
-	newPassword, err := m.cryptoHelpers.HashPassword(admin.Password)
-	if err != nil {
-		return nil, err
-	}
-	admin.Password = newPassword
-
-	err = repo.SaveWithChildren(
-		admin,
-		func(tx *gorm.DB) error {
-			for _, footstep := range admin.Footsteps {
-				footstep.AdminID = &admin.ID
-				if err := tx.Save(footstep).Error; err != nil {
-					return err
-				}
-			}
-			return nil
-		},
-		nil,
-		func(admin *Admin) bool {
-			return admin.ID == uuid.Nil
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-
 	return repo.GetByID(admin.ID.String(), preloads...)
 }
 

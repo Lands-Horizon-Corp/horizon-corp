@@ -148,7 +148,7 @@ func (m *ModelRepository) MediaUpdate(media *Media, preloads ...string) (*Media,
 	repo := NewGenericRepository[Media](m.db.Client)
 	return repo.Update(media, preloads...)
 }
-func (m *ModelRepository) MediaUpdateByID(id string, column string, value interface{}, preloads ...string) (*Media, error) {
+func (m *ModelRepository) MediaUpdateByID(id string, column string, value Media, preloads ...string) (*Media, error) {
 	repo := NewGenericRepository[Media](m.db.Client)
 	return repo.UpdateByID(id, column, value, preloads...)
 }
