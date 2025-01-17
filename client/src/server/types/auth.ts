@@ -1,8 +1,8 @@
 import { IMediaRequest } from './media'
-import { IAccountType, IUserBase } from './common'
+import { TAccountType, IUserBase } from './common'
 
 export interface IUserData extends IUserBase {
-    accountType: IAccountType
+    accountType: TAccountType
 }
 
 export interface IChangePasswordRequest {
@@ -14,7 +14,7 @@ export interface IChangePasswordRequest {
 
 export interface IForgotPasswordRequest {
     key: string
-    accountType: string
+    accountType: TAccountType
     emailTemplate?: string
     contactTemplate?: string
 }
@@ -31,11 +31,11 @@ export interface ISignInRequest {
     email?: string
     username?: string
     password: string
-    accountType: IAccountType
+    accountType: TAccountType
 }
 
 export interface ISignUpRequest {
-    accountType: IAccountType
+    accountType: TAccountType
     username: string
     firstName: string
     lastName: string

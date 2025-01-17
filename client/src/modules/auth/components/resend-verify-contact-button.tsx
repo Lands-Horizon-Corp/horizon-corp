@@ -7,7 +7,7 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { cn } from '@/lib'
 import UseCooldown from '@/hooks/use-cooldown'
 import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/services/auth/UserService'
+import UserService from '@/horizon-corp/services/auth/UserServicex'
 
 interface Props {
     verifyMode: 'email' | 'mobile'

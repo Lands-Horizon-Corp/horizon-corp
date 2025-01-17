@@ -1,9 +1,9 @@
 import { IMediaResource } from './media'
 import { IGenderResource } from './gender'
 
-export type IAccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
+export type TAccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
 
-export type IAccountStatus = 'Pending' | 'Verified' | 'Not Allowed'
+export type TAccountStatus = 'Pending' | 'Verified' | 'Not Allowed'
 
 export interface IUserBase extends ITimeStamps {
     id: number

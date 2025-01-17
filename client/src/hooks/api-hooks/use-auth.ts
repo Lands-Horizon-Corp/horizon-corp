@@ -16,6 +16,7 @@ import {
     ISignUpRequest,
     IChangePasswordRequest,
     IForgotPasswordRequest,
+    TAccountType,
 } from '@/server/types'
 import { IOperationCallbacks } from './types'
 
@@ -116,8 +117,23 @@ export const useSignUp = ({
 export const useForgotPassword = ({
     onError,
     onSuccess,
-}: IOperationCallbacks<void>) => {
-    return useMutation<void, string, IForgotPasswordRequest>({
+}:
+    | IOperationCallbacks<
+          {
+              key: string
+              accountType: TAccountType
+          },
+          string
+      >
+    | undefined = {}) => {
+    return useMutation<
+        {
+            key: string
+            accountType: TAccountType
+        },
+        string,
+        IForgotPasswordRequest
+    >({
         mutationKey: ['auth', 'forgot-password'],
         mutationFn: async (data) => {
             const [error] = await withCatchAsync(
@@ -132,7 +148,9 @@ export const useForgotPassword = ({
             }
 
             toast.success('Password reset link sent')
-            onSuccess?.()
+            onSuccess?.(data)
+
+            return data
         },
     })
 }
