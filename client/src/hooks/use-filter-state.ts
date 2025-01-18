@@ -3,18 +3,18 @@ import { useMemo, useState } from 'react'
 import {
     TFilterLogic,
     TFinalFilter,
+    IFilterState,
     TSearchFilter,
     TFilterObject,
-    IDataTableFilterState,
     TFilterPayload,
-} from '../data-table-filters/data-table-filter-context'
+} from '@/contexts/filter-context'
 import useDebounce from '@/hooks/use-debounce'
 
-const useDatableFilterState = (options?: {
+const useFilterState = (options?: {
     onFilterChange?: () => void
     debounceFinalFilterMs?: number
     defaultFilter?: TFilterObject
-}): IDataTableFilterState => {
+}): IFilterState => {
     const [filters, setFilters] = useState<TFilterObject>(
         options?.defaultFilter ?? {}
     )
@@ -120,4 +120,4 @@ const useDatableFilterState = (options?: {
     }
 }
 
-export default useDatableFilterState
+export default useFilterState

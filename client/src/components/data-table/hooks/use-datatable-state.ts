@@ -4,12 +4,13 @@ import {
     PaginationState,
     RowSelectionState,
 } from '@tanstack/react-table'
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 
 import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
+import { useSortingState } from '@/hooks/use-sorting-state'
 
 export type TDataTableDisplayType = 'Default' | 'Full'
 
@@ -34,8 +35,6 @@ const useDataTableState = <TData extends { id: string | number }>(
         rowSelection: {},
         selectedRowsData: new Map(),
     })
-
-    const [sorting, setSorting] = useState<SortingState>([])
     const [columnOrder, setColumnOrder] = useState<string[]>(
         props?.columnOrder ?? []
     )
@@ -45,6 +44,33 @@ const useDataTableState = <TData extends { id: string | number }>(
         pageIndex: props?.pageIndex ?? PAGINATION_INITIAL_INDEX,
         pageSize: props?.pageSize ?? PAGINATION_INITIAL_PAGE_SIZE,
     })
+    const { sortingState, setSortingState } = useSortingState()
+
+    const sorting: SortingState = useMemo(() => {
+        return sortingState.map((sortItem) => ({
+            id: sortItem.field,
+            desc: sortItem.order === 'desc',
+        }))
+    }, [sortingState])
+
+    const setSorting: OnChangeFn<SortingState> = (updaterOrValue) => {
+        setSortingState((prevSortingState) => {
+            const newSortingState =
+                typeof updaterOrValue === 'function'
+                    ? updaterOrValue(
+                          prevSortingState.map((sortItem) => ({
+                              id: sortItem.field,
+                              desc: sortItem.order === 'desc',
+                          }))
+                      )
+                    : updaterOrValue
+
+            return newSortingState.map((sortItem) => ({
+                field: sortItem.id,
+                order: sortItem.desc ? 'desc' : 'asc',
+            }))
+        })
+    }
 
     const getRowIdFn = useCallback((row: TData) => `${row.id}`, [])
 
@@ -79,6 +105,7 @@ const useDataTableState = <TData extends { id: string | number }>(
     }
 
     return {
+        sortingState,
         getRowIdFn,
         sorting,
         setSorting,

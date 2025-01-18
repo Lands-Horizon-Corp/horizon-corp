@@ -1,16 +1,13 @@
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import ActionTooltip from '@/components/action-tooltip'
 import { MagnifyingGlassIcon, XIcon } from '@/components/icons'
 import { DebouncedInput } from '@/components/ui/debounced-input'
 
-import {
-    TFilterModes,
-    TSearchFilter,
-    useDataTableFilter,
-} from './data-table-filter-context'
+
 import { KeysOfOrString } from '@/types'
-import ActionTooltip from '@/components/action-tooltip'
+import { TFilterModes, TSearchFilter, useFilter } from '@/contexts/filter-context'
 
 export interface IGlobalSearchTargets<T> {
     field: (string & {}) | keyof T
@@ -31,7 +28,7 @@ const DataTableGlobalSearch = <T,>({
     ...otherProps
 }: IGlobalSearchProps<T>) => {
     const [visible, setVisible] = useState(false)
-    const { filters, setFilter, bulkSetFilter } = useDataTableFilter<
+    const { filters, setFilter, bulkSetFilter } = useFilter<
         unknown,
         KeysOfOrString<T>
     >()
