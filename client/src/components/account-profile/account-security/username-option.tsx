@@ -23,12 +23,12 @@ import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import { userNameSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChangeUsernameRequest, UserData } from '@/horizon-corp/types'
+import { IChangeUsernameRequest, IUserData } from '@/horizon-corp/types'
 import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 
 interface Props {
     username: string
-    onSave: (newUserData: UserData) => void
+    onSave: (newUserData: IUserData) => void
 }
 
 const userNameOptionSchema = z.object({
@@ -56,9 +56,9 @@ const UsernameOption = ({ username, onSave }: Props) => {
     }, [username, form])
 
     const { isPending, mutate: saveUsername } = useMutation<
-        UserData,
+        IUserData,
         string,
-        ChangeUsernameRequest
+        IChangeUsernameRequest
     >({
         mutationKey: ['account-security-username'],
         mutationFn: async (data) => {

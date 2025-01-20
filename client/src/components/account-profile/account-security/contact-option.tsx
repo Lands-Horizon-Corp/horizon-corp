@@ -31,12 +31,12 @@ import { serverRequestErrExtractor } from '@/helpers'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { contactNumberSchema } from '@/validations/common'
 import ProfileService from '@/horizon-corp/services/auth/ProfileService'
-import { ChangeContactNumberRequest, UserData } from '@/horizon-corp/types'
+import { ChangeContactNumberRequest, IUserData } from '@/server/types'
 
 interface Props {
     contact: string
     verified: boolean
-    onSave: (newUserData: UserData) => void
+    onSave: (newUserData: IUserData) => void
 }
 
 const contactOptionSchema = z.object({

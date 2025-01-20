@@ -9,13 +9,13 @@ import {
     ShieldIcon,
     TransactionListIcon,
 } from '@/components/icons'
-import { AccountType, UserData } from '@/horizon-corp/types'
+import { IAccountType, IUserData } from '@/server/types'
 
 const PATHS: {
     hash: string
     name: string
     Icon: IconType
-    visibleOn: AccountType[] | 'all'
+    visibleOn: IAccountType[] | 'all'
 }[] = [
     {
         hash: 'account-settings',
@@ -41,7 +41,7 @@ const PATHS: {
 const AccountProfileNavigation = ({
     currentUser,
 }: {
-    currentUser: UserData
+    currentUser: IUserData
 }) => {
     const router = useRouter()
 

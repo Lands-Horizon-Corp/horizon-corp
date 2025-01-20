@@ -11,7 +11,7 @@ import {
 } from '@/components/icons'
 
 import { cn } from '@/lib'
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server/types'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import { IBaseComp, TAccountType, TPageType } from '@/types'
 import { isUserHasUnverified, isUserUnverified } from '@/helpers'
@@ -113,7 +113,7 @@ const AccountInfoContent = ({
 }: {
     infoTitle: string
     infoDescription: string
-    currentUser: UserData
+    currentUser: IUserData
 }) => {
     return (
         <>

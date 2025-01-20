@@ -30,13 +30,13 @@ import { withCatchAsync } from '@/utils'
 import { emailSchema } from '@/validations/common'
 import { serverRequestErrExtractor } from '@/helpers'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChangeEmailRequest, UserData } from '@/horizon-corp/types'
+import { IChangeEmailRequest, IUserData } from '@/server/types'
 import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 
 interface Props {
     email: string
     verified: boolean
-    onSave: (newUserData: UserData) => void
+    onSave: (newUserData: IUserData) => void
 }
 
 const emailOptionSchema = z.object({
@@ -46,9 +46,9 @@ const emailOptionSchema = z.object({
 const EmailOption = ({ email, verified, onSave }: Props) => {
     const [pwdModalState, setPwdModalState] = useState(false)
     const { isPending, mutate: saveEmail } = useMutation<
-        UserData,
+        IUserData,
         string,
-        ChangeEmailRequest
+        IChangeEmailRequest
     >({
         mutationKey: ['account-security-email'],
         mutationFn: async (data) => {

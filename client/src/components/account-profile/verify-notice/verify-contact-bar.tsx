@@ -21,9 +21,9 @@ import {
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib'
+import { IUserData } from '@/server'
 import { otpSchema } from '@/validations'
 import UseCooldown from '@/hooks/use-cooldown'
-import { UserData } from '@/horizon-corp/types'
 import { serverRequestErrExtractor } from '@/helpers'
 import UserService from '@/horizon-corp/services/auth/UserServicex'
 
@@ -32,7 +32,7 @@ type TVerifyMode = 'email' | 'mobile'
 interface Props {
     autoFocus?: boolean
     verifyMode: TVerifyMode
-    onSuccess?: (newUserData: UserData) => void
+    onSuccess?: (newUserData: IUserData) => void
 }
 
 const VerifyContactBar = ({
@@ -49,7 +49,7 @@ const VerifyContactBar = ({
     })
 
     const { mutate: handleVerify, isPending } = useMutation<
-        UserData,
+        IUserData,
         string,
         z.infer<typeof otpSchema>
     >({

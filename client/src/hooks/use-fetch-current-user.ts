@@ -2,20 +2,20 @@ import { AxiosError } from 'axios'
 import { useQuery } from '@tanstack/react-query'
 
 import { withCatchAsync } from '@/utils'
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server/types'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import AuthService from '@/server/api-service/auth-service'
 
 const useFetchCurrentUser = (options?: {
     onUnauthorized?: () => void
     onError?: (error: unknown) => void
-    onSuccess?: (userData: UserData) => void
+    onSuccess?: (userData: IUserData) => void
     retry?: number
     refetchOnWindowFocus?: boolean
 }) => {
     const { currentUser, setAuthStatus, setCurrentUser } = useUserAuthStore()
 
-    const query = useQuery<UserData | null>({
+    const query = useQuery<IUserData | null>({
         queryKey: ['current-user'],
         queryFn: async () => {
             if (!currentUser) setAuthStatus('loading')

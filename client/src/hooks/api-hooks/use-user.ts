@@ -4,17 +4,17 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { withCatchAsync } from '@/utils'
 import { IOperationCallbacks } from './types'
 import { serverRequestErrExtractor } from '@/helpers'
-import { MediaResource, UserData } from '@/horizon-corp/types'
+import { IMediaResource, IUserData } from '@/server/types'
 import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 
 export const useUserUpdateProfilePicture = ({
     onError,
     onSuccess,
     invalidateCurrentUser,
-}: { invalidateCurrentUser?: boolean } & IOperationCallbacks<UserData>) => {
+}: { invalidateCurrentUser?: boolean } & IOperationCallbacks<IUserData>) => {
     const queryClient = useQueryClient()
 
-    return useMutation<UserData, string, MediaResource>({
+    return useMutation<IUserData, string, IMediaResource>({
         mutationKey: ['user', 'profile'],
         mutationFn: async (data) => {
             const [error, response] = await withCatchAsync(

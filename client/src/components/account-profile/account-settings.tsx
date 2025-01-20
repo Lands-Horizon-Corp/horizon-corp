@@ -31,7 +31,7 @@ import {
 import { cn } from '@/lib'
 import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { AccountSettingRequest, UserData } from '@/horizon-corp/types'
+import { IAccountSettingRequest, IUserData } from '@/server/types'
 import ProfileService from '@/horizon-corp/services/auth/ProfileService'
 
 const AccountSettingsFormSchema = z.object({
@@ -48,8 +48,8 @@ const AccountSettingsFormSchema = z.object({
 type TAccountSettings = z.infer<typeof AccountSettingsFormSchema>
 
 interface Props {
-    currentUser: UserData
-    onSave: (newUserData: UserData) => void
+    currentUser: IUserData
+    onSave: (newUserData: IUserData) => void
 }
 
 const AccountSettings = ({ currentUser, onSave }: Props) => {
@@ -82,7 +82,7 @@ const AccountSettings = ({ currentUser, onSave }: Props) => {
         error,
         isPending,
         mutate: updateAccountSettings,
-    } = useMutation<UserData, string, AccountSettingRequest>({
+    } = useMutation<IUserData, string, AccountSettingRequest>({
         mutationKey: ['account-settings'],
         mutationFn: async (data) => {
             const [error, response] = await withCatchAsync(

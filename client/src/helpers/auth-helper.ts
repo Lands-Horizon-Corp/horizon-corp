@@ -1,6 +1,6 @@
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server/types'
 
-export const getUsersAccountTypeRedirectPage = (currentUser: UserData) => {
+export const getUsersAccountTypeRedirectPage = (currentUser: IUserData) => {
     const { accountType } = currentUser
     switch (accountType) {
         case 'Admin':
@@ -16,11 +16,11 @@ export const getUsersAccountTypeRedirectPage = (currentUser: UserData) => {
     }
 }
 
-export const isUserUnverified = (userData: UserData) => {
+export const isUserUnverified = (userData: IUserData) => {
     return userData.status !== 'Verified'
 }
 
-export const isUserHasUnverified = (userData: UserData) => {
+export const isUserHasUnverified = (userData: IUserData) => {
     return (
         userData.status === 'Pending' ||
         !userData.isEmailVerified ||
