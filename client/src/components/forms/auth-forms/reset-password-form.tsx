@@ -1,7 +1,5 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
@@ -14,16 +12,12 @@ import {
 import { KeyIcon } from '@/components/icons'
 import { Button } from '@/components/ui/button'
 import PasswordInput from '@/components/ui/password-input'
+import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib/utils'
-import { withCatchAsync } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/services/auth/UserServicex'
-
 import { IAuthForm } from '@/types/auth/form-interface'
-import { ChangePasswordRequest } from '@/horizon-corp/types'
-import FormErrorMessage from '@/components/ui/form-error-message'
+import { useChangePassword } from '@/hooks/api-hooks/use-auth'
 import { ResetPasswordSchema } from '@/validations/form-validation/reset-password-schema'
 
 type TResetPasswordForm = z.infer<typeof ResetPasswordSchema>
@@ -51,24 +45,9 @@ const ResetPasswordForm = ({
         mutate: changePassword,
         isPending,
         error,
-    } = useMutation<void | true, string, ChangePasswordRequest>({
-        mutationKey: ['change-password', resetId],
-        mutationFn: async (data) => {
-            const [error] = await withCatchAsync(
-                UserService.ChangePassword(data)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                onError?.(errorMessage)
-                throw errorMessage
-            }
-
-            onSuccess?.()
-
-            return true
-        },
+    } = useChangePassword({
+        onError,
+        onSuccess,
     })
 
     const firstError = Object.values(form.formState.errors)[0]?.message

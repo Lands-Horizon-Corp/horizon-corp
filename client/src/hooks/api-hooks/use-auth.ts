@@ -159,7 +159,7 @@ export const useForgotPassword = ({
 export const useChangePassword = ({
     onError,
     onSuccess,
-}: IOperationCallbacks<void>) => {
+}: undefined | IOperationCallbacks<void> = {}) => {
     return useMutation<void, string, IChangePasswordRequest>({
         mutationKey: ['auth', 'change-password'],
         mutationFn: async (data) => {
@@ -207,5 +207,31 @@ export const useSignOut = ({
                 queryKey: ['auth', 'current-user'],
             })
         },
+    })
+}
+
+export const useCheckResetId = ({
+    resetId,
+    onError,
+    onSuccess,
+}: { resetId: string } & IOperationCallbacks<boolean>) => {
+    return useQuery<null | boolean, string>({
+        queryKey: ['password-reset-link', resetId],
+        queryFn: async () => {
+            const [error] = await withCatchAsync(
+                AuthService.checkResetLink(resetId)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.message(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            onSuccess?.(true)
+            return true
+        },
+        initialData: null,
     })
 }
