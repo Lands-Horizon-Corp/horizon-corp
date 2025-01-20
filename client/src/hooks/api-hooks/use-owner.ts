@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { OwnerService } from '@/horizon-corp/services'
+import OwnerService from '@/server/api-service/owner-service'
 
 import {
     IApiPreloads,
