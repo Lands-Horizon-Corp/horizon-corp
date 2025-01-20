@@ -2,7 +2,7 @@ export type TNotificationPriority = 'low' | 'medium' | 'high'
 
 export type TNotification = 'success' | 'error' | 'warning' | 'info'
 
-export interface INotificationsResource {
+export interface INotificationResource {
     id: number
     type: TNotification
     message: string

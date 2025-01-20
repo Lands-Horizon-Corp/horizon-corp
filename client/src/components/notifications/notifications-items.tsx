@@ -1,24 +1,19 @@
 import { useState } from 'react'
 
-import { NotificationsResource } from '@/horizon-corp/types'
-
-import { cn } from '@/lib'
-import { toReadableDate } from '@/utils'
-
-import NotificationTypeComponent from '../notification-type'
-import { Button } from '../ui/button'
-
-import { CheckIcon, OptionsIcon, TrashIcon } from '../icons'
-
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover'
+import { Button } from '../ui/button'
+import { CheckIcon, OptionsIcon, TrashIcon } from '../icons'
+
+import { INotificationResource } from '@/server/types'
+import NotificationTypeComponent from '../notification-type'
 
 interface INotificationsItemsProps {
     className?: string
-    data: NotificationsResource
+    data: INotificationResource
     handleDeleteNotification: (id: number) => void
     handleMarkItemAsRead: (id: number) => void
 }

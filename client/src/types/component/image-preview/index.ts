@@ -1,6 +1,7 @@
-import { MediaResource } from '@/horizon-corp/types'
 import { MutableRefObject } from 'react'
 import * as ImagePreviewPrimitive from '@radix-ui/react-dialog'
+
+import { IMediaResource } from '@/server/types'
 
 export interface ImagePreviewProps
     extends React.ComponentPropsWithoutRef<
@@ -9,12 +10,12 @@ export interface ImagePreviewProps
     hideCloseButton?: boolean
     closeButtonClassName?: string
     overlayClassName?: string
-    Images: MediaResource[]
+    Images: IMediaResource[]
     scaleInterval?: number
 }
 
 export interface ImageContainerProps extends Partial<DownloadProps> {
-    media: MediaResource
+    media: IMediaResource
     scale: number
     rotateDegree: number
     flipScale: string
@@ -33,7 +34,7 @@ export interface ImagePreviewActionProps extends Partial<DownloadProps> {
 }
 
 export interface ImagePreviewPanelProps {
-    Images: MediaResource[]
+    Images: IMediaResource[]
     focusIndex: number
     scrollToIndex: (index: number) => void
 }

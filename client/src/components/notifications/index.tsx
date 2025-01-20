@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
-import { NotificationsResource } from '@/horizon-corp/types'
 import { cn } from '@/lib'
+import { INotificationResource } from '@/server/types'
 
 import { Button } from '../ui/button'
 import NotificationsItems from './notifications-items'
@@ -100,7 +100,7 @@ const NotificationsPopover = ({
 interface NotificationProps {
     userId: number
     role: Role
-    // fetchNotifications: (userId: number, role: Role) => Promise<NotificationsResource[]>;
+    // fetchNotifications: (userId: number, role: Role) => Promise<INotificationResource[]>;
 }
 
 const Notification = ({}: NotificationProps) => {
@@ -110,7 +110,7 @@ const Notification = ({}: NotificationProps) => {
 
     // const { data } = useNotifications({ userId, role })
 
-    const [notifications, setNotifications] = useState<NotificationsResource[]>(
+    const [notifications, setNotifications] = useState<INotificationResource[]>(
         [
             {
                 id: 101,

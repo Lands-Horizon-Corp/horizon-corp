@@ -3,9 +3,10 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { MemberPaginatedResource } from '@/horizon-corp/types'
+import MemberService from '@/server/api-service/member-service'
+
+import { IMemberPaginatedResource } from '@/server/types'
 import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
-import MemberService from '@/horizon-corp/services/member/member-service'
 
 export const useDeleteMember = ({
     onSuccess,
@@ -46,7 +47,7 @@ export const useFilteredPaginatedMembers = ({
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps = {}) => {
-    return useQuery<MemberPaginatedResource, string>({
+    return useQuery<IMemberPaginatedResource, string>({
         queryKey: ['member', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(

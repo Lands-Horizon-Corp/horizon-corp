@@ -8,9 +8,9 @@ import DataTableColumnHeader from "@/components/data-table/data-table-column-hea
 import ColumnActions from "@/components/data-table/data-table-column-header/column-actions"
 import { IGlobalSearchTargets } from "@/components/data-table/data-table-filters/data-table-global-search"
 
-import { FeedbackResource } from "@/horizon-corp/types"
+import { IFeedbackResource } from "@/server/types"
 
-export const FeedbackGlobalSearchTargets: IGlobalSearchTargets<FeedbackResource>[] =
+export const FeedbackGlobalSearchTargets: IGlobalSearchTargets<IFeedbackResource>[] =
 [
     { field: 'email', displayText: 'email' },
     { field: 'feedbackType', displayText: 'feedbackType' },
@@ -18,14 +18,14 @@ export const FeedbackGlobalSearchTargets: IGlobalSearchTargets<FeedbackResource>
 ]
 
 export interface IFeedBackTableActionComponentProp {
-    row: Row<FeedbackResource>
+    row: Row<IFeedbackResource>
 }
 
 export interface IFeedbackTableColumnProps {
     actionComponent?: (props: IFeedBackTableActionComponentProp) => ReactNode 
 }
 
-const AdminCompaniesFeedbackTableColumns = (opts: IFeedbackTableColumnProps): ColumnDef<FeedbackResource>[] => {
+const AdminCompaniesFeedbackTableColumns = (opts: IFeedbackTableColumnProps): ColumnDef<IFeedbackResource>[] => {
       return [
         {
             id: 'select',

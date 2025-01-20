@@ -1,7 +1,8 @@
+import { useMemo } from 'react'
 import {
+    useReactTable,
     getCoreRowModel,
     getSortedRowModel,
-    useReactTable,
 } from '@tanstack/react-table'
 
 import { cn } from '@/lib'
@@ -21,13 +22,12 @@ import useDataTableState from '@/components/data-table/hooks/use-datatable-state
 import useDatableFilterState from '@/hooks/use-filter-state'
 import FilterContext from '@/contexts/filter-context/filter-context'
 
-import { FeedbackResource } from '@/horizon-corp/types'
 import { TableProps } from '../types'
+import { IFeedbackResource } from '@/server/types'
 
-import { useMemo } from 'react'
-import { FeedbackService } from '@/horizon-corp/services'
+import FeedbackService from '@/server/api-service/feedback-service'
 
-const data: FeedbackResource[] = [
+const data: IFeedbackResource[] = [
     {
         id: 1,
         email: 'user1@example.com',
@@ -71,10 +71,10 @@ const data: FeedbackResource[] = [
 ]
 
 export interface FeedbackTableProps
-    extends TableProps<FeedbackResource>,
+    extends TableProps<IFeedbackResource>,
         IFeedbackTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<FeedbackResource>,
+        IDataTableToolbarProps<IFeedbackResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -115,7 +115,7 @@ const FeedBackTable = ({
         createHandleRowSelectionChange,
         columnVisibility,
         setColumnVisibility,
-    } = useDataTableState<FeedbackResource>({
+    } = useDataTableState<IFeedbackResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })

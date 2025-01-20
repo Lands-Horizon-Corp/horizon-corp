@@ -3,10 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 
 import { toBase64, withCatchAsync } from '@/utils';
 import { serverRequestErrExtractor } from '@/helpers';
-import { FootstepService } from '@/horizon-corp/services';
+import  FootstepService  from '@/server/api-service/footstep-service';
 
 import { IFilterPaginatedHookProps } from './types';
-import { FootstepPaginatedResource } from '@/horizon-corp/types';
+import { IFootstepPaginatedResource } from '@/server/types';
 
 export const useFilteredPaginatedFootsteps = ({
     sort,
@@ -14,7 +14,7 @@ export const useFilteredPaginatedFootsteps = ({
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps = {}) => {
-    return useQuery<FootstepPaginatedResource, string>({
+    return useQuery<IFootstepPaginatedResource, string>({
         queryKey: ['footstep', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(

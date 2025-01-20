@@ -1,6 +1,6 @@
 import { IUserBase } from "./common"
-import { IFootstepResource } from "./footstep"
 import { IRolesResource } from "./role"
+import { IFootstepResource } from "./footstep"
 
 export interface IAdminResource extends IUserBase {
     accountType: string

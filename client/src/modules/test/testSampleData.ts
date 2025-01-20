@@ -1,6 +1,6 @@
-import { MediaResource } from '@/horizon-corp/types'
+import { IMediaResource } from '@/server/types'
 
-export const sampleMediaResourceList: MediaResource[] = [
+export const sampleMediaResourceList: IMediaResource[] = [
     {
         id: 2,
         fileName: 'sample-image.png',

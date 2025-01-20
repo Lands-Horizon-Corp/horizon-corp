@@ -1,4 +1,4 @@
-import UseServer from '../../request/server'
+import APIService from "./api-service"
 
 export default class Connection {
     private static readonly BASE_ENDPOINT = '/'
@@ -9,7 +9,7 @@ export default class Connection {
      * @returns {Promise<boolean>}
      */
     public static async test(): Promise<boolean> {
-        const response = await UseServer.get(Connection.BASE_ENDPOINT)
+        const response = await APIService.get(Connection.BASE_ENDPOINT)
         return response.status === 200
     }
 }

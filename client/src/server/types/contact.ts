@@ -1,4 +1,4 @@
-export interface IContactsResource {
+export interface IContactResource {
     id: number
     first_name: string
     last_name: string
@@ -8,7 +8,7 @@ export interface IContactsResource {
     updated_at: string
 }
 
-export interface IContactsRequest {
+export interface IContactRequest {
     firstName: string
     lastName: string
     email: string

@@ -1,5 +1,5 @@
-import { isObjectEmpty } from '@/utils'
 import { AxiosError } from 'axios'
+import { isObjectEmpty } from '@/utils'
 
 export const axiosErrorMessageExtractor = (
     error: AxiosError<{ message?: string; error?: string }>

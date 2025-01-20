@@ -7,8 +7,8 @@ import {
     ICompanyResource,
     ICompanyPaginatedResource,
 } from '@/server/types'
-import { downloadFile } from '@/horizon-corp/helpers'
 import APIService from './api-service'
+import { downloadFile } from '@/server/helpers'
 
 /**
  * Service class to handle CRUD operations for companies.

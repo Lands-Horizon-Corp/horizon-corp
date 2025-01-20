@@ -1,11 +1,11 @@
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
+import { TAccountType } from '@/server/types'
 import UseCooldown from '@/hooks/use-cooldown'
-import { AccountType } from '@/horizon-corp/types'
 import { useForgotPassword } from '@/hooks/api-hooks/use-auth'
 
-type TSentTo = { key: string; accountType: AccountType }
+type TSentTo = { key: string; accountType: TAccountType }
 
 interface Props {
     duration: number

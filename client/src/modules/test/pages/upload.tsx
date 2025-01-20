@@ -6,14 +6,14 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 
-import { MediaResource } from '@/horizon-corp/types'
-import { MediaService } from '@/horizon-corp/services/common'
+import { IMediaResource } from '@/server/types'
+import MediaService from '@/server/api-service/media-service'
 
 const UploadPage = () => {
     const [files, setFiles] = useState<File[]>([])
     const [loading, setLoading] = useState(false)
     const [progress, setProgress] = useState<number[]>([])
-    const [medias, setMedias] = useState<MediaResource[]>([])
+    const [medias, setMedias] = useState<IMediaResource[]>([])
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -69,7 +69,7 @@ const UploadPage = () => {
         )
     }
 
-    const renderMedia = (media: MediaResource) => {
+    const renderMedia = (media: IMediaResource) => {
         const { url, fileType, fileName } = media
 
         if (fileType.startsWith('image')) {

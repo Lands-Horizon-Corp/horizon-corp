@@ -1,10 +1,11 @@
 import React from 'react'
 import { CheckIcon, ErrorIcon, WarningIcon } from '../icons'
-import { NotificationType } from '@/horizon-corp/types'
+
 import { cn } from '@/lib'
+import { TNotification } from '@/server/types'
 
 interface NotificationTypeProps {
-    type: NotificationType
+    type: TNotification 
     message?: string
     icon?: React.ReactNode
     IconClassName?: string
@@ -19,7 +20,7 @@ const NotificationTypeComponent = ({
     className,
 }: NotificationTypeProps) => {
     // Default icons for each notification type
-    const defaultIcons: Record<NotificationType, React.ReactNode> = {
+    const defaultIcons: Record<TNotification, React.ReactNode> = {
         success: (
             <span className="text-primary">
                 <CheckIcon />

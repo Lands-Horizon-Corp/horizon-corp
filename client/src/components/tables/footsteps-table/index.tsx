@@ -19,17 +19,17 @@ import footstepColumns, {
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
-import { FootstepResource } from '@/horizon-corp/types'
-import { FootstepService } from '@/horizon-corp/services'
+import { IFootstepResource } from '@/server/types'
 import useDatableFilterState from '@/hooks/use-filter-state'
+import FootstepService from '@/server/api-service/footstep-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import { useFilteredPaginatedFootsteps } from '@/hooks/api-hooks/use-footstep'
 
 export interface FootstepTableProps
-    extends TableProps<FootstepResource>,
+    extends TableProps<IFootstepResource>,
         IFootstepTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<FootstepResource>,
+        IDataTableToolbarProps<IFootstepResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -70,7 +70,7 @@ const FootstepTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<FootstepResource>({
+    } = useDataTableState<IFootstepResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })

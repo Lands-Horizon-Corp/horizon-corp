@@ -1,6 +1,6 @@
 import { IPaginatedResult } from './paginated-result'
 
-export interface IGendersRequest {
+export interface IGenderRequest {
     name: string
     description?: string
 }

@@ -10,9 +10,9 @@ import ColumnActions from '@/components/data-table/data-table-column-header/colu
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils/date-utils'
-import { FootstepResource, IUserBase } from '@/horizon-corp/types'
+import { IFootstepResource, IUserBase } from '@/server/types'
 
-export const footstepGlobalSearchTargets: IGlobalSearchTargets<FootstepResource>[] =
+export const footstepGlobalSearchTargets: IGlobalSearchTargets<IFootstepResource>[] =
     [
         { field: 'description', displayText: 'Description' },
         { field: 'activity', displayText: 'Activity' },
@@ -24,7 +24,7 @@ export const footstepGlobalSearchTargets: IGlobalSearchTargets<FootstepResource>
     ]
 
 export interface IFootstepTableActionComponentProp {
-    row: Row<FootstepResource>
+    row: Row<IFootstepResource>
 }
 
 export interface IFootstepTableColumnProps {
@@ -33,7 +33,7 @@ export interface IFootstepTableColumnProps {
 
 const footstepTableColumns = (
     opts?: IFootstepTableColumnProps
-): ColumnDef<FootstepResource>[] => {
+): ColumnDef<IFootstepResource>[] => {
     const displayUserMediaAndName = (user? : IUserBase) => {
         if (!user) {
             return <span className="italic text-foreground/40">No data</span>
@@ -197,7 +197,7 @@ const footstepTableColumns = (
                     title="Date Created"
                 >
                     <ColumnActions {...props}>
-                        <DateFilter<FootstepResource>
+                        <DateFilter<IFootstepResource>
                             displayText="Date Created"
                             field="createdAt"
                         />
