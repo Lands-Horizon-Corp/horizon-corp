@@ -116,9 +116,9 @@ export default class AuthService extends APIService {
     }
 
     // POST - /auth/skip-verification
-    public static async skipVerification(): Promise<AxiosResponse<IUserData>> {
+    public static async skipVerification(): Promise<IUserData> {
         const endpoint = `${AuthService.BASE_ENDPOINT}/skip-verification`
-        return await AuthService.post<void, IUserData>(endpoint)
+        return (await AuthService.post<void, IUserData>(endpoint)).data
     }
 
     // POST - /auth/new-password

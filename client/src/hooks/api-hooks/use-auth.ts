@@ -235,3 +235,99 @@ export const useCheckResetId = ({
         initialData: null,
     })
 }
+
+export const useVerify = ({
+    verifyMode,
+    onSuccess,
+    onError,
+}: { verifyMode: 'email' | 'mobile' } & IOperationCallbacks<
+    IUserData,
+    string
+>) => {
+    return useMutation<IUserData, string, { otp: string }>({
+        mutationKey: ['verify', verifyMode],
+        mutationFn: async (data) => {
+            try {
+                if (verifyMode === 'email') {
+                    const response = await AuthService.verifyEmail(data)
+                    toast.success('Email verified')
+                    onSuccess?.(response.data)
+                    return response.data
+                }
+
+                if (verifyMode === 'mobile') {
+                    const response = await AuthService.verifyContactNumber(data)
+                    toast.success('Contact verified')
+                    onSuccess?.(response.data)
+                    return response.data
+                }
+
+                throw 'Unknown verify mode'
+            } catch (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+        },
+    })
+}
+
+export const useSendUserContactOTPVerification = ({
+    verifyMode,
+    onSuccess,
+    onError,
+}: { verifyMode: 'email' | 'mobile' } & IOperationCallbacks<void, string>) => {
+    return useMutation<void, string>({
+        mutationKey: ['auth', 'send-contact-verification', verifyMode],
+        mutationFn: async () => {
+            try {
+                if (verifyMode === 'email') {
+                    await AuthService.sendEmailVerification()
+                    toast.success('OTP Resent to your email')
+                    onSuccess?.()
+                    return
+                }
+
+                if (verifyMode === 'mobile') {
+                    await AuthService.sendContactVerification()
+                    toast.success('OTP Resent to your mobile')
+                    onSuccess?.()
+                    return
+                }
+
+                throw 'Unkown verify mode'
+            } catch (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+        },
+    })
+}
+
+export const useSkipUserContactVerification = ({
+    onSuccess,
+    onError,
+}: undefined | IOperationCallbacks<IUserData, string> = {}) => {
+    return useMutation<IUserData, string>({
+        mutationKey: ['auth', 'skip-verify'],
+        mutationFn: async () => {
+            const [error, response] = await withCatchAsync(
+                AuthService.skipVerification()
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            onSuccess?.(response)
+
+            return response
+        },
+    })
+}

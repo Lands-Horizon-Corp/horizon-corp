@@ -1,13 +1,9 @@
-import { toast } from 'sonner'
-import { useMutation } from '@tanstack/react-query'
-
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib'
 import UseCooldown from '@/hooks/use-cooldown'
-import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/services/auth/UserServicex'
+import { useSendUserContactOTPVerification } from '@/hooks/api-hooks/use-auth'
 
 interface Props {
     verifyMode: 'email' | 'mobile'
@@ -26,30 +22,13 @@ const ResendVerifyContactButton = ({
     })
 
     const { mutate: resendOtpVerification, isPending: isResending } =
-        useMutation<void, string>({
-            mutationKey: ['verify-resend', verifyMode],
-            mutationFn: async () => {
-                try {
-                    if (verifyMode === 'email') {
-                        await UserService.SendEmailVerification()
-                        startCooldown()
-                        return
-                    }
-
-                    if (verifyMode === 'mobile') {
-                        await UserService.SendContactVerification()
-                        startCooldown()
-                        return
-                    }
-
-                    throw 'Unkown verify mode'
-                } catch (error) {
-                    const errorMessage = serverRequestErrExtractor({ error })
-                    toast.error(errorMessage)
-                    throw errorMessage
-                }
+        useSendUserContactOTPVerification({
+            verifyMode,
+            onSuccess: () => {
+                startCooldown()
             },
         })
+
     return (
         <Button
             size="sm"

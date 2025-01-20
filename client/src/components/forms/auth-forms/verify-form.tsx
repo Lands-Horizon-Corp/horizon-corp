@@ -1,39 +1,36 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
 
 import {
     Form,
-    FormControl,
-    FormField,
     FormItem,
+    FormField,
+    FormControl,
     FormMessage,
 } from '@/components/ui/form'
 import {
     InputOTP,
+    InputOTPSlot,
     InputOTPGroup,
     InputOTPSeparator,
-    InputOTPSlot,
 } from '@/components/ui/input-otp'
 import { Button } from '@/components/ui/button'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import ResendVerifyContactButton from '../../../modules/auth/components/resend-verify-contact-button'
 
 import { cn } from '@/lib/utils'
 import { otpSchema } from '@/validations'
-import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/services/auth/UserServicex'
 
-import { UserData } from '@/horizon-corp/types'
-import { IAuthForm } from '@/types/auth/form-interface'
-import ResendVerifyContactButton from '../resend-verify-contact-button'
+import { IUserData } from '@/server/types'
+import { IForm } from '@/types/component/form'
+import { useVerify } from '@/hooks/api-hooks/use-auth'
 
 type TVerifyForm = z.infer<typeof otpSchema>
 
-interface Props extends IAuthForm<TVerifyForm, UserData> {
+interface Props extends IForm<TVerifyForm, IUserData> {
     verifyMode: 'mobile' | 'email'
     onSkip?: () => void
 }
@@ -43,9 +40,9 @@ const VerifyForm = ({
     readOnly = false,
     verifyMode = 'mobile',
     defaultValues = { otp: '' },
-    onSuccess,
-    onError,
     onSkip,
+    onError,
+    onSuccess,
 }: Props) => {
     const form = useForm({
         resolver: zodResolver(otpSchema),
@@ -57,32 +54,10 @@ const VerifyForm = ({
         mutate: handleVerify,
         isPending,
         error,
-    } = useMutation<UserData, string, TVerifyForm>({
-        mutationKey: ['verify', verifyMode],
-        mutationFn: async (data) => {
-            try {
-                if (verifyMode === 'email') {
-                    const response = await UserService.VerifyEmail(data)
-                    onSuccess?.(response.data)
-                    toast.success('Email verified')
-                    return response.data
-                }
-
-                if (verifyMode === 'mobile') {
-                    const response = await UserService.VerifyContactNumber(data)
-                    onSuccess?.(response.data)
-                    toast.success('Contact verified')
-                    return response.data
-                }
-
-                throw 'Unknown verify mode'
-            } catch (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                onError?.(error)
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-        },
+    } = useVerify({
+        verifyMode,
+        onSuccess,
+        onError,
     })
 
     return (
