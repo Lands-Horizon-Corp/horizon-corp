@@ -26,12 +26,12 @@ import CompanyLogo from '@/modules/admin/components/company-logo'
 import CompanyAcceptBar from '@/modules/admin/components/company-accept-bar'
 
 import { toReadableDate } from '@/utils'
-import { OwnerResource } from '@/horizon-corp/types/profile'
+import { IOwnerResource } from '@/server/types'
 
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { companyLoader, useDeleteCompany } from '@/hooks/api-hooks/use-company'
 
-const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
+const CompanyOwnerSection = ({ owner }: { owner: IOwnerResource }) => {
     const AccountBadge = useMemo(() => {
         switch (owner.status) {
             case 'Verified':

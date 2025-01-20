@@ -22,9 +22,9 @@ import { cn } from '@/lib'
 import { TableProps } from '../types'
 import { IMemberResource } from '@/server/types'
 import useDatableFilterState from '@/hooks/use-filter-state'
+import MemberService from '@/server/api-service/member-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import { useFilteredPaginatedMembers } from '@/hooks/api-hooks/user-member'
-import MemberService from '@/horizon-corp/services/member/member-service'
 
 export interface MembersTableProps
     extends TableProps<IMemberResource>,

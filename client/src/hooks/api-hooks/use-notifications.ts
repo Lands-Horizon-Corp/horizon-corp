@@ -1,10 +1,11 @@
-import { serverRequestErrExtractor } from "@/helpers";
-import { NotificationsResource } from "@/horizon-corp/types";
+import { toast } from "sonner";
+import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+
 import { Role } from "@/types";
 import { withCatchAsync } from "@/utils";
-import { useMutation, UseMutationResult, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { IOperationCallbacks } from "./types";
+import { serverRequestErrExtractor } from "@/helpers";
+import { INotificationResource } from "@/server/types";
 
 interface INotificationsProps {
     userId: number;
@@ -28,13 +29,13 @@ const handleSuccess = <TDataSuccess>(
 };
 
 // Load/get notifications
-export const useNotifications = ({ userId, role }: INotificationsProps): UseQueryResult<NotificationsResource[], string> => {
-    return useQuery<NotificationsResource[], string>({
+export const useNotifications = ({ userId, role }: INotificationsProps): UseQueryResult<INotificationResource[], string> => {
+    return useQuery<INotificationResource[], string>({
         queryKey: ['admin-notifications', userId, role],
         queryFn: async () => {
               // Replace with actual API call
             const [error, result] = await withCatchAsync(
-                new Promise<NotificationsResource[]>((resolve) => {
+                new Promise<INotificationResource[]>((resolve) => {
                     resolve([]);
                 })
             );
@@ -52,7 +53,7 @@ export const useNotifications = ({ userId, role }: INotificationsProps): UseQuer
 export const useMarkasReadNotifications = ({
     onSuccess,
     onError,
-}: IOperationCallbacks<NotificationsResource, string>) => {
+}: IOperationCallbacks<INotificationResource, string>) => {
     const queryClient = useQueryClient();
 
     return useMutation<void, string, number>({

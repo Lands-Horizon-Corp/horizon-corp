@@ -30,7 +30,7 @@ import { cn } from '@/lib/utils'
 import { withCatchAsync } from '@/utils'
 import UseCooldown from '@/hooks/use-cooldown'
 import { serverRequestErrExtractor } from '@/helpers'
-import { ContactService } from '@/horizon-corp/services/common'
+import ContactService from '@/server/api-service/contact-service'
 
 type TContact = z.infer<typeof contactFormSchema>
 

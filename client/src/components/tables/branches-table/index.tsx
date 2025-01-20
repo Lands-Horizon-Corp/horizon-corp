@@ -21,7 +21,7 @@ import { cn } from '@/lib'
 import { TableProps } from '../types'
 import { IBranchResource } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
-import { BranchService } from '@/horizon-corp/services'
+import BranchService from '@/server/api-service/branch-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
 
