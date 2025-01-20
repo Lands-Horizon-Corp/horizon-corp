@@ -5,7 +5,7 @@ import axios, {
     InternalAxiosRequestConfig,
 } from 'axios'
 
-import { RequestParams } from '../types'
+import { IRequestParams } from '../types'
 
 export default class APIService {
     private static httpClient: AxiosInstance = axios.create({
@@ -61,7 +61,7 @@ export default class APIService {
 
     public static async get<R = unknown>(
         url: string,
-        params?: RequestParams,
+        params?: IRequestParams,
         config?: AxiosRequestConfig
     ): Promise<AxiosResponse<R>> {
         return APIService.httpClient.get<R>(url, { params, ...config })
@@ -70,7 +70,7 @@ export default class APIService {
     public static async post<D = unknown, R = unknown>(
         url: string,
         data?: D,
-        params?: RequestParams,
+        params?: IRequestParams,
         config?: AxiosRequestConfig
     ): Promise<AxiosResponse<R>> {
         return APIService.httpClient.post<R>(url, data, { params, ...config })
@@ -79,7 +79,7 @@ export default class APIService {
     public static async put<D = unknown, R = unknown>(
         url: string,
         data?: D,
-        params?: RequestParams,
+        params?: IRequestParams,
         config?: AxiosRequestConfig
     ): Promise<AxiosResponse<R>> {
         return APIService.httpClient.put<R>(url, data, { params, ...config })
@@ -88,7 +88,7 @@ export default class APIService {
     public static async delete<R = unknown>(
         url: string,
         data?: object,
-        params?: RequestParams,
+        params?: IRequestParams,
         config?: AxiosRequestConfig
     ): Promise<AxiosResponse<R>> {
         return APIService.httpClient.delete<R>(url, { data, params, ...config })
@@ -97,7 +97,7 @@ export default class APIService {
     public static async uploadFile<R = unknown>(
         url: string,
         formData: FormData,
-        params?: RequestParams,
+        params?: IRequestParams,
         config?: AxiosRequestConfig
     ): Promise<AxiosResponse<R>> {
         return APIService.httpClient.post<R>(url, formData, {
