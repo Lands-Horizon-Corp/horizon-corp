@@ -20,17 +20,17 @@ import membersColumns, {
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
-import { MemberResource } from '@/horizon-corp/types'
+import { IMemberResource } from '@/server/types'
 import useDatableFilterState from '@/hooks/use-filter-state'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import { useFilteredPaginatedMembers } from '@/hooks/api-hooks/user-member'
 import MemberService from '@/horizon-corp/services/member/member-service'
 
 export interface MembersTableProps
-    extends TableProps<MemberResource>,
+    extends TableProps<IMemberResource>,
         IMembersTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<MemberResource>,
+        IDataTableToolbarProps<IMemberResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -73,7 +73,7 @@ const CompaniesTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<MemberResource>({
+    } = useDataTableState<IMemberResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })

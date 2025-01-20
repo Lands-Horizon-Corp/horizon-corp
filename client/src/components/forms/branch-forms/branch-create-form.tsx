@@ -27,13 +27,13 @@ import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { contactNumberSchema } from '@/validations/common'
 import { useCreateBranch } from '@/hooks/api-hooks/use-branch'
-import { BranchResource, CompanyRequest } from '@/horizon-corp/types'
+import { IBranchResource, ICompanyRequest } from '@/server/types'
 
-type TBranchBasicInfo = Partial<CompanyRequest>
+type TBranchBasicInfo = Partial<ICompanyRequest>
 
 interface BranchCreateFormProps
     extends IBaseCompNoChild,
-        IForm<TBranchBasicInfo, BranchResource, string> {}
+        IForm<TBranchBasicInfo, IBranchResource, string> {}
 
 const BranchBasicInfoFormSchema = z.object({
     name: z.string().min(1, 'Branch name is required'),

@@ -18,9 +18,9 @@ import DataTableMultiSelectFilter from '@/components/data-table/data-table-filte
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
-import { AccountStatus, MemberResource } from '@/horizon-corp/types'
+import { TAccountStatus, IMemberResource } from '@/server/types'
 
-export const memberGlobalSearchTargets: IGlobalSearchTargets<MemberResource>[] =
+export const memberGlobalSearchTargets: IGlobalSearchTargets<IMemberResource>[] =
     [
         { field: 'name', displayText: 'Name' },
         { field: 'address', displayText: 'Address' },
@@ -30,7 +30,7 @@ export const memberGlobalSearchTargets: IGlobalSearchTargets<MemberResource>[] =
     ]
 
 export interface IMemberTableActionComponentProp {
-    row: Row<MemberResource>
+    row: Row<IMemberResource>
 }
 
 export interface IMembersTableColumnProps {
@@ -39,7 +39,7 @@ export interface IMembersTableColumnProps {
 
 const membersTableColumns = (
     opts?: IMembersTableColumnProps
-): ColumnDef<MemberResource>[] => {
+): ColumnDef<IMemberResource>[] => {
     return [
         {
             id: 'select',
@@ -195,7 +195,7 @@ const membersTableColumns = (
                     title="Contact Number"
                 >
                     <ColumnActions {...props}>
-                        <TextFilter<MemberResource>
+                        <TextFilter<IMemberResource>
                             displayText="Contact"
                             field="contactNumber"
                         />
@@ -216,8 +216,8 @@ const membersTableColumns = (
                 <DataTableColumnHeader {...props} isResizable title="Status">
                     <ColumnActions {...props}>
                         <DataTableMultiSelectFilter<
-                            MemberResource,
-                            AccountStatus
+                            IMemberResource,
+                            TAccountStatus
                         >
                             mode="equal"
                             field="status"
@@ -286,7 +286,7 @@ const membersTableColumns = (
                     title="Email Verified"
                 >
                     <ColumnActions {...props}>
-                        <DataTableMultiSelectFilter<MemberResource, boolean>
+                        <DataTableMultiSelectFilter<IMemberResource, boolean>
                             mode="equal"
                             dataType="boolean"
                             field="isEmailVerified"
@@ -341,7 +341,7 @@ const membersTableColumns = (
                     title="Contact Verified"
                 >
                     <ColumnActions {...props}>
-                        <DataTableMultiSelectFilter<MemberResource, boolean>
+                        <DataTableMultiSelectFilter<IMemberResource, boolean>
                             mode="equal"
                             dataType="boolean"
                             field="isContactVerified"
@@ -396,7 +396,7 @@ const membersTableColumns = (
                     title="Date Created"
                 >
                     <ColumnActions {...props}>
-                        <DateFilter<MemberResource>
+                        <DateFilter<IMemberResource>
                             displayText="Date Created"
                             field="createdAt"
                         />

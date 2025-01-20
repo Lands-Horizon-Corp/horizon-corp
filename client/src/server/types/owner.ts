@@ -2,7 +2,9 @@ import { IMediaRequest } from "./media"
 import { IUserBase, TAccountType } from "./common"
 import { IPaginatedResult } from "./paginated-result"
 
-export interface IOwnerResource extends IUserBase {}
+export interface IOwnerResource extends IUserBase {
+    
+}
 
 export type IOwnerPaginatedResource = IPaginatedResult<IOwnerResource>
 

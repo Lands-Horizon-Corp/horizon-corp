@@ -22,11 +22,11 @@ import FormErrorMessage from '@/components/ui/form-error-message'
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { BranchResource } from '@/horizon-corp/types'
+import { IBranchResource } from '@/server/types'
 import { useUpdateBranch } from '@/hooks/api-hooks/use-branch'
 
 type TBranchBasicInfo = Omit<
-    BranchResource,
+    IBranchResource,
     | 'id'
     | 'media'
     | 'company'
@@ -38,7 +38,7 @@ type TBranchBasicInfo = Omit<
 
 interface BranchEditBasicInfoFormProps
     extends IBaseCompNoChild,
-        IForm<TBranchBasicInfo, BranchResource, string> {
+        IForm<TBranchBasicInfo, IBranchResource, string> {
     branchId: number
 }
 

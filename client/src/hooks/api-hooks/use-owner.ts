@@ -7,10 +7,10 @@ import { OwnerService } from '@/horizon-corp/services'
 
 import {
     IApiPreloads,
-    IFilterPaginatedHookProps,
     IOperationCallbacks,
+    IFilterPaginatedHookProps,
 } from './types'
-import { OwnerPaginatedResource, OwnerResource } from '@/horizon-corp/types'
+import { IOwnerPaginatedResource, IOwnerResource } from '@/server/types'
 
 // Load Specific owner by ID
 export const useOwner = ({
@@ -18,14 +18,14 @@ export const useOwner = ({
     onError,
     preloads = ['Media'],
 }: Omit<
-    IOperationCallbacks<OwnerResource, string> & IApiPreloads,
+    IOperationCallbacks<IOwnerResource, string> & IApiPreloads,
     'onSuccess'
 > & {
     ownerId: number
 }) => {
     const queryClient = useQueryClient()
 
-    return useQuery<OwnerResource>({
+    return useQuery<IOwnerResource>({
         queryKey: ['owner', ownerId],
         queryFn: async () => {
             const [error, data] = await withCatchAsync(
@@ -55,7 +55,7 @@ export const useFilteredPaginatedOwners = ({
     preloads = ['Media', 'Company'],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps = {}) => {
-    return useQuery<OwnerPaginatedResource, string>({
+    return useQuery<IOwnerPaginatedResource, string>({
         queryKey: ['owner', 'resource-query', filterPayload, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(

@@ -7,8 +7,8 @@ import {
     IBranchResource,
     IBranchPaginatedResource,
 } from '@/server/types'
+import APIService from './api-service'
 import { downloadFile } from '@/server/helpers'
-import UseServer from '@/horizon-corp/request/server'
 
 /**
  * Service class to handle CRUD operations for branches.
@@ -29,7 +29,7 @@ export default class BranchService {
         const endpoint = `${BranchService.BASE_ENDPOINT}/${id}${separator}${preloadParams}`
 
         // Make the GET request with necessary headers
-        const response = await UseServer.get<IBranchResource>(endpoint, {
+        const response = await APIService.get<IBranchResource>(endpoint, {
             headers: {
                 Authorization: `Bearer YOUR_TOKEN`, // Replace with actual token if needed
             },
@@ -42,7 +42,7 @@ export default class BranchService {
     public static async create(
         branchData: IBranchRequest
     ): Promise<IBranchResource> {
-        const response = await UseServer.post<IBranchRequest, IBranchResource>(
+        const response = await APIService.post<IBranchRequest, IBranchResource>(
             BranchService.BASE_ENDPOINT,
             branchData
         )
@@ -51,7 +51,7 @@ export default class BranchService {
 
     public static async delete(id: number): Promise<void> {
         const endpoint = `${BranchService.BASE_ENDPOINT}/${id}`
-        await UseServer.delete<void>(endpoint)
+        await APIService.delete<void>(endpoint)
     }
 
     public static async update(
@@ -66,7 +66,7 @@ export default class BranchService {
         const separator = preloadParams ? '?' : ''
         const endpoint = `${BranchService.BASE_ENDPOINT}/${id}${separator}${preloadParams}`
 
-        const response = await UseServer.put<IBranchRequest, IBranchResource>(
+        const response = await APIService.put<IBranchRequest, IBranchResource>(
             endpoint,
             branchData,
             {
@@ -100,7 +100,7 @@ export default class BranchService {
             { skipNull: true }
         )
 
-        const response = await UseServer.get<IBranchPaginatedResource>(url)
+        const response = await APIService.get<IBranchPaginatedResource>(url)
         return response.data
     }
 
@@ -137,12 +137,12 @@ export default class BranchService {
         const payload = { ids }
 
         // Make the DELETE request with the payload
-        await UseServer.delete<void>(endpoint, payload)
+        await APIService.delete<void>(endpoint, payload)
     }
 
     public static async verify(id: number): Promise<IBranchResource> {
         const endpoint = `${BranchService.BASE_ENDPOINT}/verify/${id}`
-        const response = await UseServer.post<void, IBranchResource>(endpoint)
+        const response = await APIService.post<void, IBranchResource>(endpoint)
         return response.data
     }
 
@@ -157,7 +157,7 @@ export default class BranchService {
                 .join('&') || ''
         const separator = preloadParams ? '?' : ''
         const endpoint = `${BranchService.BASE_ENDPOINT}/profile-picture/${id}${separator}${preloadParams}`
-        const response = await UseServer.post<IMediaRequest, IBranchResource>(
+        const response = await APIService.post<IMediaRequest, IBranchResource>(
             endpoint,
             data
         )

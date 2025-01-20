@@ -19,17 +19,17 @@ import branchColumns, {
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
-import { BranchResource } from '@/horizon-corp/types'
+import { IBranchResource } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
 import { BranchService } from '@/horizon-corp/services'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
 
 export interface BranchesTableProps
-    extends TableProps<BranchResource>,
+    extends TableProps<IBranchResource>,
         IBranchesTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<BranchResource>,
+        IDataTableToolbarProps<IBranchResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -70,7 +70,7 @@ const BranchesTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<BranchResource>({
+    } = useDataTableState<IBranchResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })

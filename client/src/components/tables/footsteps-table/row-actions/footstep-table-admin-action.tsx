@@ -1,17 +1,14 @@
-import RowActionsGroup from '@/components/data-table/data-table-row-actions';
-import { IFootstepTableActionComponentProp } from '../columns';
+import RowActionsGroup from '@/components/data-table/data-table-row-actions'
+import { IFootstepTableActionComponentProp } from '../columns'
 // import useConfirmModalStore from '@/store/confirm-modal-store';
 
 interface IFootstepTableAdminActionProps
     extends IFootstepTableActionComponentProp {
-    onDeleteSuccess?: () => void;
-    onFootstepUpdate?: () => void;
+    onDeleteSuccess?: () => void
+    onFootstepUpdate?: () => void
 }
 
-const FootstepTableAdminAction = ({
-    row,
-    onDeleteSuccess,
-}: IFootstepTableAdminActionProps) => {
+const FootstepTableAdminAction = ({}: IFootstepTableAdminActionProps) => {
     // const footstep = row.original;
 
     // const { onOpen } = useConfirmModalStore();
@@ -55,7 +52,7 @@ const FootstepTableAdminAction = ({
                 </>
             }
         />
-    );
-};
+    )
+}
 
-export default FootstepTableAdminAction;
+export default FootstepTableAdminAction

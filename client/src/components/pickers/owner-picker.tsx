@@ -18,13 +18,13 @@ import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
-import { OwnerResource } from '@/horizon-corp/types'
+import { IOwnerResource } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
 
 interface Props {
     value?: number
     placeholder?: string
-    onSelect?: (selectedOwner: OwnerResource) => void
+    onSelect?: (selectedOwner: IOwnerResource) => void
 }
 
 const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
