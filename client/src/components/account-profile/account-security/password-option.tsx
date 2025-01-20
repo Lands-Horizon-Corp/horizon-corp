@@ -1,8 +1,6 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
 
 import {
     Form,
@@ -18,12 +16,9 @@ import PasswordInput from '@/components/ui/password-input'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { withCatchAsync } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
 import { passwordSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { NewPasswordRequest } from '@/horizon-corp/types'
-import ProfileService from '@/horizon-corp/services/auth/ProfileService'
+import { useUpdateAccountPassword } from '@/hooks/api-hooks/use-account'
 
 interface Props {
     onSave?: () => void
@@ -54,27 +49,8 @@ const PasswordOption = ({ onSave }: Props) => {
         },
     })
 
-    const { isPending, mutate: updatePassword } = useMutation<
-        void,
-        string,
-        NewPasswordRequest
-    >({
-        mutationKey: ['account-security-contact'],
-        mutationFn: async (data) => {
-            const [error] = await withCatchAsync(
-                ProfileService.NewPassword(data)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            toast.success('New password has been set.')
-            onSave?.()
-            form.reset()
-        },
+    const { isPending, mutate: updatePassword } = useUpdateAccountPassword({
+        onSuccess: onSave,
     })
 
     const hasChanges = form.formState.isDirty

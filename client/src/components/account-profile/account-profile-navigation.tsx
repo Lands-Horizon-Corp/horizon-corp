@@ -4,18 +4,18 @@ import { IconType } from 'react-icons/lib'
 import { useRouter, useRouterState } from '@tanstack/react-router'
 
 import {
-    AccountSettingIcon,
-    PaymentsIcon,
     ShieldIcon,
+    PaymentsIcon,
+    AccountSettingIcon,
     TransactionListIcon,
 } from '@/components/icons'
-import { IAccountType, IUserData } from '@/server/types'
+import { TAccountType, IUserData } from '@/server/types'
 
 const PATHS: {
     hash: string
     name: string
     Icon: IconType
-    visibleOn: IAccountType[] | 'all'
+    visibleOn: TAccountType[] | 'all'
 }[] = [
     {
         hash: 'account-settings',

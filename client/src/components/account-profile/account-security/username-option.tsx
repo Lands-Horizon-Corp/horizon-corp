@@ -1,16 +1,14 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { useCallback, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
 
 import {
     Form,
+    FormItem,
+    FormField,
+    FormLabel,
     FormControl,
     FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -19,12 +17,10 @@ import { CheckIcon, CloseIcon } from '@/components/icons'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { withCatchAsync } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
+import { IUserData } from '@/server'
 import { userNameSchema } from '@/validations/common'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { IChangeUsernameRequest, IUserData } from '@/horizon-corp/types'
-import ProfileService from '@/horizon-corp/services/auth/ProfileService'
+import { useUpdateAccountUsername } from '@/hooks/api-hooks/use-account'
 
 interface Props {
     username: string
@@ -55,29 +51,10 @@ const UsernameOption = ({ username, onSave }: Props) => {
         form.setValue('username', username)
     }, [username, form])
 
-    const { isPending, mutate: saveUsername } = useMutation<
-        IUserData,
-        string,
-        IChangeUsernameRequest
-    >({
-        mutationKey: ['account-security-username'],
-        mutationFn: async (data) => {
-            const [error, response] = await withCatchAsync(
-                ProfileService.ChangeUsername(data)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            toast.success('Username has been saved.')
-
-            onSave(response.data)
-
+    const { isPending, mutate: saveUsername } = useUpdateAccountUsername({
+        onSuccess: (data) => {
+            onSave?.(data)
             handleReset()
-            return response.data
         },
     })
 

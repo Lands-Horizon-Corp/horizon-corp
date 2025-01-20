@@ -1,8 +1,6 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { useCallback, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
 
 import {
     CheckIcon,
@@ -12,11 +10,11 @@ import {
 } from '@/components/icons'
 import {
     Form,
+    FormItem,
+    FormField,
+    FormLabel,
     FormControl,
     FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
 import PasswordInputModal from './password-input-modal'
@@ -26,12 +24,10 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { PhoneInput } from '@/components/contact-input/contact-input'
 
 import { cn } from '@/lib'
-import { withCatchAsync } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
+import { IUserData } from '@/server/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { contactNumberSchema } from '@/validations/common'
-import ProfileService from '@/horizon-corp/services/auth/ProfileService'
-import { ChangeContactNumberRequest, IUserData } from '@/server/types'
+import { useUpdateAccountContactNumber } from '@/hooks/api-hooks/use-account'
 
 interface Props {
     contact: string
@@ -45,28 +41,8 @@ const contactOptionSchema = z.object({
 
 const ContactOption = ({ contact, verified, onSave }: Props) => {
     const [pwdModalState, setPwdModalState] = useState(false)
-    const { isPending, mutate: saveContact } = useMutation<
-        UserData,
-        string,
-        ChangeContactNumberRequest
-    >({
-        mutationKey: ['account-security-contact'],
-        mutationFn: async (data) => {
-            const [error, response] = await withCatchAsync(
-                ProfileService.ChangeContactNumber(data)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            toast.success('Contact number has been saved.')
-
-            onSave(response.data)
-            return response.data
-        },
+    const { isPending, mutate: saveContact } = useUpdateAccountContactNumber({
+        onSuccess : onSave
     })
 
     const form = useForm<z.infer<typeof contactOptionSchema>>({

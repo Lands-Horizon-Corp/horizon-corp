@@ -4,10 +4,11 @@ import { Separator } from '@/components/ui/separator'
 
 import UsernameOption from './username-option'
 
-import { useUserAuthStore } from '@/store/user-auth-store'
 import EmailOption from './email-option'
 import ContactOption from './contact-option'
 import PasswordOption from './password-option'
+
+import { useUserAuthStore } from '@/store/user-auth-store'
 
 const AccountSecurity = () => {
     const { currentUser, setCurrentUser } = useUserAuthStore()

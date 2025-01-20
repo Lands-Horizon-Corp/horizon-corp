@@ -12,11 +12,11 @@ import AuthService from '@/server/api-service/auth-service'
 
 import {
     IUserData,
+    TAccountType,
     ISignInRequest,
     ISignUpRequest,
     IChangePasswordRequest,
     IForgotPasswordRequest,
-    TAccountType,
 } from '@/server/types'
 import { IOperationCallbacks } from './types'
 
@@ -36,7 +36,7 @@ export const useCurrentUser = ({
     onSuccess,
 }: IOperationCallbacks<IUserData>) => {
     return useQuery<IUserData, string>({
-        queryKey: ['auth', 'current-user'],
+        queryKey: ['current-user'],
         queryFn: async () => {
             const [error, data] = await withCatchAsync(
                 AuthService.currentUser()

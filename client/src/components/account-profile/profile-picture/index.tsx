@@ -7,10 +7,10 @@ import ActionTooltip from '@/components/action-tooltip'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import SingleImageUploaderModal from '@/components/single-image-uploader/single-image-uploader-modal'
 
+import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IUserData } from '@/server/types'
-import { useUserUpdateProfilePicture } from '@/hooks/api-hooks/use-user'
-import { cn } from '@/lib'
+import { useUploadAccountProfilePicture } from '@/hooks/api-hooks/use-account'
 
 interface Props extends IBaseCompNoChild {
     userData: IUserData
@@ -27,7 +27,7 @@ const UserProfilePicture = ({
     const {
         mutate: updateUserProfilePicture,
         isPending: isUpdatingUserProfilePicture,
-    } = useUserUpdateProfilePicture({
+    } = useUploadAccountProfilePicture({
         onSuccess: onUploadSuccess,
     })
 
