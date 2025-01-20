@@ -20,17 +20,17 @@ import companyColumns, {
 
 import { cn } from '@/lib'
 import { TableProps } from '../types'
-import { CompanyResource } from '@/horizon-corp/types'
+import { ICompanyResource } from '@/server/types'
 import useDatableFilterState from '@/hooks/use-filter-state'
-import { CompanyService } from '@/horizon-corp/services/common'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
+import CompanyService from '@/server/api-service/company-service'
 
 export interface CompaniesTableProps
-    extends TableProps<CompanyResource>,
+    extends TableProps<ICompanyResource>,
         ICompaniesTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<CompanyResource>,
+        IDataTableToolbarProps<ICompanyResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -73,7 +73,7 @@ const CompaniesTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<CompanyResource>({
+    } = useDataTableState<ICompanyResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })

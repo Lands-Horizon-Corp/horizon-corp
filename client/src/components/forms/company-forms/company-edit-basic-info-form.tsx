@@ -27,13 +27,13 @@ import { useUpdateCompany } from '@/hooks/api-hooks/use-company'
 
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { CompanyResource } from '@/horizon-corp/types'
+import { ICompanyResource } from '@/server/types'
 
-type TCompanyBasicInfo = Omit<CompanyResource, 'owner' | 'media' | 'branches'>
+type TCompanyBasicInfo = Omit<ICompanyResource, 'owner' | 'media' | 'branches'>
 
 interface CompanyEditBasicInfoFormProps
     extends IBaseCompNoChild,
-        IForm<TCompanyBasicInfo, CompanyResource, string> {
+        IForm<TCompanyBasicInfo, ICompanyResource, string> {
     companyId: number
 }
 

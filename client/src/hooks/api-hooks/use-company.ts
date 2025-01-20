@@ -8,7 +8,6 @@ import { toast } from 'sonner'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { CompanyService } from '@/horizon-corp/services'
 
 import {
     IApiPreloads,
@@ -16,15 +15,16 @@ import {
     IFilterPaginatedHookProps,
 } from './types'
 import {
-    MediaRequest,
-    CompanyRequest,
-    CompanyResource,
-    CompanyPaginatedResource,
-} from '@/horizon-corp/types'
+    IMediaRequest,
+    ICompanyRequest,
+    ICompanyResource,
+    ICompanyPaginatedResource,
+} from '@/server/types'
+import CompanyService from '@/server/api-service/company-service'
 
 // Only used by path preloader
 export const companyLoader = (companyId: number) =>
-    queryOptions<CompanyResource>({
+    queryOptions<ICompanyResource>({
         queryKey: ['company', 'loader', companyId],
         queryFn: async () => {
             const data = await CompanyService.getById(companyId, [
@@ -44,8 +44,8 @@ export const useCompany = ({
     onError,
     onSuccess,
 }: { companyId: number } & IApiPreloads &
-    IOperationCallbacks<CompanyResource, string>) => {
-    return useQuery<CompanyResource, string>({
+    IOperationCallbacks<ICompanyResource, string>) => {
+    return useQuery<ICompanyResource, string>({
         queryKey: ['company', companyId],
         queryFn: async () => {
             const [error, data] = await withCatchAsync(
@@ -70,10 +70,10 @@ export const useCompany = ({
 export const useCreateCompany = ({
     onError,
     onSuccess,
-}: IOperationCallbacks<CompanyResource>) => {
+}: IOperationCallbacks<ICompanyResource>) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, CompanyRequest>({
+    return useMutation<void, string, ICompanyRequest>({
         mutationKey: ['company', 'create'],
         mutationFn: async (newCompanyData) => {
             const [error, data] = await withCatchAsync(
@@ -87,12 +87,12 @@ export const useCreateCompany = ({
                 throw errorMessage
             }
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', data.id],
                 data
             )
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', 'loader', data.id],
                 data
             )
@@ -107,7 +107,7 @@ export const useCreateCompany = ({
 export const useApproveCompany = ({
     onSuccess,
     onError,
-}: IOperationCallbacks<CompanyResource, string>) => {
+}: IOperationCallbacks<ICompanyResource, string>) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, number>({
@@ -124,7 +124,7 @@ export const useApproveCompany = ({
                 throw errorMessage
             }
 
-            queryClient.setQueriesData<CompanyPaginatedResource>(
+            queryClient.setQueriesData<ICompanyPaginatedResource>(
                 { queryKey: ['company', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
@@ -138,11 +138,11 @@ export const useApproveCompany = ({
                 }
             )
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', companyId],
                 data
             )
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', 'loader', companyId],
                 data
             )
@@ -157,15 +157,15 @@ export const useApproveCompany = ({
 export const useUpdateCompany = ({
     onSuccess,
     onError,
-}: IOperationCallbacks<CompanyResource, string>) => {
+}: IOperationCallbacks<ICompanyResource, string>) => {
     const queryClient = useQueryClient()
 
     return useMutation<
-        CompanyResource,
+        ICompanyResource,
         string,
         {
             id: number
-            data: Omit<CompanyResource, 'id' | 'createdAt' | 'updatedAt'>
+            data: Omit<ICompanyResource, 'id' | 'createdAt' | 'updatedAt'>
         }
     >({
         mutationKey: ['company', 'update'],
@@ -181,7 +181,7 @@ export const useUpdateCompany = ({
                 throw errorMessage
             }
 
-            queryClient.setQueriesData<CompanyPaginatedResource>(
+            queryClient.setQueriesData<ICompanyPaginatedResource>(
                 { queryKey: ['company', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
@@ -195,9 +195,12 @@ export const useUpdateCompany = ({
                 }
             )
 
-            queryClient.setQueryData<CompanyResource>(['company', id], response)
+            queryClient.setQueryData<ICompanyResource>(
+                ['company', id],
+                response
+            )
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', 'loader', id],
                 response
             )
@@ -214,13 +217,13 @@ export const useUpdateCompany = ({
 export const useUpdateCompanyProfilePicture = ({
     onSuccess,
     onError,
-}: IOperationCallbacks<CompanyResource>) => {
+}: IOperationCallbacks<ICompanyResource>) => {
     const queryClient = useQueryClient()
 
     return useMutation<
         void,
         string,
-        { companyId: number; mediaResource: MediaRequest }
+        { companyId: number; mediaResource: IMediaRequest }
     >({
         mutationKey: ['company', 'update', 'logo'],
         mutationFn: async ({ companyId, mediaResource }) => {
@@ -235,7 +238,7 @@ export const useUpdateCompanyProfilePicture = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.setQueriesData<CompanyPaginatedResource>(
+            queryClient.setQueriesData<ICompanyPaginatedResource>(
                 { queryKey: ['company', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
@@ -249,11 +252,11 @@ export const useUpdateCompanyProfilePicture = ({
                 }
             )
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', companyId],
                 data
             )
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', companyId],
                 data
             )
@@ -306,8 +309,14 @@ export const useFilteredPaginatedCompanies = ({
     preloads = ['Media', 'Owner'],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps = {}) => {
-    return useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['company', 'resource-query', filterPayload, pagination, sort],
+    return useQuery<ICompanyPaginatedResource, string>({
+        queryKey: [
+            'company',
+            'resource-query',
+            filterPayload,
+            pagination,
+            sort,
+        ],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 CompanyService.getCompanies({

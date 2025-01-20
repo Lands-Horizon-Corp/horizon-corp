@@ -17,9 +17,9 @@ import DataTableMultiSelectFilter from '@/components/data-table/data-table-filte
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
-import { BranchResource, CompanyResource } from '@/horizon-corp/types'
+import { IBranchResource, ICompanyResource } from '@/server/types'
 
-type RootType = BranchResource
+type RootType = IBranchResource
 
 export const branchesGlobalSearchTargets: IGlobalSearchTargets<RootType>[] = [
     { field: 'name', displayText: 'Name' },
@@ -29,7 +29,7 @@ export const branchesGlobalSearchTargets: IGlobalSearchTargets<RootType>[] = [
 ]
 
 export interface IBranchTableActionComponentProp {
-    row: Row<BranchResource>
+    row: Row<IBranchResource>
 }
 
 export interface IBranchesTableColumnProps {
@@ -38,7 +38,7 @@ export interface IBranchesTableColumnProps {
 
 const branchesTableColumns = (
     opts?: IBranchesTableColumnProps
-): ColumnDef<BranchResource>[] => {
+): ColumnDef<IBranchResource>[] => {
     return [
         {
             id: 'select',
@@ -136,7 +136,7 @@ const branchesTableColumns = (
                     title="Contact Number"
                 >
                     <ColumnActions {...props}>
-                        <TextFilter<CompanyResource>
+                        <TextFilter<ICompanyResource>
                             displayText="Contact"
                             field="contactNumber"
                         />
@@ -156,7 +156,7 @@ const branchesTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Verified">
                     <ColumnActions {...props}>
-                        <DataTableMultiSelectFilter<CompanyResource, boolean>
+                        <DataTableMultiSelectFilter<ICompanyResource, boolean>
                             mode="equal"
                             dataType="boolean"
                             field="isAdminVerified"
@@ -210,7 +210,7 @@ const branchesTableColumns = (
                     title="Date Created"
                 >
                     <ColumnActions {...props}>
-                        <DateFilter<CompanyResource>
+                        <DateFilter<ICompanyResource>
                             displayText="Date Created"
                             field="createdAt"
                         />

@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button'
 
-import { CompanyResource } from '@/horizon-corp/types'
+import { ICompanyResource } from '@/server' 
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { useApproveCompany } from '@/hooks/api-hooks/use-company'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 interface Props {
-    company: CompanyResource
+    company: ICompanyResource
 }
 
 const CompanyAcceptBar = ({ company }: Props) => {
@@ -21,13 +21,6 @@ const CompanyAcceptBar = ({ company }: Props) => {
                 can operate.
             </span>
             <div className="flex">
-                {/* <Button
-                    size="sm"
-                    variant="destructive"
-                    className="h-fit rounded-none py-2 text-xs first:rounded-l-lg"
-                >
-                    Decline
-                </Button> */}
                 <Button
                     size="sm"
                     variant="secondary"

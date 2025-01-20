@@ -8,11 +8,11 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import SingleImageUploaderModal from '@/components/single-image-uploader/single-image-uploader-modal'
 
 import { IBaseCompNoChild } from '@/types'
-import { CompanyResource } from '@/horizon-corp/types'
+import { ICompanyResource } from '@/server/types'
 import { useUpdateCompanyProfilePicture } from '@/hooks/api-hooks/use-company'
 
 interface Props extends IBaseCompNoChild {
-    company: CompanyResource
+    company: ICompanyResource
 }
 
 const CompanyLogo = ({ company }: Props) => {

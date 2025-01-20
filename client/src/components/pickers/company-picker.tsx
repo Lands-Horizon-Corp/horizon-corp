@@ -18,13 +18,13 @@ import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
+import { ICompanyResource } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
-import { CompanyResource } from '@/horizon-corp/types'
 
 interface Props {
     value: number
     placeholder?: string
-    onSelect?: (selectedCompany: CompanyResource) => void
+    onSelect?: (selectedCompany: ICompanyResource) => void
 }
 
 const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {

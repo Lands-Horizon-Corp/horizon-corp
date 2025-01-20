@@ -1,12 +1,14 @@
+import { ColumnDef, Row } from "@tanstack/react-table"
+import { Link, ReactNode } from "@tanstack/react-router"
+
+import { Checkbox } from "@/components/ui/checkbox"
+import { PushPinSlashIcon } from "@/components/icons"
+import TextFilter from "@/components/data-table/data-table-filters/text-filter"
 import DataTableColumnHeader from "@/components/data-table/data-table-column-header"
 import ColumnActions from "@/components/data-table/data-table-column-header/column-actions"
 import { IGlobalSearchTargets } from "@/components/data-table/data-table-filters/data-table-global-search"
-import TextFilter from "@/components/data-table/data-table-filters/text-filter"
-import { PushPinSlashIcon } from "@/components/icons"
-import { Checkbox } from "@/components/ui/checkbox"
+
 import { FeedbackResource } from "@/horizon-corp/types"
-import { Link, ReactNode } from "@tanstack/react-router"
-import { ColumnDef, Row } from "@tanstack/react-table"
 
 export const FeedbackGlobalSearchTargets: IGlobalSearchTargets<FeedbackResource>[] =
 [
@@ -126,147 +128,6 @@ const AdminCompaniesFeedbackTableColumns = (opts: IFeedbackTableColumnProps): Co
                 },
             }) => <div>{feedbackType}</div>,
          },
-        // {
-        //     id: 'branches',
-        //     accessorKey: 'branches',
-        //     header: (props) => (
-        //         <DataTableColumnHeader {...props} isResizable title="Branches">
-        //             <ColumnActions {...props}>
-        //                 <NumberFilter
-        //                     displayText="# Branches"
-        //                     field="branches"
-        //                 />
-        //             </ColumnActions>
-        //         </DataTableColumnHeader>
-        //     ),
-        //     cell: ({
-        //         row: {
-        //             original: { branches },
-        //         },
-        //     }) => <div>{branches?.length ?? 0}</div>,
-        // },
-        // {
-        //     id: 'owner',
-        //     accessorKey: 'owner.username',
-        //     header: (props) => (
-        //         <DataTableColumnHeader {...props} isResizable title="Owner">
-        //             <ColumnActions {...props}>
-        //                 <TextFilter<CompanyResource>
-        //                     displayText="Owner"
-        //                     field="Owner.username"
-        //                 />
-        //             </ColumnActions>
-        //         </DataTableColumnHeader>
-        //     ),
-        //     cell: ({
-        //         row: {
-        //             original: { owner },
-        //         },
-        //     }) => (
-        //         <div>
-        //             {owner?.username ?? (
-        //                 <span className="text-center italic text-foreground/40">
-        //                     -
-        //                 </span>
-        //             )}
-        //         </div>
-        //     ),
-        // },
-        // {
-        //     id: 'Contact Number',
-        //     accessorKey: 'contactNumber',
-        //     header: (props) => (
-        //         <DataTableColumnHeader
-        //             {...props}
-        //             isResizable
-        //             title="Contact Number"
-        //         >
-        //             <ColumnActions {...props}>
-        //                 <TextFilter<CompanyResource>
-        //                     displayText="Contact"
-        //                     field="contactNumber"
-        //                 />
-        //             </ColumnActions>
-        //         </DataTableColumnHeader>
-        //     ),
-        //     cell: ({
-        //         row: {
-        //             original: { contactNumber },
-        //         },
-        //     }) => <div>{contactNumber}</div>,
-        // },
-        // {
-        //     id: 'Verify Status',
-        //     accessorKey: 'isAdminVerified',
-        //     header: (props) => (
-        //         <DataTableColumnHeader {...props} isResizable title="Verified">
-        //             <ColumnActions {...props}>
-        //                 <DataTableMultiSelectFilter<CompanyResource, boolean>
-        //                     mode="equal"
-        //                     dataType="boolean"
-        //                     field="isAdminVerified"
-        //                     displayText="Verify Status"
-        //                     multiSelectOptions={[
-        //                         {
-        //                             label: 'Verified',
-        //                             value: true,
-        //                         },
-        //                         {
-        //                             label: 'Not Verified',
-        //                             value: false,
-        //                         },
-        //                     ]}
-        //                 />
-        //             </ColumnActions>
-        //         </DataTableColumnHeader>
-        //     ),
-        //     cell: ({
-        //         row: {
-        //             original: { isAdminVerified },
-        //         },
-        //     }) => (
-        //         <div>
-        //             {isAdminVerified ? (
-        //                 <Badge
-        //                     className="flex w-fit items-center gap-x-1"
-        //                     variant="success"
-        //                 >
-        //                     <BadgeCheckFillIcon className="inline" /> Verified
-        //                 </Badge>
-        //             ) : (
-        //                 <Badge
-        //                     className="flex w-fit items-center gap-x-1"
-        //                     variant="warning"
-        //                 >
-        //                     <BadgeQuestionIcon className="inline" /> Pending
-        //                 </Badge>
-        //             )}
-        //         </div>
-        //     ),
-        // },
-        // {
-        //     id: 'Created At',
-        //     accessorKey: 'createdAt',
-        //     header: (props) => (
-        //         <DataTableColumnHeader
-        //             {...props}
-        //             isResizable
-        //             title="Date Created"
-        //         >
-        //             <ColumnActions {...props}>
-        //                 <DateFilter<CompanyResource>
-        //                     displayText="Date Created"
-        //                     field="createdAt"
-        //                 />
-        //             </ColumnActions>
-        //         </DataTableColumnHeader>
-        //     ),
-        //     cell: ({
-        //         row: {
-        //             original: { createdAt },
-        //         },
-        //     }) => <div>{toReadableDate(createdAt)}</div>,
-        // },
     ]
 }
 

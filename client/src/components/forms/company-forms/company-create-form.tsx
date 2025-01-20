@@ -29,12 +29,12 @@ import { useCreateCompany } from '@/hooks/api-hooks/use-company'
 
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { CompanyRequest, CompanyResource } from '@/horizon-corp/types'
 import { contactNumberSchema } from '@/validations/common'
+import { ICompanyRequest, ICompanyResource } from '@/server/types'
 
 interface CompanyCreateFormProps
     extends IBaseCompNoChild,
-        IForm<CompanyRequest, CompanyResource> {}
+        IForm<ICompanyRequest, ICompanyResource> {}
 
 const CompanyBasicInfoFormSchema = z.object({
     name: z.string().min(1, 'Company name is required'),

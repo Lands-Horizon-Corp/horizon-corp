@@ -19,9 +19,9 @@ import DataTableMultiSelectFilter from '@/components/data-table/data-table-filte
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
-import { CompanyResource } from '@/horizon-corp/types'
+import { ICompanyResource } from '@/server/types'
 
-export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[] =
+export const companyGlobalSearchTargets: IGlobalSearchTargets<ICompanyResource>[] =
     [
         { field: 'name', displayText: 'Name' },
         { field: 'address', displayText: 'Address' },
@@ -31,7 +31,7 @@ export const companyGlobalSearchTargets: IGlobalSearchTargets<CompanyResource>[]
     ]
 
 export interface ICompanyTableActionComponentProp {
-    row: Row<CompanyResource>
+    row: Row<ICompanyResource>
 }
 
 export interface ICompaniesTableColumnProps {
@@ -40,7 +40,7 @@ export interface ICompaniesTableColumnProps {
 
 const companiesTableColumns = (
     opts?: ICompaniesTableColumnProps
-): ColumnDef<CompanyResource>[] => {
+): ColumnDef<ICompanyResource>[] => {
     return [
         {
             id: 'select',
@@ -172,7 +172,7 @@ const companiesTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Owner">
                     <ColumnActions {...props}>
-                        <TextFilter<CompanyResource>
+                        <TextFilter<ICompanyResource>
                             displayText="Owner"
                             field="Owner.username"
                         />
@@ -205,7 +205,7 @@ const companiesTableColumns = (
                     title="Contact Number"
                 >
                     <ColumnActions {...props}>
-                        <TextFilter<CompanyResource>
+                        <TextFilter<ICompanyResource>
                             displayText="Contact"
                             field="contactNumber"
                         />
@@ -225,7 +225,7 @@ const companiesTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Verified">
                     <ColumnActions {...props}>
-                        <DataTableMultiSelectFilter<CompanyResource, boolean>
+                        <DataTableMultiSelectFilter<ICompanyResource, boolean>
                             mode="equal"
                             dataType="boolean"
                             field="isAdminVerified"
@@ -279,7 +279,7 @@ const companiesTableColumns = (
                     title="Date Created"
                 >
                     <ColumnActions {...props}>
-                        <DateFilter<CompanyResource>
+                        <DateFilter<ICompanyResource>
                             displayText="Date Created"
                             field="createdAt"
                         />

@@ -18,11 +18,11 @@ import BranchLogo from '@/modules/admin/components/branch-logo'
 
 import { toReadableDate } from '@/utils'
 
+import { ICompanyResource } from '@/server/types'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { branchLoader, useDeleteBranch } from '@/hooks/api-hooks/use-branch'
-import { CompanyResource } from '@/horizon-corp/types'
 
-const BranchCompanySection = ({ company }: { company: CompanyResource }) => {
+const BranchCompanySection = ({ company }: { company: ICompanyResource }) => {
     return (
         <div className="space-y-1 rounded-xl bg-popover">
             <div className="flex items-start justify-between gap-x-2 px-4 pb-4 pt-6">
