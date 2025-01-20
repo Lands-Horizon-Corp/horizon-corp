@@ -1,9 +1,14 @@
 import { AxiosRequestConfig } from 'axios'
 
-export interface RequestParams {
+export interface IRequestParams {
     [key: string]: unknown
 }
 
-export interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+export interface ICustomAxiosRequestConfig extends AxiosRequestConfig {
     retryCount?: number
+}
+
+export interface IErrorResponse {
+    error?: string
+    message?: string
 }

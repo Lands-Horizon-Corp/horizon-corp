@@ -1,4 +1,9 @@
-import { PaginatedResult } from './paginated-result'
+import { IPaginatedResult } from './paginated-result'
+
+export interface IGendersRequest {
+    name: string
+    description?: string
+}
 
 export interface IGenderResource {
     id: number
@@ -8,4 +13,4 @@ export interface IGenderResource {
     updatedAt: string
 }
 
-export type IGenderPaginatedResource = PaginatedResult<IGenderResource>
+export type IGenderPaginatedResource = IPaginatedResult<IGenderResource>

@@ -1,9 +1,14 @@
-import { IMediaRequest } from "./media"
-import { IUserBase, TAccountType } from "./common"
-import { IPaginatedResult } from "./paginated-result"
+import { ICompanyResource } from './company'
+import { IFootstepResource } from './footstep'
+import { IUserBase, TAccountType } from './common'
+import { IPaginatedResult } from './paginated-result'
+import { IMediaRequest, IMediaResource } from './media'
 
 export interface IOwnerResource extends IUserBase {
-    
+    accountType: string
+    media?: IMediaResource
+    companies?: ICompanyResource[]
+    footsteps?: IFootstepResource[]
 }
 
 export type IOwnerPaginatedResource = IPaginatedResult<IOwnerResource>
@@ -25,4 +30,3 @@ export interface IOwnerRequest {
     emailTemplate?: string
     contactTemplate?: string
 }
-
