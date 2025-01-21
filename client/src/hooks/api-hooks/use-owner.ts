@@ -22,11 +22,11 @@ export const useOwner = ({
     onError,
     preloads = ['Media'],
 }: Omit<
-    IOperationCallbacks<IOwnerResource, string> & IApiPreloads,
+    IOperationCallbacks<IOwnerResource, string> & IAPIPreloads,
     'onSuccess'
 > & {
     ownerId: number
-}) => {IAPIPreloads
+}) => {
     const queryClient = useQueryClient()
 
     return useQuery<IOwnerResource>({
@@ -58,7 +58,7 @@ export const useOwnerCompany = ({
     onError,
     onSuccess,
 }: { ownerId: number } & IOperationCallbacks<ICompanyResource> &
-    IApiPreloads) => {
+    IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useQuery<ICompanyResource>({
@@ -87,6 +87,8 @@ export const useOwnerCompany = ({
             onSuccess?.(response)
             return response
         },
+        retry: 0,
+        enabled: ownerId !== null || ownerId !== undefined,
     })
 }
 
@@ -100,7 +102,7 @@ export const useFilteredPaginatedOwners = ({
     return useQuery<IOwnerPaginatedResource, string>({
         queryKey: ['owner', 'resource-query', filterPayload, pagination],
         queryFn: async () => {
-    IAPIPreloadst [error, result] = await withCatchAsync(
+            const [error, result] = await withCatchAsync(
                 OwnerService.getOwners({
                     preloads,
                     pagination,
