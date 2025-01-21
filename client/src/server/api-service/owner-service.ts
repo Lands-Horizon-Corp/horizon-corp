@@ -4,6 +4,7 @@ import {
     IOwnerRequest,
     IOwnerResource,
     IOwnerPaginatedResource,
+    ICompanyResource,
 } from '../types'
 import APIService from './api-service'
 import { downloadFile } from '../helpers'
@@ -88,6 +89,19 @@ export default class OwnerService {
     public static async verify(id: number): Promise<IOwnerResource> {
         const endpoint = `${OwnerService.BASE_ENDPOINT}/verify/${id}`
         const response = await APIService.post<void, IOwnerResource>(endpoint)
+        return response.data
+    }
+
+    public static async getCompany(adminId: number, preloads?: string[]) {
+        const url = qs.stringifyUrl(
+            {
+                url: `${this.BASE_ENDPOINT}/${adminId}/company`,
+                query: { preloads },
+            },
+            { skipNull: true }
+        )
+
+        const response = await APIService.get<ICompanyResource>(url)
         return response.data
     }
 

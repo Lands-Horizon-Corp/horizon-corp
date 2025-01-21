@@ -10,7 +10,11 @@ import {
     IOperationCallbacks,
     IFilterPaginatedHookProps,
 } from './types'
-import { IOwnerPaginatedResource, IOwnerResource } from '@/server/types'
+import {
+    IOwnerResource,
+    ICompanyResource,
+    IOwnerPaginatedResource,
+} from '@/server/types'
 
 // Load Specific owner by ID
 export const useOwner = ({
@@ -45,6 +49,44 @@ export const useOwner = ({
             return data
         },
         enabled: ownerId !== undefined && ownerId !== null,
+    })
+}
+
+export const useOwnerCompany = ({
+    ownerId,
+    preloads = ['Owner', 'Owner.Media'],
+    onError,
+    onSuccess,
+}: { ownerId: number } & IOperationCallbacks<ICompanyResource> &
+    IApiPreloads) => {
+    const queryClient = useQueryClient()
+
+    return useQuery<ICompanyResource>({
+        queryKey: ['owner', 'company', ownerId],
+        queryFn: async () => {
+            const [error, response] = await withCatchAsync(
+                OwnerService.getCompany(ownerId, preloads)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                if (onError) onError(errorMessage)
+                else toast.error(errorMessage)
+                throw errorMessage
+            }
+
+            queryClient.setQueryData<ICompanyResource>(
+                ['company', response.id],
+                response
+            )
+            queryClient.setQueryData<ICompanyResource>(
+                ['company', 'loader', response.id],
+                response
+            )
+
+            onSuccess?.(response)
+            return response
+        },
     })
 }
 
