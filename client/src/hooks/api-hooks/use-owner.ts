@@ -6,7 +6,7 @@ import { serverRequestErrExtractor } from '@/helpers'
 import OwnerService from '@/server/api-service/owner-service'
 
 import {
-    IApiPreloads,
+    IAPIPreloads,
     IOperationCallbacks,
     IFilterPaginatedHookProps,
 } from './types'
@@ -22,7 +22,7 @@ export const useOwner = ({
     'onSuccess'
 > & {
     ownerId: number
-}) => {
+}) => {IAPIPreloads
     const queryClient = useQueryClient()
 
     return useQuery<IOwnerResource>({
@@ -58,7 +58,7 @@ export const useFilteredPaginatedOwners = ({
     return useQuery<IOwnerPaginatedResource, string>({
         queryKey: ['owner', 'resource-query', filterPayload, pagination],
         queryFn: async () => {
-            const [error, result] = await withCatchAsync(
+    IAPIPreloadst [error, result] = await withCatchAsync(
                 OwnerService.getOwners({
                     preloads,
                     pagination,
