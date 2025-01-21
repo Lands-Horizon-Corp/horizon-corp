@@ -1,8 +1,9 @@
 import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
-import OwnerCompanyRoute from './pages/company/route'
 import OwnerUserRoute from './pages/users/route'
+import { redirect } from '@tanstack/react-router'
+import OwnerCompanyRoute from './pages/company/route'
 
 export const ownerRoute = createRoute({
     getParentRoute: () => rootRoute,
@@ -14,7 +15,7 @@ export const ownerRoute = createRoute({
 const ownerLandingRoute = createRoute({
     getParentRoute: () => ownerRoute,
     path: '/',
-    component: lazyRouteComponent(() => import('@/modules/owner/pages')),
+    beforeLoad: () => redirect({ to: '/owner/dashboard' }),
 })
 
 const ownerDashboardRoute = createRoute({
