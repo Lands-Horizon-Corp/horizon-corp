@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 
 import {
-    IApiPreloads,
+    IAPIPreloads,
     IOperationCallbacks,
     IFilterPaginatedHookProps,
 } from './types'
@@ -38,7 +38,7 @@ export const useFeedback = ({
     preloads = ['User'],
     onError,
     onSuccess,
-}: { feedbackId: number } & IApiPreloads &
+}: { feedbackId: number } & IAPIPreloads &
     IOperationCallbacks<IFeedbackResource, string>) => {
     return useQuery<IFeedbackResource, string>({
         queryKey: ['feedback', feedbackId],

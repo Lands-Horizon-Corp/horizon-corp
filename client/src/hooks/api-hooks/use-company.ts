@@ -10,7 +10,7 @@ import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 
 import {
-    IApiPreloads,
+    IAPIPreloads,
     IOperationCallbacks,
     IFilterPaginatedHookProps,
 } from './types'
@@ -43,7 +43,7 @@ export const useCompany = ({
     preloads = ['Media', 'Owner', 'Owner.Media'],
     onError,
     onSuccess,
-}: { companyId: number } & IApiPreloads &
+}: { companyId: number } & IAPIPreloads &
     IOperationCallbacks<ICompanyResource, string>) => {
     return useQuery<ICompanyResource, string>({
         queryKey: ['company', companyId],
