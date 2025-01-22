@@ -18,12 +18,14 @@ import {
 
 import { THeadingLevel } from '.'
 import ActionTooltip from '../action-tooltip'
+import { cn } from '@/lib'
 
 type Props = {
     editor: Editor | null
     toggleHeading: (level: THeadingLevel) => void
     activeHeading: THeadingLevel | null
-    isHeadingDisabled?: boolean
+    isHeadingDisabled?: boolean,
+    className?: string
 }
 
 const Toolbar = ({
@@ -31,10 +33,18 @@ const Toolbar = ({
     toggleHeading,
     activeHeading,
     isHeadingDisabled = true,
+    className,
 }: Props) => {
+    
     if (!editor) {
         return null
     }
+    
+    const toggleItalic = () =>{
+        console.log('editor', editor.chain().focus())
+        editor.chain().focus().toggleItalic().run()
+    }
+    
     return (
         <div className="flex w-full min-w-fit flex-wrap space-x-2">
             <ActionTooltip align="center" side="top" tooltipContent="italic">

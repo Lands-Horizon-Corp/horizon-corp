@@ -15,6 +15,33 @@ const testLandingRoute = createRoute({
     component: React.lazy(() => import('./pages/upload')),
 })
 
-const TestRoute = testRoute.addChildren([testLandingRoute])
+const documentBuilderRoute = createRoute({
+    getParentRoute: () => testRoute,
+    path: '/document',
+    component: React.lazy(() => import('./pages/document')),
+})
+
+// const TableRoute = createRoute({
+//     getParentRoute: () => testRoute,
+//     path: '/tbl',
+//     component: React.lazy(() => import('./pages/tbl')),
+// })
+
+const signatureRoute = createRoute({
+    getParentRoute: () => testRoute,
+    path: '/signature',
+    component: React.lazy(() => import('./pages/signature')),
+})
+
+
+
+const testPageRoute = createRoute({
+    getParentRoute: () => testRoute,
+    path: '/page',
+    component: React.lazy(() => import('./pages/testPaging')),
+})
+
+
+const TestRoute = testRoute.addChildren([testLandingRoute, documentBuilderRoute, signatureRoute, testPageRoute])
 
 export default TestRoute

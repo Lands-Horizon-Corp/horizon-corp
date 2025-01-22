@@ -164,6 +164,10 @@ import {
     FaFileCsv as CsvIcon,
     FaPhoneAlt as PhoneIcon,
 
+    FaAlignLeft as TextAlignLeftIcon,
+    FaAlignRight as TextAlignRightIcon,
+    FaAlignCenter as TextAlignCenterIcon,
+    FaAlignJustify as TextAlignJustifyIcon,
 } from 'react-icons/fa'
 
 import {
@@ -329,4 +333,8 @@ export {
     ErrorIcon,
     WarningIcon,
     OptionsIcon,
+    TextAlignJustifyIcon,
+    TextAlignRightIcon,
+    TextAlignLeftIcon,
+    TextAlignCenterIcon
 }

@@ -1,4 +1,5 @@
 import MainMapContainer from '@/components/map'
+import UploadSignature from '@/components/signature'
 import { Outlet } from '@tanstack/react-router'
 import { LatLngExpression } from 'leaflet'
 
@@ -9,7 +10,7 @@ const TestLayout = () => {
     // if wanted to use current Position or List of Markers
 
     return (
-        <div className="mx-auto flex flex-col h-[500px] w-[80%]">
+        <div className="">
             <MainMapContainer
                 center={defaultCenter}
                 zoom={defaultZoom}

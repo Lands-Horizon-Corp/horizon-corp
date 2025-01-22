@@ -29,7 +29,7 @@ const TextEditor = ({
     const [activeHeading, setActiveHeading] = useState<THeadingLevel | null>(
         null
     )
-
+        
     const editor = useEditor({
         extensions: [
             StarterKit.configure({
