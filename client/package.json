@@ -53,7 +53,7 @@
         "@tanstack/react-virtual": "^3.10.9",
         "@tanstack/router-zod-adapter": "^1.81.5",
         "@tiptap/core": "^2.10.3",
-        "@tiptap/extension-document": "^2.10.0",
+        "@tiptap/extension-document": "^2.10.3",
         "@tiptap/extension-gapcursor": "^2.10.0",
         "@tiptap/extension-paragraph": "^2.10.0",
         "@tiptap/extension-table": "^2.10.0",
