@@ -21,6 +21,7 @@ import {
     ICompanyPaginatedResource,
 } from '@/server/types'
 import CompanyService from '@/server/api-service/company-service'
+import logger from '@/helpers/loggers/logger'
 
 // Only used by path preloader
 export const companyLoader = (companyId: number) =>
@@ -76,6 +77,8 @@ export const useCreateCompany = ({
     return useMutation<void, string, ICompanyRequest>({
         mutationKey: ['company', 'create'],
         mutationFn: async (newCompanyData) => {
+            logger.log('Create ddata', newCompanyData)
+
             const [error, data] = await withCatchAsync(
                 CompanyService.create(newCompanyData)
             )

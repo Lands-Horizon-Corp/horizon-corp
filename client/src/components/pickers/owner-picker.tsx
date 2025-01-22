@@ -20,14 +20,17 @@ import {
 } from '@/constants'
 import { IOwnerResource } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
+import { useUserAuthStore } from '@/store/user-auth-store'
 
 interface Props {
     value?: number
     placeholder?: string
+    disabled?: boolean
     onSelect?: (selectedOwner: IOwnerResource) => void
 }
 
-const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
+const OwnerPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
+    const { currentUser } = useUserAuthStore()
     const queryClient = useQueryClient()
     const [pickerState, setPickerState] = useState(false)
     const [pagination, setPagination] = useState<PaginationState>({
@@ -77,11 +80,16 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
                         <div className="flex items-center gap-x-2">
                             <ImageDisplay src={owner.media?.downloadURL} />
                             <span className="text-ellipsis text-foreground/80">
-                                {owner.firstName}
+                                {owner.firstName} {owner.lastName}
                             </span>
                         </div>
                         <span className="mr-2 font-mono text-xs italic text-foreground/40">
                             #{owner.id}
+                            {owner.id === currentUser?.id && (
+                                <span className="ml-1 text-foreground/60">
+                                    (You)
+                                </span>
+                            )}
                         </span>
                     </div>
                 )}
@@ -105,6 +113,7 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
             <Button
                 type="button"
                 variant="secondary"
+                disabled={disabled}
                 onClick={() => setPickerState((val) => !val)}
                 className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
             >
@@ -124,7 +133,14 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
                                 {placeholder}
                             </span>
                         ) : (
-                            <span>{owner.data?.firstName}</span>
+                            <span>
+                                {owner.data?.firstName} {owner.data?.lastName}
+                                {owner.data?.id === currentUser?.id && (
+                                    <span className="ml-1 text-foreground/60">
+                                        (You)
+                                    </span>
+                                )}
+                            </span>
                         )}
                     </span>
                     <span className="mr-1 font-mono text-sm text-foreground/30">

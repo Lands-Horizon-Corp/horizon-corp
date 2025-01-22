@@ -47,6 +47,7 @@ import {
     LiaShieldAltSolid as ShieldIcon,
     LiaUserClockSolid as UserClockIcon,
     LiaUserShieldSolid as UserShieldIcon,
+    LiaMapMarkedAltSolid as MapMarkedIcon,
 } from 'react-icons/lia'
 
 import {
@@ -157,10 +158,12 @@ import {
 } from 'react-icons/rx'
 
 import {
+    FaRegMap as MapIcon,
     FaRegEye as EyeIcon,
     FaBold as FaBoldIcon,
-    FaPhoneAlt as PhoneIcon,
     FaFileCsv as CsvIcon,
+    FaPhoneAlt as PhoneIcon,
+
 } from 'react-icons/fa'
 
 import {
@@ -191,6 +194,7 @@ import { SlOptions as OptionsIcon } from "react-icons/sl";
 // Export section
 export {
     XIcon,
+    MapIcon,
     CsvIcon,
     SunIcon,
     KeyIcon,
@@ -244,6 +248,7 @@ export {
     BuildingIcon,
     DownloadIcon,
     CalendarIcon,
+    MapMarkedIcon,
     CodeBlockIcon,
     ArrowLeftIcon,
     ArrowDownIcon,

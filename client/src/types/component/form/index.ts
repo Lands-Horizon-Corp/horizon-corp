@@ -7,4 +7,6 @@ export interface IForm<TDefaultVals, IData = unknown, IErr = unknown>
     onSuccess?: (data: IData) => void
     onError?: (e: IErr) => void
     onLoading?: (loadingState: boolean) => void
+    hiddenFields?: Array<keyof TDefaultVals>
+    disabledFields?: Array<keyof TDefaultVals>
 }
