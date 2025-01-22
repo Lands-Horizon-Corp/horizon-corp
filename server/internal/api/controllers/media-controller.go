@@ -56,7 +56,7 @@ func (c *MediaController) Show(ctx *gin.Context) {}
 // - Log all file uploads with metadata (e.g., file name, size, and user who uploaded).
 // - Store files securely, such as in a cloud storage solution, with proper access controls.
 // - Enforce rate limiting to prevent abuse of the upload endpoint.
-type MediaCreateRequest struct {
+type MediaStoreRequest struct {
 	ID *uint `json:"id"`
 
 	FileName   string `json:"fileName" validate:"required,max=255"`

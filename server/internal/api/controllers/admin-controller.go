@@ -50,6 +50,7 @@ func (c *AdminController) Show(ctx *gin.Context) {
 //	Employee: not allowed
 //	Owner: not allowed
 //	Member: not allowed
+//	public allowed
 func (c *AdminController) Store(ctx *gin.Context) {
 
 }

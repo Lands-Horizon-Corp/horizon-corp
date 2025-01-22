@@ -1,7 +1,6 @@
 package providers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -45,6 +44,32 @@ func NewTokenProvider(
 	}
 }
 
+func (at *TokenService) GenerateUserToken(user UserClaims, expiration time.Duration) (*string, error) {
+	validTypes := []string{"Member", "Employee", "Admin", "Owner"}
+	isValid := false
+	for _, validType := range validTypes {
+		if user.AccountType == validType {
+			isValid = true
+			break
+		}
+	}
+	if !isValid {
+		return nil, eris.New("invalid account type")
+	}
+	claims := &UserClaims{
+		ID:          user.ID,
+		AccountType: user.AccountType,
+	}
+
+	token, err := at.GenerateToken(claims, expiration)
+	if err != nil {
+		wrappedErr := eris.Wrap(err, "failed to generate user token")
+		at.logger.Error(wrappedErr.Error(), zap.Error(err))
+		return nil, wrappedErr
+	}
+	return &token, nil
+}
+
 func (s *TokenService) GenerateToken(claims *UserClaims, expiration time.Duration) (string, error) {
 	if expiration == 0 {
 		expiration = 12 * time.Hour
@@ -52,7 +77,7 @@ func (s *TokenService) GenerateToken(claims *UserClaims, expiration time.Duratio
 
 	claims.StandardClaims = jwt.StandardClaims{
 		Issuer:   "horizon-server",
-		Subject:  fmt.Sprintf("%d", claims.ID),
+		Subject:  claims.ID,
 		IssuedAt: time.Now().Unix(),
 	}
 

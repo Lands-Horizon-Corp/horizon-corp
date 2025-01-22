@@ -1,10 +1,12 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/google/uuid"
+	"github.com/rotisserie/eris"
 	"gorm.io/gorm"
 )
 
@@ -202,4 +204,18 @@ func (m *ModelRepository) OwnerUpdatePassword(id string, password string) (*Owne
 		return nil, err
 	}
 	return repo.UpdateByID(id, "password", newPassword)
+}
+
+func (m *ModelRepository) OwnerSignIn(key string, password string, preloads ...string) (*Owner, error) {
+	owner, err := m.OwnerSearch(key, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("user not found")
+		}
+		return nil, eris.Wrap(err, "failed to search for owner")
+	}
+	if !m.cryptoHelpers.VerifyPassword(owner.Password, password) {
+		return nil, eris.New("invalid credentials")
+	}
+	return owner, nil
 }

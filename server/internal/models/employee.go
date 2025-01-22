@@ -1,10 +1,12 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/google/uuid"
+	"github.com/rotisserie/eris"
 	"gorm.io/gorm"
 )
 
@@ -218,4 +220,18 @@ func (m *ModelRepository) EmployeeUpdatePassword(id string, password string) (*E
 		return nil, err
 	}
 	return repo.UpdateByID(id, "password", newPassword)
+}
+
+func (m *ModelRepository) EmployeeSignIn(key, password string, preload ...string) (*Employee, error) {
+	employee, err := m.EmployeeSearch(key)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("user not found")
+		}
+		return nil, eris.Wrap(err, "failed to search for employee")
+	}
+	if !m.cryptoHelpers.VerifyPassword(employee.Password, password) {
+		return nil, eris.New("invalid credentials")
+	}
+	return employee, nil
 }
