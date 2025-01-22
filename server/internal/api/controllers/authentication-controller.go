@@ -1,26 +1,57 @@
 package controllers
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
+	"github.com/google/uuid"
 )
 
 type AuthController struct {
-	repository  *models.ModelRepository
-	footstep    *handlers.FootstepHandler
-	currentUser *handlers.CurrentUser
+	repository    *models.ModelRepository
+	transformer   *models.ModelTransformer
+	footstep      *handlers.FootstepHandler
+	currentUser   *handlers.CurrentUser
+	tokenProvider *providers.TokenService
+	cfg           *config.AppConfig
+
+	adminController    *AdminController
+	ownerController    *OwnerController
+	employeeController *EmployeeController
+	memberController   *MemberController
 }
 
 func NewAuthController(
 	repository *models.ModelRepository,
+	transformer *models.ModelTransformer,
 	footstep *handlers.FootstepHandler,
 	currentUser *handlers.CurrentUser,
+	tokenProvider *providers.TokenService,
+	cfg *config.AppConfig,
+
+	adminController *AdminController,
+	ownerController *OwnerController,
+	employeeController *EmployeeController,
+	memberController *MemberController,
 ) *AuthController {
 	return &AuthController{
-		repository:  repository,
-		footstep:    footstep,
-		currentUser: currentUser,
+		repository:    repository,
+		transformer:   transformer,
+		footstep:      footstep,
+		currentUser:   currentUser,
+		tokenProvider: tokenProvider,
+		cfg:           cfg,
+
+		adminController:    adminController,
+		ownerController:    ownerController,
+		employeeController: employeeController,
+		memberController:   memberController,
 	}
 }
 
@@ -31,7 +62,27 @@ type SignUpRequest struct {
 }
 
 func (as AuthController) SignUp(ctx *gin.Context) {
-
+	var req SignUpRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	if validator.New().Struct(req) != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
+		return
+	}
+	switch req.AccountType {
+	case "Member":
+		as.memberController.Store(ctx)
+	case "Admin":
+		as.adminController.Store(ctx)
+	case "Owner":
+		as.ownerController.Store(ctx)
+	case "Employee":
+		as.employeeController.Store(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
 // SignIn handles user login.
@@ -42,7 +93,73 @@ type SignInRequest struct {
 	AccountType string `json:"accountType" validate:"required"`
 }
 
-func (as AuthController) SignIn(ctx *gin.Context) {}
+func (as AuthController) SignIn(ctx *gin.Context) {
+	var req SignInRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request data", "details": err.Error()})
+		return
+	}
+	validate := validator.New()
+	if err := validate.Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": err.Error()})
+		return
+	}
+	preloads := ctx.QueryArray("preload")
+	var rawUser interface{}
+	var transformedUser interface{}
+	var id uuid.UUID
+	var err error
+	switch req.AccountType {
+	case "Member":
+		rawUser, err = as.repository.MemberSignIn(req.Key, req.Password, preloads...)
+		if err == nil {
+			id = rawUser.(*models.Member).ID
+			transformedUser = as.transformer.MemberToResource(rawUser.(*models.Member))
+		}
+	case "Admin":
+		rawUser, err = as.repository.AdminSignIn(req.Key, req.Password, preloads...)
+		if err == nil {
+			id = rawUser.(*models.Admin).ID
+			transformedUser = as.transformer.AdminToResource(rawUser.(*models.Admin))
+		}
+	case "Owner":
+		rawUser, err = as.repository.OwnerSignIn(req.Key, req.Password, preloads...)
+		if err == nil {
+			id = rawUser.(*models.Owner).ID
+			transformedUser = as.transformer.OwnerToResource(rawUser.(*models.Owner))
+		}
+	case "Employee":
+		rawUser, err = as.repository.EmployeeSignIn(req.Key, req.Password, preloads...)
+		if err == nil {
+			id = rawUser.(*models.Employee).ID
+			transformedUser = as.transformer.EmployeeToResource(rawUser.(*models.Employee))
+		}
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid account type"})
+		return
+	}
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed", "details": err.Error()})
+		return
+	}
+	token, err := as.tokenProvider.GenerateUserToken(providers.UserClaims{
+		ID:          id.String(),
+		AccountType: req.AccountType,
+	}, 24*time.Hour)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token", "details": err.Error()})
+		return
+	}
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:     as.cfg.AppTokenName,
+		Value:    *token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
+	})
+	ctx.JSON(http.StatusOK, transformedUser)
+}
 
 // ForgotPassword handles password reset requests by sending a reset link.
 // Endpoint: POST /api/v1/auth/forgot-password

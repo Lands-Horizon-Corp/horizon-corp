@@ -1,9 +1,12 @@
 package models
 
 import (
+	"errors"
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/google/uuid"
+	"github.com/rotisserie/eris"
 	"gorm.io/gorm"
 )
 
@@ -14,22 +17,22 @@ type Employee struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
-	FirstName          string     `gorm:"type:varchar(255);unsigned" json:"first_name"`
-	LastName           string     `gorm:"type:varchar(255);unsigned" json:"last_name"`
-	MiddleName         string     `gorm:"type:varchar(255)" json:"middle_name"`
-	PermanentAddress   string     `gorm:"type:text" json:"permanent_address"`
-	Description        string     `gorm:"type:text" json:"description"`
-	BirthDate          time.Time  `gorm:"type:date;unsigned" json:"birth_date"`
-	Username           string     `gorm:"type:varchar(255);unique;unsigned" json:"username"`
-	Email              string     `gorm:"type:varchar(255);unique;unsigned" json:"email"`
-	Password           string     `gorm:"type:varchar(255);unsigned" json:"password"`
-	IsEmailVerified    bool       `gorm:"default:false" json:"is_email_verified"`
-	IsContactVerified  bool       `gorm:"default:false" json:"is_contact_verified"`
-	IsSkipVerification bool       `gorm:"default:false" json:"is_skip_verification"`
-	ContactNumber      string     `gorm:"type:varchar(255);unique;unsigned" json:"contact_number"`
-	Status             UserStatus `gorm:"type:varchar(255);default:'Pending'" json:"status"`
-	Longitude          *float64   `gorm:"type:decimal(10,7)" json:"longitude"`
-	Latitude           *float64   `gorm:"type:decimal(10,7)" json:"latitude"`
+	FirstName          string               `gorm:"type:varchar(255);unsigned" json:"first_name"`
+	LastName           string               `gorm:"type:varchar(255);unsigned" json:"last_name"`
+	MiddleName         string               `gorm:"type:varchar(255)" json:"middle_name"`
+	PermanentAddress   string               `gorm:"type:text" json:"permanent_address"`
+	Description        string               `gorm:"type:text" json:"description"`
+	BirthDate          time.Time            `gorm:"type:date;unsigned" json:"birth_date"`
+	Username           string               `gorm:"type:varchar(255);unique;unsigned" json:"username"`
+	Email              string               `gorm:"type:varchar(255);unique;unsigned" json:"email"`
+	Password           string               `gorm:"type:varchar(255);unsigned" json:"password"`
+	IsEmailVerified    bool                 `gorm:"default:false" json:"is_email_verified"`
+	IsContactVerified  bool                 `gorm:"default:false" json:"is_contact_verified"`
+	IsSkipVerification bool                 `gorm:"default:false" json:"is_skip_verification"`
+	ContactNumber      string               `gorm:"type:varchar(255);unique;unsigned" json:"contact_number"`
+	Status             providers.UserStatus `gorm:"type:varchar(255);default:'Pending'" json:"status"`
+	Longitude          *float64             `gorm:"type:decimal(10,7)" json:"longitude"`
+	Latitude           *float64             `gorm:"type:decimal(10,7)" json:"latitude"`
 
 	// Relationship 0 to 1
 	MediaID *uuid.UUID `gorm:"type:bigint;unsigned" json:"media_id"`
@@ -84,7 +87,7 @@ type EmployeeResource struct {
 	IsContactVerified  bool                     `json:"isContactVerified"`
 	IsSkipVerification bool                     `json:"isSkipVerification"`
 	ContactNumber      string                   `json:"contactNumber"`
-	Status             UserStatus               `json:"status"`
+	Status             providers.UserStatus     `json:"status"`
 	Longitude          *float64                 `json:"longitude"`
 	Latitude           *float64                 `json:"latitude"`
 	MediaID            *uuid.UUID               `json:"mediaID"`
@@ -187,6 +190,7 @@ func (m *ModelRepository) EmployeeSearch(input string, preloads ...string) (*Emp
 func (m *ModelRepository) EmployeeCreate(employee *Employee, preloads ...string) (*Employee, error) {
 	repo := NewGenericRepository[Employee](m.db.Client)
 	newPassword, err := m.cryptoHelpers.HashPassword(employee.Password)
+	employee.Status = providers.NotAllowedStatus
 	if err != nil {
 		return nil, err
 	}
@@ -216,4 +220,18 @@ func (m *ModelRepository) EmployeeUpdatePassword(id string, password string) (*E
 		return nil, err
 	}
 	return repo.UpdateByID(id, "password", newPassword)
+}
+
+func (m *ModelRepository) EmployeeSignIn(key, password string, preload ...string) (*Employee, error) {
+	employee, err := m.EmployeeSearch(key)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("user not found")
+		}
+		return nil, eris.Wrap(err, "failed to search for employee")
+	}
+	if !m.cryptoHelpers.VerifyPassword(employee.Password, password) {
+		return nil, eris.New("invalid credentials")
+	}
+	return employee, nil
 }

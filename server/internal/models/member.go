@@ -1,9 +1,12 @@
 package models
 
 import (
+	"errors"
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/google/uuid"
+	"github.com/rotisserie/eris"
 	"gorm.io/gorm"
 )
 
@@ -13,19 +16,20 @@ type Member struct {
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	FirstName         string    `gorm:"type:varchar(255);unsigned;index" json:"first_name"`
-	LastName          string    `gorm:"type:varchar(255);unsigned;index" json:"last_name"`
-	MiddleName        string    `gorm:"type:varchar(255)" json:"middle_name"`
-	PermanentAddress  string    `gorm:"type:text" json:"permanent_address"`
-	Description       string    `gorm:"type:text" json:"description"`
-	BirthDate         time.Time `gorm:"type:date;unsigned" json:"birth_date"`
-	Username          string    `gorm:"type:varchar(255);unique;unsigned" json:"username"`
-	Email             string    `gorm:"type:varchar(255);unique;unsigned" json:"email"`
-	Password          string    `gorm:"type:varchar(255);unsigned" json:"password"`
-	IsEmailVerified   bool      `gorm:"default:false" json:"is_email_verified"`
-	IsContactVerified bool      `gorm:"default:false" json:"is_contact_verified"`
-	ContactNumber     string    `gorm:"type:varchar(255);unique;unsigned" json:"contact_number"`
-	Status            string    `gorm:"type:varchar(50);default:'Pending'" json:"status"`
+	FirstName          string               `gorm:"type:varchar(255);unsigned;index" json:"first_name"`
+	LastName           string               `gorm:"type:varchar(255);unsigned;index" json:"last_name"`
+	MiddleName         string               `gorm:"type:varchar(255)" json:"middle_name"`
+	PermanentAddress   string               `gorm:"type:text" json:"permanent_address"`
+	Description        string               `gorm:"type:text" json:"description"`
+	BirthDate          time.Time            `gorm:"type:date;unsigned" json:"birth_date"`
+	Username           string               `gorm:"type:varchar(255);unique;unsigned" json:"username"`
+	Email              string               `gorm:"type:varchar(255);unique;unsigned" json:"email"`
+	Password           string               `gorm:"type:varchar(255);unsigned" json:"password"`
+	IsEmailVerified    bool                 `gorm:"default:false" json:"is_email_verified"`
+	IsContactVerified  bool                 `gorm:"default:false" json:"is_contact_verified"`
+	IsSkipVerification bool                 `gorm:"default:false" json:"is_skip_verification"`
+	ContactNumber      string               `gorm:"type:varchar(255);unique;unsigned" json:"contact_number"`
+	Status             providers.UserStatus `gorm:"type:varchar(50);default:'Pending'" json:"status"`
 
 	// Nullable Foreign Keys
 	MediaID *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"media_id"`
@@ -73,7 +77,7 @@ type MemberResource struct {
 	IsContactVerified  bool                   `json:"isContactVerified"`
 	IsSkipVerification bool                   `json:"isSkipVerification"`
 	ContactNumber      string                 `json:"contactNumber"`
-	Status             string                 `json:"status"`
+	Status             providers.UserStatus   `json:"status"`
 	Media              *MediaResource         `json:"media,omitempty"`
 	Longitude          *float64               `json:"longitude,omitempty"`
 	Latitude           *float64               `json:"latitude,omitempty"`
@@ -166,6 +170,7 @@ func (m *ModelRepository) MemberCreate(member *Member, preloads ...string) (*Mem
 		return nil, err
 	}
 	member.Password = newPassword
+	member.Status = providers.VerifiedStatus
 	return repo.Create(member, preloads...)
 }
 func (m *ModelRepository) MemberUpdate(member *Member, preloads ...string) (*Member, error) {
@@ -191,4 +196,18 @@ func (m *ModelRepository) MemberUpdatePassword(id string, password string) (*Mem
 		return nil, err
 	}
 	return repo.UpdateByID(id, "password", newPassword)
+}
+
+func (m *ModelRepository) MemberSignIn(key, password string, preload ...string) (*Member, error) {
+	member, err := m.MemberSearch(key)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("user not found")
+		}
+		return nil, eris.Wrap(err, "failed to search for member")
+	}
+	if !m.cryptoHelpers.VerifyPassword(member.Password, password) {
+		return nil, eris.New("invalid credentials")
+	}
+	return member, nil
 }

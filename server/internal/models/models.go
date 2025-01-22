@@ -9,14 +9,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type UserStatus string
-
-const (
-	PendingStatus    UserStatus = "Pending"
-	VerifiedStatus   UserStatus = "Verified"
-	NotAllowedStatus UserStatus = "Not allowed"
-)
-
 type UserAccountType string
 
 const (
@@ -109,6 +101,10 @@ type GenericRepository[T any] struct {
 // NewGenericRepository creates a new generic repository instance
 func NewGenericRepository[T any](db *gorm.DB) *GenericRepository[T] {
 	return &GenericRepository[T]{db: db}
+}
+
+func (r *GenericRepository[T]) WithTransaction(tx *gorm.DB) *GenericRepository[T] {
+	return &GenericRepository[T]{db: tx}
 }
 
 // GetByID fetches a record by ID with optional preloads
