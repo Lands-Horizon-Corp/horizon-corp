@@ -10,7 +10,7 @@ export interface PaginationOptions {
 }
 
 declare module '@tiptap/core' {
-  interface Commands<ReturnType> {
+    interface Commands<ReturnType> {
     pagination: {
       setPaginationOptions: (options: Partial<PaginationOptions>) => ReturnType;
     };
@@ -30,6 +30,12 @@ const createPageBreak = (pos: number) => {
     return pageBreak;
   });
 };
+
+
+export const PaginationsBreak = Extension.create<PaginationOptions>({
+   name: 'PaginationBreak',
+})
+
 
 export const Pagination = Extension.create<PaginationOptions>({
   name: 'pagination',
@@ -56,7 +62,7 @@ export const Pagination = Extension.create<PaginationOptions>({
   },
 
   addProseMirrorPlugins() {
-    const pluginKey = new PluginKey('pagination');
+    const pluginKey = new PluginKey('pagina tion');
 
     return [
       new Plugin({

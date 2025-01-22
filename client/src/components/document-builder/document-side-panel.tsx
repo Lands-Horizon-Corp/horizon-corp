@@ -31,6 +31,7 @@ import {
 import { MdAdd } from 'react-icons/md'
 import InsertTable from './document-insert-table'
 import companiesTableColumns from '../tables/companies-table/columns'
+import Test from './test'
 const headers = ['Id', 'Name', 'Bday', 'Age', 'Gender']
 
 const Person: any[] = []
@@ -140,11 +141,9 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
                                             {' '}
                                             {subItem.label}
                                         </span>
-
-                                        <MdAdd
-                                            size={18}
-                                            onClick={insertTable(subItem.label)}
-                                            className="ease-in-out hover:scale-105"
+                                        <InsertTable
+                                            content={<Test />}
+                                            trigger={<MdAdd size={18} />}
                                         />
                                     </SidebarMenuSubItem>
                                 </SidebarMenuSub>

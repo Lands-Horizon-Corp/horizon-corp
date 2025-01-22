@@ -23,6 +23,10 @@
     @apply !border-[5px] 
 }
 
+.tiptap table td{
+    @apply border-[5px] !border-red-500
+}
+
 .tiptap table tbody tr .selectedCell{
     @apply  bg-slate-50
 }
