@@ -22,7 +22,7 @@ import { Separator } from '@/components/ui/separator'
 import ImageDisplay from '@/components/image-display'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import CompanyLogo from '@/modules/admin/components/company-logo'
+import CompanyLogo from '@/components/company-profile/company-logo'
 import CompanyAcceptBar from '@/modules/admin/components/company-accept-bar'
 
 import { toReadableDate } from '@/utils'
@@ -200,7 +200,7 @@ const CompanyViewPage = () => {
                                         ]}
                                     />
                                     <div className="absolute left-0 top-0 z-20 hidden h-full w-full sm:block"></div>
-                                    <div className="pointer-events-none absolute left-0 top-0 z-20 hidden h-full w-[50%] bg-gradient-to-r from-popover to-transparent sm:block"></div>
+                                    <div className="pointer-events-none absolute left-0 top-0 z-20 hidden h-full w-[50%] bg-gradient-to-r from-secondary dark:from-popover to-transparent sm:block"></div>
                                 </div>
                             )}
                         </div>
