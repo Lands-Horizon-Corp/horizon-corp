@@ -24,10 +24,11 @@ import useFilterState from '@/hooks/use-filter-state'
 interface Props {
     value: number
     placeholder?: string
+    disabled? : boolean
     onSelect?: (selectedCompany: ICompanyResource) => void
 }
 
-const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
+const CompanyPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
     const queryClient = useQueryClient()
     const [pickerState, setPickerState] = useState(false)
     const [pagination, setPagination] = useState<PaginationState>({
@@ -108,6 +109,7 @@ const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
             <Button
                 type="button"
                 variant="secondary"
+                disabled={disabled}
                 onClick={() => setPickerState((val) => !val)}
                 className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
             >

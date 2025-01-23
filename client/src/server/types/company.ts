@@ -9,6 +9,7 @@ export interface ICompanyRequest {
     address?: string
     longitude?: number
     latitude?: number
+    email?: string
     contactNumber: string
     ownerId?: number
     companyId?: number
