@@ -274,7 +274,7 @@ export const useUpdateCompanyProfilePicture = ({
 export const useDeleteCompany = ({
     onSuccess,
     onError,
-}: IOperationCallbacks) => {
+}: undefined | IOperationCallbacks<undefined> = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, number>({

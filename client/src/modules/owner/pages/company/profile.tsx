@@ -4,21 +4,29 @@ import { Link } from '@tanstack/react-router'
 import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { PencilOutlineIcon } from '@/components/icons'
-import EnsureOwnerCompany from '../../components/ensure-company'
+import { PencilOutlineIcon, TrashIcon } from '@/components/icons'
 import PageContainer from '@/components/containers/page-container'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 import CompanyBanner from '@/components/company-profile/company-banner'
 import CompanyDescription from '@/components/company-profile/company-description'
 import CompanyBasicDetailsList from '@/components/company-profile/company-basic-details-list'
 import { CompanyEditFormModal } from '@/components/forms/company-forms/company-edit-basic-info-form'
 
+import EnsureOwnerCompany from '../../components/ensure-company'
+import CompanyDeleteModalContent from '../../components/company-delete-modal-description'
+
 import { ICompanyResource } from '@/server'
+import useConfirmModalStore from '@/store/confirm-modal-store'
+import { useDeleteCompany } from '@/hooks/api-hooks/use-company'
 
 const OwnerCompanyProfilePage = () => {
+    const { onOpen } = useConfirmModalStore()
     const [editModal, setEditModal] = useState(false)
     const [company, setCompany] = useState<ICompanyResource | undefined>(
         undefined
     )
+
+    const { isPending: isDeleting, mutate: deleteCompany } = useDeleteCompany()
 
     return (
         <PageContainer className="gap-y-4">
@@ -66,6 +74,33 @@ const OwnerCompanyProfilePage = () => {
                                 >
                                     <PencilOutlineIcon className="mr-2" />
                                     Edit Company
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    disabled={isDeleting}
+                                    className="text-destructive hover:text-destructive-foreground/70"
+                                    hoverVariant="destructive"
+                                    onClick={() =>
+                                        onOpen({
+                                            title: 'Company Deletion',
+                                            description:
+                                                'Deleting your company is a significant action that cannot be undone once completed. Please read the following details carefully ',
+                                            content: (
+                                                <CompanyDeleteModalContent />
+                                            ),
+                                            confirmString: 'delete',
+                                            onConfirm: () =>
+                                                deleteCompany(company.id),
+                                        })
+                                    }
+                                >
+                                    {isDeleting ? (
+                                        <LoadingSpinner />
+                                    ) : (
+                                        <TrashIcon className="mr-2" />
+                                    )}
+                                    Delete
                                 </Button>
                             </div>
                         </div>
