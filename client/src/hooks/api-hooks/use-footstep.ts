@@ -1,38 +1,51 @@
-import { toast } from 'sonner';
-import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner'
+import { useQuery } from '@tanstack/react-query'
 
-import { toBase64, withCatchAsync } from '@/utils';
-import { serverRequestErrExtractor } from '@/helpers';
-import  FootstepService  from '@/server/api-service/footstep-service';
+import { toBase64, withCatchAsync } from '@/utils'
+import { serverRequestErrExtractor } from '@/helpers'
+import FootstepService from '@/server/api-service/footstep-service'
 
-import { IFilterPaginatedHookProps } from './types';
-import { IFootstepPaginatedResource } from '@/server/types';
+import { IFilterPaginatedHookProps } from './types'
+import { IFootstepPaginatedResource } from '@/server/types'
 
 export const useFilteredPaginatedFootsteps = ({
     sort,
     filterPayload,
     preloads = [],
+    mode = 'self',
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps = {}) => {
+}: { mode?: 'team' | 'self' } & IFilterPaginatedHookProps) => {
     return useQuery<IFootstepPaginatedResource, string>({
-        queryKey: ['footstep', 'resource-query', filterPayload, pagination, sort],
+        queryKey: [
+            'footstep',
+            'resource-query',
+            mode,
+            filterPayload,
+            pagination,
+            sort,
+        ],
         queryFn: async () => {
+            let serviceFn = FootstepService.getFootsteps
+
+            if (mode === 'team') serviceFn = FootstepService.getFootstepsTeam
+            else serviceFn = FootstepService.getFootsteps
+
             const [error, result] = await withCatchAsync(
-                FootstepService.getFootsteps({
+                serviceFn({
                     preloads,
                     pagination,
                     sort: sort && toBase64(sort),
                     filters: filterPayload && toBase64(filterPayload),
                 })
-            );
+            )
 
             if (error) {
-                const errorMessage = serverRequestErrExtractor({ error });
-                toast.error(errorMessage);
-                throw errorMessage;
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                throw errorMessage
             }
 
-            return result;
+            return result
         },
         initialData: {
             data: [],
@@ -42,5 +55,5 @@ export const useFilteredPaginatedFootsteps = ({
             ...pagination,
         },
         retry: 1,
-    });
-};
+    })
+}

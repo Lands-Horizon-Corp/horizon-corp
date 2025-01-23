@@ -11,6 +11,33 @@ import { IFootstepPaginatedResource } from '@/server/types'
 export default class FootstepService {
     private static readonly BASE_ENDPOINT = '/footstep'
 
+    // GET Details of specific footsteps
+    public static async getFootstepById(
+        footstepId: number,
+        preloads: string[] = [
+            'Admin',
+            'Admin.Media',
+            'Employee',
+            'Employee.Media',
+            'Owner',
+            'Owner.Media',
+            'Member',
+            'Member.Media',
+        ]
+    ) {
+        const url = qs.stringifyUrl(
+            {
+                url: `${FootstepService.BASE_ENDPOINT}/${footstepId}`,
+                query: {
+                    preloads,
+                },
+            },
+            { skipNull: true }
+        )
+        const response = await APIService.get<IFootstepPaginatedResource>(url)
+        return response.data
+    }
+
     public static async exportAll(): Promise<void> {
         const url = `${FootstepService.BASE_ENDPOINT}/export`
         await downloadFile(url, 'all_footsteps_export.csv')
@@ -34,6 +61,37 @@ export default class FootstepService {
         await downloadFile(url, 'selected_footsteps_export.csv')
     }
 
+    // Retrieve footsteps[] for a team based on the user role:
+    //   - Admin: Can retrieve footsteps for all members, employees, and owners across all branches.
+    //   - Owner: Can retrieve footsteps for employees and members within their owned branches.
+    //   - Employee: Can retrieve footsteps for employees and members within their specific branch.
+    public static async getFootstepsTeam(props?: {
+        sort?: string
+        filters?: string
+        preloads?: string[]
+        pagination?: { pageIndex: number; pageSize: number }
+    }): Promise<IFootstepPaginatedResource> {
+        const { filters, preloads, pagination, sort } = props || {}
+
+        const url = qs.stringifyUrl(
+            {
+                url: `${FootstepService.BASE_ENDPOINT}/team`,
+                query: {
+                    sort,
+                    preloads,
+                    filter: filters,
+                    pageIndex: pagination?.pageIndex,
+                    pageSize: pagination?.pageSize,
+                },
+            },
+            { skipNull: true }
+        )
+
+        const response = await APIService.get<IFootstepPaginatedResource>(url)
+        return response.data
+    }
+
+    // GET only your own footsteps[]
     public static async getFootsteps(props?: {
         sort?: string
         filters?: string

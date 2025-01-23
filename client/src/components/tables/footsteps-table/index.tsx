@@ -13,8 +13,8 @@ import DataTablePagination from '@/components/data-table/data-table-pagination'
 import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 
 import footstepColumns, {
-    footstepGlobalSearchTargets,
     IFootstepTableColumnProps,
+    footstepGlobalSearchTargets,
 } from './columns'
 
 import { cn } from '@/lib'
@@ -38,9 +38,11 @@ export interface FootstepTableProps
         | 'exportActionProps'
         | 'deleteActionProps'
     >
+    mode?: 'self' | 'team'
 }
 
 const FootstepTable = ({
+    mode,
     className,
     toolbarProps,
     defaultFilter,
@@ -86,6 +88,7 @@ const FootstepTable = ({
         data: { data, totalPage, pageSize, totalSize },
         refetch,
     } = useFilteredPaginatedFootsteps({
+        mode,
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
