@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -17,6 +18,7 @@ type MemberController struct {
 	transformer *models.ModelTransformer
 	footstep    *handlers.FootstepHandler
 	currentUser *handlers.CurrentUser
+	otpService  *providers.OTPService
 }
 
 func NewMemberController(
@@ -24,12 +26,14 @@ func NewMemberController(
 	transformer *models.ModelTransformer,
 	footstep *handlers.FootstepHandler,
 	currentUser *handlers.CurrentUser,
+	otpService *providers.OTPService,
 ) *MemberController {
 	return &MemberController{
 		repository:  repository,
 		transformer: transformer,
 		footstep:    footstep,
 		currentUser: currentUser,
+		otpService:  otpService,
 	}
 }
 
@@ -55,17 +59,30 @@ type MemberStoreRequest struct {
 	MediaID   *uuid.UUID `json:"mediaId" validate:"omitempty,uuid"`
 	RoleID    *uuid.UUID `json:"roleId" validate:"omitempty,uuid"`
 	GenderID  *uuid.UUID `json:"genderId" validate:"omitempty,uuid"`
+
+	EmailTemplate   string `json:"emailTemplate" validate:"required"`
+	ContactTemplate string `json:"contactTemplate" validate:"required"`
 }
 
 func (c *MemberController) Store(ctx *gin.Context) {
+	c.Create(ctx)
+}
+
+func (c *MemberController) Update(ctx *gin.Context) {}
+
+func (c *MemberController) Destroy(ctx *gin.Context) {}
+
+func (c *MemberController) ForgotPassword(ctx *gin.Context) {}
+
+func (c *MemberController) Create(ctx *gin.Context) *models.Member {
 	var req MemberStoreRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
+		return nil
 	}
 	if validator.New().Struct(req) != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
-		return
+		return nil
 	}
 
 	member, err := c.repository.MemberCreate(&models.Member{
@@ -92,13 +109,34 @@ func (c *MemberController) Store(ctx *gin.Context) {
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create member", "details": err.Error()})
-		return
+		return nil
+	}
+	if err := c.otpService.SendEmailOTP(providers.OTPMessage{
+		AccountType: "member", ID: member.ID.String(),
+		MediumType: "email",
+		Reference:  "email-verification",
+	}, providers.EmailRequest{
+		To:      req.Email,
+		Subject: "ECOOP: Email Verification",
+		Body:    req.EmailTemplate,
+	}); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return nil
+	}
+	if err := c.otpService.SendContactNumberOTP(providers.OTPMessage{
+		AccountType: "member", ID: member.ID.String(),
+		MediumType: "sms",
+		Reference:  "sms-verification",
+	}, providers.SMSRequest{
+		To:   req.ContactNumber,
+		Body: req.ContactTemplate,
+		Vars: &map[string]string{
+			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
+		},
+	}); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return nil
 	}
 	ctx.JSON(http.StatusCreated, c.transformer.MemberToResource(member))
+	return member
 }
-
-func (c *MemberController) Update(ctx *gin.Context) {}
-
-func (c *MemberController) Destroy(ctx *gin.Context) {}
-
-func (c *MemberController) ForgotPassword(ctx *gin.Context) {}

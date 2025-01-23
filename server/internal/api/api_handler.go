@@ -46,12 +46,12 @@ func NewAPIHandlerInvoke(
 	{
 		admin := v1.Group("/admin")
 		{
-			admin.GET("/", adminController.Index)
-			admin.GET("/:id", adminController.Show)
-			admin.POST("/", adminController.Store)
-			admin.PUT("/:id", adminController.Update)
-			admin.DELETE("/:id", adminController.Destroy)
-			admin.DELETE("/forgot-password", adminController.ForgotPassword)
+			admin.GET("/", middle.AccountTypeMiddleware("Admin"), adminController.Index)
+			admin.GET("/:id", middle.AccountTypeMiddleware("Admin"), adminController.Show)
+			admin.POST("/", middle.AccountTypeMiddleware("Admin"), adminController.Store)
+			admin.PUT("/:id", middle.AccountTypeMiddleware("Admin"), adminController.Update)
+			admin.DELETE("/:id", middle.AccountTypeMiddleware("Admin"), adminController.Destroy)
+			admin.DELETE("/forgot-password", middle.AccountTypeMiddleware("Admin"), adminController.ForgotPassword)
 		}
 		auth := v1.Group("/auth")
 		{
@@ -99,11 +99,11 @@ func NewAPIHandlerInvoke(
 		}
 		employee := v1.Group("/employee")
 		{
-			employee.GET("/", employeeController.Index)
-			employee.GET("/:id", employeeController.Show)
-			employee.POST("/", employeeController.Store)
-			employee.DELETE("/:id", employeeController.Destroy)
-			employee.DELETE("/forgot-password", employeeController.ForgotPassword)
+			employee.GET("/", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Index)
+			employee.GET("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Show)
+			employee.POST("/", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Store)
+			employee.DELETE("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Destroy)
+			employee.DELETE("/forgot-password", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.ForgotPassword)
 		}
 
 		feedback := v1.Group("/feedback")
@@ -141,7 +141,7 @@ func NewAPIHandlerInvoke(
 		{
 			member.GET("/", memberController.Index)
 			member.GET("/:id", memberController.Show)
-			member.POST("/", memberController.Store)
+			member.POST("/", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.Store)
 			member.PUT("/:id", memberController.Update)
 			member.DELETE("/:id", memberController.Destroy)
 			member.GET("/forgot-password", memberController.ForgotPassword)
@@ -160,7 +160,7 @@ func NewAPIHandlerInvoke(
 		{
 			owner.GET("/", ownerController.Index)
 			owner.GET("/:id", ownerController.Show)
-			owner.POST("/", ownerController.Store)
+			owner.POST("/", middle.AccountTypeMiddleware("Admin"), ownerController.Store)
 			owner.PUT("/:id", ownerController.Update)
 			owner.DELETE("/:id", ownerController.Destroy)
 			owner.GET("/forgot-password", ownerController.ForgotPassword)

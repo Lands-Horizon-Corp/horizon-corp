@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -17,6 +18,7 @@ type OwnerController struct {
 	transformer *models.ModelTransformer
 	footstep    *handlers.FootstepHandler
 	currentUser *handlers.CurrentUser
+	otpService  *providers.OTPService
 }
 
 func NewOwnerController(
@@ -24,12 +26,14 @@ func NewOwnerController(
 	transformer *models.ModelTransformer,
 	footstep *handlers.FootstepHandler,
 	currentUser *handlers.CurrentUser,
+	otpService *providers.OTPService,
 ) *OwnerController {
 	return &OwnerController{
 		repository:  repository,
 		transformer: transformer,
 		footstep:    footstep,
 		currentUser: currentUser,
+		otpService:  otpService,
 	}
 }
 
@@ -62,17 +66,42 @@ type OwnerStoreRequest struct {
 	MediaID  *uuid.UUID `json:"mediaId" validate:"omitempty,uuid"`
 	GenderID *uuid.UUID `json:"genderId" validate:"omitempty,uuid"`
 	RoleID   *uuid.UUID `json:"roleId" validate:"omitempty,uuid"`
+
+	EmailTemplate   string `json:"emailTemplate" validate:"required"`
+	ContactTemplate string `json:"contactTemplate" validate:"required"`
 }
 
 func (c *OwnerController) Store(ctx *gin.Context) {
+	c.Create(ctx)
+}
+
+// PUT: /api/v1/owner/:id
+func (c *OwnerController) Update(ctx *gin.Context) {
+
+}
+
+// DELETE: /
+// For owner only delete owner but if no branch and company and no employee or members
+func (c *OwnerController) Destroy(ctx *gin.Context) {
+
+}
+
+// POST: /forgot-password
+// owner: only  for email, phone number, and actual link
+// Public: ownly  for email, and phone number
+func (c *OwnerController) ForgotPassword(ctx *gin.Context) {
+
+}
+
+func (c *OwnerController) Create(ctx *gin.Context) *models.Owner {
 	var req OwnerStoreRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
+		return nil
 	}
 	if validator.New().Struct(req) != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
-		return
+		return nil
 	}
 
 	owner, err := c.repository.OwnerCreate(&models.Owner{
@@ -98,25 +127,35 @@ func (c *OwnerController) Store(ctx *gin.Context) {
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create owner", "details": err.Error()})
-		return
+		return nil
+	}
+
+	if err := c.otpService.SendEmailOTP(providers.OTPMessage{
+		AccountType: "owner", ID: owner.ID.String(),
+		MediumType: "owner",
+		Reference:  "email-verification",
+	}, providers.EmailRequest{
+		To:      req.Email,
+		Subject: "ECOOP: Email Verification",
+		Body:    req.EmailTemplate,
+	}); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return nil
+	}
+	if err := c.otpService.SendContactNumberOTP(providers.OTPMessage{
+		AccountType: "owner", ID: owner.ID.String(),
+		MediumType: "sms",
+		Reference:  "sms-verification",
+	}, providers.SMSRequest{
+		To:   req.ContactNumber,
+		Body: req.ContactTemplate,
+		Vars: &map[string]string{
+			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
+		},
+	}); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return nil
 	}
 	ctx.JSON(http.StatusCreated, c.transformer.OwnerToResource(owner))
-}
-
-// PUT: /api/v1/owner/:id
-func (c *OwnerController) Update(ctx *gin.Context) {
-
-}
-
-// DELETE: /
-// For owner only delete owner but if no branch and company and no employee or members
-func (c *OwnerController) Destroy(ctx *gin.Context) {
-
-}
-
-// POST: /forgot-password
-// owner: only  for email, phone number, and actual link
-// Public: ownly  for email, and phone number
-func (c *OwnerController) ForgotPassword(ctx *gin.Context) {
-
+	return owner
 }

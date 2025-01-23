@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -17,6 +18,7 @@ type EmployeeController struct {
 	transformer *models.ModelTransformer
 	footstep    *handlers.FootstepHandler
 	currentUser *handlers.CurrentUser
+	otpService  *providers.OTPService
 }
 
 func NewEmployeeController(
@@ -24,12 +26,14 @@ func NewEmployeeController(
 	transformer *models.ModelTransformer,
 	footstep *handlers.FootstepHandler,
 	currentUser *handlers.CurrentUser,
+	otpService *providers.OTPService,
 ) *EmployeeController {
 	return &EmployeeController{
 		repository:  repository,
 		transformer: transformer,
 		footstep:    footstep,
 		currentUser: currentUser,
+		otpService:  otpService,
 	}
 }
 
@@ -74,17 +78,52 @@ type EmployeeStoreRequest struct {
 	BranchID *uuid.UUID `json:"branchId" validate:"omitempty,uuid"`
 	RoleID   *uuid.UUID `json:"roleId" validate:"omitempty,uuid"`
 	GenderID *uuid.UUID `json:"genderId" validate:"omitempty,uuid"`
+
+	EmailTemplate   string `json:"emailTemplate" validate:"required"`
+	ContactTemplate string `json:"contactTemplate" validate:"required"`
 }
 
 func (c *EmployeeController) Store(ctx *gin.Context) {
+	c.Create(ctx)
+	// if Logged in or not
+	//	 	Only Admin, Owner and verified
+	//		do not set cookies
+	// else
+	// 		Log me in
+
+}
+
+// PUT: /
+// Admin: Can create employee but must assign company and branch
+// Owner: can create but must assign branch
+// Employee: not allowed
+// Member: not allowed
+func (c *EmployeeController) Update(ctx *gin.Context) {
+
+}
+
+// DELETE: /:id
+// Admin: allowed
+// Owner: allowed
+// Employee: not allowed
+// Member: not allowed
+func (c *EmployeeController) Destroy(ctx *gin.Context) {
+
+}
+
+func (c *EmployeeController) ForgotPassword(ctx *gin.Context) {
+
+}
+
+func (c *EmployeeController) Create(ctx *gin.Context) *models.Employee {
 	var req EmployeeStoreRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
+		return nil
 	}
 	if validator.New().Struct(req) != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
-		return
+		return nil
 	}
 	employee, err := c.repository.EmployeeCreate(&models.Employee{
 		FirstName:          req.FirstName,
@@ -111,29 +150,34 @@ func (c *EmployeeController) Store(ctx *gin.Context) {
 	})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create employee", "details": err.Error()})
-		return
+		return nil
+	}
+	if err := c.otpService.SendEmailOTP(providers.OTPMessage{
+		AccountType: "employee", ID: employee.ID.String(),
+		MediumType: "email",
+		Reference:  "email-verification",
+	}, providers.EmailRequest{
+		To:      req.Email,
+		Subject: "ECOOP: Email Verification",
+		Body:    req.EmailTemplate,
+	}); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return nil
+	}
+	if err := c.otpService.SendContactNumberOTP(providers.OTPMessage{
+		AccountType: "employee", ID: employee.ID.String(),
+		MediumType: "sms",
+		Reference:  "sms-verification",
+	}, providers.SMSRequest{
+		To:   req.ContactNumber,
+		Body: req.ContactTemplate,
+		Vars: &map[string]string{
+			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
+		},
+	}); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return nil
 	}
 	ctx.JSON(http.StatusCreated, c.transformer.EmployeeToResource(employee))
-}
-
-// PUT: /
-// Admin: Can create employee but must assign company and branch
-// Owner: can create but must assign branch
-// Employee: not allowed
-// Member: not allowed
-func (c *EmployeeController) Update(ctx *gin.Context) {
-
-}
-
-// DELETE: /:id
-// Admin: allowed
-// Owner: allowed
-// Employee: not allowed
-// Member: not allowed
-func (c *EmployeeController) Destroy(ctx *gin.Context) {
-
-}
-
-func (c *EmployeeController) ForgotPassword(ctx *gin.Context) {
-
+	return employee
 }

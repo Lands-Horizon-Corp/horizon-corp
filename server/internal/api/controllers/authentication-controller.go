@@ -64,25 +64,59 @@ type SignUpRequest struct {
 func (as AuthController) SignUp(ctx *gin.Context) {
 	var req SignUpRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if validator.New().Struct(req) != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	var (
+		userID     string
+		userStatus providers.UserStatus
+	)
 	switch req.AccountType {
 	case "Member":
-		as.memberController.Store(ctx)
+		member := as.memberController.Create(ctx)
+		userID = member.ID.String()
+		userStatus = member.Status
 	case "Admin":
-		as.adminController.Store(ctx)
+		admin := as.adminController.Create(ctx)
+		userID = admin.ID.String()
+		userStatus = admin.Status
 	case "Owner":
-		as.ownerController.Store(ctx)
+		owner := as.ownerController.Create(ctx)
+		userID = owner.ID.String()
+		userStatus = owner.Status
 	case "Employee":
-		as.employeeController.Store(ctx)
+		employee := as.employeeController.Create(ctx)
+		userID = employee.ID.String()
+		userStatus = employee.Status
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+		return
 	}
+	token, err := as.tokenProvider.GenerateUserToken(
+		providers.UserClaims{
+			ID:          userID,
+			AccountType: req.AccountType,
+			UserStatus:  userStatus,
+		},
+		time.Hour*24,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:     as.cfg.AppTokenName,
+		Value:    *token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
+	})
+
 }
 
 // SignIn handles user login.
