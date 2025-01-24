@@ -315,12 +315,8 @@ func (as AuthController) NewPassword(ctx *gin.Context) {
 	}
 }
 
-// SkipVerification allows skipping the verification process under certain conditions.
-// Endpoint: POST /api/v1/auth/skip-verification (requires authentication)
 func (as AuthController) SkipVerification(ctx *gin.Context) {}
 
-// SendEmailVerification sends a verification email to the user.
-// Endpoint: POST /api/v1/auth/send-email-verification (requires authentication)
 type SendEmailVerificationRequest struct {
 	EmailTemplate string `json:"emailTemplate" validate:"required"`
 }

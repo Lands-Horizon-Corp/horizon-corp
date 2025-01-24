@@ -168,6 +168,7 @@ func (c *AdminController) ForgotPassword(ctx *gin.Context) {
 	link := c.ForgotPasswordResetLink(ctx)
 	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
 }
+
 func (c *AdminController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 	var req AdminForgotPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -230,6 +231,7 @@ func (c *AdminController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 		return nil
 	}
 }
+
 func (c *AdminController) Create(ctx *gin.Context) *models.Admin {
 
 	var req AdminStoreRequest
@@ -307,6 +309,10 @@ func (c *AdminController) NewPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
 		return
 	}
+	if validator.New().Struct(req) != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
+		return
+	}
 	admin, err := c.currentUser.Admin(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
@@ -321,4 +327,40 @@ func (c *AdminController) NewPassword(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+}
+
+func (c *AdminController) SkipVerification(ctx *gin.Context) {
+
+}
+
+type AdminSendEmailVerificationRequest struct {
+	EmailTemplate string `json:"emailTemplate" validate:"required"`
+}
+
+func (c *AdminController) SendEmailVerification(ctx *gin.Context) {
+
+}
+
+type AdminVerifyEmailRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
+}
+
+func (c *AdminController) VerifyEmail(ctx *gin.Context) {
+
+}
+
+type AdminSendContactNumberVerificationRequest struct {
+	ContactTemplate string `json:"contactTemplate" validate:"required"`
+}
+
+func (c *AdminController) SendContactNumberVerification(ctx *gin.Context) {
+
+}
+
+type AdminVerifyContactNumberRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
+}
+
+func (c *AdminController) VerifyContactNumber(ctx *gin.Context) {
+
 }

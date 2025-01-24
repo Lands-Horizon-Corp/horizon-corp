@@ -289,6 +289,10 @@ func (c *OwnerController) NewPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
 		return
 	}
+	if validator.New().Struct(req) != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
+		return
+	}
 	owner, err := c.currentUser.Owner(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
