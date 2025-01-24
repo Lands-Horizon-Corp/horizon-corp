@@ -269,30 +269,51 @@ func (as AuthController) ChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
 	as.tokenProvider.DeleteToken(req.ResetID)
-
 }
 
-// VerifyResetLink verifies the reset link for password recovery.
-// Endpoint: GET /api/v1/auth/verify-reset-link/:id
-func (as AuthController) VerifyResetLink(ctx *gin.Context) {}
-
-// SignOut logs the user out of the system.
-// Endpoint: POST /api/v1/auth/signout
-func (as AuthController) SignOut(ctx *gin.Context) {}
-
-// CurrentUser retrieves the currently logged-in user's details.
-// Endpoint: GET /api/v1/auth/current-user (requires authentication)
-func (as AuthController) CurrentUser(ctx *gin.Context) {}
-
-// NewPassword sets a new password for the user after verification.
-// Endpoint: POST /api/v1/auth/new-password (requires authentication)
-type NewPasswordRequest struct {
-	PreviousPassword string `json:"previousPassword" validate:"required,min=8,max=255"`
-	NewPassword      string `json:"newPassword" validate:"required,min=8,max=255"`
-	ConfirmPassword  string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
+func (as AuthController) VerifyResetLink(ctx *gin.Context) {
+	_, err := as.tokenProvider.VerifyToken(ctx.Param("id"))
+	if err != nil {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("VerifyResetLink: Token verification error: %v", err)})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Link verified successfully."})
 }
 
-func (as AuthController) NewPassword(ctx *gin.Context) {}
+func (as AuthController) SignOut(ctx *gin.Context) {
+	as.tokenProvider.ClearTokenCookie(ctx)
+	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
+}
+
+func (as AuthController) CurrentUser(ctx *gin.Context) {
+	user, err := as.currentUser.GenericUser(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, user)
+}
+
+func (as AuthController) NewPassword(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.NewPassword(ctx)
+	case "Admin":
+		as.adminController.NewPassword(ctx)
+	case "Owner":
+		as.ownerController.NewPassword(ctx)
+	case "Employee":
+		as.employeeController.NewPassword(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
+}
 
 // SkipVerification allows skipping the verification process under certain conditions.
 // Endpoint: POST /api/v1/auth/skip-verification (requires authentication)

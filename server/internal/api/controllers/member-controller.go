@@ -260,3 +260,31 @@ func (c *MemberController) Create(ctx *gin.Context) *models.Member {
 	ctx.JSON(http.StatusCreated, c.transformer.MemberToResource(member))
 	return member
 }
+
+type MemberNewPasswordRequest struct {
+	PreviousPassword string `json:"previousPassword" validate:"required,min=8,max=255"`
+	NewPassword      string `json:"newPassword" validate:"required,min=8,max=255"`
+	ConfirmPassword  string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
+}
+
+func (c *MemberController) NewPassword(ctx *gin.Context) {
+	var req *MemberChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	member, err := c.currentUser.Member(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	updatedMember, err := c.repository.MemberChangePassword(
+		member.ID.String(), req.OldPassword, req.NewPassword,
+		c.helpers.GetPreload(ctx)...,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
+}

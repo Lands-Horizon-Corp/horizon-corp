@@ -168,7 +168,6 @@ func (c *AdminController) ForgotPassword(ctx *gin.Context) {
 	link := c.ForgotPasswordResetLink(ctx)
 	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
 }
-
 func (c *AdminController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 	var req AdminForgotPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -294,4 +293,32 @@ func (c *AdminController) Create(ctx *gin.Context) *models.Admin {
 	}
 	ctx.JSON(http.StatusCreated, c.transformer.AdminToResource(admin))
 	return admin
+}
+
+type AdminNewPasswordRequest struct {
+	PreviousPassword string `json:"previousPassword" validate:"required,min=8,max=255"`
+	NewPassword      string `json:"newPassword" validate:"required,min=8,max=255"`
+	ConfirmPassword  string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
+}
+
+func (c *AdminController) NewPassword(ctx *gin.Context) {
+	var req *AdminChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	admin, err := c.currentUser.Admin(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	updatedAdmin, err := c.repository.AdminChangePassword(
+		admin.ID.String(), req.OldPassword, req.NewPassword,
+		c.helpers.GetPreload(ctx)...,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 }

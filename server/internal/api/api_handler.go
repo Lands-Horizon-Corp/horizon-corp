@@ -53,6 +53,7 @@ func NewAPIHandlerInvoke(
 			admin.DELETE("/:id", middle.AccountTypeMiddleware("Admin"), adminController.Destroy)
 			admin.POST("/forgot-password", middle.AccountTypeMiddleware("Admin"), adminController.ForgotPassword)
 			admin.POST("/change-password", middle.AccountTypeMiddleware("Admin"), adminController.ChangePassword)
+			admin.POST("/new-password", middle.AccountTypeMiddleware("Admin"), adminController.NewPassword)
 		}
 		auth := v1.Group("/auth")
 		{
@@ -106,6 +107,7 @@ func NewAPIHandlerInvoke(
 			employee.DELETE("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Destroy)
 			employee.POST("/forgot-password", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.ForgotPassword)
 			employee.POST("/change-password", middle.AccountTypeMiddleware("Employee"), employeeController.ChangePassword)
+			employee.POST("/new-password", middle.AccountTypeMiddleware("Employee"), employeeController.NewPassword)
 		}
 
 		feedback := v1.Group("/feedback")
@@ -148,6 +150,7 @@ func NewAPIHandlerInvoke(
 			member.DELETE("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.Destroy)
 			member.GET("/forgot-password", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.ForgotPassword)
 			member.POST("/change-password", middle.AccountTypeMiddleware("Member"), memberController.ChangePassword)
+			member.POST("/new-password", middle.AccountTypeMiddleware("Member"), memberController.NewPassword)
 		}
 
 		memberProfile := v1.Group("/member-profile")
@@ -168,6 +171,7 @@ func NewAPIHandlerInvoke(
 			owner.DELETE("/:id", middle.AccountTypeMiddleware("Admin"), ownerController.Destroy)
 			owner.GET("/forgot-password", middle.AccountTypeMiddleware("Admin"), ownerController.ForgotPassword)
 			owner.POST("/change-password", middle.AccountTypeMiddleware("Owner"), ownerController.ChangePassword)
+			owner.POST("/new-password", middle.AccountTypeMiddleware("Owner"), ownerController.NewPassword)
 		}
 
 		profile := v1.Group("/profile")

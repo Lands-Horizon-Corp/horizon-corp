@@ -293,3 +293,31 @@ func (c *EmployeeController) Create(ctx *gin.Context) *models.Employee {
 	ctx.JSON(http.StatusCreated, c.transformer.EmployeeToResource(employee))
 	return employee
 }
+
+type EmployeeNewPasswordRequest struct {
+	PreviousPassword string `json:"previousPassword" validate:"required,min=8,max=255"`
+	NewPassword      string `json:"newPassword" validate:"required,min=8,max=255"`
+	ConfirmPassword  string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
+}
+
+func (c *EmployeeController) NewPassword(ctx *gin.Context) {
+	var req *EmployeeChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	updatedEmployee, err := c.repository.EmployeeChangePassword(
+		employee.ID.String(), req.OldPassword, req.NewPassword,
+		c.helpers.GetPreload(ctx)...,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
+}

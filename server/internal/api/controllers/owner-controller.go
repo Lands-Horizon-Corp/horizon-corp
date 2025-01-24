@@ -276,3 +276,31 @@ func (c *OwnerController) Create(ctx *gin.Context) *models.Owner {
 	ctx.JSON(http.StatusCreated, c.transformer.OwnerToResource(owner))
 	return owner
 }
+
+type OwnerNewPasswordRequest struct {
+	PreviousPassword string `json:"previousPassword" validate:"required,min=8,max=255"`
+	NewPassword      string `json:"newPassword" validate:"required,min=8,max=255"`
+	ConfirmPassword  string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
+}
+
+func (c *OwnerController) NewPassword(ctx *gin.Context) {
+	var req *OwnerChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	owner, err := c.currentUser.Owner(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	updatedOwner, err := c.repository.OwnerChangePassword(
+		owner.ID.String(), req.OldPassword, req.NewPassword,
+		c.helpers.GetPreload(ctx)...,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+}
