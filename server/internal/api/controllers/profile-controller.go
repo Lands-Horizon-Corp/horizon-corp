@@ -1,28 +1,59 @@
 package controllers
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
 )
 
 type ProfileController struct {
-	repository  *models.ModelRepository
-	footstep    *handlers.FootstepHandler
-	currentUser *handlers.CurrentUser
+	repository    *models.ModelRepository
+	transformer   *models.ModelTransformer
+	footstep      *handlers.FootstepHandler
+	currentUser   *handlers.CurrentUser
+	tokenProvider *providers.TokenService
+	cfg           *config.AppConfig
+	helpers       *helpers.HelpersFunction
+
+	adminController    *AdminController
+	ownerController    *OwnerController
+	employeeController *EmployeeController
+	memberController   *MemberController
 }
 
 func NewProfileController(
 	repository *models.ModelRepository,
+	transformer *models.ModelTransformer,
 	footstep *handlers.FootstepHandler,
 	currentUser *handlers.CurrentUser,
+	tokenProvider *providers.TokenService,
+	cfg *config.AppConfig,
+	helpers *helpers.HelpersFunction,
+
+	adminController *AdminController,
+	ownerController *OwnerController,
+	employeeController *EmployeeController,
+	memberController *MemberController,
 ) *ProfileController {
 	return &ProfileController{
-		repository:  repository,
-		footstep:    footstep,
-		currentUser: currentUser,
+		repository:    repository,
+		transformer:   transformer,
+		footstep:      footstep,
+		currentUser:   currentUser,
+		tokenProvider: tokenProvider,
+		cfg:           cfg,
+		helpers:       helpers,
+
+		adminController:    adminController,
+		ownerController:    ownerController,
+		employeeController: employeeController,
+		memberController:   memberController,
 	}
 }
 
@@ -37,35 +68,104 @@ type AccountSettingRequest struct {
 	PermanentAddress string    `json:"permanentAddress" validate:"required,max=500"`
 }
 
-func (as *ProfileController) ProfileAccountSetting(ctx *gin.Context) {}
-
-type ChangeEmailRequest struct {
-	Password string `json:"password" validate:"required,min=8,max=255"`
-	Email    string `json:"email" validate:"required,email"`
+func (as *ProfileController) ProfileAccountSetting(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.ProfileAccountSetting(ctx)
+	case "Admin":
+		as.adminController.ProfileAccountSetting(ctx)
+	case "Owner":
+		as.ownerController.ProfileAccountSetting(ctx)
+	case "Employee":
+		as.employeeController.ProfileAccountSetting(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
-func (as *ProfileController) ProfileChangeEmail(ctx *gin.Context) {}
-
-type ChangeContactNumberRequest struct {
-	Password      string `json:"password" validate:"required,min=8,max=255"`
-	ContactNumber string `json:"contactNumber" validate:"required,min=10,max=15"`
+func (as *ProfileController) ProfileChangeEmail(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.ProfileChangeEmail(ctx)
+	case "Admin":
+		as.adminController.ProfileChangeEmail(ctx)
+	case "Owner":
+		as.ownerController.ProfileChangeEmail(ctx)
+	case "Employee":
+		as.employeeController.ProfileChangeEmail(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
-func (as *ProfileController) ProfileChangeContactNumber(ctx *gin.Context) {}
-
-type ChangePasswordSettingRequest struct {
-	OldPassword     string `json:"old_password" validate:"required,min=8,max=255"`
-	NewPassword     string `json:"new_password" validate:"required,min=8,max=255"`
-	ConfirmPassword string `json:"confirm_password" validate:"required,min=8,max=255"`
+func (as *ProfileController) ProfileChangeContactNumber(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.ProfileChangeContactNumber(ctx)
+	case "Admin":
+		as.adminController.ProfileChangeContactNumber(ctx)
+	case "Owner":
+		as.ownerController.ProfileChangeContactNumber(ctx)
+	case "Employee":
+		as.employeeController.ProfileChangeContactNumber(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
-func (as *ProfileController) ProfileChangePassword(ctx *gin.Context) {}
-
-type ChangeUsernameRequest struct {
-	Password string `json:"password" validate:"required,min=8,max=255"`
-	Username string `json:"username" validate:"required,min=5,max=255"`
+func (as *ProfileController) ProfileChangePassword(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.ChangePassword(ctx)
+	case "Admin":
+		as.adminController.ChangePassword(ctx)
+	case "Owner":
+		as.ownerController.ChangePassword(ctx)
+	case "Employee":
+		as.employeeController.ChangePassword(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
 func (as *ProfileController) ProfileChangeUsername(ctx *gin.Context) {
+
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.ProfileChangeUsername(ctx)
+	case "Admin":
+		as.adminController.ProfileChangeUsername(ctx)
+	case "Owner":
+		as.ownerController.ProfileChangeUsername(ctx)
+	case "Employee":
+		as.employeeController.ProfileChangeUsername(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 
 }

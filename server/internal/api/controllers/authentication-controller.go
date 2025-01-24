@@ -315,21 +315,65 @@ func (as AuthController) NewPassword(ctx *gin.Context) {
 	}
 }
 
-func (as AuthController) SkipVerification(ctx *gin.Context) {}
-
-type SendEmailVerificationRequest struct {
-	EmailTemplate string `json:"emailTemplate" validate:"required"`
+func (as AuthController) SkipVerification(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.SkipVerification(ctx)
+	case "Admin":
+		as.adminController.SkipVerification(ctx)
+	case "Owner":
+		as.ownerController.SkipVerification(ctx)
+	case "Employee":
+		as.employeeController.SkipVerification(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
-func (as AuthController) SendEmailVerification(ctx *gin.Context) {}
-
-// VerifyEmail verifies the user's email address using the provided token.
-// Endpoint: POST /api/v1/auth/verify-email (requires authentication)
-type VerifyEmailRequest struct {
-	Otp string `json:"otp" validate:"required,len=6"`
+func (as AuthController) SendEmailVerification(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.SendEmailVerification(ctx)
+	case "Admin":
+		as.adminController.SendEmailVerification(ctx)
+	case "Owner":
+		as.ownerController.SendEmailVerification(ctx)
+	case "Employee":
+		as.employeeController.SendEmailVerification(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
-func (as AuthController) VerifyEmail(ctx *gin.Context) {}
+func (as AuthController) VerifyEmail(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.VerifyEmail(ctx)
+	case "Admin":
+		as.adminController.VerifyEmail(ctx)
+	case "Owner":
+		as.ownerController.VerifyEmail(ctx)
+	case "Employee":
+		as.employeeController.VerifyEmail(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
+}
 
 // SendContactNumberVerification sends a verification code to the user's contact number.
 // Endpoint: POST /api/v1/auth/send-contact-number-verification (requires authentication)
@@ -338,13 +382,42 @@ type SendContactNumberVerificationRequest struct {
 	ContactTemplate string `json:"contactTemplate" validate:"required"`
 }
 
-func (as AuthController) SendContactNumberVerification(ctx *gin.Context) {}
-
-// VerifyContactNumber verifies the user's contact number using the provided code.
-// Endpoint: POST /api/v1/auth/verify-contact-number (requires authentication)
-
-type VerifyContactNumberRequest struct {
-	Otp string `json:"otp" validate:"required,len=6"`
+func (as AuthController) SendContactNumberVerification(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.SendContactNumberVerification(ctx)
+	case "Admin":
+		as.adminController.SendContactNumberVerification(ctx)
+	case "Owner":
+		as.ownerController.SendContactNumberVerification(ctx)
+	case "Employee":
+		as.employeeController.SendContactNumberVerification(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
 }
 
-func (as AuthController) VerifyContactNumber(ctx *gin.Context) {}
+func (as AuthController) VerifyContactNumber(ctx *gin.Context) {
+	user, _, err := as.currentUser.Claims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+	switch user.AccountType {
+	case "Member":
+		as.memberController.VerifyContactNumber(ctx)
+	case "Admin":
+		as.adminController.VerifyContactNumber(ctx)
+	case "Owner":
+		as.ownerController.VerifyContactNumber(ctx)
+	case "Employee":
+		as.employeeController.VerifyContactNumber(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
+}
