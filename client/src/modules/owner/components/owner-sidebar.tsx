@@ -33,34 +33,34 @@ const ownerSidebarItem: TSidebarItem[] = [
             {
                 text: 'Members',
                 baseUrl: '/owner/users/members',
-                Icon: UserIcon,
+                // Icon: UserIcon,
                 subItems: [
                     {
                         text: 'View Members',
                         url: '/view-members',
-                        Icon: UserListIcon,
+                        // Icon: UserListIcon,
                     },
                     {
                         text: 'Members Activity',
                         url: '/members-activity',
-                        Icon: UserClockIcon,
+                        // Icon: UserClockIcon,
                     },
                 ],
             },
             {
                 text: 'Employees',
                 baseUrl: '/owner/users/employees',
-                Icon: UserShieldIcon,
+                // Icon: UserShieldIcon,
                 subItems: [
                     {
                         text: 'View employees',
                         url: '/view-employees',
-                        Icon: UserListIcon,
+                        // Icon: UserListIcon,
                     },
                     {
                         text: 'Employee Footsteps',
                         url: '/employee-footsteps',
-                        Icon: FootstepsIcon,
+                        // Icon: FootstepsIcon,
                     },
                 ],
             },
@@ -78,12 +78,12 @@ const ownerSidebarItem: TSidebarItem[] = [
         subItems: [
             {
                 text: 'Profile',
-                Icon: BuildingCogIcon,
+                // Icon: BuildingCogIcon,
                 url: '/profile',
             },
             {
                 text: 'Branches',
-                Icon: BuildingBranchIcon,
+                // Icon: BuildingBranchIcon,
                 url: '/branches',
             },
         ],

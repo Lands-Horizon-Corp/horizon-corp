@@ -46,7 +46,7 @@ const SidebarItem: FC<TSidebarItem> = (props) => {
                     <div
                         className={cn(
                             'ml-3.5 flex flex-col gap-y-2 border-l pl-1',
-                            isExpanded && 'gap-y-1 pl-2'
+                            isExpanded && 'gap-y-0 pl-2'
                         )}
                     >
                         {subItems.map((subItem) => {
