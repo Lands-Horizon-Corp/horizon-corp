@@ -1,9 +1,12 @@
 package models
 
 import (
+	"errors"
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/google/uuid"
+	"github.com/rotisserie/eris"
 	"gorm.io/gorm"
 )
 
@@ -14,20 +17,20 @@ type Admin struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// Fields
-	FirstName          string     `json:"first_name" gorm:"type:varchar(255);unsigned"`
-	LastName           string     `json:"last_name" gorm:"type:varchar(255);unsigned"`
-	MiddleName         string     `json:"middle_name" gorm:"type:varchar(255)"`
-	PermanentAddress   string     `json:"permanent_address" gorm:"type:text"`
-	Description        string     `json:"description" gorm:"type:text"`
-	BirthDate          time.Time  `json:"birth_date" gorm:"type:date"`
-	Username           string     `json:"username" gorm:"type:varchar(255);unique;unsigned"`
-	Email              string     `json:"email" gorm:"type:varchar(255);unique;unsigned"`
-	Password           string     `json:"password" gorm:"type:varchar(255);unsigned"`
-	ContactNumber      string     `json:"contact_number" gorm:"type:varchar(15);unique;unsigned"`
-	IsEmailVerified    bool       `json:"is_email_verified" gorm:"default:false"`
-	IsContactVerified  bool       `json:"is_contact_verified" gorm:"default:false"`
-	IsSkipVerification bool       `json:"is_skip_verification" gorm:"default:false"`
-	Status             UserStatus `json:"status" gorm:"type:varchar(11);default:'Pending'"`
+	FirstName          string               `json:"first_name" gorm:"type:varchar(255);unsigned"`
+	LastName           string               `json:"last_name" gorm:"type:varchar(255);unsigned"`
+	MiddleName         string               `json:"middle_name" gorm:"type:varchar(255)"`
+	PermanentAddress   string               `json:"permanent_address" gorm:"type:text"`
+	Description        string               `json:"description" gorm:"type:text"`
+	BirthDate          time.Time            `json:"birth_date" gorm:"type:date"`
+	Username           string               `json:"username" gorm:"type:varchar(255);unique;unsigned"`
+	Email              string               `json:"email" gorm:"type:varchar(255);unique;unsigned"`
+	Password           string               `json:"password" gorm:"type:varchar(255);unsigned"`
+	ContactNumber      string               `json:"contact_number" gorm:"type:varchar(15);unique;unsigned"`
+	IsEmailVerified    bool                 `json:"is_email_verified" gorm:"default:false"`
+	IsContactVerified  bool                 `json:"is_contact_verified" gorm:"default:false"`
+	IsSkipVerification bool                 `json:"is_skip_verification" gorm:"default:false"`
+	Status             providers.UserStatus `json:"status" gorm:"type:varchar(11);default:'Pending'"`
 
 	// Relationship 0 to 1
 	MediaID *uuid.UUID `json:"media_id" gorm:"type:bigint;unsigned"`
@@ -60,27 +63,27 @@ type AdminResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	FirstName          string              `json:"firstName"`
-	LastName           string              `json:"lastName"`
-	MiddleName         string              `json:"middleName"`
-	FullName           string              `json:"fullName"`
-	PermanentAddress   string              `json:"permanentAddress"`
-	Description        string              `json:"description"`
-	BirthDate          time.Time           `json:"birthDate"`
-	Username           string              `json:"username"`
-	Email              string              `json:"email"`
-	ContactNumber      string              `json:"contactNumber"`
-	IsEmailVerified    bool                `json:"isEmailVerified"`
-	IsContactVerified  bool                `json:"isContactVerified"`
-	IsSkipVerification bool                `json:"isSkipVerification"`
-	Status             UserStatus          `json:"status"`
-	MediaID            *uuid.UUID          `json:"mediaID"`
-	Media              *MediaResource      `json:"media"`
-	RoleID             *uuid.UUID          `json:"roleID"`
-	Role               *RoleResource       `json:"role"`
-	GenderID           *uuid.UUID          `json:"genderID"`
-	Gender             *GenderResource     `json:"gender"`
-	Footsteps          []*FootstepResource `json:"footsteps"`
+	FirstName          string               `json:"firstName"`
+	LastName           string               `json:"lastName"`
+	MiddleName         string               `json:"middleName"`
+	FullName           string               `json:"fullName"`
+	PermanentAddress   string               `json:"permanentAddress"`
+	Description        string               `json:"description"`
+	BirthDate          time.Time            `json:"birthDate"`
+	Username           string               `json:"username"`
+	Email              string               `json:"email"`
+	ContactNumber      string               `json:"contactNumber"`
+	IsEmailVerified    bool                 `json:"isEmailVerified"`
+	IsContactVerified  bool                 `json:"isContactVerified"`
+	IsSkipVerification bool                 `json:"isSkipVerification"`
+	Status             providers.UserStatus `json:"status"`
+	MediaID            *uuid.UUID           `json:"mediaID"`
+	Media              *MediaResource       `json:"media"`
+	RoleID             *uuid.UUID           `json:"roleID"`
+	Role               *RoleResource        `json:"role"`
+	GenderID           *uuid.UUID           `json:"genderID"`
+	Gender             *GenderResource      `json:"gender"`
+	Footsteps          []*FootstepResource  `json:"footsteps"`
 }
 
 func (m *ModelTransformer) AdminToResource(admin *Admin) *AdminResource {
@@ -162,35 +165,14 @@ func (m *ModelRepository) AdminSearch(input string, preloads ...string) (*Admin,
 	}
 }
 func (m *ModelRepository) AdminCreate(admin *Admin, preloads ...string) (*Admin, error) {
+	admin.Status = providers.NotAllowedStatus
 	repo := NewGenericRepository[Admin](m.db.Client)
-
-	// Hash the password before saving
 	newPassword, err := m.cryptoHelpers.HashPassword(admin.Password)
+	admin.Status = providers.NotAllowedStatus
 	if err != nil {
 		return nil, err
 	}
 	admin.Password = newPassword
-
-	err = repo.SaveWithChildren(
-		admin,
-		func(tx *gorm.DB) error {
-			for _, footstep := range admin.Footsteps {
-				footstep.AdminID = &admin.ID
-				if err := tx.Save(footstep).Error; err != nil {
-					return err
-				}
-			}
-			return nil
-		},
-		nil,
-		func(admin *Admin) bool {
-			return admin.ID == uuid.Nil
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-
 	return repo.GetByID(admin.ID.String(), preloads...)
 }
 
@@ -218,3 +200,47 @@ func (m *ModelRepository) AdminUpdatePassword(id string, password string) (*Admi
 	}
 	return repo.UpdateByID(id, "password", newPassword)
 }
+
+func (m *ModelRepository) AdminSignIn(key, password string, preload ...string) (*Admin, error) {
+	admin, err := m.AdminSearch(key)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("user not found")
+		}
+		return nil, eris.Wrap(err, "failed to search for admin")
+	}
+	if !m.cryptoHelpers.VerifyPassword(admin.Password, password) {
+		return nil, eris.New("invalid credentials")
+	}
+	return admin, nil
+}
+
+// const accountType = "Member"
+// 	userID, dbPassword, err := ac.FindByEmailUsernameOrContactForPassword(accountType, key)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
+// 		return
+// 	}
+// 	if !ac.cryptoHelpers.VerifyPassword(dbPassword, password) {
+// 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "SignIn: Invalid credentials."})
+// 		return
+// 	}
+// 	token, err := ac.GenerateUserToken(userID, accountType, SignedInExpiration)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "SignIn: Token generation error"})
+// 		return
+// 	}
+// 	http.SetCookie(ctx.Writer, &http.Cookie{
+// 		Name:     ac.cfg.AppTokenName,
+// 		Value:    *token,
+// 		Path:     "/",
+// 		HttpOnly: true,
+// 		Secure:   true,
+// 		SameSite: http.SameSiteNoneMode,
+// 	})
+// 	user, err := ac.FindByEmailUsernameOrContact(accountType, key)
+// 	if err != nil {
+// 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
+// 		return
+// 	}
+// 	ctx.JSON(http.StatusOK, user)
