@@ -541,3 +541,195 @@ func (c *OwnerController) VerifyContactNumber(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
 }
+
+func (c *OwnerController) ProfilePicture(ctx *gin.Context) {
+	var req MediaStoreRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	owner, err := c.currentUser.Owner(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
+		MediaID: req.ID,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+}
+
+type OwnerAccountSettingRequest struct {
+	BirthDate        time.Time `json:"birthDate" validate:"required"`
+	FirstName        string    `json:"firstName" validate:"required,max=255"`
+	MiddleName       string    `json:"middleName" validate:"required,max=255"`
+	LastName         string    `json:"lastName" validate:"required,max=255"`
+	Description      string    `json:"description" validate:"max=2048"`
+	PermanentAddress string    `json:"permanentAddress" validate:"required,max=500"`
+}
+
+func (c *OwnerController) ProfileAccountSetting(ctx *gin.Context) {
+	var req OwnerAccountSettingRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	owner, err := c.currentUser.Owner(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
+		BirthDate:        req.BirthDate,
+		MiddleName:       req.MiddleName,
+		FirstName:        req.FirstName,
+		LastName:         req.LastName,
+		Description:      req.Description,
+		PermanentAddress: req.PermanentAddress,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+}
+
+type OwnerChangeEmailRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Email    string `json:"email" validate:"required,email"`
+}
+
+func (c *OwnerController) ProfileChangeEmail(ctx *gin.Context) {
+	var req OwnerChangeEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	owner, err := c.currentUser.Owner(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	if !c.repository.OwnerVerifyPassword(owner.ID.String(), req.Password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
+		Email:           req.Email,
+		IsEmailVerified: false,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+}
+
+type OwnerChangeContactNumberRequest struct {
+	Password      string `json:"password" validate:"required,min=8,max=255"`
+	ContactNumber string `json:"contactNumber" validate:"required,min=10,max=15"`
+}
+
+func (c *OwnerController) ProfileChangeContactNumber(ctx *gin.Context) {
+	var req OwnerChangeContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	owner, err := c.currentUser.Owner(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	if !c.repository.OwnerVerifyPassword(owner.ID.String(), req.Password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
+		ContactNumber:     req.ContactNumber,
+		IsContactVerified: false,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+
+}
+
+type OwnerChangeUsernameRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Username string `json:"username" validate:"required,min=5,max=255"`
+}
+
+func (c *OwnerController) ProfileChangeUsername(ctx *gin.Context) {
+	var req OwnerChangeUsernameRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	owner, err := c.currentUser.Owner(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	if !c.repository.OwnerVerifyPassword(owner.ID.String(), req.Password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
+		Username: req.Username,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+
+}

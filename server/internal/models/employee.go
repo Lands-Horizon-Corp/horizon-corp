@@ -272,3 +272,11 @@ func (m *ModelRepository) EmployeeForceChangePassword(employeeID string, newPass
 	}
 	return updatedEmployee, nil
 }
+
+func (m *ModelRepository) EmployeeVerifyPassword(key string, password string) bool {
+	admin, err := m.EmployeeSearch(key)
+	if err != nil {
+		return false
+	}
+	return m.cryptoHelpers.VerifyPassword(admin.Password, password)
+}

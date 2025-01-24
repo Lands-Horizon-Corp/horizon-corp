@@ -541,3 +541,195 @@ func (c *MemberController) VerifyContactNumber(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
 }
+
+func (c *MemberController) ProfilePicture(ctx *gin.Context) {
+	var req MediaStoreRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	member, err := c.currentUser.Member(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	updatedMember, err := c.repository.MemberUpdateByID(member.ID.String(), &models.Member{
+		MediaID: req.ID,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
+}
+
+type MemberAccountSettingRequest struct {
+	BirthDate        time.Time `json:"birthDate" validate:"required"`
+	FirstName        string    `json:"firstName" validate:"required,max=255"`
+	MiddleName       string    `json:"middleName" validate:"required,max=255"`
+	LastName         string    `json:"lastName" validate:"required,max=255"`
+	Description      string    `json:"description" validate:"max=2048"`
+	PermanentAddress string    `json:"permanentAddress" validate:"required,max=500"`
+}
+
+func (c *MemberController) ProfileAccountSetting(ctx *gin.Context) {
+	var req MemberAccountSettingRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	member, err := c.currentUser.Member(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	updatedMember, err := c.repository.MemberUpdateByID(member.ID.String(), &models.Member{
+		BirthDate:        req.BirthDate,
+		MiddleName:       req.MiddleName,
+		FirstName:        req.FirstName,
+		LastName:         req.LastName,
+		Description:      req.Description,
+		PermanentAddress: req.PermanentAddress,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
+}
+
+type MemberChangeEmailRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Email    string `json:"email" validate:"required,email"`
+}
+
+func (c *MemberController) ProfileChangeEmail(ctx *gin.Context) {
+	var req MemberChangeEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	member, err := c.currentUser.Member(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	if !c.repository.MemberVerifyPassword(member.ID.String(), req.Password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedMember, err := c.repository.MemberUpdateByID(member.ID.String(), &models.Member{
+		Email:           req.Email,
+		IsEmailVerified: false,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
+}
+
+type MemberChangeContactNumberRequest struct {
+	Password      string `json:"password" validate:"required,min=8,max=255"`
+	ContactNumber string `json:"contactNumber" validate:"required,min=10,max=15"`
+}
+
+func (c *MemberController) ProfileChangeContactNumber(ctx *gin.Context) {
+	var req MemberChangeContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	member, err := c.currentUser.Member(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	if !c.repository.MemberVerifyPassword(member.ID.String(), req.Password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedMember, err := c.repository.MemberUpdateByID(member.ID.String(), &models.Member{
+		ContactNumber:     req.ContactNumber,
+		IsContactVerified: false,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
+
+}
+
+type MemberChangeUsernameRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Username string `json:"username" validate:"required,min=5,max=255"`
+}
+
+func (c *MemberController) ProfileChangeUsername(ctx *gin.Context) {
+	var req MemberChangeUsernameRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	member, err := c.currentUser.Member(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	if !c.repository.MemberVerifyPassword(member.ID.String(), req.Password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedMember, err := c.repository.MemberUpdateByID(member.ID.String(), &models.Member{
+		Username: req.Username,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
+
+}

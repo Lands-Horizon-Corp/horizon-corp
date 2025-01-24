@@ -4,6 +4,7 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type MediaController struct {
@@ -57,7 +58,7 @@ func (c *MediaController) Show(ctx *gin.Context) {}
 // - Store files securely, such as in a cloud storage solution, with proper access controls.
 // - Enforce rate limiting to prevent abuse of the upload endpoint.
 type MediaStoreRequest struct {
-	ID *uint `json:"id"`
+	ID *uuid.UUID `json:"id"`
 
 	FileName   string `json:"fileName" validate:"required,max=255"`
 	FileSize   int64  `json:"fileSize" validate:"required,min=1"`

@@ -248,3 +248,11 @@ func (m *ModelRepository) MemberForceChangePassword(memberID string, newPassword
 	}
 	return updatedMember, nil
 }
+
+func (m *ModelRepository) MemberVerifyPassword(key string, password string) bool {
+	admin, err := m.MemberSearch(key)
+	if err != nil {
+		return false
+	}
+	return m.cryptoHelpers.VerifyPassword(admin.Password, password)
+}

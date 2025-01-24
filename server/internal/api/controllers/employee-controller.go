@@ -541,3 +541,195 @@ func (c *EmployeeController) VerifyContactNumber(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
 }
+
+func (c *EmployeeController) ProfilePicture(ctx *gin.Context) {
+	var req MediaStoreRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	updatedEmployee, err := c.repository.EmployeeUpdateByID(employee.ID.String(), &models.Employee{
+		MediaID: req.ID,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
+}
+
+type EmployeeAccountSettingRequest struct {
+	BirthDate        time.Time `json:"birthDate" validate:"required"`
+	FirstName        string    `json:"firstName" validate:"required,max=255"`
+	MiddleName       string    `json:"middleName" validate:"required,max=255"`
+	LastName         string    `json:"lastName" validate:"required,max=255"`
+	Description      string    `json:"description" validate:"max=2048"`
+	PermanentAddress string    `json:"permanentAddress" validate:"required,max=500"`
+}
+
+func (c *EmployeeController) ProfileAccountSetting(ctx *gin.Context) {
+	var req EmployeeAccountSettingRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	updatedEmployee, err := c.repository.EmployeeUpdateByID(employee.ID.String(), &models.Employee{
+		BirthDate:        req.BirthDate,
+		MiddleName:       req.MiddleName,
+		FirstName:        req.FirstName,
+		LastName:         req.LastName,
+		Description:      req.Description,
+		PermanentAddress: req.PermanentAddress,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
+}
+
+type EmployeeChangeEmailRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Email    string `json:"email" validate:"required,email"`
+}
+
+func (c *EmployeeController) ProfileChangeEmail(ctx *gin.Context) {
+	var req EmployeeChangeEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	if !c.repository.EmployeeVerifyPassword(employee.ID.String(), req.Password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedEmployee, err := c.repository.EmployeeUpdateByID(employee.ID.String(), &models.Employee{
+		Email:           req.Email,
+		IsEmailVerified: false,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
+}
+
+type EmployeeChangeContactNumberRequest struct {
+	Password      string `json:"password" validate:"required,min=8,max=255"`
+	ContactNumber string `json:"contactNumber" validate:"required,min=10,max=15"`
+}
+
+func (c *EmployeeController) ProfileChangeContactNumber(ctx *gin.Context) {
+	var req EmployeeChangeContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	if !c.repository.EmployeeVerifyPassword(employee.ID.String(), req.Password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedEmployee, err := c.repository.EmployeeUpdateByID(employee.ID.String(), &models.Employee{
+		ContactNumber:     req.ContactNumber,
+		IsContactVerified: false,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
+
+}
+
+type EmployeeChangeUsernameRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Username string `json:"username" validate:"required,min=5,max=255"`
+}
+
+func (c *EmployeeController) ProfileChangeUsername(ctx *gin.Context) {
+	var req EmployeeChangeUsernameRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+	if !c.repository.EmployeeVerifyPassword(employee.ID.String(), req.Password) {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
+		return
+	}
+	updatedEmployee, err := c.repository.EmployeeUpdateByID(employee.ID.String(), &models.Employee{
+		Username: req.Username,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
+
+}

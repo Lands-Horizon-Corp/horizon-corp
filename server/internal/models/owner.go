@@ -256,3 +256,11 @@ func (m *ModelRepository) OwnerForceChangePassword(ownerID string, newPassword s
 	}
 	return updatedOwner, nil
 }
+
+func (m *ModelRepository) OwnerVerifyPassword(key string, password string) bool {
+	admin, err := m.OwnerSearch(key)
+	if err != nil {
+		return false
+	}
+	return m.cryptoHelpers.VerifyPassword(admin.Password, password)
+}
