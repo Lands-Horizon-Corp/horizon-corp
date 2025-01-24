@@ -122,6 +122,36 @@ func (c *EmployeeController) Destroy(ctx *gin.Context) {
 
 }
 
+type EmployeeChangePasswordRequest struct {
+	OldPassword     string `json:"old_password" validate:"required,min=8,max=255"`
+	NewPassword     string `json:"new_password" validate:"required,min=8,max=255"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,min=8,max=255"`
+}
+
+func (as EmployeeController) ChangePassword(ctx *gin.Context) {
+	var req *EmployeeChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	employee, err := as.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	updated, err := as.repository.EmployeeChangePassword(
+		employee.ID.String(),
+		req.OldPassword,
+		req.NewPassword,
+		as.helpers.GetPreload(ctx)...,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err})
+		return
+	}
+	ctx.JSON(http.StatusCreated, as.transformer.EmployeeToResource(updated))
+}
+
 func (c *EmployeeController) ForgotPassword(ctx *gin.Context) {
 	link := c.ForgotPasswordResetLink(ctx)
 	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})

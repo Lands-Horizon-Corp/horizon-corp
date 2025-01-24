@@ -111,6 +111,36 @@ func (c *OwnerController) ForgotPassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
 }
 
+type OwnerChangePasswordRequest struct {
+	OldPassword     string `json:"old_password" validate:"required,min=8,max=255"`
+	NewPassword     string `json:"new_password" validate:"required,min=8,max=255"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,min=8,max=255"`
+}
+
+func (as OwnerController) ChangePassword(ctx *gin.Context) {
+	var req *OwnerChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	owner, err := as.currentUser.Owner(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	updated, err := as.repository.OwnerChangePassword(
+		owner.ID.String(),
+		req.OldPassword,
+		req.NewPassword,
+		as.helpers.GetPreload(ctx)...,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err})
+		return
+	}
+	ctx.JSON(http.StatusCreated, as.transformer.OwnerToResource(updated))
+}
+
 type OwnerForgotPasswordRequest struct {
 	Key             string `json:"key" validate:"required,max=255"`
 	EmailTemplate   string `json:"emailTemplate"`

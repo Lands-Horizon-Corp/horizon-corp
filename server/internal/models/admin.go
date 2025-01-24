@@ -215,6 +215,51 @@ func (m *ModelRepository) AdminSignIn(key, password string, preload ...string) (
 	return admin, nil
 }
 
+func (m *ModelRepository) AdminChangePassword(adminID string, currentPassword, newPassword string, preloads ...string) (*Admin, error) {
+	admin, err := m.AdminGetByID(adminID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("admin not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve admin")
+	}
+	if !m.cryptoHelpers.VerifyPassword(admin.Password, currentPassword) {
+		return nil, eris.New("invalid current password")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	admin.Password = hashedPassword
+	repo := NewGenericRepository[Admin](m.db.Client)
+	updatedAdmin, err := repo.Update(admin, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update admin with new password")
+	}
+	return updatedAdmin, nil
+}
+
+func (m *ModelRepository) AdminForceChangePassword(adminID string, newPassword string, preloads ...string) (*Admin, error) {
+	admin, err := m.AdminGetByID(adminID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("admin not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve admin")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	admin.Password = hashedPassword
+	repo := NewGenericRepository[Admin](m.db.Client)
+	updatedAdmin, err := repo.Update(admin, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update admin with new password")
+	}
+	return updatedAdmin, nil
+}
+
 // const accountType = "Member"
 // 	userID, dbPassword, err := ac.FindByEmailUsernameOrContactForPassword(accountType, key)
 // 	if err != nil {

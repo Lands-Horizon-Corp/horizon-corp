@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -239,7 +240,37 @@ type ChangePasswordRequest struct {
 	ConfirmPassword string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
 }
 
-func (as AuthController) ChangePassword(ctx *gin.Context) {}
+func (as AuthController) ChangePassword(ctx *gin.Context) {
+	var req ChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: JSON binding error: %v", err)})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	claims, err := as.tokenProvider.VerifyToken(req.ResetID)
+	if err != nil {
+		as.tokenProvider.ClearTokenCookie(ctx)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: Token verification error: %v", err)})
+		return
+	}
+	switch claims.AccountType {
+	case "Member":
+		as.repository.MemberForceChangePassword(claims.ID, req.NewPassword)
+	case "Admin":
+		as.repository.AdminForceChangePassword(claims.ID, req.NewPassword)
+	case "Owner":
+		as.repository.OwnerForceChangePassword(claims.ID, req.NewPassword)
+	case "Employee":
+		as.repository.EmployeeForceChangePassword(claims.ID, req.NewPassword)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
+	as.tokenProvider.DeleteToken(req.ResetID)
+
+}
 
 // VerifyResetLink verifies the reset link for password recovery.
 // Endpoint: GET /api/v1/auth/verify-reset-link/:id

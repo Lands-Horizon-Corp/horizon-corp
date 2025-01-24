@@ -128,6 +128,36 @@ func (c *AdminController) Destroy(ctx *gin.Context) {
 
 }
 
+type AdminChangePasswordRequest struct {
+	OldPassword     string `json:"old_password" validate:"required,min=8,max=255"`
+	NewPassword     string `json:"new_password" validate:"required,min=8,max=255"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,min=8,max=255"`
+}
+
+func (as AdminController) ChangePassword(ctx *gin.Context) {
+	var req *AdminChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		return
+	}
+	admin, err := as.currentUser.Admin(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		return
+	}
+	updated, err := as.repository.AdminChangePassword(
+		admin.ID.String(),
+		req.OldPassword,
+		req.NewPassword,
+		as.helpers.GetPreload(ctx)...,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err})
+		return
+	}
+	ctx.JSON(http.StatusCreated, as.transformer.AdminToResource(updated))
+}
+
 type AdminForgotPasswordRequest struct {
 	Key             string `json:"key" validate:"required,max=255"`
 	EmailTemplate   string `json:"emailTemplate"`

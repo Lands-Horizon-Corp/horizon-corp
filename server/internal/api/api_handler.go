@@ -51,7 +51,8 @@ func NewAPIHandlerInvoke(
 			admin.POST("/", middle.AccountTypeMiddleware("Admin"), adminController.Store)
 			admin.PUT("/:id", middle.AccountTypeMiddleware("Admin"), adminController.Update)
 			admin.DELETE("/:id", middle.AccountTypeMiddleware("Admin"), adminController.Destroy)
-			admin.DELETE("/forgot-password", middle.AccountTypeMiddleware("Admin"), adminController.ForgotPassword)
+			admin.POST("/forgot-password", middle.AccountTypeMiddleware("Admin"), adminController.ForgotPassword)
+			admin.POST("/change-password", middle.AccountTypeMiddleware("Admin"), adminController.ChangePassword)
 		}
 		auth := v1.Group("/auth")
 		{
@@ -103,7 +104,8 @@ func NewAPIHandlerInvoke(
 			employee.GET("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Show)
 			employee.POST("/", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Store)
 			employee.DELETE("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Destroy)
-			employee.DELETE("/forgot-password", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.ForgotPassword)
+			employee.POST("/forgot-password", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.ForgotPassword)
+			employee.POST("/change-password", middle.AccountTypeMiddleware("Employee"), employeeController.ChangePassword)
 		}
 
 		feedback := v1.Group("/feedback")
@@ -145,6 +147,7 @@ func NewAPIHandlerInvoke(
 			member.PUT("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee", "Member"), memberController.Update)
 			member.DELETE("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.Destroy)
 			member.GET("/forgot-password", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.ForgotPassword)
+			member.POST("/change-password", middle.AccountTypeMiddleware("Member"), memberController.ChangePassword)
 		}
 
 		memberProfile := v1.Group("/member-profile")
@@ -164,6 +167,7 @@ func NewAPIHandlerInvoke(
 			owner.PUT("/:id", middle.AccountTypeMiddleware("Admin", "Owner"), ownerController.Update)
 			owner.DELETE("/:id", middle.AccountTypeMiddleware("Admin"), ownerController.Destroy)
 			owner.GET("/forgot-password", middle.AccountTypeMiddleware("Admin"), ownerController.ForgotPassword)
+			owner.POST("/change-password", middle.AccountTypeMiddleware("Owner"), ownerController.ChangePassword)
 		}
 
 		profile := v1.Group("/profile")
