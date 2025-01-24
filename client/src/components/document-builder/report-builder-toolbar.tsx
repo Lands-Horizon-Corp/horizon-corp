@@ -46,11 +46,13 @@ import { useDocumentBuilderStore } from '@/store/document-builder-store'
 
 interface TableToolBarProps extends React.ComponentProps<'div'> {
     editor: Editor | null
+    handleGeneratePdf?: () => void
 }
 
 export const ReportBuilderToolbar = ({
     editor,
     className,
+    handleGeneratePdf
 }: TableToolBarProps) => {
 
     const [activeHeading, setActiveHeading] = useState<THeadingLevel | null>(
@@ -90,6 +92,7 @@ export const ReportBuilderToolbar = ({
         >
             {editor && (
                 <>
+                    <Button variant={'ghost'} onClick={handleGeneratePdf}>export</Button>
                     <TableToolbar
                         editor={editor}
                         dimensions={dimensions}

@@ -7,4 +7,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
+@layer base {
+ img{ display: initial} /* Add custom base styles here */
+}

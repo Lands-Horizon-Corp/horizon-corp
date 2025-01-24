@@ -5,7 +5,7 @@ import TableCell from '@tiptap/extension-table-cell'
 import Text from '@tiptap/extension-text'
 import TextAlign from '@tiptap/extension-text-align'
 import { EditorContent, useEditor } from '@tiptap/react'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import StarterKit from '@tiptap/starter-kit'
 import {
     CustomTable,
@@ -19,19 +19,27 @@ import { useDocumentBuilderStore } from '@/store/document-builder-store'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import { Pagination } from './pagination'
-
-export type PageProps = {
-    htmlTemplate: string
-    style: string
-}
+import { Button } from '../ui/button'
+import html2canvas from 'html2canvas'
+import jsPDF from 'jspdf'
+// import { html2pdf } from 'html2pdf-ts'
+import { HTML2PDFOptions } from 'html2pdf-ts'
+// @ts-ignore
+import * as html2pdf from 'html2pdf.js'
 
 export const DocumentBuilder = () => {
     const editorRefFocus = useRef<Array<HTMLDivElement | null>>([])
+    const reportTemplateRef = useRef<HTMLDivElement>(null)
 
     const { pages, currentPage } = useDocumentBuilderStore()
+    const [editorContent, setEditorContent] = useState(
+        pages[currentPage].htmlTemplate
+    )
 
     useEffect(() => {
-        useDocumentBuilderStore.setState({ editorRefFocus: editorRefFocus.current })
+        useDocumentBuilderStore.setState({
+            editorRefFocus: editorRefFocus.current,
+        })
     }, [])
 
     const editor = useEditor({
@@ -61,7 +69,7 @@ export const DocumentBuilder = () => {
                 types: ['heading', 'paragraph'],
             }),
         ],
-        content: pages[currentPage].htmlTemplate,
+        content: '',
         editorProps: {
             attributes: {
                 class: `table-toolbar-custom`,
@@ -73,18 +81,89 @@ export const DocumentBuilder = () => {
         },
     })
 
-    if (!editor) {
-        return null
+    const [tableWidth, setTableWidth] = useState(0)
+
+    // useEffect(() => {
+    //     if (!editor) return
+
+    //     // Sync editor content to state whenever it updates
+    //     editor.on('update', () => {
+    //         console.log('editor updated')
+    //         const tableWrapper = document.querySelector(
+    //             '.tableWrapper'
+    //         ) as HTMLElement | null
+    //         const tableWidth = tableWrapper.offsetWidth ?? 0
+    //         setTableWidth(tableWidth)
+    //     })
+    // }, [editor])
+
+    const handleGeneratePdf = async () => {
+        const input = reportTemplateRef.current
+
+        if (!input) return
+
+        try {
+            const canvas = await html2canvas(input)
+            const imgData = canvas.toDataURL('image/png')
+
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'px',
+                format: 'a4',
+            })
+
+            const pdfWidth = pdf.internal.pageSize.getWidth()
+
+            const computedPdfWidth = tableWidth - pdfWidth
+
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width
+
+            // console.log('pdfWidth', pdfWidth);
+            // console.log('pdfHeight', pdfHeight);
+            // console.log( 'computedPdfWidth', computedPdfWidth);
+
+            // pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight)
+            // pdf.addPage('a4','portrait');
+            // pdf.save('report.pdf')
+
+            const opt = {
+                margin: 0.1,
+                filename: 'myfile.pdf',
+                image: { type: 'jpeg', quality: 1 },
+                // pagebreak: { avoid: "tr", mode: "css", before: "#nextpage1", after: "1cm" },
+                html2canvas: {
+                    scale: 4,
+                    useCORS: true,
+                    dpi: 192,
+                    letterRendering: true,
+                },
+                jsPDF: {
+                    unit: 'in',
+                    format: 'legal',
+                    orientation: 'landscape',
+                    putTotalPages: true,
+                },
+            }
+             html2pdf.default( input, opt );
+        } catch (error) {
+            console.error('Error generating PDF:', error)
+        }
     }
 
     return (
         <SidebarProvider>
-            <div className="flex w-full h-full">
+            <div className="flex h-full w-full">
                 <div className="relative w-full bg-secondary dark:bg-black">
-                    <DocumentBuilderTools editor={editor} />
-                    <div className="h-full w-full justify-center pt-20">
+                    <DocumentBuilderTools
+                        handleGeneratePdf={handleGeneratePdf}
+                        editor={editor}
+                    />
+                    <div
+                        ref={reportTemplateRef}
+                        className="tableWrapper h-full w-full justify-center"
+                    >
                         <EditorContent
-                            className="page relative mx-auto mb-20 shadow-ls bg-white dark:bg-secondary dark:text-white flex min-h-[11.5in] h-fit max-h-fit w-[8.5in] cursor-pointer justify-center gap-3 overflow-hidden rounded-lg p-[1in] text-start"
+                            className="page shadow-ls mx relative mb-20 flex h-fit max-h-fit min-h-[11.5in] w-full cursor-pointer justify-center gap-3 overflow-hidden rounded-lg bg-white p-[.5in] text-start dark:bg-secondary dark:text-white"
                             editor={editor}
                         />
                     </div>

@@ -19,23 +19,8 @@
     @apply !gap-5
 }
 
-.tiptap .page {
-    @apply !border-[5px] 
-}
-
-.tiptap table td{
-    @apply border-[5px] !border-red-500
-}
-
 .tiptap table tbody tr .selectedCell{
     @apply  bg-slate-50
-}
-
-.tiptap table tbody tr th p {
-    @apply !p-0 !m-0
-}
-.tiptap table tbody tr td p {
-    @apply !p-0 !m-0
 }
 
 .table-toolbar-custom code {
@@ -54,56 +39,32 @@
     @apply prose p-0 w-screen max-w-full  h-full text-black font-sans focus:outline-none; 
 }
 
-.table th p {
- @apply px-2
-}
-
-.table col {
-    @apply border
-}
-
-.table tr {
-    @apply border-b-0 border-y-[.5px]
-}
-
-.table {
-    @apply max-w-full
-}
-
 
 .tiptap:first-child {
     margin-top: 0;
 }
 
-/* Table-specific styling */
 .tiptap table {
-    border-collapse: collapse;
-    margin: 0;
-    overflow: hidden;
-    table-layout: fixed;
-    width: 100%;
+    @apply border-collapse m-0 overflow-hidden table w-full 
 }
-
 
 .tiptap table td,
 .tiptap table th {
-    border: 1px solid var(--gray-3);
-    box-sizing: border-box;
-    min-width: 1em;
-    padding: 6px 8px;
-    position: relative;
-    vertical-align: top;
+    @apply border-[0px] border-gray-300 box-border min-w-[1em] px-2 pb-5 relative align-top text-xs
+}
+
+.tiptap table th {
+    @apply font-bold text-left !bg-slate-50 
 }
 
 .tiptap table td > *,
 .tiptap table th > * {
-    margin-bottom: 0;
+    @apply mb-0
 }
 
 .tiptap table th {
     background-color: var(--gray-1);
-    font-weight: bold;
-    text-align: left;
+    @apply font-bold text-left 
 }
 
 .tiptap table .selectedCell:after {

@@ -5,15 +5,16 @@ import { useSidebar } from '../ui/sidebar'
 
 interface TableToolBarProps extends React.ComponentProps<'div'> {
     editor: Editor | null
+    handleGeneratePdf?: () => void
 }
 
-const DocumentBuilderTools = ({ editor }: TableToolBarProps) => {
+const DocumentBuilderTools = ({ editor, handleGeneratePdf }: TableToolBarProps) => {
     const { open } = useSidebar()
 
     return (
         <div className="fixed z-10 mt-2 flex h-14 w-full items-center justify-center bg-transparent">
             <div className='px-5 w-fit bg-white dark:bg-secondary h-full shadow-md rounded-lg'>
-                <ReportBuilderToolbar className="grow" editor={editor} />
+                <ReportBuilderToolbar handleGeneratePdf={handleGeneratePdf} className="grow" editor={editor} />
             </div>
             {open && <div className="w-[16rem] flex-none"></div>}
         </div>

@@ -30,7 +30,7 @@ import {
 } from 'react-icons/fa'
 import { MdAdd } from 'react-icons/md'
 import InsertTable from './document-insert-table'
-import companiesTableColumns from '../tables/companies-table/columns'
+// import companiesTableColumns from '../tables/companies-table/columns'
 import Test from './test'
 const headers = ['Id', 'Name', 'Bday', 'Age', 'Gender']
 
@@ -108,12 +108,15 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
     menuItems,
     editor,
 }) => {
+
     const insertTable = (tableName: string) => () => {
+        console.log('tableName', tableName)
         if (!tableName) return
         if (tableName === 'Accounts') {
-            editor?.commands.insertContent(generateTableHTML(headers, Person))
+            console.log(ReactDOMServer.renderToStaticMarkup(<Test />))
+            editor?.commands.insertContent(ReactDOMServer.renderToStaticMarkup(<Test />))
         }
-    }
+    }       
 
     return (
         <div>
@@ -131,7 +134,7 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
                         <CollapsibleContent>
                             {item.subItems.map((subItem, subIndex) => (
                                 <SidebarMenuSub key={subIndex}>
-                                    <SidebarMenuSubItem className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-xs hover:bg-secondary">
+                                    <SidebarMenuSubItem onClick={insertTable('Accounts')} className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-xs hover:bg-secondary">
                                         {subItem.icon && (
                                             <span className="mr-2 flex size-4 items-center">
                                                 {subItem.icon}
@@ -141,10 +144,12 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
                                             {' '}
                                             {subItem.label}
                                         </span>
-                                        <InsertTable
+
+                                        {/* <InsertTable
                                             content={<Test />}
+                                            onClick={insertTable(subItem.label)}
                                             trigger={<MdAdd size={18} />}
-                                        />
+                                        /> */}
                                     </SidebarMenuSubItem>
                                 </SidebarMenuSub>
                             ))}
@@ -164,7 +169,6 @@ const menuItems: SidebarMenuItem[] = [
             {
                 label: 'Companies',
                 icon: <FaDollarSign />,
-                onClick: () => console.log('Accounts clicked'),
             },
         ],
     },
