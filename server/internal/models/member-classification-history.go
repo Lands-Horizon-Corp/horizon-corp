@@ -84,9 +84,9 @@ func (m *ModelRepository) MemberClassificationHistoryUpdate(memberclassification
 	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
 	return repo.Update(memberclassificationhistory, preloads...)
 }
-func (m *ModelRepository) MemberClassificationHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberClassificationHistory, error) {
+func (m *ModelRepository) MemberClassificationHistoryUpdateByID(id string, value *MemberClassificationHistory, preloads ...string) (*MemberClassificationHistory, error) {
 	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberClassificationHistoryDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberClassificationHistory](m.db.Client)

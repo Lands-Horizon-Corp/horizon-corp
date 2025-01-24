@@ -81,9 +81,9 @@ func (m *ModelRepository) MemberContactNumberReferencesUpdate(membercontactnumbe
 	repo := NewGenericRepository[MemberContactNumberReferences](m.db.Client)
 	return repo.Update(membercontactnumberreferences, preloads...)
 }
-func (m *ModelRepository) MemberContactNumberReferencesUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberContactNumberReferences, error) {
+func (m *ModelRepository) MemberContactNumberReferencesUpdateByID(id string, value *MemberContactNumberReferences, preloads ...string) (*MemberContactNumberReferences, error) {
 	repo := NewGenericRepository[MemberContactNumberReferences](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberContactNumberReferencesDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberContactNumberReferences](m.db.Client)

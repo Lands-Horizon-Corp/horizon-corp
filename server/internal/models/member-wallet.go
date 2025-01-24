@@ -89,9 +89,9 @@ func (m *ModelRepository) MemberWalletUpdate(memberwallet *MemberWallet, preload
 	repo := NewGenericRepository[MemberWallet](m.db.Client)
 	return repo.Update(memberwallet, preloads...)
 }
-func (m *ModelRepository) MemberWalletUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberWallet, error) {
+func (m *ModelRepository) MemberWalletUpdateByID(id string, value *MemberWallet, preloads ...string) (*MemberWallet, error) {
 	repo := NewGenericRepository[MemberWallet](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberWalletDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberWallet](m.db.Client)

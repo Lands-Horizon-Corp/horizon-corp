@@ -112,9 +112,9 @@ func (m *ModelRepository) RoleUpdate(role *Role, preloads ...string) (*Role, err
 	repo := NewGenericRepository[Role](m.db.Client)
 	return repo.Update(role, preloads...)
 }
-func (m *ModelRepository) RoleUpdateByID(id string, column string, value interface{}, preloads ...string) (*Role, error) {
+func (m *ModelRepository) RoleUpdateByID(id string, value *Role, preloads ...string) (*Role, error) {
 	repo := NewGenericRepository[Role](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) RoleDeleteByID(id string) error {
 	repo := NewGenericRepository[Role](m.db.Client)

@@ -88,9 +88,9 @@ func (m *ModelRepository) MemberIncomeUpdate(memberincome *MemberIncome, preload
 	repo := NewGenericRepository[MemberIncome](m.db.Client)
 	return repo.Update(memberincome, preloads...)
 }
-func (m *ModelRepository) MemberIncomeUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberIncome, error) {
+func (m *ModelRepository) MemberIncomeUpdateByID(id string, value *MemberIncome, preloads ...string) (*MemberIncome, error) {
 	repo := NewGenericRepository[MemberIncome](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberIncomeDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberIncome](m.db.Client)

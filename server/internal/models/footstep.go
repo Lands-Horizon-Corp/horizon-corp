@@ -135,9 +135,9 @@ func (m *ModelRepository) FootstepUpdate(footstep *Footstep, preloads ...string)
 	repo := NewGenericRepository[Footstep](m.db.Client)
 	return repo.Update(footstep, preloads...)
 }
-func (m *ModelRepository) FootstepUpdateByID(id string, column string, value interface{}, preloads ...string) (*Footstep, error) {
+func (m *ModelRepository) FootstepUpdateByID(id string, value *Footstep, preloads ...string) (*Footstep, error) {
 	repo := NewGenericRepository[Footstep](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) FootstepDeleteByID(id string) error {
 	repo := NewGenericRepository[Footstep](m.db.Client)

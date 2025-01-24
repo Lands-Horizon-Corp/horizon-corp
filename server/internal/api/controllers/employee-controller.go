@@ -54,27 +54,34 @@ func NewEmployeeController(
 	}
 }
 
-// GET :/
-// Admin: Can get anything but must give company id
-// Owner: All employee but must be only his company and its branches
-// Employee: only employee on current branch
+// GET: /api/v1/employee
+// Retrieve employees with optional filtering for pagination or no pagination. Results can be converted to records.
+//
+//	Employee: Can retrieve all employees if employee  status is verified
+//	Employee: not allowed
+//	Member: not allowed
 func (c *EmployeeController) Index(ctx *gin.Context) {
 
 }
 
-// GET :/id
-// Admin: Can get anything but must give company id
-// Owner: All employee but must be only his company and its branches
-// Employee: only employee on current branch
-func (c *EmployeeController) Show(ctx *gin.Context) {
+// GET: /api/v1/employee/:id
+//
+//      Employee: if employee  status is verified
+//      Employee: not allowed
+//      Owner: not allowed
+//      Member: not allowed
 
+func (c *EmployeeController) Show(ctx *gin.Context) {
+	// if id or email or
 }
 
-// POST: /
-// Admin: Can create employee but must assign company and branch
-// Owner: can create but must assign branch
-// Employee: not allowed
-// Member: not allowed
+// POST: /api/v1/employee
+//
+//	Employee: Can create employee and automatically verified and also if employee and the status is verified
+//	Employee: not allowed
+//	Owner: not allowed
+//	Member: not allowed
+//	public allowed
 type EmployeeStoreRequest struct {
 	FirstName        string    `json:"firstName" validate:"required,min=2,max=255"`
 	LastName         string    `json:"lastName" validate:"required,min=2,max=255"`
@@ -88,11 +95,7 @@ type EmployeeStoreRequest struct {
 	ConfirmPassword  string    `json:"confirmPassword" validate:"required,eqfield=Password"`
 	ContactNumber    string    `json:"contactNumber" validate:"required,e164"`
 
-	Longitude *float64 `json:"longitude" validate:"omitempty,numeric"`
-	Latitude  *float64 `json:"latitude" validate:"omitempty,numeric"`
-
 	MediaID  *uuid.UUID `json:"mediaId" validate:"omitempty,uuid"`
-	BranchID *uuid.UUID `json:"branchId" validate:"omitempty,uuid"`
 	RoleID   *uuid.UUID `json:"roleId" validate:"omitempty,uuid"`
 	GenderID *uuid.UUID `json:"genderId" validate:"omitempty,uuid"`
 
@@ -104,20 +107,23 @@ func (c *EmployeeController) Store(ctx *gin.Context) {
 	c.Create(ctx)
 }
 
-// PUT: /
-// Admin: Can create employee but must assign company and branch
-// Owner: can create but must assign branch
-// Employee: not allowed
-// Member: not allowed
+// PUT: /api/v1/employee/:id
+//
+//	Employee: Can change status of employee but only if employee and the status is verified
+//	Employee: not allowed
+//	Owner: not allowed
+//	Member: not allowed
 func (c *EmployeeController) Update(ctx *gin.Context) {
 
 }
 
-// DELETE: /:id
-// Admin: allowed
-// Owner: allowed
-// Employee: not allowed
-// Member: not allowed
+// DELETE:/api/v1/employee/:id
+// Verifiy employee
+//
+//	Employee: only if employee  status is verified
+//	Employee: not allowed
+//	Owner: not allowed
+//	Member: not allowed
 func (c *EmployeeController) Destroy(ctx *gin.Context) {
 
 }
@@ -129,16 +135,18 @@ type EmployeeChangePasswordRequest struct {
 }
 
 func (as EmployeeController) ChangePassword(ctx *gin.Context) {
-	var req *EmployeeChangePasswordRequest
+	var req EmployeeChangePasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
+
 	employee, err := as.currentUser.Employee(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
+
 	updated, err := as.repository.EmployeeChangePassword(
 		employee.ID.String(),
 		req.OldPassword,
@@ -146,15 +154,11 @@ func (as EmployeeController) ChangePassword(ctx *gin.Context) {
 		as.helpers.GetPreload(ctx)...,
 	)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to update password"})
 		return
 	}
-	ctx.JSON(http.StatusCreated, as.transformer.EmployeeToResource(updated))
-}
 
-func (c *EmployeeController) ForgotPassword(ctx *gin.Context) {
-	link := c.ForgotPasswordResetLink(ctx)
-	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
+	ctx.JSON(http.StatusOK, as.transformer.EmployeeToResource(updated))
 }
 
 type EmployeeForgotPasswordRequest struct {
@@ -163,19 +167,25 @@ type EmployeeForgotPasswordRequest struct {
 	ContactTemplate string `json:"contactTemplate"`
 }
 
+func (c *EmployeeController) ForgotPassword(ctx *gin.Context) {
+	link := c.ForgotPasswordResetLink(ctx)
+	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
+}
+
 func (c *EmployeeController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 	var req EmployeeForgotPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return nil
 	}
 	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
 		return nil
 	}
+
 	user, err := c.repository.EmployeeSearch(req.Key)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		return nil
 	}
 
@@ -185,12 +195,13 @@ func (c *EmployeeController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 		UserStatus:  user.Status,
 	}, time.Minute*10)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate reset token"})
 		return nil
 	}
 
 	resetLink := fmt.Sprintf("%s/auth/password-reset/%s", c.cfg.AppClientUrl, *token)
 	keyType := c.helpers.GetKeyType(req.Key)
+
 	switch keyType {
 	case "contact":
 		contactReq := providers.SMSRequest{
@@ -202,7 +213,8 @@ func (c *EmployeeController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 			},
 		}
 		if err := c.smsProvder.SendSMS(contactReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: SMS sending error %v", err)})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send SMS for password reset"})
+			return nil
 		}
 		return &resetLink
 	case "email":
@@ -216,12 +228,12 @@ func (c *EmployeeController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 			},
 		}
 		if err := c.emailProvider.SendEmail(emailReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Email sending error: %v", err)})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email for password reset"})
 			return nil
 		}
 		return &resetLink
 	default:
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Invalid key type: %s", keyType)})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid key type"})
 		return nil
 	}
 }
@@ -229,13 +241,14 @@ func (c *EmployeeController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 func (c *EmployeeController) Create(ctx *gin.Context) *models.Employee {
 	var req EmployeeStoreRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return nil
 	}
-	if validator.New().Struct(req) != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return nil
 	}
+
 	preloads := c.helpers.GetPreload(ctx)
 	employee, err := c.repository.EmployeeCreate(&models.Employee{
 		FirstName:          req.FirstName,
@@ -252,34 +265,34 @@ func (c *EmployeeController) Create(ctx *gin.Context) *models.Employee {
 		IsContactVerified:  false,
 		IsSkipVerification: false,
 		Status:             providers.NotAllowedStatus,
-		Longitude:          req.Longitude,
-		Latitude:           req.Latitude,
-
-		MediaID:  req.MediaID,
-		BranchID: req.BranchID,
-		RoleID:   req.RoleID,
-		GenderID: req.GenderID,
+		MediaID:            req.MediaID,
+		RoleID:             req.RoleID,
+		GenderID:           req.GenderID,
 	}, preloads...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create employee", "details": err.Error()})
 		return nil
 	}
+
 	if err := c.otpService.SendEmailOTP(providers.OTPMessage{
-		AccountType: "Employee", ID: employee.ID.String(),
-		MediumType: "email",
-		Reference:  "email-verification",
+		AccountType: "Employee",
+		ID:          employee.ID.String(),
+		MediumType:  "email",
+		Reference:   "email-verification",
 	}, providers.EmailRequest{
 		To:      req.Email,
 		Subject: "ECOOP: Email Verification",
 		Body:    req.EmailTemplate,
 	}); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
 		return nil
 	}
+
 	if err := c.otpService.SendContactNumberOTP(providers.OTPMessage{
-		AccountType: "Employee", ID: employee.ID.String(),
-		MediumType: "sms",
-		Reference:  "sms-verification",
+		AccountType: "Employee",
+		ID:          employee.ID.String(),
+		MediumType:  "sms",
+		Reference:   "sms-verification",
 	}, providers.SMSRequest{
 		To:   req.ContactNumber,
 		Body: req.ContactTemplate,
@@ -287,9 +300,10 @@ func (c *EmployeeController) Create(ctx *gin.Context) *models.Employee {
 			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
 		},
 	}); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send contact number verification"})
 		return nil
 	}
+
 	ctx.JSON(http.StatusCreated, c.transformer.EmployeeToResource(employee))
 	return employee
 }
@@ -301,27 +315,229 @@ type EmployeeNewPasswordRequest struct {
 }
 
 func (c *EmployeeController) NewPassword(ctx *gin.Context) {
-	var req *EmployeeChangePasswordRequest
+	var req EmployeeChangePasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
-	if validator.New().Struct(req) != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
+
 	employee, err := c.currentUser.Employee(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
+
 	updatedEmployee, err := c.repository.EmployeeChangePassword(
 		employee.ID.String(), req.OldPassword, req.NewPassword,
 		c.helpers.GetPreload(ctx)...,
 	)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
 		return
 	}
+
+	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
+}
+
+func (c *EmployeeController) SkipVerification(ctx *gin.Context) {
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	updatedEmployee, err := c.repository.EmployeeUpdateByID(employee.ID.String(), &models.Employee{
+		IsSkipVerification: true,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
+}
+
+type EmployeeSendEmailVerificationRequest struct {
+	EmailTemplate string `json:"emailTemplate" validate:"required"`
+}
+
+func (c *EmployeeController) SendEmailVerification(ctx *gin.Context) {
+	var req EmployeeSendEmailVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	otpMessage := providers.OTPMessage{
+		AccountType: "Employee",
+		ID:          employee.ID.String(),
+		MediumType:  providers.Email,
+		Reference:   "send-email-verification",
+	}
+	emailRequest := providers.EmailRequest{
+		To:      employee.Email,
+		Subject: "ECOOP: Email Verification",
+		Body:    req.EmailTemplate,
+	}
+
+	if err := c.otpService.SendEmailOTP(otpMessage, emailRequest); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Please check your inbox or spam folder"})
+}
+
+type EmployeeVerifyEmailRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
+}
+
+func (c *EmployeeController) VerifyEmail(ctx *gin.Context) {
+	var req EmployeeVerifyEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	otpMessage := providers.OTPMessage{
+		AccountType: "Employee",
+		ID:          employee.ID.String(),
+		MediumType:  providers.Email,
+		Reference:   "send-email-verification",
+	}
+
+	isValid, err := c.otpService.ValidateOTP(otpMessage, req.Otp)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate OTP"})
+		return
+	}
+	if !isValid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
+		return
+	}
+
+	updatedEmployee, err := c.repository.EmployeeUpdateByID(employee.ID.String(), &models.Employee{
+		IsEmailVerified: true,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
+}
+
+type EmployeeSendContactNumberVerificationRequest struct {
+	ContactTemplate string `json:"contactTemplate" validate:"required"`
+}
+
+func (c *EmployeeController) SendContactNumberVerification(ctx *gin.Context) {
+	var req EmployeeSendContactNumberVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	otpMessage := providers.OTPMessage{
+		AccountType: "Employee",
+		ID:          employee.ID.String(),
+		MediumType:  providers.Email,
+		Reference:   "send-contact-number-verification",
+	}
+	contactReq := providers.SMSRequest{
+		To:   employee.ContactNumber,
+		Body: req.ContactTemplate,
+		Vars: &map[string]string{
+			"name": fmt.Sprintf("%s %s", employee.FirstName, employee.LastName),
+		},
+	}
+
+	if err := c.otpService.SendContactNumberOTP(otpMessage, contactReq); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification OTP"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully"})
+}
+
+type EmployeeVerifyContactNumberRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
+}
+
+func (c *EmployeeController) VerifyContactNumber(ctx *gin.Context) {
+	var req EmployeeVerifyContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+
+	employee, err := c.currentUser.Employee(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	otpMessage := providers.OTPMessage{
+		AccountType: "Employee",
+		ID:          employee.ID.String(),
+		MediumType:  providers.Email,
+		Reference:   "send-contact-number-verification",
+	}
+
+	isValid, err := c.otpService.ValidateOTP(otpMessage, req.Otp)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "OTP validation error"})
+		return
+	}
+	if !isValid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
+		return
+	}
+
+	updatedEmployee, err := c.repository.EmployeeUpdateByID(employee.ID.String(), &models.Employee{
+		IsContactVerified: true,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
 }

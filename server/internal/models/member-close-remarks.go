@@ -79,9 +79,9 @@ func (m *ModelRepository) MemberCloseRemarksUpdate(membercloseremarks *MemberClo
 	repo := NewGenericRepository[MemberCloseRemarks](m.db.Client)
 	return repo.Update(membercloseremarks, preloads...)
 }
-func (m *ModelRepository) MemberCloseRemarksUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberCloseRemarks, error) {
+func (m *ModelRepository) MemberCloseRemarksUpdateByID(id string, value *MemberCloseRemarks, preloads ...string) (*MemberCloseRemarks, error) {
 	repo := NewGenericRepository[MemberCloseRemarks](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberCloseRemarksDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberCloseRemarks](m.db.Client)

@@ -105,9 +105,9 @@ func (m *ModelRepository) MemberBranchRegistrationUpdate(memberbranchregistratio
 	repo := NewGenericRepository[MemberBranchRegistration](m.db.Client)
 	return repo.Update(memberbranchregistration, preloads...)
 }
-func (m *ModelRepository) MemberBranchRegistrationUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberBranchRegistration, error) {
+func (m *ModelRepository) MemberBranchRegistrationUpdateByID(id string, column string, value *MemberBranchRegistration, preloads ...string) (*MemberBranchRegistration, error) {
 	repo := NewGenericRepository[MemberBranchRegistration](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberBranchRegistrationDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberBranchRegistration](m.db.Client)

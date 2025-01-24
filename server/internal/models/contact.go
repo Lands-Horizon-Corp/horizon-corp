@@ -85,9 +85,9 @@ func (m *ModelRepository) ContactUpdate(contact *Contact, preloads ...string) (*
 	repo := NewGenericRepository[Contact](m.db.Client)
 	return repo.Update(contact, preloads...)
 }
-func (m *ModelRepository) ContactUpdateByID(id string, column string, value interface{}, preloads ...string) (*Contact, error) {
+func (m *ModelRepository) ContactUpdateByID(id string, value *Contact, preloads ...string) (*Contact, error) {
 	repo := NewGenericRepository[Contact](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) ContactDeleteByID(id string) error {
 	repo := NewGenericRepository[Contact](m.db.Client)

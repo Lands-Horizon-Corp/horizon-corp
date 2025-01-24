@@ -201,9 +201,9 @@ func (m *ModelRepository) EmployeeUpdate(employee *Employee, preloads ...string)
 	repo := NewGenericRepository[Employee](m.db.Client)
 	return repo.Update(employee, preloads...)
 }
-func (m *ModelRepository) EmployeeUpdateByID(id string, column string, value interface{}, preloads ...string) (*Employee, error) {
+func (m *ModelRepository) EmployeeUpdateByID(id string, value *Employee, preloads ...string) (*Employee, error) {
 	repo := NewGenericRepository[Employee](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) EmployeeDeleteByID(id string) error {
 	repo := NewGenericRepository[Employee](m.db.Client)
@@ -212,14 +212,6 @@ func (m *ModelRepository) EmployeeDeleteByID(id string) error {
 func (m *ModelRepository) EmployeeGetAll(preloads ...string) ([]*Employee, error) {
 	repo := NewGenericRepository[Employee](m.db.Client)
 	return repo.GetAll(preloads...)
-}
-func (m *ModelRepository) EmployeeUpdatePassword(id string, password string) (*Employee, error) {
-	repo := NewGenericRepository[Employee](m.db.Client)
-	newPassword, err := m.cryptoHelpers.HashPassword(password)
-	if err != nil {
-		return nil, err
-	}
-	return repo.UpdateByID(id, "password", newPassword)
 }
 
 func (m *ModelRepository) EmployeeSignIn(key, password string, preload ...string) (*Employee, error) {

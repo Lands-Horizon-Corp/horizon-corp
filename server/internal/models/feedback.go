@@ -80,9 +80,9 @@ func (m *ModelRepository) FeedbackUpdate(feedback *Feedback, preloads ...string)
 	repo := NewGenericRepository[Feedback](m.db.Client)
 	return repo.Update(feedback, preloads...)
 }
-func (m *ModelRepository) FeedbackUpdateByID(id string, column string, value interface{}, preloads ...string) (*Feedback, error) {
+func (m *ModelRepository) FeedbackUpdateByID(id string, value *Feedback, preloads ...string) (*Feedback, error) {
 	repo := NewGenericRepository[Feedback](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) FeedbackDeleteByID(id string) error {
 	repo := NewGenericRepository[Feedback](m.db.Client)

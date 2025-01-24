@@ -185,9 +185,9 @@ func (m *ModelRepository) OwnerUpdate(owner *Owner, preloads ...string) (*Owner,
 	repo := NewGenericRepository[Owner](m.db.Client)
 	return repo.Update(owner, preloads...)
 }
-func (m *ModelRepository) OwnerUpdateByID(id string, column string, value interface{}, preloads ...string) (*Owner, error) {
+func (m *ModelRepository) OwnerUpdateByID(id string, value *Owner, preloads ...string) (*Owner, error) {
 	repo := NewGenericRepository[Owner](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) OwnerDeleteByID(id string) error {
 	repo := NewGenericRepository[Owner](m.db.Client)
@@ -196,14 +196,6 @@ func (m *ModelRepository) OwnerDeleteByID(id string) error {
 func (m *ModelRepository) OwnerGetAll(preloads ...string) ([]*Owner, error) {
 	repo := NewGenericRepository[Owner](m.db.Client)
 	return repo.GetAll(preloads...)
-}
-func (m *ModelRepository) OwnerUpdatePassword(id string, password string) (*Owner, error) {
-	repo := NewGenericRepository[Owner](m.db.Client)
-	newPassword, err := m.cryptoHelpers.HashPassword(password)
-	if err != nil {
-		return nil, err
-	}
-	return repo.UpdateByID(id, "password", newPassword)
 }
 
 func (m *ModelRepository) OwnerSignIn(key string, password string, preloads ...string) (*Owner, error) {

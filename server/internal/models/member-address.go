@@ -94,9 +94,9 @@ func (m *ModelRepository) MemberAddressUpdate(memberaddress *MemberAddress, prel
 	repo := NewGenericRepository[MemberAddress](m.db.Client)
 	return repo.Update(memberaddress, preloads...)
 }
-func (m *ModelRepository) MemberAddressUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberAddress, error) {
+func (m *ModelRepository) MemberAddressUpdateByID(id string, value *MemberAddress, preloads ...string) (*MemberAddress, error) {
 	repo := NewGenericRepository[MemberAddress](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberAddressDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberAddress](m.db.Client)

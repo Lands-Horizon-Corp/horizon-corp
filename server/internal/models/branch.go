@@ -135,9 +135,9 @@ func (m *ModelRepository) BranchUpdate(branch *Branch, preloads ...string) (*Bra
 	repo := NewGenericRepository[Branch](m.db.Client)
 	return repo.Update(branch, preloads...)
 }
-func (m *ModelRepository) BranchUpdateByID(id string, column string, value interface{}, preloads ...string) (*Branch, error) {
+func (m *ModelRepository) BranchUpdateByID(id string, value *Branch, preloads ...string) (*Branch, error) {
 	repo := NewGenericRepository[Branch](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) BranchDeleteByID(id string) error {
 	repo := NewGenericRepository[Branch](m.db.Client)

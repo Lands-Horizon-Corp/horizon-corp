@@ -135,16 +135,18 @@ type AdminChangePasswordRequest struct {
 }
 
 func (as AdminController) ChangePassword(ctx *gin.Context) {
-	var req *AdminChangePasswordRequest
+	var req AdminChangePasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
+
 	admin, err := as.currentUser.Admin(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
+
 	updated, err := as.repository.AdminChangePassword(
 		admin.ID.String(),
 		req.OldPassword,
@@ -152,10 +154,11 @@ func (as AdminController) ChangePassword(ctx *gin.Context) {
 		as.helpers.GetPreload(ctx)...,
 	)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to update password"})
 		return
 	}
-	ctx.JSON(http.StatusCreated, as.transformer.AdminToResource(updated))
+
+	ctx.JSON(http.StatusOK, as.transformer.AdminToResource(updated))
 }
 
 type AdminForgotPasswordRequest struct {
@@ -172,16 +175,17 @@ func (c *AdminController) ForgotPassword(ctx *gin.Context) {
 func (c *AdminController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 	var req AdminForgotPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return nil
 	}
 	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
 		return nil
 	}
+
 	user, err := c.repository.AdminSearch(req.Key)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
 		return nil
 	}
 
@@ -191,12 +195,13 @@ func (c *AdminController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 		UserStatus:  user.Status,
 	}, time.Minute*10)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate reset token"})
 		return nil
 	}
 
 	resetLink := fmt.Sprintf("%s/auth/password-reset/%s", c.cfg.AppClientUrl, *token)
 	keyType := c.helpers.GetKeyType(req.Key)
+
 	switch keyType {
 	case "contact":
 		contactReq := providers.SMSRequest{
@@ -208,7 +213,8 @@ func (c *AdminController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 			},
 		}
 		if err := c.smsProvder.SendSMS(contactReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: SMS sending error %v", err)})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send SMS for password reset"})
+			return nil
 		}
 		return &resetLink
 	case "email":
@@ -222,27 +228,27 @@ func (c *AdminController) ForgotPasswordResetLink(ctx *gin.Context) *string {
 			},
 		}
 		if err := c.emailProvider.SendEmail(emailReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Email sending error: %v", err)})
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email for password reset"})
 			return nil
 		}
 		return &resetLink
 	default:
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Invalid key type: %s", keyType)})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid key type"})
 		return nil
 	}
 }
 
 func (c *AdminController) Create(ctx *gin.Context) *models.Admin {
-
 	var req AdminStoreRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return nil
 	}
-	if validator.New().Struct(req) != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return nil
 	}
+
 	preloads := c.helpers.GetPreload(ctx)
 	admin, err := c.repository.AdminCreate(&models.Admin{
 		FirstName:          req.FirstName,
@@ -267,22 +273,26 @@ func (c *AdminController) Create(ctx *gin.Context) *models.Admin {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create admin", "details": err.Error()})
 		return nil
 	}
+
 	if err := c.otpService.SendEmailOTP(providers.OTPMessage{
-		AccountType: "Admin", ID: admin.ID.String(),
-		MediumType: "email",
-		Reference:  "email-verification",
+		AccountType: "Admin",
+		ID:          admin.ID.String(),
+		MediumType:  "email",
+		Reference:   "email-verification",
 	}, providers.EmailRequest{
 		To:      req.Email,
 		Subject: "ECOOP: Email Verification",
 		Body:    req.EmailTemplate,
 	}); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
 		return nil
 	}
+
 	if err := c.otpService.SendContactNumberOTP(providers.OTPMessage{
-		AccountType: "Admin", ID: admin.ID.String(),
-		MediumType: "sms",
-		Reference:  "sms-verification",
+		AccountType: "Admin",
+		ID:          admin.ID.String(),
+		MediumType:  "sms",
+		Reference:   "sms-verification",
 	}, providers.SMSRequest{
 		To:   req.ContactNumber,
 		Body: req.ContactTemplate,
@@ -290,9 +300,10 @@ func (c *AdminController) Create(ctx *gin.Context) *models.Admin {
 			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
 		},
 	}); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send contact number verification"})
 		return nil
 	}
+
 	ctx.JSON(http.StatusCreated, c.transformer.AdminToResource(admin))
 	return admin
 }
@@ -304,33 +315,49 @@ type AdminNewPasswordRequest struct {
 }
 
 func (c *AdminController) NewPassword(ctx *gin.Context) {
-	var req *AdminChangePasswordRequest
+	var req AdminChangePasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("SendContactNumberVerification: JSON binding error: %v", err)})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
-	if validator.New().Struct(req) != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
+
 	admin, err := c.currentUser.Admin(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
 		return
 	}
+
 	updatedAdmin, err := c.repository.AdminChangePassword(
 		admin.ID.String(), req.OldPassword, req.NewPassword,
 		c.helpers.GetPreload(ctx)...,
 	)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 }
 
 func (c *AdminController) SkipVerification(ctx *gin.Context) {
+	admin, err := c.currentUser.Admin(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
 
+	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
+		IsSkipVerification: true,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
+		return
+	}
+	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 }
 
 type AdminSendEmailVerificationRequest struct {
@@ -338,7 +365,40 @@ type AdminSendEmailVerificationRequest struct {
 }
 
 func (c *AdminController) SendEmailVerification(ctx *gin.Context) {
+	var req AdminSendEmailVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 
+	admin, err := c.currentUser.Admin(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	otpMessage := providers.OTPMessage{
+		AccountType: "Admin",
+		ID:          admin.ID.String(),
+		MediumType:  providers.Email,
+		Reference:   "send-email-verification",
+	}
+	emailRequest := providers.EmailRequest{
+		To:      admin.Email,
+		Subject: "ECOOP: Email Verification",
+		Body:    req.EmailTemplate,
+	}
+
+	if err := c.otpService.SendEmailOTP(otpMessage, emailRequest); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Please check your inbox or spam folder"})
 }
 
 type AdminVerifyEmailRequest struct {
@@ -346,7 +406,48 @@ type AdminVerifyEmailRequest struct {
 }
 
 func (c *AdminController) VerifyEmail(ctx *gin.Context) {
+	var req AdminVerifyEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 
+	admin, err := c.currentUser.Admin(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	otpMessage := providers.OTPMessage{
+		AccountType: "Admin",
+		ID:          admin.ID.String(),
+		MediumType:  providers.Email,
+		Reference:   "send-email-verification",
+	}
+
+	isValid, err := c.otpService.ValidateOTP(otpMessage, req.Otp)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate OTP"})
+		return
+	}
+	if !isValid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
+		return
+	}
+
+	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
+		IsEmailVerified: true,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 }
 
 type AdminSendContactNumberVerificationRequest struct {
@@ -354,7 +455,42 @@ type AdminSendContactNumberVerificationRequest struct {
 }
 
 func (c *AdminController) SendContactNumberVerification(ctx *gin.Context) {
+	var req AdminSendContactNumberVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 
+	admin, err := c.currentUser.Admin(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	otpMessage := providers.OTPMessage{
+		AccountType: "Admin",
+		ID:          admin.ID.String(),
+		MediumType:  providers.Email,
+		Reference:   "send-contact-number-verification",
+	}
+	contactReq := providers.SMSRequest{
+		To:   admin.ContactNumber,
+		Body: req.ContactTemplate,
+		Vars: &map[string]string{
+			"name": fmt.Sprintf("%s %s", admin.FirstName, admin.LastName),
+		},
+	}
+
+	if err := c.otpService.SendContactNumberOTP(otpMessage, contactReq); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification OTP"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully"})
 }
 
 type AdminVerifyContactNumberRequest struct {
@@ -362,5 +498,46 @@ type AdminVerifyContactNumberRequest struct {
 }
 
 func (c *AdminController) VerifyContactNumber(ctx *gin.Context) {
+	var req AdminVerifyContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 
+	admin, err := c.currentUser.Admin(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	otpMessage := providers.OTPMessage{
+		AccountType: "Admin",
+		ID:          admin.ID.String(),
+		MediumType:  providers.Email,
+		Reference:   "send-contact-number-verification",
+	}
+
+	isValid, err := c.otpService.ValidateOTP(otpMessage, req.Otp)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "OTP validation error"})
+		return
+	}
+	if !isValid {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
+		return
+	}
+
+	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
+		IsContactVerified: true,
+	}, c.helpers.GetPreload(ctx)...)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 }

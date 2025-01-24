@@ -180,9 +180,9 @@ func (m *ModelRepository) AdminUpdate(admin *Admin, preloads ...string) (*Admin,
 	repo := NewGenericRepository[Admin](m.db.Client)
 	return repo.Update(admin, preloads...)
 }
-func (m *ModelRepository) AdminUpdateByID(id string, column string, value interface{}, preloads ...string) (*Admin, error) {
+func (m *ModelRepository) AdminUpdateByID(id string, value *Admin, preloads ...string) (*Admin, error) {
 	repo := NewGenericRepository[Admin](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) AdminDeleteByID(id string) error {
 	repo := NewGenericRepository[Admin](m.db.Client)
@@ -191,14 +191,6 @@ func (m *ModelRepository) AdminDeleteByID(id string) error {
 func (m *ModelRepository) AdminGetAll(preloads ...string) ([]*Admin, error) {
 	repo := NewGenericRepository[Admin](m.db.Client)
 	return repo.GetAll(preloads...)
-}
-func (m *ModelRepository) AdminUpdatePassword(id string, password string) (*Admin, error) {
-	repo := NewGenericRepository[Admin](m.db.Client)
-	newPassword, err := m.cryptoHelpers.HashPassword(password)
-	if err != nil {
-		return nil, err
-	}
-	return repo.UpdateByID(id, "password", newPassword)
 }
 
 func (m *ModelRepository) AdminSignIn(key, password string, preload ...string) (*Admin, error) {

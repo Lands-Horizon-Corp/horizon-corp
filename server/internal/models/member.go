@@ -177,9 +177,9 @@ func (m *ModelRepository) MemberUpdate(member *Member, preloads ...string) (*Mem
 	repo := NewGenericRepository[Member](m.db.Client)
 	return repo.Update(member, preloads...)
 }
-func (m *ModelRepository) MemberUpdateByID(id string, column string, value interface{}, preloads ...string) (*Member, error) {
+func (m *ModelRepository) MemberUpdateByID(id string, value *Member, preloads ...string) (*Member, error) {
 	repo := NewGenericRepository[Member](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberDeleteByID(id string) error {
 	repo := NewGenericRepository[Member](m.db.Client)
@@ -188,14 +188,6 @@ func (m *ModelRepository) MemberDeleteByID(id string) error {
 func (m *ModelRepository) MemberGetAll(preloads ...string) ([]*Member, error) {
 	repo := NewGenericRepository[Member](m.db.Client)
 	return repo.GetAll(preloads...)
-}
-func (m *ModelRepository) MemberUpdatePassword(id string, password string) (*Member, error) {
-	repo := NewGenericRepository[Member](m.db.Client)
-	newPassword, err := m.cryptoHelpers.HashPassword(password)
-	if err != nil {
-		return nil, err
-	}
-	return repo.UpdateByID(id, "password", newPassword)
 }
 
 func (m *ModelRepository) MemberSignIn(key, password string, preload ...string) (*Member, error) {

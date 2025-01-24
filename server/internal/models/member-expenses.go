@@ -87,9 +87,9 @@ func (m *ModelRepository) MemberExpensesUpdate(memberexpenses *MemberExpenses, p
 	repo := NewGenericRepository[MemberExpenses](m.db.Client)
 	return repo.Update(memberexpenses, preloads...)
 }
-func (m *ModelRepository) MemberExpensesUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberExpenses, error) {
+func (m *ModelRepository) MemberExpensesUpdateByID(id string, value *MemberExpenses, preloads ...string) (*MemberExpenses, error) {
 	repo := NewGenericRepository[MemberExpenses](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberExpensesDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberExpenses](m.db.Client)

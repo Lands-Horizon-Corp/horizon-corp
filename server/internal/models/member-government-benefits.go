@@ -100,9 +100,9 @@ func (m *ModelRepository) MemberGovernmentBenefitsUpdate(membergovernmentbenefit
 	repo := NewGenericRepository[MemberGovernmentBenefits](m.db.Client)
 	return repo.Update(membergovernmentbenefits, preloads...)
 }
-func (m *ModelRepository) MemberGovernmentBenefitsUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberGovernmentBenefits, error) {
+func (m *ModelRepository) MemberGovernmentBenefitsUpdateByID(id string, value *MemberGovernmentBenefits, preloads ...string) (*MemberGovernmentBenefits, error) {
 	repo := NewGenericRepository[MemberGovernmentBenefits](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberGovernmentBenefitsDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberGovernmentBenefits](m.db.Client)
