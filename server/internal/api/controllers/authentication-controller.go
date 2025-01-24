@@ -6,6 +6,7 @@ import (
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
@@ -20,6 +21,7 @@ type AuthController struct {
 	currentUser   *handlers.CurrentUser
 	tokenProvider *providers.TokenService
 	cfg           *config.AppConfig
+	helpers       *helpers.HelpersFunction
 
 	adminController    *AdminController
 	ownerController    *OwnerController
@@ -34,6 +36,7 @@ func NewAuthController(
 	currentUser *handlers.CurrentUser,
 	tokenProvider *providers.TokenService,
 	cfg *config.AppConfig,
+	helpers *helpers.HelpersFunction,
 
 	adminController *AdminController,
 	ownerController *OwnerController,
@@ -47,6 +50,7 @@ func NewAuthController(
 		currentUser:   currentUser,
 		tokenProvider: tokenProvider,
 		cfg:           cfg,
+		helpers:       helpers,
 
 		adminController:    adminController,
 		ownerController:    ownerController,
@@ -133,12 +137,11 @@ func (as AuthController) SignIn(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request data", "details": err.Error()})
 		return
 	}
-	validate := validator.New()
-	if err := validate.Struct(req); err != nil {
+	if err := validator.New().Struct(req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": err.Error()})
 		return
 	}
-	preloads := ctx.QueryArray("preload")
+	preloads := as.helpers.GetPreload(ctx)
 	var rawUser interface{}
 	var transformedUser interface{}
 	var id uuid.UUID
@@ -199,13 +202,34 @@ func (as AuthController) SignIn(ctx *gin.Context) {
 // Endpoint: POST /api/v1/auth/forgot-password
 
 type ForgotPasswordRequest struct {
-	Key             string `json:"key" validate:"required,max=255"`
-	AccountType     string `json:"accountType" validate:"required,max=10"`
-	EmailTemplate   string `json:"emailTemplate"`
-	ContactTemplate string `json:"contactTemplate"`
+	Key         string `json:"key" validate:"required,max=255"`
+	AccountType string `json:"accountType" validate:"required,max=10"`
 }
 
-func (as AuthController) ForgotPassword(ctx *gin.Context) {}
+func (as AuthController) ForgotPassword(ctx *gin.Context) {
+	var req ForgotPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": err.Error()})
+		return
+	}
+	switch req.AccountType {
+	case "Member":
+		as.memberController.ForgotPassword(ctx)
+	case "Admin":
+		as.adminController.ForgotPasswordResetLink(ctx)
+	case "Owner":
+		as.ownerController.ForgotPasswordResetLink(ctx)
+	case "Employee":
+		as.employeeController.ForgotPasswordResetLink(ctx)
+	default:
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid account type"})
+		return
+	}
+}
 
 // ChangePassword handles changing the user's password.
 // Endpoint: POST /api/v1/auth/change-password

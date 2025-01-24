@@ -139,12 +139,12 @@ func NewAPIHandlerInvoke(
 
 		member := v1.Group("/member")
 		{
-			member.GET("/", memberController.Index)
-			member.GET("/:id", memberController.Show)
+			member.GET("/", middle.AccountTypeMiddleware("Admin", "Owner", "Employee", "Member"), memberController.Index)
+			member.GET("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee", "Member"), memberController.Show)
 			member.POST("/", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.Store)
-			member.PUT("/:id", memberController.Update)
-			member.DELETE("/:id", memberController.Destroy)
-			member.GET("/forgot-password", memberController.ForgotPassword)
+			member.PUT("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee", "Member"), memberController.Update)
+			member.DELETE("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.Destroy)
+			member.GET("/forgot-password", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.ForgotPassword)
 		}
 
 		memberProfile := v1.Group("/member-profile")
@@ -158,12 +158,12 @@ func NewAPIHandlerInvoke(
 
 		owner := v1.Group("/owner")
 		{
-			owner.GET("/", ownerController.Index)
-			owner.GET("/:id", ownerController.Show)
+			owner.GET("/", middle.AccountTypeMiddleware("Admin"), ownerController.Index)
+			owner.GET("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), ownerController.Show)
 			owner.POST("/", middle.AccountTypeMiddleware("Admin"), ownerController.Store)
-			owner.PUT("/:id", ownerController.Update)
-			owner.DELETE("/:id", ownerController.Destroy)
-			owner.GET("/forgot-password", ownerController.ForgotPassword)
+			owner.PUT("/:id", middle.AccountTypeMiddleware("Admin", "Owner"), ownerController.Update)
+			owner.DELETE("/:id", middle.AccountTypeMiddleware("Admin"), ownerController.Destroy)
+			owner.GET("/forgot-password", middle.AccountTypeMiddleware("Admin"), ownerController.ForgotPassword)
 		}
 
 		profile := v1.Group("/profile")

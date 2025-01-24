@@ -162,3 +162,17 @@ func (hf *HelpersFunction) ParseIDsFromQuery(ctx *gin.Context, paramName string)
 
 	return ids, nil
 }
+
+func (hf HelpersFunction) GetPreload(ctx *gin.Context) []string {
+	preloadParam := ctx.Query("preload")
+	var preloads []string
+	if preloadParam != "" {
+		for _, rel := range strings.Split(preloadParam, ",") {
+			rel = strings.TrimSpace(rel)
+			if rel != "" {
+				preloads = append(preloads, rel)
+			}
+		}
+	}
+	return preloads
+}

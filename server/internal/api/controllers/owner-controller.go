@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
@@ -14,11 +16,16 @@ import (
 )
 
 type OwnerController struct {
-	repository  *models.ModelRepository
-	transformer *models.ModelTransformer
-	footstep    *handlers.FootstepHandler
-	currentUser *handlers.CurrentUser
-	otpService  *providers.OTPService
+	repository    *models.ModelRepository
+	transformer   *models.ModelTransformer
+	footstep      *handlers.FootstepHandler
+	currentUser   *handlers.CurrentUser
+	otpService    *providers.OTPService
+	tokenProvider *providers.TokenService
+	cfg           *config.AppConfig
+	helpers       *helpers.HelpersFunction
+	smsProvder    *providers.SMSService
+	emailProvider *providers.EmailService
 }
 
 func NewOwnerController(
@@ -27,13 +34,23 @@ func NewOwnerController(
 	footstep *handlers.FootstepHandler,
 	currentUser *handlers.CurrentUser,
 	otpService *providers.OTPService,
+	tokenProvider *providers.TokenService,
+	cfg *config.AppConfig,
+	helpers *helpers.HelpersFunction,
+	smsProvder *providers.SMSService,
+	emailProvider *providers.EmailService,
 ) *OwnerController {
 	return &OwnerController{
-		repository:  repository,
-		transformer: transformer,
-		footstep:    footstep,
-		currentUser: currentUser,
-		otpService:  otpService,
+		repository:    repository,
+		transformer:   transformer,
+		footstep:      footstep,
+		currentUser:   currentUser,
+		otpService:    otpService,
+		tokenProvider: tokenProvider,
+		cfg:           cfg,
+		helpers:       helpers,
+		smsProvder:    smsProvder,
+		emailProvider: emailProvider,
 	}
 }
 
@@ -90,7 +107,77 @@ func (c *OwnerController) Destroy(ctx *gin.Context) {
 // owner: only  for email, phone number, and actual link
 // Public: ownly  for email, and phone number
 func (c *OwnerController) ForgotPassword(ctx *gin.Context) {
+	link := c.ForgotPasswordResetLink(ctx)
+	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
+}
 
+type OwnerForgotPasswordRequest struct {
+	Key             string `json:"key" validate:"required,max=255"`
+	EmailTemplate   string `json:"emailTemplate"`
+	ContactTemplate string `json:"contactTemplate"`
+}
+
+func (c *OwnerController) ForgotPasswordResetLink(ctx *gin.Context) *string {
+	var req OwnerForgotPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return nil
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": err.Error()})
+		return nil
+	}
+	user, err := c.repository.OwnerSearch(req.Key)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
+		return nil
+	}
+
+	token, err := c.tokenProvider.GenerateUserToken(providers.UserClaims{
+		ID:          user.ID.String(),
+		AccountType: "Owner",
+		UserStatus:  user.Status,
+	}, time.Minute*10)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return nil
+	}
+
+	resetLink := fmt.Sprintf("%s/auth/password-reset/%s", c.cfg.AppClientUrl, *token)
+	keyType := c.helpers.GetKeyType(req.Key)
+	switch keyType {
+	case "contact":
+		contactReq := providers.SMSRequest{
+			To:   req.Key,
+			Body: req.ContactTemplate,
+			Vars: &map[string]string{
+				"name":      fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+				"eventLink": resetLink,
+			},
+		}
+		if err := c.smsProvder.SendSMS(contactReq); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: SMS sending error %v", err)})
+		}
+		return &resetLink
+	case "email":
+		emailReq := providers.EmailRequest{
+			To:      req.Key,
+			Subject: "ECOOP: Change Password Request",
+			Body:    req.ContactTemplate,
+			Vars: &map[string]string{
+				"name":      fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+				"eventLink": resetLink,
+			},
+		}
+		if err := c.emailProvider.SendEmail(emailReq); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Email sending error: %v", err)})
+			return nil
+		}
+		return &resetLink
+	default:
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Invalid key type: %s", keyType)})
+		return nil
+	}
 }
 
 func (c *OwnerController) Create(ctx *gin.Context) *models.Owner {
@@ -103,7 +190,7 @@ func (c *OwnerController) Create(ctx *gin.Context) *models.Owner {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
 		return nil
 	}
-
+	preloads := c.helpers.GetPreload(ctx)
 	owner, err := c.repository.OwnerCreate(&models.Owner{
 		FirstName:          req.FirstName,
 		LastName:           req.LastName,
@@ -124,15 +211,15 @@ func (c *OwnerController) Create(ctx *gin.Context) *models.Owner {
 		MediaID:  req.MediaID,
 		RoleID:   req.RoleID,
 		GenderID: req.GenderID,
-	})
+	}, preloads...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create owner", "details": err.Error()})
 		return nil
 	}
 
 	if err := c.otpService.SendEmailOTP(providers.OTPMessage{
-		AccountType: "owner", ID: owner.ID.String(),
-		MediumType: "owner",
+		AccountType: "Owner", ID: owner.ID.String(),
+		MediumType: "Owner",
 		Reference:  "email-verification",
 	}, providers.EmailRequest{
 		To:      req.Email,
@@ -143,7 +230,7 @@ func (c *OwnerController) Create(ctx *gin.Context) *models.Owner {
 		return nil
 	}
 	if err := c.otpService.SendContactNumberOTP(providers.OTPMessage{
-		AccountType: "owner", ID: owner.ID.String(),
+		AccountType: "Owner", ID: owner.ID.String(),
 		MediumType: "sms",
 		Reference:  "sms-verification",
 	}, providers.SMSRequest{

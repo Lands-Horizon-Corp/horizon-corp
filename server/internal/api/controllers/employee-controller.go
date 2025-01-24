@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
@@ -14,11 +16,16 @@ import (
 )
 
 type EmployeeController struct {
-	repository  *models.ModelRepository
-	transformer *models.ModelTransformer
-	footstep    *handlers.FootstepHandler
-	currentUser *handlers.CurrentUser
-	otpService  *providers.OTPService
+	repository    *models.ModelRepository
+	transformer   *models.ModelTransformer
+	footstep      *handlers.FootstepHandler
+	currentUser   *handlers.CurrentUser
+	otpService    *providers.OTPService
+	tokenProvider *providers.TokenService
+	cfg           *config.AppConfig
+	helpers       *helpers.HelpersFunction
+	smsProvder    *providers.SMSService
+	emailProvider *providers.EmailService
 }
 
 func NewEmployeeController(
@@ -27,13 +34,23 @@ func NewEmployeeController(
 	footstep *handlers.FootstepHandler,
 	currentUser *handlers.CurrentUser,
 	otpService *providers.OTPService,
+	tokenProvider *providers.TokenService,
+	cfg *config.AppConfig,
+	helpers *helpers.HelpersFunction,
+	smsProvder *providers.SMSService,
+	emailProvider *providers.EmailService,
 ) *EmployeeController {
 	return &EmployeeController{
-		repository:  repository,
-		transformer: transformer,
-		footstep:    footstep,
-		currentUser: currentUser,
-		otpService:  otpService,
+		repository:    repository,
+		transformer:   transformer,
+		footstep:      footstep,
+		currentUser:   currentUser,
+		otpService:    otpService,
+		tokenProvider: tokenProvider,
+		cfg:           cfg,
+		helpers:       helpers,
+		smsProvder:    smsProvder,
+		emailProvider: emailProvider,
 	}
 }
 
@@ -85,12 +102,6 @@ type EmployeeStoreRequest struct {
 
 func (c *EmployeeController) Store(ctx *gin.Context) {
 	c.Create(ctx)
-	// if Logged in or not
-	//	 	Only Admin, Owner and verified
-	//		do not set cookies
-	// else
-	// 		Log me in
-
 }
 
 // PUT: /
@@ -112,7 +123,77 @@ func (c *EmployeeController) Destroy(ctx *gin.Context) {
 }
 
 func (c *EmployeeController) ForgotPassword(ctx *gin.Context) {
+	link := c.ForgotPasswordResetLink(ctx)
+	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
+}
 
+type EmployeeForgotPasswordRequest struct {
+	Key             string `json:"key" validate:"required,max=255"`
+	EmailTemplate   string `json:"emailTemplate"`
+	ContactTemplate string `json:"contactTemplate"`
+}
+
+func (c *EmployeeController) ForgotPasswordResetLink(ctx *gin.Context) *string {
+	var req EmployeeForgotPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err})
+		return nil
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": err.Error()})
+		return nil
+	}
+	user, err := c.repository.EmployeeSearch(req.Key)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
+		return nil
+	}
+
+	token, err := c.tokenProvider.GenerateUserToken(providers.UserClaims{
+		ID:          user.ID.String(),
+		AccountType: "Employee",
+		UserStatus:  user.Status,
+	}, time.Minute*10)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err})
+		return nil
+	}
+
+	resetLink := fmt.Sprintf("%s/auth/password-reset/%s", c.cfg.AppClientUrl, *token)
+	keyType := c.helpers.GetKeyType(req.Key)
+	switch keyType {
+	case "contact":
+		contactReq := providers.SMSRequest{
+			To:   req.Key,
+			Body: req.ContactTemplate,
+			Vars: &map[string]string{
+				"name":      fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+				"eventLink": resetLink,
+			},
+		}
+		if err := c.smsProvder.SendSMS(contactReq); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: SMS sending error %v", err)})
+		}
+		return &resetLink
+	case "email":
+		emailReq := providers.EmailRequest{
+			To:      req.Key,
+			Subject: "ECOOP: Change Password Request",
+			Body:    req.ContactTemplate,
+			Vars: &map[string]string{
+				"name":      fmt.Sprintf("%s %s", user.FirstName, user.LastName),
+				"eventLink": resetLink,
+			},
+		}
+		if err := c.emailProvider.SendEmail(emailReq); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Email sending error: %v", err)})
+			return nil
+		}
+		return &resetLink
+	default:
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": fmt.Sprintf("ForgotPassword: Invalid key type: %s", keyType)})
+		return nil
+	}
 }
 
 func (c *EmployeeController) Create(ctx *gin.Context) *models.Employee {
@@ -125,6 +206,7 @@ func (c *EmployeeController) Create(ctx *gin.Context) *models.Employee {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": req})
 		return nil
 	}
+	preloads := c.helpers.GetPreload(ctx)
 	employee, err := c.repository.EmployeeCreate(&models.Employee{
 		FirstName:          req.FirstName,
 		LastName:           req.LastName,
@@ -147,13 +229,13 @@ func (c *EmployeeController) Create(ctx *gin.Context) *models.Employee {
 		BranchID: req.BranchID,
 		RoleID:   req.RoleID,
 		GenderID: req.GenderID,
-	})
+	}, preloads...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create employee", "details": err.Error()})
 		return nil
 	}
 	if err := c.otpService.SendEmailOTP(providers.OTPMessage{
-		AccountType: "employee", ID: employee.ID.String(),
+		AccountType: "Employee", ID: employee.ID.String(),
 		MediumType: "email",
 		Reference:  "email-verification",
 	}, providers.EmailRequest{
@@ -165,7 +247,7 @@ func (c *EmployeeController) Create(ctx *gin.Context) *models.Employee {
 		return nil
 	}
 	if err := c.otpService.SendContactNumberOTP(providers.OTPMessage{
-		AccountType: "employee", ID: employee.ID.String(),
+		AccountType: "Employee", ID: employee.ID.String(),
 		MediumType: "sms",
 		Reference:  "sms-verification",
 	}, providers.SMSRequest{
