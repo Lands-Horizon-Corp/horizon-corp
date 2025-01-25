@@ -157,6 +157,11 @@ func (as AdminController) ChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to update password"})
 		return
 	}
+	_, err = as.footstep.Create(ctx, "Admin", "ChangePassword", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, as.transformer.AdminToResource(updated))
 }
@@ -340,6 +345,12 @@ func (c *AdminController) NewPassword(ctx *gin.Context) {
 		return
 	}
 
+	_, err = c.footstep.Create(ctx, "Admin", "NewPassword", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 }
 
@@ -355,6 +366,11 @@ func (c *AdminController) SkipVerification(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Admin", "SkipVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
@@ -395,6 +411,11 @@ func (c *AdminController) SendEmailVerification(ctx *gin.Context) {
 
 	if err := c.otpService.SendEmailOTP(otpMessage, emailRequest); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Admin", "SendEmailVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 
@@ -446,6 +467,11 @@ func (c *AdminController) VerifyEmail(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Admin", "VerifyEmail", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 }
@@ -487,6 +513,11 @@ func (c *AdminController) SendContactNumberVerification(ctx *gin.Context) {
 
 	if err := c.otpService.SendContactNumberOTP(otpMessage, contactReq); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification OTP"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Admin", "SendContactNumberVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 
@@ -538,6 +569,11 @@ func (c *AdminController) VerifyContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Admin", "VerifyContactNumber", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 }
@@ -567,6 +603,11 @@ func (c *AdminController) ProfilePicture(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Admin", "ProfilePicture", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
@@ -613,6 +654,11 @@ func (c *AdminController) ProfileAccountSetting(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Admin", "ProfileAccountSetting", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 }
 
@@ -650,6 +696,11 @@ func (c *AdminController) ProfileChangeEmail(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Admin", "ProfileChangeEmail", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
@@ -691,6 +742,11 @@ func (c *AdminController) ProfileChangeContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Admin", "ProfileChangeContactNumber", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
 
 }
@@ -728,6 +784,11 @@ func (c *AdminController) ProfileChangeUsername(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Admin", "ProfileChangeUsername", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))

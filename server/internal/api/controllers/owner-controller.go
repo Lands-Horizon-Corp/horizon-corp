@@ -157,6 +157,11 @@ func (as OwnerController) ChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to update password"})
 		return
 	}
+	_, err = as.footstep.Create(ctx, "Owner", "ChangePassword", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, as.transformer.OwnerToResource(updated))
 }
@@ -340,6 +345,12 @@ func (c *OwnerController) NewPassword(ctx *gin.Context) {
 		return
 	}
 
+	_, err = c.footstep.Create(ctx, "Owner", "NewPassword", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
 }
 
@@ -355,6 +366,11 @@ func (c *OwnerController) SkipVerification(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Owner", "SkipVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
@@ -395,6 +411,11 @@ func (c *OwnerController) SendEmailVerification(ctx *gin.Context) {
 
 	if err := c.otpService.SendEmailOTP(otpMessage, emailRequest); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Owner", "SendEmailVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 
@@ -446,6 +467,11 @@ func (c *OwnerController) VerifyEmail(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Owner", "VerifyEmail", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
 }
@@ -487,6 +513,11 @@ func (c *OwnerController) SendContactNumberVerification(ctx *gin.Context) {
 
 	if err := c.otpService.SendContactNumberOTP(otpMessage, contactReq); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification OTP"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Owner", "SendContactNumberVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 
@@ -538,6 +569,11 @@ func (c *OwnerController) VerifyContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Owner", "VerifyContactNumber", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
 }
@@ -567,6 +603,11 @@ func (c *OwnerController) ProfilePicture(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Owner", "ProfilePicture", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
@@ -613,6 +654,11 @@ func (c *OwnerController) ProfileAccountSetting(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Owner", "ProfileAccountSetting", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
 }
 
@@ -650,6 +696,11 @@ func (c *OwnerController) ProfileChangeEmail(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Owner", "ProfileChangeEmail", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
@@ -691,6 +742,11 @@ func (c *OwnerController) ProfileChangeContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Owner", "ProfileChangeContactNumber", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
 
 }
@@ -728,6 +784,11 @@ func (c *OwnerController) ProfileChangeUsername(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Owner", "ProfileChangeUsername", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))

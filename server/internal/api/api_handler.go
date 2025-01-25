@@ -51,9 +51,24 @@ func NewAPIHandlerInvoke(
 			admin.POST("/", middle.AccountTypeMiddleware("Admin"), adminController.Store)
 			admin.PUT("/:id", middle.AccountTypeMiddleware("Admin"), adminController.Update)
 			admin.DELETE("/:id", middle.AccountTypeMiddleware("Admin"), adminController.Destroy)
-			admin.POST("/forgot-password", middle.AccountTypeMiddleware("Admin"), adminController.ForgotPassword)
+
 			admin.POST("/change-password", middle.AccountTypeMiddleware("Admin"), adminController.ChangePassword)
+			admin.POST("/forgot-password", middle.AccountTypeMiddleware("Admin"), adminController.ForgotPassword)
+			admin.POST("/forgot-password-reset-link", middle.AccountTypeMiddleware("Admin"), adminController.ForgotPassword)
 			admin.POST("/new-password", middle.AccountTypeMiddleware("Admin"), adminController.NewPassword)
+
+			admin.POST("/skip-verification", middle.AccountTypeMiddleware("Admin"), adminController.SkipVerification)
+			admin.POST("/send-email-verification", middle.AccountTypeMiddleware("Admin"), adminController.SendEmailVerification)
+			admin.POST("/verify-email", middle.AccountTypeMiddleware("Admin"), adminController.VerifyEmail)
+
+			admin.POST("/send-contact-number-verification", middle.AccountTypeMiddleware("Admin"), adminController.SendContactNumberVerification)
+			admin.POST("/verify-contact-number", middle.AccountTypeMiddleware("Admin"), adminController.VerifyContactNumber)
+
+			admin.POST("/profile-picture", middle.AccountTypeMiddleware("Admin"), adminController.ProfilePicture)
+			admin.PUT("/profile-account-setting", middle.AccountTypeMiddleware("Admin"), adminController.ProfileAccountSetting)
+			admin.PUT("/profile-change-email", middle.AccountTypeMiddleware("Admin"), adminController.ProfileChangeEmail)
+			admin.PUT("/profile-change-contact-number", middle.AccountTypeMiddleware("Admin"), adminController.ProfileChangeContactNumber)
+			admin.PUT("/profile-change-username", middle.AccountTypeMiddleware("Admin"), adminController.ProfileChangeUsername)
 		}
 		auth := v1.Group("/auth")
 		{
@@ -99,15 +114,32 @@ func NewAPIHandlerInvoke(
 			contact.POST("/", contactController.Store)
 			contact.DELETE("/:id", contactController.Destroy)
 		}
+
 		employee := v1.Group("/employee")
 		{
 			employee.GET("/", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Index)
 			employee.GET("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Show)
 			employee.POST("/", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Store)
-			employee.DELETE("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Destroy)
-			employee.POST("/forgot-password", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.ForgotPassword)
+			employee.PUT("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.Update)
+			employee.DELETE("/:id", middle.AccountTypeMiddleware("Admin", "Owner"), employeeController.Destroy)
+
+			employee.POST("/forgot-password-reset-link", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), employeeController.ForgotPassword)
 			employee.POST("/change-password", middle.AccountTypeMiddleware("Employee"), employeeController.ChangePassword)
+			employee.POST("/forgot-password", middle.AccountTypeMiddleware("Employee"), employeeController.ForgotPassword)
 			employee.POST("/new-password", middle.AccountTypeMiddleware("Employee"), employeeController.NewPassword)
+
+			employee.POST("/skip-verification", middle.AccountTypeMiddleware("Employee"), employeeController.SkipVerification)
+			employee.POST("/send-email-verification", middle.AccountTypeMiddleware("Employee"), employeeController.SendEmailVerification)
+			employee.POST("/verify-email", middle.AccountTypeMiddleware("Employee"), employeeController.VerifyEmail)
+
+			employee.POST("/send-contact-number-verification", middle.AccountTypeMiddleware("Employee"), employeeController.SendContactNumberVerification)
+			employee.POST("/verify-contact-number", middle.AccountTypeMiddleware("Employee"), employeeController.VerifyContactNumber)
+
+			employee.POST("/profile-picture", middle.AccountTypeMiddleware("Employee"), employeeController.ProfilePicture)
+			employee.PUT("/profile-account-setting", middle.AccountTypeMiddleware("Employee"), employeeController.ProfileAccountSetting)
+			employee.PUT("/profile-change-email", middle.AccountTypeMiddleware("Employee"), employeeController.ProfileChangeEmail)
+			employee.PUT("/profile-change-contact-number", middle.AccountTypeMiddleware("Employee"), employeeController.ProfileChangeContactNumber)
+			employee.PUT("/profile-change-username", middle.AccountTypeMiddleware("Employee"), employeeController.ProfileChangeUsername)
 		}
 
 		feedback := v1.Group("/feedback")
@@ -148,9 +180,24 @@ func NewAPIHandlerInvoke(
 			member.POST("/", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.Store)
 			member.PUT("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee", "Member"), memberController.Update)
 			member.DELETE("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.Destroy)
-			member.GET("/forgot-password", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), memberController.ForgotPassword)
+
+			member.POST("/forgot-password-reset-link", middle.AccountTypeMiddleware("Admin", "Owner", "Employee", "Member"), memberController.ForgotPassword)
 			member.POST("/change-password", middle.AccountTypeMiddleware("Member"), memberController.ChangePassword)
+			member.POST("/forgot-password", middle.AccountTypeMiddleware("Member"), memberController.ForgotPassword)
 			member.POST("/new-password", middle.AccountTypeMiddleware("Member"), memberController.NewPassword)
+
+			member.POST("/skip-verification", middle.AccountTypeMiddleware("Member"), memberController.SkipVerification)
+			member.POST("/send-email-verification", middle.AccountTypeMiddleware("Member"), memberController.SendEmailVerification)
+			member.POST("/verify-email", middle.AccountTypeMiddleware("Member"), memberController.VerifyEmail)
+
+			member.POST("/send-contact-number-verification", middle.AccountTypeMiddleware("Member"), memberController.SendContactNumberVerification)
+			member.POST("/verify-contact-number", middle.AccountTypeMiddleware("Member"), memberController.VerifyContactNumber)
+
+			member.POST("/profile-picture", middle.AccountTypeMiddleware("Member"), memberController.ProfilePicture)
+			member.PUT("/profile-account-setting", middle.AccountTypeMiddleware("Member"), memberController.ProfileAccountSetting)
+			member.PUT("/profile-change-email", middle.AccountTypeMiddleware("Member"), memberController.ProfileChangeEmail)
+			member.PUT("/profile-change-contact-number", middle.AccountTypeMiddleware("Member"), memberController.ProfileChangeContactNumber)
+			member.PUT("/profile-change-username", middle.AccountTypeMiddleware("Member"), memberController.ProfileChangeUsername)
 		}
 
 		memberProfile := v1.Group("/member-profile")
@@ -168,10 +215,25 @@ func NewAPIHandlerInvoke(
 			owner.GET("/:id", middle.AccountTypeMiddleware("Admin", "Owner", "Employee"), ownerController.Show)
 			owner.POST("/", middle.AccountTypeMiddleware("Admin"), ownerController.Store)
 			owner.PUT("/:id", middle.AccountTypeMiddleware("Admin", "Owner"), ownerController.Update)
-			owner.DELETE("/:id", middle.AccountTypeMiddleware("Admin"), ownerController.Destroy)
-			owner.GET("/forgot-password", middle.AccountTypeMiddleware("Admin"), ownerController.ForgotPassword)
+			owner.DELETE("/:id", middle.AccountTypeMiddleware("Amin"), ownerController.Destroy)
+
 			owner.POST("/change-password", middle.AccountTypeMiddleware("Owner"), ownerController.ChangePassword)
+			owner.POST("/forgot-password", middle.AccountTypeMiddleware("Owner"), ownerController.ForgotPassword)
+			owner.POST("/forgot-password-reset-link", middle.AccountTypeMiddleware("Admin", "Owner"), ownerController.ForgotPassword)
 			owner.POST("/new-password", middle.AccountTypeMiddleware("Owner"), ownerController.NewPassword)
+
+			owner.POST("/skip-verification", middle.AccountTypeMiddleware("Owner"), ownerController.SkipVerification)
+			owner.POST("/send-email-verification", middle.AccountTypeMiddleware("Owner"), ownerController.SendEmailVerification)
+			owner.POST("/verify-email", middle.AccountTypeMiddleware("Owner"), ownerController.VerifyEmail)
+
+			owner.POST("/send-contact-number-verification", middle.AccountTypeMiddleware("Owner"), ownerController.SendContactNumberVerification)
+			owner.POST("/verify-contact-number", middle.AccountTypeMiddleware("Owner"), ownerController.VerifyContactNumber)
+
+			owner.POST("/profile-picture", middle.AccountTypeMiddleware("Owner"), ownerController.ProfilePicture)
+			owner.PUT("/profile-account-setting", middle.AccountTypeMiddleware("Owner"), ownerController.ProfileAccountSetting)
+			owner.PUT("/profile-change-email", middle.AccountTypeMiddleware("Owner"), ownerController.ProfileChangeEmail)
+			owner.PUT("/profile-change-contact-number", middle.AccountTypeMiddleware("Owner"), ownerController.ProfileChangeContactNumber)
+			owner.PUT("/profile-change-username", middle.AccountTypeMiddleware("Owner"), ownerController.ProfileChangeUsername)
 		}
 
 		profile := v1.Group("/profile")

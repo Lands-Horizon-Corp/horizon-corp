@@ -157,6 +157,11 @@ func (as MemberController) ChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to update password"})
 		return
 	}
+	_, err = as.footstep.Create(ctx, "Member", "ChangePassword", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, as.transformer.MemberToResource(updated))
 }
@@ -340,6 +345,12 @@ func (c *MemberController) NewPassword(ctx *gin.Context) {
 		return
 	}
 
+	_, err = c.footstep.Create(ctx, "Member", "NewPassword", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
 }
 
@@ -355,6 +366,11 @@ func (c *MemberController) SkipVerification(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Member", "SkipVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
@@ -395,6 +411,11 @@ func (c *MemberController) SendEmailVerification(ctx *gin.Context) {
 
 	if err := c.otpService.SendEmailOTP(otpMessage, emailRequest); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Member", "SendEmailVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 
@@ -446,6 +467,11 @@ func (c *MemberController) VerifyEmail(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Member", "VerifyEmail", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
 }
@@ -487,6 +513,11 @@ func (c *MemberController) SendContactNumberVerification(ctx *gin.Context) {
 
 	if err := c.otpService.SendContactNumberOTP(otpMessage, contactReq); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification OTP"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Member", "SendContactNumberVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 
@@ -538,6 +569,11 @@ func (c *MemberController) VerifyContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Member", "VerifyContactNumber", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
 }
@@ -567,6 +603,11 @@ func (c *MemberController) ProfilePicture(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Member", "ProfilePicture", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
@@ -613,6 +654,11 @@ func (c *MemberController) ProfileAccountSetting(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Member", "ProfileAccountSetting", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
 }
 
@@ -650,6 +696,11 @@ func (c *MemberController) ProfileChangeEmail(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Member", "ProfileChangeEmail", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
@@ -691,6 +742,11 @@ func (c *MemberController) ProfileChangeContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Member", "ProfileChangeContactNumber", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))
 
 }
@@ -728,6 +784,11 @@ func (c *MemberController) ProfileChangeUsername(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update member details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Member", "ProfileChangeUsername", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.MemberToResource(updatedMember))

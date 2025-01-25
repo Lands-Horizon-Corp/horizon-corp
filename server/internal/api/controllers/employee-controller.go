@@ -157,6 +157,11 @@ func (as EmployeeController) ChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to update password"})
 		return
 	}
+	_, err = as.footstep.Create(ctx, "Employee", "ChangePassword", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, as.transformer.EmployeeToResource(updated))
 }
@@ -340,6 +345,12 @@ func (c *EmployeeController) NewPassword(ctx *gin.Context) {
 		return
 	}
 
+	_, err = c.footstep.Create(ctx, "Employee", "NewPassword", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
+
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
 }
 
@@ -355,6 +366,11 @@ func (c *EmployeeController) SkipVerification(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Employee", "SkipVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
@@ -395,6 +411,11 @@ func (c *EmployeeController) SendEmailVerification(ctx *gin.Context) {
 
 	if err := c.otpService.SendEmailOTP(otpMessage, emailRequest); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Employee", "SendEmailVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 
@@ -446,6 +467,11 @@ func (c *EmployeeController) VerifyEmail(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Employee", "VerifyEmail", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
 }
@@ -487,6 +513,11 @@ func (c *EmployeeController) SendContactNumberVerification(ctx *gin.Context) {
 
 	if err := c.otpService.SendContactNumberOTP(otpMessage, contactReq); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification OTP"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Employee", "SendContactNumberVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 
@@ -538,6 +569,11 @@ func (c *EmployeeController) VerifyContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Employee", "VerifyContactNumber", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
 }
@@ -567,6 +603,11 @@ func (c *EmployeeController) ProfilePicture(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Employee", "ProfilePicture", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
@@ -613,6 +654,11 @@ func (c *EmployeeController) ProfileAccountSetting(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Employee", "ProfileAccountSetting", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
 }
 
@@ -650,6 +696,11 @@ func (c *EmployeeController) ProfileChangeEmail(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Employee", "ProfileChangeEmail", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
@@ -691,6 +742,11 @@ func (c *EmployeeController) ProfileChangeContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
 		return
 	}
+	_, err = c.footstep.Create(ctx, "Employee", "ProfileChangeContactNumber", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))
 
 }
@@ -728,6 +784,11 @@ func (c *EmployeeController) ProfileChangeUsername(ctx *gin.Context) {
 	}, c.helpers.GetPreload(ctx)...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update employee details"})
+		return
+	}
+	_, err = c.footstep.Create(ctx, "Employee", "ProfileChangeUsername", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
 		return
 	}
 	ctx.JSON(http.StatusOK, c.transformer.EmployeeToResource(updatedEmployee))

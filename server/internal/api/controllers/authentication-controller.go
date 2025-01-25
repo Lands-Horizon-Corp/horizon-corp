@@ -113,6 +113,11 @@ func (as AuthController) SignUp(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+	_, err = as.footstep.Create(ctx, "Auth", "SignUp", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     as.cfg.AppTokenName,
 		Value:    *token,
@@ -188,6 +193,13 @@ func (as AuthController) SignIn(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token", "details": err.Error()})
 		return
 	}
+
+	_, err = as.footstep.Create(ctx, "Auth", "SignIn", fmt.Sprintf("User %s signed in", id.String()))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
+
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     as.cfg.AppTokenName,
 		Value:    *token,
@@ -313,6 +325,11 @@ func (as AuthController) NewPassword(ctx *gin.Context) {
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
+	_, err = as.footstep.Create(ctx, "Auth", "NewPassword", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 }
 
 func (as AuthController) SkipVerification(ctx *gin.Context) {
@@ -332,6 +349,11 @@ func (as AuthController) SkipVerification(ctx *gin.Context) {
 		as.employeeController.SkipVerification(ctx)
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	}
+	_, err = as.footstep.Create(ctx, "Auth", "SkipVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
 	}
 }
 
@@ -353,6 +375,11 @@ func (as AuthController) SendEmailVerification(ctx *gin.Context) {
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
+	_, err = as.footstep.Create(ctx, "Auth", "SendEmailVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
 }
 
 func (as AuthController) VerifyEmail(ctx *gin.Context) {
@@ -373,6 +400,12 @@ func (as AuthController) VerifyEmail(ctx *gin.Context) {
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
+	_, err = as.footstep.Create(ctx, "Auth", "VerifyEmail", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
+
 }
 
 // SendContactNumberVerification sends a verification code to the user's contact number.
@@ -400,6 +433,12 @@ func (as AuthController) SendContactNumberVerification(ctx *gin.Context) {
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
+	_, err = as.footstep.Create(ctx, "Auth", "SendContactNumberVerification", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
+
 }
 
 func (as AuthController) VerifyContactNumber(ctx *gin.Context) {
@@ -420,4 +459,10 @@ func (as AuthController) VerifyContactNumber(ctx *gin.Context) {
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
 	}
+	_, err = as.footstep.Create(ctx, "Auth", "VerifyContactNumber", "")
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		return
+	}
+
 }
