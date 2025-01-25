@@ -163,7 +163,7 @@ func NewAPIHandlerInvoke(
 			gender.PUT("/:id", genderController.Update)
 			gender.DELETE("/:id", genderController.Destroy)
 		}
-		media := v1.Group("/media")
+		media := v1.Group("/media", middle.AuthMiddleware())
 		{
 			media.GET("/", mediaController.Index)
 			media.GET("/:id", mediaController.Show)
@@ -171,6 +171,7 @@ func NewAPIHandlerInvoke(
 			media.PUT("/:id", mediaController.Update)
 			media.DELETE("/:id", mediaController.Destroy)
 			media.GET("/team", mediaController.Team)
+			media.POST("/upload", mediaController.Upload)
 		}
 
 		member := v1.Group("/member")

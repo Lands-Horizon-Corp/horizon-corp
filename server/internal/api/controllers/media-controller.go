@@ -1,27 +1,37 @@
 package controllers
 
 import (
+	"net/http"
+
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 	"github.com/google/uuid"
 )
 
 type MediaController struct {
-	repository  *models.ModelRepository
-	footstep    *handlers.FootstepHandler
-	currentUser *handlers.CurrentUser
+	repository      *models.ModelRepository
+	transformer     *models.ModelTransformer
+	footstep        *handlers.FootstepHandler
+	currentUser     *handlers.CurrentUser
+	storageProvider *providers.StorageProvider
 }
 
 func NewMediaController(
 	repository *models.ModelRepository,
+	transformer *models.ModelTransformer,
 	footstep *handlers.FootstepHandler,
 	currentUser *handlers.CurrentUser,
+	storageProvider *providers.StorageProvider,
 ) *MediaController {
 	return &MediaController{
-		repository:  repository,
-		footstep:    footstep,
-		currentUser: currentUser,
+		repository:      repository,
+		transformer:     transformer,
+		footstep:        footstep,
+		currentUser:     currentUser,
+		storageProvider: storageProvider,
 	}
 }
 
@@ -47,16 +57,6 @@ func (c *MediaController) Index(ctx *gin.Context) {}
 // - Handle edge cases, such as file not found or unauthorized access, with clear error messages.
 func (c *MediaController) Show(ctx *gin.Context) {}
 
-// POST: /upload
-// Upload a new media file.
-//
-// Enhancements:
-// - Validate file type and size to ensure compliance with application policies.
-// - Implement virus scanning to enhance security for uploaded files.
-// - Provide progress feedback for large file uploads.
-// - Log all file uploads with metadata (e.g., file name, size, and user who uploaded).
-// - Store files securely, such as in a cloud storage solution, with proper access controls.
-// - Enforce rate limiting to prevent abuse of the upload endpoint.
 type MediaStoreRequest struct {
 	ID *uuid.UUID `json:"id"`
 
@@ -69,7 +69,32 @@ type MediaStoreRequest struct {
 	BucketName string `json:"bucketName,omitempty" validate:"max=255"`
 }
 
-func (c *MediaController) Store(ctx *gin.Context) {}
+func (c *MediaController) Store(ctx *gin.Context) {
+	var req MediaStoreRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+	uploaded := &models.Media{
+		FileName:   req.FileName,
+		FileSize:   req.FileSize,
+		FileType:   req.FileType,
+		StorageKey: req.StorageKey,
+		URL:        req.URL,
+		BucketName: req.BucketName,
+	}
+	mediaUpload, err := c.repository.MediaCreate(uploaded)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, c.transformer.MediaToResource(mediaUpload))
+
+}
 
 // PUT: /:id
 // Update the name and description of a media file.
@@ -109,3 +134,30 @@ func (c *MediaController) Destroy(ctx *gin.Context) {}
 // - Implement audit logging to track who accessed media files and under what context.
 // - Ensure sensitive data is excluded from the response based on role-specific access.
 func (c *MediaController) Team(ctx *gin.Context) {}
+
+func (c *MediaController) Upload(ctx *gin.Context) {
+	mediaHeader, err := ctx.FormFile("file")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "no file is received"})
+		return
+	}
+	media, err := c.storageProvider.UploadFile(mediaHeader)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "unable to upload the file"})
+		return
+	}
+	uploaded := &models.Media{
+		FileName:   media.FileName,
+		FileSize:   media.FileSize,
+		FileType:   media.FileType,
+		StorageKey: media.StorageKey,
+		URL:        media.URL,
+		BucketName: media.BucketName,
+	}
+	mediaUpload, err := c.repository.MediaCreate(uploaded)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, c.transformer.MediaToResource(mediaUpload))
+}

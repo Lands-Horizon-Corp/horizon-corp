@@ -23,10 +23,6 @@ type Media struct {
 	BucketName  string `gorm:"type:varchar(255)" json:"bucket_name"`
 	Description string `json:"description" gorm:"type:text"`
 
-	// Enhancements
-	IsPublic  bool       `gorm:"default:false" json:"is_public"`
-	ExpiresAt *time.Time `gorm:"type:timestamp" json:"expires_at"`
-
 	// Metadata (grouping related fields)
 	Metadata Metadata `gorm:"embedded" json:"metadata"`
 
@@ -61,24 +57,23 @@ type MediaResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	Description string              `json:"description"`
-	FileName    string              `json:"fileName"`
-	FileSize    int64               `json:"fileSize"`
-	FileType    string              `json:"fileType"`
-	StorageKey  string              `json:"storageKey"`
-	URL         string              `json:"uRL"`
-	Key         string              `json:"key"`
-	DownloadURL string              `json:"downloadURL"`
-	BucketName  string              `json:"bucketName"`
-	IsPublic    bool                `json:"isPublic"`
-	ExpiresAt   string              `json:"expiresAt,omitempty"`
-	Metadata    Metadata            `json:"metadata"`
-	Employees   []*EmployeeResource `json:"employees"`
-	Members     []*MemberResource   `json:"members"`
-	Owners      []*OwnerResource    `json:"owners"`
-	Admins      []*AdminResource    `json:"admins"`
-	Companies   []*CompanyResource  `json:"companies"`
-	Branches    []*BranchResource   `json:"branches"`
+	Description string `json:"description"`
+	FileName    string `json:"fileName"`
+	FileSize    int64  `json:"fileSize"`
+	FileType    string `json:"fileType"`
+	StorageKey  string `json:"storageKey"`
+	URL         string `json:"uRL"`
+	Key         string `json:"key"`
+	DownloadURL string `json:"downloadURL"`
+	BucketName  string `json:"bucketName"`
+
+	Metadata  Metadata            `json:"metadata"`
+	Employees []*EmployeeResource `json:"employees"`
+	Members   []*MemberResource   `json:"members"`
+	Owners    []*OwnerResource    `json:"owners"`
+	Admins    []*AdminResource    `json:"admins"`
+	Companies []*CompanyResource  `json:"companies"`
+	Branches  []*BranchResource   `json:"branches"`
 }
 
 func (m *ModelTransformer) MediaToResource(media *Media) *MediaResource {
@@ -88,11 +83,6 @@ func (m *ModelTransformer) MediaToResource(media *Media) *MediaResource {
 	temporaryURL, err := m.storage.GeneratePresignedURL(media.StorageKey)
 	if err != nil {
 		return nil
-	}
-
-	expiresAt := ""
-	if media.ExpiresAt != nil {
-		expiresAt = media.ExpiresAt.Format(time.RFC3339)
 	}
 
 	return &MediaResource{
@@ -111,8 +101,6 @@ func (m *ModelTransformer) MediaToResource(media *Media) *MediaResource {
 		Key:         media.Key,
 		BucketName:  media.BucketName,
 		DownloadURL: temporaryURL,
-		IsPublic:    media.IsPublic,
-		ExpiresAt:   expiresAt,
 		Metadata:    media.Metadata,
 		Employees:   m.EmployeeToResourceList(media.Employees),
 		Members:     m.MemberToResourceList(media.Members),
