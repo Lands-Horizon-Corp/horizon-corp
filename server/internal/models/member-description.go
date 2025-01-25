@@ -85,9 +85,9 @@ func (m *ModelRepository) MemberDescriptionUpdate(memberdescription *MemberDescr
 	repo := NewGenericRepository[MemberDescription](m.db.Client)
 	return repo.Update(memberdescription, preloads...)
 }
-func (m *ModelRepository) MemberDescriptionUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberDescription, error) {
+func (m *ModelRepository) MemberDescriptionUpdateByID(id string, value *MemberDescription, preloads ...string) (*MemberDescription, error) {
 	repo := NewGenericRepository[MemberDescription](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberDescriptionDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberDescription](m.db.Client)

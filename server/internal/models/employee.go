@@ -201,9 +201,9 @@ func (m *ModelRepository) EmployeeUpdate(employee *Employee, preloads ...string)
 	repo := NewGenericRepository[Employee](m.db.Client)
 	return repo.Update(employee, preloads...)
 }
-func (m *ModelRepository) EmployeeUpdateByID(id string, column string, value interface{}, preloads ...string) (*Employee, error) {
+func (m *ModelRepository) EmployeeUpdateByID(id string, value *Employee, preloads ...string) (*Employee, error) {
 	repo := NewGenericRepository[Employee](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) EmployeeDeleteByID(id string) error {
 	repo := NewGenericRepository[Employee](m.db.Client)
@@ -212,14 +212,6 @@ func (m *ModelRepository) EmployeeDeleteByID(id string) error {
 func (m *ModelRepository) EmployeeGetAll(preloads ...string) ([]*Employee, error) {
 	repo := NewGenericRepository[Employee](m.db.Client)
 	return repo.GetAll(preloads...)
-}
-func (m *ModelRepository) EmployeeUpdatePassword(id string, password string) (*Employee, error) {
-	repo := NewGenericRepository[Employee](m.db.Client)
-	newPassword, err := m.cryptoHelpers.HashPassword(password)
-	if err != nil {
-		return nil, err
-	}
-	return repo.UpdateByID(id, "password", newPassword)
 }
 
 func (m *ModelRepository) EmployeeSignIn(key, password string, preload ...string) (*Employee, error) {
@@ -234,4 +226,57 @@ func (m *ModelRepository) EmployeeSignIn(key, password string, preload ...string
 		return nil, eris.New("invalid credentials")
 	}
 	return employee, nil
+}
+
+func (m *ModelRepository) EmployeeChangePassword(employeeID string, currentPassword, newPassword string, preloads ...string) (*Employee, error) {
+	employee, err := m.EmployeeGetByID(employeeID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("employee not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve employee")
+	}
+	if !m.cryptoHelpers.VerifyPassword(employee.Password, currentPassword) {
+		return nil, eris.New("invalid current password")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	employee.Password = hashedPassword
+	repo := NewGenericRepository[Employee](m.db.Client)
+	updatedEmployee, err := repo.Update(employee, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update employee with new password")
+	}
+	return updatedEmployee, nil
+}
+
+func (m *ModelRepository) EmployeeForceChangePassword(employeeID string, newPassword string, preloads ...string) (*Employee, error) {
+	employee, err := m.EmployeeGetByID(employeeID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("employee not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve employee")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	employee.Password = hashedPassword
+	repo := NewGenericRepository[Employee](m.db.Client)
+	updatedEmployee, err := repo.Update(employee, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update employee with new password")
+	}
+	return updatedEmployee, nil
+}
+
+func (m *ModelRepository) EmployeeVerifyPassword(key string, password string) bool {
+	admin, err := m.EmployeeSearch(key)
+	if err != nil {
+		return false
+	}
+	return m.cryptoHelpers.VerifyPassword(admin.Password, password)
 }

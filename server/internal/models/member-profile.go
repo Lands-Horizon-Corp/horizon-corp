@@ -213,28 +213,28 @@ func (m *ModelTransformer) MemberProfileToResourceList(profileList []*MemberProf
 	return profileResources
 }
 
-func (m *ModelRepository) MemberProfileResourceGetByID(id string, preloads ...string) (*MemberProfileResource, error) {
-	repo := NewGenericRepository[MemberProfileResource](m.db.Client)
+func (m *ModelRepository) MemberProfileGetByID(id string, preloads ...string) (*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
 	return repo.GetByID(id, preloads...)
 }
 
-func (m *ModelRepository) MemberProfileResourceCreate(memberprofileresource *MemberProfileResource, preloads ...string) (*MemberProfileResource, error) {
-	repo := NewGenericRepository[MemberProfileResource](m.db.Client)
-	return repo.Create(memberprofileresource, preloads...)
+func (m *ModelRepository) MemberProfileCreate(memberProfile *MemberProfile, preloads ...string) (*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
+	return repo.Create(memberProfile, preloads...)
 }
-func (m *ModelRepository) MemberProfileResourceUpdate(memberprofileresource *MemberProfileResource, preloads ...string) (*MemberProfileResource, error) {
-	repo := NewGenericRepository[MemberProfileResource](m.db.Client)
-	return repo.Update(memberprofileresource, preloads...)
+func (m *ModelRepository) MemberProfileUpdate(memberProfile *MemberProfile, preloads ...string) (*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
+	return repo.Update(memberProfile, preloads...)
 }
-func (m *ModelRepository) MemberProfileResourceUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberProfileResource, error) {
-	repo := NewGenericRepository[MemberProfileResource](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+func (m *ModelRepository) MemberProfileUpdateByID(id string, value *MemberProfile, preloads ...string) (*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
 }
-func (m *ModelRepository) MemberProfileResourceDeleteByID(id string) error {
-	repo := NewGenericRepository[MemberProfileResource](m.db.Client)
+func (m *ModelRepository) MemberProfileDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
 	return repo.DeleteByID(id)
 }
-func (m *ModelRepository) MemberProfileResourceGetAll(preloads ...string) ([]*MemberProfileResource, error) {
-	repo := NewGenericRepository[MemberProfileResource](m.db.Client)
+func (m *ModelRepository) MemberProfileGetAll(preloads ...string) ([]*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
 	return repo.GetAll(preloads...)
 }

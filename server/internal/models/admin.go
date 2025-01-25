@@ -180,9 +180,9 @@ func (m *ModelRepository) AdminUpdate(admin *Admin, preloads ...string) (*Admin,
 	repo := NewGenericRepository[Admin](m.db.Client)
 	return repo.Update(admin, preloads...)
 }
-func (m *ModelRepository) AdminUpdateByID(id string, column string, value interface{}, preloads ...string) (*Admin, error) {
+func (m *ModelRepository) AdminUpdateByID(id string, value *Admin, preloads ...string) (*Admin, error) {
 	repo := NewGenericRepository[Admin](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) AdminDeleteByID(id string) error {
 	repo := NewGenericRepository[Admin](m.db.Client)
@@ -191,14 +191,6 @@ func (m *ModelRepository) AdminDeleteByID(id string) error {
 func (m *ModelRepository) AdminGetAll(preloads ...string) ([]*Admin, error) {
 	repo := NewGenericRepository[Admin](m.db.Client)
 	return repo.GetAll(preloads...)
-}
-func (m *ModelRepository) AdminUpdatePassword(id string, password string) (*Admin, error) {
-	repo := NewGenericRepository[Admin](m.db.Client)
-	newPassword, err := m.cryptoHelpers.HashPassword(password)
-	if err != nil {
-		return nil, err
-	}
-	return repo.UpdateByID(id, "password", newPassword)
 }
 
 func (m *ModelRepository) AdminSignIn(key, password string, preload ...string) (*Admin, error) {
@@ -215,32 +207,55 @@ func (m *ModelRepository) AdminSignIn(key, password string, preload ...string) (
 	return admin, nil
 }
 
-// const accountType = "Member"
-// 	userID, dbPassword, err := ac.FindByEmailUsernameOrContactForPassword(accountType, key)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
-// 		return
-// 	}
-// 	if !ac.cryptoHelpers.VerifyPassword(dbPassword, password) {
-// 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "SignIn: Invalid credentials."})
-// 		return
-// 	}
-// 	token, err := ac.GenerateUserToken(userID, accountType, SignedInExpiration)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "SignIn: Token generation error"})
-// 		return
-// 	}
-// 	http.SetCookie(ctx.Writer, &http.Cookie{
-// 		Name:     ac.cfg.AppTokenName,
-// 		Value:    *token,
-// 		Path:     "/",
-// 		HttpOnly: true,
-// 		Secure:   true,
-// 		SameSite: http.SameSiteNoneMode,
-// 	})
-// 	user, err := ac.FindByEmailUsernameOrContact(accountType, key)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": fmt.Sprintf("SignIn: User not found: %v", err)})
-// 		return
-// 	}
-// 	ctx.JSON(http.StatusOK, user)
+func (m *ModelRepository) AdminChangePassword(adminID string, currentPassword, newPassword string, preloads ...string) (*Admin, error) {
+	admin, err := m.AdminGetByID(adminID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("admin not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve admin")
+	}
+	if !m.cryptoHelpers.VerifyPassword(admin.Password, currentPassword) {
+		return nil, eris.New("invalid current password")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	admin.Password = hashedPassword
+	repo := NewGenericRepository[Admin](m.db.Client)
+	updatedAdmin, err := repo.Update(admin, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update admin with new password")
+	}
+	return updatedAdmin, nil
+}
+
+func (m *ModelRepository) AdminForceChangePassword(adminID string, newPassword string, preloads ...string) (*Admin, error) {
+	admin, err := m.AdminGetByID(adminID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("admin not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve admin")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	admin.Password = hashedPassword
+	repo := NewGenericRepository[Admin](m.db.Client)
+	updatedAdmin, err := repo.Update(admin, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update admin with new password")
+	}
+	return updatedAdmin, nil
+}
+
+func (m *ModelRepository) AdminVerifyPassword(adminID string, password string) bool {
+	admin, err := m.AdminSearch(adminID)
+	if err != nil {
+		return false
+	}
+	return m.cryptoHelpers.VerifyPassword(admin.Password, password)
+}

@@ -98,9 +98,9 @@ func (m *ModelRepository) TimesheetUpdate(timesheet *Timesheet, preloads ...stri
 	repo := NewGenericRepository[Timesheet](m.db.Client)
 	return repo.Update(timesheet, preloads...)
 }
-func (m *ModelRepository) TimesheetUpdateByID(id string, column string, value interface{}, preloads ...string) (*Timesheet, error) {
+func (m *ModelRepository) TimesheetUpdateByID(id string, value *Timesheet, preloads ...string) (*Timesheet, error) {
 	repo := NewGenericRepository[Timesheet](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) TimesheetDeleteByID(id string) error {
 	repo := NewGenericRepository[Timesheet](m.db.Client)

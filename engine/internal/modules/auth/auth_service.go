@@ -615,7 +615,6 @@ func (as AuthService) ProfileChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated."})
 		return
 	}
-
 	switch claims.AccountType {
 	case "Member":
 		as.authAccount.MemberProfileChangePassword(ctx, claims.ID, req.OldPassword, req.NewPassword)

@@ -82,9 +82,9 @@ func (m *ModelRepository) MemberMutualFundsHistoryUpdate(membermutualfundshistor
 	repo := NewGenericRepository[MemberMutualFundsHistory](m.db.Client)
 	return repo.Update(membermutualfundshistory, preloads...)
 }
-func (m *ModelRepository) MemberMutualFundsHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberMutualFundsHistory, error) {
+func (m *ModelRepository) MemberMutualFundsHistoryUpdateByID(id string, value *MemberMutualFundsHistory, preloads ...string) (*MemberMutualFundsHistory, error) {
 	repo := NewGenericRepository[MemberMutualFundsHistory](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberMutualFundsHistoryDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberMutualFundsHistory](m.db.Client)

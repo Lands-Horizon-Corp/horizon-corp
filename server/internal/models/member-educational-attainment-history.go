@@ -84,9 +84,9 @@ func (m *ModelRepository) MemberEducationalAttainmentHistoryUpdate(membereducati
 	repo := NewGenericRepository[MemberEducationalAttainmentHistory](m.db.Client)
 	return repo.Update(membereducationalattainmenthistory, preloads...)
 }
-func (m *ModelRepository) MemberEducationalAttainmentHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberEducationalAttainmentHistory, error) {
+func (m *ModelRepository) MemberEducationalAttainmentHistoryUpdateByID(id string, value *MemberEducationalAttainmentHistory, preloads ...string) (*MemberEducationalAttainmentHistory, error) {
 	repo := NewGenericRepository[MemberEducationalAttainmentHistory](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberEducationalAttainmentHistoryDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberEducationalAttainmentHistory](m.db.Client)

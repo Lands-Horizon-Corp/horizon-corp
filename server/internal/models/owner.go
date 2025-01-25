@@ -185,9 +185,9 @@ func (m *ModelRepository) OwnerUpdate(owner *Owner, preloads ...string) (*Owner,
 	repo := NewGenericRepository[Owner](m.db.Client)
 	return repo.Update(owner, preloads...)
 }
-func (m *ModelRepository) OwnerUpdateByID(id string, column string, value interface{}, preloads ...string) (*Owner, error) {
+func (m *ModelRepository) OwnerUpdateByID(id string, value *Owner, preloads ...string) (*Owner, error) {
 	repo := NewGenericRepository[Owner](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) OwnerDeleteByID(id string) error {
 	repo := NewGenericRepository[Owner](m.db.Client)
@@ -196,14 +196,6 @@ func (m *ModelRepository) OwnerDeleteByID(id string) error {
 func (m *ModelRepository) OwnerGetAll(preloads ...string) ([]*Owner, error) {
 	repo := NewGenericRepository[Owner](m.db.Client)
 	return repo.GetAll(preloads...)
-}
-func (m *ModelRepository) OwnerUpdatePassword(id string, password string) (*Owner, error) {
-	repo := NewGenericRepository[Owner](m.db.Client)
-	newPassword, err := m.cryptoHelpers.HashPassword(password)
-	if err != nil {
-		return nil, err
-	}
-	return repo.UpdateByID(id, "password", newPassword)
 }
 
 func (m *ModelRepository) OwnerSignIn(key string, password string, preloads ...string) (*Owner, error) {
@@ -218,4 +210,57 @@ func (m *ModelRepository) OwnerSignIn(key string, password string, preloads ...s
 		return nil, eris.New("invalid credentials")
 	}
 	return owner, nil
+}
+
+func (m *ModelRepository) OwnerChangePassword(ownerID string, currentPassword, newPassword string, preloads ...string) (*Owner, error) {
+	owner, err := m.OwnerGetByID(ownerID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("owner not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve owner")
+	}
+	if !m.cryptoHelpers.VerifyPassword(owner.Password, currentPassword) {
+		return nil, eris.New("invalid current password")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	owner.Password = hashedPassword
+	repo := NewGenericRepository[Owner](m.db.Client)
+	updatedOwner, err := repo.Update(owner, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update owner with new password")
+	}
+	return updatedOwner, nil
+}
+
+func (m *ModelRepository) OwnerForceChangePassword(ownerID string, newPassword string, preloads ...string) (*Owner, error) {
+	owner, err := m.OwnerGetByID(ownerID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("owner not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve owner")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	owner.Password = hashedPassword
+	repo := NewGenericRepository[Owner](m.db.Client)
+	updatedOwner, err := repo.Update(owner, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update owner with new password")
+	}
+	return updatedOwner, nil
+}
+
+func (m *ModelRepository) OwnerVerifyPassword(key string, password string) bool {
+	admin, err := m.OwnerSearch(key)
+	if err != nil {
+		return false
+	}
+	return m.cryptoHelpers.VerifyPassword(admin.Password, password)
 }

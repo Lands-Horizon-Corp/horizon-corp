@@ -85,9 +85,9 @@ func (m *ModelRepository) MemberCenterHistoryUpdate(membercenterhistory *MemberC
 	repo := NewGenericRepository[MemberCenterHistory](m.db.Client)
 	return repo.Update(membercenterhistory, preloads...)
 }
-func (m *ModelRepository) MemberCenterHistoryUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberCenterHistory, error) {
+func (m *ModelRepository) MemberCenterHistoryUpdateByID(id string, value *MemberCenterHistory, preloads ...string) (*MemberCenterHistory, error) {
 	repo := NewGenericRepository[MemberCenterHistory](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberCenterHistoryDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberCenterHistory](m.db.Client)

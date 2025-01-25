@@ -91,9 +91,9 @@ func (m *ModelRepository) MemberJointAccountsUpdate(memberjointaccounts *MemberJ
 	repo := NewGenericRepository[MemberJointAccounts](m.db.Client)
 	return repo.Update(memberjointaccounts, preloads...)
 }
-func (m *ModelRepository) MemberJointAccountsUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberJointAccounts, error) {
+func (m *ModelRepository) MemberJointAccountsUpdateByID(id string, value *MemberJointAccounts, preloads ...string) (*MemberJointAccounts, error) {
 	repo := NewGenericRepository[MemberJointAccounts](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberJointAccountsDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberJointAccounts](m.db.Client)

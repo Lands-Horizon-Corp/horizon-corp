@@ -22,15 +22,15 @@ func NewFootstepHandler(
 		currentUser: currentUser,
 	}
 }
-func (f *FootstepHandler) Create(ctx *gin.Context, module, activity, description string, latitude, longitude *float64) (*models.Footstep, error) {
+
+// Only works when logged in
+func (f *FootstepHandler) Create(ctx *gin.Context, module, activity, description string) (*models.Footstep, error) {
 	claims, userInfo, err := f.currentUser.Claims(ctx)
 	if err != nil {
 		return nil, eris.Wrap(err, "failed to retrieve current user claims")
 	}
-
 	var adminID, employeeID, ownerID, memberID *uuid.UUID
 	var preloads []string
-
 	switch claims.AccountType {
 	case "Admin":
 		admin, err := f.currentUser.Admin(ctx)
@@ -70,8 +70,8 @@ func (f *FootstepHandler) Create(ctx *gin.Context, module, activity, description
 		Module:         module,
 		Activity:       activity,
 		Description:    description,
-		Latitude:       latitude,
-		Longitude:      longitude,
+		Latitude:       &userInfo.Latitude,
+		Longitude:      &userInfo.Longitude,
 		Timestamp:      time.Now(),
 		IsDeleted:      false,
 		IPAddress:      userInfo.IPAddress,

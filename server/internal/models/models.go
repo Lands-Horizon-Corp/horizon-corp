@@ -143,21 +143,20 @@ func (r *GenericRepository[T]) GetByColumn(column string, value interface{}, pre
 	return &entity, nil
 }
 
-func (r *GenericRepository[T]) UpdateByID(id string, column string, value interface{}, preloads ...string) (*T, error) {
+func (r *GenericRepository[T]) UpdateByID(id string, values *T, preloads ...string) (*T, error) {
 	if _, err := uuid.Parse(id); err != nil {
 		return nil, eris.Wrap(err, "invalid UUID")
 	}
-
 	var entity T
-	if err := r.db.Model(&entity).Where("id = ?", id).Update(column, value).Error; err != nil {
-		return nil, err
+	if err := r.db.Model(&entity).Where("id = ?", id).Updates(values).Error; err != nil {
+		return nil, eris.Wrap(err, "failed to update entity")
 	}
 	query := r.db.Where("id = ?", id)
 	for _, preload := range preloads {
 		query = query.Preload(preload)
 	}
 	if err := query.First(&entity).Error; err != nil {
-		return nil, err
+		return nil, eris.Wrap(err, "failed to reload entity after update")
 	}
 	return &entity, nil
 }

@@ -112,9 +112,9 @@ func (m *ModelRepository) CompanyUpdate(company *Company, preloads ...string) (*
 	repo := NewGenericRepository[Company](m.db.Client)
 	return repo.Update(company, preloads...)
 }
-func (m *ModelRepository) CompanyUpdateByID(id string, column string, value interface{}, preloads ...string) (*Company, error) {
+func (m *ModelRepository) CompanyUpdateByID(id string, value *Company, preloads ...string) (*Company, error) {
 	repo := NewGenericRepository[Company](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) CompanyDeleteByID(id string) error {
 	repo := NewGenericRepository[Company](m.db.Client)

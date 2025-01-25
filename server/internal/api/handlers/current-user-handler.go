@@ -22,17 +22,20 @@ type UserInfo struct {
 
 type CurrentUser struct {
 	tokenProvider *providers.TokenService
+	transformer   *models.ModelTransformer
 	repository    *models.ModelRepository
 	helpers       *helpers.HelpersFunction
 }
 
 func NewCurrentUser(
 	tokenProvider *providers.TokenService,
+	transformer *models.ModelTransformer,
 	repository *models.ModelRepository,
 	helpers *helpers.HelpersFunction,
 ) *CurrentUser {
 	return &CurrentUser{
 		tokenProvider: tokenProvider,
+		transformer:   transformer,
 		repository:    repository,
 		helpers:       helpers,
 	}
@@ -79,6 +82,49 @@ func (c *CurrentUser) Claims(ctx *gin.Context) (*providers.UserClaims, *UserInfo
 	}
 
 	return userClaims, userInfo, nil
+}
+
+func (c *CurrentUser) GenericUser(ctx *gin.Context) (interface{}, error) {
+	// Get claims
+	claims, _, err := c.Claims(ctx)
+	if err != nil {
+		return nil, eris.Wrap(err, "unauthorized")
+	}
+
+	// Switch on AccountType to figure out what user type to fetch
+	preloads := c.helpers.GetPreload(ctx)
+	switch claims.AccountType {
+	case "Admin":
+		admin, err := c.repository.AdminGetByID(claims.ID, preloads...)
+		if err != nil {
+			return nil, eris.Wrap(err, "admin not found")
+		}
+		return c.transformer.AdminToResource(admin), nil
+
+	case "Employee":
+		employee, err := c.repository.EmployeeGetByID(claims.ID, preloads...)
+		if err != nil {
+			return nil, eris.Wrap(err, "employee not found")
+		}
+		return c.transformer.EmployeeToResource(employee), nil
+
+	case "Owner":
+		owner, err := c.repository.OwnerGetByID(claims.ID, preloads...)
+		if err != nil {
+			return nil, eris.Wrap(err, "owner not found")
+		}
+		return c.transformer.OwnerToResource(owner), nil
+
+	case "Member":
+		member, err := c.repository.MemberGetByID(claims.ID, preloads...)
+		if err != nil {
+			return nil, eris.Wrap(err, "member not found")
+		}
+		return c.transformer.MemberToResource(member), nil
+
+	default:
+		return nil, eris.New("unknown account type")
+	}
 }
 
 // Admin Handler

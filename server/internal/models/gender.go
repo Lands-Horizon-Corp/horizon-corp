@@ -91,9 +91,9 @@ func (m *ModelRepository) GenderUpdate(gender *Gender, preloads ...string) (*Gen
 	repo := NewGenericRepository[Gender](m.db.Client)
 	return repo.Update(gender, preloads...)
 }
-func (m *ModelRepository) GenderUpdateByID(id string, column string, value interface{}, preloads ...string) (*Gender, error) {
+func (m *ModelRepository) GenderUpdateByID(id string, value *Gender, preloads ...string) (*Gender, error) {
 	repo := NewGenericRepository[Gender](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) GenderDeleteByID(id string) error {
 	repo := NewGenericRepository[Gender](m.db.Client)

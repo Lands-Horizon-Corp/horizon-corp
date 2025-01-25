@@ -88,9 +88,9 @@ func (m *ModelRepository) MemberRelativeAccountsUpdate(memberrelativeaccounts *M
 	repo := NewGenericRepository[MemberRelativeAccounts](m.db.Client)
 	return repo.Update(memberrelativeaccounts, preloads...)
 }
-func (m *ModelRepository) MemberRelativeAccountsUpdateByID(id string, column string, value interface{}, preloads ...string) (*MemberRelativeAccounts, error) {
+func (m *ModelRepository) MemberRelativeAccountsUpdateByID(id string, value *MemberRelativeAccounts, preloads ...string) (*MemberRelativeAccounts, error) {
 	repo := NewGenericRepository[MemberRelativeAccounts](m.db.Client)
-	return repo.UpdateByID(id, column, value, preloads...)
+	return repo.UpdateByID(id, value, preloads...)
 }
 func (m *ModelRepository) MemberRelativeAccountsDeleteByID(id string) error {
 	repo := NewGenericRepository[MemberRelativeAccounts](m.db.Client)
