@@ -13,6 +13,7 @@ import {
     IAPIPreloads,
     IOperationCallbacks,
     IFilterPaginatedHookProps,
+    IQueryProps,
 } from './types'
 import {
     IMediaRequest,
@@ -305,10 +306,11 @@ export const useDeleteCompany = ({
 
 export const useFilteredPaginatedCompanies = ({
     sort,
+    enabled,
     filterPayload,
     preloads = ['Media', 'Owner'],
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps = {}) => {
+}: IFilterPaginatedHookProps & IQueryProps = {}) => {
     return useQuery<ICompanyPaginatedResource, string>({
         queryKey: [
             'company',
@@ -342,6 +344,7 @@ export const useFilteredPaginatedCompanies = ({
             totalPage: 1,
             ...pagination,
         },
+        enabled,
         retry: 1,
     })
 }

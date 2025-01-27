@@ -14,3 +14,7 @@ export interface IFilterPaginatedHookProps extends IAPIPreloads {
 export interface IAPIPreloads {
     preloads?: string[]
 }
+
+export interface IQueryProps {
+    enabled?: boolean
+}

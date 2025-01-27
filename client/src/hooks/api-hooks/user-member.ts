@@ -6,7 +6,11 @@ import { serverRequestErrExtractor } from '@/helpers'
 import MemberService from '@/server/api-service/member-service'
 
 import { IMemberPaginatedResource } from '@/server/types'
-import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
+import {
+    IFilterPaginatedHookProps,
+    IOperationCallbacks,
+    IQueryProps,
+} from './types'
 
 export const useDeleteMember = ({
     onSuccess,
@@ -43,10 +47,11 @@ export const useDeleteMember = ({
 
 export const useFilteredPaginatedMembers = ({
     sort,
+    enabled,
     filterPayload,
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps = {}) => {
+}: IFilterPaginatedHookProps & IQueryProps = {}) => {
     return useQuery<IMemberPaginatedResource, string>({
         queryKey: ['member', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
@@ -74,6 +79,7 @@ export const useFilteredPaginatedMembers = ({
             totalPage: 1,
             ...pagination,
         },
+        enabled,
         retry: 1,
     })
 }

@@ -15,7 +15,11 @@ import {
     IBranchPaginatedResource,
 } from '@/server/types'
 import BranchService from '@/server/api-service/branch-service'
-import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
+import {
+    IFilterPaginatedHookProps,
+    IOperationCallbacks,
+    IQueryProps,
+} from './types'
 
 // for route pathParam loader
 export const branchLoader = (companyId: number) =>
@@ -206,11 +210,12 @@ export const useDeleteBranch = ({
 }
 
 export const useFilteredPaginatedBranch = ({
-    filterPayload,
-    pagination = { pageSize: 10, pageIndex: 1 },
-    preloads = ['Media', 'Owner'],
     sort,
-}: IFilterPaginatedHookProps = {}) => {
+    enabled,
+    filterPayload,
+    preloads = ['Media', 'Owner'],
+    pagination = { pageSize: 10, pageIndex: 1 },
+}: IFilterPaginatedHookProps & IQueryProps = {}) => {
     return useQuery<IBranchPaginatedResource, string>({
         queryKey: ['branch', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
@@ -238,6 +243,7 @@ export const useFilteredPaginatedBranch = ({
             totalPage: 1,
             ...pagination,
         },
+        enabled,
         retry: 1,
     })
 }
