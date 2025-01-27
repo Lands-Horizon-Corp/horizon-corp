@@ -20,30 +20,41 @@ export default class BranchService {
         id: number,
         preloads?: string[]
     ): Promise<IBranchResource> {
-        // Construct each preload as a separate 'preloads' query parameter
-        const preloadParams =
-            preloads
-                ?.map((preload) => `preloads=${encodeURIComponent(preload)}`)
-                .join('&') || ''
-        const separator = preloadParams ? '?' : ''
-        const endpoint = `${BranchService.BASE_ENDPOINT}/${id}${separator}${preloadParams}`
+        const url = qs.stringifyUrl(
+            {
+                url: `${BranchService.BASE_ENDPOINT}/${id}`,
+                query: {
+                    preloads,
+                },
+            },
+            { skipNull: true }
+        )
 
-        // Make the GET request with necessary headers
-        const response = await APIService.get<IBranchResource>(endpoint, {
+        const response = await APIService.get<IBranchResource>(url, {
             headers: {
-                Authorization: `Bearer YOUR_TOKEN`, // Replace with actual token if needed
+                Authorization: `Bearer YOUR_TOKEN`,
             },
         })
 
         return response.data
     }
 
-  
     public static async create(
-        branchData: IBranchRequest
+        branchData: IBranchRequest,
+        preloads?: string[]
     ): Promise<IBranchResource> {
+        const url = qs.stringifyUrl(
+            {
+                url: `${BranchService.BASE_ENDPOINT}`,
+                query: {
+                    preloads,
+                },
+            },
+            { skipNull: true }
+        )
+
         const response = await APIService.post<IBranchRequest, IBranchResource>(
-            BranchService.BASE_ENDPOINT,
+            url,
             branchData
         )
         return response.data
@@ -59,15 +70,18 @@ export default class BranchService {
         branchData: IBranchRequest,
         preloads?: string[]
     ): Promise<IBranchResource> {
-        const preloadParams =
-            preloads
-                ?.map((preload) => `preloads=${encodeURIComponent(preload)}`)
-                .join('&') || ''
-        const separator = preloadParams ? '?' : ''
-        const endpoint = `${BranchService.BASE_ENDPOINT}/${id}${separator}${preloadParams}`
+        const url = qs.stringifyUrl(
+            {
+                url: `${BranchService.BASE_ENDPOINT}/${id}`,
+                query: {
+                    preloads,
+                },
+            },
+            { skipNull: true }
+        )
 
         const response = await APIService.put<IBranchRequest, IBranchResource>(
-            endpoint,
+            url,
             branchData,
             {
                 headers: {
@@ -151,14 +165,18 @@ export default class BranchService {
         data: IMediaRequest,
         preloads: string[] = ['Media']
     ): Promise<IBranchResource> {
-        const preloadParams =
-            preloads
-                ?.map((preload) => `preloads=${encodeURIComponent(preload)}`)
-                .join('&') || ''
-        const separator = preloadParams ? '?' : ''
-        const endpoint = `${BranchService.BASE_ENDPOINT}/profile-picture/${id}${separator}${preloadParams}`
+        const url = qs.stringifyUrl(
+            {
+                url: `${BranchService.BASE_ENDPOINT}/profile-picture/${id}`,
+                query: {
+                    preloads,
+                },
+            },
+            { skipNull: true }
+        )
+
         const response = await APIService.post<IMediaRequest, IBranchResource>(
-            endpoint,
+            url,
             data
         )
         return response.data

@@ -24,15 +24,14 @@ import {
 import CompanyService from '@/server/api-service/company-service'
 
 // Only used by path preloader
-export const companyLoader = (companyId: number) =>
+export const companyLoader = (
+    companyId: number,
+    preloads: string[] = ['Owner', 'Owner.Media', 'Media']
+) =>
     queryOptions<ICompanyResource>({
         queryKey: ['company', 'loader', companyId],
         queryFn: async () => {
-            const data = await CompanyService.getById(companyId, [
-                'Owner',
-                'Owner.Media',
-                'Media',
-            ])
+            const data = await CompanyService.getById(companyId, preloads)
             return data
         },
         retry: 0,
@@ -69,16 +68,17 @@ export const useCompany = ({
 
 // create company
 export const useCreateCompany = ({
+    preloads = ['Owner', 'Media', 'Owner.Media'],
     onError,
     onSuccess,
-}: IOperationCallbacks<ICompanyResource>) => {
+}: IOperationCallbacks<ICompanyResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, ICompanyRequest>({
         mutationKey: ['company', 'create'],
         mutationFn: async (newCompanyData) => {
             const [error, data] = await withCatchAsync(
-                CompanyService.create(newCompanyData)
+                CompanyService.create(newCompanyData, preloads)
             )
 
             if (error) {
@@ -106,16 +106,17 @@ export const useCreateCompany = ({
 
 // approve company
 export const useApproveCompany = ({
+    preloads,
     onSuccess,
     onError,
-}: IOperationCallbacks<ICompanyResource, string>) => {
+}: IOperationCallbacks<ICompanyResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, number>({
         mutationKey: ['company', 'approve'],
         mutationFn: async (companyId) => {
             const [error, data] = await withCatchAsync(
-                CompanyService.verify(companyId)
+                CompanyService.verify(companyId, preloads)
             )
 
             if (error) {
@@ -156,9 +157,10 @@ export const useApproveCompany = ({
 
 // update company
 export const useUpdateCompany = ({
+    preloads = ['Owner', 'Media', 'Owner.Media'],
     onSuccess,
     onError,
-}: IOperationCallbacks<ICompanyResource, string>) => {
+}: IOperationCallbacks<ICompanyResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -172,7 +174,7 @@ export const useUpdateCompany = ({
         mutationKey: ['company', 'update'],
         mutationFn: async ({ id, data }) => {
             const [error, response] = await withCatchAsync(
-                CompanyService.update(id, data)
+                CompanyService.update(id, data, preloads)
             )
 
             if (error) {
@@ -216,9 +218,10 @@ export const useUpdateCompany = ({
 
 // update company logo
 export const useUpdateCompanyProfilePicture = ({
+    preloads = ['Owner', 'Media', 'Owner.Media'],
     onSuccess,
     onError,
-}: IOperationCallbacks<ICompanyResource>) => {
+}: IOperationCallbacks<ICompanyResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -229,7 +232,7 @@ export const useUpdateCompanyProfilePicture = ({
         mutationKey: ['company', 'update', 'logo'],
         mutationFn: async ({ companyId, mediaResource }) => {
             const [error, data] = await withCatchAsync(
-                CompanyService.ProfilePicture(companyId, mediaResource)
+                CompanyService.ProfilePicture(companyId, mediaResource, preloads)
             )
 
             if (error) {
@@ -308,7 +311,7 @@ export const useFilteredPaginatedCompanies = ({
     sort,
     enabled,
     filterPayload,
-    preloads = ['Media', 'Owner'],
+    preloads = ['Media', 'Owner', 'Owner.Media'],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
     return useQuery<ICompanyPaginatedResource, string>({
