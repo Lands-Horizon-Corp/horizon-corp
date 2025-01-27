@@ -68,11 +68,7 @@ export const useCompany = ({
 
 // create company
 export const useCreateCompany = ({
-<<<<<<< HEAD
     preloads=['Media', 'Owner', 'Owner.Media'],
-=======
-    preloads = ['Owner', 'Media', 'Owner.Media'],
->>>>>>> 59-feature/admin
     onError,
     onSuccess,
 }: IOperationCallbacks<ICompanyResource> & IAPIPreloads) => {
@@ -110,13 +106,9 @@ export const useCreateCompany = ({
 
 // approve company
 export const useApproveCompany = ({
-    preloads,
     onSuccess,
     onError,
-<<<<<<< HEAD
     preloads = ['Media', 'Owner', 'Owner.Media'],
-=======
->>>>>>> 59-feature/admin
 }: IOperationCallbacks<ICompanyResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
