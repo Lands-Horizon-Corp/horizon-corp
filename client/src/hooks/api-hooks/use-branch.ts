@@ -23,15 +23,14 @@ import {
 } from './types'
 
 // for route pathParam loader
-export const branchLoader = (companyId: number) =>
+export const branchLoader = (
+    companyId: number,
+    preloads: string[] = ['Owner', 'Owner.Media', 'Media']
+) =>
     queryOptions<IBranchResource>({
         queryKey: ['branch', 'loader', companyId],
         queryFn: async () => {
-            const data = await BranchService.getById(companyId, [
-                'Owner',
-                'Owner.Media',
-                'Media',
-            ])
+            const data = await BranchService.getById(companyId, preloads)
             return data
         },
         retry: 0,
@@ -39,16 +38,17 @@ export const branchLoader = (companyId: number) =>
 
 // Create branch
 export const useCreateBranch = ({
+    preloads=  ['Company', 'Company.Media'],
     onError,
     onSuccess,
-}: IOperationCallbacks<IBranchResource, string>) => {
+}: IOperationCallbacks<IBranchResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<IBranchResource, string, IBranchRequest>({
         mutationKey: ['branch', 'create'],
         mutationFn: async (newBranchData) => {
             const [error, data] = await withCatchAsync(
-                BranchService.create(newBranchData)
+                BranchService.create(newBranchData, preloads)
             )
 
             if (error) {

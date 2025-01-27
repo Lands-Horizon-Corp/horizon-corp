@@ -68,7 +68,11 @@ export const useCompany = ({
 
 // create company
 export const useCreateCompany = ({
+<<<<<<< HEAD
     preloads=['Media', 'Owner', 'Owner.Media'],
+=======
+    preloads = ['Owner', 'Media', 'Owner.Media'],
+>>>>>>> 59-feature/admin
     onError,
     onSuccess,
 }: IOperationCallbacks<ICompanyResource> & IAPIPreloads) => {
@@ -106,9 +110,13 @@ export const useCreateCompany = ({
 
 // approve company
 export const useApproveCompany = ({
+    preloads,
     onSuccess,
     onError,
+<<<<<<< HEAD
     preloads = ['Media', 'Owner', 'Owner.Media'],
+=======
+>>>>>>> 59-feature/admin
 }: IOperationCallbacks<ICompanyResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
@@ -157,9 +165,10 @@ export const useApproveCompany = ({
 
 // update company
 export const useUpdateCompany = ({
+    preloads = ['Owner', 'Media', 'Owner.Media'],
     onSuccess,
     onError,
-}: IOperationCallbacks<ICompanyResource, string>) => {
+}: IOperationCallbacks<ICompanyResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -173,7 +182,7 @@ export const useUpdateCompany = ({
         mutationKey: ['company', 'update'],
         mutationFn: async ({ id, data }) => {
             const [error, response] = await withCatchAsync(
-                CompanyService.update(id, data)
+                CompanyService.update(id, data, preloads)
             )
 
             if (error) {
@@ -217,9 +226,10 @@ export const useUpdateCompany = ({
 
 // update company logo
 export const useUpdateCompanyProfilePicture = ({
+    preloads = ['Owner', 'Media', 'Owner.Media'],
     onSuccess,
     onError,
-}: IOperationCallbacks<ICompanyResource>) => {
+}: IOperationCallbacks<ICompanyResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -230,7 +240,7 @@ export const useUpdateCompanyProfilePicture = ({
         mutationKey: ['company', 'update', 'logo'],
         mutationFn: async ({ companyId, mediaResource }) => {
             const [error, data] = await withCatchAsync(
-                CompanyService.ProfilePicture(companyId, mediaResource)
+                CompanyService.ProfilePicture(companyId, mediaResource, preloads)
             )
 
             if (error) {
@@ -309,7 +319,7 @@ export const useFilteredPaginatedCompanies = ({
     sort,
     enabled,
     filterPayload,
-    preloads = ['Media', 'Owner'],
+    preloads = ['Media', 'Owner', 'Owner.Media'],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
     return useQuery<ICompanyPaginatedResource, string>({

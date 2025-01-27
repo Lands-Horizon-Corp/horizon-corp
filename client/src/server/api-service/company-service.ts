@@ -21,10 +21,13 @@ export default class CompanyService {
         preloads?: string[]
     ): Promise<ICompanyResource> {
         // Construct each preload as a separate 'preloads' query parameter
-        const url = qs.stringifyUrl({
-            url: `${CompanyService.BASE_ENDPOINT}/${id}`,
-            query: { preloads },
-        })
+        const url = qs.stringifyUrl(
+            {
+                url: `${CompanyService.BASE_ENDPOINT}/${id}`,
+                query: { preloads },
+            },
+            { skipNull: true }
+        )
 
         // Make the GET request with necessary headers
         const response = await APIService.get<ICompanyResource>(url, {
@@ -40,15 +43,19 @@ export default class CompanyService {
         companyData: ICompanyRequest,
         preloads?: string[]
     ): Promise<ICompanyResource> {
-        const url = qs.stringifyUrl({
-            url: `${CompanyService.BASE_ENDPOINT}`,
-            query: { preloads },
-        })
+        const url = qs.stringifyUrl(
+            {
+                url: `${CompanyService.BASE_ENDPOINT}`,
+                query: { preloads },
+            },
+            { skipNull: true }
+        )
 
         const response = await APIService.post<
             ICompanyRequest,
             ICompanyResource
         >(url, companyData)
+
         return response.data
     }
 
@@ -102,9 +109,6 @@ export default class CompanyService {
             { skipNull: true }
         )
 
-        // Output URL
-        // /api/v1/company?filter=eyJmaWx0ZXJzIjpbXSwibG9naWMiOiJBTkQifQ%3D%3D&pageIndex=0&pageSize=10&preloads=Media&preloads=Owner
-
         const response = await APIService.get<ICompanyPaginatedResource>(url)
         return response.data
     }
@@ -149,11 +153,15 @@ export default class CompanyService {
         id: number,
         preloads?: string[]
     ): Promise<ICompanyResource> {
-        const url = qs.stringifyUrl({
-            url: `${CompanyService.BASE_ENDPOINT}/verify/${id}`,
-            query: { preloads },
-        })
-
+        const url = qs.stringifyUrl(
+            {
+                url: `${CompanyService.BASE_ENDPOINT}/verify/${id}`,
+                query: {
+                    preloads,
+                },
+            },
+            { skipNull: true }
+        )
         const response = await APIService.post<void, ICompanyResource>(url)
         return response.data
     }
@@ -161,13 +169,17 @@ export default class CompanyService {
     public static async ProfilePicture(
         id: number,
         data: IMediaRequest,
-        preloads: string[] = ['Media']
+        preloads: string[] = ['Media', 'Owner', 'Owner.Media']
     ): Promise<ICompanyResource> {
-        const url = qs.stringifyUrl({
-            url: `${CompanyService.BASE_ENDPOINT}/profile-picture/${id}`,
-            query: { preloads },
-        })
-
+        const url = qs.stringifyUrl(
+            {
+                url: `${CompanyService.BASE_ENDPOINT}/profile-picture/${id}`,
+                query: {
+                    preloads,
+                },
+            },
+            { skipNull: true }
+        )
         const response = await APIService.post<IMediaRequest, ICompanyResource>(
             url,
             data
