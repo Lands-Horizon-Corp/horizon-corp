@@ -5,6 +5,7 @@ import {
 } from '@tanstack/react-router'
 
 import { ownerRoute } from '../../route'
+import OwnerBranchRoute from './branch/route'
 
 export const ownerCompanyRoute = createRoute({
     getParentRoute: () => ownerRoute,
@@ -23,16 +24,10 @@ const ownerCompanyProfileRoute = createRoute({
     component: lazyRouteComponent(() => import('./profile')),
 })
 
-const ownerCompanyBranchesRoute = createRoute({
-    getParentRoute: () => ownerCompanyRoute,
-    path: 'branches',
-    component: lazyRouteComponent(() => import('./branches')),
-})
-
 const OwnerCompanyRoute = ownerCompanyRoute.addChildren([
     ownerCompanyIndexRoute,
     ownerCompanyProfileRoute,
-    ownerCompanyBranchesRoute,
+    OwnerBranchRoute
 ])
 
 export default OwnerCompanyRoute

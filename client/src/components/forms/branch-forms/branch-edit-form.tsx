@@ -6,6 +6,11 @@ import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
+    MapMarkedIcon,
+    VerifiedPatchIcon,
+    LoadingSpinnerIcon,
+} from '@/components/icons'
+import {
     Form,
     FormItem,
     FormField,
@@ -13,86 +18,93 @@ import {
     FormControl,
     FormMessage,
 } from '@/components/ui/form'
-
-import {
-    MapMarkedIcon,
-    VerifiedPatchIcon,
-    LoadingSpinnerIcon,
-} from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
 import TextEditor from '@/components/text-editor'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-import OwnerPicker from '@/components/pickers/owner-picker'
 import Modal, { IModalProps } from '@/components/modals/modal'
+import CompanyPicker from '@/components/pickers/company-picker'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import { PhoneInput } from '@/components/contact-input/contact-input'
 
 import { cn } from '@/lib'
-import { useCreateCompany } from '@/hooks/api-hooks/use-company'
-
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { contactNumberSchema } from '@/validations/common'
-import { ICompanyRequest, ICompanyResource } from '@/server/types'
+import { useUpdateBranch } from '@/hooks/api-hooks/use-branch'
+import { IBranchRequest, IBranchResource } from '@/server/types'
 
-interface CompanyCreateFormProps
+type TBranchBasicInfo = Omit<
+    IBranchRequest,
+    | 'id'
+    | 'media'
+    | 'company'
+    | 'employees'
+    | 'members'
+    | 'createdAt'
+    | 'updatedAt'
+>
+
+interface BranchEditFormProps
     extends IBaseCompNoChild,
-        IForm<ICompanyRequest, ICompanyResource> {}
+        IForm<TBranchBasicInfo, IBranchResource, string> {
+    branchId: number
+}
 
-const CompanyBasicInfoFormSchema = z.object({
-    name: z.string().min(1, 'Company name is required'),
-    description: z
-        .string()
-        .min(1, 'Company description is required')
+const BranchBasicInfoFormSchema = z.object({
+    name: z.string().min(1, 'Branch name is required'),
+    description: z.string().optional(),
+    companyId: z.coerce
+        .number({ invalid_type_error: 'Company ID is invalid' })
         .optional(),
-    contactNumber: contactNumberSchema,
-    latitude: z.coerce.number().optional(),
+    address: z.string().min(1, 'Branch address is required').optional(),
     longitude: z.coerce.number().optional(),
-    address: z.string().min(1, 'Company address is required').optional(),
-    ownerId: z.coerce
-        .number({ invalid_type_error: 'Invalid Owner' })
-        .optional(),
+    latitude: z.coerce.number().optional(),
+    email: z.string().email('Invalid email address'),
+    contactNumber: z.string(),
+    isAdminVerified: z.boolean(),
 })
 
-const CompanyCreateForm = ({
+const BranchEditForm = ({
     readOnly,
+    branchId,
     className,
     defaultValues,
     disabledFields,
     onError,
     onSuccess,
     onLoading,
-}: CompanyCreateFormProps) => {
+}: BranchEditFormProps) => {
     const [mapPickerState, setMapPickerState] = useState(false)
 
-    const form = useForm<z.infer<typeof CompanyBasicInfoFormSchema>>({
+    const form = useForm<z.infer<typeof BranchBasicInfoFormSchema>>({
         defaultValues: {
-            address: '',
-            contactNumber: '',
-            description: '',
-            latitude: 14.58423341171918,
-            longitude: 120.987654321,
             name: '',
+            email: '',
+            address: '',
+            description: '',
+            contactNumber: '',
+            latitude: 14.5842,
+            longitude: 120.9876,
             ...defaultValues,
         },
         reValidateMode: 'onChange',
-        resolver: zodResolver(CompanyBasicInfoFormSchema),
+        resolver: zodResolver(BranchBasicInfoFormSchema),
     })
 
+    const hasChanges = form.formState.isDirty
     const defaultCenter = {
         lat: form.getValues('latitude') ?? 14.58423341171918,
-        lng: form.getValues('longitude') ?? 120.987654321,
+        lng: form.getValues('longitude') ?? -239.01863962431653,
     }
 
     const {
-        isPending,
-        mutate: create,
         error,
+        isPending,
+        mutate: save,
         reset,
-    } = useCreateCompany({
+    } = useUpdateBranch({
         onSuccess: (data) => {
             onSuccess?.(data)
             form.reset(data)
@@ -100,18 +112,18 @@ const CompanyCreateForm = ({
         onError,
     })
 
+    const isDisabled = (
+        field: keyof z.infer<typeof BranchBasicInfoFormSchema>
+    ) => readOnly || disabledFields?.includes(field)
+
     useEffect(() => {
         onLoading?.(isPending)
     }, [isPending, onLoading])
 
-    const isDisabled = (
-        field: keyof z.infer<typeof CompanyBasicInfoFormSchema>
-    ) => readOnly || disabledFields?.includes(field)
-
     return (
         <form
             className={cn('flex flex-col gap-y-2', className)}
-            onSubmit={form.handleSubmit((data) => create(data))}
+            onSubmit={form.handleSubmit((data) => save({ id: branchId, data }))}
         >
             <Form {...form}>
                 <fieldset
@@ -119,7 +131,7 @@ const CompanyCreateForm = ({
                     className="grid gap-x-4 gap-y-4 sm:grid-cols-2"
                 >
                     <fieldset className="space-y-2">
-                        <legend className="mb-2">Company Basic Info</legend>
+                        <legend className="mb-2">Branch Basic Info</legend>
                         <FormField
                             control={form.control}
                             name="name"
@@ -129,14 +141,40 @@ const CompanyCreateForm = ({
                                         htmlFor={field.name}
                                         className="text-right text-sm font-normal text-foreground/60"
                                     >
-                                        Company Name
+                                        Branch Name
                                     </FormLabel>
                                     <FormControl>
                                         <Input
                                             {...field}
                                             id={field.name}
-                                            placeholder="Company Name"
+                                            placeholder="Branch Name"
                                             autoComplete="off"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            control={form.control}
+                            name="companyId"
+                            render={({ field }) => (
+                                <FormItem className="col-span-2 space-y-1 sm:col-span-1">
+                                    <FormLabel
+                                        htmlFor={field.name}
+                                        className="text-right text-sm font-normal text-foreground/60"
+                                    >
+                                        Company
+                                    </FormLabel>
+                                    <FormControl>
+                                        <CompanyPicker
+                                            value={field.value}
+                                            onSelect={(company) =>
+                                                field.onChange(company.id)
+                                            }
+                                            placeholder="Select company"
+                                            disabled={isDisabled(field.name)}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -165,44 +203,41 @@ const CompanyCreateForm = ({
                                 </FormItem>
                             )}
                         />
+                    </fieldset>
+
+                    <fieldset className="space-y-2">
+                        <legend className="mb-2">
+                            Branch Contact & Address
+                        </legend>
                         <FormField
                             control={form.control}
-                            name="ownerId"
+                            name="email"
                             render={({ field }) => (
                                 <FormItem className="col-span-2 space-y-1 sm:col-span-1">
                                     <FormLabel
                                         htmlFor={field.name}
                                         className="text-right text-sm font-normal text-foreground/60"
                                     >
-                                        Company Owner
+                                        Email
                                     </FormLabel>
                                     <FormControl>
-                                        <OwnerPicker
-                                            value={field.value}
-                                            onSelect={(company) =>
-                                                field.onChange(company.id)
-                                            }
-                                            placeholder="Select Owner"
-                                            disabled={isDisabled('ownerId')}
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            type="email"
+                                            autoComplete="off"
+                                            placeholder="Email"
+                                            disabled={isDisabled(field.name)}
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                    </fieldset>
-
-                    <fieldset className="space-y-2">
-                        <legend className="mb-2">
-                            Company Contact & Address
-                        </legend>
                         <FormField
                             control={form.control}
                             name="contactNumber"
-                            render={({
-                                field,
-                                fieldState: { invalid, error },
-                            }) => (
+                            render={({ field }) => (
                                 <FormItem className="col-span-2 space-y-1 sm:col-span-1">
                                     <FormLabel
                                         htmlFor={field.name}
@@ -216,12 +251,13 @@ const CompanyCreateForm = ({
                                                 {...field}
                                                 defaultCountry="PH"
                                                 className="w-full"
+                                                disabled={isDisabled(
+                                                    field.name
+                                                )}
                                             />
                                             <VerifiedPatchIcon
                                                 className={cn(
-                                                    'absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
-                                                    (invalid || error) &&
-                                                        'text-destructive'
+                                                    'absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out'
                                                 )}
                                             />
                                         </div>
@@ -239,7 +275,7 @@ const CompanyCreateForm = ({
                                         htmlFor={field.name}
                                         className="text-right text-sm font-normal text-foreground/60"
                                     >
-                                        Company Address
+                                        Branch Address
                                     </FormLabel>
                                     <FormControl>
                                         <Textarea
@@ -247,15 +283,13 @@ const CompanyCreateForm = ({
                                             id={field.name}
                                             autoComplete="off"
                                             placeholder="Address"
+                                            disabled={isDisabled(field.name)}
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <h4 className="col-span-2 text-sm font-normal text-foreground/60">
-                            Company Map Location
-                        </h4>
                         <FormField
                             control={form.control}
                             name="latitude"
@@ -274,6 +308,7 @@ const CompanyCreateForm = ({
                                             type="number"
                                             autoComplete="off"
                                             placeholder="Latitude"
+                                            disabled={isDisabled(field.name)}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -298,6 +333,7 @@ const CompanyCreateForm = ({
                                             type="number"
                                             autoComplete="off"
                                             placeholder="Longitude"
+                                            disabled={isDisabled(field.name)}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -363,41 +399,43 @@ const CompanyCreateForm = ({
                 </fieldset>
 
                 <FormErrorMessage errorMessage={error} />
-                <div>
-                    <Separator className="my-2 sm:my-4" />
-                    <div className="flex items-center justify-end gap-x-2">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={() => {
-                                form.reset()
-                                reset()
-                            }}
-                            className="w-full self-end px-8 sm:w-fit"
-                        >
-                            Reset
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={isPending}
-                            className="w-full self-end px-8 sm:w-fit"
-                        >
-                            {isPending ? <LoadingSpinnerIcon /> : 'Create'}
-                        </Button>
+                {hasChanges && (
+                    <div>
+                        <Separator className="my-2 sm:my-4" />
+                        <div className="flex items-center justify-end gap-x-2">
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                onClick={() => {
+                                    form.reset()
+                                    reset()
+                                }}
+                                className="w-full self-end px-8 sm:w-fit"
+                            >
+                                Reset
+                            </Button>
+                            <Button
+                                type="submit"
+                                disabled={isPending}
+                                className="w-full self-end px-8 sm:w-fit"
+                            >
+                                {isPending ? <LoadingSpinnerIcon /> : 'Save'}
+                            </Button>
+                        </div>
                     </div>
-                </div>
+                )}
             </Form>
         </form>
     )
 }
 
-export const CompanyCreateFormModal = ({
-    title = 'Company Create',
-    description = 'Setup a new company',
+export const BranchEditFormModal = ({
+    title = 'Edit Branch',
+    description = 'Update branch info',
     formProps,
     className,
     ...props
-}: IModalProps & { formProps: Omit<CompanyCreateFormProps, 'className'> }) => {
+}: IModalProps & { formProps: Omit<BranchEditFormProps, 'className'> }) => {
     return (
         <Modal
             title={title}
@@ -405,9 +443,9 @@ export const CompanyCreateFormModal = ({
             description={description}
             {...props}
         >
-            <CompanyCreateForm {...formProps} />
+            <BranchEditForm {...formProps} />
         </Modal>
     )
 }
 
-export default CompanyCreateForm
+export default BranchEditForm

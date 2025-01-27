@@ -22,9 +22,7 @@ import { useDeleteCompany } from '@/hooks/api-hooks/use-company'
 const OwnerCompanyProfilePage = () => {
     const { onOpen } = useConfirmModalStore()
     const [editModal, setEditModal] = useState(false)
-    const [company, setCompany] = useState<ICompanyResource | undefined>(
-        undefined
-    )
+    const [company, setCompany] = useState<ICompanyResource | undefined>()
 
     const { isPending: isDeleting, mutate: deleteCompany } = useDeleteCompany()
 
@@ -104,7 +102,7 @@ const OwnerCompanyProfilePage = () => {
                                 </Button>
                             </div>
                         </div>
-                        <div className="w-full rounded-xl border bg-popover dark:bg-secondary">
+                        <div className="w-full rounded-xl border bg-secondary">
                             <p className="p-4 font-medium">Company Details</p>
                             <Separator className="dark:bg-background" />
                             <div className="grid grid-cols-5 gap-4 p-4">
@@ -127,7 +125,7 @@ const OwnerCompanyProfilePage = () => {
                                         ]}
                                     />
                                 ) : (
-                                    <div className="col-span-3 flex min-h-40 items-center justify-center rounded-lg border bg-secondary p-4 text-foreground/50 dark:bg-popover">
+                                    <div className="col-span-3 flex min-h-40 items-center justify-center rounded-lg border p-4 text-foreground/50 bg-popover">
                                         <p>
                                             Unable to show company location map
                                         </p>
@@ -139,7 +137,7 @@ const OwnerCompanyProfilePage = () => {
                                 />
                             </div>
                         </div>
-                        <div className="w-full rounded-xl border bg-popover dark:bg-secondary">
+                        <div className="w-full rounded-xl border bg-secondary">
                             <p className="p-4 font-medium">Company About</p>
                             <Separator className="dark:bg-background" />
                             <CompanyDescription

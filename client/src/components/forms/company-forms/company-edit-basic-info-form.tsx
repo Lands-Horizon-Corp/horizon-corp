@@ -350,33 +350,6 @@ const CompanyEditForm = ({
                         </div>
                     </fieldset>
                 </fieldset>
-                <div className="">
-                    <h4 className="text-sm font-normal text-foreground/60">
-                        Company Map Location
-                    </h4>
-                    <p className="mt-2 text-sm text-foreground/60">
-                        Use the map to set the coordinates of the company.
-                        Coordinates use to display your company&apos;s location
-                        to interactive map
-                    </p>
-                    <MainMapContainer
-                        zoom={13}
-                        center={defaultCenter}
-                        defaultMarkerPins={[defaultCenter]}
-                        onCoordinateClick={(coord) => {
-                            const { lat, lng } = coord as LatLngLiteral
-                            if (!lat || !lng || isPending || readOnly) return
-
-                            form.setValue('latitude', lat, {
-                                shouldDirty: true,
-                            })
-                            form.setValue('longitude', lng, {
-                                shouldDirty: true,
-                            })
-                        }}
-                        className="min-h-[500px] p-0 py-2"
-                    />
-                </div>
                 <FormErrorMessage errorMessage={firstError || error} />
                 {hasChanges && (
                     <div>

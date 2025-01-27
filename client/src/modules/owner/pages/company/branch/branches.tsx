@@ -4,15 +4,13 @@ import { BranchCreateFormModal } from '@/components/forms'
 import BranchesTable from '@/components/tables/branches-table'
 import PageContainer from '@/components/containers/page-container'
 
-import EnsureOwnerCompany from '../../components/ensure-company'
+import EnsureOwnerCompany from '../../../components/ensure-company'
 
 import { ICompanyResource } from '@/server'
 
 const OwnerCompanyBranchesPage = () => {
     const [modal, setModal] = useState(false)
-    const [company, setCompany] = useState<ICompanyResource | undefined>(
-        undefined
-    )
+    const [company, setCompany] = useState<ICompanyResource | undefined>()
 
     return (
         <PageContainer>
@@ -41,7 +39,7 @@ const OwnerCompanyBranchesPage = () => {
                             className="min-h-[90vh] w-full"
                             defaultFilter={{
                                 companyId: {
-                                    value: company.id,
+                                    value: company?.id,
                                     mode: 'equal',
                                     displayText: '',
                                     isStaticFilter: true,

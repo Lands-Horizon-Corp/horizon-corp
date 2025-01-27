@@ -16,6 +16,7 @@ import {
 } from '@/server/types'
 import BranchService from '@/server/api-service/branch-service'
 import {
+    IAPIPreloads,
     IFilterPaginatedHookProps,
     IOperationCallbacks,
     IQueryProps,
@@ -72,7 +73,8 @@ export const useCreateBranch = ({
 export const useUpdateBranch = ({
     onSuccess,
     onError,
-}: IOperationCallbacks<IBranchResource, string>) => {
+    preloads = ['Media', 'Owner', 'Owner.Media'],
+}: IOperationCallbacks<IBranchResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -86,7 +88,7 @@ export const useUpdateBranch = ({
         mutationKey: ['branch', 'update'],
         mutationFn: async ({ id, data }) => {
             const [error, response] = await withCatchAsync(
-                BranchService.update(id, data)
+                BranchService.update(id, data, preloads)
             )
 
             if (error) {
@@ -116,6 +118,8 @@ export const useUpdateBranch = ({
             )
 
             onSuccess?.(response)
+
+            toast.success('Branch updated.')
             return response
         },
     })
@@ -178,7 +182,7 @@ export const useUpdateBranchProfilePicture = ({
 export const useDeleteBranch = ({
     onSuccess,
     onError,
-}: IOperationCallbacks) => {
+}: undefined | IOperationCallbacks = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, number>({
@@ -213,7 +217,7 @@ export const useFilteredPaginatedBranch = ({
     sort,
     enabled,
     filterPayload,
-    preloads = ['Media', 'Owner'],
+    preloads = ['Media', 'Company'],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
     return useQuery<IBranchPaginatedResource, string>({

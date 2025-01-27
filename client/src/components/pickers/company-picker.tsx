@@ -22,7 +22,7 @@ import { ICompanyResource } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
 
 interface Props {
-    value: number
+    value? : number
     placeholder?: string
     disabled? : boolean
     onSelect?: (selectedCompany: ICompanyResource) => void
@@ -48,6 +48,7 @@ const CompanyPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
         useFilteredPaginatedCompanies({
             filterPayload: finalFilterPayload,
             pagination,
+            enabled : !disabled
         })
 
     const company = useCompany({ companyId: value as number })
