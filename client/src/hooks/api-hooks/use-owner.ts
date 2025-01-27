@@ -9,6 +9,7 @@ import {
     IAPIPreloads,
     IOperationCallbacks,
     IFilterPaginatedHookProps,
+    IQueryProps,
 } from './types'
 import {
     IOwnerResource,
@@ -95,10 +96,11 @@ export const useOwnerCompany = ({
 // paginated/ filtered and sorted
 export const useFilteredPaginatedOwners = ({
     sort,
+    enabled,
     filterPayload,
     preloads = ['Media', 'Company'],
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps = {}) => {
+}: IFilterPaginatedHookProps & IQueryProps = {}) => {
     return useQuery<IOwnerPaginatedResource, string>({
         queryKey: ['owner', 'resource-query', filterPayload, pagination],
         queryFn: async () => {
@@ -127,6 +129,7 @@ export const useFilteredPaginatedOwners = ({
             ...pagination,
         },
         retry: 1,
+        enabled : enabled
     })
 }
 
