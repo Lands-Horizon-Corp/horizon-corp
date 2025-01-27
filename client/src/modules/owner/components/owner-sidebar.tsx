@@ -5,14 +5,14 @@ import {
     ReportsIcon,
     BuildingIcon,
     SettingsIcon,
-    UserListIcon,
     DashboardIcon,
     FootstepsIcon,
-    UserClockIcon,
-    UserShieldIcon,
-    BuildingCogIcon,
     NotificationIcon,
-    BuildingBranchIcon,
+    // UserListIcon,
+    // UserClockIcon,
+    // UserShieldIcon,
+    // BuildingCogIcon,
+    // BuildingBranchIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 

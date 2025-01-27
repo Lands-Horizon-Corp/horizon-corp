@@ -5,9 +5,9 @@ import type { TSidebarItem } from '@/components/sidebar/sidebar-types'
 import SidebarItemContent from '@/components/sidebar/sidebar-item-content'
 import SidebarItemWithTooltip from '@/components/sidebar/sidebar-with-tooltip-wrapper'
 
-import { concatParentUrl, sidebarRouteMatcher } from './sidebar-utils'
 import { cn } from '@/lib/utils'
 import { useSidebarContext } from './sidebar-context'
+import { concatParentUrl, sidebarRouteMatcher } from './sidebar-utils'
 
 const SidebarItem: FC<TSidebarItem> = (props) => {
     const router = useRouter()
