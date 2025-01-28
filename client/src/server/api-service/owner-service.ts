@@ -7,8 +7,9 @@ import {
     TEntityId,
     IOwnerRequest,
     IOwnerResource,
-    ICompanyResource,
     IOwnerPaginatedResource,
+    ICompanyPaginatedResource,
+    IBranchPaginatedResource,
 } from '../types'
 
 /**
@@ -94,19 +95,65 @@ export default class OwnerService {
         return response.data
     }
 
-    public static async getAdminCompany(
-        adminId: TEntityId,
+    public static async getCompanies({
+        sort,
+        ownerId,
+        filters,
+        preloads,
+        pagination,
+    }: {
+        ownerId: TEntityId
+        sort?: string
+        filters?: string
         preloads?: string[]
-    ) {
+        pagination?: { pageIndex: number; pageSize: number }
+    }) {
         const url = qs.stringifyUrl(
             {
-                url: `${this.BASE_ENDPOINT}/${adminId}/company`,
-                query: { preloads },
+                url: `${this.BASE_ENDPOINT}/${ownerId}/company`,
+                query: {
+                    sort,
+                    preloads,
+                    filter: filters,
+                    pageIndex: pagination?.pageIndex,
+                    pageSize: pagination?.pageSize,
+                },
             },
             { skipNull: true }
         )
 
-        const response = await APIService.get<ICompanyResource>(url)
+        const response = await APIService.get<ICompanyPaginatedResource>(url)
+        return response.data
+    }
+
+    public static async getBranches({
+        sort,
+        ownerId,
+        filters,
+        preloads,
+        pagination,
+    }: {
+        ownerId: TEntityId
+        filters?: string
+        preloads?: string[]
+        pagination?: { pageIndex: number; pageSize: number }
+        sort?: string
+    }) {
+        const url = qs.stringifyUrl(
+            {
+                url: `${OwnerService.BASE_ENDPOINT}/${ownerId}`,
+                query: {
+                    sort,
+                    preloads,
+                    filter: filters,
+                    pageIndex: pagination?.pageIndex,
+                    pageSize: pagination?.pageSize,
+                },
+            },
+            { skipNull: true }
+        )
+
+        const response = await APIService.get<IBranchPaginatedResource>(url)
         return response.data
     }
 

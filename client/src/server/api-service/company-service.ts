@@ -89,14 +89,12 @@ export default class CompanyService {
         return response.data
     }
 
-    public static async getCompanies(props?: {
+    public static async getCompanies({ filters, preloads, pagination, sort } : {
         sort?: string
         filters?: string
         preloads?: string[]
         pagination?: { pageIndex: number; pageSize: number }
-    }): Promise<ICompanyPaginatedResource> {
-        const { filters, preloads, pagination, sort } = props || {}
-
+    } = {}): Promise<ICompanyPaginatedResource> {
         const url = qs.stringifyUrl(
             {
                 url: `${CompanyService.BASE_ENDPOINT}`,
