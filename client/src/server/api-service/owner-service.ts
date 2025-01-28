@@ -8,7 +8,6 @@ import {
     IOwnerRequest,
     IOwnerResource,
     IOwnerPaginatedResource,
-    ICompanyPaginatedResource,
     IBranchPaginatedResource,
 } from '../types'
 
@@ -92,37 +91,6 @@ export default class OwnerService {
     public static async verify(id: TEntityId): Promise<IOwnerResource> {
         const endpoint = `${OwnerService.BASE_ENDPOINT}/verify/${id}`
         const response = await APIService.post<void, IOwnerResource>(endpoint)
-        return response.data
-    }
-
-    public static async getCompanies({
-        sort,
-        ownerId,
-        filters,
-        preloads,
-        pagination,
-    }: {
-        ownerId: TEntityId
-        sort?: string
-        filters?: string
-        preloads?: string[]
-        pagination?: { pageIndex: number; pageSize: number }
-    }) {
-        const url = qs.stringifyUrl(
-            {
-                url: `${this.BASE_ENDPOINT}/${ownerId}/company`,
-                query: {
-                    sort,
-                    preloads,
-                    filter: filters,
-                    pageIndex: pagination?.pageIndex,
-                    pageSize: pagination?.pageSize,
-                },
-            },
-            { skipNull: true }
-        )
-
-        const response = await APIService.get<ICompanyPaginatedResource>(url)
         return response.data
     }
 
