@@ -5,12 +5,57 @@ import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import MemberService from '@/server/api-service/member-service'
 
-import { IMemberPaginatedResource } from '@/server/types'
 import {
+    IMemberPaginatedResource,
+    IMemberRequest,
+    IMemberResource,
+} from '@/server/types'
+import {
+    IAPIPreloads,
     IFilterPaginatedHookProps,
     IOperationCallbacks,
     IQueryProps,
 } from './types'
+
+export const useCreateMember = ({
+    preloads = ['Media'],
+    onSuccess,
+    onError,
+}: undefined | (IOperationCallbacks<IMemberResource, string> & IAPIPreloads) = {}) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<IMemberResource, string, IMemberRequest>({
+        mutationKey: ['member', 'create'],
+        mutationFn: async (data) => {
+            const [error, newMember] = await withCatchAsync(
+                MemberService.create(data, preloads)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            queryClient.invalidateQueries({
+                queryKey: ['member', 'resource-query'],
+            })
+
+            queryClient.invalidateQueries({
+                queryKey: ['member', newMember.id],
+            })
+            queryClient.removeQueries({
+                queryKey: ['member', 'loader', newMember.id],
+            })
+
+            toast.success('New Member Account Created')
+            onSuccess?.(newMember)
+
+            return newMember
+        },
+    })
+}
 
 export const useDeleteMember = ({
     onSuccess,
