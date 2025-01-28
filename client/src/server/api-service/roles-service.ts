@@ -1,5 +1,5 @@
 import APIService from './api-service'
-import { IRolesResource, IRolesRequest } from '../types'
+import { IRolesResource, IRolesRequest, TEntityId } from '../types'
 
 /**
  * Service class to handle CRUD operations for roles.
@@ -24,13 +24,13 @@ export default class RoleService {
         return response.data
     }
 
-    public static async delete(id: number): Promise<void> {
+    public static async delete(id: TEntityId): Promise<void> {
         const endpoint = `${RoleService.BASE_ENDPOINT}/${id}`
         await APIService.delete<void>(endpoint)
     }
 
     public static async update(
-        id: number,
+        id: TEntityId,
         roleData: IRolesRequest
     ): Promise<IRolesResource> {
         const endpoint = `${RoleService.BASE_ENDPOINT}/${id}`
@@ -41,7 +41,7 @@ export default class RoleService {
         return response.data
     }
 
-    public static async getById(id: number): Promise<IRolesResource> {
+    public static async getById(id: TEntityId): Promise<IRolesResource> {
         const endpoint = `${RoleService.BASE_ENDPOINT}/${id}`
         const response = await APIService.get<IRolesResource>(endpoint)
         return response.data

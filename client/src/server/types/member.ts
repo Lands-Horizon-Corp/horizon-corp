@@ -3,7 +3,7 @@ import { IRolesResource } from './role'
 import { IGenderResource } from './gender'
 import { IFootstepResource } from './footstep'
 import { IPaginatedResult } from './paginated-result'
-import { ITimeStamps, IUserBase, TAccountStatus } from './common'
+import { ITimeStamps, IUserBase, TAccountStatus, TEntityId } from './common'
 
 export interface IMemberRequest {
     username: string
@@ -23,11 +23,11 @@ export interface IMemberRequest {
     emailTemplate?: string
     contactTemplate?: string
 
-    companyId?: number
+    companyId?: TEntityId
 }
 
 export interface IMemberResource extends IUserBase, ITimeStamps {
-    id: string
+    id: TEntityId 
     accountType: 'Member'
 
     username: string

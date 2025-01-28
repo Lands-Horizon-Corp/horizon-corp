@@ -4,7 +4,6 @@ import { IFootstepResource } from "./footstep"
 
 export interface IAdminResource extends IUserBase {
     accountType: string
-    description?: string
     role?: IRolesResource
     footsteps?: IFootstepResource[]
 }

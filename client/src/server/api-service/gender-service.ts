@@ -1,12 +1,14 @@
 import qs from 'query-string'
 
+import APIService from './api-service'
+import { downloadFile } from '../helpers'
+
 import {
+    TEntityId,
     IGenderRequest,
     IGenderResource,
     IGenderPaginatedResource,
 } from '../types'
-import APIService from './api-service'
-import { downloadFile } from '../helpers'
 
 /**
  * Service class to handle CRUD operations for genders.
@@ -31,13 +33,13 @@ export default class GenderService {
         return response.data
     }
 
-    public static async delete(id: number): Promise<void> {
+    public static async delete(id: TEntityId): Promise<void> {
         const endpoint = `${GenderService.BASE_ENDPOINT}/${id}`
         await APIService.delete<void>(endpoint)
     }
 
     public static async update(
-        id: number,
+        id: TEntityId,
         genderData: IGenderRequest
     ): Promise<IGenderResource> {
         const endpoint = `${GenderService.BASE_ENDPOINT}/${id}`
@@ -48,9 +50,14 @@ export default class GenderService {
         return response.data
     }
 
-    public static async getById(id: number): Promise<IGenderResource> {
-        const endpoint = `${GenderService.BASE_ENDPOINT}/${id}`
-        const response = await APIService.get<IGenderResource>(endpoint)
+    public static async getById(id: TEntityId): Promise<IGenderResource> {
+        const url = qs.stringifyUrl(
+            {
+                url: `${GenderService.BASE_ENDPOINT}/${id}`,
+            },
+            { skipNull: true }
+        )
+        const response = await APIService.get<IGenderResource>(url)
         return response.data
     }
 
@@ -90,9 +97,15 @@ export default class GenderService {
         await downloadFile(url, 'filtered_genders_export.xlsx')
     }
 
-    public static async exportSelected(ids: number[]): Promise<void> {
-        const query = ids.map((id) => `ids=${id}`).join('&')
-        const url = `${GenderService.BASE_ENDPOINT}/export-selected?${query}`
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
+        const url = qs.stringifyUrl(
+            {
+                url: `${GenderService.BASE_ENDPOINT}/export-selected`,
+                query: { ids },
+            },
+            { skipNull: true }
+        )
+
         await downloadFile(url, 'selected_genders_export.xlsx')
     }
 

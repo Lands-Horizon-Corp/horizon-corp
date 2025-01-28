@@ -1,14 +1,16 @@
 // services/BranchService.ts
 import qs from 'query-string'
 
+import APIService from './api-service'
+import { downloadFile } from '@/server/helpers'
+
 import {
+    TEntityId,
     IMediaRequest,
     IBranchRequest,
     IBranchResource,
     IBranchPaginatedResource,
 } from '@/server/types'
-import APIService from './api-service'
-import { downloadFile } from '@/server/helpers'
 
 /**
  * Service class to handle CRUD operations for branches.
@@ -17,7 +19,7 @@ export default class BranchService {
     private static readonly BASE_ENDPOINT = '/branch'
 
     public static async getById(
-        id: number,
+        id: TEntityId,
         preloads?: string[]
     ): Promise<IBranchResource> {
         const url = qs.stringifyUrl(
@@ -60,13 +62,13 @@ export default class BranchService {
         return response.data
     }
 
-    public static async delete(id: number): Promise<void> {
+    public static async delete(id: TEntityId): Promise<void> {
         const endpoint = `${BranchService.BASE_ENDPOINT}/${id}`
         await APIService.delete<void>(endpoint)
     }
 
     public static async update(
-        id: number,
+        id: TEntityId,
         branchData: IBranchRequest,
         preloads?: string[]
     ): Promise<IBranchResource> {
@@ -131,7 +133,7 @@ export default class BranchService {
         await downloadFile(url, 'filtered_branches_export.csv')
     }
 
-    public static async exportSelected(ids: number[]): Promise<void> {
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
         if (ids.length === 0) {
             throw new Error('No branch IDs provided for export.')
         }
@@ -139,12 +141,18 @@ export default class BranchService {
         // Construct each preload as a separate 'preloads' query parameter if needed
         // (Assuming export-selected might also accept preloads; if not, you can omit this)
 
-        const query = ids.map((id) => `ids=${encodeURIComponent(id)}`).join('&')
-        const url = `${BranchService.BASE_ENDPOINT}/export-selected?${query}`
+        const url = qs.stringifyUrl(
+            {
+                url: `${BranchService.BASE_ENDPOINT}/export-selected`,
+                query: { ids },
+            },
+            { skipNull: true }
+        )
+
         await downloadFile(url, 'selected_branches_export.csv')
     }
 
-    public static async deleteMany(ids: number[]): Promise<void> {
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
         const endpoint = `${BranchService.BASE_ENDPOINT}/bulk-delete`
 
         // Construct the request payload
@@ -154,14 +162,14 @@ export default class BranchService {
         await APIService.delete<void>(endpoint, payload)
     }
 
-    public static async verify(id: number): Promise<IBranchResource> {
+    public static async verify(id: TEntityId): Promise<IBranchResource> {
         const endpoint = `${BranchService.BASE_ENDPOINT}/verify/${id}`
         const response = await APIService.post<void, IBranchResource>(endpoint)
         return response.data
     }
 
     public static async ProfilePicture(
-        id: number,
+        id: TEntityId,
         data: IMediaRequest,
         preloads: string[] = ['Media']
     ): Promise<IBranchResource> {

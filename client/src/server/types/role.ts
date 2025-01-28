@@ -1,3 +1,5 @@
+import { TEntityId } from "./common"
+
 export interface IRolesRequest {
     name: string
     description?: string
@@ -18,7 +20,7 @@ export interface IRolesRequest {
 }
 
 export interface IRolesResource {
-    id: number
+    id: TEntityId
     name: string
     description?: string
 

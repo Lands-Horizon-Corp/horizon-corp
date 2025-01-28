@@ -1,12 +1,14 @@
 import qs from 'query-string'
 
+import APIService from './api-service'
+import { downloadFile } from '../helpers'
+
 import {
+    TEntityId,
     IFeedbackRequest,
     IFeedbackResource,
     IFeedbackPaginatedResource,
 } from '../types'
-import APIService from './api-service'
-import { downloadFile } from '../helpers'
 
 /**
  * Service class to handle CRUD operations for feedbacks.
@@ -15,7 +17,7 @@ export default class FeedbackService {
     private static readonly BASE_ENDPOINT = '/feedback'
 
     public static async getById(
-        id: number,
+        id: TEntityId,
         preloads?: string[]
     ): Promise<IFeedbackResource> {
         const url = qs.stringifyUrl({
@@ -37,7 +39,7 @@ export default class FeedbackService {
         return response.data
     }
 
-    public static async delete(id: number): Promise<void> {
+    public static async delete(id: TEntityId): Promise<void> {
         const endpoint = `${FeedbackService.BASE_ENDPOINT}/${id}`
         await APIService.delete<void>(endpoint)
     }
@@ -84,7 +86,7 @@ export default class FeedbackService {
         await downloadFile(url, 'filtered_feedbacks_export.csv')
     }
 
-    public static async exportSelected(ids: number[]): Promise<void> {
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
         if (ids.length === 0) {
             throw new Error('No feedback IDs provided for export.')
         }
@@ -97,7 +99,7 @@ export default class FeedbackService {
         await downloadFile(url, 'selected_feedbacks_export.csv')
     }
 
-    public static async deleteMany(ids: number[]): Promise<void> {
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
         const url = `${FeedbackService.BASE_ENDPOINT}/bulk-delete`
         const payload = { ids }
 

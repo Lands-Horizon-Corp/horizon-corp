@@ -3,7 +3,7 @@ import qs from 'query-string'
 import APIService from './api-service'
 import { downloadFile } from '../helpers'
 
-import { IFootstepPaginatedResource } from '@/server/types'
+import { IFootstepPaginatedResource, TEntityId } from '@/server/types'
 
 /**
  * Service class to handle CRUD operations for footsteps.
@@ -13,7 +13,7 @@ export default class FootstepService {
 
     // GET Details of specific footsteps
     public static async getFootstepById(
-        footstepId: number,
+        footstepId: TEntityId,
         preloads: string[] = [
             'Admin',
             'Admin.Media',
@@ -51,13 +51,19 @@ export default class FootstepService {
         await downloadFile(url, 'filtered_footsteps_export.csv')
     }
 
-    public static async exportSelected(ids: string[]): Promise<void> {
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
         if (ids.length === 0) {
             throw new Error('No footstep IDs provided for export.')
         }
 
-        const query = ids.map((id) => `ids=${encodeURIComponent(id)}`).join('&')
-        const url = `${FootstepService.BASE_ENDPOINT}/export-selected?${query}`
+        const url = qs.stringifyUrl(
+            {
+                url: `${FootstepService.BASE_ENDPOINT}/export-selected?`,
+                query: { ids },
+            },
+            { skipNull: true }
+        )
+
         await downloadFile(url, 'selected_footsteps_export.csv')
     }
 

@@ -1,3 +1,4 @@
+import { TEntityId } from './common'
 import { IPaginatedResult } from './paginated-result'
 
 export interface IGenderRequest {
@@ -6,7 +7,7 @@ export interface IGenderRequest {
 }
 
 export interface IGenderResource {
-    id: number
+    id: TEntityId
     name: string
     description: string
     createdAt: string

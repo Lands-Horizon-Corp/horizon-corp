@@ -2,7 +2,8 @@ import qs from 'query-string'
 
 import APIService from './api-service'
 import { downloadFile } from '../helpers'
-import { IUserBase, IAdminResource } from '../types'
+
+import { IUserBase, IAdminResource, TEntityId } from '../types'
 
 /**
  * Service class to handle CRUD operations for admins.
@@ -11,7 +12,7 @@ export default class AdminService {
     private static readonly BASE_ENDPOINT = '/admin'
 
     public static async getById(
-        id: number,
+        id: TEntityId,
         preloads?: string[]
     ): Promise<IAdminResource> {
         const url = qs.stringifyUrl({
@@ -32,14 +33,17 @@ export default class AdminService {
     }
 
     public static async update(
-        id: number,
+        id: TEntityId,
         adminData: IUserBase,
         preloads?: string[]
     ): Promise<IAdminResource> {
-        const url = qs.stringifyUrl({
-            url: `${AdminService.BASE_ENDPOINT}/${id}`,
-            query: { preloads },
-        })
+        const url = qs.stringifyUrl(
+            {
+                url: `${AdminService.BASE_ENDPOINT}/${id}`,
+                query: { preloads },
+            },
+            { skipNull: true }
+        )
 
         const response = await APIService.put<IUserBase, IAdminResource>(
             url,
@@ -48,7 +52,7 @@ export default class AdminService {
         return response.data
     }
 
-    public static async delete(id: number): Promise<void> {
+    public static async delete(id: TEntityId): Promise<void> {
         const endpoint = `${AdminService.BASE_ENDPOINT}/${id}`
         await APIService.delete<void>(endpoint)
     }
@@ -79,7 +83,7 @@ export default class AdminService {
         return response.data
     }
 
-    public static async verify(id: number): Promise<IAdminResource> {
+    public static async verify(id: TEntityId): Promise<IAdminResource> {
         const endpoint = `${AdminService.BASE_ENDPOINT}/verify/${id}`
         const response = await APIService.post<void, IAdminResource>(endpoint)
         return response.data
@@ -90,7 +94,7 @@ export default class AdminService {
         await downloadFile(url, 'all_admins_export.csv')
     }
 
-    public static async exportSelected(ids: number[]): Promise<void> {
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
         if (ids.length === 0) {
             throw new Error('No admin IDs provided for export.')
         }
@@ -103,7 +107,7 @@ export default class AdminService {
         await downloadFile(url, 'selected_admins_export.csv')
     }
 
-    public static async deleteMany(ids: number[]): Promise<void> {
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
         const url = `${AdminService.BASE_ENDPOINT}/bulk-delete`
         const payload = { ids }
 

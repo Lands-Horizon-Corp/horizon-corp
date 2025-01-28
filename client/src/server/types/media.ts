@@ -1,5 +1,7 @@
+import { TEntityId } from "./common"
+
 export interface IMediaResource {
-    id: number
+    id: TEntityId
     fileName: string
     fileSize: number
     fileType: string
@@ -12,7 +14,7 @@ export interface IMediaResource {
 }
 
 export interface IMediaRequest {
-    id?: number
+    id?: TEntityId
     fileName: string
     fileSize: number
     fileType: string

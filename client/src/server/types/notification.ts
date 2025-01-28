@@ -1,9 +1,11 @@
+import { TEntityId } from "./common"
+
 export type TNotificationPriority = 'low' | 'medium' | 'high'
 
 export type TNotification = 'success' | 'error' | 'warning' | 'info'
 
 export interface INotificationResource {
-    id: number
+    id: TEntityId
     type: TNotification
     message: string
     title?: string
@@ -12,6 +14,6 @@ export interface INotificationResource {
     priority?: TNotificationPriority
     duration?: number
     read: boolean
-    userId?: number | null
+    userId?: TEntityId | null
     category?: string
 }

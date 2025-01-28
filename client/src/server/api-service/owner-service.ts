@@ -1,13 +1,15 @@
 import qs from 'query-string'
 
-import {
-    IOwnerRequest,
-    IOwnerResource,
-    IOwnerPaginatedResource,
-    ICompanyResource,
-} from '../types'
 import APIService from './api-service'
 import { downloadFile } from '../helpers'
+
+import {
+    TEntityId,
+    IOwnerRequest,
+    IOwnerResource,
+    ICompanyResource,
+    IOwnerPaginatedResource,
+} from '../types'
 
 /**
  * Service class to handle CRUD operations for owners.
@@ -16,7 +18,7 @@ export default class OwnerService {
     private static readonly BASE_ENDPOINT = '/owner'
 
     public static async getById(
-        id: number,
+        id: TEntityId,
         preloads?: string[]
     ): Promise<IOwnerResource> {
         const url = qs.stringifyUrl({
@@ -39,7 +41,7 @@ export default class OwnerService {
     }
 
     public static async update(
-        id: number,
+        id: TEntityId,
         ownerData: IOwnerRequest,
         preloads?: string[]
     ): Promise<IOwnerResource> {
@@ -55,7 +57,7 @@ export default class OwnerService {
         return response.data
     }
 
-    public static async delete(id: number): Promise<void> {
+    public static async delete(id: TEntityId): Promise<void> {
         const endpoint = `${OwnerService.BASE_ENDPOINT}/${id}`
         await APIService.delete<void>(endpoint)
     }
@@ -86,13 +88,16 @@ export default class OwnerService {
         return response.data
     }
 
-    public static async verify(id: number): Promise<IOwnerResource> {
+    public static async verify(id: TEntityId): Promise<IOwnerResource> {
         const endpoint = `${OwnerService.BASE_ENDPOINT}/verify/${id}`
         const response = await APIService.post<void, IOwnerResource>(endpoint)
         return response.data
     }
 
-    public static async getCompany(adminId: number, preloads?: string[]) {
+    public static async getAdminCompany(
+        adminId: TEntityId,
+        preloads?: string[]
+    ) {
         const url = qs.stringifyUrl(
             {
                 url: `${this.BASE_ENDPOINT}/${adminId}/company`,
@@ -110,7 +115,7 @@ export default class OwnerService {
         await downloadFile(url, 'all_owners_export.csv')
     }
 
-    public static async exportSelected(ids: number[]): Promise<void> {
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
         if (ids.length === 0) {
             throw new Error('No owner IDs provided for export.')
         }
@@ -123,7 +128,7 @@ export default class OwnerService {
         await downloadFile(url, 'selected_owners_export.csv')
     }
 
-    public static async deleteMany(ids: number[]): Promise<void> {
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
         const url = `${OwnerService.BASE_ENDPOINT}/bulk-delete`
         const payload = { ids }
 

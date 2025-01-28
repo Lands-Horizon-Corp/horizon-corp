@@ -1,14 +1,16 @@
 // services/CompanyService.ts
 import qs from 'query-string'
 
+import APIService from './api-service'
+import { downloadFile } from '@/server/helpers'
+
 import {
+    TEntityId,
     IMediaRequest,
     ICompanyRequest,
     ICompanyResource,
     ICompanyPaginatedResource,
 } from '@/server/types'
-import APIService from './api-service'
-import { downloadFile } from '@/server/helpers'
 
 /**
  * Service class to handle CRUD operations for companies.
@@ -17,7 +19,7 @@ export default class CompanyService {
     private static readonly BASE_ENDPOINT = '/company'
 
     public static async getById(
-        id: number,
+        id: TEntityId,
         preloads?: string[]
     ): Promise<ICompanyResource> {
         // Construct each preload as a separate 'preloads' query parameter
@@ -59,13 +61,13 @@ export default class CompanyService {
         return response.data
     }
 
-    public static async delete(id: number): Promise<void> {
+    public static async delete(id: TEntityId): Promise<void> {
         const endpoint = `${CompanyService.BASE_ENDPOINT}/${id}`
         await APIService.delete(endpoint)
     }
 
     public static async update(
-        id: number,
+        id: TEntityId,
         companyData: ICompanyRequest,
         preloads?: string[]
     ): Promise<ICompanyResource> {
@@ -119,14 +121,17 @@ export default class CompanyService {
     }
 
     public static async exportAllFiltered(filters?: string): Promise<void> {
-        const filterQuery = filters
-            ? `filter=${encodeURIComponent(filters)}`
-            : ''
-        const url = `${this.BASE_ENDPOINT}/export-search${filterQuery ? `?${filterQuery}` : ''}`
+        const url = qs.stringifyUrl(
+            {
+                url: `${this.BASE_ENDPOINT}/export-search`,
+                query: { filters },
+            },
+            { skipNull: true }
+        )
         await downloadFile(url, 'filtered_companies_export.csv')
     }
 
-    public static async exportSelected(ids: number[]): Promise<void> {
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
         if (ids.length === 0) {
             throw new Error('No company IDs provided for export.')
         }
@@ -139,7 +144,7 @@ export default class CompanyService {
         await downloadFile(url, 'selected_companies_export.csv')
     }
 
-    public static async deleteMany(ids: number[]): Promise<void> {
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
         const endpoint = `${CompanyService.BASE_ENDPOINT}/bulk-delete`
 
         // Construct the request payload
@@ -150,7 +155,7 @@ export default class CompanyService {
     }
 
     public static async verify(
-        id: number,
+        id: TEntityId,
         preloads?: string[]
     ): Promise<ICompanyResource> {
         const url = qs.stringifyUrl(
@@ -167,7 +172,7 @@ export default class CompanyService {
     }
 
     public static async ProfilePicture(
-        id: number,
+        id: TEntityId,
         data: IMediaRequest,
         preloads: string[] = ['Media', 'Owner', 'Owner.Media']
     ): Promise<ICompanyResource> {

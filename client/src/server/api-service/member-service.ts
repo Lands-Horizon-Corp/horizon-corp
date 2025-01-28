@@ -3,11 +3,13 @@ import qs from 'query-string'
 
 import APIService from './api-service'
 import { downloadFile } from '../helpers'
+
 import {
+    TEntityId,
     IMediaRequest,
-    IMemberPaginatedResource,
     IMemberRequest,
     IMemberResource,
+    IMemberPaginatedResource,
 } from '../types'
 
 /**
@@ -17,7 +19,7 @@ export default class MemberService {
     private static readonly BASE_ENDPOINT = '/member'
 
     public static async getById(
-        id: number,
+        id: TEntityId,
         preloads?: string[]
     ): Promise<IMemberResource> {
         const url = qs.stringifyUrl({
@@ -48,13 +50,13 @@ export default class MemberService {
         ).data
     }
 
-    public static async delete(id: number): Promise<void> {
+    public static async delete(id: TEntityId): Promise<void> {
         const endpoint = `${MemberService.BASE_ENDPOINT}/${id}`
         await APIService.delete<void>(endpoint)
     }
 
     public static async update(
-        id: number,
+        id: TEntityId,
         memberData: IMemberRequest,
         preloads?: string[]
     ): Promise<IMemberResource> {
@@ -114,17 +116,22 @@ export default class MemberService {
         await downloadFile(url, 'filtered_members_export.csv')
     }
 
-    public static async exportSelected(ids: (string|number)[]): Promise<void> {
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
         if (ids.length === 0) {
             throw new Error('No member IDs provided for export.')
         }
+        const url = qs.stringifyUrl(
+            {
+                url: `${MemberService.BASE_ENDPOINT}/export-selected`,
+                query: { ids },
+            },
+            { skipNull: true }
+        )
 
-        const query = ids.map((id) => `ids=${encodeURIComponent(id)}`).join('&')
-        const url = `${MemberService.BASE_ENDPOINT}/export-selected?${query}`
         await downloadFile(url, 'selected_members_export.csv')
     }
 
-    public static async deleteMany(ids: (number | string)[]): Promise<void> {
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
         const endpoint = `${MemberService.BASE_ENDPOINT}/bulk-delete`
 
         const payload = { ids }
@@ -133,7 +140,7 @@ export default class MemberService {
     }
 
     public static async profilePicture(
-        id: number,
+        id: TEntityId,
         data: IMediaRequest,
         preloads: string[] = ['Media']
     ): Promise<IMemberResource> {

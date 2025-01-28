@@ -1,3 +1,4 @@
+import { TEntityId } from './common'
 import { IPaginatedResult } from './paginated-result'
 
 export interface IFeedbackRequest {
@@ -7,7 +8,7 @@ export interface IFeedbackRequest {
 }
 
 export interface IFeedbackResource {
-    id: number
+    id: TEntityId
     email: string
     description: string
     feedbackType: string

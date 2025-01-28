@@ -3,9 +3,10 @@ import { IAdminResource } from './admin'
 import { IMemberResource } from './member'
 import { IEmployeeResource } from './employee'
 import { IPaginatedResult } from './paginated-result'
+import { TEntityId } from './common'
 
 export interface IFootstepResource {
-    id: string
+    id: TEntityId
     createdAt: string
     updatedAt: string
     deletedAt: string
@@ -19,13 +20,13 @@ export interface IFootstepResource {
     timestamp: string
     isDeleted: boolean
 
-    adminID?: string
+    adminID?: TEntityId
     admin?: IAdminResource
-    employeeID?: string
+    employeeID?: TEntityId 
     employee?: IEmployeeResource
-    ownerID?: string
+    ownerID?: TEntityId 
     owner?: IOwnerResource
-    memberID?: string
+    memberID?: TEntityId
     member?: IMemberResource
 }
 

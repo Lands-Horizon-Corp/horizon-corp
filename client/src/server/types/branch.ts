@@ -3,6 +3,7 @@ import { IMemberResource } from './member'
 import { ICompanyResource } from './company'
 import { IEmployeeResource } from './employee'
 import { IPaginatedResult } from './paginated-result'
+import { TEntityId } from './common'
 
 export interface IBranchRequest {
     name: string
@@ -18,7 +19,7 @@ export interface IBranchRequest {
 }
 
 export interface IBranchResource {
-    id: number
+    id: TEntityId
     name: string
     address?: string
     description?: string
