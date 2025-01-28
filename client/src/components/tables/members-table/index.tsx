@@ -41,7 +41,7 @@ export interface MembersTableProps
     >
 }
 
-const CompaniesTable = ({
+const MembersTable = ({
     className,
     toolbarProps,
     defaultFilter,
@@ -185,4 +185,4 @@ const CompaniesTable = ({
     )
 }
 
-export default CompaniesTable
+export default MembersTable
