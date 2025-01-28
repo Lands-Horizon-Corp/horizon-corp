@@ -114,7 +114,7 @@ export default class MemberService {
         await downloadFile(url, 'filtered_members_export.csv')
     }
 
-    public static async exportSelected(ids: number[]): Promise<void> {
+    public static async exportSelected(ids: (string|number)[]): Promise<void> {
         if (ids.length === 0) {
             throw new Error('No member IDs provided for export.')
         }
@@ -124,7 +124,7 @@ export default class MemberService {
         await downloadFile(url, 'selected_members_export.csv')
     }
 
-    public static async deleteMany(ids: number[]): Promise<void> {
+    public static async deleteMany(ids: (number | string)[]): Promise<void> {
         const endpoint = `${MemberService.BASE_ENDPOINT}/bulk-delete`
 
         const payload = { ids }
