@@ -8,7 +8,6 @@ import {
     IOwnerRequest,
     IOwnerResource,
     IOwnerPaginatedResource,
-    ICompanyPaginatedResource,
     IBranchPaginatedResource,
 } from '../types'
 
