@@ -17,7 +17,6 @@ import {
 import {
     MapMarkedIcon,
     VerifiedPatchIcon,
-    LoadingSpinnerIcon,
 } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import MainMapContainer from '@/components/map'
@@ -37,6 +36,7 @@ import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { contactNumberSchema } from '@/validations/common'
 import { ICompanyRequest, ICompanyResource } from '@/server/types'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 interface CompanyCreateFormProps
     extends IBaseCompNoChild,
@@ -382,7 +382,7 @@ const CompanyCreateForm = ({
                             disabled={isPending}
                             className="w-full self-end px-8 sm:w-fit"
                         >
-                            {isPending ? <LoadingSpinnerIcon /> : 'Create'}
+                            {isPending ? <LoadingSpinner /> : 'Create'}
                         </Button>
                     </div>
                 </div>
