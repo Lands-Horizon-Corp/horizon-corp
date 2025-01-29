@@ -55,9 +55,8 @@ interface BranchEditFormProps
 const BranchBasicInfoFormSchema = z.object({
     name: z.string().min(1, 'Branch name is required'),
     description: z.string().optional(),
-    companyId: z.coerce
-        .number({ invalid_type_error: 'Company ID is invalid' })
-        .or(z.string())
+    companyId: z
+        .string({ invalid_type_error: 'Company ID is invalid' })
         .optional(),
     address: z.string().min(1, 'Branch address is required').optional(),
     longitude: z.coerce.number().optional(),
