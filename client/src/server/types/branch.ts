@@ -1,9 +1,9 @@
+import { TEntityId } from './common'
 import { IMediaResource } from './media'
 import { IMemberResource } from './member'
 import { ICompanyResource } from './company'
 import { IEmployeeResource } from './employee'
 import { IPaginatedResult } from './paginated-result'
-import { TEntityId } from './common'
 
 export interface IBranchRequest {
     name: string
@@ -15,7 +15,7 @@ export interface IBranchRequest {
     contactNumber: string
     isAdminVerified: boolean
     mediaId?: number
-    companyId?: number
+    companyId?: TEntityId
 }
 
 export interface IBranchResource {
