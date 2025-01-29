@@ -14,10 +14,7 @@ import {
     FormMessage,
 } from '@/components/ui/form'
 
-import {
-    MapMarkedIcon,
-    VerifiedPatchIcon,
-} from '@/components/icons'
+import { MapMarkedIcon, VerifiedPatchIcon } from '@/components/icons'
 import { Input } from '@/components/ui/input'
 import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
@@ -52,9 +49,7 @@ const CompanyBasicInfoFormSchema = z.object({
     latitude: z.coerce.number().optional(),
     longitude: z.coerce.number().optional(),
     address: z.string().min(1, 'Company address is required').optional(),
-    ownerId: z.coerce
-        .number({ invalid_type_error: 'Invalid Owner' }).or(z.string())
-        .optional(),
+    ownerId: z.string({ invalid_type_error: 'Invalid Owner' }).optional(),
 })
 
 const CompanyCreateForm = ({
