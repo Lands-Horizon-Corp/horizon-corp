@@ -15,6 +15,8 @@ import {
     IOwnerResource,
     ICompanyResource,
     IOwnerPaginatedResource,
+    IBranchPaginatedResource,
+    TEntityId,
 } from '@/server/types'
 
 // Load Specific owner by ID
@@ -66,7 +68,7 @@ export const useOwnerCompany = ({
         queryKey: ['owner', 'company', ownerId],
         queryFn: async () => {
             const [error, response] = await withCatchAsync(
-                OwnerService.getCompany(ownerId, preloads)
+                OwnerService.getOwnCompany(ownerId, preloads)
             )
 
             if (error) {
@@ -90,6 +92,47 @@ export const useOwnerCompany = ({
         },
         retry: 0,
         enabled: ownerId !== null || ownerId !== undefined,
+    })
+}
+
+export const useOwnerPaginatedBranch = ({
+    sort,
+    enabled,
+    ownerId,
+    filterPayload,
+    preloads = ['Media'],
+    pagination = { pageSize: 10, pageIndex: 1 },
+}: IFilterPaginatedHookProps & IQueryProps & { ownerId: TEntityId }) => {
+    return useQuery<IBranchPaginatedResource, string>({
+        queryKey: ['branch', 'resource-query', filterPayload, pagination, sort],
+        queryFn: async () => {
+            const [error, result] = await withCatchAsync(
+                OwnerService.getBranches({
+                    ownerId,
+                    preloads,
+                    pagination,
+                    sort: sort && toBase64(sort),
+                    filters: filterPayload && toBase64(filterPayload),
+                })
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                throw errorMessage
+            }
+
+            return result
+        },
+        initialData: {
+            data: [],
+            pages: [],
+            totalSize: 0,
+            totalPage: 1,
+            ...pagination,
+        },
+        enabled,
+        retry: 1,
     })
 }
 
@@ -129,7 +172,6 @@ export const useFilteredPaginatedOwners = ({
             ...pagination,
         },
         retry: 1,
-        enabled : enabled
+        enabled: enabled,
     })
 }
-

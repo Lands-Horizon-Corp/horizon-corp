@@ -9,6 +9,7 @@ import {
     IMemberPaginatedResource,
     IMemberRequest,
     IMemberResource,
+    TEntityId,
 } from '@/server/types'
 import {
     IAPIPreloads,
@@ -63,7 +64,7 @@ export const useDeleteMember = ({
 }: IOperationCallbacks) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, number>({
+    return useMutation<void, string, TEntityId>({
         mutationKey: ['member', 'delete'],
         mutationFn: async (memberId) => {
             const [error] = await withCatchAsync(MemberService.delete(memberId))
