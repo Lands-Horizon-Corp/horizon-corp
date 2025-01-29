@@ -10,12 +10,13 @@ import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 
 import {
+    IQueryProps,
     IAPIPreloads,
     IOperationCallbacks,
     IFilterPaginatedHookProps,
-    IQueryProps,
 } from './types'
 import {
+    TEntityId,
     IMediaRequest,
     ICompanyRequest,
     ICompanyResource,
@@ -25,7 +26,7 @@ import CompanyService from '@/server/api-service/company-service'
 
 // Only used by path preloader
 export const companyLoader = (
-    companyId: number,
+    companyId: TEntityId,
     preloads: string[] = ['Owner', 'Owner.Media', 'Media']
 ) =>
     queryOptions<ICompanyResource>({
@@ -43,7 +44,7 @@ export const useCompany = ({
     preloads = ['Media', 'Owner', 'Owner.Media'],
     onError,
     onSuccess,
-}: { companyId: number } & IAPIPreloads &
+}: { companyId: TEntityId } & IAPIPreloads &
     IOperationCallbacks<ICompanyResource, string>) => {
     return useQuery<ICompanyResource, string>({
         queryKey: ['company', companyId],
@@ -112,7 +113,7 @@ export const useApproveCompany = ({
 }: IOperationCallbacks<ICompanyResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, number>({
+    return useMutation<void, string, TEntityId>({
         mutationKey: ['company', 'approve'],
         mutationFn: async (companyId) => {
             const [error, data] = await withCatchAsync(
@@ -167,7 +168,7 @@ export const useUpdateCompany = ({
         ICompanyResource,
         string,
         {
-            id: number
+            id: TEntityId
             data: Omit<ICompanyResource, 'id' | 'createdAt' | 'updatedAt'>
         }
     >({
@@ -227,7 +228,7 @@ export const useUpdateCompanyProfilePicture = ({
     return useMutation<
         void,
         string,
-        { companyId: number; mediaResource: IMediaRequest }
+        { companyId: TEntityId; mediaResource: IMediaRequest }
     >({
         mutationKey: ['company', 'update', 'logo'],
         mutationFn: async ({ companyId, mediaResource }) => {
@@ -278,7 +279,7 @@ export const useDeleteCompany = ({
 }: undefined | IOperationCallbacks<undefined> = {}) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, number>({
+    return useMutation<void, string, TEntityId>({
         mutationKey: ['company', 'delete'],
         mutationFn: async (companyId) => {
             const [error] = await withCatchAsync(

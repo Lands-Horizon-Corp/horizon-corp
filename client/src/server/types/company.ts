@@ -12,8 +12,8 @@ export interface ICompanyRequest {
     latitude?: number
     email?: string
     contactNumber: string
-    ownerId?: number
-    companyId?: number
+    ownerId?: TEntityId
+    companyId?: TEntityId
     mediaId?: number
     isAdminVerified?: boolean
 }

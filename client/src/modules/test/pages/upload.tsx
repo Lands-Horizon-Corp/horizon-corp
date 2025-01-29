@@ -55,7 +55,7 @@ const UploadPage = () => {
         }
     }
 
-    const handleDelete = async (id: number, index: number) => {
+    const handleDelete = async (id: number | string, index: number) => {
         await MediaService.delete(id)
         // Remove the media from the `medias` array
         setMedias((prevMedias) => prevMedias.filter((media) => media.id !== id))
