@@ -33,7 +33,7 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { useUpdateBranch } from '@/hooks/api-hooks/use-branch'
-import { IBranchRequest, IBranchResource } from '@/server/types'
+import { IBranchRequest, IBranchResource, TEntityId } from '@/server/types'
 
 type TBranchBasicInfo = Omit<
     IBranchRequest,
@@ -49,7 +49,7 @@ type TBranchBasicInfo = Omit<
 interface BranchEditFormProps
     extends IBaseCompNoChild,
         IForm<TBranchBasicInfo, IBranchResource, string> {
-    branchId: number
+    branchId: TEntityId
 }
 
 const BranchBasicInfoFormSchema = z.object({
@@ -57,6 +57,7 @@ const BranchBasicInfoFormSchema = z.object({
     description: z.string().optional(),
     companyId: z.coerce
         .number({ invalid_type_error: 'Company ID is invalid' })
+        .or(z.string())
         .optional(),
     address: z.string().min(1, 'Branch address is required').optional(),
     longitude: z.coerce.number().optional(),

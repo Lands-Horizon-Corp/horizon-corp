@@ -44,13 +44,14 @@ interface BranchCreateFormProps
 
 const BranchBasicInfoFormSchema = z.object({
     name: z.string().min(1, 'Branch name is required'),
-    companyId: z.coerce.number({
-        required_error: 'Company is required',
-        invalid_type_error: 'Company ID is invalid',
-    }),
-    ownerId: z.coerce
-        .number({ invalid_type_error: 'Invalid Owner' })
-        .optional(),
+    companyId:  z.union([
+        z.string(),
+        z.coerce.number({ invalid_type_error: 'Invalid Company ID' }).optional(),
+    ]).optional(),
+    ownerId: z.union([ // TO REMOVE
+        z.string(),
+        z.coerce.number({ invalid_type_error: 'Invalid Owner' }).optional(),
+    ]).optional(),
     description: z.string().min(1, 'Branch description is required').optional(),
     address: z.string().min(1, 'Branch address is required').optional(),
     longitude: z.coerce.number().optional(),
@@ -73,6 +74,7 @@ const BranchCreateForm = ({
     onLoading,
 }: BranchCreateFormProps) => {
     const [mapPickerState, setMapPickerState] = useState(false)
+
 
     const form = useForm<z.infer<typeof BranchBasicInfoFormSchema>>({
         defaultValues: {
