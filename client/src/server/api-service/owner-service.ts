@@ -9,6 +9,7 @@ import {
     IOwnerResource,
     IOwnerPaginatedResource,
     IBranchPaginatedResource,
+    ICompanyResource,
 } from '../types'
 
 /**
@@ -60,6 +61,17 @@ export default class OwnerService {
     public static async delete(id: TEntityId): Promise<void> {
         const endpoint = `${OwnerService.BASE_ENDPOINT}/${id}`
         await APIService.delete<void>(endpoint)
+    }
+
+    public static async getOwnCompany(id: TEntityId, preloads?: string[]) {
+        const url = qs.stringifyUrl(
+            {
+                url: `${OwnerService.BASE_ENDPOINT}/${id}/company`,
+                query: { preloads },
+            },
+            { skipNull: true }
+        )
+        return (await APIService.get<ICompanyResource>(url)).data
     }
 
     public static async getOwners(props?: {

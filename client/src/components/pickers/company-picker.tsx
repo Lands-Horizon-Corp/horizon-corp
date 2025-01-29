@@ -18,13 +18,13 @@ import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
-import { ICompanyResource } from '@/server/types'
+import { ICompanyResource, TEntityId } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
 
 interface Props {
-    value? : number
+    value?: number | string
     placeholder?: string
-    disabled? : boolean
+    disabled?: boolean
     onSelect?: (selectedCompany: ICompanyResource) => void
 }
 
@@ -48,10 +48,10 @@ const CompanyPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
         useFilteredPaginatedCompanies({
             filterPayload: finalFilterPayload,
             pagination,
-            enabled : !disabled
+            enabled: !disabled,
         })
 
-    const company = useCompany({ companyId: value as number })
+    const company = useCompany({ companyId: value as TEntityId })
 
     return (
         <>

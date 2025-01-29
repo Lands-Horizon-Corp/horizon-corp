@@ -18,12 +18,12 @@ import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
-import { IOwnerResource } from '@/server/types'
+import { IOwnerResource, TEntityId } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
 import { useUserAuthStore } from '@/store/user-auth-store'
 
 interface Props {
-    value?: number
+    value?: TEntityId
     placeholder?: string
     disabled?: boolean
     onSelect?: (selectedOwner: IOwnerResource) => void

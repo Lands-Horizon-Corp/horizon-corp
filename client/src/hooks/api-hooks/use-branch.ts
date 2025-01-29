@@ -8,13 +8,15 @@ import { toast } from 'sonner'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
+import BranchService from '@/server/api-service/branch-service'
+
 import {
+    TEntityId,
     IMediaRequest,
     IBranchRequest,
     IBranchResource,
     IBranchPaginatedResource,
 } from '@/server/types'
-import BranchService from '@/server/api-service/branch-service'
 import {
     IAPIPreloads,
     IFilterPaginatedHookProps,
@@ -24,7 +26,7 @@ import {
 
 // for route pathParam loader
 export const branchLoader = (
-    companyId: number,
+    companyId: TEntityId,
     preloads: string[] = ['Owner', 'Owner.Media', 'Media']
 ) =>
     queryOptions<IBranchResource>({
@@ -81,7 +83,7 @@ export const useUpdateBranch = ({
         IBranchResource,
         string,
         {
-            id: number
+            id: TEntityId
             data: IBranchRequest
         }
     >({
@@ -135,7 +137,7 @@ export const useUpdateBranchProfilePicture = ({
     return useMutation<
         void,
         string,
-        { branchId: number; mediaResource: IMediaRequest }
+        { branchId: TEntityId; mediaResource: IMediaRequest }
     >({
         mutationKey: ['branch', 'update', 'logo'],
         mutationFn: async ({ branchId, mediaResource }) => {
@@ -185,7 +187,7 @@ export const useDeleteBranch = ({
 }: undefined | IOperationCallbacks = {}) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, number>({
+    return useMutation<void, string, TEntityId>({
         mutationKey: ['branch', 'delete'],
         mutationFn: async (branchId) => {
             const [error] = await withCatchAsync(BranchService.delete(branchId))

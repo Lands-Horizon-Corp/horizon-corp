@@ -1,9 +1,15 @@
 import z from 'zod'
+import { toast } from 'sonner'
 import { LatLngLiteral } from 'leaflet'
 import { useForm } from 'react-hook-form'
 import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import {
+    MapMarkedIcon,
+    VerifiedPatchIcon,
+    LoadingSpinnerIcon,
+} from '@/components/icons'
 import {
     Form,
     FormItem,
@@ -12,19 +18,15 @@ import {
     FormControl,
     FormMessage,
 } from '@/components/ui/form'
-
 import { Input } from '@/components/ui/input'
 import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
 import TextEditor from '@/components/text-editor'
+import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
+import Modal, { IModalProps } from '@/components/modals/modal'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import { PhoneInput } from '@/components/contact-input/contact-input'
-import {
-    LoadingSpinnerIcon,
-    MapMarkedIcon,
-    VerifiedPatchIcon,
-} from '@/components/icons'
 
 import { cn } from '@/lib'
 import { contactNumberSchema } from '@/validations/common'
@@ -32,17 +34,14 @@ import { useUpdateCompany } from '@/hooks/api-hooks/use-company'
 
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { ICompanyResource } from '@/server/types'
-import { Textarea } from '@/components/ui/textarea'
-import Modal, { IModalProps } from '@/components/modals/modal'
-import { toast } from 'sonner'
+import { ICompanyResource, TEntityId } from '@/server/types'
 
 type TCompanyBasicInfo = Omit<ICompanyResource, 'owner' | 'media' | 'branches'>
 
 interface CompanyEditBasicInfoFormProps
     extends IBaseCompNoChild,
         IForm<TCompanyBasicInfo, ICompanyResource, string> {
-    companyId: number
+    companyId: TEntityId
 }
 
 const CompanyBasicInfoFormSchema = z.object({
