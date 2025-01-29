@@ -14,7 +14,7 @@ export interface IBranchRequest {
     email: string
     contactNumber: string
     isAdminVerified: boolean
-    mediaId?: number
+    mediaId?: TEntityId
     companyId?: TEntityId
 }
 
@@ -26,7 +26,7 @@ export interface IBranchResource {
     longitude?: number
     latitude?: number
     email: string
-    companyId?: number
+    companyId?: TEntityId
     contactNumber: string
     isAdminVerified: boolean
     media?: IMediaResource

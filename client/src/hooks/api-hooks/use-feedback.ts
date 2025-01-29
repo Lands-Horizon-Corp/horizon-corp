@@ -13,6 +13,7 @@ import {
     IFilterPaginatedHookProps,
 } from './types'
 import {
+    TEntityId,
     IFeedbackRequest,
     IFeedbackResource,
     IFeedbackPaginatedResource,
@@ -22,7 +23,7 @@ import { serverRequestErrExtractor } from '@/helpers'
 import FeedbackService from '@/server/api-service/feedback-service'
 
 // Only used by path preloader
-export const feedbackLoader = (feedbackId: number) =>
+export const feedbackLoader = (feedbackId: TEntityId) =>
     queryOptions<IFeedbackResource>({
         queryKey: ['feedback', 'loader', feedbackId],
         queryFn: async () => {
@@ -38,7 +39,7 @@ export const useFeedback = ({
     preloads = ['User'],
     onError,
     onSuccess,
-}: { feedbackId: number } & IAPIPreloads &
+}: { feedbackId: TEntityId } & IAPIPreloads &
     IOperationCallbacks<IFeedbackResource, string>) => {
     return useQuery<IFeedbackResource, string>({
         queryKey: ['feedback', feedbackId],
@@ -99,7 +100,7 @@ export const useDeleteFeedback = ({
 }: IOperationCallbacks) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, number>({
+    return useMutation<void, string, TEntityId>({
         mutationKey: ['feedback', 'delete'],
         mutationFn: async (feedbackId) => {
             const [error] = await withCatchAsync(
