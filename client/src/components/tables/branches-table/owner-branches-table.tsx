@@ -21,10 +21,10 @@ import { cn } from '@/lib'
 import useFilterState from '@/hooks/use-filter-state'
 import BranchService from '@/server/api-service/branch-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
-import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
+import { useOwnerPaginatedBranch } from '@/hooks/api-hooks/use-owner'
 
 import { TableProps } from '../types'
-import { IBranchResource } from '@/server/types'
+import { IBranchResource, TEntityId } from '@/server/types'
 
 export interface BranchesTableProps
     extends TableProps<IBranchResource>,
@@ -38,10 +38,12 @@ export interface BranchesTableProps
         | 'filterLogicProps'
         | 'exportActionProps'
         | 'deleteActionProps'
-    >
+    >,
+    ownerId : TEntityId
 }
 
 const BranchesTable = ({
+    ownerId,
     className,
     onSelectData,
     toolbarProps,
@@ -86,7 +88,8 @@ const BranchesTable = ({
         isRefetching,
         data: { data, totalPage, pageSize, totalSize },
         refetch,
-    } = useFilteredPaginatedBranch({
+    } = useOwnerPaginatedBranch({
+        ownerId,
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
