@@ -5,7 +5,7 @@ export type TAccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
 
 export type TAccountStatus = 'Pending' | 'Verified' | 'Not Allowed'
 
-export type TEntityId = number | string
+export type TEntityId = string
 
 export interface IUserBase extends ITimeStamps, ILongLat {
     id: TEntityId

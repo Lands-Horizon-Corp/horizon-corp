@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 
-import { IMediaResource } from '@/server/types'
+import { IMediaResource, TEntityId } from '@/server/types'
 import MediaService from '@/server/api-service/media-service'
 
 const UploadPage = () => {
@@ -55,7 +55,7 @@ const UploadPage = () => {
         }
     }
 
-    const handleDelete = async (id: number | string, index: number) => {
+    const handleDelete = async (id: TEntityId, index: number) => {
         await MediaService.delete(id)
         // Remove the media from the `medias` array
         setMedias((prevMedias) => prevMedias.filter((media) => media.id !== id))
