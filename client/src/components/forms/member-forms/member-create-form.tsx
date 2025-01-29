@@ -42,7 +42,6 @@ const MemberCreateForm = ({
     readOnly,
     className,
     defaultValues,
-    disabledFields,
     onError,
     onSuccess,
 }: IMemberCreateFormProps) => {
@@ -65,8 +64,8 @@ const MemberCreateForm = ({
         },
     })
 
-    const isDisabled = (field: keyof z.infer<typeof createMemberSchema>) =>
-        readOnly || disabledFields?.includes(field)
+    // const isDisabled = (field: keyof z.infer<typeof createMemberSchema>) =>
+    //     readOnly || disabledFields?.includes(field)
 
     const {
         error,
