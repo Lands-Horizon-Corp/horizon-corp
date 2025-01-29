@@ -42,7 +42,7 @@ export interface BranchesTableProps
     ownerId : TEntityId
 }
 
-const BranchesTable = ({
+const OwnerBranchesTable = ({
     ownerId,
     className,
     onSelectData,
@@ -181,4 +181,4 @@ const BranchesTable = ({
     )
 }
 
-export default BranchesTable
+export default OwnerBranchesTable
