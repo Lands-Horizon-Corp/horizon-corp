@@ -1,6 +1,7 @@
 import { AxiosProgressEvent } from 'axios'
+
 import APIService from './api-service'
-import { IMediaResource } from '../types'
+import { IMediaResource, TEntityId } from '../types'
 
 export default class MediaService {
     private static readonly BASE_ENDPOINT = '/media'
@@ -22,7 +23,7 @@ export default class MediaService {
         return response.data
     }
 
-    public static async delete(id: number): Promise<void> {
+    public static async delete(id: TEntityId): Promise<void> {
         await APIService.delete(`${MediaService.BASE_ENDPOINT}/${id}`)
     }
 }

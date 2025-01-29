@@ -13,14 +13,14 @@ import {
     useOwner,
     useFilteredPaginatedOwners,
 } from '@/hooks/api-hooks/use-owner'
+import { useUserAuthStore } from '@/store/user-auth-store'
 
 import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
-import { IOwnerResource, TEntityId } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
-import { useUserAuthStore } from '@/store/user-auth-store'
+import { IOwnerResource, TEntityId } from '@/server/types'
 
 interface Props {
     value?: TEntityId
@@ -53,7 +53,7 @@ const OwnerPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
             enabled : !disabled
         })
 
-    const owner = useOwner({ ownerId: value as number })
+    const owner = useOwner({ ownerId: value as TEntityId })
 
     return (
         <>
