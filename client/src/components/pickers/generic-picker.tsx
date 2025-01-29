@@ -12,9 +12,10 @@ import Modal, { IModalProps } from '@/components/modals/modal'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib'
+import { TEntityId } from '@/server'
 import { useInternalState } from '@/hooks/use-internal-state'
 
-interface GenericPickerProps<T extends { id: number }> extends IModalProps {
+interface GenericPickerProps<T extends { id: TEntityId }> extends IModalProps {
     items: T[]
     isLoading?: boolean
     listHeading?: string
@@ -25,7 +26,7 @@ interface GenericPickerProps<T extends { id: number }> extends IModalProps {
     renderItem: (item: T) => React.ReactNode
 }
 
-const GenericPicker = <T extends { id: number }>({
+const GenericPicker = <T extends { id: TEntityId }>({
     open,
     items,
     children,

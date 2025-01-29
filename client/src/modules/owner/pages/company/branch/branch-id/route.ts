@@ -17,9 +17,9 @@ export const ownerBranchId = createRoute({
         parse: ownerIdPathSchema.parse,
     },
     errorComponent: ErrorPage,
-    // loader: async ({ context, params: { branchId } }) => {
-    //     await context.queryClient.ensureQueryData(branchLoader(branchId))
-    // },
+    loader: async ({ context, params: { branchId } }) => {
+        await context.queryClient.ensureQueryData(branchLoader(branchId))
+    },
 })
 
 const ownerBranchIndexRoute = createRoute({

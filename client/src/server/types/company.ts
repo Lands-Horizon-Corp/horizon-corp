@@ -1,8 +1,8 @@
+import { TEntityId } from './common'
 import { IMediaResource } from './media'
 import { IOwnerResource } from './owner'
 import { IBranchResource } from './branch'
 import { IPaginatedResult } from './paginated-result'
-import { TEntityId } from './common'
 
 export interface ICompanyRequest {
     name: string
@@ -14,7 +14,7 @@ export interface ICompanyRequest {
     contactNumber: string
     ownerId?: TEntityId
     companyId?: TEntityId
-    mediaId?: number
+    mediaId?: TEntityId
     isAdminVerified?: boolean
 }
 

@@ -28,7 +28,7 @@ export const useOwner = ({
     IOperationCallbacks<IOwnerResource, string> & IAPIPreloads,
     'onSuccess'
 > & {
-    ownerId: number
+    ownerId: TEntityId
 }) => {
     const queryClient = useQueryClient()
 
@@ -60,7 +60,7 @@ export const useOwnerCompany = ({
     preloads = ['Owner', 'Owner.Media'],
     onError,
     onSuccess,
-}: { ownerId: number } & IOperationCallbacks<ICompanyResource> &
+}: { ownerId: TEntityId } & IOperationCallbacks<ICompanyResource> &
     IAPIPreloads) => {
     const queryClient = useQueryClient()
 
