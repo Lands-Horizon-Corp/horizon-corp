@@ -29,7 +29,7 @@ import FeedbackService from '@/server/api-service/feedback-service'
 
 const data: IFeedbackResource[] = [
     {
-        id: 1,
+        id: '7f76efd0-940a-42f9-afa9-8644453e20aa',
         email: 'user1@example.com',
         description: 'Great service, very satisfied.',
         feedbackType: 'positive',
@@ -37,7 +37,7 @@ const data: IFeedbackResource[] = [
         updatedAt: '2025-01-01T10:00:00Z',
     },
     {
-        id: 2,
+        id: '24d740f2-f57f-4579-a9a3-03d6ddec44b5',
         email: 'user2@example.com',
         description: 'Had some issues with the checkout process.',
         feedbackType: 'negative',
@@ -45,7 +45,7 @@ const data: IFeedbackResource[] = [
         updatedAt: '2025-01-02T14:30:00Z',
     },
     {
-        id: 3,
+        id: '9482cd20-df59-49a2-b6ce-bf88bed349e3',
         email: 'user3@example.com',
         description: 'Can we have more payment options?',
         feedbackType: 'neutral',
@@ -53,7 +53,7 @@ const data: IFeedbackResource[] = [
         updatedAt: '2025-01-03T09:15:00Z',
     },
     {
-        id: 4,
+        id: 'f13a44b8-d627-47db-8584-614eb016f6d6',
         email: 'user4@example.com',
         description: 'Loved the user interface. Very intuitive!',
         feedbackType: 'positive',
@@ -61,7 +61,7 @@ const data: IFeedbackResource[] = [
         updatedAt: '2025-01-04T18:45:00Z',
     },
     {
-        id: 5,
+        id: '88350bb7-29de-4e99-bcf0-2f668bcfae92',
         email: 'user5@example.com',
         description: 'The app is crashing frequently. Please fix.',
         feedbackType: 'negative',
