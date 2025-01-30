@@ -5,8 +5,6 @@ import {
     getSortedRowModel,
 } from '@tanstack/react-table'
 
-import { cn } from '@/lib'
-
 import DataTable from '@/components/data-table'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 import DataTableToolbar, {
@@ -18,18 +16,20 @@ import FeedbackColumns, {
     IFeedbackTableColumnProps,
 } from './column'
 
-import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
-import useDatableFilterState from '@/hooks/use-filter-state'
-import FilterContext from '@/contexts/filter-context/filter-context'
-
 import { TableProps } from '../types'
 import { IFeedbackResource } from '@/server/types'
 
+import { cn } from '@/lib'
+import { usePagination } from '@/hooks/use-pagination'
+import useDatableFilterState from '@/hooks/use-filter-state'
 import FeedbackService from '@/server/api-service/feedback-service'
+import FilterContext from '@/contexts/filter-context/filter-context'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
 const data: IFeedbackResource[] = [
     {
-        id: '7f76efd0-940a-42f9-afa9-8644453e20aa',
+        id: '0194b533-6840-7cad-87d9-1421e172b38f',
         email: 'user1@example.com',
         description: 'Great service, very satisfied.',
         feedbackType: 'positive',
@@ -37,7 +37,7 @@ const data: IFeedbackResource[] = [
         updatedAt: '2025-01-01T10:00:00Z',
     },
     {
-        id: '24d740f2-f57f-4579-a9a3-03d6ddec44b5',
+        id: '0194b533-6840-758a-b225-9ac464541fdd',
         email: 'user2@example.com',
         description: 'Had some issues with the checkout process.',
         feedbackType: 'negative',
@@ -45,7 +45,7 @@ const data: IFeedbackResource[] = [
         updatedAt: '2025-01-02T14:30:00Z',
     },
     {
-        id: '9482cd20-df59-49a2-b6ce-bf88bed349e3',
+        id: '0194b533-6840-7fb5-adc1-06e6d8e9a9a5',
         email: 'user3@example.com',
         description: 'Can we have more payment options?',
         feedbackType: 'neutral',
@@ -53,7 +53,7 @@ const data: IFeedbackResource[] = [
         updatedAt: '2025-01-03T09:15:00Z',
     },
     {
-        id: 'f13a44b8-d627-47db-8584-614eb016f6d6',
+        id: '0194b533-6841-7739-82e8-86afe14c64bc',
         email: 'user4@example.com',
         description: 'Loved the user interface. Very intuitive!',
         feedbackType: 'positive',
@@ -61,7 +61,7 @@ const data: IFeedbackResource[] = [
         updatedAt: '2025-01-04T18:45:00Z',
     },
     {
-        id: '88350bb7-29de-4e99-bcf0-2f668bcfae92',
+        id: '0194b533-6841-7081-8361-17d57341424d',
         email: 'user5@example.com',
         description: 'The app is crashing frequently. Please fix.',
         feedbackType: 'negative',
@@ -92,6 +92,8 @@ const FeedBackTable = ({
     className,
     toolbarProps,
 }: FeedbackTableProps) => {
+    const { pagination, setPagination } = usePagination()
+    const { tableSorting, setTableSorting } = useDataTableSorting()
 
     const columns = useMemo(
         () =>
@@ -100,13 +102,9 @@ const FeedBackTable = ({
             }),
         [actionComponent]
     )
-    
+
     const {
-        sorting,
-        setSorting,
         getRowIdFn,
-        pagination,
-        setPagination,
         columnOrder,
         setColumnOrder,
         isScrollable,
@@ -134,11 +132,11 @@ const FeedBackTable = ({
             columnPinning: { left: ['select'] },
         },
         state: {
-            sorting,
             pagination,
             columnOrder,
-            rowSelection: rowSelectionState.rowSelection,
             columnVisibility,
+            sorting: tableSorting,
+            rowSelection: rowSelectionState.rowSelection,
         },
         rowCount: 50,
         pageCount: 1,
@@ -146,7 +144,7 @@ const FeedBackTable = ({
         manualFiltering: true,
         manualPagination: true,
         getRowId: getRowIdFn,
-        onSortingChange: setSorting,
+        onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onColumnOrderChange: setColumnOrder,
@@ -175,7 +173,7 @@ const FeedBackTable = ({
                         isLoading: false,
                         filters: filterState.finalFilterPayload,
                         disabled: false,
-                        exportAll: FeedbackService.exportAll
+                        exportAll: FeedbackService.exportAll,
                     }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,

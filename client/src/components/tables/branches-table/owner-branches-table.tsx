@@ -16,16 +16,15 @@ import branchColumns, {
     branchesGlobalSearchTargets,
 } from './columns'
 
+import { TableProps } from '../types'
+import { IBranchResource, TEntityId } from '@/server/types'
+
 import { cn } from '@/lib'
 import useFilterState from '@/hooks/use-filter-state'
+import { usePagination } from '@/hooks/use-pagination'
 import BranchService from '@/server/api-service/branch-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
-
-import { TableProps } from '../types'
-import { IBranchResource } from '@/server/types'
-
-import { usePagination } from '@/hooks/use-pagination'
-import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
+import { useOwnerPaginatedBranch } from '@/hooks/api-hooks/use-owner'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
@@ -42,9 +41,11 @@ export interface BranchesTableProps
         | 'exportActionProps'
         | 'deleteActionProps'
     >
+    ownerId: TEntityId
 }
 
-const BranchesTable = ({
+const OwnerBranchesTable = ({
+    ownerId,
     className,
     onSelectData,
     toolbarProps,
@@ -54,7 +55,6 @@ const BranchesTable = ({
     const { pagination, setPagination } = usePagination()
     const { sortingState, tableSorting, setTableSorting } =
         useDataTableSorting()
-
     const columns = useMemo(
         () =>
             branchColumns({
@@ -88,7 +88,8 @@ const BranchesTable = ({
         isRefetching,
         data: { data, totalPage, pageSize, totalSize },
         refetch,
-    } = useFilteredPaginatedBranch({
+    } = useOwnerPaginatedBranch({
+        ownerId,
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
@@ -180,4 +181,4 @@ const BranchesTable = ({
     )
 }
 
-export default BranchesTable
+export default OwnerBranchesTable
