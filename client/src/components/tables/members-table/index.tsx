@@ -11,7 +11,6 @@ import DataTableToolbar, {
     IDataTableToolbarProps,
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
-import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 
 import membersColumns, {
     IMembersTableColumnProps,
@@ -19,12 +18,16 @@ import membersColumns, {
 } from './columns'
 
 import { cn } from '@/lib'
+import { usePagination } from '@/hooks/use-pagination'
+import useDatableFilterState from '@/hooks/use-filter-state'
+import { useFilteredPaginatedMembers } from '@/hooks/api-hooks/user-member'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
+
 import { TableProps } from '../types'
 import { IMemberResource } from '@/server/types'
-import useDatableFilterState from '@/hooks/use-filter-state'
 import MemberService from '@/server/api-service/member-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
-import { useFilteredPaginatedMembers } from '@/hooks/api-hooks/user-member'
 
 export interface MembersTableProps
     extends TableProps<IMemberResource>,
@@ -49,6 +52,9 @@ const MembersTable = ({
     actionComponent,
 }: MembersTableProps) => {
     const queryClient = useQueryClient()
+    const { pagination, setPagination } = usePagination()
+    const { sortingState, tableSorting, setTableSorting } =
+        useDataTableSorting()
 
     const columns = useMemo(
         () =>
@@ -59,12 +65,7 @@ const MembersTable = ({
     )
 
     const {
-        sorting,
-        sortingState,
-        setSorting,
         getRowIdFn,
-        pagination,
-        setPagination,
         columnOrder,
         setColumnOrder,
         isScrollable,
@@ -103,7 +104,7 @@ const MembersTable = ({
             columnPinning: { left: ['select'] },
         },
         state: {
-            sorting,
+            sorting: tableSorting,
             pagination,
             columnOrder,
             rowSelection: rowSelectionState.rowSelection,
@@ -116,7 +117,7 @@ const MembersTable = ({
         manualFiltering: true,
         manualPagination: true,
         getRowId: getRowIdFn,
-        onSortingChange: setSorting,
+        onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onColumnOrderChange: setColumnOrder,

@@ -11,7 +11,6 @@ import DataTableToolbar, {
     IDataTableToolbarProps,
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
-import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 
 import companyColumns, {
     companyGlobalSearchTargets,
@@ -19,12 +18,16 @@ import companyColumns, {
 } from './columns'
 
 import { cn } from '@/lib'
+import { usePagination } from '@/hooks/use-pagination'
+import useDatableFilterState from '@/hooks/use-filter-state'
+import CompanyService from '@/server/api-service/company-service'
+import FilterContext from '@/contexts/filter-context/filter-context'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
+
 import { TableProps } from '../types'
 import { ICompanyResource } from '@/server/types'
-import useDatableFilterState from '@/hooks/use-filter-state'
-import FilterContext from '@/contexts/filter-context/filter-context'
-import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
-import CompanyService from '@/server/api-service/company-service'
 
 export interface CompaniesTableProps
     extends TableProps<ICompanyResource>,
@@ -49,6 +52,9 @@ const CompaniesTable = ({
     actionComponent,
 }: CompaniesTableProps) => {
     const queryClient = useQueryClient()
+    const { pagination, setPagination } = usePagination()
+    const { sortingState, tableSorting, setTableSorting } =
+        useDataTableSorting()
 
     const columns = useMemo(
         () =>
@@ -59,12 +65,7 @@ const CompaniesTable = ({
     )
 
     const {
-        sorting,
-        sortingState,
-        setSorting,
         getRowIdFn,
-        pagination,
-        setPagination,
         columnOrder,
         setColumnOrder,
         isScrollable,
@@ -103,7 +104,7 @@ const CompaniesTable = ({
             columnPinning: { left: ['select'] },
         },
         state: {
-            sorting,
+            sorting : tableSorting,
             pagination,
             columnOrder,
             rowSelection: rowSelectionState.rowSelection,
@@ -116,7 +117,7 @@ const CompaniesTable = ({
         manualFiltering: true,
         manualPagination: true,
         getRowId: getRowIdFn,
-        onSortingChange: setSorting,
+        onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onColumnOrderChange: setColumnOrder,

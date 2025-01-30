@@ -10,7 +10,6 @@ import DataTableToolbar, {
     IDataTableToolbarProps,
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
-import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 
 import branchColumns, {
     IBranchesTableColumnProps,
@@ -21,10 +20,14 @@ import { cn } from '@/lib'
 import useFilterState from '@/hooks/use-filter-state'
 import BranchService from '@/server/api-service/branch-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
-import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
 
 import { TableProps } from '../types'
 import { IBranchResource } from '@/server/types'
+
+import { usePagination } from '@/hooks/use-pagination'
+import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
 export interface BranchesTableProps
     extends TableProps<IBranchResource>,
@@ -48,6 +51,10 @@ const BranchesTable = ({
     defaultFilter,
     actionComponent,
 }: BranchesTableProps) => {
+    const { pagination, setPagination } = usePagination()
+    const { sortingState, tableSorting, setTableSorting } =
+        useDataTableSorting()
+
     const columns = useMemo(
         () =>
             branchColumns({
@@ -57,12 +64,7 @@ const BranchesTable = ({
     )
 
     const {
-        sorting,
-        sortingState,
-        setSorting,
         getRowIdFn,
-        pagination,
-        setPagination,
         columnOrder,
         setColumnOrder,
         isScrollable,
@@ -101,7 +103,7 @@ const BranchesTable = ({
             columnPinning: { left: ['select'] },
         },
         state: {
-            sorting,
+            sorting: tableSorting,
             pagination,
             columnOrder,
             rowSelection: rowSelectionState.rowSelection,
@@ -113,7 +115,7 @@ const BranchesTable = ({
         manualFiltering: true,
         manualPagination: true,
         getRowId: getRowIdFn,
-        onSortingChange: setSorting,
+        onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onColumnOrderChange: setColumnOrder,
