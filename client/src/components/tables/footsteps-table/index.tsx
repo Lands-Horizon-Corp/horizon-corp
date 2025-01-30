@@ -10,7 +10,6 @@ import DataTableToolbar, {
     IDataTableToolbarProps,
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
-import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 
 import footstepColumns, {
     IFootstepTableColumnProps,
@@ -20,10 +19,14 @@ import footstepColumns, {
 import { cn } from '@/lib'
 import { TableProps } from '../types'
 import { IFootstepResource } from '@/server/types'
-import useDatableFilterState from '@/hooks/use-filter-state'
 import FootstepService from '@/server/api-service/footstep-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
+
+import { usePagination } from '@/hooks/use-pagination'
+import useDatableFilterState from '@/hooks/use-filter-state'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { useFilteredPaginatedFootsteps } from '@/hooks/api-hooks/use-footstep'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
 export interface FootstepTableProps
     extends TableProps<IFootstepResource>,
@@ -49,6 +52,10 @@ const FootstepTable = ({
     onSelectData,
     actionComponent,
 }: FootstepTableProps) => {
+    const { pagination, setPagination } = usePagination()
+    const { sortingState, tableSorting, setTableSorting } =
+        useDataTableSorting()
+
     const columns = useMemo(
         () =>
             footstepColumns({
@@ -58,12 +65,7 @@ const FootstepTable = ({
     )
 
     const {
-        sorting,
-        sortingState,
-        setSorting,
         getRowIdFn,
-        pagination,
-        setPagination,
         columnOrder,
         setColumnOrder,
         isScrollable,
@@ -103,7 +105,7 @@ const FootstepTable = ({
             columnPinning: { left: ['select'] },
         },
         state: {
-            sorting,
+            sorting: tableSorting,
             pagination,
             columnOrder,
             rowSelection: rowSelectionState.rowSelection,
@@ -116,7 +118,7 @@ const FootstepTable = ({
         manualFiltering: true,
         manualPagination: true,
         getRowId: getRowIdFn,
-        onSortingChange: setSorting,
+        onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onColumnOrderChange: setColumnOrder,
