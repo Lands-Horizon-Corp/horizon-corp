@@ -10,21 +10,23 @@ import DataTableToolbar, {
     IDataTableToolbarProps,
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
-import useDataTableState from '@/components/data-table/hooks/use-datatable-state'
 
 import branchColumns, {
     IBranchesTableColumnProps,
     branchesGlobalSearchTargets,
 } from './columns'
 
+import { TableProps } from '../types'
+import { IBranchResource, TEntityId } from '@/server/types'
+
 import { cn } from '@/lib'
 import useFilterState from '@/hooks/use-filter-state'
+import { usePagination } from '@/hooks/use-pagination'
 import BranchService from '@/server/api-service/branch-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import { useOwnerPaginatedBranch } from '@/hooks/api-hooks/use-owner'
-
-import { TableProps } from '../types'
-import { IBranchResource, TEntityId } from '@/server/types'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
 export interface BranchesTableProps
     extends TableProps<IBranchResource>,
@@ -38,8 +40,8 @@ export interface BranchesTableProps
         | 'filterLogicProps'
         | 'exportActionProps'
         | 'deleteActionProps'
-    >,
-    ownerId : TEntityId
+    >
+    ownerId: TEntityId
 }
 
 const OwnerBranchesTable = ({
@@ -50,6 +52,9 @@ const OwnerBranchesTable = ({
     defaultFilter,
     actionComponent,
 }: BranchesTableProps) => {
+    const { pagination, setPagination } = usePagination()
+    const { sortingState, tableSorting, setTableSorting } =
+        useDataTableSorting()
     const columns = useMemo(
         () =>
             branchColumns({
@@ -59,12 +64,7 @@ const OwnerBranchesTable = ({
     )
 
     const {
-        sorting,
-        sortingState,
-        setSorting,
         getRowIdFn,
-        pagination,
-        setPagination,
         columnOrder,
         setColumnOrder,
         isScrollable,
@@ -104,7 +104,7 @@ const OwnerBranchesTable = ({
             columnPinning: { left: ['select'] },
         },
         state: {
-            sorting,
+            sorting: tableSorting,
             pagination,
             columnOrder,
             rowSelection: rowSelectionState.rowSelection,
@@ -116,7 +116,7 @@ const OwnerBranchesTable = ({
         manualFiltering: true,
         manualPagination: true,
         getRowId: getRowIdFn,
-        onSortingChange: setSorting,
+        onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
         onColumnOrderChange: setColumnOrder,
