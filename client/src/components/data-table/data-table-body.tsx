@@ -46,7 +46,7 @@ const DataTableBody = <TData,>({
                     {getVisibleCells(row, targetGroup).map((cell) => (
                         <TableCell
                             key={cell.id}
-                            className="size-fit text-nowrap"
+                            className="size-fit px-4 py-2.5 text-nowrap"
                         >
                             {flexRender(
                                 cell.column.columnDef.cell,

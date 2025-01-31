@@ -204,9 +204,47 @@ const membersTableColumns = (
             ),
             cell: ({
                 row: {
-                    original: { contactNumber },
+                    original: { contactNumber, isContactVerified },
                 },
-            }) => <div>{contactNumber}</div>,
+            }) => (
+                <div>
+                    {isContactVerified ? (
+                        <BadgeCheckFillIcon className="mr-1 inline text-primary" />
+                    ) : (
+                        <BadgeQuestionIcon className="mr-1 inline text-amber-400" />
+                    )}
+                    {contactNumber}
+                </div>
+            ),
+            enableMultiSort: true,
+        },
+        {
+            id: 'email',
+            accessorKey: 'email',
+            header: (props) => (
+                <DataTableColumnHeader {...props} isResizable title="Email">
+                    <ColumnActions {...props}>
+                        <TextFilter<IMemberResource>
+                            displayText="Email"
+                            field="email"
+                        />
+                    </ColumnActions>
+                </DataTableColumnHeader>
+            ),
+            cell: ({
+                row: {
+                    original: { email, isEmailVerified },
+                },
+            }) => (
+                <div>
+                    {isEmailVerified ? (
+                        <BadgeCheckFillIcon className="mr-1 inline text-primary" />
+                    ) : (
+                        <BadgeQuestionIcon className="mr-1 inline text-amber-400" />
+                    )}
+                    {email}
+                </div>
+            ),
             enableMultiSort: true,
         },
         {
@@ -249,7 +287,7 @@ const membersTableColumns = (
                 <div>
                     {status === 'Verified' && (
                         <Badge
-                            className="flex w-fit items-center gap-x-1"
+                            className="flex w-fit items-center gap-x-1 px-1.5"
                             variant="success"
                         >
                             <BadgeCheckFillIcon className="inline" /> Verified
@@ -257,7 +295,7 @@ const membersTableColumns = (
                     )}
                     {status === 'Pending' && (
                         <Badge
-                            className="flex w-fit items-center gap-x-1"
+                            className="flex w-fit items-center gap-x-1 px-1.5"
                             variant="warning"
                         >
                             <BadgeQuestionIcon className="inline" /> Pending
@@ -265,7 +303,7 @@ const membersTableColumns = (
                     )}
                     {status === 'Not Allowed' && (
                         <Badge
-                            className="flex w-fit items-center gap-x-1"
+                            className="flex w-fit items-center gap-x-1 px-1.5"
                             variant="destructive"
                         >
                             <BadgeExclamationIcon className="inline" /> Not
@@ -312,20 +350,9 @@ const membersTableColumns = (
             }) => (
                 <div>
                     {isEmailVerified ? (
-                        <Badge
-                            className="flex w-fit items-center gap-x-1"
-                            variant="success"
-                        >
-                            <BadgeCheckFillIcon className="inline" /> Verified
-                        </Badge>
+                        <span className="text-green-400">Verified</span>
                     ) : (
-                        <Badge
-                            className="flex w-fit items-center gap-x-1"
-                            variant="warning"
-                        >
-                            <BadgeQuestionIcon className="inline" /> Not
-                            Verified
-                        </Badge>
+                        <span className="text-amber-400">Pending</span>
                     )}
                 </div>
             ),
@@ -367,20 +394,9 @@ const membersTableColumns = (
             }) => (
                 <div>
                     {isContactVerified ? (
-                        <Badge
-                            className="flex w-fit items-center gap-x-1"
-                            variant="success"
-                        >
-                            <BadgeCheckFillIcon className="inline" />
-                        </Badge>
+                        <span className="text-green-400">Verified</span>
                     ) : (
-                        <Badge
-                            className="flex w-fit items-center gap-x-1"
-                            variant="warning"
-                        >
-                            <BadgeQuestionIcon className="inline" /> Not
-                            Verified
-                        </Badge>
+                        <span className="text-amber-400">Pending</span>
                     )}
                 </div>
             ),
