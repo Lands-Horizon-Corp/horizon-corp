@@ -1,22 +1,40 @@
+import {
+    useQuery,
+    useMutation,
+    queryOptions,
+    useQueryClient,
+} from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 import MemberService from '@/server/api-service/member-service'
 
 import {
-    IMemberPaginatedResource,
+    IQueryProps,
+    IAPIPreloads,
+    IOperationCallbacks,
+    IFilterPaginatedHookProps,
+} from './types'
+import {
+    TEntityId,
     IMemberRequest,
     IMemberResource,
-    TEntityId,
+    IMemberPaginatedResource,
 } from '@/server/types'
-import {
-    IAPIPreloads,
-    IFilterPaginatedHookProps,
-    IOperationCallbacks,
-    IQueryProps,
-} from './types'
+
+export const memberLoader = (
+    memberId: TEntityId,
+    preloads: string[] = ['Media']
+) =>
+    queryOptions<IMemberResource>({
+        queryKey: ['member', 'loader', memberId],
+        queryFn: async () => {
+            const data = await MemberService.getById(memberId, preloads)
+            return data
+        },
+        retry: 0,
+    })
 
 export const useCreateMember = ({
     preloads = ['Media'],
