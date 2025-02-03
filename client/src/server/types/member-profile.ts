@@ -1,7 +1,7 @@
 import { IBranchResource } from './branch'
 import { IMemberResource } from './member'
 import { IEmployeeResource } from './employee'
-import { ITimeStamps, TEntityId } from './common'
+import { ITimeStamps, TAccountStatus, TEntityId } from './common'
 import { IMemberTypeResource } from './member-type'
 import { IMemberAssetsResource } from './member-assets'
 import { IMemberWalletResource } from './member-wallet'
@@ -35,7 +35,7 @@ export interface IMemberProfileRequest {
     businessAddress?: string
     businessContact?: string
 
-    status: string
+    status: TAccountStatus
     isClosed: boolean
 
     pagibigNumber?: string
@@ -83,7 +83,7 @@ export interface IMemberProfileResource extends ITimeStamps {
     businessAddress?: string
     businessContact?: string
 
-    status: string
+    status: TAccountStatus
     isClosed: boolean
 
     pagibigNumber?: string
