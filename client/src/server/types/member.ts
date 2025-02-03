@@ -27,7 +27,7 @@ export interface IMemberRequest {
 }
 
 export interface IMemberResource extends IUserBase, ITimeStamps {
-    id: TEntityId 
+    id: TEntityId
     accountType: 'Member'
 
     username: string
