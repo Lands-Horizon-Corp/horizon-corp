@@ -1,56 +1,31 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/google/uuid"
 )
 
 type AdminController struct {
-	repository    *models.ModelRepository
-	transformer   *models.ModelTransformer
-	footstep      *handlers.FootstepHandler
-	currentUser   *handlers.CurrentUser
-	otpService    *providers.OTPService
-	tokenProvider *providers.TokenService
-	cfg           *config.AppConfig
-	helpers       *helpers.HelpersFunction
-	smsProvder    *providers.SMSService
-	emailProvider *providers.EmailService
+	authHandler     *handlers.AuthHandler
+	footstepHandler *handlers.FootstepHandler
+	cfg             *config.AppConfig
 }
 
 func NewAdminController(
-	repository *models.ModelRepository,
-	transformer *models.ModelTransformer,
-	footstep *handlers.FootstepHandler,
-	currentUser *handlers.CurrentUser,
-	otpService *providers.OTPService,
-	tokenProvider *providers.TokenService,
+	authHandler *handlers.AuthHandler,
+	footstepHandler *handlers.FootstepHandler,
 	cfg *config.AppConfig,
-	helpers *helpers.HelpersFunction,
-	smsProvder *providers.SMSService,
-	emailProvider *providers.EmailService,
 ) *AdminController {
 	return &AdminController{
-		repository:    repository,
-		transformer:   transformer,
-		footstep:      footstep,
-		currentUser:   currentUser,
-		otpService:    otpService,
-		tokenProvider: tokenProvider,
-		cfg:           cfg,
-		helpers:       helpers,
-		smsProvder:    smsProvder,
-		emailProvider: emailProvider,
+		authHandler:     authHandler,
+		footstepHandler: footstepHandler,
+		cfg:             cfg,
 	}
 }
 
@@ -140,30 +115,12 @@ func (as AdminController) ChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
-
-	admin, err := as.currentUser.Admin(ctx)
+	user, err := as.authHandler.ChangePassword(ctx, "Admin", req.OldPassword, req.NewPassword, req.ConfirmPassword)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	updated, err := as.repository.AdminChangePassword(
-		admin.ID.String(),
-		req.OldPassword,
-		req.NewPassword,
-		as.helpers.GetPreload(ctx)...,
-	)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to update password"})
-		return
-	}
-	_, err = as.footstep.Create(ctx, "Admin", "ChangePassword", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, as.transformer.AdminToResource(updated))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type AdminForgotPasswordRequest struct {
@@ -173,144 +130,57 @@ type AdminForgotPasswordRequest struct {
 }
 
 func (c *AdminController) ForgotPassword(ctx *gin.Context) {
-	link := c.ForgotPasswordResetLink(ctx)
+	link, err := c.ForgotPasswordResetLink(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
 	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
 }
 
-func (c *AdminController) ForgotPasswordResetLink(ctx *gin.Context) *string {
+func (c *AdminController) ForgotPasswordResetLink(ctx *gin.Context) (string, error) {
 	var req AdminForgotPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return nil
+		return "", err
 	}
 	if err := validator.New().Struct(req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return nil
+		return "", err
 	}
-
-	user, err := c.repository.AdminSearch(req.Key)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		return nil
-	}
-
-	token, err := c.tokenProvider.GenerateUserToken(providers.UserClaims{
-		ID:          user.ID.String(),
-		AccountType: "Admin",
-		UserStatus:  user.Status,
-	}, time.Minute*10)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate reset token"})
-		return nil
-	}
-
-	resetLink := fmt.Sprintf("%s/auth/password-reset/%s", c.cfg.AppClientUrl, *token)
-	keyType := c.helpers.GetKeyType(req.Key)
-
-	switch keyType {
-	case "contact":
-		contactReq := providers.SMSRequest{
-			To:   req.Key,
-			Body: req.ContactTemplate,
-			Vars: &map[string]string{
-				"name":      fmt.Sprintf("%s %s", user.FirstName, user.LastName),
-				"eventLink": resetLink,
-			},
-		}
-		if err := c.smsProvder.SendSMS(contactReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send SMS for password reset"})
-			return nil
-		}
-		return &resetLink
-	case "email":
-		emailReq := providers.EmailRequest{
-			To:      req.Key,
-			Subject: "ECOOP: Change Password Request",
-			Body:    req.ContactTemplate,
-			Vars: &map[string]string{
-				"name":      fmt.Sprintf("%s %s", user.FirstName, user.LastName),
-				"eventLink": resetLink,
-			},
-		}
-		if err := c.emailProvider.SendEmail(emailReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email for password reset"})
-			return nil
-		}
-		return &resetLink
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid key type"})
-		return nil
-	}
+	return c.authHandler.ForgotPasswordResetLink(ctx, "Admin", req.Key, req.EmailTemplate, req.ContactTemplate)
 }
 
-func (c *AdminController) Create(ctx *gin.Context) *models.Admin {
+func (c *AdminController) Create(ctx *gin.Context) {
 	var req AdminStoreRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return nil
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
-		return nil
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-
-	preloads := c.helpers.GetPreload(ctx)
-	admin, err := c.repository.AdminCreate(&models.Admin{
-		FirstName:          req.FirstName,
-		LastName:           req.LastName,
-		MiddleName:         req.MiddleName,
-		PermanentAddress:   req.PermanentAddress,
-		Description:        req.Description,
-		BirthDate:          req.BirthDate,
-		Username:           req.Username,
-		Email:              req.Email,
-		Password:           req.Password,
-		ContactNumber:      req.ContactNumber,
-		IsEmailVerified:    false,
-		IsContactVerified:  false,
-		IsSkipVerification: false,
-		Status:             providers.NotAllowedStatus,
-		MediaID:            req.MediaID,
-		RoleID:             req.RoleID,
-		GenderID:           req.GenderID,
-	}, preloads...)
+	user, err := c.authHandler.Create(ctx, "Admin",
+		req.FirstName,
+		req.LastName,
+		req.MiddleName,
+		req.PermanentAddress,
+		req.Description,
+		req.BirthDate,
+		req.Username,
+		req.Email,
+		req.Password,
+		req.ContactNumber,
+		req.MediaID,
+		req.RoleID,
+		req.GenderID,
+		req.EmailTemplate,
+		req.ContactTemplate)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create admin", "details": err.Error()})
-		return nil
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
-
-	if err := c.otpService.SendEmailOTP(providers.OTPMessage{
-		AccountType: "Admin",
-		ID:          admin.ID.String(),
-		MediumType:  "email",
-		Reference:   "email-verification",
-	}, providers.EmailRequest{
-		To:      req.Email,
-		Subject: "ECOOP: Email Verification",
-		Body:    req.EmailTemplate,
-	}); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
-		return nil
-	}
-
-	if err := c.otpService.SendContactNumberOTP(providers.OTPMessage{
-		AccountType: "Admin",
-		ID:          admin.ID.String(),
-		MediumType:  "sms",
-		Reference:   "sms-verification",
-	}, providers.SMSRequest{
-		To:   req.ContactNumber,
-		Body: req.ContactTemplate,
-		Vars: &map[string]string{
-			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
-		},
-	}); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send contact number verification"})
-		return nil
-	}
-
-	ctx.JSON(http.StatusCreated, c.transformer.AdminToResource(admin))
-	return admin
+	ctx.JSON(http.StatusOK, user)
 }
 
 type AdminNewPasswordRequest struct {
@@ -326,54 +196,24 @@ func (c *AdminController) NewPassword(ctx *gin.Context) {
 		return
 	}
 	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
 		return
 	}
-
-	admin, err := c.currentUser.Admin(ctx)
+	user, err := c.authHandler.NewPassword(ctx, "Admin", req.OldPassword, req.NewPassword)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	updatedAdmin, err := c.repository.AdminChangePassword(
-		admin.ID.String(), req.OldPassword, req.NewPassword,
-		c.helpers.GetPreload(ctx)...,
-	)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
-		return
-	}
-
-	_, err = c.footstep.Create(ctx, "Admin", "NewPassword", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+	ctx.JSON(http.StatusOK, user)
 }
 
 func (c *AdminController) SkipVerification(ctx *gin.Context) {
-	admin, err := c.currentUser.Admin(ctx)
+	user, err := c.authHandler.SkipVerification(ctx, "Admin")
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
-		IsSkipVerification: true,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "SkipVerification", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type AdminSendEmailVerificationRequest struct {
@@ -390,35 +230,10 @@ func (c *AdminController) SendEmailVerification(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	admin, err := c.currentUser.Admin(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+	if err := c.authHandler.SendEmailVerification(ctx, "Admin", req.EmailTemplate); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	otpMessage := providers.OTPMessage{
-		AccountType: "Admin",
-		ID:          admin.ID.String(),
-		MediumType:  providers.Email,
-		Reference:   "send-email-verification",
-	}
-	emailRequest := providers.EmailRequest{
-		To:      admin.Email,
-		Subject: "ECOOP: Email Verification",
-		Body:    req.EmailTemplate,
-	}
-
-	if err := c.otpService.SendEmailOTP(otpMessage, emailRequest); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "SendEmailVerification", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
 	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Please check your inbox or spam folder"})
 }
 
@@ -436,44 +251,12 @@ func (c *AdminController) VerifyEmail(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	admin, err := c.currentUser.Admin(ctx)
+	user, err := c.authHandler.VerifyEmail(ctx, "Admin", req.Otp)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	otpMessage := providers.OTPMessage{
-		AccountType: "Admin",
-		ID:          admin.ID.String(),
-		MediumType:  providers.Email,
-		Reference:   "send-email-verification",
-	}
-
-	isValid, err := c.otpService.ValidateOTP(otpMessage, req.Otp)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate OTP"})
-		return
-	}
-	if !isValid {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
-		return
-	}
-
-	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
-		IsEmailVerified: true,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "VerifyEmail", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type AdminSendContactNumberVerificationRequest struct {
@@ -490,37 +273,10 @@ func (c *AdminController) SendContactNumberVerification(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	admin, err := c.currentUser.Admin(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+	if err := c.authHandler.SendContactNumberVerification(ctx, "Admin", req.ContactTemplate); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	otpMessage := providers.OTPMessage{
-		AccountType: "Admin",
-		ID:          admin.ID.String(),
-		MediumType:  providers.Email,
-		Reference:   "send-contact-number-verification",
-	}
-	contactReq := providers.SMSRequest{
-		To:   admin.ContactNumber,
-		Body: req.ContactTemplate,
-		Vars: &map[string]string{
-			"name": fmt.Sprintf("%s %s", admin.FirstName, admin.LastName),
-		},
-	}
-
-	if err := c.otpService.SendContactNumberOTP(otpMessage, contactReq); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification OTP"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "SendContactNumberVerification", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
 	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully"})
 }
 
@@ -538,44 +294,12 @@ func (c *AdminController) VerifyContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	admin, err := c.currentUser.Admin(ctx)
+	user, err := c.authHandler.VerifyContactNumber(ctx, "Admin", req.Otp)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	otpMessage := providers.OTPMessage{
-		AccountType: "Admin",
-		ID:          admin.ID.String(),
-		MediumType:  providers.Email,
-		Reference:   "send-contact-number-verification",
-	}
-
-	isValid, err := c.otpService.ValidateOTP(otpMessage, req.Otp)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "OTP validation error"})
-		return
-	}
-	if !isValid {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
-		return
-	}
-
-	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
-		IsContactVerified: true,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "VerifyContactNumber", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+	ctx.JSON(http.StatusOK, user)
 }
 
 func (c *AdminController) ProfilePicture(ctx *gin.Context) {
@@ -588,29 +312,12 @@ func (c *AdminController) ProfilePicture(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	admin, err := c.currentUser.Admin(ctx)
+	user, err := c.authHandler.ProfilePicture(ctx, "Admin", req.ID)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
-		MediaID: req.ID,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "ProfilePicture", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type AdminAccountSettingRequest struct {
@@ -632,34 +339,19 @@ func (c *AdminController) ProfileAccountSetting(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	admin, err := c.currentUser.Admin(ctx)
+	user, err := c.authHandler.ProfileAccountSetting(ctx, "Admin",
+		req.BirthDate,
+		req.FirstName,
+		req.MiddleName,
+		req.LastName,
+		req.Description,
+		req.PermanentAddress,
+	)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
-		BirthDate:        req.BirthDate,
-		MiddleName:       req.MiddleName,
-		FirstName:        req.FirstName,
-		LastName:         req.LastName,
-		Description:      req.Description,
-		PermanentAddress: req.PermanentAddress,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "ProfileAccountSetting", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type AdminChangeEmailRequest struct {
@@ -677,33 +369,12 @@ func (c *AdminController) ProfileChangeEmail(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	admin, err := c.currentUser.Admin(ctx)
+	user, err := c.authHandler.ProfileChangeEmail(ctx, "Admin", req.Password, req.Email)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	if !c.repository.AdminVerifyPassword(admin.ID.String(), req.Password) {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
-		return
-	}
-	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
-		Email:           req.Email,
-		IsEmailVerified: false,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "ProfileChangeEmail", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type AdminChangeContactNumberRequest struct {
@@ -721,33 +392,13 @@ func (c *AdminController) ProfileChangeContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	admin, err := c.currentUser.Admin(ctx)
+
+	user, err := c.authHandler.ProfileChangeContactNumber(ctx, "Admin", req.Password, req.ContactNumber)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	if !c.repository.AdminVerifyPassword(admin.ID.String(), req.Password) {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
-		return
-	}
-	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
-		ContactNumber:     req.ContactNumber,
-		IsContactVerified: false,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "ProfileChangeContactNumber", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+	ctx.JSON(http.StatusOK, user)
 
 }
 
@@ -766,31 +417,41 @@ func (c *AdminController) ProfileChangeUsername(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	admin, err := c.currentUser.Admin(ctx)
+	user, err := c.authHandler.ProfileChangeContactNumber(ctx, "Admin", req.Password, req.Username)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	if !c.repository.AdminVerifyPassword(admin.ID.String(), req.Password) {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
-		return
-	}
-	updatedAdmin, err := c.repository.AdminUpdateByID(admin.ID.String(), &models.Admin{
-		Username: req.Username,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update admin details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Admin", "ProfileChangeUsername", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.AdminToResource(updatedAdmin))
+	ctx.JSON(http.StatusOK, user)
+}
 
+type AdminSignInRequest struct {
+	Key      string `json:"key" validate:"required,max=255"`
+	Password string `json:"password" validate:"required,min=8,max=255"`
+}
+
+func (as AdminController) SignIn(ctx *gin.Context) {
+	var req AdminSignInRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user, token, err := as.authHandler.SignIn(ctx, "Admin", req.Key, req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	http.SetCookie(ctx.Writer, &http.Cookie{
+		Name:     as.cfg.AppTokenName,
+		Value:    *token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
+	})
+	ctx.JSON(http.StatusOK, user)
 }
