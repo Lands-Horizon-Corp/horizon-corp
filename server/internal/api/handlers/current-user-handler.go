@@ -53,32 +53,36 @@ func (c *CurrentUser) Claims(ctx *gin.Context) (*providers.UserClaims, *UserInfo
 		c.tokenProvider.ClearTokenCookie(ctx)
 		return nil, nil, eris.New("failed to cast claims to *auth.UserClaims")
 	}
-
 	latStr := ctx.GetHeader("X-Latitude")
 	lonStr := ctx.GetHeader("X-Longitude")
 
 	var latitude, longitude *float64
-
 	if latStr != "" {
 		if lat, err := strconv.ParseFloat(latStr, 64); err == nil {
 			latitude = &lat
 		}
 	}
-
 	if lonStr != "" {
 		if lon, err := strconv.ParseFloat(lonStr, 64); err == nil {
 			longitude = &lon
 		}
 	}
 
+	var lat, lon float64
+	if latitude != nil {
+		lat = *latitude
+	}
+	if longitude != nil {
+		lon = *longitude
+	}
 	userInfo := &UserInfo{
 		IPAddress:      ctx.ClientIP(),
 		UserAgent:      ctx.GetHeader("User-Agent"),
 		Referer:        ctx.GetHeader("Referer"),
 		Location:       ctx.GetHeader("X-Location"),
 		AcceptLanguage: ctx.GetHeader("Accept-Language"),
-		Latitude:       *latitude,
-		Longitude:      *longitude,
+		Latitude:       lat,
+		Longitude:      lon,
 	}
 
 	return userClaims, userInfo, nil

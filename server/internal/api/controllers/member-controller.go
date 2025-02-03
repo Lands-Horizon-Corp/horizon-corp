@@ -156,7 +156,7 @@ func (c *MemberController) Create(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := c.authHandler.Create(ctx, "Member",
+	user, err := c.authHandler.SignUp(ctx, "Member",
 		req.FirstName,
 		req.LastName,
 		req.MiddleName,

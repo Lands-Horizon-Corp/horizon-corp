@@ -45,8 +45,8 @@ func (c *BranchController) Show(ctx *gin.Context) {}
 //
 // - Admin: Allowed but must select a company first.
 // - Owner: Allowed.
-// - Employee: Not allowed.
-// - Member: Not allowed.
+// - Employee: Not Allowed.
+// - Member: Not Allowed.
 //
 // Endpoint: POST /api/v1/branch
 func (c *BranchController) Store(ctx *gin.Context) {}
@@ -55,8 +55,8 @@ func (c *BranchController) Store(ctx *gin.Context) {}
 //
 // - Admin: Allowed.
 // - Owner: Allowed.
-// - Employee: Not allowed.
-// - Member: Not allowed.
+// - Employee: Not Allowed.
+// - Member: Not Allowed.
 //
 // Endpoint: PUT /api/v1/branch/:id
 func (c *BranchController) Update(ctx *gin.Context) {}
@@ -65,8 +65,8 @@ func (c *BranchController) Update(ctx *gin.Context) {}
 //
 // - Admin: Allowed but only if there are no members in the branch.
 // - Owner: Allowed but only if there are no members in the branch.
-// - Employee: Not allowed.
-// - Member: Not allowed.
+// - Employee: Not Allowed.
+// - Member: Not Allowed.
 //
 // Endpoint: DELETE /api/v1/branch/:id
 func (c *BranchController) Destroy(ctx *gin.Context) {}

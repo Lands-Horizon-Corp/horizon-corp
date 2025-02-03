@@ -160,7 +160,7 @@ func (c *AdminController) Create(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := c.authHandler.Create(ctx, "Admin",
+	user, err := c.authHandler.SignUp(ctx, "Admin",
 		req.FirstName,
 		req.LastName,
 		req.MiddleName,

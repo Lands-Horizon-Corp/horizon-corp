@@ -156,7 +156,7 @@ func (c *OwnerController) Create(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := c.authHandler.Create(ctx, "Owner",
+	user, err := c.authHandler.SignUp(ctx, "Owner",
 		req.FirstName,
 		req.LastName,
 		req.MiddleName,

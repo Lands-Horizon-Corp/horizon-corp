@@ -156,7 +156,7 @@ func (c *EmployeeController) Create(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := c.authHandler.Create(ctx, "Employee",
+	user, err := c.authHandler.SignUp(ctx, "Employee",
 		req.FirstName,
 		req.LastName,
 		req.MiddleName,

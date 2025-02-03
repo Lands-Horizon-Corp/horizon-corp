@@ -8,10 +8,10 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
-	"github.com/google/uuid"
 )
 
 type AuthController struct {
@@ -47,16 +47,16 @@ type SignUpRequest struct {
 	MiddleName       string    `json:"middleName" validate:"omitempty,min=2,max=255"`
 	PermanentAddress string    `json:"permanentAddress" validate:"required"`
 	Description      string    `json:"description" validate:"omitempty"`
-	BirthDate        time.Time `json:"birthDate" validate:"required,datetime=2006-01-02"`
-	Username         string    `json:"username" validate:"required,alphanum,min=3,max=255"`
+	BirthDate        time.Time `json:"birthDate" validate:"required"`
+	Username         string    `json:"username" validate:"required,min=3,max=255"`
 	Email            string    `json:"email" validate:"required,email"`
 	Password         string    `json:"password" validate:"required,min=8,max=255"`
 	ConfirmPassword  string    `json:"confirmPassword" validate:"required,eqfield=Password"`
 	ContactNumber    string    `json:"contactNumber" validate:"required,e164"`
 
-	MediaID  *uuid.UUID `json:"mediaId" validate:"omitempty,uuid"`
-	RoleID   *uuid.UUID `json:"roleId" validate:"omitempty,uuid"`
-	GenderID *uuid.UUID `json:"genderId" validate:"omitempty,uuid"`
+	MediaID  *string `json:"mediaId" validate:"omitempty"`
+	RoleID   *string `json:"roleId" validate:"omitempty"`
+	GenderID *string `json:"genderId" validate:"omitempty"`
 
 	EmailTemplate   string `json:"emailTemplate" validate:"required"`
 	ContactTemplate string `json:"contactTemplate" validate:"required"`
@@ -68,12 +68,13 @@ func (as AuthController) SignUp(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	if err := validator.New().Struct(req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	user, err := as.authHandler.Create(
+	user, err := as.authHandler.SignUp(
 		ctx,
 		req.AccountType,
 		req.FirstName,
@@ -86,31 +87,39 @@ func (as AuthController) SignUp(ctx *gin.Context) {
 		req.Email,
 		req.Password,
 		req.ContactNumber,
-		req.MediaID,
-		req.RoleID,
-		req.GenderID,
+		as.helpers.StringToUUID(req.MediaID),
+		as.helpers.StringToUUID(req.RoleID),
+		as.helpers.StringToUUID(req.GenderID),
 		req.EmailTemplate,
 		req.ContactTemplate,
 	)
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userMap, ok := user.(map[string]interface{})
-	if !ok {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user data format"})
+
+	var userID string
+	var userStatus providers.UserStatus
+
+	switch u := user.(type) {
+	case *models.AdminResource:
+		userID = u.ID.String()
+		userStatus = u.Status
+	case *models.MemberResource:
+		userID = u.ID.String()
+		userStatus = u.Status
+	case *models.EmployeeResource:
+		userID = u.ID.String()
+		userStatus = u.Status
+	case *models.OwnerResource:
+		userID = u.ID.String()
+		userStatus = u.Status
+	default:
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "unknown account type"})
 		return
 	}
-	userID, ok := userMap["id"].(string)
-	if !ok {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user ID"})
-		return
-	}
-	userStatus, ok := userMap["status"].(providers.UserStatus)
-	if !ok {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid user Status"})
-		return
-	}
+
 	token, err := as.tokenProvider.GenerateUserToken(
 		providers.UserClaims{
 			ID:          userID,
@@ -119,10 +128,12 @@ func (as AuthController) SignUp(ctx *gin.Context) {
 		},
 		time.Hour*24,
 	)
+
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
 	}
+
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     as.cfg.AppTokenName,
 		Value:    *token,
@@ -132,6 +143,7 @@ func (as AuthController) SignUp(ctx *gin.Context) {
 		SameSite: http.SameSiteNoneMode,
 	})
 
+	ctx.JSON(http.StatusOK, gin.H{"message": "signup successful"})
 }
 
 // SignIn handles user login.
