@@ -11,17 +11,17 @@ import { serverRequestErrExtractor } from '@/helpers'
 import MemberService from '@/server/api-service/member-service'
 
 import {
-    IQueryProps,
-    IAPIPreloads,
-    IOperationCallbacks,
-    IFilterPaginatedHookProps,
-} from './types'
-import {
     TEntityId,
     IMemberRequest,
     IMemberResource,
     IMemberPaginatedResource,
 } from '@/server/types'
+import {
+    IQueryProps,
+    IAPIPreloads,
+    IOperationCallbacks,
+    IFilterPaginatedHookProps,
+} from './types'
 
 export const memberLoader = (
     memberId: TEntityId,
