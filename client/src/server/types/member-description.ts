@@ -9,3 +9,9 @@ export interface IMemberDescriptionResource extends ITimeStamps {
     name: string
     membersProfile?: IMemberProfileResource
 }
+
+export interface IMemberDescriptionRequest {
+    date: string
+    description: string
+    name: string
+}

@@ -20,6 +20,54 @@ import { IMemberGovernmentBenefitsResource } from './member-government-benefits'
 import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history'
 import { IMemberContactNumberReferencesResource } from './member-contact-number-references'
 
+export interface IMemberProfileRequest {
+    id: TEntityId
+    oldReferenceID?: string
+    passbookNumber?: string
+
+    notes: string
+    description: string
+    contactNumber: string
+    tinNumber?: string
+    civilStatus: string
+    occupation?: string
+    sssNumber?: string
+    businessAddress?: string
+    businessContact?: string
+
+    status: string
+    isClosed: boolean
+
+    pagibigNumber?: string
+    philhealthNumber?: string
+    isMutualFundMember: boolean
+    isMicroFinanceMember: boolean
+
+    mediaID?: TEntityId
+    memberID?: TEntityId
+
+    memberTypeID?: TEntityId
+    memberClassificationID?: TEntityId
+    memberGenderID?: TEntityId
+    branchID?: TEntityId
+    memberCenterID?: TEntityId
+    memberEducationalAttainmentID?: TEntityId
+
+    memberDescriptions?: IMemberDescriptionResource[]
+    // memberRecruits?: IMemberRecruitsResource[]
+    // memberContactNumberReferences?: IMemberContactNumberReferencesResource[]
+    // memberWallets?: IMemberWalletResource[]
+    // memberIncome?: IMemberIncomeResource[]
+    // memberExpenses?: IMemberExpensesResource[]
+    // memberCloseRemarks?: IMemberCloseRemarksResource[]
+    // memberJointAccounts?: IMemberJointAccountsResource[]
+    // memberRelativeAccounts?: IMemberRelativeAccountsResource[]
+    // memberAddresses?: IMemberAddressResource[]
+    // memberGovernmentBenefits?: IMemberGovernmentBenefitsResource[]
+    // memberMutualFundsHistory?: IMemberMutualFundsHistoryResource[]
+    // memberAssets?: IMemberAssetsResource[]
+}
+
 export interface IMemberProfileResource extends ITimeStamps {
     id: TEntityId
     oldReferenceID?: string
