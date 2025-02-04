@@ -9,10 +9,12 @@ import { IBaseComp } from '@/types'
 
 interface Props extends IBaseComp {
     content?: string
+    disabled?: boolean
     spellCheck?: boolean
     placeholder?: string
     showToolbar?: boolean
     isHeadingDisabled?: boolean
+    textEditorClassName?: string
     onChange: (content: string) => void
 }
 
@@ -21,8 +23,10 @@ export type THeadingLevel = 1 | 2 | 3 | 4
 const TextEditor = ({
     className,
     content = '',
+    disabled,
     spellCheck = true,
     showToolbar = true,
+    textEditorClassName,
     isHeadingDisabled = true,
     onChange,
 }: Props) => {
@@ -62,7 +66,7 @@ const TextEditor = ({
         setActiveHeading(level)
     }
     return (
-        <div className="w-full space-y-2">
+        <div className={cn('w-full space-y-2', className)}>
             {showToolbar && editor && (
                 <Toolbar
                     editor={editor}
@@ -71,7 +75,11 @@ const TextEditor = ({
                     isHeadingDisabled={isHeadingDisabled}
                 />
             )}
-            <EditorContent editor={editor} />
+            <EditorContent
+                editor={editor}
+                disabled={disabled}
+                className={cn('w-full', textEditorClassName)}
+            />
         </div>
     )
 }
