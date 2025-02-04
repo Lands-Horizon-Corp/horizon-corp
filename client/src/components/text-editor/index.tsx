@@ -47,7 +47,8 @@ const TextEditor = ({
         editorProps: {
             attributes: {
                 spellcheck: spellCheck ? 'true' : 'false',
-                class: `toolbar-custom ${cn('', className)} `,
+                class: `toolbar-custom`,
+                className: cn('w-full', textEditorClassName),
             },
         },
         onUpdate({ editor }) {
@@ -78,7 +79,6 @@ const TextEditor = ({
             <EditorContent
                 editor={editor}
                 disabled={disabled}
-                className={cn('w-full', textEditorClassName)}
             />
         </div>
     )
