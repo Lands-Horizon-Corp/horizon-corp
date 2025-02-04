@@ -11,7 +11,6 @@ export interface IMemberDescriptionResource extends ITimeStamps {
 }
 
 export interface IMemberDescriptionRequest {
-    date: string
-    description: string
     name: string
+    description: string
 }

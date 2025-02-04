@@ -10,3 +10,10 @@ export interface IMemberIncomeResource extends ITimeStamps {
     description: string
     membersProfile?: IMemberProfileResource
 }
+
+export interface IMemberIncomeRequest {
+    name: string
+    amount: number
+    date: string
+    description: string
+}

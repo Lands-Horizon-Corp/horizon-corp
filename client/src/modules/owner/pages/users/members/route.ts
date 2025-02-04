@@ -5,6 +5,7 @@ import {
 } from '@tanstack/react-router'
 
 import { ownerUserRoute } from '../route'
+import OwnerMemberIdRoute from './member-id/route'
 
 export const ownerUserMemberRoute = createRoute({
     getParentRoute: () => ownerUserRoute,
@@ -33,6 +34,7 @@ const OwnerUserMemberRoute = ownerUserMemberRoute.addChildren([
     ownerUserMemberIndexRoute,
     ownerViewMembersRoute,
     ownerMembersActivityRoute,
+    OwnerMemberIdRoute,
 ])
 
 export default OwnerUserMemberRoute

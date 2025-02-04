@@ -12,3 +12,11 @@ export interface IMemberAddressResource extends ITimeStamps {
     label: string
     membersProfile?: IMemberProfileResource
 }
+
+export interface IMemberAddressRequest {
+    postalCode : string
+    province : string
+    city : string
+    barangay : string
+    label : string
+}

@@ -6,3 +6,10 @@ export interface IMemberContactNumberReferencesResource extends ITimeStamps {
     description: string
     contactNumber: string
 }
+
+export interface IMemberContactNumberReferencesRequest {
+    name: string
+    description: string
+    contactNumber: string
+}
+

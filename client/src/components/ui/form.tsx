@@ -163,6 +163,21 @@ const FormMessage = React.forwardRef<
         </p>
     )
 })
+
+const FormHidableItem = <T,>({
+    field,
+    children,
+    hiddenFields,
+}: {
+    field: keyof T
+    children: React.ReactNode
+    hiddenFields?: Array<keyof T>
+}) => {
+    if (hiddenFields && hiddenFields.includes(field)) return
+
+    return children
+}
+
 FormMessage.displayName = 'FormMessage'
 
 export {
@@ -171,6 +186,7 @@ export {
     FormItem,
     FormLabel,
     FormControl,
+    FormHidableItem,
     FormDescription,
     FormMessage,
     FormField,

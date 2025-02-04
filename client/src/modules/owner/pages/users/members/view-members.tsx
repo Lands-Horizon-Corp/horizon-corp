@@ -82,6 +82,7 @@ const OwnerViewMembersPage = () => {
                     defaultValues: {
                         companyId: company?.id,
                     },
+                    onSuccess : (newMember) => {}
                 }}
             />
             <EnsureOwnerCompany disabled onSuccess={setCompany}>
