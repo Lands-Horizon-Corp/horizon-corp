@@ -47,7 +47,8 @@ const TextEditor = ({
         editorProps: {
             attributes: {
                 spellcheck: spellCheck ? 'true' : 'false',
-                class: `toolbar-custom ${cn('', className)} `,
+                class: `toolbar-custom `,
+                className: cn('', textEditorClassName),
             },
         },
         onUpdate({ editor }) {
