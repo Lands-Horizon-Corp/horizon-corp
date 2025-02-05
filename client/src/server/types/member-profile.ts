@@ -19,6 +19,7 @@ import { IMemberRelativeAccountsResource } from './member-relative-accounts'
 import { IMemberGovernmentBenefitsResource } from './member-government-benefits'
 import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history'
 import { IMemberContactNumberReferencesResource } from './member-contact-number-references'
+import { IMediaResource } from './media'
 
 export interface IMemberProfileRequest {
     id: TEntityId
@@ -92,6 +93,8 @@ export interface IMemberProfileResource extends ITimeStamps {
     isMicroFinanceMember: boolean
 
     mediaID?: TEntityId
+    media?: IMediaResource
+
     memberID?: TEntityId
     member?: IMemberResource
 
@@ -112,6 +115,9 @@ export interface IMemberProfileResource extends ITimeStamps {
 
     memberCenterID?: TEntityId
     memberCenter?: IMemberCenterResource
+
+    signatureMediaID?: TEntityId
+    signatureMedia?: IMediaResource
 
     memberEducationalAttainmentID?: TEntityId
     memberDescriptions?: IMemberDescriptionResource[]
