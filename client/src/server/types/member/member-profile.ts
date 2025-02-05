@@ -12,17 +12,16 @@ import { IMemberAddressResource } from './member-address'
 import { IMemberExpensesResource } from './member-expenses'
 import { IMemberRecruitsResource } from './member-recruits'
 import { IMemberDescriptionResource } from './member-description'
-import { ITimeStamps, TAccountStatus, TEntityId } from '../common'
 import { IMemberCloseRemarksResource } from './member-close-remarks'
 import { IMemberJointAccountsResource } from './member-joint-accounts'
 import { IMemberClassificationResource } from './member-classification'
 import { IMemberRelativeAccountsResource } from './member-relative-accounts'
 import { IMemberGovernmentBenefitsResource } from './member-government-benefits'
+import { ITimeStamps, TAccountStatus, TCivilStatus, TEntityId } from '../common'
 import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history'
 import { IMemberContactNumberReferencesResource } from './member-contact-number-references'
 
 export interface IMemberProfileRequest {
-    id: TEntityId
     oldReferenceID?: string
     passbookNumber?: string
 
@@ -30,7 +29,7 @@ export interface IMemberProfileRequest {
     description: string
     contactNumber: string
     tinNumber?: string
-    civilStatus: 'Married' | 'Single' | 'Widowed' | 'Separated' | 'N/A'
+    civilStatus: TCivilStatus
     occupation?: string
     sssNumber?: string
     businessAddress?: string
@@ -125,7 +124,6 @@ export interface IMemberProfileRequest {
 
 
 export interface IMemberProfileResource extends ITimeStamps {
-    id: TEntityId
     oldReferenceID?: string
     passbookNumber?: string
 
