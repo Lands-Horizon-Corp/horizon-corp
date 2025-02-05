@@ -42,7 +42,7 @@ export interface ILongLat {
 }
 
 export interface ITimeStamps {
-    deletedAt?: Date | null
-    createdAt: Date
-    updatedAt: Date
+    deletedAt?: string | null
+    createdAt: string
+    updatedAt: string
 }

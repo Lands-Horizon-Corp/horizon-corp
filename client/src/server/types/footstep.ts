@@ -1,9 +1,9 @@
 import { IOwnerResource } from './owner'
 import { IAdminResource } from './admin'
-import { IMemberResource } from './member'
+import { IMemberResource } from './member/member'
 import { IEmployeeResource } from './employee'
+import { TAccountType, TEntityId } from './common'
 import { IPaginatedResult } from './paginated-result'
-import { TEntityId } from './common'
 
 export interface IFootstepResource {
     id: TEntityId
@@ -11,7 +11,7 @@ export interface IFootstepResource {
     updatedAt: string
     deletedAt: string
 
-    accountType: string
+    accountType: TAccountType
     module: string
     description: string
     activity: string
@@ -22,9 +22,9 @@ export interface IFootstepResource {
 
     adminID?: TEntityId
     admin?: IAdminResource
-    employeeID?: TEntityId 
+    employeeID?: TEntityId
     employee?: IEmployeeResource
-    ownerID?: TEntityId 
+    ownerID?: TEntityId
     owner?: IOwnerResource
     memberID?: TEntityId
     member?: IMemberResource

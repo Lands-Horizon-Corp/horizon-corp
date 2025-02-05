@@ -76,6 +76,7 @@ export const useSignIn = ({
                 onError?.(errorMessage)
                 throw errorMessage
             }
+            queryClient.removeQueries()
 
             toast.success('Signed in successfully')
             onSuccess?.(data)
