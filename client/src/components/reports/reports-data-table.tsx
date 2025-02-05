@@ -25,7 +25,7 @@ import { TableProps } from './types'
  *   getRowKey={(row) => row.id}
  * />
  */
-function ReportDataTable<TData>(props: TableProps<TData>) {
+function ReportsDataTable<TData>(props: TableProps<TData>) {
   const {
     columns,
     data,
@@ -41,7 +41,7 @@ function ReportDataTable<TData>(props: TableProps<TData>) {
       <TableHeader>
         <TableRow>
           {columns.map((col) => {
-            const headerText = col.header ?? String(col.key)
+            const headerText = col.header ?? String(col.key);
             return (
               <th
                 key={String(col.key)}
@@ -58,7 +58,7 @@ function ReportDataTable<TData>(props: TableProps<TData>) {
       <TableBody>
         {data.map((row, rowIndex) => {
           // Use the user-provided getRowKey() if available, else fallback
-          const uniqueRowKey = getRowKey ? getRowKey(row) : rowIndex
+          const uniqueRowKey = getRowKey ? getRowKey(row) : rowIndex;
 
           return (
             <TableRow
@@ -69,7 +69,7 @@ function ReportDataTable<TData>(props: TableProps<TData>) {
                 : rowClassName}
             >
               {columns.map((col) => {
-                let cellValue: React.ReactNode
+                let cellValue: React.ReactNode;
 
                 // If there's a custom renderCell, use it; else, use the raw property value
                 if (col.renderCell) {
@@ -79,10 +79,8 @@ function ReportDataTable<TData>(props: TableProps<TData>) {
                   const value = row[dataKey]
                   cellValue = value === undefined
                     ? placeholderForUndefined
-                    : String(value)
+                    : String(value);
                 }
-
-                console.log('col', col.cellStyle)
 
                 return (
                   <td
@@ -105,4 +103,4 @@ function ReportDataTable<TData>(props: TableProps<TData>) {
   )
 }
 
-export default ReportDataTable
+export default ReportsDataTable

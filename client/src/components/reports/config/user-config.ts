@@ -47,7 +47,6 @@ export const FinancialRecords: TellerTransactionRecord[] = [
     },
 ];
 
-// define columns as ColumnDefinition<FinancialRecord> so TS can help:
 export const columns: ColumnDefinition<TellerTransactionRecord>[] = [
     { key: 'date', header: 'Date', cellStyle: { fontWeight: 'bold', fontStyle:'italic', fontSize:'2px' } },
     { key: 'orNumber', header: 'O.R. No.' },
@@ -78,7 +77,6 @@ export const columns: ColumnDefinition<TellerTransactionRecord>[] = [
     },
 ];
 
-// We can store the rest of the report config here, or just keep it in the UI layer
 export const tellerReportConfig = {
     title: 'Teller Monitoring Report',
     subtitle: 'January 2025',

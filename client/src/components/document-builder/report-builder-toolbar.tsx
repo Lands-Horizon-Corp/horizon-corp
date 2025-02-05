@@ -52,9 +52,8 @@ interface TableToolBarProps extends React.ComponentProps<'div'> {
 export const ReportBuilderToolbar = ({
     editor,
     className,
-    handleGeneratePdf
+    handleGeneratePdf,
 }: TableToolBarProps) => {
-
     const [activeHeading, setActiveHeading] = useState<THeadingLevel | null>(
         null
     )
@@ -63,7 +62,6 @@ export const ReportBuilderToolbar = ({
         row: 0,
         col: 0,
     })
-
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
@@ -92,7 +90,9 @@ export const ReportBuilderToolbar = ({
         >
             {editor && (
                 <>
-                    <Button variant={'ghost'} onClick={handleGeneratePdf}>export</Button>
+                    <Button variant={'ghost'} onClick={handleGeneratePdf}>
+                        export
+                    </Button>
                     <TableToolbar
                         editor={editor}
                         dimensions={dimensions}
@@ -112,7 +112,6 @@ export const ReportBuilderToolbar = ({
         </div>
     )
 }
-
 
 interface TableToolsProps {
     editor: Editor | null
@@ -141,7 +140,6 @@ export const TableToolbar = ({
     }
 
     const insertTable = () => {
-        console.log(editor.commands)
         editor.commands.insertTable({
             rows: dimensions.row,
             cols: dimensions.col,
@@ -150,11 +148,14 @@ export const TableToolbar = ({
     }
 
     const handleTableHeight = (height: number) => {
-        editor?.chain().focus().updateAttributes('tableRow', {
-            rowHeight: height, 
-          }).run()
+        editor
+            ?.chain()
+            .focus()
+            .updateAttributes('tableRow', {
+                rowHeight: height,
+            })
+            .run()
     }
-
 
     const tableInputClass =
         'rounded-[10px] border border-[#4D4C4C]/20 bg-white/50 dark:bg-secondary/70 focus:border-none focus-visible:ring-1 focus-visible:ring-primary focus-visible:ring-offset-0 placeholder:text-[#838383]'
@@ -170,10 +171,10 @@ export const TableToolbar = ({
     return (
         <>
             <DropdownMenu>
-                <DropdownMenuTrigger >
-                    <Button variant={'ghost'} className={cn('px-2.5')}>
+                <DropdownMenuTrigger>
+                    <p className={cn('px-2.5')}>
                         <Table2 size={20} />
-                    </Button>
+                    </p>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="[&>div>img]:mr-2 [&>div]:text-xs">
                     <DropdownMenuLabel>Create Table</DropdownMenuLabel>
@@ -362,7 +363,11 @@ export const TableToolbar = ({
                                         className={cn(tableInputClass)}
                                     ></Input>
                                 </div>
-                                <Button onClick={()=> handleTableHeight(height)}>set Height</Button>
+                                <Button
+                                    onClick={() => handleTableHeight(height)}
+                                >
+                                    set Height
+                                </Button>
                             </DropdownMenuSubContent>
                         </DropdownMenuPortal>
                     </DropdownMenuSub>

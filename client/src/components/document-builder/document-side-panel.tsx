@@ -1,5 +1,7 @@
 import { Editor } from '@tiptap/react'
-import React from 'react'
+import React, {
+    //  useEffect, useRef 
+    } from 'react'
 import ReactDOMServer from 'react-dom/server'
 import {
     Sidebar,
@@ -28,65 +30,14 @@ import {
     FaBuilding,
     FaExchangeAlt,
 } from 'react-icons/fa'
-import { MdAdd } from 'react-icons/md'
-import InsertTable from './document-insert-table'
-// import companiesTableColumns from '../tables/companies-table/columns'
-import Test from './test'
-const headers = ['Id', 'Name', 'Bday', 'Age', 'Gender']
+// import { useTellerTransactionStore } from '@/store/report-store'
+// import ReportGenerator from '../reports/report-generator'
+// import { TellerTransactionRecord } from '../reports/types'
+// import { getCoreRowModel, useReactTable } from '@tanstack/react-table'
+// import TestReport from './test'
+// import Test from './test'
+import UserTeller from '@/modules/owner/pages/reports/user-teller/user-teller'
 
-const Person: any[] = []
-
-for (let i = 1; i <= 50; i++) {
-    const randomYear = Math.floor(Math.random() * (2005 - 1970 + 1)) + 1970
-    const randomMonth = Math.floor(Math.random() * 12) + 1
-    const randomDay = Math.floor(Math.random() * 28) + 1
-    const bday = `${randomYear}-${String(randomMonth).padStart(2, '0')}-${String(randomDay).padStart(2, '0')}`
-    const age = new Date().getFullYear() - randomYear
-    const gender = Math.random() > 0.5 ? 'Male' : 'Female'
-    const name = `Person ${i}`
-
-    Person.push({
-        id: i,
-        bday: bday,
-        name: name,
-        age: age,
-        gender: gender,
-    })
-}
-
-interface TableRowData {
-    [key: string]: string | number | null | undefined
-}
-
-interface TableContentProps {
-    headers: string[]
-    data: TableRowData[]
-}
-
-const TableContent: React.FC<TableContentProps> = ({ headers, data }) => {
-    return (
-        <table>
-            <thead>
-                <tr>
-                    {headers.map((header) => (
-                        <th key={header}>{header}</th>
-                    ))}
-                </tr>
-            </thead>
-            <tbody>
-                {data.map((row, rowIndex) => (
-                    <tr key={rowIndex}>
-                        {headers.map((header) => (
-                            <td key={header}>
-                                {row[header.toLowerCase()] || ''}
-                            </td>
-                        ))}
-                    </tr>
-                ))}
-            </tbody>
-        </table>
-    )
-}
 
 interface SidebarSubItem {
     label: string
@@ -105,18 +56,14 @@ interface SidebarMenuProps {
     editor: Editor | null
 }
 const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
-    menuItems,
-    editor,
-}) => {
+    menuItems,editor}) => {
 
-    const insertTable = (tableName: string) => () => {
-        console.log('tableName', tableName)
-        if (!tableName) return
-        if (tableName === 'Accounts') {
-            console.log(ReactDOMServer.renderToStaticMarkup(<Test />))
-            editor?.commands.insertContent(ReactDOMServer.renderToStaticMarkup(<Test />))
+
+    const insertContent = ( ) =>{
+        if(editor){
+            editor?.commands.insertContent(ReactDOMServer.renderToStaticMarkup(<UserTeller />))
         }
-    }       
+    }
 
     return (
         <div>
@@ -134,7 +81,9 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
                         <CollapsibleContent>
                             {item.subItems.map((subItem, subIndex) => (
                                 <SidebarMenuSub key={subIndex}>
-                                    <SidebarMenuSubItem onClick={insertTable('Accounts')} className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-xs hover:bg-secondary">
+                                    <SidebarMenuSubItem onClick={insertContent}
+                                        className="flex cursor-pointer items-center rounded-sm px-2 py-2 text-xs hover:bg-secondary"
+                                    >
                                         {subItem.icon && (
                                             <span className="mr-2 flex size-4 items-center">
                                                 {subItem.icon}
@@ -144,12 +93,6 @@ const SidebarMenuContainer: React.FC<SidebarMenuProps> = ({
                                             {' '}
                                             {subItem.label}
                                         </span>
-
-                                        {/* <InsertTable
-                                            content={<Test />}
-                                            onClick={insertTable(subItem.label)}
-                                            trigger={<MdAdd size={18} />}
-                                        /> */}
                                     </SidebarMenuSubItem>
                                 </SidebarMenuSub>
                             ))}
@@ -271,15 +214,6 @@ const DocumenetSidePanel = ({ editor }: DocumenetSidePanelProps) => {
             </SidebarGroup>
             <SidebarFooter />
         </Sidebar>
-    )
-}
-
-export const generateTableHTML = (
-    headers: string[],
-    data: TableRowData[]
-): string => {
-    return ReactDOMServer.renderToStaticMarkup(
-        <TableContent headers={headers} data={data} />
     )
 }
 

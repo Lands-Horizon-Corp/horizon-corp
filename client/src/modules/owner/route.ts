@@ -4,6 +4,7 @@ import { rootRoute } from '@/root-route'
 import OwnerUserRoute from './pages/users/route'
 import { redirect } from '@tanstack/react-router'
 import OwnerCompanyRoute from './pages/company/route'
+import ownerReportsRoute from './pages/reports/route'
 
 export const ownerRoute = createRoute({
     getParentRoute: () => rootRoute,
@@ -34,12 +35,6 @@ const ownerFootstepTrackingRoute = createRoute({
     getParentRoute: () => ownerRoute,
     path: 'footstep-tracking',
     component: lazyRouteComponent(() => import('./pages/footstep-tracking')),
-})
-
-const ownerReportsRoute = createRoute({
-    getParentRoute: () => ownerRoute,
-    path: 'reports',
-    component: lazyRouteComponent(() => import('./pages/reports')),
 })
 
 const ownerNotificationsRoute = createRoute({

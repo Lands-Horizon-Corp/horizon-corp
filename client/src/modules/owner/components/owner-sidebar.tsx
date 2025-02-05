@@ -96,7 +96,14 @@ const ownerSidebarItem: TSidebarItem[] = [
     {
         text: 'Reports',
         Icon: ReportsIcon,
-        url: '/owner/reports',
+        baseUrl: '/owner/reports',
+        subItems: [
+            {
+                text: 'Reports-Dashboard',
+                Icon: DashboardIcon,
+                url: '/dashboard',
+            },
+        ],
     },
     {
         Icon: NotificationIcon,

@@ -1,5 +1,3 @@
-// types.ts or table.ts (wherever you keep your table types)
-
 import React from 'react'
 
 /**
@@ -25,7 +23,7 @@ export interface ColumnDefinition<TData> {
 export interface TableProps<TData> {
   columns: ColumnDefinition<TData>[]
   data: TData[]
-
+ 
   /**
    * If provided, this function should return a unique string/number
    * to use as the React "key" for each row. This is better for performance
@@ -50,4 +48,5 @@ export interface TableProps<TData> {
    * the column key doesn't exist on the row). Defaults to an empty string.
    */
   placeholderForUndefined?: React.ReactNode
+  setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>
 }

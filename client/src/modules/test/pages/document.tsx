@@ -72,8 +72,6 @@ export type Person = {
 //   },
 // ];
 
-
-
 const document = () => {
     return (
         <div className="h-screen w-screen">

@@ -1,12 +1,7 @@
-import Test from "@/components/document-builder/test"
-
-
+import ReportsDashboard from "./reports/dashboard/report-dashboard"
 const OwnerReportsPage = () => {
     return <div>
-        
-    {/* <Test/> */}
-
-
+               <ReportsDashboard />
     </div>
 }
 

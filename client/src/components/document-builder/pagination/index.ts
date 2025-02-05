@@ -107,7 +107,6 @@ export const Pagination = Extension.create<PaginationOptions>({
               
               const nodeHeight = node.isBlock ? dom.offsetHeight || 0 : 0;
               if (currentHeight + nodeHeight > pageHeight - 2 * pageMargin) {
-                console.log('page break', currentHeight)
                 decorations.push(createPageBreak(pos));
                 currentHeight = 0;
               }

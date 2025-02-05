@@ -19,22 +19,32 @@ import { useDocumentBuilderStore } from '@/store/document-builder-store'
 import TableRow from '@tiptap/extension-table-row'
 import TableHeader from '@tiptap/extension-table-header'
 import { Pagination } from './pagination'
-import { Button } from '../ui/button'
 import html2canvas from 'html2canvas'
 import jsPDF from 'jspdf'
-// import { html2pdf } from 'html2pdf-ts'
-import { HTML2PDFOptions } from 'html2pdf-ts'
 // @ts-ignore
 import * as html2pdf from 'html2pdf.js'
+// import { useTellerTransactionStore } from '@/store/report-store'
+// import { useReactTable, getCoreRowModel } from '@tanstack/react-table'
+import ReactDOMServer from 'react-dom/server'
+// import Test from './test'
+import { useLocation } from '@tanstack/react-router'
+import UserTeller from '@/modules/owner/pages/reports/user-teller/user-teller'
+
+const REPORT_COMPONENTS: Record<string, () => JSX.Element> = {
+    '/reports/document/user-teller': UserTeller,
+}
 
 export const DocumentBuilder = () => {
+    
+    const location = useLocation()
+
+    console.log(location.pathname)
+
     const editorRefFocus = useRef<Array<HTMLDivElement | null>>([])
     const reportTemplateRef = useRef<HTMLDivElement>(null)
 
-    const { pages, currentPage } = useDocumentBuilderStore()
-    const [editorContent, setEditorContent] = useState(
-        pages[currentPage].htmlTemplate
-    )
+    // const { pages, currentPage } = useDocumentBuilderStore()
+    // const [editorContent, setEditorContent] = useState(pages[currentPage].htmlTemplate)
 
     useEffect(() => {
         useDocumentBuilderStore.setState({
@@ -69,7 +79,7 @@ export const DocumentBuilder = () => {
                 types: ['heading', 'paragraph'],
             }),
         ],
-        content: '',
+        content: ReactDOMServer.renderToStaticMarkup(<UserTeller />),
         editorProps: {
             attributes: {
                 class: `table-toolbar-custom`,
@@ -82,20 +92,6 @@ export const DocumentBuilder = () => {
     })
 
     const [tableWidth, setTableWidth] = useState(0)
-
-    // useEffect(() => {
-    //     if (!editor) return
-
-    //     // Sync editor content to state whenever it updates
-    //     editor.on('update', () => {
-    //         console.log('editor updated')
-    //         const tableWrapper = document.querySelector(
-    //             '.tableWrapper'
-    //         ) as HTMLElement | null
-    //         const tableWidth = tableWrapper.offsetWidth ?? 0
-    //         setTableWidth(tableWidth)
-    //     })
-    // }, [editor])
 
     const handleGeneratePdf = async () => {
         const input = reportTemplateRef.current
@@ -144,16 +140,33 @@ export const DocumentBuilder = () => {
                     putTotalPages: true,
                 },
             }
-             html2pdf.default( input, opt );
+            html2pdf.default(input, opt)
         } catch (error) {
             console.error('Error generating PDF:', error)
         }
     }
+    // const location = useLocation();
+    // const hasInserted = useRef(false);
+
+    // const { data, config, columns } = useTellerTransactionStore(
+    //     (state) => state
+    // )
+
+    // const table = useReactTable({
+    //     columns: columns,
+    //     data: data,
+    //     getCoreRowModel: getCoreRowModel(),
+    // })
+
+    // const TellerReportConfig = {
+    //     ...config,
+    //     table: table,
+    // }
 
     return (
-        <SidebarProvider>
-            <div className="flex h-full w-full">
-                <div className="relative w-full bg-secondary dark:bg-black">
+        <SidebarProvider defaultOpen={false}>
+            <div className="flex h-full w-full ">
+                <div className="relative w-full bg-secondary py-5 flex flex-col space-y-5 dark:bg-black">
                     <DocumentBuilderTools
                         handleGeneratePdf={handleGeneratePdf}
                         editor={editor}

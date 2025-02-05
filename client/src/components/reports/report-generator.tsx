@@ -1,36 +1,56 @@
-// components/ReportGenerator.tsx
-import ReportWrapper from './report-wrapper';
-import ReportHeader from './report-header';
-import ReportFooter from './report-footer';
-import DataTable from './reports-data-table';
-import { TableProps } from './types';
+import ReportWrapper from './report-wrapper'
+import ReportHeader from './report-header'
+import ReportsDataTable from './reports-data-table'
+import { ColumnDefinition } from './types'
+import ReportFooter from './report-footer'
 
-interface ReportGeneratorConfig<TData> {
-  title: string;
-  subtitle?: string;
-  filters?: Record<string, string>;
-  footer?: { totals: { label: string; value: number } };
-  columns: TableProps<TData>['columns'];
-  data: TData[];
+export interface ReportGeneratorConfig<TData> {
+    title: string
+    subtitle?: string
+    filters?: Record<string, string>
+    footer?: { totals: { label: string; value: number } }
+    columns: ColumnDefinition<TData>[]
+    data: TData[]
+    footerData: TData[]
+    footerColumns: ColumnDefinition<TData>[]
 }
 
-interface ReportGeneratorProps<TData> {
-  reportConfig: ReportGeneratorConfig<TData>;
+export interface ReportGeneratorProps<TData> {
+    reportConfig: ReportGeneratorConfig<TData>
 }
 
-function ReportGenerator<TData>(props: ReportGeneratorProps<TData>) {
-  const { reportConfig } = props;
-  const { title, subtitle, filters, columns, data, footer } = reportConfig;
+const ReportGenerator = <TData,>(props: ReportGeneratorProps<TData>) => {
+    
+    const { reportConfig } = props
 
-  return (
-    <ReportWrapper
-      title={title}
-      subtitle={subtitle}
-      header={filters ? <ReportHeader metadata={filters} /> : null}
-      table={<DataTable columns={columns} data={data} />}
-      footer={footer ? <ReportFooter totals={footer.totals} /> : null}
-    />
-  );
+    const {
+        title,
+        subtitle,
+        filters,
+        footer,
+        data,
+        columns,
+        footerColumns,
+        footerData,
+    } = reportConfig
+   
+    return (
+        <ReportWrapper
+            title={title}
+            subtitle={subtitle}
+            header={filters ? <ReportHeader metadata={filters} /> : null}
+            table={<ReportsDataTable<TData> columns={columns} data={data} />}
+            footer={
+                footerData && footer ? (
+                    <ReportFooter<TData>
+                        totals={footer.totals}
+                        footerColumns={footerColumns}
+                        footerData={footerData}
+                    />
+                ) : null
+            }
+        />
+    )
 }
 
-export default ReportGenerator;
+export default ReportGenerator
