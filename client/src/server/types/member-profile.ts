@@ -25,6 +25,7 @@ import {
     IMemberContactNumberReferencesRequest,
     IMemberContactNumberReferencesResource,
 } from './member-contact-number-references'
+import { IMediaResource } from './media'
 
 export interface IMemberProfileRequest {
     oldReferenceID?: string
@@ -130,6 +131,8 @@ export interface IMemberProfileResource extends ITimeStamps {
     isMicroFinanceMember: boolean
 
     mediaID?: TEntityId
+    media?: IMediaResource
+
     memberID?: TEntityId
     member?: IMemberResource
 
@@ -150,6 +153,9 @@ export interface IMemberProfileResource extends ITimeStamps {
 
     memberCenterID?: TEntityId
     memberCenter?: IMemberCenterResource
+
+    signatureMediaID?: TEntityId
+    signatureMedia?: IMediaResource
 
     memberEducationalAttainmentID?: TEntityId
     memberDescriptions?: IMemberDescriptionResource[]
