@@ -1,6 +1,6 @@
 import { IOwnerResource } from './owner'
 import { IAdminResource } from './admin'
-import { IMemberResource } from './member'
+import { IMemberResource } from './member/member'
 import { IEmployeeResource } from './employee'
 import { TAccountType, TEntityId } from './common'
 import { IPaginatedResult } from './paginated-result'

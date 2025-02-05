@@ -1,6 +1,6 @@
 import { TEntityId } from './common'
 import { IMediaResource } from './media'
-import { IMemberResource } from './member'
+import { IMemberResource } from './member/member'
 import { ICompanyResource } from './company'
 import { IEmployeeResource } from './employee'
 import { IPaginatedResult } from './paginated-result'

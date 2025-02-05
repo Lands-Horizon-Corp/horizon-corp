@@ -1,7 +1,7 @@
-import { IBranchResource } from './branch'
+import { IBranchResource } from '../branch'
 import { IMemberResource } from './member'
-import { IEmployeeResource } from './employee'
-import { ITimeStamps, TAccountStatus, TEntityId } from './common'
+import { IEmployeeResource } from '../employee'
+import { ITimeStamps, TAccountStatus, TEntityId } from '../common'
 import { IMemberTypeResource } from './member-type'
 import { IMemberAssetsResource } from './member-assets'
 import { IMemberWalletResource } from './member-wallet'
@@ -19,7 +19,7 @@ import { IMemberRelativeAccountsResource } from './member-relative-accounts'
 import { IMemberGovernmentBenefitsResource } from './member-government-benefits'
 import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history'
 import { IMemberContactNumberReferencesResource } from './member-contact-number-references'
-import { IMediaResource } from './media'
+import { IMediaResource } from '../media'
 
 export interface IMemberProfileRequest {
     id: TEntityId

@@ -7,7 +7,7 @@ import { serverRequestErrExtractor } from '@/helpers'
 import {
     IMemberProfileRequest,
     IMemberProfileResource,
-} from '@/server/types/member-profile'
+} from '@/server/types/member/member-profile'
 import { IAPIPreloads, IOperationCallbacks } from './types'
 import MemberProfileService from '@/server/api-service/member-profile-service'
 
