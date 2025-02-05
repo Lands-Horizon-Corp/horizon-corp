@@ -36,29 +36,29 @@ export interface IAccountRequest {
     description: string
     altDescription?: string
     type: TAccountingAccounts
-    maxAmount: number
-    minAmount: number
-    computationType: TEntityId
-    headerRow: number
-    centerRow: number
-    totalRow: number
-    print: boolean
-    addOn: boolean
-    allowRebate: boolean
-    taxable: boolean
+    maxAmount?: number
+    minAmount?: number
+    computationType?: TEntityId
+    headerRow?: number
+    centerRow?: number
+    totalRow?: number
+    print?: boolean
+    addOn?: boolean
+    allowRebate?: boolean
+    taxable?: boolean
     finesAmort?: number
     finesMaturity?: number
-    interestStandard?: number // Percentage
-    interestSecured?: number // Percentage
-    schemeNo: number
-    altCode: number
-    glCode: number
+    interestStandard?: number 
+    interestSecured?: number 
+    schemeNo?: number
+    altCode?: number
+    glCode?: number
     finesGpAmort?: number
     addtlGp?: string
     noGracePeriodDaily: boolean
     finesGpMaturity?: number
-    earnedUnearnedInterest: TEarnedUnearnedInterest
-    otherInformationOfAnAccount: TOtherAccountInformation
+    earnedUnearnedInterest?: TEarnedUnearnedInterest
+    otherInformationOfAnAccount?: TOtherAccountInformation
 }
 
 export interface IAccountResource extends ITimeStamps {
@@ -68,29 +68,29 @@ export interface IAccountResource extends ITimeStamps {
     description: string
     altDescription?: string
     type: TAccountType
-    maxAmount: number
-    minAmount: number
-    computationType: string | TEntityId
-    headerRow: number
-    centerRow: number
-    totalRow: number
-    print: boolean
-    addOn: boolean
-    allowRebate: boolean
-    taxable: boolean
+    maxAmount?: number
+    minAmount?: number
+    computationType?: TEntityId
+    headerRow?: number
+    centerRow?: number
+    totalRow?: number
+    print?: boolean
+    addOn?: boolean
+    allowRebate?: boolean
+    taxable?: boolean
     finesAmort?: number
     finesMaturity?: number
-    interestStandard?: number // Percentage
-    interestSecured?: number // Percentage
-    schemeNo: number
-    altCode: number
-    glCode: number
+    interestStandard?: number 
+    interestSecured?: number 
+    schemeNo?: number
+    altCode?: number
+    glCode?: number
     finesGpAmort?: number
     addtlGp?: string
-    noGracePeriodDaily: boolean
+    noGracePeriodDaily?: boolean
     finesGpMaturity?: number
-    earnedUnearnedInterest: TEarnedUnearnedInterest
-    otherInformationOfAnAccount: TOtherAccountInformation
+    earnedUnearnedInterest?: TEarnedUnearnedInterest
+    otherInformationOfAnAccount?: TOtherAccountInformation
 }
 
 export type IAccountPaginatedResource = IPaginatedResult<IAccountResource>
