@@ -46,3 +46,10 @@ export interface ITimeStamps {
     createdAt: string
     updatedAt: string
 }
+
+export type TCivilStatus =
+    | 'Married'
+    | 'Single'
+    | 'Widowed'
+    | 'Separated'
+    | 'N/A'
