@@ -1,4 +1,4 @@
-import { ITimeStamps, TAccountType, TEntityId } from "../common"
+import { ITimeStamps, TEntityId } from "../common"
 import { IPaginatedResult } from "../paginated-result"
 
 export type TAccountingAccounts =
@@ -67,7 +67,7 @@ export interface IAccountResource extends ITimeStamps {
     accountCode: string
     description: string
     altDescription?: string
-    type: TAccountType
+    type: TAccountingAccounts
     maxAmount?: number
     minAmount?: number
     computationType?: TEntityId
