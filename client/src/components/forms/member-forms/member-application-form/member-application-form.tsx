@@ -41,6 +41,7 @@ import {
 import TextEditor from '@/components/text-editor'
 import { PhoneInput } from '@/components/contact-input/contact-input'
 import { Textarea } from '@/components/ui/textarea'
+import { FormLabeledInputField } from '@/components/ui/form-labeled-input-field'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -57,6 +58,7 @@ const MemberApplicationForm = ({
     disabledFields,
     hiddenFields,
 }: IMemberApplicationFormProps) => {
+
     const form = useForm<TMemberProfileForm>({
         resolver: zodResolver(createMemberProfileSchema),
         reValidateMode: 'onChange',
@@ -178,59 +180,23 @@ const MemberApplicationForm = ({
                         <div className="space-y-4">
                             <legend>Identification & Reference</legend>
                             <Separator />
-                            <FormField
+                            <FormLabeledInputField
+                                form={form}
+                                showMessage={true}
                                 name="passbookNumber"
-                                control={form.control}
-                                render={({ field }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
-                                    >
-                                        <FormItem className="col-span-1 space-y-1">
-                                            <FormLabel htmlFor={field.name}>
-                                                Passbook Number
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    placeholder="Enter Passbook Number"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
-                                )}
+                                label="Passbook Number"
+                                hiddenFields={hiddenFields}
+                                placeholder="Enter Passbook Number"
+                                isDisabled={isDisabled('passbookNumber')}
                             />
-                            <FormField
+                            <FormLabeledInputField
                                 name="oldReferenceID"
-                                control={form.control}
-                                render={({ field }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
-                                    >
-                                        <FormItem className="col-span-1 space-y-1">
-                                            <FormLabel htmlFor={field.name}>
-                                                Old Reference ID
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    placeholder="Enter Old Passbook/ID"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
-                                )}
+                                form={form}
+                                hiddenFields={hiddenFields}
+                                isDisabled={isDisabled('oldReferenceID')}
+                                label="Old Reference ID"
+                                placeholder="Enter Old Passbook/ID"
+                                showMessage={true}
                             />
                             <FormField
                                 name="status"
@@ -245,8 +211,8 @@ const MemberApplicationForm = ({
                                                 Status
                                             </FormLabel>
                                             <Select
-                                                onValueChange={field.onChange}
                                                 defaultValue={field.value}
+                                                onValueChange={field.onChange}
                                             >
                                                 <FormControl>
                                                     <SelectTrigger

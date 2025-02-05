@@ -15,6 +15,10 @@ import {
     IMemberDescriptionRequest,
     IMemberDescriptionResource,
 } from './member-description'
+import {
+    IMemberDescriptionRequest,
+    IMemberDescriptionResource,
+} from './member-description'
 import { IMemberCloseRemarksResource } from './member-close-remarks'
 import { IMemberJointAccountsResource } from './member-joint-accounts'
 import { IMemberClassificationResource } from './member-classification'
