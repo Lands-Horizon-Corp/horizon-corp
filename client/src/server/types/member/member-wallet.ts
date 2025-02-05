@@ -1,11 +1,12 @@
-import { ITimeStamps, TEntityId } from './common'
+import { ITimeStamps, TEntityId } from '../common'
 import { IMemberProfileResource } from './member-profile'
 
-export interface IMemberAssetsResource extends ITimeStamps {
+export interface IMemberWalletResource extends ITimeStamps {
     id: TEntityId
     membersProfileID: TEntityId
-    entryDate: string
+    debit: number
+    credit: number
+    date: string
     description: string
-    name: string
     membersProfile?: IMemberProfileResource
 }

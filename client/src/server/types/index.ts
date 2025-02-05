@@ -1,7 +1,7 @@
 /* User Types */
 export * from './owner'
 export * from './admin'
-export * from './member'
+export * from './member/member'
 export * from './employee'
 
 export * from './api'
@@ -9,7 +9,7 @@ export * from './auth'
 export * from './role'
 export * from './media'
 export * from './gender'
-export * from './member'
+export * from './member/member'
 export * from './branch'
 export * from './common'
 export * from './company'

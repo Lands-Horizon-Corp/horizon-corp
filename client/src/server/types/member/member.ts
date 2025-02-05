@@ -1,9 +1,9 @@
-import { IMediaRequest } from './media'
-import { IRolesResource } from './role'
-import { IGenderResource } from './gender'
-import { IFootstepResource } from './footstep'
-import { IPaginatedResult } from './paginated-result'
-import { ITimeStamps, IUserBase, TAccountStatus, TEntityId } from './common'
+import { IMediaRequest } from '../media'
+import { IRolesResource } from '../role'
+import { IGenderResource } from '../gender'
+import { IFootstepResource } from '../footstep'
+import { IPaginatedResult } from '../paginated-result'
+import { ITimeStamps, IUserBase, TAccountStatus, TEntityId } from '../common'
 
 export interface IMemberRequest {
     username: string

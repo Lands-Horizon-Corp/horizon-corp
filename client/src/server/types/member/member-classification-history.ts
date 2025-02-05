@@ -1,4 +1,4 @@
-import { TEntityId } from './common'
+import { TEntityId } from '../common'
 import { IMemberProfileResource } from './member-profile'
 import { IMemberClassificationResource } from './member-classification'
 

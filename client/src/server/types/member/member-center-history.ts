@@ -1,4 +1,4 @@
-import { ITimeStamps, TEntityId } from './common'
+import { ITimeStamps, TEntityId } from '../common'
 import { IMemberCenterResource } from './member-center'
 import { IMemberProfileResource } from './member-profile'
 

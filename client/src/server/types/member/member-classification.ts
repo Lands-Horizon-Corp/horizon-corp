@@ -1,4 +1,4 @@
-import { TEntityId } from './common'
+import { TEntityId } from '../common'
 import { IMemberClassificationHistoryResource } from './member-classification-history'
 
 export interface IMemberClassificationResource {

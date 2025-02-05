@@ -1,4 +1,4 @@
-import { ITimeStamps, TEntityId } from './common'
+import { ITimeStamps, TEntityId } from '../common'
 import { IMemberGenderHistoryResource } from './member-gender-history'
 
 export interface IMemberGenderResource extends ITimeStamps {

@@ -1,37 +1,28 @@
-import { IBranchResource } from './branch'
+import { IBranchResource } from '../branch'
 import { IMemberResource } from './member'
-import { IEmployeeResource } from './employee'
-import { ITimeStamps, TAccountStatus, TEntityId } from './common'
+import { IEmployeeResource } from '../employee'
+import { ITimeStamps, TAccountStatus, TEntityId } from '../common'
 import { IMemberTypeResource } from './member-type'
 import { IMemberAssetsResource } from './member-assets'
 import { IMemberWalletResource } from './member-wallet'
-import { IMemberIncomeRequest, IMemberIncomeResource } from './member-income'
+import { IMemberIncomeResource } from './member-income'
 import { IMemberGenderResource } from './member-gender'
 import { IMemberCenterResource } from './member-center'
-import { IMemberAddressRequest, IMemberAddressResource } from './member-address'
+import { IMemberAddressResource } from './member-address'
 import { IMemberExpensesResource } from './member-expenses'
 import { IMemberRecruitsResource } from './member-recruits'
-import {
-    IMemberDescriptionRequest,
-    IMemberDescriptionResource,
-} from './member-description'
-import {
-    IMemberDescriptionRequest,
-    IMemberDescriptionResource,
-} from './member-description'
+import { IMemberDescriptionResource } from './member-description'
 import { IMemberCloseRemarksResource } from './member-close-remarks'
 import { IMemberJointAccountsResource } from './member-joint-accounts'
 import { IMemberClassificationResource } from './member-classification'
 import { IMemberRelativeAccountsResource } from './member-relative-accounts'
 import { IMemberGovernmentBenefitsResource } from './member-government-benefits'
 import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history'
-import {
-    IMemberContactNumberReferencesRequest,
-    IMemberContactNumberReferencesResource,
-} from './member-contact-number-references'
-import { IMediaResource } from './media'
+import { IMemberContactNumberReferencesResource } from './member-contact-number-references'
+import { IMediaResource } from '../media'
 
 export interface IMemberProfileRequest {
+    id: TEntityId
     oldReferenceID?: string
     passbookNumber?: string
 
@@ -63,52 +54,19 @@ export interface IMemberProfileRequest {
     memberCenterID?: TEntityId
     memberEducationalAttainmentID?: TEntityId
 
-    memberAddresses?: IMemberAddressRequest[]
-    memberDescriptions?: IMemberDescriptionRequest[]
-    memberContactNumberReferences?: IMemberContactNumberReferencesRequest[]
-    memberIncome?: IMemberIncomeRequest[]
-
-    memberRelativeAccounts?: {
-        membersProfileID: TEntityId
-        relativeProfileMemberID: TEntityId
-        familyRelationship: string
-        description: string
-    }[]
-    memberAssets?: { entryDate: string; description: string; name: string }[]
-
-    memberExpenses?: {
-        name: string
-        date: string
-        amount: number
-        description: string
-    }[]
-    memberJointAccounts?: {
-        description: string
-        firstName: string
-        lastName: string
-        middleName?: string
-        familyRelationship?: string
-    }[]
-    memberRecruits?: {
-        membersProfileID: TEntityId
-        membersProfileRecruitedID: TEntityId
-        dateRecruited: string
-        description: string
-        name: string
-    }[]
-
-    memberGovernmentBenefits?: {
-        country: string
-        name: string
-        description: string
-        value: number
-        frontMediaID?: TEntityId
-        backMediaID?: TEntityId
-    }[]
-
+    memberDescriptions?: IMemberDescriptionResource[]
+    // memberRecruits?: IMemberRecruitsResource[]
+    // memberContactNumberReferences?: IMemberContactNumberReferencesResource[]
     // memberWallets?: IMemberWalletResource[]
+    // memberIncome?: IMemberIncomeResource[]
+    // memberExpenses?: IMemberExpensesResource[]
     // memberCloseRemarks?: IMemberCloseRemarksResource[]
+    // memberJointAccounts?: IMemberJointAccountsResource[]
+    // memberRelativeAccounts?: IMemberRelativeAccountsResource[]
+    // memberAddresses?: IMemberAddressResource[]
+    // memberGovernmentBenefits?: IMemberGovernmentBenefitsResource[]
     // memberMutualFundsHistory?: IMemberMutualFundsHistoryResource[]
+    // memberAssets?: IMemberAssetsResource[]
 }
 
 export interface IMemberProfileResource extends ITimeStamps {

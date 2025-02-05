@@ -1,4 +1,4 @@
-import { ITimeStamps, TEntityId } from './common'
+import { ITimeStamps, TEntityId } from '../common'
 
 export interface IMemberContactNumberReferencesResource extends ITimeStamps {
     id: TEntityId
