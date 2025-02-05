@@ -13,6 +13,7 @@ import {
     UserShieldIcon,
     BuildingCogIcon,
     BuildingBranchIcon,
+    BankIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
@@ -85,6 +86,19 @@ const ownerSidebarItem: TSidebarItem[] = [
                 text: 'Branches',
                 Icon: BuildingBranchIcon,
                 url: '/branches',
+            },
+        ],
+    },
+    {
+        text: 'Accounting',
+        Icon: BankIcon,
+        baseUrl: '/owner/accounting',
+        subItems: [
+            { text: 'Accounts', url: '/accounts', Icon: BankIcon },
+            {
+                Icon: BankIcon,
+                text: 'Computation Type',
+                url: '/computation-type',
             },
         ],
     },
