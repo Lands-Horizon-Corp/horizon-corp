@@ -673,7 +673,7 @@ const MemberApplicationForm = ({
                     <div className="col-span-1 space-y-4">
                         <legend>Notes & Description</legend>
                         <Separator />
-                        <fieldset className="grid sm:grid-cols-2">
+                        <fieldset className="grid gap-x-2 sm:grid-cols-2">
                             <FormField
                                 name="notes"
                                 control={form.control}
