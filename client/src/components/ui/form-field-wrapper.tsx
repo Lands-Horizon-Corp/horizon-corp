@@ -1,30 +1,27 @@
-import { UseFormReturn, FieldValues, Path } from 'react-hook-form'
+import { Path, FieldValues, ControllerProps } from 'react-hook-form'
 
 import {
     FormItem,
     FormLabel,
     FormField,
-    FormControl,
     FormMessage,
     FormDescription,
     FormHidableItem,
 } from '@/components/ui/form'
-import { Input, InputProps } from '@/components/ui/input'
 
 import { cn } from '@/lib/utils'
 
-type FormLabeledInputFieldProps<T extends FieldValues> = {
-    name: Path<T>
-    form: UseFormReturn<T>
+export interface FormFieldWrapperProps<
+    T extends FieldValues = FieldValues,
+    TName extends Path<T> = Path<T>,
+> extends ControllerProps<T, TName> {
     hiddenFields?: Array<Path<T>>
 
     isDisabled?: boolean
-    showMessage?: boolean
+    hideFieldMessage?: boolean
 
     label?: string
-    placeholder?: string
     description?: string
-    inputProps?: Omit<InputProps, 'id' | 'disabled' | 'placeholder'>
 
     className?: string
     labelClassName?: string
@@ -32,28 +29,26 @@ type FormLabeledInputFieldProps<T extends FieldValues> = {
     descriptionClassName?: string
 }
 
-export const FormLabeledInputField = <T extends FieldValues>({
+const FormFieldWrapper = <
+    T extends FieldValues,
+    TName extends Path<T> = Path<T>,
+>({
     name,
-    form,
     label,
     className,
-    inputProps,
-    isDisabled,
-    hiddenFields,
-    placeholder,
     description,
+    hiddenFields,
     labelClassName,
     messageClassName,
-    showMessage = true,
     descriptionClassName,
-}: FormLabeledInputFieldProps<T>) => {
-
-
+    hideFieldMessage = false,
+    render,
+    ...controllerProps
+}: FormFieldWrapperProps<T, TName>) => {
     return (
-        <FormField<T, Path<T>>
+        <FormField<T, TName>
             name={name}
-            control={form.control}
-            render={({ field }) => (
+            render={({ field, ...other }) => (
                 <FormHidableItem<T>
                     field={field.name}
                     hiddenFields={hiddenFields}
@@ -76,16 +71,8 @@ export const FormLabeledInputField = <T extends FieldValues>({
                                 {description}
                             </FormDescription>
                         )}
-                        <FormControl>
-                            <Input
-                                {...field}
-                                {...inputProps}
-                                id={field.name}
-                                disabled={isDisabled}
-                                placeholder={placeholder}
-                            />
-                        </FormControl>
-                        {showMessage && (
+                        {render({ field, ...other })}
+                        {!hideFieldMessage && (
                             <FormMessage
                                 className={cn('text-xs', messageClassName)}
                             />
@@ -93,6 +80,9 @@ export const FormLabeledInputField = <T extends FieldValues>({
                     </FormItem>
                 </FormHidableItem>
             )}
+            {...controllerProps}
         />
     )
 }
+
+export default FormFieldWrapper
