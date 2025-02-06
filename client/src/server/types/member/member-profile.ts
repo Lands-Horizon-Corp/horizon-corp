@@ -116,7 +116,7 @@ export interface IMemberProfileRequest {
         country: string
         name: string
         description: string
-        value: number
+        value: string
         frontMediaID?: TEntityId
         backMediaID?: TEntityId
     }[]
