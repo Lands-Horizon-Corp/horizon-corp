@@ -4,8 +4,9 @@ import PageContainer from '@/components/containers/page-container'
 import MemberTypeTable from '@/components/tables/member-type-table'
 import EnsureOwnerCompany from '@/modules/owner/components/ensure-company'
 import { MemberTypeCreateFormModal } from '@/components/forms/member-forms/member-type-create-form'
+import MemberTypeTableOwnerAction from '@/components/tables/member-type-table/row-actions/member-type-owner-action'
 
-const OwnerViewMembersPage = () => {
+const OwnerViewMemberTypesPage = () => {
     const [modalState, setModalState] = useState(false)
 
     return (
@@ -21,6 +22,9 @@ const OwnerViewMembersPage = () => {
                             onClick: () => setModalState(true),
                         },
                     }}
+                    actionComponent={(prop) => (
+                        <MemberTypeTableOwnerAction {...prop} />
+                    )}
                     className="min-h-[90vh] w-full"
                 />
             </EnsureOwnerCompany>
@@ -28,4 +32,4 @@ const OwnerViewMembersPage = () => {
     )
 }
 
-export default OwnerViewMembersPage
+export default OwnerViewMemberTypesPage

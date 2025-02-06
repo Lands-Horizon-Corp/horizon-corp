@@ -1,5 +1,5 @@
 import z from 'zod'
-import { useForm } from 'react-hook-form'
+import { Path, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Form } from '@/components/ui/form'
@@ -14,24 +14,29 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { IMemberTypeRequest } from '@/server/types'
-import { useCreateMemberType } from '@/hooks/api-hooks/member/use-member-type'
+import { IMemberTypeRequest, TEntityId } from '@/server/types'
+import { useUpdateMemberType } from '@/hooks/api-hooks/member/use-member-type'
 import { createMemberTypeSchema } from '@/validations/form-validation/member/member-type-schema'
 
-type TMemberTypeCreateForm = z.infer<typeof createMemberTypeSchema>
+type TMemberTypeForm = z.infer<typeof createMemberTypeSchema>
 
-interface IMemberTypeCreateFormProps
+interface IMemberTypeFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IMemberTypeRequest>, unknown, string> {}
+        IForm<Partial<IMemberTypeRequest>, unknown, unknown> {
+    memberTypeId: TEntityId
+}
 
-const MemberTypeCreateForm = ({
+const MemberTypeUpdateForm = ({
+    memberTypeId,
     readOnly,
     className,
+    hiddenFields,
     defaultValues,
+    disabledFields,
     onError,
     onSuccess,
-}: IMemberTypeCreateFormProps) => {
-    const form = useForm<TMemberTypeCreateForm>({
+}: IMemberTypeFormProps) => {
+    const form = useForm<TMemberTypeForm>({
         resolver: zodResolver(createMemberTypeSchema),
         reValidateMode: 'onChange',
         mode: 'onSubmit',
@@ -45,49 +50,54 @@ const MemberTypeCreateForm = ({
 
     const {
         error,
-        isPending: isCreating,
-        mutate: createMemberType,
-    } = useCreateMemberType({ onSuccess, onError })
+        isPending: isUpdating,
+        mutate: updateMemberType,
+    } = useUpdateMemberType({ onSuccess, onError })
+
+    const isDisabled = (field: Path<TMemberTypeForm>) =>
+        readOnly || disabledFields?.includes(field) || false
 
     return (
         <Form {...form}>
             <form
                 onSubmit={form.handleSubmit((formData) =>
-                    createMemberType(formData)
+                    updateMemberType({ memberTypeId, data: formData })
                 )}
                 className={cn('flex w-full flex-col gap-y-4', className)}
             >
                 <fieldset
-                    disabled={isCreating || readOnly}
+                    disabled={isUpdating || readOnly}
                     className="grid gap-x-6 gap-y-4 sm:gap-y-3"
                 >
                     <fieldset className="space-y-3">
                         <FormFieldWrapper
-                            control={form.control}
                             name="name"
                             label="Name"
+                            control={form.control}
+                            hiddenFields={hiddenFields}
                             render={({ field }) => (
                                 <Input
                                     {...field}
                                     id={field.name}
                                     placeholder="Member Type Name"
                                     autoComplete="member-type-name"
-                                    disabled={isCreating || readOnly}
+                                    disabled={isDisabled(field.name)}
                                 />
                             )}
                         />
 
                         <FormFieldWrapper
-                            control={form.control}
                             name="prefix"
                             label="Prefix"
+                            control={form.control}
+                            hiddenFields={hiddenFields}
                             render={({ field }) => (
                                 <Input
                                     {...field}
                                     id={field.name}
                                     placeholder="Prefix"
                                     autoComplete="member-type-prefix"
-                                    disabled={isCreating || readOnly}
+                                    disabled={isDisabled(field.name)}
                                 />
                             )}
                         />
@@ -101,8 +111,8 @@ const MemberTypeCreateForm = ({
                                     {...field}
                                     id={field.name}
                                     placeholder="Description"
-                                    autoCapitalize="member-type-description"
-                                    disabled={isCreating || readOnly}
+                                    autoComplete="member-type-description"
+                                    disabled={isDisabled(field.name)}
                                 />
                             )}
                         />
@@ -123,10 +133,10 @@ const MemberTypeCreateForm = ({
                         </Button>
                         <Button
                             type="submit"
-                            disabled={isCreating}
+                            disabled={isUpdating}
                             className="w-full self-end px-8 sm:w-fit"
                         >
-                            {isCreating ? <LoadingSpinner /> : 'Create'}
+                            {isUpdating ? <LoadingSpinner /> : 'Update'}
                         </Button>
                     </div>
                 </div>
@@ -135,14 +145,14 @@ const MemberTypeCreateForm = ({
     )
 }
 
-export const MemberTypeCreateFormModal = ({
-    title = 'Create Member Type',
-    description = 'Fill out the form to add a new member type.',
+export const MemberTypeUpdateFormModal = ({
+    title = 'Update Member Type',
+    description = 'Fill out the form to update member type.',
     className,
     formProps,
     ...props
 }: IModalProps & {
-    formProps?: Omit<IMemberTypeCreateFormProps, 'className'>
+    formProps: Omit<IMemberTypeFormProps, 'className'>
 }) => {
     return (
         <Modal
@@ -151,9 +161,9 @@ export const MemberTypeCreateFormModal = ({
             className={cn('', className)}
             {...props}
         >
-            <MemberTypeCreateForm {...formProps} />
+            <MemberTypeUpdateForm {...formProps} />
         </Modal>
     )
 }
 
-export default MemberTypeCreateForm
+export default MemberTypeUpdateForm
