@@ -7,7 +7,7 @@ import useDataTableState from "@/hooks/data-table-hooks/use-datatable-state";
 import { usePagination } from "@/hooks/use-pagination";
 import { cn } from "@/lib";
 import { IAccountResource } from "@/server/types/accounts/accounts";
-import { useQueryClient } from "@tanstack/react-query";
+// import { useQueryClient } from "@tanstack/react-query";
 import { useReactTable, getCoreRowModel, getSortedRowModel } from "@tanstack/react-table";
 import { useMemo } from "react";
 import { TableProps } from "../types";
@@ -42,7 +42,7 @@ const AccountsTable = ({
   onSelectData,
   actionComponent,
 }: AccountsTableProps) => {
-  const queryClient = useQueryClient();
+//   const queryClient = useQueryClient();
   const { pagination, setPagination } = usePagination();
   const { sortingState, tableSorting, setTableSorting } = useDataTableSorting();
 
@@ -119,17 +119,17 @@ const AccountsTable = ({
   return (
       <FilterContext.Provider value={filterState}>
           <div className={cn('flex h-full flex-col gap-y-2', className)}>
-              {/* <DataTableToolbar
+              <DataTableToolbar
                   className=""
-                  // globalSearchProps={{
-                  //     defaultMode: 'equal',
-                  //     targets: accountGlobalSearchTargets,
-                  // }}
+                  globalSearchProps={{
+                      defaultMode: 'equal',
+                      targets: accountsGlobalSearchTargets,
+                  }}
                   table={table}
-                  // refreshActionProps={{
-                  //     onClick: () => refetch(),
-                  //     isLoading: isPending || isRefetching,
-                  // }}
+                  refreshActionProps={{
+                      onClick: () => {},
+                      isLoading: false,
+                  }}
                   // deleteActionProps={{
                   //     onDeleteSuccess: () =>
                   //         queryClient.invalidateQueries({
@@ -162,7 +162,7 @@ const AccountsTable = ({
                       setFilterLogic: filterState.setFilterLogic,
                   }}
                   {...toolbarProps}
-              /> */}
+              />
               <DataTable
                   table={table}
                   isStickyHeader
