@@ -49,8 +49,8 @@ const ownerSidebarItem: TSidebarItem[] = [
                         Icon: UserClockIcon,
                     },
                     {
-                        text: 'Member Type',
-                        url: '/member-type',
+                        text: 'Member Types',
+                        url: '/member-types',
                         Icon: UserCogIcon,
                     },
                 ],

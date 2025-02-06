@@ -6,7 +6,14 @@ const OwnerViewMembersPage = () => {
     return (
         <PageContainer>
             <EnsureOwnerCompany disabled>
-                <MemberTypeTable />
+                <MemberTypeTable
+                    toolbarProps={{
+                        createActionProps: {
+                            onClick: () => {},
+                        },
+                    }}
+                    className="min-h-[90vh] w-full"
+                />
             </EnsureOwnerCompany>
         </PageContainer>
     )

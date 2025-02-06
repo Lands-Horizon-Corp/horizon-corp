@@ -30,10 +30,17 @@ const ownerMembersActivityRoute = createRoute({
     component: lazyRouteComponent(() => import('./members-activity-page')),
 })
 
+const ownerMemberTypesRoute = createRoute({
+    getParentRoute: () => ownerUserMemberRoute,
+    path: 'member-types',
+    component: lazyRouteComponent(() => import('./member-types-page')),
+})
+
 const OwnerUserMemberRoute = ownerUserMemberRoute.addChildren([
     ownerUserMemberIndexRoute,
     ownerViewMembersRoute,
     ownerMembersActivityRoute,
+    ownerMemberTypesRoute,
     OwnerMemberIdRoute,
 ])
 
