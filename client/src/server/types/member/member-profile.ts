@@ -122,8 +122,8 @@ export interface IMemberProfileRequest {
     }[]
 }
 
-
 export interface IMemberProfileResource extends ITimeStamps {
+    id: TEntityId
     oldReferenceID?: string
     passbookNumber?: string
 
