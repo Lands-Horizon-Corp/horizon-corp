@@ -139,7 +139,7 @@ export const useFilteredPaginatedMembers = ({
             return result
         },
         initialData: {
-            data: [],
+            data: [ ],
             pages: [],
             totalSize: 0,
             totalPage: 1,
