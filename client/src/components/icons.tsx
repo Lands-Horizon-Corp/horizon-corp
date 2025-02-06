@@ -44,6 +44,7 @@ import {
 
 import {
     LiaUser as UserIcon,
+    LiaUserCogSolid as UserCogIcon,
     LiaShieldAltSolid as ShieldIcon,
     LiaUserClockSolid as UserClockIcon,
     LiaUserShieldSolid as UserShieldIcon,
@@ -164,8 +165,9 @@ import {
     FaBold as FaBoldIcon,
     FaFileCsv as CsvIcon,
     FaPhoneAlt as PhoneIcon,
-
 } from 'react-icons/fa'
+
+import { FaVenusMars as GendersIcon } from "react-icons/fa6";
 
 import {
     RiListCheck3 as TransactionListIcon,
@@ -231,6 +233,8 @@ export {
     ZoomInIcon,
     AdjustIcon,
     Image2Icon,
+    UserCogIcon,
+    GendersIcon,
     RefreshIcon,
     ArrowUpIcon,
     SidebarIcon,

@@ -1,19 +1,21 @@
 import {
+    BankIcon,
     UserIcon,
     ShieldIcon,
     Users3Icon,
+    GendersIcon,
     ReportsIcon,
     BuildingIcon,
     SettingsIcon,
+    UserListIcon,
     DashboardIcon,
     FootstepsIcon,
-    NotificationIcon,
-    UserListIcon,
     UserClockIcon,
     UserShieldIcon,
     BuildingCogIcon,
+    NotificationIcon,
     BuildingBranchIcon,
-    BankIcon,
+    UserCogIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
@@ -46,6 +48,11 @@ const ownerSidebarItem: TSidebarItem[] = [
                         url: '/members-activity',
                         Icon: UserClockIcon,
                     },
+                    {
+                        text: 'Member Type',
+                        url: '/member-type',
+                        Icon: UserCogIcon,
+                    },
                 ],
             },
             {
@@ -64,6 +71,11 @@ const ownerSidebarItem: TSidebarItem[] = [
                         Icon: FootstepsIcon,
                     },
                 ],
+            },
+            {
+                text: 'Genders',
+                Icon: GendersIcon,
+                url: '/genders',
             },
         ],
     },
