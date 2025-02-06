@@ -1,15 +1,12 @@
 import z from 'zod'
-import { useFieldArray, useForm } from 'react-hook-form'
+import { Path, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import {
     Form,
     FormItem,
-    FormField,
     FormLabel,
     FormControl,
-    FormMessage,
-    FormHidableItem,
     FormDescription,
 } from '@/components/ui/form'
 import {
@@ -30,18 +27,19 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { useCreateMemberProfile } from '@/hooks/api-hooks/use-member-profile'
 import { createMemberProfileSchema } from '@/validations/form-validation/member-schema'
 
-import { cn } from '@/lib'
-import { IBaseCompNoChild } from '@/types'
 import {
+    XIcon,
     PlusIcon,
     TrashIcon,
     VerifiedPatchIcon,
-    XIcon,
 } from '@/components/icons'
 import TextEditor from '@/components/text-editor'
-import { PhoneInput } from '@/components/contact-input/contact-input'
 import { Textarea } from '@/components/ui/textarea'
-import { FormLabeledInputField } from '@/components/ui/form-labeled-input-field'
+import FormFieldWrapper from '@/components/ui/form-field-wrapper'
+import { PhoneInput } from '@/components/contact-input/contact-input'
+
+import { cn } from '@/lib'
+import { IBaseCompNoChild } from '@/types'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -76,8 +74,8 @@ const MemberApplicationForm = ({
         },
     })
 
-    const isDisabled = (field: keyof TMemberProfileForm) =>
-        readOnly || disabledFields?.includes(field)
+    const isDisabled = (field: Path<TMemberProfileForm>) =>
+        readOnly || disabledFields?.includes(field) || false
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
@@ -179,442 +177,395 @@ const MemberApplicationForm = ({
                         <div className="space-y-4">
                             <legend>Identification & Reference</legend>
                             <Separator />
-                            <FormLabeledInputField
-                                form={form}
-                                showMessage={true}
+                            <FormFieldWrapper
                                 name="passbookNumber"
+                                control={form.control}
                                 label="Passbook Number"
                                 hiddenFields={hiddenFields}
-                                placeholder="Enter Passbook Number"
-                                isDisabled={isDisabled('passbookNumber')}
+                                render={({ field }) => (
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Enter Passbook Number"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
+                                )}
                             />
-                            <FormLabeledInputField
+
+                            <FormFieldWrapper
                                 name="oldReferenceID"
-                                form={form}
-                                hiddenFields={hiddenFields}
-                                isDisabled={isDisabled('oldReferenceID')}
+                                control={form.control}
                                 label="Old Reference ID"
-                                placeholder="Enter Old Passbook/ID"
-                                showMessage={true}
+                                hiddenFields={hiddenFields}
+                                render={({ field }) => (
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Enter Old Passbook/ID"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
+                                )}
                             />
-                            <FormField
+
+                            <FormFieldWrapper
                                 name="status"
+                                label="Status"
                                 control={form.control}
+                                hiddenFields={hiddenFields}
                                 render={({ field }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
+                                    <Select
+                                        defaultValue={field.value}
+                                        onValueChange={field.onChange}
                                     >
-                                        <FormItem className="col-span-1 space-y-1">
-                                            <FormLabel htmlFor={field.name}>
-                                                Status
-                                            </FormLabel>
-                                            <Select
-                                                defaultValue={field.value}
-                                                onValueChange={field.onChange}
+                                        <FormControl>
+                                            <SelectTrigger
+                                                disabled={isDisabled(
+                                                    field.name
+                                                )}
                                             >
-                                                <FormControl>
-                                                    <SelectTrigger
-                                                        disabled={isDisabled(
-                                                            field.name
-                                                        )}
-                                                    >
-                                                        <SelectValue
-                                                            {...field}
-                                                            id={field.name}
-                                                            placeholder="Member Status"
-                                                        />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="Pending">
-                                                        Pending
-                                                    </SelectItem>
-                                                    <SelectItem value="Verified">
-                                                        Verified
-                                                    </SelectItem>
-                                                    <SelectItem value="Not Allowed">
-                                                        Not Allowed
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
+                                                <SelectValue
+                                                    {...field}
+                                                    id={field.name}
+                                                    placeholder="Member Status"
+                                                />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="Pending">
+                                                Pending
+                                            </SelectItem>
+                                            <SelectItem value="Verified">
+                                                Verified
+                                            </SelectItem>
+                                            <SelectItem value="Not Allowed">
+                                                Not Allowed
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 )}
                             />
-                            <FormField
+                            <FormFieldWrapper
+                                control={form.control}
                                 name="isMutualFundMember"
-                                control={form.control}
+                                hiddenFields={hiddenFields}
                                 render={({ field }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
-                                    >
-                                        <FormItem className="col-span-1">
-                                            <span className="inline-flex w-full items-center gap-x-2 rounded-xl bg-popover px-4 py-2">
-                                                <FormControl>
-                                                    <Checkbox
-                                                        id={field.name}
-                                                        disabled={isDisabled(
-                                                            field.name
-                                                        )}
-                                                        checked={field.value}
-                                                        onCheckedChange={(
-                                                            checked
-                                                        ) => {
-                                                            field.onChange(
-                                                                checked
-                                                            )
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormLabel
-                                                    htmlFor={field.name}
-                                                    className="ml-2 space-y-2"
-                                                >
-                                                    <span>
-                                                        Mutualfund Member
-                                                    </span>
-                                                    <FormDescription className="font-normal">
-                                                        Contributes to a pooled
-                                                        investment (mutual
-                                                        fund).
-                                                    </FormDescription>
-                                                </FormLabel>
-                                            </span>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
+                                    <span className="inline-flex w-full items-center gap-x-2 rounded-xl bg-popover px-4 py-2">
+                                        <FormControl>
+                                            <Checkbox
+                                                id={field.name}
+                                                disabled={isDisabled(
+                                                    field.name
+                                                )}
+                                                checked={field.value}
+                                                onCheckedChange={(checked) =>
+                                                    field.onChange(checked)
+                                                }
+                                            />
+                                        </FormControl>
+                                        <FormLabel
+                                            htmlFor={field.name}
+                                            className="ml-2 space-y-2"
+                                        >
+                                            <span>Mutualfund Member</span>
+                                            <FormDescription className="font-normal">
+                                                Contributes to a pooled
+                                                investment (mutual fund).
+                                            </FormDescription>
+                                        </FormLabel>
+                                    </span>
                                 )}
                             />
-                            <FormField
-                                name="isMicroFinanceMember"
+                            <FormFieldWrapper
                                 control={form.control}
+                                name="isMicroFinanceMember"
+                                hiddenFields={hiddenFields}
                                 render={({ field }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
-                                    >
-                                        <FormItem className="col-span-1">
-                                            <span className="inline-flex w-full items-center gap-x-2 rounded-xl bg-popover px-4 py-2">
-                                                <FormControl>
-                                                    <Checkbox
-                                                        id={field.name}
-                                                        disabled={isDisabled(
-                                                            field.name
-                                                        )}
-                                                        checked={field.value}
-                                                        onCheckedChange={(
-                                                            checked
-                                                        ) => {
-                                                            field.onChange(
-                                                                checked
-                                                            )
-                                                        }}
-                                                    />
-                                                </FormControl>
-                                                <FormLabel
-                                                    htmlFor={field.name}
-                                                    className="ml-2 space-y-2"
-                                                >
-                                                    <span>
-                                                        Micro Finance Member
-                                                    </span>
-                                                    <FormDescription className="font-normal">
-                                                        Participates in
-                                                        small-scale financial
-                                                        services.
-                                                    </FormDescription>
-                                                </FormLabel>
-                                            </span>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
+                                    <span className="inline-flex w-full items-center gap-x-2 rounded-xl bg-popover px-4 py-2">
+                                        <FormControl>
+                                            <Checkbox
+                                                id={field.name}
+                                                disabled={isDisabled(
+                                                    field.name
+                                                )}
+                                                checked={field.value}
+                                                onCheckedChange={(checked) =>
+                                                    field.onChange(checked)
+                                                }
+                                            />
+                                        </FormControl>
+                                        <FormLabel
+                                            htmlFor={field.name}
+                                            className="ml-2 space-y-2"
+                                        >
+                                            <span>Micro Finance Member</span>
+                                            <FormDescription className="font-normal">
+                                                Participates in small-scale
+                                                financial services.
+                                            </FormDescription>
+                                        </FormLabel>
+                                    </span>
                                 )}
                             />
                         </div>
+
                         <div className="space-y-4">
                             <legend>Personal Information</legend>
                             <Separator />
-                            <FormField
-                                name="contactNumber"
+                            <FormFieldWrapper
                                 control={form.control}
+                                name="contactNumber"
+                                label="Contact Number *"
+                                hiddenFields={hiddenFields}
                                 render={({
                                     field,
                                     fieldState: { invalid, error },
                                 }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
-                                    >
-                                        <FormItem className="col-span-1 space-y-1">
-                                            <FormLabel htmlFor={field.name}>
-                                                Contact Number *
-                                            </FormLabel>
-                                            <FormControl>
-                                                <div className="relative flex flex-1 items-center gap-x-2">
-                                                    <VerifiedPatchIcon
-                                                        className={cn(
-                                                            'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
-                                                            (invalid ||
-                                                                error) &&
-                                                                'text-destructive'
-                                                        )}
-                                                    />
-                                                    <PhoneInput
-                                                        {...field}
-                                                        className="w-full"
-                                                        defaultCountry="PH"
-                                                    />
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
+                                    <FormControl>
+                                        <div className="relative flex flex-1 items-center gap-x-2">
+                                            <VerifiedPatchIcon
+                                                className={cn(
+                                                    'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
+                                                    (invalid || error) &&
+                                                        'text-destructive'
+                                                )}
+                                            />
+                                            <PhoneInput
+                                                {...field}
+                                                className="w-full"
+                                                defaultCountry="PH"
+                                            />
+                                        </div>
+                                    </FormControl>
                                 )}
                             />
-                            <FormField
+                            <FormFieldWrapper
+                                control={form.control}
                                 name="civilStatus"
-                                control={form.control}
-                                render={({ field }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
-                                    >
-                                        <FormItem className="col-span-1 space-y-1">
-                                            <FormLabel htmlFor={field.name}>
-                                                Civil Status
-                                            </FormLabel>
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                            >
-                                                <FormControl>
-                                                    <SelectTrigger
-                                                        disabled={isDisabled(
-                                                            field.name
-                                                        )}
-                                                    >
-                                                        <SelectValue
-                                                            {...field}
-                                                            id={field.name}
-                                                            placeholder="Select Civil Status"
-                                                        />
-                                                    </SelectTrigger>
-                                                </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="Married">
-                                                        Married
-                                                    </SelectItem>
-                                                    <SelectItem value="Single">
-                                                        Single
-                                                    </SelectItem>
-                                                    <SelectItem value="Widowed">
-                                                        Widowed
-                                                    </SelectItem>
-                                                    <SelectItem value="Separated">
-                                                        Separated
-                                                    </SelectItem>
-                                                    <SelectItem value="N/A">
-                                                        N/A
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
-                                )}
-                            />
-                            <FormLabeledInputField
-                                name="occupation"
-                                form={form}
+                                label="Civil Status"
                                 hiddenFields={hiddenFields}
-                                isDisabled={isDisabled('occupation')}
-                                label="Occupation"
-                                placeholder="Enter Occupation"
-                                showMessage={true}
-                            />
-                            <FormField
-                                control={form.control}
-                                name="businessAddress"
                                 render={({ field }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
+                                    <Select
+                                        onValueChange={field.onChange}
+                                        defaultValue={field.value}
                                     >
-                                        <FormItem className="col-span-1 space-y-1">
-                                            <FormLabel htmlFor={field.name}>
-                                                Business Address
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Textarea
+                                        <FormControl>
+                                            <SelectTrigger
+                                                disabled={isDisabled(
+                                                    field.name
+                                                )}
+                                            >
+                                                <SelectValue
                                                     {...field}
                                                     id={field.name}
-                                                    placeholder="Enter business address"
-                                                    className="min-h-0"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
+                                                    placeholder="Select Civil Status"
                                                 />
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value="Married">
+                                                Married
+                                            </SelectItem>
+                                            <SelectItem value="Single">
+                                                Single
+                                            </SelectItem>
+                                            <SelectItem value="Widowed">
+                                                Widowed
+                                            </SelectItem>
+                                            <SelectItem value="Separated">
+                                                Separated
+                                            </SelectItem>
+                                            <SelectItem value="N/A">
+                                                N/A
+                                            </SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                 )}
                             />
-                            <FormField
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="occupation"
+                                label="Occupation"
+                                hiddenFields={hiddenFields}
+                                render={({ field }) => (
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Enter Occupation"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
+                                )}
+                            />
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="businessAddress"
+                                label="Business Address"
+                                hiddenFields={hiddenFields}
+                                render={({ field }) => (
+                                    <FormControl>
+                                        <Textarea
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Enter business address"
+                                            className="min-h-0"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
+                                )}
+                            />
+                            <FormFieldWrapper
                                 control={form.control}
                                 name="businessContact"
+                                label="Business Contact"
+                                hiddenFields={hiddenFields}
                                 render={({
                                     field,
-                                    fieldState: { invalid },
+                                    fieldState: { invalid, error },
                                 }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
-                                    >
-                                        <FormItem className="col-span-1 space-y-1">
-                                            <FormLabel htmlFor={field.name}>
-                                                Business Contact
-                                            </FormLabel>
-                                            <FormControl>
-                                                <div className="relative flex flex-1 items-center gap-x-2">
-                                                    <VerifiedPatchIcon
-                                                        className={cn(
-                                                            'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
-                                                            (invalid ||
-                                                                error) &&
-                                                                'text-destructive'
-                                                        )}
-                                                    />
-                                                    <PhoneInput
-                                                        {...field}
-                                                        disabled={isDisabled(
-                                                            field.name
-                                                        )}
-                                                        className="w-full"
-                                                        defaultCountry="PH"
-                                                    />
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
+                                    <FormControl>
+                                        <div className="relative flex flex-1 items-center gap-x-2">
+                                            <VerifiedPatchIcon
+                                                className={cn(
+                                                    'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
+                                                    (invalid || error) &&
+                                                        'text-destructive'
+                                                )}
+                                            />
+                                            <PhoneInput
+                                                {...field}
+                                                disabled={isDisabled(
+                                                    field.name
+                                                )}
+                                                className="w-full"
+                                                defaultCountry="PH"
+                                            />
+                                        </div>
+                                    </FormControl>
                                 )}
                             />
                         </div>
+
                         <div className="space-y-4">
                             <legend>Government Related Info</legend>
                             <Separator />
-
-                            <FormLabeledInputField
+                            <FormFieldWrapper
+                                control={form.control}
                                 name="tinNumber"
-                                form={form}
-                                hiddenFields={hiddenFields}
-                                isDisabled={isDisabled('tinNumber')}
                                 label="TIN Number"
-                                placeholder="Enter TIN Number"
+                                hiddenFields={hiddenFields}
+                                render={({ field }) => (
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Enter TIN Number"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
+                                )}
                             />
-
-                            <FormLabeledInputField
+                            <FormFieldWrapper
+                                control={form.control}
                                 name="sssNumber"
-                                form={form}
-                                hiddenFields={hiddenFields}
-                                isDisabled={isDisabled('sssNumber')}
                                 label="SSS Number"
-                                placeholder="Enter SSS Number"
+                                hiddenFields={hiddenFields}
+                                render={({ field }) => (
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Enter SSS Number"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
+                                )}
                             />
-
-                            <FormLabeledInputField
+                            <FormFieldWrapper
+                                control={form.control}
                                 name="pagibigNumber"
-                                form={form}
-                                hiddenFields={hiddenFields}
-                                isDisabled={isDisabled('pagibigNumber')}
                                 label="PAGIBIG Number"
-                                placeholder="Enter PAGIBIG Number"
-                            />
-
-                            <FormLabeledInputField
-                                name="philhealthNumber"
-                                form={form}
                                 hiddenFields={hiddenFields}
-                                isDisabled={isDisabled('philhealthNumber')}
+                                render={({ field }) => (
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Enter PAGIBIG Number"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
+                                )}
+                            />
+                            <FormFieldWrapper
+                                control={form.control}
+                                name="philhealthNumber"
                                 label="PhilHealth Number"
-                                placeholder="Enter PhilHealth Number"
+                                hiddenFields={hiddenFields}
+                                render={({ field }) => (
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            id={field.name}
+                                            placeholder="Enter PhilHealth Number"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
+                                )}
                             />
                         </div>
                     </div>
+
                     <div className="col-span-1 space-y-4">
                         <legend>Notes & Description</legend>
                         <Separator />
                         <fieldset className="grid gap-x-2 sm:grid-cols-2">
-                            <FormField
+                            <FormFieldWrapper
                                 name="notes"
+                                label="Notes *"
                                 control={form.control}
+                                hiddenFields={hiddenFields}
                                 render={({ field }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
-                                    >
-                                        <FormItem className="col-span-1 space-y-1">
-                                            <FormLabel htmlFor={field.name}>
-                                                Notes *
-                                            </FormLabel>
-                                            <FormControl>
-                                                <TextEditor
-                                                    {...field}
-                                                    placeholder="Enter Notes"
-                                                    className=""
-                                                    textEditorClassName="!max-w-none"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
+                                    <FormControl>
+                                        <TextEditor
+                                            {...field}
+                                            placeholder="Enter Notes"
+                                            className=""
+                                            textEditorClassName="!max-w-none"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
                                 )}
                             />
-                            <FormField
-                                name="description"
+                            <FormFieldWrapper
                                 control={form.control}
+                                name="description"
+                                label="Description *"
+                                hiddenFields={hiddenFields}
                                 render={({ field }) => (
-                                    <FormHidableItem
-                                        field={field.name}
-                                        hiddenFields={hiddenFields}
-                                    >
-                                        <FormItem className="col-span-1 space-y-1">
-                                            <FormLabel htmlFor={field.name}>
-                                                Description *
-                                            </FormLabel>
-                                            <FormControl>
-                                                <TextEditor
-                                                    {...field}
-                                                    placeholder="Enter Description"
-                                                />
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    </FormHidableItem>
+                                    <FormControl>
+                                        <TextEditor
+                                            {...field}
+                                            placeholder="Enter Description"
+                                            disabled={isDisabled(field.name)}
+                                        />
+                                    </FormControl>
                                 )}
                             />
                         </fieldset>
                     </div>
 
-                    <FormField
-                        control={form.control}
+                    <FormFieldWrapper
+                        label="Address"
                         name="memberAddress"
-                        render={({ fieldState }) => (
-                            <FormItem className="col-span-1 mt-8 space-y-2">
-                                <FormLabel>Address</FormLabel>
-
-                                {fieldState.error?.message && (
-                                    <FormMessage className="text-xs text-red-500">
-                                        {fieldState.error.message}
-                                    </FormMessage>
-                                )}
+                        control={form.control}
+                        hiddenFields={hiddenFields}
+                        render={() => (
+                            <>
                                 <Separator />
                                 <fieldset className="grid gap-4">
                                     {memberAddress.fields.map(
@@ -623,36 +574,65 @@ const MemberApplicationForm = ({
                                                 key={addressField.id}
                                                 className="flex w-full flex-col gap-4 md:flex-row"
                                             >
-                                                <FormLabeledInputField
+                                                <FormFieldWrapper
+                                                    control={form.control}
                                                     name={`memberAddress.${index}.label`}
-                                                    form={form}
                                                     label="Label *"
-                                                    placeholder="Label"
-                                                    className="w-full"
+                                                    hiddenFields={hiddenFields}
+                                                    render={({ field }) => (
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Label"
+                                                            />
+                                                        </FormControl>
+                                                    )}
                                                 />
-
-                                                <FormLabeledInputField
+                                                <FormFieldWrapper
+                                                    control={form.control}
                                                     name={`memberAddress.${index}.barangay`}
-                                                    form={form}
                                                     label="Barangay *"
-                                                    placeholder="Barangay"
-                                                    className="w-full"
+                                                    hiddenFields={hiddenFields}
+                                                    render={({ field }) => (
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Barangay"
+                                                            />
+                                                        </FormControl>
+                                                    )}
                                                 />
-
-                                                <FormLabeledInputField
+                                                <FormFieldWrapper
+                                                    control={form.control}
                                                     name={`memberAddress.${index}.city`}
-                                                    form={form}
                                                     label="City *"
-                                                    placeholder="City"
-                                                    className="w-full"
+                                                    hiddenFields={hiddenFields}
+                                                    render={({ field }) => (
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="City"
+                                                            />
+                                                        </FormControl>
+                                                    )}
                                                 />
-
-                                                <FormLabeledInputField
+                                                <FormFieldWrapper
+                                                    control={form.control}
                                                     name={`memberAddress.${index}.province`}
-                                                    form={form}
                                                     label="Province *"
-                                                    placeholder="Province"
-                                                    className="w-full"
+                                                    hiddenFields={hiddenFields}
+                                                    render={({ field }) => (
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Province"
+                                                            />
+                                                        </FormControl>
+                                                    )}
                                                 />
                                                 <Button
                                                     size="icon"
@@ -687,24 +667,18 @@ const MemberApplicationForm = ({
                                 >
                                     <PlusIcon className="mr-2" /> Add Address
                                 </Button>
-                            </FormItem>
+                            </>
                         )}
                     />
 
-                    <FormField
+                    <FormFieldWrapper
                         control={form.control}
+                        hiddenFields={hiddenFields}
                         name="memberContactNumberReferences"
-                        render={({ fieldState }) => (
-                            <FormItem className="col-span-1 mt-8 space-y-2">
-                                <FormLabel>Contact Number References</FormLabel>
-                                {fieldState.error?.message && (
-                                    <FormMessage className="text-xs text-red-500">
-                                        {fieldState.error.message}
-                                    </FormMessage>
-                                )}
-
+                        label="Member Contact Number References"
+                        render={() => (
+                            <FormItem className="col-span-1 space-y-2">
                                 <Separator />
-
                                 <fieldset className="grid gap-4">
                                     {memberContactNumberReferences.fields.map(
                                         (contactField, index) => (
@@ -712,35 +686,48 @@ const MemberApplicationForm = ({
                                                 key={contactField.id}
                                                 className="flex w-full flex-col gap-4 md:flex-row"
                                             >
-                                                <FormLabeledInputField
-                                                    name={`memberContactNumberReferences.${index}.name`}
-                                                    form={form}
-                                                    label="Name *"
-                                                    placeholder="Reference Name"
-                                                    className="w-full"
-                                                />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
-                                                    name={`memberContactNumberReferences.${index}.description`}
+                                                    label="Name *"
+                                                    hiddenFields={hiddenFields}
+                                                    name={`memberContactNumberReferences.${index}.name`}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Description *
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Textarea
-                                                                    placeholder="Description Content"
-                                                                    className="min-h-0"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Reference Name"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
+                                                    control={form.control}
+                                                    name={`memberContactNumberReferences.${index}.description`}
+                                                    label="Description *"
+                                                    hiddenFields={hiddenFields}
+                                                    render={({ field }) => (
+                                                        <FormControl>
+                                                            <Textarea
+                                                                {...field}
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="min-h-0"
+                                                                placeholder="Description Content"
+                                                            />
+                                                        </FormControl>
+                                                    )}
+                                                />
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberContactNumberReferences.${index}.contactNumber`}
+                                                    label="Contact Number *"
+                                                    hiddenFields={hiddenFields}
                                                     render={({
                                                         field,
                                                         fieldState: {
@@ -748,33 +735,26 @@ const MemberApplicationForm = ({
                                                             error,
                                                         },
                                                     }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel
-                                                                htmlFor={
-                                                                    field.name
-                                                                }
-                                                            >
-                                                                Contact Number *
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <div className="relative flex flex-1 items-center gap-x-2">
-                                                                    <VerifiedPatchIcon
-                                                                        className={cn(
-                                                                            'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
-                                                                            (invalid ||
-                                                                                error) &&
-                                                                                'text-destructive'
-                                                                        )}
-                                                                    />
-                                                                    <PhoneInput
-                                                                        {...field}
-                                                                        className="w-full"
-                                                                        defaultCountry="PH"
-                                                                    />
-                                                                </div>
-                                                            </FormControl>
-                                                            <FormMessage className="text-xs" />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <div className="relative flex flex-1 items-center gap-x-2">
+                                                                <VerifiedPatchIcon
+                                                                    className={cn(
+                                                                        'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
+                                                                        (invalid ||
+                                                                            error) &&
+                                                                            'text-destructive'
+                                                                    )}
+                                                                />
+                                                                <PhoneInput
+                                                                    {...field}
+                                                                    disabled={isDisabled(
+                                                                        field.name
+                                                                    )}
+                                                                    className="w-full"
+                                                                    defaultCountry="PH"
+                                                                />
+                                                            </div>
+                                                        </FormControl>
                                                     )}
                                                 />
                                                 <Button
@@ -794,7 +774,6 @@ const MemberApplicationForm = ({
                                         )
                                     )}
                                 </fieldset>
-
                                 <Button
                                     size="sm"
                                     type="button"
@@ -807,79 +786,106 @@ const MemberApplicationForm = ({
                                         })
                                     }
                                 >
-                                    <PlusIcon className="mr-2" />
-                                    Add Contact Reference
+                                    <PlusIcon className="mr-2" /> Add Contact
+                                    Reference
                                 </Button>
                             </FormItem>
                         )}
                     />
 
-                    <FormField
+                    <FormFieldWrapper
                         control={form.control}
                         name="memberIncome"
-                        render={({ fieldState }) => (
-                            <FormItem className="col-span-1 mt-8 space-y-2">
-                                <FormLabel>Member Income</FormLabel>
-                                {fieldState.error?.message && (
-                                    <FormMessage className="text-xs text-red-500">
-                                        {fieldState.error.message}
-                                    </FormMessage>
-                                )}
-
+                        label="Member Income"
+                        hiddenFields={hiddenFields}
+                        render={() => (
+                            <FormItem className="col-span-1 space-y-2">
                                 <Separator />
-
-                                <fieldset className="grid gap-4">
+                                <fieldset
+                                    disabled={isDisabled('memberIncome')}
+                                    className="grid gap-4"
+                                >
                                     {incomeFields.map((incomeField, index) => (
                                         <div
                                             key={incomeField.id}
                                             className="flex w-full flex-col gap-4 md:flex-row"
                                         >
-                                            <FormLabeledInputField
+                                            <FormFieldWrapper
+                                                control={form.control}
                                                 name={`memberIncome.${index}.name`}
-                                                form={form}
-                                                hiddenFields={hiddenFields}
                                                 label="Name *"
-                                                placeholder="Income Name"
-                                                className="w-full"
+                                                hiddenFields={hiddenFields}
+                                                render={({ field }) => (
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Income Name"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
+                                                )}
                                             />
-
-                                            <FormLabeledInputField
+                                            <FormFieldWrapper
+                                                control={form.control}
                                                 name={`memberIncome.${index}.amount`}
-                                                form={form}
-                                                hiddenFields={hiddenFields}
                                                 label="Amount *"
-                                                placeholder="0"
-                                                className="w-full"
-                                                inputProps={{ type: 'number' }}
-                                            />
-
-                                            <FormLabeledInputField
-                                                name={`memberIncome.${index}.date`}
-                                                form={form}
                                                 hiddenFields={hiddenFields}
-                                                label="Date *"
-                                                placeholder="YYYY-MM-DD"
-                                                className="w-full"
-                                                inputProps={{ type: 'date' }}
+                                                render={({ field }) => (
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="0"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                            type="number"
+                                                        />
+                                                    </FormControl>
+                                                )}
                                             />
-
-                                            <FormField
+                                            <FormFieldWrapper
+                                                control={form.control}
+                                                name={`memberIncome.${index}.date`}
+                                                label="Date *"
+                                                hiddenFields={hiddenFields}
+                                                render={({ field }) => (
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="YYYY-MM-DD"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                            type="date"
+                                                        />
+                                                    </FormControl>
+                                                )}
+                                            />
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberIncome.${index}.description`}
+                                                label="Description *"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full space-y-1">
-                                                        <FormLabel>
-                                                            Description *
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Textarea
-                                                                placeholder="Description"
-                                                                className="min-h-0"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Textarea
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Description"
+                                                            className="min-h-0"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
                                             <Button
@@ -889,6 +895,9 @@ const MemberApplicationForm = ({
                                                 onClick={() =>
                                                     removeIncome(index)
                                                 }
+                                                disabled={isDisabled(
+                                                    'memberIncome'
+                                                )}
                                                 className="self-center rounded-full p-2"
                                             >
                                                 <XIcon className="size-4" />
@@ -896,7 +905,6 @@ const MemberApplicationForm = ({
                                         </div>
                                     ))}
                                 </fieldset>
-
                                 <Button
                                     size="sm"
                                     type="button"
@@ -909,6 +917,7 @@ const MemberApplicationForm = ({
                                             description: '',
                                         })
                                     }
+                                    disabled={isDisabled('memberIncome')}
                                 >
                                     <PlusIcon className="mr-2" />
                                     Add Income
@@ -917,98 +926,99 @@ const MemberApplicationForm = ({
                         )}
                     />
 
-                    <FormField
+                    <FormFieldWrapper
                         control={form.control}
+                        label="Member Relative Accounts"
                         name="memberRelativeAccounts"
-                        render={({ fieldState }) => (
+                        hiddenFields={hiddenFields}
+                        render={() => (
                             <FormItem className="col-span-1 mt-8 space-y-2">
-                                <FormLabel>Relative Accounts</FormLabel>
-                                {fieldState.error?.message && (
-                                    <FormMessage className="text-xs text-red-500">
-                                        {fieldState.error.message}
-                                    </FormMessage>
-                                )}
-
                                 <Separator />
-
-                                <fieldset className="grid gap-4">
+                                <fieldset
+                                    disabled={isDisabled(
+                                        'memberRelativeAccounts'
+                                    )}
+                                    className="grid gap-4"
+                                >
                                     {relativeFields.map((relField, index) => (
                                         <div
                                             key={relField.id}
                                             className="flex w-full flex-col gap-4 md:flex-row"
                                         >
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberRelativeAccounts.${index}.membersProfileID`}
+                                                label="Member's Profile ID"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Member's Profile ID
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                {...field}
-                                                                placeholder="Member's Profile ID"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Member's Profile ID"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberRelativeAccounts.${index}.relativeProfileMemberID`}
+                                                label="Relative Profile Member ID"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Relative Profile
-                                                            Member ID
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                {...field}
-                                                                placeholder="Relative Profile Member ID"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Relative Profile Member ID"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberRelativeAccounts.${index}.familyRelationship`}
+                                                label="Family Relationship"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Family Relationship
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                {...field}
-                                                                placeholder="e.g. Spouse, Sibling"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="e.g. Spouse, Sibling"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberRelativeAccounts.${index}.description`}
+                                                label="Description"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Description
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Textarea
-                                                                {...field}
-                                                                placeholder="Additional details"
-                                                                className="min-h-0"
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Textarea
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Additional details"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="min-h-0"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
                                             <Button
@@ -1018,6 +1028,9 @@ const MemberApplicationForm = ({
                                                 onClick={() =>
                                                     removeRelative(index)
                                                 }
+                                                disabled={isDisabled(
+                                                    'memberRelativeAccounts'
+                                                )}
                                                 className="self-center rounded-full p-2"
                                             >
                                                 <XIcon className="size-4" />
@@ -1037,6 +1050,9 @@ const MemberApplicationForm = ({
                                             description: '',
                                         })
                                     }
+                                    disabled={isDisabled(
+                                        'memberRelativeAccounts'
+                                    )}
                                 >
                                     <PlusIcon className="mr-2" />
                                     Add Relative
@@ -1045,77 +1061,79 @@ const MemberApplicationForm = ({
                         )}
                     />
 
-                    <FormField
+                    <FormFieldWrapper
                         control={form.control}
                         name="memberAssets"
-                        render={({ fieldState }) => (
-                            <FormItem className="col-span-1 mt-8 space-y-2">
-                                <FormLabel>Assets</FormLabel>
-                                {fieldState.error?.message && (
-                                    <FormMessage className="text-xs text-red-500">
-                                        {fieldState.error.message}
-                                    </FormMessage>
-                                )}
+                        label="Member Assets"
+                        hiddenFields={hiddenFields}
+                        render={() => (
+                            <FormItem className="col-span-1 space-y-2">
                                 <Separator />
-                                <fieldset className="grid gap-4">
+                                <fieldset
+                                    disabled={isDisabled('memberAssets')}
+                                    className="grid gap-4"
+                                >
                                     {memberAssetsFields.map(
                                         (assetField, index) => (
                                             <div
                                                 key={assetField.id}
                                                 className="flex w-full flex-col gap-4 md:flex-row"
                                             >
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberAssets.${index}.name`}
+                                                    label="Name"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Name
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Name"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Name"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberAssets.${index}.entryDate`}
+                                                    label="Entry Date"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Entry Date
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    type="date"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Entry Date"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                                type="date"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberAssets.${index}.description`}
+                                                    label="Description"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Description
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Textarea
-                                                                    className="min-h-0"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                {...field}
+                                                                id={field.name}
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="min-h-0"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
                                                 <Button
@@ -1125,6 +1143,9 @@ const MemberApplicationForm = ({
                                                     onClick={() =>
                                                         removeAsset(index)
                                                     }
+                                                    disabled={isDisabled(
+                                                        'memberAssets'
+                                                    )}
                                                     className="self-center rounded-full p-2"
                                                 >
                                                     <XIcon className="size-4" />
@@ -1144,6 +1165,7 @@ const MemberApplicationForm = ({
                                             name: '',
                                         })
                                     }
+                                    disabled={isDisabled('memberAssets')}
                                 >
                                     <PlusIcon className="mr-2" />
                                     Add Asset
@@ -1152,97 +1174,100 @@ const MemberApplicationForm = ({
                         )}
                     />
 
-                    <FormField
+                    <FormFieldWrapper
                         control={form.control}
                         name="memberExpenses"
-                        render={({ fieldState }) => (
+                        label="Member Expenses"
+                        hiddenFields={hiddenFields}
+                        render={() => (
                             <FormItem className="col-span-1 mt-8 space-y-2">
-                                <FormLabel>Expenses</FormLabel>
-                                {fieldState.error?.message && (
-                                    <FormMessage className="text-xs text-red-500">
-                                        {fieldState.error.message}
-                                    </FormMessage>
-                                )}
                                 <Separator />
-                                <fieldset className="grid gap-4">
+                                <fieldset
+                                    disabled={isDisabled('memberExpenses')}
+                                    className="grid gap-4"
+                                >
                                     {memberExpensesFields.map(
                                         (expenseField, index) => (
                                             <div
                                                 key={expenseField.id}
                                                 className="flex w-full flex-col gap-4 md:flex-row"
                                             >
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberExpenses.${index}.name`}
+                                                    label="Name"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Name
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Name"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Name"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberExpenses.${index}.date`}
+                                                    label="Date"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Date
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    type="date"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                type="date"
+                                                                placeholder="Date"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberExpenses.${index}.amount`}
+                                                    label="Amount"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Amount
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    type="number"
-                                                                    placeholder="0"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                type="number"
+                                                                placeholder="0"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberExpenses.${index}.description`}
+                                                    label="Description"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Description
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Textarea
-                                                                    placeholder="Description"
-                                                                    className="min-h-0"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Description"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="min-h-0"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
                                                 <Button
@@ -1252,6 +1277,9 @@ const MemberApplicationForm = ({
                                                     onClick={() =>
                                                         removeExpense(index)
                                                     }
+                                                    disabled={isDisabled(
+                                                        'memberExpenses'
+                                                    )}
                                                     className="self-center rounded-full p-2"
                                                 >
                                                     <XIcon className="size-4" />
@@ -1272,6 +1300,7 @@ const MemberApplicationForm = ({
                                             description: '',
                                         })
                                     }
+                                    disabled={isDisabled('memberExpenses')}
                                 >
                                     <PlusIcon className="mr-2" />
                                     Add Expense
@@ -1280,113 +1309,116 @@ const MemberApplicationForm = ({
                         )}
                     />
 
-                    <FormField
+                    <FormFieldWrapper
                         control={form.control}
                         name="memberJointAccounts"
-                        render={({ fieldState }) => (
-                            <FormItem className="col-span-1 mt-8 space-y-2">
-                                <FormLabel>Joint Accounts</FormLabel>
-                                {fieldState.error?.message && (
-                                    <FormMessage className="text-xs text-red-500">
-                                        {fieldState.error.message}
-                                    </FormMessage>
-                                )}
+                        label="Member Joint Accounts"
+                        hiddenFields={hiddenFields}
+                        render={() => (
+                            <FormItem className="col-span-1 space-y-2">
                                 <Separator />
-                                <fieldset className="grid gap-4">
+                                <fieldset
+                                    disabled={isDisabled('memberJointAccounts')}
+                                    className="grid gap-4"
+                                >
                                     {jointFields.map((jointField, index) => (
                                         <div
                                             key={jointField.id}
                                             className="flex w-full flex-col gap-4 md:flex-row"
                                         >
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberJointAccounts.${index}.firstName`}
+                                                label="First Name"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            First Name
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="e.g. John"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="e.g. John"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberJointAccounts.${index}.lastName`}
+                                                label="Last Name"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Last Name
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="e.g. Doe"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="e.g. Doe"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberJointAccounts.${index}.middleName`}
+                                                label="Middle Name"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Middle Name
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="e.g. M."
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="e.g. M."
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberJointAccounts.${index}.familyRelationship`}
+                                                label="Family Relationship"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Family Relationship
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="e.g. Cousin, Spouse"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="e.g. Cousin, Spouse"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberJointAccounts.${index}.description`}
+                                                label="Description"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Description
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Textarea
-                                                                className="min-h-0"
-                                                                placeholder="Description"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Textarea
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Description"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="min-h-0"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
                                             <Button
@@ -1396,6 +1428,9 @@ const MemberApplicationForm = ({
                                                 onClick={() =>
                                                     removeJoint(index)
                                                 }
+                                                disabled={isDisabled(
+                                                    'memberJointAccounts'
+                                                )}
                                                 className="self-center rounded-full p-2"
                                             >
                                                 <XIcon className="size-4" />
@@ -1409,13 +1444,14 @@ const MemberApplicationForm = ({
                                     variant="secondary"
                                     onClick={() =>
                                         addJoint({
-                                            description: '',
                                             firstName: '',
                                             lastName: '',
                                             middleName: '',
                                             familyRelationship: '',
+                                            description: '',
                                         })
                                     }
+                                    disabled={isDisabled('memberJointAccounts')}
                                 >
                                     <PlusIcon className="mr-2" />
                                     Add Joint Account
@@ -1424,117 +1460,117 @@ const MemberApplicationForm = ({
                         )}
                     />
 
-                    <FormField
+                    <FormFieldWrapper
                         control={form.control}
                         name="memberRecruits"
-                        render={({ fieldState }) => (
-                            <FormItem className="col-span-1 mt-8 space-y-2">
-                                <FormLabel>Recruits</FormLabel>
-                                {fieldState.error?.message && (
-                                    <FormMessage className="text-xs text-red-500">
-                                        {fieldState.error.message}
-                                    </FormMessage>
-                                )}
+                        label="Member Recruits"
+                        hiddenFields={hiddenFields}
+                        render={() => (
+                            <FormItem className="col-span-1 space-y-2">
                                 <Separator />
-                                <fieldset className="grid gap-4">
+                                <fieldset
+                                    disabled={isDisabled('memberRecruits')}
+                                    className="grid gap-4"
+                                >
                                     {recruitFields.map(
                                         (recruitField, index) => (
                                             <div
                                                 key={recruitField.id}
                                                 className="flex w-full flex-col gap-4 md:flex-row"
                                             >
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberRecruits.${index}.membersProfileID`}
+                                                    label="Member's Profile ID"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Member's Profile
-                                                                ID
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Member's Profile ID"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Member's Profile ID"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberRecruits.${index}.membersProfileRecruitedID`}
+                                                    label="Recruited Member's Prof. ID"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Recruited
-                                                                Member's Prof.
-                                                                ID
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Recruited Member's Profile"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Recruited Member's Profile"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberRecruits.${index}.dateRecruited`}
+                                                    label="Date Recruited"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Date Recruited
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    type="date"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                type="date"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberRecruits.${index}.description`}
+                                                    label="Description"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Description
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Textarea
-                                                                    className="min-h-0"
-                                                                    placeholder="Description"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Textarea
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Description"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="min-h-0"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
-                                                <FormField
+                                                <FormFieldWrapper
                                                     control={form.control}
                                                     name={`memberRecruits.${index}.name`}
+                                                    label="Name"
+                                                    hiddenFields={hiddenFields}
                                                     render={({ field }) => (
-                                                        <FormItem className="w-full">
-                                                            <FormLabel>
-                                                                Name
-                                                            </FormLabel>
-                                                            <FormControl>
-                                                                <Input
-                                                                    placeholder="Name"
-                                                                    {...field}
-                                                                />
-                                                            </FormControl>
-                                                            <FormMessage />
-                                                        </FormItem>
+                                                        <FormControl>
+                                                            <Input
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Name"
+                                                                disabled={isDisabled(
+                                                                    field.name
+                                                                )}
+                                                                className="w-full"
+                                                            />
+                                                        </FormControl>
                                                     )}
                                                 />
                                                 <Button
@@ -1544,6 +1580,9 @@ const MemberApplicationForm = ({
                                                     onClick={() =>
                                                         removeRecruit(index)
                                                     }
+                                                    disabled={isDisabled(
+                                                        'memberRecruits'
+                                                    )}
                                                     className="self-center rounded-full p-2"
                                                 >
                                                     <XIcon className="size-4" />
@@ -1565,6 +1604,7 @@ const MemberApplicationForm = ({
                                             name: '',
                                         })
                                     }
+                                    disabled={isDisabled('memberRecruits')}
                                 >
                                     <PlusIcon className="mr-2" />
                                     Add Recruit
@@ -1573,137 +1613,140 @@ const MemberApplicationForm = ({
                         )}
                     />
 
-                    <FormField
+                    <FormFieldWrapper
                         control={form.control}
                         name="memberGovernmentBenefits"
-                        render={({ fieldState }) => (
-                            <FormItem className="col-span-1 mt-8 space-y-2">
-                                <FormLabel>Government Benefits</FormLabel>
-                                {fieldState.error?.message && (
-                                    <FormMessage className="text-xs text-red-500">
-                                        {fieldState.error.message}
-                                    </FormMessage>
-                                )}
+                        label="Government Benefits"
+                        hiddenFields={hiddenFields}
+                        render={() => (
+                            <FormItem className="col-span-1 space-y-2">
                                 <Separator />
-                                <fieldset className="grid gap-4">
+                                <fieldset
+                                    disabled={isDisabled(
+                                        'memberGovernmentBenefits'
+                                    )}
+                                    className="grid gap-4"
+                                >
                                     {govtFields.map((benefitField, index) => (
                                         <div
                                             key={benefitField.id}
                                             className="flex w-full flex-col gap-4 md:flex-row"
                                         >
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberGovernmentBenefits.${index}.country`}
+                                                label="Country"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Country
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="Country"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Country"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberGovernmentBenefits.${index}.name`}
+                                                label="Name"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Name
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="Name"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Name"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberGovernmentBenefits.${index}.description`}
+                                                label="Description"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Description
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Textarea
-                                                                className="min-h-0"
-                                                                placeholder="Description"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Textarea
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Description"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="min-h-0"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberGovernmentBenefits.${index}.value`}
+                                                label="Value"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Value
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                type="number"
-                                                                placeholder="0"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            type="number"
+                                                            placeholder="0"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberGovernmentBenefits.${index}.frontMediaID`}
+                                                label="Front Media ID"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Front Media ID
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="Front Media ID"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Front Media ID"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-
-                                            <FormField
+                                            <FormFieldWrapper
                                                 control={form.control}
                                                 name={`memberGovernmentBenefits.${index}.backMediaID`}
+                                                label="Back Media ID"
+                                                hiddenFields={hiddenFields}
                                                 render={({ field }) => (
-                                                    <FormItem className="w-full">
-                                                        <FormLabel>
-                                                            Back Media ID
-                                                        </FormLabel>
-                                                        <FormControl>
-                                                            <Input
-                                                                placeholder="Back Media ID"
-                                                                {...field}
-                                                            />
-                                                        </FormControl>
-                                                        <FormMessage />
-                                                    </FormItem>
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Back Media ID"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
                                                 )}
                                             />
-
                                             <Button
                                                 size="icon"
                                                 variant="secondary"
@@ -1711,6 +1754,9 @@ const MemberApplicationForm = ({
                                                 onClick={() =>
                                                     removeGovtBenefit(index)
                                                 }
+                                                disabled={isDisabled(
+                                                    'memberGovernmentBenefits'
+                                                )}
                                                 className="self-center rounded-full p-2"
                                             >
                                                 <XIcon className="size-4" />
@@ -1732,6 +1778,9 @@ const MemberApplicationForm = ({
                                             backMediaID: undefined,
                                         })
                                     }
+                                    disabled={isDisabled(
+                                        'memberGovernmentBenefits'
+                                    )}
                                 >
                                     <PlusIcon className="mr-2" />
                                     Add Government Benefit
@@ -1740,73 +1789,90 @@ const MemberApplicationForm = ({
                         )}
                     />
 
-                    <div className="col-span-1 mt-8 space-y-2">
-                        <legend>Descriptions</legend>
-                        <Separator />
-                        <fieldset className="grid gap-4 sm:grid-cols-2">
-                            {fields.map((field, index) => (
-                                <div
-                                    key={field.id}
-                                    className="relative space-y-2 rounded-lg bg-popover p-4"
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="memberDescriptions"
+                        label="Descriptions"
+                        hiddenFields={hiddenFields}
+                        render={() => (
+                            <FormItem className="col-span-1 space-y-2">
+                                <Separator />
+                                <fieldset
+                                    disabled={isDisabled('memberDescriptions')}
+                                    className="grid gap-4 sm:grid-cols-2"
                                 >
-                                    <FormField
-                                        control={form.control}
-                                        name={`memberDescriptions.${index}.name`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Name</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        placeholder="Description Name"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <FormField
-                                        control={form.control}
-                                        name={`memberDescriptions.${index}.description`}
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>
-                                                    Description
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <TextEditor
-                                                        placeholder="Description Content"
-                                                        {...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                    <Button
-                                        size="icon"
-                                        type="button"
-                                        variant="secondary"
-                                        onClick={() => remove(index)}
-                                        className="absolute right-2 top-0 size-fit rounded-full p-2"
-                                    >
-                                        <TrashIcon className="size-4" />
-                                    </Button>
-                                </div>
-                            ))}
-                        </fieldset>
-                        <Button
-                            size="sm"
-                            type="button"
-                            variant="secondary"
-                            className="items-center"
-                            onClick={() =>
-                                append({ name: '', description: '' })
-                            }
-                        >
-                            <PlusIcon className="mr-2" /> Add Description
-                        </Button>
-                    </div>
+                                    {fields.map((field, index) => (
+                                        <div
+                                            key={field.id}
+                                            className="relative space-y-2 rounded-lg bg-popover p-4"
+                                        >
+                                            <FormFieldWrapper
+                                                control={form.control}
+                                                name={`memberDescriptions.${index}.name`}
+                                                label="Name"
+                                                hiddenFields={hiddenFields}
+                                                render={({ field }) => (
+                                                    <FormControl>
+                                                        <Input
+                                                            {...field}
+                                                            id={field.name}
+                                                            placeholder="Description Name"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="w-full"
+                                                        />
+                                                    </FormControl>
+                                                )}
+                                            />
+                                            <FormFieldWrapper
+                                                control={form.control}
+                                                name={`memberDescriptions.${index}.description`}
+                                                label="Description"
+                                                hiddenFields={hiddenFields}
+                                                render={({ field }) => (
+                                                    <FormControl>
+                                                        <TextEditor
+                                                            {...field}
+                                                            placeholder="Description Content"
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                            className="min-h-0"
+                                                        />
+                                                    </FormControl>
+                                                )}
+                                            />
+                                            <Button
+                                                size="icon"
+                                                type="button"
+                                                variant="secondary"
+                                                onClick={() => remove(index)}
+                                                disabled={isDisabled(
+                                                    'memberDescriptions'
+                                                )}
+                                                className="absolute right-2 top-0 size-fit rounded-full p-2"
+                                            >
+                                                <TrashIcon className="size-4" />
+                                            </Button>
+                                        </div>
+                                    ))}
+                                </fieldset>
+                                <Button
+                                    size="sm"
+                                    type="button"
+                                    variant="secondary"
+                                    onClick={() =>
+                                        append({ name: '', description: '' })
+                                    }
+                                    disabled={isDisabled('memberDescriptions')}
+                                >
+                                    <PlusIcon className="mr-2" /> Add
+                                    Description
+                                </Button>
+                            </FormItem>
+                        )}
+                    />
                 </fieldset>
 
                 <FormErrorMessage errorMessage={error} />
