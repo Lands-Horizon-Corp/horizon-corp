@@ -1,8 +1,8 @@
 // services/MemberService.ts
 import qs from 'query-string'
 
-import APIService from './api-service'
-import { downloadFile } from '../helpers'
+import APIService from '../api-service'
+import { downloadFile } from '../../helpers'
 
 import {
     TEntityId,
@@ -10,7 +10,7 @@ import {
     IMemberRequest,
     IMemberResource,
     IMemberPaginatedResource,
-} from '../types'
+} from '../../types'
 
 /**
  * Service class to handle CRUD operations for members.

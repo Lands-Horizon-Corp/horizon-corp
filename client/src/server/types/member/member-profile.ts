@@ -1,7 +1,7 @@
-import { IBranchResource } from '../branch'
+import { IMediaResource } from '../media'
 import { IMemberResource } from './member'
+import { IBranchResource } from '../branch'
 import { IEmployeeResource } from '../employee'
-import { ITimeStamps, TAccountStatus, TEntityId } from '../common'
 import { IMemberTypeResource } from './member-type'
 import { IMemberAssetsResource } from './member-assets'
 import { IMemberWalletResource } from './member-wallet'
@@ -17,12 +17,11 @@ import { IMemberJointAccountsResource } from './member-joint-accounts'
 import { IMemberClassificationResource } from './member-classification'
 import { IMemberRelativeAccountsResource } from './member-relative-accounts'
 import { IMemberGovernmentBenefitsResource } from './member-government-benefits'
+import { ITimeStamps, TAccountStatus, TCivilStatus, TEntityId } from '../common'
 import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history'
 import { IMemberContactNumberReferencesResource } from './member-contact-number-references'
-import { IMediaResource } from '../media'
 
 export interface IMemberProfileRequest {
-    id: TEntityId
     oldReferenceID?: string
     passbookNumber?: string
 
@@ -30,13 +29,13 @@ export interface IMemberProfileRequest {
     description: string
     contactNumber: string
     tinNumber?: string
-    civilStatus: string
+    civilStatus: TCivilStatus
     occupation?: string
     sssNumber?: string
     businessAddress?: string
     businessContact?: string
 
-    status: TAccountStatus
+    status: 'Pending' | 'Verified' | 'Not Allowed'
     isClosed: boolean
 
     pagibigNumber?: string
@@ -47,30 +46,84 @@ export interface IMemberProfileRequest {
     mediaID?: TEntityId
     memberID?: TEntityId
 
+    branchID?: TEntityId
     memberTypeID?: TEntityId
     memberClassificationID?: TEntityId
     memberGenderID?: TEntityId
-    branchID?: TEntityId
     memberCenterID?: TEntityId
     memberEducationalAttainmentID?: TEntityId
 
-    memberDescriptions?: IMemberDescriptionResource[]
-    // memberRecruits?: IMemberRecruitsResource[]
-    // memberContactNumberReferences?: IMemberContactNumberReferencesResource[]
-    // memberWallets?: IMemberWalletResource[]
-    // memberIncome?: IMemberIncomeResource[]
-    // memberExpenses?: IMemberExpensesResource[]
-    // memberCloseRemarks?: IMemberCloseRemarksResource[]
-    // memberJointAccounts?: IMemberJointAccountsResource[]
-    // memberRelativeAccounts?: IMemberRelativeAccountsResource[]
-    // memberAddresses?: IMemberAddressResource[]
-    // memberGovernmentBenefits?: IMemberGovernmentBenefitsResource[]
-    // memberMutualFundsHistory?: IMemberMutualFundsHistoryResource[]
-    // memberAssets?: IMemberAssetsResource[]
+    memberDescriptions?: { name: string; description: string }[]
+
+    memberAddress: {
+        postalCode: string
+        province: string
+        city: string
+        barangay: string
+        label: string
+    }[]
+
+    memberContactNumberReferences: {
+        name: string
+        description: string
+        contactNumber: string
+    }[]
+
+    memberIncome?: {
+        name: string
+        amount: number
+        date: string
+        description: string
+    }[]
+
+    memberRelativeAccounts?: {
+        membersProfileID: TEntityId
+        relativeProfileMemberID: TEntityId
+        familyRelationship: string
+        description: string
+    }[]
+
+    memberAssets?: {
+        entryDate: string
+        description: string
+        name: string
+    }[]
+
+    memberExpenses?: {
+        name: string
+        date: string
+        amount: number
+        description: string
+    }[]
+
+    memberJointAccounts?: {
+        description: string
+        firstName: string
+        lastName: string
+        middleName?: string
+        familyRelationship?: string
+    }[]
+
+    memberRecruits?: {
+        membersProfileID: TEntityId
+        membersProfileRecruitedID: TEntityId
+        dateRecruited: string
+        description: string
+        name: string
+    }[]
+
+    memberGovernmentBenefits?: {
+        country: string
+        name: string
+        description: string
+        value: string
+        frontMediaID?: TEntityId
+        backMediaID?: TEntityId
+    }[]
 }
 
+
 export interface IMemberProfileResource extends ITimeStamps {
-    id: TEntityId
     oldReferenceID?: string
     passbookNumber?: string
 

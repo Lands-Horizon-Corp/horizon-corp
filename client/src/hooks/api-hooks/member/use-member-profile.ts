@@ -9,7 +9,7 @@ import {
     IMemberProfileResource,
 } from '@/server/types/member/member-profile'
 import { IAPIPreloads, IOperationCallbacks } from './types'
-import MemberProfileService from '@/server/api-service/member-profile-service'
+import MemberProfileService from '@/server/api-service/member-services/member-profile-service'
 
 export const useCreateMemberProfile = ({
     preloads = ['Media'],

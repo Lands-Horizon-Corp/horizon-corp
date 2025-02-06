@@ -1,11 +1,11 @@
 import qs from 'query-string'
 
-import APIService from './api-service'
+import APIService from '../api-service'
 
 import {
     IMemberProfileRequest,
     IMemberProfileResource,
-} from '../types/member/member-profile'
+} from '../../types/member/member-profile'
 
 export default class MemberProfileService {
     private static readonly BASE_ENDPOINT = '/member-profile'
