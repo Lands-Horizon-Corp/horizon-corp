@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { IMemberTypeTableActionComponentProp } from '../columns'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { useDeleteMemberType } from '@/hooks/api-hooks/member/use-member-type'
+import { MemberTypeUpdateFormModal } from '@/components/forms/member-forms/member-type-update-form'
 
 interface IMemberTypeTableOwnerActionProps
     extends IMemberTypeTableActionComponentProp {
@@ -14,6 +16,7 @@ const MemberTypeTableOwnerAction = ({
     row,
     onDeleteSuccess,
 }: IMemberTypeTableOwnerActionProps) => {
+    const [updateModalForm, setUpdateModalForm] = useState(false)
     const memberType = row.original
 
     const { onOpen } = useConfirmModalStore()
@@ -24,40 +27,40 @@ const MemberTypeTableOwnerAction = ({
         })
 
     return (
-        <RowActionsGroup
-            onDelete={{
-                text: 'Delete',
-                isAllowed: !isDeletingMemberType,
-                onClick: () => {
-                    onOpen({
-                        title: 'Delete Member Type',
-                        description: 'Are you sure to delete this Member Type?',
-                        onConfirm: () => deleteMemberType(memberType.id),
-                    })
-                },
-            }}
-            onEdit={{
-                text: 'Edit',
-                isAllowed: true,
-                onClick: () => {
-                    // router.navigate({
-                    //     to: '/admin/member-types-management/$memberTypeId/edit',
-                    //     params: { memberTypeId: memberType.id },
-                    // })
-                },
-            }}
-            onView={{
-                text: 'View',
-                isAllowed: true,
-                onClick: () => {
-                    // router.navigate({
-                    //     to: '/admin/member-types-management/$memberTypeId/view',
-                    //     params: { memberTypeId: memberType.id },
-                    // })
-                },
-            }}
-            otherActions={<>{/* Additional actions can be added here */}</>}
-        />
+        <>
+            <div onClick={(e) => e.stopPropagation()}>
+                <MemberTypeUpdateFormModal
+                    formProps={{
+                        memberTypeId: memberType.id,
+                        defaultValues: {
+                            ...memberType,
+                        },
+                    }}
+                    open={updateModalForm}
+                    onOpenChange={setUpdateModalForm}
+                />
+            </div>
+            <RowActionsGroup
+                onDelete={{
+                    text: 'Delete',
+                    isAllowed: !isDeletingMemberType,
+                    onClick: () => {
+                        onOpen({
+                            title: 'Delete Member Type',
+                            description:
+                                'Are you sure to delete this Member Type?',
+                            onConfirm: () => deleteMemberType(memberType.id),
+                        })
+                    },
+                }}
+                onEdit={{
+                    text: 'Edit',
+                    isAllowed: true,
+                    onClick: () => setUpdateModalForm(true),
+                }}
+                otherActions={<>{/* Additional actions can be added here */}</>}
+            />
+        </>
     )
 }
 
