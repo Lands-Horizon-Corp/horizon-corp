@@ -46,10 +46,10 @@ export interface IMemberProfileRequest {
     mediaID?: TEntityId
     memberID?: TEntityId
 
+    branchID?: TEntityId
     memberTypeID?: TEntityId
     memberClassificationID?: TEntityId
     memberGenderID?: TEntityId
-    branchID?: TEntityId
     memberCenterID?: TEntityId
     memberEducationalAttainmentID?: TEntityId
 
