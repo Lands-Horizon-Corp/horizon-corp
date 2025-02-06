@@ -2402,7 +2402,10 @@ const MemberApplicationForm = ({
                                     title: 'Reset Form',
                                     description:
                                         'Are you sure to reset the form fields? Any changes will be lost.',
-                                    onConfirm: () => form.reset(),
+                                    onConfirm: () => {
+                                        form.reset()
+                                        setStep(0)
+                                    },
                                 })
                             }}
                             className="w-full self-end px-8 sm:w-fit"
