@@ -101,7 +101,7 @@ export const useUpdateMemberType = ({
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 onError?.(errorMessage)
-                throw new Error(errorMessage)
+                throw errorMessage
             }
 
             queryClient.invalidateQueries({
@@ -138,7 +138,7 @@ export const useDeleteMemberType = ({
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 onError?.(errorMessage)
-                throw new Error(errorMessage)
+                throw errorMessage
             }
 
             queryClient.invalidateQueries({
