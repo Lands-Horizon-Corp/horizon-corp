@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { IMemberRequest } from '@/server/types'
-import { useCreateMember } from '@/hooks/api-hooks/user-member'
+import { useCreateMember } from '@/hooks/api-hooks/member/use-member'
 import { createMemberSchema } from '@/validations/form-validation/member-schema'
 import Modal, { IModalProps } from '@/components/modals/modal'
 
