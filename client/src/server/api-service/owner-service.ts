@@ -121,7 +121,7 @@ export default class OwnerService {
     }) {
         const url = qs.stringifyUrl(
             {
-                url: `${OwnerService.BASE_ENDPOINT}/${ownerId}`,
+                url: `${OwnerService.BASE_ENDPOINT}/${ownerId}/branch`,
                 query: {
                     sort,
                     preloads,
