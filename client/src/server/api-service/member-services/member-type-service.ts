@@ -89,7 +89,7 @@ export default class MemberTypeService {
         )
 
         const response =
-            await APIService.get<TMemberTypePaginatedResource[]>(url)
+            await APIService.get<TMemberTypePaginatedResource>(url)
         return response.data
     }
 
