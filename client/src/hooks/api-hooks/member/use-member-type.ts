@@ -20,6 +20,7 @@ import {
     TEntityId,
     IMemberTypeRequest,
     IMemberTypeResource,
+    TMemberTypePaginatedResource,
 } from '@/server/types'
 
 
@@ -123,7 +124,7 @@ export const useFilteredPaginatedMemberTypes = ({
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
-    return useQuery<IMemberTypeResource[], string>({
+    return useQuery<TMemberTypePaginatedResource[], string>({
         queryKey: [
             'member-type',
             'resource-query',
