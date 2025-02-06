@@ -4,8 +4,8 @@ import ErrorPage from '@/modules/owner/components/error-page'
 
 import { ownerUserMemberRoute } from '../route'
 import { memberIdPathSchema } from './route-schema'
-import { memberLoader } from '@/hooks/api-hooks/user-member'
 import MemberApplication from './member-application'
+import { memberLoader } from '@/hooks/api-hooks/member/use-member'
 
 const ownerMemberIdRoute = createRoute({
     getParentRoute: () => ownerUserMemberRoute,
@@ -22,7 +22,7 @@ const ownerMemberIdRoute = createRoute({
 const memberApplicationRoute = createRoute({
     getParentRoute: () => ownerMemberIdRoute,
     path: 'member-application',
-    component : MemberApplication
+    component: MemberApplication,
 })
 
 const OwnerMemberIdRoute = ownerMemberIdRoute.addChildren([

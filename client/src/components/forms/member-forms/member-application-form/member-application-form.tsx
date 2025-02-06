@@ -1,4 +1,5 @@
 import z from 'zod'
+import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Path, useFieldArray, useForm } from 'react-hook-form'
 
@@ -24,7 +25,7 @@ import { Separator } from '@/components/ui/separator'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { useCreateMemberProfile } from '@/hooks/api-hooks/use-member-profile'
+import { useCreateMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
 import { createMemberProfileSchema } from '@/validations/form-validation/member-schema'
 
 import {
@@ -42,7 +43,6 @@ import { PhoneInput } from '@/components/contact-input/contact-input'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { useState } from 'react'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
@@ -60,8 +60,9 @@ const Steps: Step[] = [
     {
         title: 'Personal & Identification Information',
         fields: [
+            'memberId',
             'passbookNumber',
-            'oldReferenceID',
+            'oldReferenceId',
             'status',
             'isMutualFundMember',
             'isMicroFinanceMember',
@@ -273,11 +274,10 @@ const MemberApplicationForm = ({
                                             </FormControl>
                                         )}
                                     />
-
                                     <FormFieldWrapper
-                                        name="oldReferenceID"
+                                        name="oldReferenceId"
                                         control={form.control}
-                                        label="Old Reference ID"
+                                        label="Old Reference Id"
                                         hiddenFields={hiddenFields}
                                         render={({ field }) => (
                                             <FormControl>
@@ -292,7 +292,24 @@ const MemberApplicationForm = ({
                                             </FormControl>
                                         )}
                                     />
-
+                                    <FormFieldWrapper
+                                        name="memberId"
+                                        control={form.control}
+                                        label="Member Account ID"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    id={field.name}
+                                                    placeholder="Member Account ID"
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
                                     <FormFieldWrapper
                                         name="status"
                                         label="Status"

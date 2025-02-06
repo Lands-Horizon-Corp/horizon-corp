@@ -26,7 +26,7 @@ export const createMemberSchema = z.object({
 })
 
 export const createMemberProfileSchema = z.object({
-    oldReferenceID: z.string().optional(),
+    oldReferenceId: z.string().optional(),
     passbookNumber: z.string().optional(),
 
     notes: z.string().min(1, 'Notes are required'),
@@ -49,14 +49,14 @@ export const createMemberProfileSchema = z.object({
     isMutualFundMember: z.boolean().default(false),
     isMicroFinanceMember: z.boolean().default(false),
 
-    mediaID: entityIdSchema.optional(),
-    memberID: entityIdSchema.optional(),
+    mediaId : entityIdSchema.optional(),
+    memberId: entityIdSchema.optional(),
 
-    memberTypeID: entityIdSchema.optional(),
-    memberClassificationID: entityIdSchema.optional(),
-    memberGenderID: entityIdSchema.optional(),
-    branchID: entityIdSchema.optional(),
-    memberCenterID: entityIdSchema.optional(),
+    memberTypeId: entityIdSchema.optional(),
+    memberClassificationId: entityIdSchema.optional(),
+    memberGenderId: entityIdSchema.optional(),
+    branchId : entityIdSchema.optional(),
+    memberCenterId: entityIdSchema.optional(),
     memberEducationalAttainmentID: entityIdSchema.optional(),
 
     memberDescriptions: z

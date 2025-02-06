@@ -4,7 +4,7 @@ import { useSuspenseQuery } from '@tanstack/react-query'
 import PageContainer from '@/components/containers/page-container'
 import MemberApplicationForm from '@/components/forms/member-forms/member-application-form/member-application-form'
 
-import { memberLoader } from '@/hooks/api-hooks/user-member'
+import { memberLoader } from '@/hooks/api-hooks/member/use-member'
 
 const MemberApplication = () => {
     const { memberId } = useParams({
@@ -18,10 +18,10 @@ const MemberApplication = () => {
             <p className="mb-4 self-start text-lg">Member Application</p>
             <MemberApplicationForm
                 defaultValues={{
-                    memberID: member.id,
+                    memberId: member.id,
                 }}
                 className="max-w-7xl"
-                hiddenFields={['memberID']}
+                disabledFields={['memberId']}
             />
         </PageContainer>
     )
