@@ -8,7 +8,7 @@ import {
     IMemberProfileRequest,
     IMemberProfileResource,
 } from '@/server/types/member/member-profile'
-import { IAPIPreloads, IOperationCallbacks } from './types'
+import { IAPIPreloads, IOperationCallbacks } from '../types'
 import MemberProfileService from '@/server/api-service/member-services/member-profile-service'
 
 export const useCreateMemberProfile = ({
