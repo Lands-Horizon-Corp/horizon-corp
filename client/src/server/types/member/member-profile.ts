@@ -22,7 +22,7 @@ import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history
 import { IMemberContactNumberReferencesResource } from './member-contact-number-references'
 
 export interface IMemberProfileRequest {
-    oldReferenceID?: string
+    oldReferenceId?: string
     passbookNumber?: string
 
     notes: string
@@ -43,15 +43,15 @@ export interface IMemberProfileRequest {
     isMutualFundMember: boolean
     isMicroFinanceMember: boolean
 
-    mediaID?: TEntityId
-    memberID?: TEntityId
+    mediaId?: TEntityId
+    memberId?: TEntityId
 
-    branchID?: TEntityId
-    memberTypeID?: TEntityId
-    memberClassificationID?: TEntityId
-    memberGenderID?: TEntityId
-    memberCenterID?: TEntityId
-    memberEducationalAttainmentID?: TEntityId
+    branchId?: TEntityId
+    memberTypeId?: TEntityId
+    memberClassificationId?: TEntityId
+    memberGenderId?: TEntityId
+    memberCenterId?: TEntityId
+    memberEducationalAttainmentId?: TEntityId
 
     memberDescriptions?: { name: string; description: string }[]
 
@@ -77,8 +77,8 @@ export interface IMemberProfileRequest {
     }[]
 
     memberRelativeAccounts?: {
-        membersProfileID: TEntityId
-        relativeProfileMemberID: TEntityId
+        membersProfileId: TEntityId
+        relativeProfileMemberId: TEntityId
         familyRelationship: string
         description: string
     }[]
@@ -105,8 +105,8 @@ export interface IMemberProfileRequest {
     }[]
 
     memberRecruits?: {
-        membersProfileID: TEntityId
-        membersProfileRecruitedID: TEntityId
+        membersProfileId: TEntityId
+        membersProfileRecruitedId: TEntityId
         dateRecruited: string
         description: string
         name: string
@@ -117,14 +117,14 @@ export interface IMemberProfileRequest {
         name: string
         description: string
         value: string
-        frontMediaID?: TEntityId
-        backMediaID?: TEntityId
+        frontMediaId?: TEntityId
+        backMediaId?: TEntityId
     }[]
 }
 
 export interface IMemberProfileResource extends ITimeStamps {
     id: TEntityId
-    oldReferenceID?: string
+    oldReferenceId?: string
     passbookNumber?: string
 
     notes: string
@@ -145,34 +145,34 @@ export interface IMemberProfileResource extends ITimeStamps {
     isMutualFundMember: boolean
     isMicroFinanceMember: boolean
 
-    mediaID?: TEntityId
+    mediaId?: TEntityId
     media?: IMediaResource
 
-    memberID?: TEntityId
+    memberId?: TEntityId
     member?: IMemberResource
 
-    memberTypeID?: TEntityId
+    memberTypeId?: TEntityId
     memberType?: IMemberTypeResource
 
-    memberClassificationID?: TEntityId
+    memberClassificationId?: TEntityId
     memberClassification?: IMemberClassificationResource
 
-    memberGenderID?: TEntityId
+    memberGenderId?: TEntityId
     memberGender?: IMemberGenderResource
 
-    verifiedByEmployeeID?: TEntityId
+    verifiedByEmployeeId?: TEntityId
     verifiedByEmployee?: IEmployeeResource
 
-    branchID?: TEntityId
+    branchId?: TEntityId
     branch?: IBranchResource
 
-    memberCenterID?: TEntityId
+    memberCenterId?: TEntityId
     memberCenter?: IMemberCenterResource
 
-    signatureMediaID?: TEntityId
+    signatureMediaId?: TEntityId
     signatureMedia?: IMediaResource
 
-    memberEducationalAttainmentID?: TEntityId
+    memberEducationalAttainmentId?: TEntityId
     memberDescriptions?: IMemberDescriptionResource[]
     memberRecruits?: IMemberRecruitsResource[]
     memberContactNumberReferences?: IMemberContactNumberReferencesResource[]
