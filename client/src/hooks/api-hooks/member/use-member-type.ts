@@ -79,6 +79,48 @@ export const useCreateMemberType = ({
     })
 }
 
+export const useUpdateMemberType = ({
+    preloads = ['Owner', 'Media', 'Owner.Media'],
+    onSuccess,
+    onError,
+}: IOperationCallbacks & IAPIPreloads) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<
+        void,
+        string,
+        { memberTypeId: TEntityId; data: IMemberTypeRequest }
+    >({
+        mutationKey: ['member-type', 'update'],
+        mutationFn: async ({ memberTypeId, data }) => {
+            const [error] = await withCatchAsync(
+                MemberTypeService.update(memberTypeId, data, preloads)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw new Error(errorMessage)
+            }
+
+            queryClient.invalidateQueries({
+                queryKey: ['member-type', 'resource-query'],
+            })
+
+            queryClient.invalidateQueries({
+                queryKey: ['member-type', memberTypeId],
+            })
+            queryClient.removeQueries({
+                queryKey: ['member-type', 'loader', memberTypeId],
+            })
+
+            toast.success('Member Type updated')
+            onSuccess?.(undefined)
+        },
+    })
+}
+
 export const useDeleteMemberType = ({
     onSuccess,
     onError,
