@@ -3,7 +3,7 @@ import { IMemberProfileResource } from './member-profile'
 
 export interface IMemberExpensesResource extends ITimeStamps {
     id: TEntityId
-    membersProfileID: TEntityId
+    membersProfileId: TEntityId
     name: string
     date: string
     amount: number

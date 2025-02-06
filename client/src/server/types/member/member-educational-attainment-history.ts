@@ -5,8 +5,8 @@ import { IMemberEducationalAttainmentResource } from './member-educational-attai
 export interface IMemberEducationalAttainmentHistoryResource
     extends ITimeStamps {
     id: TEntityId
-    memberProfileID: TEntityId
-    memberEducationalAttainmentID: TEntityId
+    memberProfileId: TEntityId
+    memberEducationalAttainmentId: TEntityId
     memberProfile?: IMemberProfileResource
     memberEducationalAttainment?: IMemberEducationalAttainmentResource
 }

@@ -4,8 +4,8 @@ import { IMemberProfileResource } from './member-profile'
 
 export interface IMemberGenderHistoryResource extends ITimeStamps {
     id: TEntityId
-    memberProfileID: TEntityId
-    memberGenderID: TEntityId
+    memberProfileId: TEntityId
+    memberGenderId: TEntityId
     memberProfile?: IMemberProfileResource
     memberGender?: IMemberGenderResource
 }
