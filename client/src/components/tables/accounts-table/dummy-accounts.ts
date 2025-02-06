@@ -13,7 +13,6 @@ export const TOtherAccountInformation = [
     'None', 'Jewelry', 'Field', 'Grocery', 'Track Loan Ded', 'CIB/CIK Acct.', 'COH Acct.'
 ] as const;
 
-// Generate a random alphanumeric string (to replace UUIDs)
 const generateRandomId = (length = 12) => {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
@@ -56,6 +55,5 @@ export const generateDummyAccounts = (count: number): IAccountResource[] => {
     }));
 };
 
-// Example usage:
 export const DummyAccountsData = generateDummyAccounts(100);
 console.log(DummyAccountsData);
