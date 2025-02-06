@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import MemberService from '@/server/api-service/member-service'
+import MemberService from '@/server/api-service/member-services/member-service'
 
 import {
     TEntityId,
@@ -21,7 +21,7 @@ import {
     IAPIPreloads,
     IOperationCallbacks,
     IFilterPaginatedHookProps,
-} from './types'
+} from '../types'
 
 export const memberLoader = (
     memberId: TEntityId,
