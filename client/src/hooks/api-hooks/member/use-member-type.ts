@@ -23,7 +23,6 @@ import {
     TMemberTypePaginatedResource,
 } from '@/server/types'
 
-
 export const memberTypeLoader = (
     memberTypeId: TEntityId,
     preloads: string[] = []
@@ -124,7 +123,7 @@ export const useFilteredPaginatedMemberTypes = ({
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
-    return useQuery<TMemberTypePaginatedResource[], string>({
+    return useQuery<TMemberTypePaginatedResource, string>({
         queryKey: [
             'member-type',
             'resource-query',
@@ -150,7 +149,13 @@ export const useFilteredPaginatedMemberTypes = ({
 
             return result
         },
-        initialData: [],
+        initialData: {
+            data: [],
+            pages: [],
+            totalSize: 0,
+            totalPage: 1,
+            ...pagination,
+        },
         enabled,
         retry: 1,
     })
