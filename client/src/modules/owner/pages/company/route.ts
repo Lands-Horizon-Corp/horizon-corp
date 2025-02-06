@@ -21,7 +21,7 @@ const ownerCompanyIndexRoute = createRoute({
 const ownerCompanyProfileRoute = createRoute({
     getParentRoute: () => ownerCompanyRoute,
     path: 'profile',
-    component: lazyRouteComponent(() => import('./profile')),
+    component: lazyRouteComponent(() => import('./company-profile-page')),
 })
 
 const OwnerCompanyRoute = ownerCompanyRoute.addChildren([
