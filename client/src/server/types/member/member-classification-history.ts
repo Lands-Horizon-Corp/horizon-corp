@@ -7,8 +7,8 @@ export interface IMemberClassificationHistoryResource {
     createdAt: string
     updatedAt: string
     deletedAt: string
-    memberProfileID: TEntityId
-    memberClassificationID: TEntityId
+    memberProfileId: TEntityId
+    memberClassificationId: TEntityId
     memberProfile?: IMemberProfileResource
     memberClassification?: IMemberClassificationResource
 }

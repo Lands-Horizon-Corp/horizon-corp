@@ -8,6 +8,6 @@ export interface IMemberJointAccountsResource extends ITimeStamps {
     description: string
     middleName?: string
     familyRelationship?: string
-    membersProfileID: TEntityId
+    membersProfileId: TEntityId
     membersProfile?: IMemberProfileResource
 }

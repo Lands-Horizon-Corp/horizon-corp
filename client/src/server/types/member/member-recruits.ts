@@ -3,8 +3,8 @@ import { IMemberProfileResource } from './member-profile'
 
 export interface IMemberRecruitsResource extends ITimeStamps {
     id: TEntityId
-    membersProfileID: TEntityId
-    membersProfileRecruitedID: TEntityId
+    membersProfileId: TEntityId
+    membersProfileRecruitedId: TEntityId
     dateRecruited: string
     description: string
     name: string

@@ -3,7 +3,7 @@ import { IMemberProfileResource } from './member-profile'
 
 export interface IMemberCloseRemarksResource extends ITimeStamps {
     id: TEntityId
-    membersProfileID: TEntityId
+    membersProfileId: TEntityId
     description: string
     membersProfile?: IMemberProfileResource
 }
