@@ -3,7 +3,7 @@ import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import { IMemberTableActionComponentProp } from '../columns'
 
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import { useDeleteMember } from '@/hooks/api-hooks/user-member'
+import { useDeleteMember } from '@/hooks/api-hooks/member/use-member'
 
 interface IMembersTableOwnerActionProps
     extends IMemberTableActionComponentProp {

@@ -8,8 +8,8 @@ import { TEntityId } from '@/server/types'
 import {
     IMemberTypeRequest,
     IMemberTypeResource,
+    TMemberTypePaginatedResource,
 } from '@/server/types/member/member-type'
-
 
 export default class MemberTypeService {
     private static readonly BASE_ENDPOINT = '/member-type'
@@ -71,7 +71,7 @@ export default class MemberTypeService {
         filters?: string
         preloads?: string[]
         pagination?: { pageIndex: number; pageSize: number }
-    }): Promise<IMemberTypeResource[]> {
+    }) {
         const { filters, preloads, pagination, sort } = props || {}
 
         const url = qs.stringifyUrl(
@@ -88,7 +88,8 @@ export default class MemberTypeService {
             { skipNull: true }
         )
 
-        const response = await APIService.get<IMemberTypeResource[]>(url)
+        const response =
+            await APIService.get<TMemberTypePaginatedResource>(url)
         return response.data
     }
 
