@@ -165,7 +165,7 @@ export const createMemberProfileSchema = z.object({
                 country: z.string().min(1, 'Country is required'),
                 name: z.string().min(1, 'Name is required'),
                 description: z.string().min(1, 'Description is required'),
-                value: z.number().min(0, 'Value must be non-negative'),
+                value: z.string().min(1, 'Value is required'),
                 frontMediaID: entityIdSchema.optional(),
                 backMediaID: entityIdSchema.optional(),
             })
