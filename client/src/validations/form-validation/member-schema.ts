@@ -57,7 +57,7 @@ export const createMemberProfileSchema = z.object({
     memberGenderId: entityIdSchema.optional(),
     branchId : entityIdSchema.optional(),
     memberCenterId: entityIdSchema.optional(),
-    memberEducationalAttainmentID: entityIdSchema.optional(),
+    memberEducationalAttainmentId: entityIdSchema.optional(),
 
     memberDescriptions: z
         .array(
@@ -104,8 +104,8 @@ export const createMemberProfileSchema = z.object({
     memberRelativeAccounts: z
         .array(
             z.object({
-                membersProfileID: entityIdSchema,
-                relativeProfileMemberID: entityIdSchema,
+                membersProfileId: entityIdSchema,
+                relativeProfileMemberId: entityIdSchema,
                 familyRelationship: z
                     .string()
                     .min(1, 'Family relationship is required'),
@@ -150,8 +150,8 @@ export const createMemberProfileSchema = z.object({
     memberRecruits: z
         .array(
             z.object({
-                membersProfileID: entityIdSchema,
-                membersProfileRecruitedID: entityIdSchema,
+                membersProfileId: entityIdSchema,
+                membersProfileRecruitedId: entityIdSchema,
                 dateRecruited: z.string().min(1, 'Date recruited is required'),
                 description: z.string().min(1, 'Description is required'),
                 name: z.string().min(1, 'Name is required'),
@@ -166,8 +166,8 @@ export const createMemberProfileSchema = z.object({
                 name: z.string().min(1, 'Name is required'),
                 description: z.string().min(1, 'Description is required'),
                 value: z.string().min(1, 'Value is required'),
-                frontMediaID: entityIdSchema.optional(),
-                backMediaID: entityIdSchema.optional(),
+                frontMediaId: entityIdSchema.optional(),
+                backMediaId: entityIdSchema.optional(),
             })
         )
         .optional(),

@@ -1068,7 +1068,7 @@ const MemberApplicationForm = ({
                                                             }
                                                             className="col-span-2"
                                                             label="Front Media ID"
-                                                            name={`memberGovernmentBenefits.${index}.frontMediaID`}
+                                                            name={`memberGovernmentBenefits.${index}.frontMediaId`}
                                                             render={({
                                                                 field,
                                                             }) => (
@@ -1093,7 +1093,7 @@ const MemberApplicationForm = ({
                                                             }
                                                             label="Back Media ID"
                                                             className="col-span-2"
-                                                            name={`memberGovernmentBenefits.${index}.backMediaID`}
+                                                            name={`memberGovernmentBenefits.${index}.backMediaId`}
                                                             hiddenFields={
                                                                 hiddenFields
                                                             }
@@ -1173,8 +1173,8 @@ const MemberApplicationForm = ({
                                                     name: '',
                                                     description: '',
                                                     value: '',
-                                                    frontMediaID: undefined,
-                                                    backMediaID: undefined,
+                                                    frontMediaId: undefined,
+                                                    backMediaId: undefined,
                                                 })
                                             }
                                             disabled={isDisabled(
@@ -1364,7 +1364,6 @@ const MemberApplicationForm = ({
                                     </FormItem>
                                 )}
                             />
-
                             <FormFieldWrapper
                                 name="memberAssets"
                                 control={form.control}
@@ -1507,7 +1506,6 @@ const MemberApplicationForm = ({
                                     </FormItem>
                                 )}
                             />
-
                             <FormFieldWrapper
                                 name="memberExpenses"
                                 control={form.control}
@@ -1712,7 +1710,7 @@ const MemberApplicationForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberRelativeAccounts.${index}.membersProfileID`}
+                                                            name={`memberRelativeAccounts.${index}.membersProfileId`}
                                                             label="Member's Profile ID"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -1739,7 +1737,7 @@ const MemberApplicationForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberRelativeAccounts.${index}.relativeProfileMemberID`}
+                                                            name={`memberRelativeAccounts.${index}.relativeProfileMemberId`}
                                                             label="Relative Profile Member ID"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -1842,8 +1840,8 @@ const MemberApplicationForm = ({
                                             variant="secondary"
                                             onClick={() =>
                                                 addRelative({
-                                                    membersProfileID: '',
-                                                    relativeProfileMemberID: '',
+                                                    membersProfileId: '',
+                                                    relativeProfileMemberId: '',
                                                     familyRelationship: '',
                                                     description: '',
                                                 })
@@ -1858,7 +1856,6 @@ const MemberApplicationForm = ({
                                     </FormItem>
                                 )}
                             />
-
                             <FormFieldWrapper
                                 name="memberJointAccounts"
                                 control={form.control}
@@ -2057,7 +2054,6 @@ const MemberApplicationForm = ({
                                     </FormItem>
                                 )}
                             />
-
                             <FormFieldWrapper
                                 name="memberRecruits"
                                 control={form.control}
@@ -2082,7 +2078,7 @@ const MemberApplicationForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberRecruits.${index}.membersProfileID`}
+                                                            name={`memberRecruits.${index}.membersProfileId`}
                                                             label="Member's Profile ID"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -2109,7 +2105,7 @@ const MemberApplicationForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberRecruits.${index}.membersProfileRecruitedID`}
+                                                            name={`memberRecruits.${index}.membersProfileRecruitedId`}
                                                             label="Recruited Member's Prof. ID"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -2239,8 +2235,8 @@ const MemberApplicationForm = ({
                                             type="button"
                                             onClick={() =>
                                                 addRecruit({
-                                                    membersProfileID: '',
-                                                    membersProfileRecruitedID:
+                                                    membersProfileId: '',
+                                                    membersProfileRecruitedId:
                                                         '',
                                                     dateRecruited: '',
                                                     description: '',
@@ -2259,7 +2255,6 @@ const MemberApplicationForm = ({
                             />
                         </>
                     )}
-
                     {step === 4 && (
                         <>
                             <div className="col-span-1 space-y-4">
