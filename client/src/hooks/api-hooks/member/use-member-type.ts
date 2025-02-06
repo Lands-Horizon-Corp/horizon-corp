@@ -83,7 +83,7 @@ export const useUpdateMemberType = ({
     preloads = ['Owner', 'Media', 'Owner.Media'],
     onSuccess,
     onError,
-}: IOperationCallbacks & IAPIPreloads) => {
+}: IOperationCallbacks<IMemberTypeResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -93,7 +93,7 @@ export const useUpdateMemberType = ({
     >({
         mutationKey: ['member-type', 'update'],
         mutationFn: async ({ memberTypeId, data }) => {
-            const [error] = await withCatchAsync(
+            const [error, result] = await withCatchAsync(
                 MemberTypeService.update(memberTypeId, data, preloads)
             )
 
@@ -101,7 +101,7 @@ export const useUpdateMemberType = ({
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 onError?.(errorMessage)
-                throw new Error(errorMessage)
+                throw errorMessage
             }
 
             queryClient.invalidateQueries({
@@ -116,7 +116,7 @@ export const useUpdateMemberType = ({
             })
 
             toast.success('Member Type updated')
-            onSuccess?.(undefined)
+            onSuccess?.(result)
         },
     })
 }
@@ -138,7 +138,7 @@ export const useDeleteMemberType = ({
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 onError?.(errorMessage)
-                throw new Error(errorMessage)
+                throw errorMessage
             }
 
             queryClient.invalidateQueries({

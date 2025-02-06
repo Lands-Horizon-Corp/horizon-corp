@@ -93,7 +93,7 @@ export const useDeleteMember = ({
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 onError?.(errorMessage)
-                throw new Error(errorMessage)
+                throw errorMessage
             }
 
             queryClient.invalidateQueries({
