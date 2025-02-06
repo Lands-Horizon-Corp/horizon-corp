@@ -1,6 +1,6 @@
 import z from 'zod'
-import { Path, useFieldArray, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Path, useFieldArray, useForm } from 'react-hook-form'
 
 import {
     Form,
@@ -118,7 +118,7 @@ const MemberApplicationForm = ({
     const form = useForm<TMemberProfileForm>({
         resolver: zodResolver(createMemberProfileSchema),
         reValidateMode: 'onChange',
-        mode: 'onSubmit',
+        mode: 'onChange',
         defaultValues: {
             notes: '',
             occupation: '',
@@ -135,6 +135,14 @@ const MemberApplicationForm = ({
 
     const isDisabled = (field: Path<TMemberProfileForm>) =>
         readOnly || disabledFields?.includes(field) || false
+
+    const onNext = async () => {
+        const triggerValidation = await form.trigger(Steps[step].fields, {
+            shouldFocus: true,
+        })
+
+        if (triggerValidation) setStep((prev) => prev + 1)
+    }
 
     const { fields, append, remove } = useFieldArray({
         control: form.control,
@@ -608,6 +616,29 @@ const MemberApplicationForm = ({
                                                             control={
                                                                 form.control
                                                             }
+                                                            name={`memberAddress.${index}.postalCode`}
+                                                            label="Postal Code *"
+                                                            hiddenFields={
+                                                                hiddenFields
+                                                            }
+                                                            render={({
+                                                                field,
+                                                            }) => (
+                                                                <FormControl>
+                                                                    <Input
+                                                                        {...field}
+                                                                        id={
+                                                                            field.name
+                                                                        }
+                                                                        placeholder="Postal Code"
+                                                                    />
+                                                                </FormControl>
+                                                            )}
+                                                        />
+                                                        <FormFieldWrapper
+                                                            control={
+                                                                form.control
+                                                            }
                                                             name={`memberAddress.${index}.city`}
                                                             label="City *"
                                                             hiddenFields={
@@ -742,11 +773,12 @@ const MemberApplicationForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <Textarea
+                                                                    <Input
                                                                         {...field}
                                                                         disabled={isDisabled(
                                                                             field.name
                                                                         )}
+                                                                        multiple
                                                                         className="min-h-0"
                                                                         placeholder="Description Content"
                                                                     />
@@ -2391,13 +2423,13 @@ const MemberApplicationForm = ({
                             type="button"
                             disabled={step === Steps.length - 1}
                             variant="secondary"
-                            onClick={() => setStep((prev) => prev + 1)}
+                            onClick={onNext}
                         >
                             Next <ChevronRightIcon />
                         </Button>
                         <Button
                             type="submit"
-                            disabled={isCreating}
+                            disabled={isCreating || step !== Steps.length - 1}
                             className="w-full self-end px-8 sm:w-fit"
                         >
                             {isCreating ? <LoadingSpinner /> : 'Create'}
