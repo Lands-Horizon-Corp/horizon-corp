@@ -52,8 +52,8 @@ type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 interface IMemberApplicationFormProps
     extends IBaseCompNoChild,
         IForm<Partial<TMemberProfileForm>, unknown, string> {
-            memberTypeOptionsFilter? : TFilterObject
-        }
+    memberTypeOptionsFilter?: TFilterObject
+}
 
 type Step = {
     title: string
@@ -278,7 +278,9 @@ const MemberApplicationForm = ({
                                                 /> */}
                                                 <MemberTypeSelect
                                                     {...field}
-                                                    filter={memberTypeOptionsFilter}
+                                                    filter={
+                                                        memberTypeOptionsFilter
+                                                    }
                                                     onChange={(memberType) =>
                                                         field.onChange(
                                                             memberType.id
