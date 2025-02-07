@@ -3,14 +3,21 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { OwnerService } from '@/horizon-corp/services'
+import OwnerService from '@/server/api-service/owner-service'
 
 import {
-    IApiPreloads,
-    IFilterPaginatedHookProps,
+    IAPIPreloads,
     IOperationCallbacks,
+    IFilterPaginatedHookProps,
+    IQueryProps,
 } from './types'
-import { OwnerPaginatedResource, OwnerResource } from '@/horizon-corp/types'
+import {
+    IOwnerResource,
+    ICompanyResource,
+    IOwnerPaginatedResource,
+    IBranchPaginatedResource,
+    TEntityId,
+} from '@/server/types'
 
 // Load Specific owner by ID
 export const useOwner = ({
@@ -18,14 +25,14 @@ export const useOwner = ({
     onError,
     preloads = ['Media'],
 }: Omit<
-    IOperationCallbacks<OwnerResource, string> & IApiPreloads,
+    IOperationCallbacks<IOwnerResource, string> & IAPIPreloads,
     'onSuccess'
 > & {
-    ownerId: number
+    ownerId: TEntityId
 }) => {
     const queryClient = useQueryClient()
 
-    return useQuery<OwnerResource>({
+    return useQuery<IOwnerResource>({
         queryKey: ['owner', ownerId],
         queryFn: async () => {
             const [error, data] = await withCatchAsync(
@@ -48,14 +55,96 @@ export const useOwner = ({
     })
 }
 
+export const useOwnerCompany = ({
+    ownerId,
+    preloads = ['Owner', 'Owner.Media'],
+    onError,
+    onSuccess,
+}: { ownerId: TEntityId } & IOperationCallbacks<ICompanyResource> &
+    IAPIPreloads) => {
+    const queryClient = useQueryClient()
+
+    return useQuery<ICompanyResource>({
+        queryKey: ['owner', 'company', ownerId],
+        queryFn: async () => {
+            const [error, response] = await withCatchAsync(
+                OwnerService.getOwnCompany(ownerId, preloads)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                if (onError) onError(errorMessage)
+                else toast.error(errorMessage)
+                throw errorMessage
+            }
+
+            queryClient.setQueryData<ICompanyResource>(
+                ['company', response.id],
+                response
+            )
+            queryClient.setQueryData<ICompanyResource>(
+                ['company', 'loader', response.id],
+                response
+            )
+
+            onSuccess?.(response)
+            return response
+        },
+        retry: 0,
+        enabled: ownerId !== null || ownerId !== undefined,
+    })
+}
+
+export const useOwnerPaginatedBranch = ({
+    sort,
+    enabled,
+    ownerId,
+    filterPayload,
+    preloads = ['Media'],
+    pagination = { pageSize: 10, pageIndex: 1 },
+}: IFilterPaginatedHookProps & IQueryProps & { ownerId: TEntityId }) => {
+    return useQuery<IBranchPaginatedResource, string>({
+        queryKey: ['branch', 'resource-query', filterPayload, pagination, sort],
+        queryFn: async () => {
+            const [error, result] = await withCatchAsync(
+                OwnerService.getBranches({
+                    ownerId,
+                    preloads,
+                    pagination,
+                    sort: sort && toBase64(sort),
+                    filters: filterPayload && toBase64(filterPayload),
+                })
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                throw errorMessage
+            }
+
+            return result
+        },
+        initialData: {
+            data: [],
+            pages: [],
+            totalSize: 0,
+            totalPage: 1,
+            ...pagination,
+        },
+        enabled,
+        retry: 1,
+    })
+}
+
 // paginated/ filtered and sorted
 export const useFilteredPaginatedOwners = ({
     sort,
+    enabled,
     filterPayload,
     preloads = ['Media', 'Company'],
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps = {}) => {
-    return useQuery<OwnerPaginatedResource, string>({
+}: IFilterPaginatedHookProps & IQueryProps = {}) => {
+    return useQuery<IOwnerPaginatedResource, string>({
         queryKey: ['owner', 'resource-query', filterPayload, pagination],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
@@ -83,5 +172,6 @@ export const useFilteredPaginatedOwners = ({
             ...pagination,
         },
         retry: 1,
+        enabled: enabled,
     })
 }

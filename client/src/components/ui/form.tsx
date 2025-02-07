@@ -4,6 +4,7 @@ import { Slot } from '@radix-ui/react-slot'
 import {
     Controller,
     ControllerProps,
+    FieldError,
     FieldPath,
     FieldValues,
     FormProvider,
@@ -146,7 +147,15 @@ const FormMessage = React.forwardRef<
     React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, children, ...props }, ref) => {
     const { error, formMessageId } = useFormField()
-    const body = error ? String(error?.message) : children
+
+    let body: React.ReactNode | string = ''
+
+    if (Array.isArray(error)) {
+        const errs = error as FieldError[]
+        body = errs[0].message
+    } else {
+        body = error ? String(error?.message) : children
+    }
 
     if (!body) {
         return null
@@ -156,22 +165,38 @@ const FormMessage = React.forwardRef<
         <p
             ref={ref}
             id={formMessageId}
-            className={cn('text-sm font-medium text-destructive', className)}
+            className={cn('text-xs text-destructive', className)}
             {...props}
         >
             {body}
         </p>
     )
 })
+
+const FormHidableItem = <T,>({
+    field,
+    children,
+    hiddenFields,
+}: {
+    field: keyof T
+    children: React.ReactNode
+    hiddenFields?: Array<keyof T>
+}) => {
+    if (hiddenFields && hiddenFields.includes(field)) return
+
+    return children
+}
+
 FormMessage.displayName = 'FormMessage'
 
 export {
     useFormField,
     Form,
     FormItem,
+    FormField,
     FormLabel,
     FormControl,
-    FormDescription,
     FormMessage,
-    FormField,
+    FormHidableItem,
+    FormDescription,
 }

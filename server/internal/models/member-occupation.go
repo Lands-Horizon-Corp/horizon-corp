@@ -16,6 +16,8 @@ type MemberOccupation struct {
 	Name        string                     `gorm:"size:255;unsigned"`
 	Description string                     `gorm:"size:500"`
 	History     []*MemberOccupationHistory `gorm:"foreignKey:MemberOccupationID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+	CompanyID   uuid.UUID                  `gorm:"unsigned" json:"company_id"`
+	Company     *Company                   `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberOccupation) BeforeCreate(tx *gorm.DB) (err error) {
@@ -64,4 +66,30 @@ func (m *ModelTransformer) MemberOccupationToResourceList(occupationList []*Memb
 		occupationResources = append(occupationResources, m.MemberOccupationToResource(occupation))
 	}
 	return occupationResources
+}
+
+func (m *ModelRepository) MemberOccupationGetByID(id string, preloads ...string) (*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberOccupationCreate(memberoccupation *MemberOccupation, preloads ...string) (*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.Create(memberoccupation, preloads...)
+}
+func (m *ModelRepository) MemberOccupationUpdate(memberoccupation *MemberOccupation, preloads ...string) (*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.Update(memberoccupation, preloads...)
+}
+func (m *ModelRepository) MemberOccupationUpdateByID(id string, value *MemberOccupation, preloads ...string) (*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberOccupationDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberOccupationGetAll(preloads ...string) ([]*MemberOccupation, error) {
+	repo := NewGenericRepository[MemberOccupation](m.db.Client)
+	return repo.GetAll(preloads...)
 }

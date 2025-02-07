@@ -1,38 +1,34 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouterState } from '@tanstack/react-router'
 
 import {
     Form,
-    FormControl,
-    FormDescription,
-    FormField,
     FormItem,
     FormLabel,
+    FormField,
+    FormControl,
+    FormDescription,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import TextEditor from '@/components/text-editor'
 import { Separator } from '@/components/ui/separator'
-import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 
 import {
+    lastNameSchema,
     birthDateSchema,
     firstNameSchema,
-    lastNameSchema,
     middleNameSchema,
 } from '@/validations/common'
 
 import { cn } from '@/lib'
-import { withCatchAsync } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
-import { AccountSettingRequest, UserData } from '@/horizon-corp/types'
-import ProfileService from '@/horizon-corp/services/auth/ProfileService'
+import { IUserData } from '@/server/types'
+import { useUpdateAccountSettings } from '@/hooks/api-hooks/use-account'
 
 const AccountSettingsFormSchema = z.object({
     lastName: lastNameSchema,
@@ -48,8 +44,8 @@ const AccountSettingsFormSchema = z.object({
 type TAccountSettings = z.infer<typeof AccountSettingsFormSchema>
 
 interface Props {
-    currentUser: UserData
-    onSave: (newUserData: UserData) => void
+    currentUser: IUserData
+    onSave: (newUserData: IUserData) => void
 }
 
 const AccountSettings = ({ currentUser, onSave }: Props) => {
@@ -82,23 +78,8 @@ const AccountSettings = ({ currentUser, onSave }: Props) => {
         error,
         isPending,
         mutate: updateAccountSettings,
-    } = useMutation<UserData, string, AccountSettingRequest>({
-        mutationKey: ['account-settings'],
-        mutationFn: async (data) => {
-            const [error, response] = await withCatchAsync(
-                ProfileService.AccountSetting(data)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            onSave(response.data)
-            toast.success('Changes saved')
-            return response.data
-        },
+    } = useUpdateAccountSettings({
+        onSuccess: onSave,
     })
 
     if (hash !== 'account-settings') return null

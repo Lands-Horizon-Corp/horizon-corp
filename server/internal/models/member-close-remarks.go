@@ -65,3 +65,29 @@ func (m *ModelTransformer) MemberCloseRemarksToResourceList(remarksList []*Membe
 	}
 	return remarksResources
 }
+
+func (m *ModelRepository) MemberCloseRemarksGetByID(id string, preloads ...string) (*MemberCloseRemarks, error) {
+	repo := NewGenericRepository[MemberCloseRemarks](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberCloseRemarksCreate(membercloseremarks *MemberCloseRemarks, preloads ...string) (*MemberCloseRemarks, error) {
+	repo := NewGenericRepository[MemberCloseRemarks](m.db.Client)
+	return repo.Create(membercloseremarks, preloads...)
+}
+func (m *ModelRepository) MemberCloseRemarksUpdate(membercloseremarks *MemberCloseRemarks, preloads ...string) (*MemberCloseRemarks, error) {
+	repo := NewGenericRepository[MemberCloseRemarks](m.db.Client)
+	return repo.Update(membercloseremarks, preloads...)
+}
+func (m *ModelRepository) MemberCloseRemarksUpdateByID(id string, value *MemberCloseRemarks, preloads ...string) (*MemberCloseRemarks, error) {
+	repo := NewGenericRepository[MemberCloseRemarks](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberCloseRemarksDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberCloseRemarks](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberCloseRemarksGetAll(preloads ...string) ([]*MemberCloseRemarks, error) {
+	repo := NewGenericRepository[MemberCloseRemarks](m.db.Client)
+	return repo.GetAll(preloads...)
+}

@@ -6,31 +6,33 @@ import {
 } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-import {
-    MediaRequest,
-    CompanyResource,
-    CompanyPaginatedResource,
-    CompanyRequest,
-} from '@/horizon-corp/types'
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import { CompanyService } from '@/horizon-corp/services'
+
 import {
-    IApiPreloads,
-    IFilterPaginatedHookProps,
+    IQueryProps,
+    IAPIPreloads,
     IOperationCallbacks,
+    IFilterPaginatedHookProps,
 } from './types'
+import {
+    TEntityId,
+    IMediaRequest,
+    ICompanyRequest,
+    ICompanyResource,
+    ICompanyPaginatedResource,
+} from '@/server/types'
+import CompanyService from '@/server/api-service/company-service'
 
 // Only used by path preloader
-export const companyLoader = (companyId: number) =>
-    queryOptions<CompanyResource>({
+export const companyLoader = (
+    companyId: TEntityId,
+    preloads: string[] = ['Owner', 'Owner.Media', 'Media']
+) =>
+    queryOptions<ICompanyResource>({
         queryKey: ['company', 'loader', companyId],
         queryFn: async () => {
-            const data = await CompanyService.getById(companyId, [
-                'Owner',
-                'Owner.Media',
-                'Media',
-            ])
+            const data = await CompanyService.getById(companyId, preloads)
             return data
         },
         retry: 0,
@@ -42,9 +44,9 @@ export const useCompany = ({
     preloads = ['Media', 'Owner', 'Owner.Media'],
     onError,
     onSuccess,
-}: { companyId: number } & IApiPreloads &
-    IOperationCallbacks<CompanyResource, string>) => {
-    return useQuery<CompanyResource, string>({
+}: { companyId: TEntityId } & IAPIPreloads &
+    IOperationCallbacks<ICompanyResource, string>) => {
+    return useQuery<ICompanyResource, string>({
         queryKey: ['company', companyId],
         queryFn: async () => {
             const [error, data] = await withCatchAsync(
@@ -67,16 +69,17 @@ export const useCompany = ({
 
 // create company
 export const useCreateCompany = ({
+    preloads=['Media', 'Owner', 'Owner.Media'],
     onError,
     onSuccess,
-}: IOperationCallbacks<CompanyResource>) => {
+}: IOperationCallbacks<ICompanyResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, CompanyRequest>({
+    return useMutation<void, string, ICompanyRequest>({
         mutationKey: ['company', 'create'],
         mutationFn: async (newCompanyData) => {
             const [error, data] = await withCatchAsync(
-                CompanyService.create(newCompanyData)
+                CompanyService.create(newCompanyData, preloads)
             )
 
             if (error) {
@@ -86,12 +89,12 @@ export const useCreateCompany = ({
                 throw errorMessage
             }
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', data.id],
                 data
             )
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', 'loader', data.id],
                 data
             )
@@ -106,14 +109,15 @@ export const useCreateCompany = ({
 export const useApproveCompany = ({
     onSuccess,
     onError,
-}: IOperationCallbacks<CompanyResource, string>) => {
+    preloads = ['Media', 'Owner', 'Owner.Media'],
+}: IOperationCallbacks<ICompanyResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, number>({
+    return useMutation<void, string, TEntityId>({
         mutationKey: ['company', 'approve'],
         mutationFn: async (companyId) => {
             const [error, data] = await withCatchAsync(
-                CompanyService.verify(companyId)
+                CompanyService.verify(companyId, preloads)
             )
 
             if (error) {
@@ -123,7 +127,7 @@ export const useApproveCompany = ({
                 throw errorMessage
             }
 
-            queryClient.setQueriesData<CompanyPaginatedResource>(
+            queryClient.setQueriesData<ICompanyPaginatedResource>(
                 { queryKey: ['company', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
@@ -137,11 +141,11 @@ export const useApproveCompany = ({
                 }
             )
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', companyId],
                 data
             )
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', 'loader', companyId],
                 data
             )
@@ -154,23 +158,24 @@ export const useApproveCompany = ({
 
 // update company
 export const useUpdateCompany = ({
+    preloads = ['Owner', 'Media', 'Owner.Media'],
     onSuccess,
     onError,
-}: IOperationCallbacks<CompanyResource, string>) => {
+}: IOperationCallbacks<ICompanyResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
-        CompanyResource,
+        ICompanyResource,
         string,
         {
-            id: number
-            data: Omit<CompanyResource, 'id' | 'createdAt' | 'updatedAt'>
+            id: TEntityId
+            data: Omit<ICompanyResource, 'id' | 'createdAt' | 'updatedAt'>
         }
     >({
         mutationKey: ['company', 'update'],
         mutationFn: async ({ id, data }) => {
             const [error, response] = await withCatchAsync(
-                CompanyService.update(id, data)
+                CompanyService.update(id, data, preloads)
             )
 
             if (error) {
@@ -180,7 +185,7 @@ export const useUpdateCompany = ({
                 throw errorMessage
             }
 
-            queryClient.setQueriesData<CompanyPaginatedResource>(
+            queryClient.setQueriesData<ICompanyPaginatedResource>(
                 { queryKey: ['company', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
@@ -194,12 +199,17 @@ export const useUpdateCompany = ({
                 }
             )
 
-            queryClient.setQueryData<CompanyResource>(['company', id], response)
+            queryClient.setQueryData<ICompanyResource>(
+                ['company', id],
+                response
+            )
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', 'loader', id],
                 response
             )
+
+            toast.success('Company updated')
 
             onSuccess?.(response)
             return response
@@ -209,20 +219,21 @@ export const useUpdateCompany = ({
 
 // update company logo
 export const useUpdateCompanyProfilePicture = ({
+    preloads = ['Owner', 'Media', 'Owner.Media'],
     onSuccess,
     onError,
-}: IOperationCallbacks<CompanyResource>) => {
+}: IOperationCallbacks<ICompanyResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
         void,
         string,
-        { companyId: number; mediaResource: MediaRequest }
+        { companyId: TEntityId; mediaResource: IMediaRequest }
     >({
         mutationKey: ['company', 'update', 'logo'],
         mutationFn: async ({ companyId, mediaResource }) => {
             const [error, data] = await withCatchAsync(
-                CompanyService.ProfilePicture(companyId, mediaResource)
+                CompanyService.ProfilePicture(companyId, mediaResource, preloads)
             )
 
             if (error) {
@@ -232,7 +243,7 @@ export const useUpdateCompanyProfilePicture = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.setQueriesData<CompanyPaginatedResource>(
+            queryClient.setQueriesData<ICompanyPaginatedResource>(
                 { queryKey: ['company', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
@@ -246,11 +257,11 @@ export const useUpdateCompanyProfilePicture = ({
                 }
             )
 
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', companyId],
                 data
             )
-            queryClient.setQueryData<CompanyResource>(
+            queryClient.setQueryData<ICompanyResource>(
                 ['company', companyId],
                 data
             )
@@ -265,10 +276,10 @@ export const useUpdateCompanyProfilePicture = ({
 export const useDeleteCompany = ({
     onSuccess,
     onError,
-}: IOperationCallbacks) => {
+}: undefined | IOperationCallbacks<undefined> = {}) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, number>({
+    return useMutation<void, string, TEntityId>({
         mutationKey: ['company', 'delete'],
         mutationFn: async (companyId) => {
             const [error] = await withCatchAsync(
@@ -299,12 +310,19 @@ export const useDeleteCompany = ({
 
 export const useFilteredPaginatedCompanies = ({
     sort,
+    enabled,
     filterPayload,
-    preloads = ['Media', 'Owner'],
+    preloads = ['Media', 'Owner', 'Owner.Media'],
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps = {}) => {
-    return useQuery<CompanyPaginatedResource, string>({
-        queryKey: ['company', 'resource-query', filterPayload, pagination, sort],
+}: IFilterPaginatedHookProps & IQueryProps = {}) => {
+    return useQuery<ICompanyPaginatedResource, string>({
+        queryKey: [
+            'company',
+            'resource-query',
+            filterPayload,
+            pagination,
+            sort,
+        ],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 CompanyService.getCompanies({
@@ -330,6 +348,7 @@ export const useFilteredPaginatedCompanies = ({
             totalPage: 1,
             ...pagination,
         },
+        enabled,
         retry: 1,
     })
 }

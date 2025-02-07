@@ -8,11 +8,11 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import SingleImageUploaderModal from '@/components/single-image-uploader/single-image-uploader-modal'
 
 import { IBaseCompNoChild } from '@/types'
-import { BranchResource } from '@/horizon-corp/types'
+import { IBranchResource } from '@/server/types'
 import { useUpdateBranchProfilePicture } from '@/hooks/api-hooks/use-branch'
 
 interface Props extends IBaseCompNoChild {
-    branch: BranchResource
+    branch: IBranchResource
 }
 
 const BranchLogo = ({ branch }: Props) => {

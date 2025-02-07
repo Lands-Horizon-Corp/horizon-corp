@@ -1,31 +1,19 @@
 import { toast } from 'sonner'
 import { useRouter } from '@tanstack/react-router'
-import { useMutation } from '@tanstack/react-query'
 
 import { Button } from '@/components/ui/button'
 
-import { withCatchAsync } from '@/utils'
-import { serverRequestErrExtractor } from '@/helpers'
+import { useSignOut } from '@/hooks/api-hooks/use-auth'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import UserService from '@/horizon-corp/services/auth/UserService'
 
 const NavSignOut = () => {
     const router = useRouter()
     const { onOpen } = useConfirmModalStore()
     const { authStatus, currentUser, setCurrentUser } = useUserAuthStore()
 
-    const { mutate: handleSignout, isPending: isSigningOut } = useMutation({
-        mutationKey: ['sign-out'],
-        mutationFn: async () => {
-            const [error] = await withCatchAsync(UserService.SignOut())
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                return
-            }
-
+    const { mutate: handleSignout, isPending: isSigningOut } = useSignOut({
+        onSuccess: () => {
             setCurrentUser(null)
             router.navigate({ to: '/auth/sign-in' })
             toast.success('Signed out')

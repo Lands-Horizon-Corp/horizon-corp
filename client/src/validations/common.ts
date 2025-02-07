@@ -19,7 +19,7 @@ export const emailSchema = z
 
 export const userNameSchema = z
     .string({ required_error: 'Username is required' })
-    .min(1, 'User Name is required')
+    .min(1, 'Username is required')
 
 export const firstNameSchema = z
     .string({ required_error: 'First Name is required' })
@@ -62,7 +62,7 @@ export const birthDateSchema = z.date().refine(
         today.setHours(0, 0, 0, 0)
         return date < today
     },
-    { message: 'BirthDate cannot be today or in the future' }
+    { message: 'Birthdate cannot be today or in the future' }
 )
 
 export const otpCodeSchema = z
@@ -72,3 +72,11 @@ export const otpCodeSchema = z
     .regex(NUMBER_LETTER_REGEX, 'OTP must be valid alphanumeric characters')
 
 export const contactNumberSchema = z.string().min(1, 'Contact Number is empty')
+
+export const accountStatusSchema = z.enum([
+    'Pending',
+    'Verified',
+    'Not Allowed',
+])
+
+export const entityIdSchema = z.string().uuid('Invalid ID')

@@ -9,14 +9,14 @@ import SingleImageUploadOption from './upload-options'
 import ActionTooltip from '@/components/action-tooltip'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import { MediaResource } from '@/horizon-corp/types'
+import { IMediaResource } from '@/server/types'
 import { base64ImagetoFile } from '@/helpers/picture-crop-helper'
 import { useSinglePictureUpload } from '@/hooks/api-hooks/use-media-resource'
 
 export interface ISingleImageUploadProps {
     defaultImage?: string
     defaultFileName?: string
-    onUploadComplete: (mediaResource: MediaResource) => void
+    onUploadComplete: (mediaResource: IMediaResource) => void
 }
 
 const SingleImageUpload = ({

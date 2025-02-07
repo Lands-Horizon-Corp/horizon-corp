@@ -1,8 +1,12 @@
 import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
+import OwnerUserRoute from './pages/users/route'
+import { redirect } from '@tanstack/react-router'
+import OwnerCompanyRoute from './pages/company/route'
+import OwnerAccountingRoute from './pages/accounting/route'
 
-const ownerRoute = createRoute({
+export const ownerRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'owner',
     beforeLoad: () => {},
@@ -12,7 +16,7 @@ const ownerRoute = createRoute({
 const ownerLandingRoute = createRoute({
     getParentRoute: () => ownerRoute,
     path: '/',
-    component: lazyRouteComponent(() => import('@/modules/owner/pages')),
+    beforeLoad: () => redirect({ to: '/owner/dashboard' }),
 })
 
 const ownerDashboardRoute = createRoute({
@@ -21,52 +25,10 @@ const ownerDashboardRoute = createRoute({
     component: lazyRouteComponent(() => import('./pages/dashboard')),
 })
 
-const ownerViewMembersRoute = createRoute({
-    getParentRoute: () => ownerRoute,
-    path: '/users/members/view-members',
-    component: lazyRouteComponent(() => import('./pages/members/view-members')),
-})
-
-const ownerMembersActivityRoute = createRoute({
-    getParentRoute: () => ownerRoute,
-    path: 'users/members/members-activity',
-    component: lazyRouteComponent(
-        () => import('./pages/members/members-activity')
-    ),
-})
-
-const ownerViewEmployeesRoute = createRoute({
-    getParentRoute: () => ownerRoute,
-    path: 'users/employees/view-employees',
-    component: lazyRouteComponent(
-        () => import('./pages/employees/view-employees')
-    ),
-})
-
-const ownerEmployeeFootstepsRoute = createRoute({
-    getParentRoute: () => ownerRoute,
-    path: 'users/employees/employee-footsteps',
-    component: lazyRouteComponent(
-        () => import('./pages/employees/employee-footsteps')
-    ),
-})
-
 const ownerRolesManagementRoute = createRoute({
     getParentRoute: () => ownerRoute,
     path: 'roles-management',
     component: lazyRouteComponent(() => import('./pages/roles-management')),
-})
-
-const ownerCompanyProfileRoute = createRoute({
-    getParentRoute: () => ownerRoute,
-    path: 'company/profile',
-    component: lazyRouteComponent(() => import('./pages/company/profile')),
-})
-
-const ownerCompanyBranchesRoute = createRoute({
-    getParentRoute: () => ownerRoute,
-    path: 'company/branches',
-    component: lazyRouteComponent(() => import('./pages/company/branches')),
 })
 
 const ownerFootstepTrackingRoute = createRoute({
@@ -102,18 +64,15 @@ const ownerSettingsRoute = createRoute({
 const OwnerRoute = ownerRoute.addChildren([
     ownerLandingRoute,
     ownerDashboardRoute,
-    ownerViewMembersRoute,
-    ownerMembersActivityRoute,
-    ownerViewEmployeesRoute,
-    ownerEmployeeFootstepsRoute,
     ownerRolesManagementRoute,
-    ownerCompanyProfileRoute,
-    ownerCompanyBranchesRoute,
     ownerFootstepTrackingRoute,
     ownerReportsRoute,
     ownerNotificationsRoute,
     ownerProfileRoute,
     ownerSettingsRoute,
+    OwnerUserRoute,
+    OwnerCompanyRoute,
+    OwnerAccountingRoute,
 ])
 
 export default OwnerRoute

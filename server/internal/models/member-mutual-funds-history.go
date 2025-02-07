@@ -68,3 +68,29 @@ func (m *ModelTransformer) MemberMutualFundsHistoryToResourceList(historyList []
 	}
 	return historyResources
 }
+
+func (m *ModelRepository) MemberMutualFundsHistoryGetByID(id string, preloads ...string) (*MemberMutualFundsHistory, error) {
+	repo := NewGenericRepository[MemberMutualFundsHistory](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberMutualFundsHistoryCreate(membermutualfundshistory *MemberMutualFundsHistory, preloads ...string) (*MemberMutualFundsHistory, error) {
+	repo := NewGenericRepository[MemberMutualFundsHistory](m.db.Client)
+	return repo.Create(membermutualfundshistory, preloads...)
+}
+func (m *ModelRepository) MemberMutualFundsHistoryUpdate(membermutualfundshistory *MemberMutualFundsHistory, preloads ...string) (*MemberMutualFundsHistory, error) {
+	repo := NewGenericRepository[MemberMutualFundsHistory](m.db.Client)
+	return repo.Update(membermutualfundshistory, preloads...)
+}
+func (m *ModelRepository) MemberMutualFundsHistoryUpdateByID(id string, value *MemberMutualFundsHistory, preloads ...string) (*MemberMutualFundsHistory, error) {
+	repo := NewGenericRepository[MemberMutualFundsHistory](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberMutualFundsHistoryDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberMutualFundsHistory](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberMutualFundsHistoryGetAll(preloads ...string) ([]*MemberMutualFundsHistory, error) {
+	repo := NewGenericRepository[MemberMutualFundsHistory](m.db.Client)
+	return repo.GetAll(preloads...)
+}

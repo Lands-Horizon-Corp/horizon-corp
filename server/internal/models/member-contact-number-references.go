@@ -67,3 +67,29 @@ func (m *ModelTransformer) MemberContactNumberReferencesToResourceList(reference
 	}
 	return referenceResources
 }
+
+func (m *ModelRepository) MemberContactNumberReferencesGetByID(id string, preloads ...string) (*MemberContactNumberReferences, error) {
+	repo := NewGenericRepository[MemberContactNumberReferences](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberContactNumberReferencesCreate(membercontactnumberreferences *MemberContactNumberReferences, preloads ...string) (*MemberContactNumberReferences, error) {
+	repo := NewGenericRepository[MemberContactNumberReferences](m.db.Client)
+	return repo.Create(membercontactnumberreferences, preloads...)
+}
+func (m *ModelRepository) MemberContactNumberReferencesUpdate(membercontactnumberreferences *MemberContactNumberReferences, preloads ...string) (*MemberContactNumberReferences, error) {
+	repo := NewGenericRepository[MemberContactNumberReferences](m.db.Client)
+	return repo.Update(membercontactnumberreferences, preloads...)
+}
+func (m *ModelRepository) MemberContactNumberReferencesUpdateByID(id string, value *MemberContactNumberReferences, preloads ...string) (*MemberContactNumberReferences, error) {
+	repo := NewGenericRepository[MemberContactNumberReferences](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberContactNumberReferencesDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberContactNumberReferences](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberContactNumberReferencesGetAll(preloads ...string) ([]*MemberContactNumberReferences, error) {
+	repo := NewGenericRepository[MemberContactNumberReferences](m.db.Client)
+	return repo.GetAll(preloads...)
+}

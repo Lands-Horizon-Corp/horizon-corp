@@ -6,23 +6,25 @@ import {
 } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
+
 import {
-    FeedbackRequest,
-    FeedbackResource,
-    FeedbackPaginatedResource,
-} from '@/horizon-corp/types'
-import { FeedbackService } from '@/horizon-corp/services'
-import {
-    IApiPreloads,
-    IFilterPaginatedHookProps,
+    IAPIPreloads,
     IOperationCallbacks,
+    IFilterPaginatedHookProps,
 } from './types'
-import { serverRequestErrExtractor } from '@/helpers'
+import {
+    TEntityId,
+    IFeedbackRequest,
+    IFeedbackResource,
+    IFeedbackPaginatedResource,
+} from '@/server/types'
 import { withCatchAsync, toBase64 } from '@/utils'
+import { serverRequestErrExtractor } from '@/helpers'
+import FeedbackService from '@/server/api-service/feedback-service'
 
 // Only used by path preloader
-export const feedbackLoader = (feedbackId: number) =>
-    queryOptions<FeedbackResource>({
+export const feedbackLoader = (feedbackId: TEntityId) =>
+    queryOptions<IFeedbackResource>({
         queryKey: ['feedback', 'loader', feedbackId],
         queryFn: async () => {
             const data = await FeedbackService.getById(feedbackId, ['User'])
@@ -37,9 +39,9 @@ export const useFeedback = ({
     preloads = ['User'],
     onError,
     onSuccess,
-}: { feedbackId: number } & IApiPreloads &
-    IOperationCallbacks<FeedbackResource, string>) => {
-    return useQuery<FeedbackResource, string>({
+}: { feedbackId: TEntityId } & IAPIPreloads &
+    IOperationCallbacks<IFeedbackResource, string>) => {
+    return useQuery<IFeedbackResource, string>({
         queryKey: ['feedback', feedbackId],
         queryFn: async () => {
             const [error, data] = await withCatchAsync(
@@ -64,10 +66,10 @@ export const useFeedback = ({
 export const useCreateFeedback = ({
     onError,
     onSuccess,
-}: IOperationCallbacks<FeedbackResource>) => {
+}: IOperationCallbacks<IFeedbackResource>) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, FeedbackRequest>({
+    return useMutation<void, string, IFeedbackRequest>({
         mutationKey: ['feedback', 'create'],
         mutationFn: async (feedbackData) => {
             const [error, data] = await withCatchAsync(
@@ -98,7 +100,7 @@ export const useDeleteFeedback = ({
 }: IOperationCallbacks) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, number>({
+    return useMutation<void, string, TEntityId>({
         mutationKey: ['feedback', 'delete'],
         mutationFn: async (feedbackId) => {
             const [error] = await withCatchAsync(
@@ -129,7 +131,7 @@ export const useFilteredPaginatedFeedbacks = ({
     preloads = ['User'],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps = {}) => {
-    return useQuery<FeedbackPaginatedResource, string>({
+    return useQuery<IFeedbackPaginatedResource, string>({
         queryKey: ['feedback', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(

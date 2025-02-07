@@ -6,12 +6,12 @@ import { WarningCircleIcon } from '@/components/icons'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { HELP_CONTACT } from '@/constants'
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server/types'
 import { getUsersAccountTypeRedirectPage } from '@/helpers'
 
 interface Props {
     loading: boolean
-    userData: UserData
+    userData: IUserData
     onBackSignOut: () => void
 }
 

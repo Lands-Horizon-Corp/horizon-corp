@@ -1,7 +1,9 @@
 import {
+    BankIcon,
     UserIcon,
     ShieldIcon,
     Users3Icon,
+    GendersIcon,
     ReportsIcon,
     BuildingIcon,
     SettingsIcon,
@@ -13,6 +15,7 @@ import {
     BuildingCogIcon,
     NotificationIcon,
     BuildingBranchIcon,
+    UserCogIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
@@ -45,6 +48,11 @@ const ownerSidebarItem: TSidebarItem[] = [
                         url: '/members-activity',
                         Icon: UserClockIcon,
                     },
+                    {
+                        text: 'Member Types',
+                        url: '/member-types',
+                        Icon: UserCogIcon,
+                    },
                 ],
             },
             {
@@ -63,6 +71,11 @@ const ownerSidebarItem: TSidebarItem[] = [
                         Icon: FootstepsIcon,
                     },
                 ],
+            },
+            {
+                text: 'Genders',
+                Icon: GendersIcon,
+                url: '/genders',
             },
         ],
     },
@@ -85,6 +98,19 @@ const ownerSidebarItem: TSidebarItem[] = [
                 text: 'Branches',
                 Icon: BuildingBranchIcon,
                 url: '/branches',
+            },
+        ],
+    },
+    {
+        text: 'Accounting',
+        Icon: BankIcon,
+        baseUrl: '/owner/accounting',
+        subItems: [
+            { text: 'Accounts', url: '/accounts', Icon: BankIcon },
+            {
+                Icon: BankIcon,
+                text: 'Computation Type',
+                url: '/computation-type',
             },
         ],
     },

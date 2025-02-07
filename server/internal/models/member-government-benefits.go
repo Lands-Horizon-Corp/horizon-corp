@@ -86,3 +86,29 @@ func (m *ModelTransformer) MemberGovernmentBenefitsToResourceList(benefitList []
 	}
 	return benefitResources
 }
+
+func (m *ModelRepository) MemberGovernmentBenefitsGetByID(id string, preloads ...string) (*MemberGovernmentBenefits, error) {
+	repo := NewGenericRepository[MemberGovernmentBenefits](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberGovernmentBenefitsCreate(membergovernmentbenefits *MemberGovernmentBenefits, preloads ...string) (*MemberGovernmentBenefits, error) {
+	repo := NewGenericRepository[MemberGovernmentBenefits](m.db.Client)
+	return repo.Create(membergovernmentbenefits, preloads...)
+}
+func (m *ModelRepository) MemberGovernmentBenefitsUpdate(membergovernmentbenefits *MemberGovernmentBenefits, preloads ...string) (*MemberGovernmentBenefits, error) {
+	repo := NewGenericRepository[MemberGovernmentBenefits](m.db.Client)
+	return repo.Update(membergovernmentbenefits, preloads...)
+}
+func (m *ModelRepository) MemberGovernmentBenefitsUpdateByID(id string, value *MemberGovernmentBenefits, preloads ...string) (*MemberGovernmentBenefits, error) {
+	repo := NewGenericRepository[MemberGovernmentBenefits](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberGovernmentBenefitsDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberGovernmentBenefits](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberGovernmentBenefitsGetAll(preloads ...string) ([]*MemberGovernmentBenefits, error) {
+	repo := NewGenericRepository[MemberGovernmentBenefits](m.db.Client)
+	return repo.GetAll(preloads...)
+}

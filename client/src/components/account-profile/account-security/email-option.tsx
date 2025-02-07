@@ -1,8 +1,6 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
 import { useCallback, useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
 
 import {
     CheckIcon,
@@ -12,11 +10,11 @@ import {
 } from '@/components/icons'
 import {
     Form,
+    FormItem,
+    FormField,
+    FormLabel,
     FormControl,
     FormDescription,
-    FormField,
-    FormItem,
-    FormLabel,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -26,17 +24,15 @@ import VerifyContactBar from '../verify-notice/verify-contact-bar'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib'
-import { withCatchAsync } from '@/utils'
+import { IUserData } from '@/server/types'
 import { emailSchema } from '@/validations/common'
-import { serverRequestErrExtractor } from '@/helpers'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ChangeEmailRequest, UserData } from '@/horizon-corp/types'
-import ProfileService from '@/horizon-corp/services/auth/ProfileService'
+import { useUpdateAccountEmail } from '@/hooks/api-hooks/use-account'
 
 interface Props {
     email: string
     verified: boolean
-    onSave: (newUserData: UserData) => void
+    onSave: (newUserData: IUserData) => void
 }
 
 const emailOptionSchema = z.object({
@@ -45,28 +41,8 @@ const emailOptionSchema = z.object({
 
 const EmailOption = ({ email, verified, onSave }: Props) => {
     const [pwdModalState, setPwdModalState] = useState(false)
-    const { isPending, mutate: saveEmail } = useMutation<
-        UserData,
-        string,
-        ChangeEmailRequest
-    >({
-        mutationKey: ['account-security-email'],
-        mutationFn: async (data) => {
-            const [error, response] = await withCatchAsync(
-                ProfileService.ChangeEmail(data)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            toast.success('Email has been saved.')
-
-            onSave(response.data)
-            return response.data
-        },
+    const { isPending, mutate: saveEmail } = useUpdateAccountEmail({
+        onSuccess : onSave
     })
 
     const form = useForm<z.infer<typeof emailOptionSchema>>({

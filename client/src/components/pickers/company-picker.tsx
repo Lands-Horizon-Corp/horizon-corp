@@ -18,16 +18,17 @@ import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
+import { ICompanyResource, TEntityId } from '@/server/types'
 import useFilterState from '@/hooks/use-filter-state'
-import { CompanyResource } from '@/horizon-corp/types'
 
 interface Props {
-    value: number
+    value?: number | string
     placeholder?: string
-    onSelect?: (selectedCompany: CompanyResource) => void
+    disabled?: boolean
+    onSelect?: (selectedCompany: ICompanyResource) => void
 }
 
-const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
+const CompanyPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
     const queryClient = useQueryClient()
     const [pickerState, setPickerState] = useState(false)
     const [pagination, setPagination] = useState<PaginationState>({
@@ -47,9 +48,10 @@ const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
         useFilteredPaginatedCompanies({
             filterPayload: finalFilterPayload,
             pagination,
+            enabled: !disabled,
         })
 
-    const company = useCompany({ companyId: value as number })
+    const company = useCompany({ companyId: value as TEntityId })
 
     return (
         <>
@@ -108,6 +110,7 @@ const CompanyPicker = ({ value, placeholder, onSelect }: Props) => {
             <Button
                 type="button"
                 variant="secondary"
+                disabled={disabled}
                 onClick={() => setPickerState((val) => !val)}
                 className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
             >

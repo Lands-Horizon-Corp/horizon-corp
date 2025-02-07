@@ -15,12 +15,12 @@ import TimeInCounter from '@/components/time-in-out/time-in-counter'
 import TimeInTimeOut, { TTImeInEntry } from '@/components/time-in-out'
 
 import { cn } from '@/lib/utils'
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server/types'
 import { IBaseCompNoChild } from '@/types/component'
 import { randomEndOfDayQuoute, randomStartOfDayQuoute } from '@/constants'
 
 interface Props extends IBaseCompNoChild {
-    currentUser: UserData | null
+    currentUser: IUserData | null
 }
 
 const NavTimeInBar = ({ className, currentUser }: Props) => {

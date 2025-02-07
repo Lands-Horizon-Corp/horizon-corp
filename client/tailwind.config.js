@@ -55,12 +55,21 @@ export default {
     				'3': 'hsl(var(--chart-3))',
     				'4': 'hsl(var(--chart-4))',
     				'5': 'hsl(var(--chart-5))'
-    			}
-    		}
+    			},
+    		},
+			keyframes: {
+				bump: {
+				  '0%, 100%': { transform: 'scale(1)' },
+				  '50%': { transform: 'scale(1.1)' },
+				},
+			  },
+			  animation: {
+				bump: 'bump 0.3s ease-in-out',
+			  },
     	}
     },
     plugins: [
 	    require("tailwindcss-animate"), 
-    	    require('@tailwindcss/typography')
+    	require('@tailwindcss/typography')
 	],
 };

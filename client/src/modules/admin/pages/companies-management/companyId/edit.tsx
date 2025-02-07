@@ -1,7 +1,7 @@
 import { useParams } from '@tanstack/react-router'
 import { useSuspenseQuery } from '@tanstack/react-query'
 
-import { CompanyEditBasicInfoForm } from '@/components/forms'
+import { CompanyEditForm } from '@/components/forms'
 
 import { companyLoader } from '@/hooks/api-hooks/use-company'
 
@@ -16,7 +16,7 @@ const CompanyEditPage = () => {
         <div className="flex w-full max-w-full flex-col items-center px-4 pb-6 sm:px-8">
             <div className="w-full max-w-5xl space-y-4 p-4">
                 <h4 className="font-medium">Edit Company</h4>
-                <CompanyEditBasicInfoForm
+                <CompanyEditForm
                     companyId={companyId}
                     defaultValues={company}
                 />

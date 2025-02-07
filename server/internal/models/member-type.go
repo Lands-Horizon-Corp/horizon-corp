@@ -19,6 +19,9 @@ type MemberType struct {
 
 	MembersProfile *MemberProfile       `gorm:"foreignKey:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"members_profile"`
 	History        []*MemberTypeHistory `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberType) BeforeCreate(tx *gorm.DB) (err error) {
@@ -69,4 +72,30 @@ func (m *ModelTransformer) MemberTypeToResourceList(memberTypeList []*MemberType
 		memberTypeResources = append(memberTypeResources, m.MemberTypeToResource(memberType))
 	}
 	return memberTypeResources
+}
+
+func (m *ModelRepository) MemberTypeGetByID(id string, preloads ...string) (*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberTypeCreate(membertype *MemberType, preloads ...string) (*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.Create(membertype, preloads...)
+}
+func (m *ModelRepository) MemberTypeUpdate(membertype *MemberType, preloads ...string) (*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.Update(membertype, preloads...)
+}
+func (m *ModelRepository) MemberTypeUpdateByID(id string, value *MemberType, preloads ...string) (*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberTypeDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberTypeGetAll(preloads ...string) ([]*MemberType, error) {
+	repo := NewGenericRepository[MemberType](m.db.Client)
+	return repo.GetAll(preloads...)
 }

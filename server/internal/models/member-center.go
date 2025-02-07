@@ -13,9 +13,13 @@ type MemberCenter struct {
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	Name        string                 `gorm:"size:255;unsigned"`
-	Description string                 `gorm:"size:500"`
-	History     []*MemberCenterHistory `gorm:"foreignKey:MemberCenterID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+	Name        string `gorm:"size:255;unsigned"`
+	Description string `gorm:"size:500"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
+
+	History []*MemberCenterHistory `gorm:"foreignKey:MemberCenterID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
 }
 
 func (v *MemberCenter) BeforeCreate(tx *gorm.DB) (err error) {
@@ -64,4 +68,30 @@ func (m *ModelTransformer) MemberCenterToResourceList(centerList []*MemberCenter
 		centerResources = append(centerResources, m.MemberCenterToResource(center))
 	}
 	return centerResources
+}
+
+func (m *ModelRepository) MemberCenterGetByID(id string, preloads ...string) (*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberCenterCreate(membercenter *MemberCenter, preloads ...string) (*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.Create(membercenter, preloads...)
+}
+func (m *ModelRepository) MemberCenterUpdate(membercenter *MemberCenter, preloads ...string) (*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.Update(membercenter, preloads...)
+}
+func (m *ModelRepository) MemberCenterUpdateByID(id string, value *MemberCenter, preloads ...string) (*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberCenterDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberCenterGetAll(preloads ...string) ([]*MemberCenter, error) {
+	repo := NewGenericRepository[MemberCenter](m.db.Client)
+	return repo.GetAll(preloads...)
 }

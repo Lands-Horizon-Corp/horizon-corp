@@ -7,17 +7,17 @@ import {
     PhoneOutlineIcon,
     CalendarCheckIcon,
 } from '@/components/icons'
-
-import { UserData } from '@/horizon-corp/types'
-import UserProfilePicture from './profile-picture'
 import AccountQr from './account-qr'
+import UserProfilePicture from './profile-picture'
+
+import { IUserData } from '@/server/types'
 
 const AccountProfileBanner = ({
     currentUser,
     updateUserData,
 }: {
-    currentUser: UserData
-    updateUserData: (newUserData: UserData) => void
+    currentUser: IUserData
+    updateUserData: (newUserData: IUserData) => void
 }) => {
     return (
         <div className="overflow-clip rounded-2xl bg-secondary shadow-md">

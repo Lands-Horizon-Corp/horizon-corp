@@ -73,3 +73,29 @@ func (m *ModelTransformer) MemberExpensesToResourceList(expensesList []*MemberEx
 	}
 	return expensesResources
 }
+
+func (m *ModelRepository) MemberExpensesGetByID(id string, preloads ...string) (*MemberExpenses, error) {
+	repo := NewGenericRepository[MemberExpenses](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberExpensesCreate(memberexpenses *MemberExpenses, preloads ...string) (*MemberExpenses, error) {
+	repo := NewGenericRepository[MemberExpenses](m.db.Client)
+	return repo.Create(memberexpenses, preloads...)
+}
+func (m *ModelRepository) MemberExpensesUpdate(memberexpenses *MemberExpenses, preloads ...string) (*MemberExpenses, error) {
+	repo := NewGenericRepository[MemberExpenses](m.db.Client)
+	return repo.Update(memberexpenses, preloads...)
+}
+func (m *ModelRepository) MemberExpensesUpdateByID(id string, value *MemberExpenses, preloads ...string) (*MemberExpenses, error) {
+	repo := NewGenericRepository[MemberExpenses](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberExpensesDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberExpenses](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberExpensesGetAll(preloads ...string) ([]*MemberExpenses, error) {
+	repo := NewGenericRepository[MemberExpenses](m.db.Client)
+	return repo.GetAll(preloads...)
+}

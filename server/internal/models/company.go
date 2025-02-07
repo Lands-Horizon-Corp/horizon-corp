@@ -98,3 +98,29 @@ func (m *ModelTransformer) CompanyToResourceList(companyList []*Company) []*Comp
 	}
 	return companyResources
 }
+
+func (m *ModelRepository) CompanyGetByID(id string, preloads ...string) (*Company, error) {
+	repo := NewGenericRepository[Company](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) CompanyCreate(company *Company, preloads ...string) (*Company, error) {
+	repo := NewGenericRepository[Company](m.db.Client)
+	return repo.Create(company, preloads...)
+}
+func (m *ModelRepository) CompanyUpdate(company *Company, preloads ...string) (*Company, error) {
+	repo := NewGenericRepository[Company](m.db.Client)
+	return repo.Update(company, preloads...)
+}
+func (m *ModelRepository) CompanyUpdateByID(id string, value *Company, preloads ...string) (*Company, error) {
+	repo := NewGenericRepository[Company](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) CompanyDeleteByID(id string) error {
+	repo := NewGenericRepository[Company](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) CompanyGetAll(preloads ...string) ([]*Company, error) {
+	repo := NewGenericRepository[Company](m.db.Client)
+	return repo.GetAll(preloads...)
+}

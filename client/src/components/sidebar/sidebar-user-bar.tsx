@@ -23,13 +23,11 @@ import {
 import UserAvatar from '@/components/user-avatar'
 
 import { cn } from '@/lib/utils'
-import { withCatchAsync } from '@/utils'
 import { IBaseCompNoChild } from '@/types/component'
 import { useTheme } from '@/providers/theme-provider'
-import { serverRequestErrExtractor } from '@/helpers'
+import { useSignOut } from '@/hooks/api-hooks/use-auth'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import UserService from '@/horizon-corp/services/auth/UserService'
 
 interface Props extends IBaseCompNoChild {
     isExpanded: boolean
@@ -41,20 +39,13 @@ const SidebarUserBar = ({ className, isExpanded }: Props) => {
     const { setTheme, resolvedTheme } = useTheme()
     const { currentUser, setCurrentUser } = useUserAuthStore()
 
-    const handleSignout = async () => {
-        const [error] = await withCatchAsync(UserService.SignOut())
-
-        if (error) {
-            const errorMessage = serverRequestErrExtractor({ error })
-            toast.error(errorMessage)
-            return
-        }
-
-        router.navigate({ to: '/auth/sign-in' })
-
-        setCurrentUser(null)
-        toast.success('Signed out')
-    }
+    const { mutate: handleSignout } = useSignOut({
+        onSuccess: () => {
+            setCurrentUser(null)
+            router.navigate({ to: '/auth/sign-in' })
+            toast.success('Signed Out')
+        },
+    })
 
     return (
         <DropdownMenu>

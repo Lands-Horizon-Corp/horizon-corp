@@ -76,3 +76,28 @@ func (m *ModelTransformer) MemberRecruitsToResourceList(recruitList []*MemberRec
 	}
 	return recruitResources
 }
+
+func (m *ModelRepository) MemberRecruitsGetByID(id string, preloads ...string) (*MemberRecruits, error) {
+	repo := NewGenericRepository[MemberRecruits](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+func (m *ModelRepository) MemberRecruitsCreate(memberrecruits *MemberRecruits, preloads ...string) (*MemberRecruits, error) {
+	repo := NewGenericRepository[MemberRecruits](m.db.Client)
+	return repo.Create(memberrecruits, preloads...)
+}
+func (m *ModelRepository) MemberRecruitsUpdate(memberrecruits *MemberRecruits, preloads ...string) (*MemberRecruits, error) {
+	repo := NewGenericRepository[MemberRecruits](m.db.Client)
+	return repo.Update(memberrecruits, preloads...)
+}
+func (m *ModelRepository) MemberRecruitsUpdateByID(id string, value *MemberRecruits, preloads ...string) (*MemberRecruits, error) {
+	repo := NewGenericRepository[MemberRecruits](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberRecruitsDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberRecruits](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberRecruitsGetAll(preloads ...string) ([]*MemberRecruits, error) {
+	repo := NewGenericRepository[MemberRecruits](m.db.Client)
+	return repo.GetAll(preloads...)
+}

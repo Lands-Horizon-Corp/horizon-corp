@@ -8,25 +8,31 @@ import { toast } from 'sonner'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
+import BranchService from '@/server/api-service/branch-service'
+
 import {
-    MediaRequest,
-    BranchRequest,
-    BranchResource,
-    BranchPaginatedResource,
-} from '@/horizon-corp/types'
-import { BranchService } from '@/horizon-corp/services'
-import { IFilterPaginatedHookProps, IOperationCallbacks } from './types'
+    TEntityId,
+    IMediaRequest,
+    IBranchRequest,
+    IBranchResource,
+    IBranchPaginatedResource,
+} from '@/server/types'
+import {
+    IAPIPreloads,
+    IFilterPaginatedHookProps,
+    IOperationCallbacks,
+    IQueryProps,
+} from './types'
 
 // for route pathParam loader
-export const branchLoader = (companyId: number) =>
-    queryOptions<BranchResource>({
+export const branchLoader = (
+    companyId: TEntityId,
+    preloads: string[] = ['Owner', 'Owner.Media', 'Media']
+) =>
+    queryOptions<IBranchResource>({
         queryKey: ['branch', 'loader', companyId],
         queryFn: async () => {
-            const data = await BranchService.getById(companyId, [
-                'Owner',
-                'Owner.Media',
-                'Media',
-            ])
+            const data = await BranchService.getById(companyId, preloads)
             return data
         },
         retry: 0,
@@ -34,16 +40,17 @@ export const branchLoader = (companyId: number) =>
 
 // Create branch
 export const useCreateBranch = ({
+    preloads=  ['Company', 'Company.Media'],
     onError,
     onSuccess,
-}: IOperationCallbacks<BranchResource, string>) => {
+}: IOperationCallbacks<IBranchResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
-    return useMutation<BranchResource, string, BranchRequest>({
+    return useMutation<IBranchResource, string, IBranchRequest>({
         mutationKey: ['branch', 'create'],
         mutationFn: async (newBranchData) => {
             const [error, data] = await withCatchAsync(
-                BranchService.create(newBranchData)
+                BranchService.create(newBranchData, preloads)
             )
 
             if (error) {
@@ -68,21 +75,22 @@ export const useCreateBranch = ({
 export const useUpdateBranch = ({
     onSuccess,
     onError,
-}: IOperationCallbacks<BranchResource, string>) => {
+    preloads = ['Media', 'Owner', 'Owner.Media'],
+}: IOperationCallbacks<IBranchResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
-        BranchResource,
+        IBranchResource,
         string,
         {
-            id: number
-            data: BranchRequest
+            id: TEntityId
+            data: IBranchRequest
         }
     >({
         mutationKey: ['branch', 'update'],
         mutationFn: async ({ id, data }) => {
             const [error, response] = await withCatchAsync(
-                BranchService.update(id, data)
+                BranchService.update(id, data, preloads)
             )
 
             if (error) {
@@ -92,7 +100,7 @@ export const useUpdateBranch = ({
                 throw errorMessage
             }
 
-            queryClient.setQueriesData<BranchPaginatedResource>(
+            queryClient.setQueriesData<IBranchPaginatedResource>(
                 { queryKey: ['branch', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
@@ -105,13 +113,15 @@ export const useUpdateBranch = ({
                 }
             )
 
-            queryClient.setQueryData<BranchResource>(['branch', id], response)
-            queryClient.setQueryData<BranchResource>(
+            queryClient.setQueryData<IBranchResource>(['branch', id], response)
+            queryClient.setQueryData<IBranchResource>(
                 ['branch', 'loader', id],
                 response
             )
 
             onSuccess?.(response)
+
+            toast.success('Branch updated.')
             return response
         },
     })
@@ -121,13 +131,13 @@ export const useUpdateBranch = ({
 export const useUpdateBranchProfilePicture = ({
     onSuccess,
     onError,
-}: IOperationCallbacks<BranchResource>) => {
+}: IOperationCallbacks<IBranchResource>) => {
     const queryClient = useQueryClient()
 
     return useMutation<
         void,
         string,
-        { branchId: number; mediaResource: MediaRequest }
+        { branchId: TEntityId; mediaResource: IMediaRequest }
     >({
         mutationKey: ['branch', 'update', 'logo'],
         mutationFn: async ({ branchId, mediaResource }) => {
@@ -142,7 +152,7 @@ export const useUpdateBranchProfilePicture = ({
                 throw new Error(errorMessage)
             }
 
-            queryClient.setQueriesData<BranchPaginatedResource>(
+            queryClient.setQueriesData<IBranchPaginatedResource>(
                 { queryKey: ['branch', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
@@ -155,8 +165,11 @@ export const useUpdateBranchProfilePicture = ({
                 }
             )
 
-            queryClient.setQueryData<BranchResource>(['branch', branchId], data)
-            queryClient.setQueryData<BranchResource>(
+            queryClient.setQueryData<IBranchResource>(
+                ['branch', branchId],
+                data
+            )
+            queryClient.setQueryData<IBranchResource>(
                 ['branch', 'loader', branchId],
                 data
             )
@@ -171,10 +184,10 @@ export const useUpdateBranchProfilePicture = ({
 export const useDeleteBranch = ({
     onSuccess,
     onError,
-}: IOperationCallbacks) => {
+}: undefined | IOperationCallbacks = {}) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, number>({
+    return useMutation<void, string, TEntityId>({
         mutationKey: ['branch', 'delete'],
         mutationFn: async (branchId) => {
             const [error] = await withCatchAsync(BranchService.delete(branchId))
@@ -203,12 +216,13 @@ export const useDeleteBranch = ({
 }
 
 export const useFilteredPaginatedBranch = ({
-    filterPayload,
-    pagination = { pageSize: 10, pageIndex: 1 },
-    preloads = ['Media', 'Owner'],
     sort,
-}: IFilterPaginatedHookProps = {}) => {
-    return useQuery<BranchPaginatedResource, string>({
+    enabled,
+    filterPayload,
+    preloads = ['Media', 'Company'],
+    pagination = { pageSize: 10, pageIndex: 1 },
+}: IFilterPaginatedHookProps & IQueryProps = {}) => {
+    return useQuery<IBranchPaginatedResource, string>({
         queryKey: ['branch', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
@@ -235,6 +249,7 @@ export const useFilteredPaginatedBranch = ({
             totalPage: 1,
             ...pagination,
         },
+        enabled,
         retry: 1,
     })
 }

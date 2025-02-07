@@ -44,9 +44,11 @@ import {
 
 import {
     LiaUser as UserIcon,
+    LiaUserCogSolid as UserCogIcon,
     LiaShieldAltSolid as ShieldIcon,
     LiaUserClockSolid as UserClockIcon,
     LiaUserShieldSolid as UserShieldIcon,
+    LiaMapMarkedAltSolid as MapMarkedIcon,
 } from 'react-icons/lia'
 
 import {
@@ -108,6 +110,7 @@ import {
     MdRotateRight as RotateRightIcon,
     MdMarkEmailRead as EmailCheckIcon,
     MdOutlinePayments as PaymentsIcon,
+    MdOutlineAccountBalance as BankIcon,
     MdCameraEnhance as CameraSelectIcon,
     MdFlipCameraAndroid as CameraFlipIcon,
     MdManageAccounts as AccountSettingIcon,
@@ -157,11 +160,14 @@ import {
 } from 'react-icons/rx'
 
 import {
+    FaRegMap as MapIcon,
     FaRegEye as EyeIcon,
     FaBold as FaBoldIcon,
-    FaPhoneAlt as PhoneIcon,
     FaFileCsv as CsvIcon,
+    FaPhoneAlt as PhoneIcon,
 } from 'react-icons/fa'
+
+import { FaVenusMars as GendersIcon } from "react-icons/fa6";
 
 import {
     RiListCheck3 as TransactionListIcon,
@@ -182,16 +188,22 @@ import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
 
 import { GrPowerReset as PowerResetIcon } from 'react-icons/gr'
 
-import { VscLocation as LocationPinOutlineIcon } from 'react-icons/vsc'
+import { VscLocation as LocationPinOutlineIcon, VscError as ErrorIcon  } from 'react-icons/vsc'
+
+import { BiErrorCircle as WarningIcon } from "react-icons/bi";
+
+import { SlOptions as OptionsIcon } from "react-icons/sl";
 
 // Export section
 export {
     XIcon,
+    MapIcon,
     CsvIcon,
     SunIcon,
     KeyIcon,
     DevIcon,
     EyeIcon,
+    BankIcon,
     PlusIcon,
     UndoIcon,
     RedoIcon,
@@ -221,6 +233,8 @@ export {
     ZoomInIcon,
     AdjustIcon,
     Image2Icon,
+    UserCogIcon,
+    GendersIcon,
     RefreshIcon,
     ArrowUpIcon,
     SidebarIcon,
@@ -240,6 +254,7 @@ export {
     BuildingIcon,
     DownloadIcon,
     CalendarIcon,
+    MapMarkedIcon,
     CodeBlockIcon,
     ArrowLeftIcon,
     ArrowDownIcon,
@@ -317,4 +332,7 @@ export {
     Rotate90DegreeRightIcon,
     BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
+    ErrorIcon,
+    WarningIcon,
+    OptionsIcon,
 }

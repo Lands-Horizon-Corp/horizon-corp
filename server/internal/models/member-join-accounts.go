@@ -77,3 +77,29 @@ func (m *ModelTransformer) MemberJointAccountsToResourceList(accountList []*Memb
 	}
 	return accountResources
 }
+
+func (m *ModelRepository) MemberJointAccountsGetByID(id string, preloads ...string) (*MemberJointAccounts, error) {
+	repo := NewGenericRepository[MemberJointAccounts](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberJointAccountsCreate(memberjointaccounts *MemberJointAccounts, preloads ...string) (*MemberJointAccounts, error) {
+	repo := NewGenericRepository[MemberJointAccounts](m.db.Client)
+	return repo.Create(memberjointaccounts, preloads...)
+}
+func (m *ModelRepository) MemberJointAccountsUpdate(memberjointaccounts *MemberJointAccounts, preloads ...string) (*MemberJointAccounts, error) {
+	repo := NewGenericRepository[MemberJointAccounts](m.db.Client)
+	return repo.Update(memberjointaccounts, preloads...)
+}
+func (m *ModelRepository) MemberJointAccountsUpdateByID(id string, value *MemberJointAccounts, preloads ...string) (*MemberJointAccounts, error) {
+	repo := NewGenericRepository[MemberJointAccounts](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberJointAccountsDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberJointAccounts](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberJointAccountsGetAll(preloads ...string) ([]*MemberJointAccounts, error) {
+	repo := NewGenericRepository[MemberJointAccounts](m.db.Client)
+	return repo.GetAll(preloads...)
+}

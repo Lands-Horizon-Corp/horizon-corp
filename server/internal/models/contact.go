@@ -71,3 +71,29 @@ func (m *ModelTransformer) ContactToResourceList(contactList []*Contact) []*Cont
 	}
 	return contactResources
 }
+
+func (m *ModelRepository) ContactGetByID(id string, preloads ...string) (*Contact, error) {
+	repo := NewGenericRepository[Contact](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) ContactCreate(contact *Contact, preloads ...string) (*Contact, error) {
+	repo := NewGenericRepository[Contact](m.db.Client)
+	return repo.Create(contact, preloads...)
+}
+func (m *ModelRepository) ContactUpdate(contact *Contact, preloads ...string) (*Contact, error) {
+	repo := NewGenericRepository[Contact](m.db.Client)
+	return repo.Update(contact, preloads...)
+}
+func (m *ModelRepository) ContactUpdateByID(id string, value *Contact, preloads ...string) (*Contact, error) {
+	repo := NewGenericRepository[Contact](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) ContactDeleteByID(id string) error {
+	repo := NewGenericRepository[Contact](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) ContactGetAll(preloads ...string) ([]*Contact, error) {
+	repo := NewGenericRepository[Contact](m.db.Client)
+	return repo.GetAll(preloads...)
+}

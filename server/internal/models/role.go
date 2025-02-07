@@ -23,16 +23,6 @@ type Role struct {
 	UpdateRole bool `gorm:"default:false" json:"update_role"`
 	DeleteRole bool `gorm:"default:false" json:"delete_role"`
 
-	ReadErrorDetails   bool `gorm:"default:false" json:"read_error_details"`
-	WriteErrorDetails  bool `gorm:"default:false" json:"write_error_details"`
-	UpdateErrorDetails bool `gorm:"default:false" json:"update_error_details"`
-	DeleteErrorDetails bool `gorm:"default:false" json:"delete_error_details"`
-
-	ReadGender   bool `gorm:"default:false" json:"read_gender"`
-	WriteGender  bool `gorm:"default:false" json:"write_gender"`
-	UpdateGender bool `gorm:"default:false" json:"update_gender"`
-	DeleteGender bool `gorm:"default:false" json:"delete_gender"`
-
 	// Relationship 0 to many
 	Admins    []*Admin    `gorm:"foreignKey:RoleID" json:"admins"`
 	Owners    []*Owner    `gorm:"foreignKey:RoleID" json:"owners"`
@@ -53,22 +43,15 @@ type RoleResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	Name               string `json:"name"`
-	Description        string `json:"description"`
-	ApiKey             string `json:"apiKey"`
-	Color              string `json:"color"`
-	ReadRole           bool   `json:"readRole"`
-	WriteRole          bool   `json:"writeRole"`
-	UpdateRole         bool   `json:"updateRole"`
-	DeleteRole         bool   `json:"deleteRole"`
-	ReadErrorDetails   bool   `json:"readErrorDetails"`
-	WriteErrorDetails  bool   `json:"writeErrorDetails"`
-	UpdateErrorDetails bool   `json:"updateErrorDetails"`
-	DeleteErrorDetails bool   `json:"deleteErrorDetails"`
-	ReadGender         bool   `json:"readGender"`
-	WriteGender        bool   `json:"writeGender"`
-	UpdateGender       bool   `json:"updateGender"`
-	DeleteGender       bool   `json:"deleteGender"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	ApiKey      string `json:"apiKey"`
+	Color       string `json:"color"`
+
+	ReadRole   bool `json:"readRole"`
+	WriteRole  bool `json:"writeRole"`
+	UpdateRole bool `json:"updateRole"`
+	DeleteRole bool `json:"deleteRole"`
 
 	Admins    []*AdminResource    `json:"admins"`
 	Owners    []*OwnerResource    `json:"owners"`
@@ -88,26 +71,19 @@ func (m *ModelTransformer) RoleToResource(role *Role) *RoleResource {
 		UpdatedAt: role.UpdatedAt.Format(time.RFC3339),
 		DeletedAt: role.DeletedAt.Time.Format(time.RFC3339),
 
-		Name:               role.Name,
-		Description:        role.Description,
-		ApiKey:             role.ApiKey,
-		Color:              role.Color,
-		ReadRole:           role.ReadRole,
-		WriteRole:          role.WriteRole,
-		UpdateRole:         role.UpdateRole,
-		DeleteRole:         role.DeleteRole,
-		ReadErrorDetails:   role.ReadErrorDetails,
-		WriteErrorDetails:  role.WriteErrorDetails,
-		UpdateErrorDetails: role.UpdateErrorDetails,
-		DeleteErrorDetails: role.DeleteErrorDetails,
-		ReadGender:         role.ReadGender,
-		WriteGender:        role.WriteGender,
-		UpdateGender:       role.UpdateGender,
-		DeleteGender:       role.DeleteGender,
-		Admins:             m.AdminToResourceList(role.Admins),
-		Owners:             m.OwnerToResourceList(role.Owners),
-		Employees:          m.EmployeeToResourceList(role.Employees),
-		Members:            m.MemberToResourceList(role.Members),
+		Name:        role.Name,
+		Description: role.Description,
+		ApiKey:      role.ApiKey,
+		Color:       role.Color,
+		ReadRole:    role.ReadRole,
+		WriteRole:   role.WriteRole,
+		UpdateRole:  role.UpdateRole,
+		DeleteRole:  role.DeleteRole,
+
+		Admins:    m.AdminToResourceList(role.Admins),
+		Owners:    m.OwnerToResourceList(role.Owners),
+		Employees: m.EmployeeToResourceList(role.Employees),
+		Members:   m.MemberToResourceList(role.Members),
 	}
 }
 
@@ -121,4 +97,30 @@ func (m *ModelTransformer) RoleToResourceList(roleList []*Role) []*RoleResource 
 		roleResources = append(roleResources, m.RoleToResource(role))
 	}
 	return roleResources
+}
+
+func (m *ModelRepository) RoleGetByID(id string, preloads ...string) (*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) RoleCreate(role *Role, preloads ...string) (*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.Create(role, preloads...)
+}
+func (m *ModelRepository) RoleUpdate(role *Role, preloads ...string) (*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.Update(role, preloads...)
+}
+func (m *ModelRepository) RoleUpdateByID(id string, value *Role, preloads ...string) (*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) RoleDeleteByID(id string) error {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) RoleGetAll(preloads ...string) ([]*Role, error) {
+	repo := NewGenericRepository[Role](m.db.Client)
+	return repo.GetAll(preloads...)
 }

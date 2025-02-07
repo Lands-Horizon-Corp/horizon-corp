@@ -7,28 +7,32 @@ import ActionTooltip from '@/components/action-tooltip'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import SingleImageUploaderModal from '@/components/single-image-uploader/single-image-uploader-modal'
 
-import { IBaseCompNoChild } from '@/types'
-import { UserData } from '@/horizon-corp/types'
-import { useUserUpdateProfilePicture } from '@/hooks/api-hooks/use-user'
 import { cn } from '@/lib'
+import { IBaseCompNoChild } from '@/types'
+import { IUserData } from '@/server/types'
+import { useUploadAccountProfilePicture } from '@/hooks/api-hooks/use-account'
 
 interface Props extends IBaseCompNoChild {
-    userData: UserData
-    onUploadSuccess? : (newUserData: UserData) => void
+    userData: IUserData
+    onUploadSuccess?: (newUserData: IUserData) => void
 }
 
-const UserProfilePicture = ({ userData, className, onUploadSuccess }: Props) => {
+const UserProfilePicture = ({
+    userData,
+    className,
+    onUploadSuccess,
+}: Props) => {
     const [modal, toggleModal] = useState(false)
 
     const {
         mutate: updateUserProfilePicture,
         isPending: isUpdatingUserProfilePicture,
-    } = useUserUpdateProfilePicture({
+    } = useUploadAccountProfilePicture({
         onSuccess: onUploadSuccess,
     })
 
     return (
-        <div className={cn("relative size-24", className)}>
+        <div className={cn('relative size-24', className)}>
             <SingleImageUploaderModal
                 modalState={modal}
                 setModalState={toggleModal}

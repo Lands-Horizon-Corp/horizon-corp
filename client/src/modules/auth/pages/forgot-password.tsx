@@ -3,13 +3,13 @@ import { useRouter, useSearch } from '@tanstack/react-router'
 
 import { Button } from '@/components/ui/button'
 import GuestGuard from '@/components/wrappers/guest-guard'
-import AuthPageWrapper from '../components/auth-page-wrapper'
 import ForgotPasswordEmail, {
     TForgotPasswordEmail,
-} from '@/modules/auth/components/forms/forgot-password-email'
-import FormErrorMessage from '../../../components/ui/form-error-message'
+} from '@/components/forms/auth-forms/forgot-password-email'
+import AuthPageWrapper from '../components/auth-page-wrapper'
+import FormErrorMessage from '@/components/ui/form-error-message'
 import { EmailCheckIcon, ArrowLeftIcon } from '@/components/icons'
-import ResendPasswordResetLinkButton from '../components/resend-password-reset-link-button'
+import ResendPasswordResetLinkButton from '@/components/forms/auth-forms/resend-password-reset-link-button'
 
 import useLoadingErrorState from '@/hooks/use-loading-error-state'
 

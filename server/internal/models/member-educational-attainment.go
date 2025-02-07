@@ -16,6 +16,9 @@ type MemberEducationalAttainment struct {
 	Name        string                                `gorm:"size:255;unsigned"`
 	Description string                                `gorm:"size:500"`
 	History     []*MemberEducationalAttainmentHistory `gorm:"foreignKey:MemberEducationalAttainmentID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"history,omitempty"`
+
+	CompanyID uuid.UUID `gorm:"unsigned" json:"company_id"`
+	Company   *Company  `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberEducationalAttainment) BeforeCreate(tx *gorm.DB) (err error) {
@@ -64,4 +67,30 @@ func (m *ModelTransformer) MemberEducationalAttainmentToResourceList(attainmentL
 		attainmentResources = append(attainmentResources, m.MemberEducationalAttainmentToResource(attainment))
 	}
 	return attainmentResources
+}
+
+func (m *ModelRepository) MemberEducationalAttainmentGetByID(id string, preloads ...string) (*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberEducationalAttainmentCreate(membereducationalattainment *MemberEducationalAttainment, preloads ...string) (*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.Create(membereducationalattainment, preloads...)
+}
+func (m *ModelRepository) MemberEducationalAttainmentUpdate(membereducationalattainment *MemberEducationalAttainment, preloads ...string) (*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.Update(membereducationalattainment, preloads...)
+}
+func (m *ModelRepository) MemberEducationalAttainmentUpdateByID(id string, value *MemberEducationalAttainment, preloads ...string) (*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberEducationalAttainmentDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberEducationalAttainmentGetAll(preloads ...string) ([]*MemberEducationalAttainment, error) {
+	repo := NewGenericRepository[MemberEducationalAttainment](m.db.Client)
+	return repo.GetAll(preloads...)
 }

@@ -3,12 +3,12 @@ import { useCallback, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter, useSearch } from '@tanstack/react-router'
 
-import SignInForm from '../components/forms/sign-in-form'
 import GuestGuard from '@/components/wrappers/guest-guard'
-import AuthPageWrapper from '../components/auth-page-wrapper'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import SignInForm from '@/components/forms/auth-forms/sign-in-form'
+import AuthPageWrapper from '../components/auth-page-wrapper'
 
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server/types'
 import { isUserHasUnverified } from '@/helpers'
 import { useUserAuthStore } from '@/store/user-auth-store'
 
@@ -21,7 +21,7 @@ const SignInPage = () => {
     const prefilledValues = useSearch({ from: '/auth/sign-in' })
 
     const onSignInSuccess = useCallback(
-        (userData: UserData) => {
+        (userData: IUserData) => {
             setCurrentUser(userData)
 
             const { status } = userData

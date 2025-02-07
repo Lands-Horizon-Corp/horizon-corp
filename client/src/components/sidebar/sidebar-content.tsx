@@ -73,7 +73,7 @@ const SidebarContent = ({
                 <div
                     className={cn(
                         'ecoop-scroll z-0 flex max-h-full flex-col gap-y-2 overflow-y-scroll px-4 py-4',
-                        isExpanded && 'gap-y-1 group',
+                        isExpanded && 'gap-y-0 group',
                     )}
                 >
                     {items.map((prop, key) => (

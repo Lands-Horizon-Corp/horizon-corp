@@ -3,44 +3,35 @@ import { useRouter } from '@tanstack/react-router'
 
 import {
     DropdownMenu,
-    DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
+    DropdownMenuContent,
     DropdownMenuTrigger,
+    DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import { LogoutIcon, UserIcon } from '@/components/icons'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import {
-    getUsersAccountTypeRedirectPage,
-    serverRequestErrExtractor,
-} from '@/helpers'
-import { withCatchAsync } from '@/utils'
+import { useSignOut } from '@/hooks/api-hooks/use-auth'
 import { useUserAuthStore } from '@/store/user-auth-store'
+import { getUsersAccountTypeRedirectPage } from '@/helpers'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import UserService from '@/horizon-corp/services/auth/UserService'
 
 const NavProfileMenu = () => {
     const router = useRouter()
     const { onOpen } = useConfirmModalStore()
     const { currentUser, setCurrentUser } = useUserAuthStore()
 
-    const handleSignout = async () => {
-        const [error] = await withCatchAsync(UserService.SignOut())
+    const { mutate: handleSignout, isPending } = useSignOut({
+        onSuccess: () => {
+            router.navigate({ to: '/auth/sign-in' })
 
-        if (error) {
-            const errorMessage = serverRequestErrExtractor({ error })
-            toast.error(errorMessage)
-            return
-        }
-
-        router.navigate({ to: '/auth/sign-in' })
-
-        setCurrentUser(null)
-        toast.success('Signed out')
-    }
+            setCurrentUser(null)
+            toast.success('Signed out')
+        },
+    })
 
     if (!currentUser) return null
 
@@ -52,12 +43,16 @@ const NavProfileMenu = () => {
                     variant="outline"
                     className="rounded-full p-0.5"
                 >
-                    <UserAvatar
-                        className="size-full"
-                        fallbackClassName="bg-transparent"
-                        src={currentUser.media?.downloadURL ?? ''}
-                        fallback={currentUser.username.charAt(0) ?? '-'}
-                    />
+                    {isPending ? (
+                        <LoadingSpinner />
+                    ) : (
+                        <UserAvatar
+                            className="size-full"
+                            fallbackClassName="bg-transparent"
+                            src={currentUser.media?.downloadURL ?? ''}
+                            fallback={currentUser.username.charAt(0) ?? '-'}
+                        />
+                    )}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>

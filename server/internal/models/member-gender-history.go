@@ -17,6 +17,8 @@ type MemberGenderHistory struct {
 	MemberGenderID  uuid.UUID      `gorm:"type:bigint;unsigned;unsigned" json:"member_gender_id"`
 	MemberProfile   *MemberProfile `gorm:"foreignKey:MemberProfileID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"member_profile"`
 	MemberGender    *MemberGender  `gorm:"foreignKey:MemberGenderID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"member_gender"`
+	CompanyID       uuid.UUID      `gorm:"unsigned" json:"company_id"`
+	Company         *Company       `gorm:"foreignKey:CompanyID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"company"`
 }
 
 func (v *MemberGenderHistory) BeforeCreate(tx *gorm.DB) (err error) {
@@ -67,4 +69,30 @@ func (m *ModelTransformer) MemberGenderHistoryToResourceList(historyList []*Memb
 		historyResources = append(historyResources, m.MemberGenderHistoryToResource(history))
 	}
 	return historyResources
+}
+
+func (m *ModelRepository) MemberGenderHistoryGetByID(id string, preloads ...string) (*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberGenderHistoryCreate(membergenderhistory *MemberGenderHistory, preloads ...string) (*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.Create(membergenderhistory, preloads...)
+}
+func (m *ModelRepository) MemberGenderHistoryUpdate(membergenderhistory *MemberGenderHistory, preloads ...string) (*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.Update(membergenderhistory, preloads...)
+}
+func (m *ModelRepository) MemberGenderHistoryUpdateByID(id string, value *MemberGenderHistory, preloads ...string) (*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberGenderHistoryDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberGenderHistoryGetAll(preloads ...string) ([]*MemberGenderHistory, error) {
+	repo := NewGenericRepository[MemberGenderHistory](m.db.Client)
+	return repo.GetAll(preloads...)
 }

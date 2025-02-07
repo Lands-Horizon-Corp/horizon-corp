@@ -13,21 +13,24 @@ import {
     useOwner,
     useFilteredPaginatedOwners,
 } from '@/hooks/api-hooks/use-owner'
+import { useUserAuthStore } from '@/store/user-auth-store'
 
 import {
     PAGINATION_INITIAL_INDEX,
     PAGINATION_INITIAL_PAGE_SIZE,
 } from '@/constants'
-import { OwnerResource } from '@/horizon-corp/types'
 import useFilterState from '@/hooks/use-filter-state'
+import { IOwnerResource, TEntityId } from '@/server/types'
 
 interface Props {
-    value?: number
+    value?: TEntityId
     placeholder?: string
-    onSelect?: (selectedOwner: OwnerResource) => void
+    disabled?: boolean
+    onSelect?: (selectedOwner: IOwnerResource) => void
 }
 
-const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
+const OwnerPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
+    const { currentUser } = useUserAuthStore()
     const queryClient = useQueryClient()
     const [pickerState, setPickerState] = useState(false)
     const [pagination, setPagination] = useState<PaginationState>({
@@ -47,9 +50,10 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
         useFilteredPaginatedOwners({
             filterPayload: finalFilterPayload,
             pagination,
+            enabled : !disabled
         })
 
-    const owner = useOwner({ ownerId: value as number })
+    const owner = useOwner({ ownerId: value as TEntityId })
 
     return (
         <>
@@ -77,11 +81,16 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
                         <div className="flex items-center gap-x-2">
                             <ImageDisplay src={owner.media?.downloadURL} />
                             <span className="text-ellipsis text-foreground/80">
-                                {owner.firstName}
+                                {owner.firstName} {owner.lastName}
                             </span>
                         </div>
                         <span className="mr-2 font-mono text-xs italic text-foreground/40">
                             #{owner.id}
+                            {owner.id === currentUser?.id && (
+                                <span className="ml-1 text-foreground/60">
+                                    (You)
+                                </span>
+                            )}
                         </span>
                     </div>
                 )}
@@ -105,6 +114,7 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
             <Button
                 type="button"
                 variant="secondary"
+                disabled={disabled}
                 onClick={() => setPickerState((val) => !val)}
                 className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
             >
@@ -124,7 +134,14 @@ const OwnerPicker = ({ value, placeholder, onSelect }: Props) => {
                                 {placeholder}
                             </span>
                         ) : (
-                            <span>{owner.data?.firstName}</span>
+                            <span>
+                                {owner.data?.firstName} {owner.data?.lastName}
+                                {owner.data?.id === currentUser?.id && (
+                                    <span className="ml-1 text-foreground/60">
+                                        (You)
+                                    </span>
+                                )}
+                            </span>
                         )}
                     </span>
                     <span className="mr-1 font-mono text-sm text-foreground/30">

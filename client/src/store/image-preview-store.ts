@@ -1,9 +1,9 @@
 import { create } from 'zustand'
-import { MediaResource } from '@/horizon-corp/types'
+import { IMediaResource } from '@/server/types'
 
 interface ImagePreviewState {
     isOpen: boolean
-    Images?: MediaResource[]
+    Images?: IMediaResource[]
     focusIndex: number
 }
 

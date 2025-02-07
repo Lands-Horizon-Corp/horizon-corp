@@ -1,5 +1,4 @@
 export * from './auth'
-export * from './filter'
 export * from './models'
 export * from './constants'
 export * from './component'

@@ -121,3 +121,29 @@ func (m *ModelTransformer) BranchToResourceList(branchList []*Branch) []*BranchR
 	}
 	return branchResources
 }
+
+func (m *ModelRepository) BranchGetByID(id string, preloads ...string) (*Branch, error) {
+	repo := NewGenericRepository[Branch](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) BranchCreate(branch *Branch, preloads ...string) (*Branch, error) {
+	repo := NewGenericRepository[Branch](m.db.Client)
+	return repo.Create(branch, preloads...)
+}
+func (m *ModelRepository) BranchUpdate(branch *Branch, preloads ...string) (*Branch, error) {
+	repo := NewGenericRepository[Branch](m.db.Client)
+	return repo.Update(branch, preloads...)
+}
+func (m *ModelRepository) BranchUpdateByID(id string, value *Branch, preloads ...string) (*Branch, error) {
+	repo := NewGenericRepository[Branch](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) BranchDeleteByID(id string) error {
+	repo := NewGenericRepository[Branch](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) BranchGetAll(preloads ...string) ([]*Branch, error) {
+	repo := NewGenericRepository[Branch](m.db.Client)
+	return repo.GetAll(preloads...)
+}

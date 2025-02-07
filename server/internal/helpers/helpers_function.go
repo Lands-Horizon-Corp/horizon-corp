@@ -106,7 +106,9 @@ func (hf *HelpersFunction) SanitizeBody(body string) string {
 func (hf *HelpersFunction) GetKeyType(key string) string {
 
 	trimmedKey := strings.TrimSpace(key)
-
+	if hf.isValidUUID(key) {
+		return "id"
+	}
 	if trimmedKey == "" {
 		return "empty"
 	}
@@ -116,11 +118,15 @@ func (hf *HelpersFunction) GetKeyType(key string) string {
 	if hf.isValidKey(trimmedKey) {
 		return "key"
 	}
-
 	if hf.isValidUsername(trimmedKey) {
 		return "username"
 	}
 	return "unknown"
+}
+
+func (hf *HelpersFunction) isValidUUID(input string) bool {
+	_, err := uuid.Parse(input)
+	return err == nil
 }
 
 func (hf *HelpersFunction) isValidEmail(email string) bool {
@@ -155,4 +161,18 @@ func (hf *HelpersFunction) ParseIDsFromQuery(ctx *gin.Context, paramName string)
 	}
 
 	return ids, nil
+}
+
+func (hf HelpersFunction) GetPreload(ctx *gin.Context) []string {
+	preloadParam := ctx.Query("preload")
+	var preloads []string
+	if preloadParam != "" {
+		for _, rel := range strings.Split(preloadParam, ",") {
+			rel = strings.TrimSpace(rel)
+			if rel != "" {
+				preloads = append(preloads, rel)
+			}
+		}
+	}
+	return preloads
 }

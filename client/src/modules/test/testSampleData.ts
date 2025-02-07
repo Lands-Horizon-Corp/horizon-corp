@@ -1,8 +1,8 @@
-import { MediaResource } from '@/horizon-corp/types'
+import { IMediaResource } from '@/server/types'
 
-export const sampleMediaResourceList: MediaResource[] = [
+export const sampleMediaResourceList: IMediaResource[] = [
     {
-        id: 2,
+        id: '7f76efd0-940a-42f9-afa9-8644453e20aa',
         fileName: 'sample-image.png',
         fileSize: 5242880, // 5 MB in bytes
         fileType: 'image/jpeg',
@@ -14,7 +14,7 @@ export const sampleMediaResourceList: MediaResource[] = [
         downloadURL: 'https://cdn.example.com/media/resources/sample-image.jpg',
     },
     {
-        id: 3,
+        id: '324d740f2-f57f-4579-a9a3-03d6ddec44b5',
         fileName: 'sample-image2.png',
         fileSize: 7340032, // 7 MB in bytes
         fileType: 'audio/mpeg',
@@ -26,7 +26,7 @@ export const sampleMediaResourceList: MediaResource[] = [
         downloadURL: 'https://cdn.example.com/media/resources/music-track.mp3',
     },
     {
-        id: 4,
+        id: '9482cd20-df59-49a2-b6ce-bf88bed349e3',
         fileName: 'sample-image3.png',
         fileSize: 2097152, // 2 MB in bytes
         fileType: 'application/pdf',
@@ -38,7 +38,7 @@ export const sampleMediaResourceList: MediaResource[] = [
         downloadURL: 'https://cdn.example.com/media/resources/document.pdf',
     },
     // {
-    //   id: 3,
+    //   id: 'f13a44b8-d627-47db-8584-614eb016f6d6',
     //   fileName: "sample-image2.png",
     //   fileSize: 7340032, // 7 MB in bytes
     //   fileType: "audio/mpeg",
@@ -50,7 +50,7 @@ export const sampleMediaResourceList: MediaResource[] = [
     //   downloadURL: "https://cdn.example.com/media/resources/music-track.mp3"
     // },
     // {
-    //   id: 4,
+    //   id: '88350bb7-29de-4e99-bcf0-2f668bcfae92,
     //   fileName: "sample-image3.png",
     //   fileSize: 2097152, // 2 MB in bytes
     //   fileType: "application/pdf",

@@ -1,7 +1,6 @@
 package providers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -12,9 +11,18 @@ import (
 	"go.uber.org/zap"
 )
 
+type UserStatus string
+
+const (
+	PendingStatus    UserStatus = "Pending"
+	VerifiedStatus   UserStatus = "Verified"
+	NotAllowedStatus UserStatus = "Not allowed"
+)
+
 type UserClaims struct {
-	ID          uint   `json:"id"`
-	AccountType string `json:"accountType"`
+	ID          string     `json:"id"`
+	AccountType string     `json:"accountType"`
+	UserStatus  UserStatus `json:"userStatus"`
 	jwt.StandardClaims
 }
 
@@ -36,6 +44,32 @@ func NewTokenProvider(
 	}
 }
 
+func (at *TokenService) GenerateUserToken(user UserClaims, expiration time.Duration) (*string, error) {
+	validTypes := []string{"Member", "Employee", "Admin", "Owner"}
+	isValid := false
+	for _, validType := range validTypes {
+		if user.AccountType == validType {
+			isValid = true
+			break
+		}
+	}
+	if !isValid {
+		return nil, eris.New("invalid account type")
+	}
+	claims := &UserClaims{
+		ID:          user.ID,
+		AccountType: user.AccountType,
+	}
+
+	token, err := at.GenerateToken(claims, expiration)
+	if err != nil {
+		wrappedErr := eris.Wrap(err, "failed to generate user token")
+		at.logger.Error(wrappedErr.Error(), zap.Error(err))
+		return nil, wrappedErr
+	}
+	return &token, nil
+}
+
 func (s *TokenService) GenerateToken(claims *UserClaims, expiration time.Duration) (string, error) {
 	if expiration == 0 {
 		expiration = 12 * time.Hour
@@ -43,7 +77,7 @@ func (s *TokenService) GenerateToken(claims *UserClaims, expiration time.Duratio
 
 	claims.StandardClaims = jwt.StandardClaims{
 		Issuer:   "horizon-server",
-		Subject:  fmt.Sprintf("%d", claims.ID),
+		Subject:  claims.ID,
 		IssuedAt: time.Now().Unix(),
 	}
 
@@ -95,17 +129,17 @@ func (s *TokenService) VerifyToken(tokenString string) (*UserClaims, error) {
 		return nil, eris.Errorf("invalid issuer: %s", claims.Issuer)
 	}
 
-	s.logger.Info("Token verified successfully", zap.Uint("userID", claims.ID))
+	s.logger.Info("Token verified successfully", zap.String("userID", claims.ID))
 	return claims, nil
 }
 
-func (s *TokenService) StoreToken(tokenString string, userId uint) error {
+func (s *TokenService) StoreToken(tokenString string, userId string) error {
 	expiration := 24 * time.Hour
 	if err := s.cache.Set(tokenString, userId, expiration); err != nil {
 		s.logger.Error("Error storing token in Redis", zap.Error(err))
 		return eris.Wrap(err, "error storing token in Redis")
 	}
-	s.logger.Info("Token reference stored successfully in Redis", zap.Uint("userId", userId))
+	s.logger.Info("Token reference stored successfully in Redis", zap.String("userId", userId))
 	return nil
 }
 

@@ -1,9 +1,12 @@
 package models
 
 import (
+	"errors"
 	"time"
 
+	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/google/uuid"
+	"github.com/rotisserie/eris"
 	"gorm.io/gorm"
 )
 
@@ -13,19 +16,20 @@ type Member struct {
 	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	FirstName         string    `gorm:"type:varchar(255);unsigned;index" json:"first_name"`
-	LastName          string    `gorm:"type:varchar(255);unsigned;index" json:"last_name"`
-	MiddleName        string    `gorm:"type:varchar(255)" json:"middle_name"`
-	PermanentAddress  string    `gorm:"type:text" json:"permanent_address"`
-	Description       string    `gorm:"type:text" json:"description"`
-	BirthDate         time.Time `gorm:"type:date;unsigned" json:"birth_date"`
-	Username          string    `gorm:"type:varchar(255);unique;unsigned" json:"username"`
-	Email             string    `gorm:"type:varchar(255);unique;unsigned" json:"email"`
-	Password          string    `gorm:"type:varchar(255);unsigned" json:"password"`
-	IsEmailVerified   bool      `gorm:"default:false" json:"is_email_verified"`
-	IsContactVerified bool      `gorm:"default:false" json:"is_contact_verified"`
-	ContactNumber     string    `gorm:"type:varchar(255);unique;unsigned" json:"contact_number"`
-	Status            string    `gorm:"type:varchar(50);default:'Pending'" json:"status"`
+	FirstName          string               `gorm:"type:varchar(255);unsigned;index" json:"first_name"`
+	LastName           string               `gorm:"type:varchar(255);unsigned;index" json:"last_name"`
+	MiddleName         string               `gorm:"type:varchar(255)" json:"middle_name"`
+	PermanentAddress   string               `gorm:"type:text" json:"permanent_address"`
+	Description        string               `gorm:"type:text" json:"description"`
+	BirthDate          time.Time            `gorm:"type:date;unsigned" json:"birth_date"`
+	Username           string               `gorm:"type:varchar(255);unique;unsigned" json:"username"`
+	Email              string               `gorm:"type:varchar(255);unique;unsigned" json:"email"`
+	Password           string               `gorm:"type:varchar(255);unsigned" json:"password"`
+	IsEmailVerified    bool                 `gorm:"default:false" json:"is_email_verified"`
+	IsContactVerified  bool                 `gorm:"default:false" json:"is_contact_verified"`
+	IsSkipVerification bool                 `gorm:"default:false" json:"is_skip_verification"`
+	ContactNumber      string               `gorm:"type:varchar(255);unique;unsigned" json:"contact_number"`
+	Status             providers.UserStatus `gorm:"type:varchar(50);default:'Pending'" json:"status"`
 
 	// Nullable Foreign Keys
 	MediaID *uuid.UUID `gorm:"type:bigint;unsigned;index" json:"media_id"`
@@ -59,9 +63,11 @@ type MemberResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	FirstName          string                 `json:"firstName"`
-	LastName           string                 `json:"lastName"`
-	MiddleName         string                 `json:"middleName,omitempty"`
+	FirstName  string `json:"firstName"`
+	LastName   string `json:"lastName"`
+	MiddleName string `json:"middleName,omitempty"`
+	FullName   string `json:"fullName"`
+
 	PermanentAddress   string                 `json:"permanentAddress,omitempty"`
 	Description        string                 `json:"description,omitempty"`
 	BirthDate          time.Time              `json:"birthDate"`
@@ -71,7 +77,7 @@ type MemberResource struct {
 	IsContactVerified  bool                   `json:"isContactVerified"`
 	IsSkipVerification bool                   `json:"isSkipVerification"`
 	ContactNumber      string                 `json:"contactNumber"`
-	Status             string                 `json:"status"`
+	Status             providers.UserStatus   `json:"status"`
 	Media              *MediaResource         `json:"media,omitempty"`
 	Longitude          *float64               `json:"longitude,omitempty"`
 	Latitude           *float64               `json:"latitude,omitempty"`
@@ -93,9 +99,11 @@ func (m *ModelTransformer) MemberToResource(member *Member) *MemberResource {
 		UpdatedAt: member.UpdatedAt.Format(time.RFC3339),
 		DeletedAt: member.DeletedAt.Time.Format(time.RFC3339),
 
-		FirstName:         member.FirstName,
-		LastName:          member.LastName,
-		MiddleName:        member.MiddleName,
+		FirstName:  member.FirstName,
+		LastName:   member.LastName,
+		MiddleName: member.MiddleName,
+		FullName:   member.FirstName + " " + member.MiddleName + " " + member.LastName,
+
 		PermanentAddress:  member.PermanentAddress,
 		Description:       member.Description,
 		BirthDate:         member.BirthDate,
@@ -125,4 +133,126 @@ func (m *ModelTransformer) MemberToResourceList(memberList []*Member) []*MemberR
 		memberResources = append(memberResources, m.MemberToResource(member))
 	}
 	return memberResources
+}
+
+func (m *ModelRepository) MemberGetByID(id string, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+func (m *ModelRepository) MemberGetByUsername(username string, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetByColumn("username", username, preloads...)
+}
+func (m *ModelRepository) MemberGetByEmail(email string, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetByColumn("email", email, preloads...)
+}
+func (m *ModelRepository) MemberGetByContactNumber(contact_number string, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetByColumn("contact_number", contact_number, preloads...)
+}
+func (m *ModelRepository) MemberSearch(input string, preloads ...string) (*Member, error) {
+	switch m.helpers.GetKeyType(input) {
+	case "id":
+		return m.MemberGetByID(input, preloads...)
+	case "contact":
+		return m.MemberGetByContactNumber(input, preloads...)
+	case "email":
+		return m.MemberGetByEmail(input, preloads...)
+	default:
+		return m.MemberGetByUsername(input, preloads...)
+	}
+}
+func (m *ModelRepository) MemberCreate(member *Member, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	newPassword, err := m.cryptoHelpers.HashPassword(member.Password)
+	if err != nil {
+		return nil, err
+	}
+	member.Password = newPassword
+	member.Status = providers.VerifiedStatus
+	return repo.Create(member, preloads...)
+}
+func (m *ModelRepository) MemberUpdate(member *Member, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.Update(member, preloads...)
+}
+func (m *ModelRepository) MemberUpdateByID(id string, value *Member, preloads ...string) (*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberDeleteByID(id string) error {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberGetAll(preloads ...string) ([]*Member, error) {
+	repo := NewGenericRepository[Member](m.db.Client)
+	return repo.GetAll(preloads...)
+}
+
+func (m *ModelRepository) MemberSignIn(key, password string, preload ...string) (*Member, error) {
+	member, err := m.MemberSearch(key)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("user not found")
+		}
+		return nil, eris.Wrap(err, "failed to search for member")
+	}
+	if !m.cryptoHelpers.VerifyPassword(member.Password, password) {
+		return nil, eris.New("invalid credentials")
+	}
+	return member, nil
+}
+
+func (m *ModelRepository) MemberChangePassword(memberID string, currentPassword, newPassword string, preloads ...string) (*Member, error) {
+	member, err := m.MemberGetByID(memberID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("member not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve member")
+	}
+	if !m.cryptoHelpers.VerifyPassword(member.Password, currentPassword) {
+		return nil, eris.New("invalid current password")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	member.Password = hashedPassword
+	repo := NewGenericRepository[Member](m.db.Client)
+	updatedMember, err := repo.Update(member, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update member with new password")
+	}
+	return updatedMember, nil
+}
+
+func (m *ModelRepository) MemberForceChangePassword(memberID string, newPassword string, preloads ...string) (*Member, error) {
+	member, err := m.MemberGetByID(memberID, preloads...)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, eris.New("member not found")
+		}
+		return nil, eris.Wrap(err, "failed to retrieve member")
+	}
+	hashedPassword, err := m.cryptoHelpers.HashPassword(newPassword)
+	if err != nil {
+		return nil, eris.Wrap(err, "unable to hash new password")
+	}
+	member.Password = hashedPassword
+	repo := NewGenericRepository[Member](m.db.Client)
+	updatedMember, err := repo.Update(member, preloads...)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to update member with new password")
+	}
+	return updatedMember, nil
+}
+
+func (m *ModelRepository) MemberVerifyPassword(key string, password string) bool {
+	admin, err := m.MemberSearch(key)
+	if err != nil {
+		return false
+	}
+	return m.cryptoHelpers.VerifyPassword(admin.Password, password)
 }

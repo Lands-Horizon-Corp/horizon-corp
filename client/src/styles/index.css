@@ -233,3 +233,7 @@ body[data-scroll-locked] {
 body[data-scroll-locked] {
     --removed-body-scroll-bar-size: 2px;
 }
+
+.PopoverContent {
+    z-index: 1000; /* Ensure it’s above other elements */
+  }

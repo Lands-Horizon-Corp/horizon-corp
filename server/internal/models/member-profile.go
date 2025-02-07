@@ -212,3 +212,29 @@ func (m *ModelTransformer) MemberProfileToResourceList(profileList []*MemberProf
 	}
 	return profileResources
 }
+
+func (m *ModelRepository) MemberProfileGetByID(id string, preloads ...string) (*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
+	return repo.GetByID(id, preloads...)
+}
+
+func (m *ModelRepository) MemberProfileCreate(memberProfile *MemberProfile, preloads ...string) (*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
+	return repo.Create(memberProfile, preloads...)
+}
+func (m *ModelRepository) MemberProfileUpdate(memberProfile *MemberProfile, preloads ...string) (*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
+	return repo.Update(memberProfile, preloads...)
+}
+func (m *ModelRepository) MemberProfileUpdateByID(id string, value *MemberProfile, preloads ...string) (*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
+	return repo.UpdateByID(id, value, preloads...)
+}
+func (m *ModelRepository) MemberProfileDeleteByID(id string) error {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
+	return repo.DeleteByID(id)
+}
+func (m *ModelRepository) MemberProfileGetAll(preloads ...string) ([]*MemberProfile, error) {
+	repo := NewGenericRepository[MemberProfile](m.db.Client)
+	return repo.GetAll(preloads...)
+}

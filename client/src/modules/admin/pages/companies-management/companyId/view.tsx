@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import DOMPurify from 'isomorphic-dompurify'
 import { useSuspenseQuery } from '@tanstack/react-query'
 import { useParams, useRouter } from '@tanstack/react-router'
 
@@ -22,16 +21,18 @@ import { Separator } from '@/components/ui/separator'
 import ImageDisplay from '@/components/image-display'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
-import CompanyLogo from '@/modules/admin/components/company-logo'
+import CompanyLogo from '@/components/company-profile/company-logo'
 import CompanyAcceptBar from '@/modules/admin/components/company-accept-bar'
 
 import { toReadableDate } from '@/utils'
-import { OwnerResource } from '@/horizon-corp/types/profile'
+import { IOwnerResource } from '@/server/types'
 
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { companyLoader, useDeleteCompany } from '@/hooks/api-hooks/use-company'
+import CompanyBadge from '@/components/company-profile/company-badge'
+import CompanyDescription from '@/components/company-profile/company-description'
 
-const CompanyOwnerSection = ({ owner }: { owner: OwnerResource }) => {
+const CompanyOwnerSection = ({ owner }: { owner: IOwnerResource }) => {
     const AccountBadge = useMemo(() => {
         switch (owner.status) {
             case 'Verified':
@@ -90,22 +91,21 @@ const CompanyViewPage = () => {
     return (
         <div className="flex w-full max-w-full flex-col items-center px-4 pb-6 sm:px-8">
             <div className="flex w-full max-w-5xl flex-col items-center space-y-4">
-                <div className="flex w-full flex-col items-center space-y-4 overflow-clip rounded-xl bg-secondary">
-                    <div className="relative w-full flex-col items-center overflow-clip rounded-xl bg-popover">
+                <div className="flex w-full flex-col items-center space-y-4 overflow-clip rounded-xl bg-secondary dark:bg-popover">
+                    <div className="relative w-full flex-col items-center overflow-clip">
                         <div className="h-[180px] w-full rounded-md bg-[url('/profile-cover.png')] bg-cover bg-center" />
                         <div className="relative z-10 w-full space-y-2.5">
-                            <CompanyLogo company={company} />
+                            <CompanyLogo
+                                className="absolute -top-28 left-4 z-20"
+                                company={company}
+                            />
                             <div className="pointer-events-none relative z-10 !my-0 space-y-2.5 px-6 pb-4 pt-8 sm:pb-6">
                                 <div className="pointer-events-none absolute right-0 top-0 -z-10 m-0 hidden h-full w-full bg-gradient-to-r from-popover from-[10%] to-transparent sm:block" />
                                 <span className="pointer-events-auto z-50 flex items-center gap-x-2">
                                     <h3 className="text-lg font-medium">
                                         {company.name}
                                     </h3>
-                                    {company.isAdminVerified ? (
-                                        <BadgeCheckFillIcon className="text-primary" />
-                                    ) : (
-                                        <BadgeQuestionFillIcon className="text-amber-500" />
-                                    )}
+                                    <CompanyBadge company={company} />
                                 </span>
                                 <span className="pointer-events-auto m-0 inline-flex items-center gap-x-2 text-sm text-foreground/80">
                                     <LocationPinIcon /> {company.address}
@@ -135,7 +135,7 @@ const CompanyViewPage = () => {
                                                 params: { companyId },
                                             })
                                         }
-                                        className="pointer-events-auto rounded-none text-foreground/80 hover:text-foreground first:rounded-l-md last:rounded-r-md"
+                                        className="pointer-events-auto rounded-none text-foreground/80 first:rounded-l-md last:rounded-r-md hover:text-foreground"
                                     >
                                         <PencilOutlineIcon className="mr-2 inline" />
                                         Edit
@@ -150,7 +150,7 @@ const CompanyViewPage = () => {
                                                 params: { companyId },
                                             })
                                         }
-                                        className="pointer-events-auto rounded-none text-foreground/80 hover:text-foreground first:rounded-l-md last:rounded-r-md"
+                                        className="pointer-events-auto rounded-none text-foreground/80 first:rounded-l-md last:rounded-r-md hover:text-foreground"
                                     >
                                         <StoreIcon className="mr-2 inline" />
                                         Branches
@@ -169,7 +169,7 @@ const CompanyViewPage = () => {
                                                     deleteCompany(companyId),
                                             })
                                         }
-                                        className="pointer-events-auto rounded-none text-foreground/80 hover:text-foreground first:rounded-l-md last:rounded-r-md"
+                                        className="pointer-events-auto rounded-none text-foreground/80 first:rounded-l-md last:rounded-r-md hover:text-foreground"
                                     >
                                         {isDeleting ? (
                                             <LoadingSpinner className="mr-2 inline" />
@@ -186,7 +186,7 @@ const CompanyViewPage = () => {
                                         viewOnly
                                         zoom={13}
                                         hideControls
-                                        className="pointer-events-nonee z-10 rounded-none p-0"
+                                        className="pointer-events-nonee pointer-events-none z-10 h-full rounded-none p-0"
                                         mapContainerClassName="sm:rounded-none"
                                         center={{
                                             lng: company.longitude,
@@ -200,7 +200,7 @@ const CompanyViewPage = () => {
                                         ]}
                                     />
                                     <div className="absolute left-0 top-0 z-20 hidden h-full w-full sm:block"></div>
-                                    <div className="pointer-events-none absolute left-0 top-0 z-20 hidden h-full w-[50%] bg-gradient-to-r from-popover to-transparent sm:block"></div>
+                                    <div className="pointer-events-none absolute left-0 top-0 z-20 hidden h-full w-[50%] bg-gradient-to-r from-secondary to-transparent dark:from-popover sm:block"></div>
                                 </div>
                             )}
                         </div>
@@ -214,17 +214,7 @@ const CompanyViewPage = () => {
                         Company&apos;s Description
                         <QuestionCircleFillIcon className="inline text-foreground/20" />
                     </h3>
-                    <div
-                        dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(
-                                company.description &&
-                                    company.description.length > 0
-                                    ? company.description
-                                    : '<i>No Description</i>'
-                            ),
-                        }}
-                        className="prose !max-w-full rounded-xl bg-secondary p-4 text-sm text-foreground/70 prose-p:text-foreground/80 prose-strong:text-foreground dark:bg-popover sm:text-sm"
-                    ></div>
+                    <CompanyDescription description={company.description} />
                 </div>
                 <Separator className="w-full" />
                 <div className="w-full space-y-4">
