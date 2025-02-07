@@ -22,7 +22,7 @@ export interface IOwnerRequest {
     email: string
     password: string
     confirmPassword: string
-    birthDate: Date
+    birthDate: string
     contactNumber: string
     permanentAddress: string
     media?: IMediaRequest

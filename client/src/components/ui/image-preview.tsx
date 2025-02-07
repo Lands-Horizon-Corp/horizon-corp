@@ -47,8 +47,6 @@ import {
     ImagePreviewProps,
 } from '@/types/component/image-preview'
 
-import { useMatch } from '@tanstack/react-location';
-
 const ImagePreview = ImagePreviewPrimitive.Root
 
 const ImagePreviewPortal = ImagePreviewPrimitive.Portal
@@ -225,7 +223,6 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
     const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
     const animationFrameId = useRef<number | null>(null);
 
-    console.log('startPosition', startPosition)
     // console.log('isDragging', isDragging)
     //  console.log('previewPosition', previewPosition)
 
@@ -520,10 +517,6 @@ const ImagePreviewContent = React.forwardRef<
         const [rotateDegree, setRotateDegree] = useState(0)
         const [flipScale, setFlipScale] = useState('')
         const imageRef = useRef<HTMLImageElement | null>(null)
-        const match = useMatch();
-        const { id } = match?.params || {}; // Safely access `id` with default
-        console.log(id)
-        // /const navigate = useNavigate();
 
         const [downloadImage, setDownloadImage] = useState<DownloadProps>({
             fileName: Images[0]?.fileName || '',

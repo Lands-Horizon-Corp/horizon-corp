@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { cn } from '@/lib'
-import { INotificationResource } from '@/server/types'
+import { INotificationResource, TEntityId } from '@/server/types'
 
 import { Button } from '../ui/button'
 import NotificationsItems from './notifications-items'
@@ -103,7 +103,7 @@ interface NotificationProps {
     // fetchNotifications: (userId: number, role: Role) => Promise<INotificationResource[]>;
 }
 
-const Notification = ({}: NotificationProps) => {
+const Notification: React.FC<NotificationProps> = () => {
     const [selectedTab, setSelectedTab] = useState<NotificationGroupType>(
         NotificationGroup.all
     )
@@ -113,7 +113,7 @@ const Notification = ({}: NotificationProps) => {
     const [notifications, setNotifications] = useState<INotificationResource[]>(
         [
             {
-                id: 101,
+                id: 'd290f1ee-6c54-4b01-90e6-d701748f0851',
                 type: 'error',
                 message: 'Database connection failed on Server #3.',
                 title: 'Critical System Alert',
@@ -125,7 +125,7 @@ const Notification = ({}: NotificationProps) => {
                 category: 'System',
             },
             {
-                id: 102,
+                id: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
                 type: 'warning',
                 message: 'There are 5 pending user account approvals.',
                 title: 'Pending Approvals',
@@ -137,7 +137,7 @@ const Notification = ({}: NotificationProps) => {
                 category: 'User Management',
             },
             {
-                id: 103,
+                id: '7c9e6679-7425-40de-944b-e07fc1f90ae7',
                 type: 'success',
                 message: 'Backup process completed successfully.',
                 title: 'Backup Complete',
@@ -149,7 +149,7 @@ const Notification = ({}: NotificationProps) => {
                 category: 'System',
             },
             {
-                id: 104,
+                id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
                 type: 'info',
                 message: 'The weekly analytics report is ready for review.',
                 title: 'Analytics Report',
@@ -161,7 +161,7 @@ const Notification = ({}: NotificationProps) => {
                 category: 'Analytics',
             },
             {
-                id: 105,
+                id: '9b2b3e16-2f69-4b8d-bc2d-1a9fae48d6f3',
                 type: 'error',
                 message: 'Payment processing failed for Invoice #5678.',
                 title: 'Payment Failure',
@@ -169,11 +169,11 @@ const Notification = ({}: NotificationProps) => {
                 actionUrl: '/admin/payments/failure/5678',
                 read: false,
                 priority: 'high',
-                userId: 42,
+                userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
                 category: 'Finance',
             },
             {
-                id: 106,
+                id: '123e4567-e89b-12d3-a456-426614174000',
                 type: 'success',
                 message: "New user 'John Doe' has registered.",
                 title: 'New Registration',
@@ -181,11 +181,11 @@ const Notification = ({}: NotificationProps) => {
                 actionUrl: '/admin/users/42',
                 read: true,
                 priority: 'low',
-                userId: 42,
+                userId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
                 category: 'User Management',
             },
             {
-                id: 107,
+                id: 'fdda765f-fc57-5604-a269-52a7df8164ec',
                 type: 'info',
                 message:
                     'Version 2.5.0 of the application has been deployed successfully.',
@@ -198,7 +198,7 @@ const Notification = ({}: NotificationProps) => {
                 category: 'System',
             },
             {
-                id: 108,
+                id: '1c6e760a-4b0e-4d73-8b3f-2a4e8df63e2c',
                 type: 'warning',
                 message: 'The API usage limit is at 85%.',
                 title: 'API Usage Warning',
@@ -212,17 +212,17 @@ const Notification = ({}: NotificationProps) => {
         ]
     )
 
-    const [readNotifications, setReadNotifications] = useState<Set<number>>(
+    const [readNotifications, setReadNotifications] = useState<Set<TEntityId>>(
         new Set(
             notifications.filter((item) => item.read).map((item) => item.id)
         )
     )
 
-    const handleDeleteNotification = (id: number) => {
+    const handleDeleteNotification = (id: TEntityId) => {
         setNotifications(notifications.filter((item) => item.id !== id))
     }
 
-    const handleMarkItemAsRead = (id: number) => {
+    const handleMarkItemAsRead = (id: TEntityId) => {
         setReadNotifications((prev) => new Set([...prev, id]))
     }
 

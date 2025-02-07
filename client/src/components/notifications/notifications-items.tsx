@@ -10,14 +10,14 @@ import { CheckIcon, OptionsIcon, TrashIcon } from '../icons'
 
 import { cn } from '@/lib'
 import { toReadableDate } from '@/utils'
-import { INotificationResource } from '@/server/types'
+import { INotificationResource, TEntityId } from '@/server/types'
 import NotificationTypeComponent from '../notification-type'
 
 interface INotificationsItemsProps {
     className?: string
     data: INotificationResource
-    handleDeleteNotification: (id: number) => void
-    handleMarkItemAsRead: (id: number) => void
+    handleDeleteNotification: (id: TEntityId) => void
+    handleMarkItemAsRead: (id: TEntityId) => void
 }
 
 const NotificationsItems = ({
@@ -27,10 +27,10 @@ const NotificationsItems = ({
     handleMarkItemAsRead,
 }: INotificationsItemsProps) => {
 
-    const [hoveredId, setHoveredId] = useState<number | null>(null)
-    const [openPopoverId, setOpenPopoverId] = useState<number | null>(null)
+    const [hoveredId, setHoveredId] = useState<TEntityId | null>(null)
+    const [openPopoverId, setOpenPopoverId] = useState<TEntityId | null>(null)
 
-    const handlePopoverToggle = (id: number) => {
+    const handlePopoverToggle = (id: TEntityId) => {
         setOpenPopoverId((prevId) => (prevId === id ? null : id))
     }
 

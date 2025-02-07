@@ -10,7 +10,6 @@ import {
     FormLabel,
     FormControl,
     FormMessage,
-    FormDescription,
 } from '@/components/ui/form' // Ensure Form is from ShadCN
 import { AccountRequestSchema } from '@/validations/form-validation/accounts-schema'
 
@@ -29,8 +28,7 @@ const AccountsCreateForm = () => {
         },
     })
 
-    function onSubmit(values: TAccountsCreateForm) {
-        console.log(values)
+    function onSubmit() {
     }
 
     return (

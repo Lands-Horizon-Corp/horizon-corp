@@ -42,8 +42,6 @@ interface IAccountsCreateFormProps
 const AccountsCreateForm = ({
     readOnly,
     className,
-    defaultValues,
-    onError,
     onSuccess,
 }: IAccountsCreateFormProps) => {
     const form = useForm<TAccountsCreateForm>({
@@ -88,7 +86,6 @@ const AccountsCreateForm = ({
             <Separator />
             <form
                 onSubmit={form.handleSubmit((formData) => {
-                    console.log('formData', formData)
                     onSuccess?.(formData)
                 })}
                 className={cn('flex w-full flex-col gap-y-6', className)}

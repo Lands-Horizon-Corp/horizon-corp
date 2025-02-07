@@ -28,6 +28,14 @@ const OwnerViewMembersPage = () => {
             fullName: 'haha',
             email: 'john.doe@example.com',
             contactNumber: '+1-800-555-5678',
+            accountType: '',
+            birthDate: '2025-01-15T12:00:00Z',
+            status: 'Pending',
+            isEmailVerified: false,
+            isContactVerified: false,
+            isSkipVerification: false,
+            createdAt: '',
+            updatedAt: '',
         },
         media: {
             id: '9482cd20-df59-49a2-b6ce-bf88bed349e3',
@@ -82,7 +90,7 @@ const OwnerViewMembersPage = () => {
                     defaultValues: {
                         companyId: company?.id,
                     },
-                    onSuccess : (newMember) => {}
+                    onSuccess: () => {},
                 }}
             />
             <EnsureOwnerCompany disabled onSuccess={setCompany}>

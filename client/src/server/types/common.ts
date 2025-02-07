@@ -14,7 +14,7 @@ export interface IUserBase extends ITimeStamps, ILongLat {
     lastName: string
     middleName?: string
     fullName: string // concat & returned by server
-    birthDate: Date
+    birthDate: string
 
     email: string
     contactNumber: string
