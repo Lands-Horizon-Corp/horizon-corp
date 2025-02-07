@@ -11,7 +11,7 @@ interface IGenderTableActionProps extends IGenderTableActionComponentProp {
     onDeleteSuccess?: () => void
 }
 
-const GenderTableRowActions = ({
+const GenderTableOwnerAction = ({
     row,
     onDeleteSuccess,
 }: IGenderTableActionProps) => {
@@ -63,4 +63,4 @@ const GenderTableRowActions = ({
     )
 }
 
-export default GenderTableRowActions
+export default GenderTableOwnerAction
