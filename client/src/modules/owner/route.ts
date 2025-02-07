@@ -4,6 +4,7 @@ import { rootRoute } from '@/root-route'
 import OwnerUserRoute from './pages/users/route'
 import { redirect } from '@tanstack/react-router'
 import OwnerCompanyRoute from './pages/company/route'
+import OwnerAccountingRoute from './pages/accounting/route'
 
 export const ownerRoute = createRoute({
     getParentRoute: () => rootRoute,
@@ -64,13 +65,14 @@ const OwnerRoute = ownerRoute.addChildren([
     ownerLandingRoute,
     ownerDashboardRoute,
     ownerRolesManagementRoute,
-    OwnerUserRoute,
-    OwnerCompanyRoute,
     ownerFootstepTrackingRoute,
     ownerReportsRoute,
     ownerNotificationsRoute,
     ownerProfileRoute,
     ownerSettingsRoute,
+    OwnerUserRoute,
+    OwnerCompanyRoute,
+    OwnerAccountingRoute,
 ])
 
 export default OwnerRoute

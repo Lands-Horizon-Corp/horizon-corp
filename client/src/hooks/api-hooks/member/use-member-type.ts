@@ -20,8 +20,8 @@ import {
     TEntityId,
     IMemberTypeRequest,
     IMemberTypeResource,
+    TMemberTypePaginatedResource,
 } from '@/server/types'
-
 
 export const memberTypeLoader = (
     memberTypeId: TEntityId,
@@ -79,6 +79,48 @@ export const useCreateMemberType = ({
     })
 }
 
+export const useUpdateMemberType = ({
+    preloads = ['Owner', 'Media', 'Owner.Media'],
+    onSuccess,
+    onError,
+}: IOperationCallbacks<IMemberTypeResource> & IAPIPreloads) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<
+        void,
+        string,
+        { memberTypeId: TEntityId; data: IMemberTypeRequest }
+    >({
+        mutationKey: ['member-type', 'update'],
+        mutationFn: async ({ memberTypeId, data }) => {
+            const [error, result] = await withCatchAsync(
+                MemberTypeService.update(memberTypeId, data, preloads)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            queryClient.invalidateQueries({
+                queryKey: ['member-type', 'resource-query'],
+            })
+
+            queryClient.invalidateQueries({
+                queryKey: ['member-type', memberTypeId],
+            })
+            queryClient.removeQueries({
+                queryKey: ['member-type', 'loader', memberTypeId],
+            })
+
+            toast.success('Member Type updated')
+            onSuccess?.(result)
+        },
+    })
+}
+
 export const useDeleteMemberType = ({
     onSuccess,
     onError,
@@ -96,7 +138,7 @@ export const useDeleteMemberType = ({
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 onError?.(errorMessage)
-                throw new Error(errorMessage)
+                throw errorMessage
             }
 
             queryClient.invalidateQueries({
@@ -123,7 +165,7 @@ export const useFilteredPaginatedMemberTypes = ({
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
-    return useQuery<IMemberTypeResource[], string>({
+    return useQuery<TMemberTypePaginatedResource, string>({
         queryKey: [
             'member-type',
             'resource-query',
@@ -149,7 +191,13 @@ export const useFilteredPaginatedMemberTypes = ({
 
             return result
         },
-        initialData: [],
+        initialData: {
+            data: [],
+            pages: [],
+            totalSize: 0,
+            totalPage: 1,
+            ...pagination,
+        },
         enabled,
         retry: 1,
     })

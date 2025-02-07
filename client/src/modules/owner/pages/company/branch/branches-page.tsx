@@ -1,21 +1,23 @@
 import { useState } from 'react'
 
 import { BranchCreateFormModal } from '@/components/forms'
-import BranchesTable from '@/components/tables/branches-table'
 import PageContainer from '@/components/containers/page-container'
 
 import EnsureOwnerCompany from '../../../components/ensure-company'
 
-import { ICompanyResource } from '@/server'
+import { ICompanyResource, TEntityId } from '@/server'
+import { useUserAuthStore } from '@/store/user-auth-store'
+import OwnerBranchesTable from '@/components/tables/branches-table/owner-branches-table'
 
 const OwnerCompanyBranchesPage = () => {
+    const { currentUser } = useUserAuthStore()
     const [modal, setModal] = useState(false)
     const [company, setCompany] = useState<ICompanyResource | undefined>()
 
     return (
         <PageContainer>
             <EnsureOwnerCompany onSuccess={setCompany}>
-                {company && (
+                {company && currentUser && (
                     <>
                         <BranchCreateFormModal
                             open={modal}
@@ -30,7 +32,8 @@ const OwnerCompanyBranchesPage = () => {
                                 },
                             }}
                         />
-                        <BranchesTable
+                        <OwnerBranchesTable
+                            ownerId={currentUser.id as TEntityId}
                             toolbarProps={{
                                 createActionProps: {
                                     onClick: () => setModal((val) => !val),

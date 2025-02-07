@@ -3,7 +3,7 @@ import { IMemberProfileResource } from './member-profile'
 
 export interface IMemberAddressResource extends ITimeStamps {
     id: TEntityId
-    membersProfileID: TEntityId
+    membersProfileId: TEntityId
     postalCode: string
     province: string
     city: string
@@ -11,4 +11,12 @@ export interface IMemberAddressResource extends ITimeStamps {
     region: string
     label: string
     membersProfile?: IMemberProfileResource
+}
+
+export interface IMemberAddressRequest {
+    postalCode : string
+    province : string
+    city : string
+    barangay : string
+    label : string
 }

@@ -20,13 +20,13 @@ export interface IFootstepResource {
     timestamp: string
     isDeleted: boolean
 
-    adminID?: TEntityId
+    adminId?: TEntityId
     admin?: IAdminResource
-    employeeID?: TEntityId
+    employeeId?: TEntityId
     employee?: IEmployeeResource
-    ownerID?: TEntityId
+    ownerId?: TEntityId
     owner?: IOwnerResource
-    memberID?: TEntityId
+    memberId?: TEntityId
     member?: IMemberResource
 }
 

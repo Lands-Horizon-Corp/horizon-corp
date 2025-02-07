@@ -1,18 +1,21 @@
 import {
+    BankIcon,
     UserIcon,
     ShieldIcon,
     Users3Icon,
+    GendersIcon,
     ReportsIcon,
     BuildingIcon,
     SettingsIcon,
+    UserListIcon,
     DashboardIcon,
     FootstepsIcon,
+    UserClockIcon,
+    UserShieldIcon,
+    BuildingCogIcon,
     NotificationIcon,
-    // UserListIcon,
-    // UserClockIcon,
-    // UserShieldIcon,
-    // BuildingCogIcon,
-    // BuildingBranchIcon,
+    BuildingBranchIcon,
+    UserCogIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
@@ -33,36 +36,46 @@ const ownerSidebarItem: TSidebarItem[] = [
             {
                 text: 'Members',
                 baseUrl: '/owner/users/members',
-                // Icon: UserIcon,
+                Icon: UserIcon,
                 subItems: [
                     {
                         text: 'View Members',
                         url: '/view-members',
-                        // Icon: UserListIcon,
+                        Icon: UserListIcon,
                     },
                     {
                         text: 'Members Activity',
                         url: '/members-activity',
-                        // Icon: UserClockIcon,
+                        Icon: UserClockIcon,
+                    },
+                    {
+                        text: 'Member Types',
+                        url: '/member-types',
+                        Icon: UserCogIcon,
                     },
                 ],
             },
             {
                 text: 'Employees',
                 baseUrl: '/owner/users/employees',
-                // Icon: UserShieldIcon,
+                Icon: UserShieldIcon,
                 subItems: [
                     {
                         text: 'View employees',
                         url: '/view-employees',
-                        // Icon: UserListIcon,
+                        Icon: UserListIcon,
                     },
                     {
                         text: 'Employee Footsteps',
                         url: '/employee-footsteps',
-                        // Icon: FootstepsIcon,
+                        Icon: FootstepsIcon,
                     },
                 ],
+            },
+            {
+                text: 'Genders',
+                Icon: GendersIcon,
+                url: '/genders',
             },
         ],
     },
@@ -78,13 +91,26 @@ const ownerSidebarItem: TSidebarItem[] = [
         subItems: [
             {
                 text: 'Profile',
-                // Icon: BuildingCogIcon,
+                Icon: BuildingCogIcon,
                 url: '/profile',
             },
             {
                 text: 'Branches',
-                // Icon: BuildingBranchIcon,
+                Icon: BuildingBranchIcon,
                 url: '/branches',
+            },
+        ],
+    },
+    {
+        text: 'Accounting',
+        Icon: BankIcon,
+        baseUrl: '/owner/accounting',
+        subItems: [
+            { text: 'Accounts', url: '/accounts', Icon: BankIcon },
+            {
+                Icon: BankIcon,
+                text: 'Computation Type',
+                url: '/computation-type',
             },
         ],
     },

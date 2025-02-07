@@ -36,7 +36,7 @@ const ownerBranchIndexRoute = createRoute({
 const ownerBranchViewRoute = createRoute({
     getParentRoute: () => ownerBranchId,
     path: 'view',
-    component: lazyRouteComponent(() => import('./view')),
+    component: lazyRouteComponent(() => import('./view-branch-page')),
 })
 
 const OwnerBranchIdRoute = ownerBranchId.addChildren([

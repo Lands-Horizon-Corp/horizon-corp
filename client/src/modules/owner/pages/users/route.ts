@@ -1,4 +1,8 @@
-import { createRoute, redirect } from '@tanstack/react-router'
+import {
+    createRoute,
+    lazyRouteComponent,
+    redirect,
+} from '@tanstack/react-router'
 
 import { ownerRoute } from '../../route'
 import OwnerUserMemberRoute from './members/route'
@@ -19,10 +23,17 @@ export const ownerUserIndexRoute = createRoute({
     },
 })
 
+export const ownerGenderRoute = createRoute({
+    path: 'genders',
+    getParentRoute: () => ownerUserRoute,
+    component: lazyRouteComponent(() => import('./genders-page')),
+})
+
 const OwnerUserRoute = ownerUserRoute.addChildren([
+    ownerGenderRoute,
     ownerUserIndexRoute,
     OwnerUserEmployeesRoute,
-    OwnerUserMemberRoute
+    OwnerUserMemberRoute,
 ])
 
 export default OwnerUserRoute

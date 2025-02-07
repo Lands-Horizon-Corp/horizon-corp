@@ -30,8 +30,46 @@ export const memberLoader = (
     queryOptions<IMemberResource>({
         queryKey: ['member', 'loader', memberId],
         queryFn: async () => {
-            const data = await MemberService.getById(memberId, preloads)
-            return data
+            // const data = await MemberService.getById(memberId, preloads)
+            // return data
+
+            return {
+                id: '550e8400-e29b-41d4-a716-446655440000',
+                accountType: 'Member',
+                username: 'john_doe',
+                description: 'A passionate developer.',
+                isEmailVerified: true,
+                isContactVerified: false,
+                isSkipVerification: false,
+                status: 'Verified',
+                firstName: 'John',
+                lastName: 'Doe',
+                middleName: 'A.',
+                fullName: 'John A. Doe',
+                birthDate: new Date('1990-05-15'),
+                email: 'john.doe@example.com',
+                contactNumber: '+1234567890',
+                permanentAddress: '123 Main Street, Springfield, USA',
+                mediaId: 1,
+                media: {
+                    id: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+                    fileName: 'profile.jpg',
+                    fileSize: 204800,
+                    fileType: 'image/jpeg',
+                    storageKey: 'users/john_doe/profile.jpg',
+                    url: 'https://example.com/storage/users/john_doe/profile.jpg',
+                    bucketName: 'user-uploads',
+                    createdAt: '2024-02-01T09:00:00Z',
+                    updatedAt: '2024-02-01T09:00:00Z',
+                    downloadURL:
+                        'https://example.com/storage/users/john_doe/profile.jpg?download=true',
+                },
+                longitude: -73.935242,
+                latitude: 40.73061,
+                deletedAt: null,
+                createdAt: '2024-02-01T08:30:00Z',
+                updatedAt: '2024-02-01T08:30:00Z',
+            }
         },
         retry: 0,
     })
@@ -93,7 +131,7 @@ export const useDeleteMember = ({
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 onError?.(errorMessage)
-                throw new Error(errorMessage)
+                throw errorMessage
             }
 
             queryClient.invalidateQueries({
@@ -139,7 +177,7 @@ export const useFilteredPaginatedMembers = ({
             return result
         },
         initialData: {
-            data: [],
+            data: [ ],
             pages: [],
             totalSize: 0,
             totalPage: 1,

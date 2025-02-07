@@ -1,3 +1,4 @@
+import { Path } from 'react-hook-form'
 import { IBaseCompNoChild } from '../../component/index'
 
 export interface IForm<TDefaultVals, IData = unknown, IErr = unknown>
@@ -7,6 +8,7 @@ export interface IForm<TDefaultVals, IData = unknown, IErr = unknown>
     onSuccess?: (data: IData) => void
     onError?: (e: IErr) => void
     onLoading?: (loadingState: boolean) => void
-    hiddenFields?: Array<keyof TDefaultVals>
-    disabledFields?: Array<keyof TDefaultVals>
+    onSubmit?: (formDatas: Required<TDefaultVals>) => void
+    hiddenFields?: Array<Path<TDefaultVals>>
+    disabledFields?: Array<Path<TDefaultVals>>
 }

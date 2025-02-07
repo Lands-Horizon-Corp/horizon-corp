@@ -24,13 +24,13 @@ export const ownerEmployeesIndexRoute = createRoute({
 export const ownerEmployeesView = createRoute({
     getParentRoute: () => ownerUserEmployeesRoute,
     path: 'view-employees',
-    component: lazyRouteComponent(() => import('./view-employees')),
+    component: lazyRouteComponent(() => import('./view-employees-page')),
 })
 
 const ownerEmployeesFootstepsRoute = createRoute({
     getParentRoute: () => ownerUserEmployeesRoute,
     path: 'employee-footsteps',
-    component: lazyRouteComponent(() => import('./employee-footsteps')),
+    component: lazyRouteComponent(() => import('./employee-footsteps-page')),
 })
 
 const OwnerUserEmployeesRoute = ownerUserEmployeesRoute.addChildren([

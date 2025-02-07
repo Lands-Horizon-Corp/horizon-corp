@@ -72,3 +72,11 @@ export const otpCodeSchema = z
     .regex(NUMBER_LETTER_REGEX, 'OTP must be valid alphanumeric characters')
 
 export const contactNumberSchema = z.string().min(1, 'Contact Number is empty')
+
+export const accountStatusSchema = z.enum([
+    'Pending',
+    'Verified',
+    'Not Allowed',
+])
+
+export const entityIdSchema = z.string().uuid('Invalid ID')

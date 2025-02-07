@@ -11,7 +11,7 @@ export const ownerBranchRoute = createRoute({
 export const ownerCompanyBranchIndexRoute = createRoute({
     getParentRoute: () => ownerBranchRoute,
     path: '/',
-    component: lazyRouteComponent(() => import('./branches')),
+    component: lazyRouteComponent(() => import('./branches-page')),
 })
 
 const OwnerBranchRoute = ownerBranchRoute.addChildren([
