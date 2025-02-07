@@ -20,7 +20,8 @@ export const axiosErrorMessageExtractor = (
     }
     const { response } = error
 
-    if (isObjectEmpty(response)) return 'Unknown server error occured'
+    // Former isObjectEmpty(response)
+    if (isObjectEmpty(response.data)) return 'Unknown server error occured'
 
     switch (response.status) {
         case 404:
