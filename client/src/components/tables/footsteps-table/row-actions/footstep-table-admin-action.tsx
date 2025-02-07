@@ -8,7 +8,9 @@ interface IFootstepTableAdminActionProps
     onFootstepUpdate?: () => void
 }
 
-const FootstepTableAdminAction = ({}: IFootstepTableAdminActionProps) => {
+const FootstepTableAdminAction: React.FC<
+    IFootstepTableAdminActionProps
+> = () => {
     // const footstep = row.original;
 
     // const { onOpen } = useConfirmModalStore();

@@ -56,4 +56,3 @@ export const generateDummyAccounts = (count: number): IAccountResource[] => {
 };
 
 export const DummyAccountsData = generateDummyAccounts(100);
-console.log(DummyAccountsData);

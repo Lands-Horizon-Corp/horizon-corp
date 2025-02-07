@@ -18,7 +18,7 @@ export const withCatchAsync = async <
         })
 }
 
-export const isObjectEmpty = (obj: Record<string, any>): boolean => {
+export const isObjectEmpty = (obj: Record<string, unknown>): boolean => {
     for (const _ in obj) return false
     return true
 }
