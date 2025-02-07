@@ -4,7 +4,7 @@ import AccountsTable from '@/components/tables/accounts-table'
 import { useState } from 'react'
 
 const AccountsPage = () => {
-    const [createModal, setCreateModal] = useState(true)
+    const [createModal, setCreateModal] = useState(false)
 
     return (
         <PageContainer>
