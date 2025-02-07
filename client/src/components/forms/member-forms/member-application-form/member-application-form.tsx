@@ -44,12 +44,16 @@ import { PhoneInput } from '@/components/contact-input/contact-input'
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import MemberTypeSelect from '@/components/selects/member-type-select'
+import { TFilterObject } from '@/contexts/filter-context'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
 interface IMemberApplicationFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<TMemberProfileForm>, unknown, string> {}
+        IForm<Partial<TMemberProfileForm>, unknown, string> {
+    memberTypeOptionsFilter?: TFilterObject
+}
 
 type Step = {
     title: string
@@ -107,11 +111,12 @@ const Steps: Step[] = [
 const MemberApplicationForm = ({
     readOnly,
     className,
+    hiddenFields,
     defaultValues,
+    disabledFields,
+    memberTypeOptionsFilter,
     onError,
     onSuccess,
-    disabledFields,
-    hiddenFields,
 }: IMemberApplicationFormProps) => {
     const { onOpen } = useConfirmModalStore()
     const [step, setStep] = useState(0)
@@ -256,6 +261,35 @@ const MemberApplicationForm = ({
                                 <div className="space-y-4">
                                     <legend>Identification & Reference</legend>
                                     <Separator />
+                                    <FormFieldWrapper
+                                        name="memberTypeId"
+                                        control={form.control}
+                                        label="Member Type"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                {/* <Input
+                                                    {...field}
+                                                    id={field.name}
+                                                    placeholder="Member Type"
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
+                                                /> */}
+                                                <MemberTypeSelect
+                                                    {...field}
+                                                    filter={
+                                                        memberTypeOptionsFilter
+                                                    }
+                                                    onChange={(memberType) =>
+                                                        field.onChange(
+                                                            memberType.id
+                                                        )
+                                                    }
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
                                     <FormFieldWrapper
                                         name="passbookNumber"
                                         control={form.control}
@@ -881,82 +915,84 @@ const MemberApplicationForm = ({
                     )}
 
                     {step === 1 && (
-                        <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="space-y-4">
                             <div className="space-y-4">
                                 <legend>Government Related Info</legend>
                                 <Separator />
-                                <FormFieldWrapper
-                                    name="tinNumber"
-                                    control={form.control}
-                                    label="TIN Number"
-                                    hiddenFields={hiddenFields}
-                                    render={({ field }) => (
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                placeholder="Enter TIN Number"
-                                                disabled={isDisabled(
-                                                    field.name
-                                                )}
-                                            />
-                                        </FormControl>
-                                    )}
-                                />
-                                <FormFieldWrapper
-                                    name="sssNumber"
-                                    control={form.control}
-                                    label="SSS Number"
-                                    hiddenFields={hiddenFields}
-                                    render={({ field }) => (
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                placeholder="Enter SSS Number"
-                                                disabled={isDisabled(
-                                                    field.name
-                                                )}
-                                            />
-                                        </FormControl>
-                                    )}
-                                />
-                                <FormFieldWrapper
-                                    name="pagibigNumber"
-                                    control={form.control}
-                                    label="PAGIBIG Number"
-                                    hiddenFields={hiddenFields}
-                                    render={({ field }) => (
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                placeholder="Enter PAGIBIG Number"
-                                                disabled={isDisabled(
-                                                    field.name
-                                                )}
-                                            />
-                                        </FormControl>
-                                    )}
-                                />
-                                <FormFieldWrapper
-                                    name="philhealthNumber"
-                                    control={form.control}
-                                    label="PhilHealth Number"
-                                    hiddenFields={hiddenFields}
-                                    render={({ field }) => (
-                                        <FormControl>
-                                            <Input
-                                                {...field}
-                                                id={field.name}
-                                                placeholder="Enter PhilHealth Number"
-                                                disabled={isDisabled(
-                                                    field.name
-                                                )}
-                                            />
-                                        </FormControl>
-                                    )}
-                                />
+                                <div className="grid gap-4 sm:grid-cols-2">
+                                    <FormFieldWrapper
+                                        name="tinNumber"
+                                        control={form.control}
+                                        label="TIN Number"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    id={field.name}
+                                                    placeholder="Enter TIN Number"
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
+                                        name="sssNumber"
+                                        control={form.control}
+                                        label="SSS Number"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    id={field.name}
+                                                    placeholder="Enter SSS Number"
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
+                                        name="pagibigNumber"
+                                        control={form.control}
+                                        label="PAGIBIG Number"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    id={field.name}
+                                                    placeholder="Enter PAGIBIG Number"
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
+                                        name="philhealthNumber"
+                                        control={form.control}
+                                        label="PhilHealth Number"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    id={field.name}
+                                                    placeholder="Enter PhilHealth Number"
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                </div>
                             </div>
                             <FormFieldWrapper
                                 name="memberGovernmentBenefits"
@@ -979,10 +1015,10 @@ const MemberApplicationForm = ({
                                                         className="relative grid grid-cols-2 gap-x-2 gap-y-2 rounded-xl bg-secondary p-4 dark:bg-popover sm:grid-cols-4"
                                                     >
                                                         <FormFieldWrapper
+                                                            name={`memberGovernmentBenefits.${index}.country`}
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberGovernmentBenefits.${index}.country`}
                                                             label="Country"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -1006,10 +1042,10 @@ const MemberApplicationForm = ({
                                                             )}
                                                         />
                                                         <FormFieldWrapper
+                                                            name={`memberGovernmentBenefits.${index}.name`}
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberGovernmentBenefits.${index}.name`}
                                                             label="Name"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -1033,10 +1069,10 @@ const MemberApplicationForm = ({
                                                             )}
                                                         />
                                                         <FormFieldWrapper
+                                                            name={`memberGovernmentBenefits.${index}.value`}
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberGovernmentBenefits.${index}.value`}
                                                             label="Value"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -1060,68 +1096,12 @@ const MemberApplicationForm = ({
                                                             )}
                                                         />
                                                         <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            className="col-span-2"
-                                                            label="Front Media ID"
-                                                            name={`memberGovernmentBenefits.${index}.frontMediaId`}
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Front Media ID"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            label="Back Media ID"
-                                                            className="col-span-2"
-                                                            name={`memberGovernmentBenefits.${index}.backMediaId`}
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Back Media ID"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
+                                                            name={`memberGovernmentBenefits.${index}.description`}
                                                             control={
                                                                 form.control
                                                             }
                                                             label="Description"
                                                             className="col-span-4"
-                                                            name={`memberGovernmentBenefits.${index}.description`}
                                                             hiddenFields={
                                                                 hiddenFields
                                                             }
@@ -1139,6 +1119,64 @@ const MemberApplicationForm = ({
                                                                             field.name
                                                                         )}
                                                                         className="min-h-0"
+                                                                    />
+                                                                </FormControl>
+                                                            )}
+                                                        />
+                                                        <FormFieldWrapper
+                                                            name={`memberGovernmentBenefits.${index}.frontMediaId`}
+                                                            control={
+                                                                form.control
+                                                            }
+                                                            hiddenFields={
+                                                                hiddenFields
+                                                            }
+                                                            className="col-span-2"
+                                                            label="ID Front"
+                                                            render={({
+                                                                field,
+                                                            }) => (
+                                                                <FormControl>
+                                                                    <div>
+                                                                        <Input
+                                                                            {...field}
+                                                                            id={
+                                                                                field.name
+                                                                            }
+                                                                            placeholder="Front Media ID"
+                                                                            disabled={isDisabled(
+                                                                                field.name
+                                                                            )}
+                                                                            className="w-full"
+                                                                        />
+                                                                    </div>
+                                                                </FormControl>
+                                                            )}
+                                                        />
+                                                        <FormFieldWrapper
+                                                            name={`memberGovernmentBenefits.${index}.backMediaId`}
+                                                            control={
+                                                                form.control
+                                                            }
+                                                            label="ID Back"
+                                                            className="col-span-2"
+                                                            hiddenFields={
+                                                                hiddenFields
+                                                            }
+                                                            render={({
+                                                                field,
+                                                            }) => (
+                                                                <FormControl>
+                                                                    <Input
+                                                                        {...field}
+                                                                        id={
+                                                                            field.name
+                                                                        }
+                                                                        placeholder="Back Media ID"
+                                                                        disabled={isDisabled(
+                                                                            field.name
+                                                                        )}
+                                                                        className="w-full"
                                                                     />
                                                                 </FormControl>
                                                             )}
