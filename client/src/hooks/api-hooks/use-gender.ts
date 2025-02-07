@@ -1,8 +1,4 @@
-import {
-    useQuery,
-    useMutation,
-    useQueryClient,
-} from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 import { toBase64, withCatchAsync } from '@/utils'
@@ -62,11 +58,11 @@ export const useCreateGender = ({
 export const useUpdateGender = ({
     onError,
     onSuccess,
-}: IOperationCallbacks<IGenderResource> = {}) => {
+}: IOperationCallbacks<IGenderResource, string> = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<
-        void,
+        IGenderResource,
         string,
         { genderId: TEntityId; data: IGenderRequest }
     >({
@@ -95,6 +91,8 @@ export const useUpdateGender = ({
 
             toast.success('Gender updated')
             onSuccess?.(result)
+
+            return result
         },
     })
 }
