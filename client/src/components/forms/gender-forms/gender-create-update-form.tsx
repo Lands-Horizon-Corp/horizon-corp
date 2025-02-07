@@ -153,7 +153,13 @@ export const GenderCreateUpdateFormModal = ({
             className={cn('', className)}
             {...props}
         >
-            <GenderCreateUpdateForm {...formProps} />
+            <GenderCreateUpdateForm
+                {...formProps}
+                onSuccess={(createdData) => {
+                    formProps?.onSuccess?.(createdData)
+                    props.onOpenChange?.(false)
+                }}
+            />
         </Modal>
     )
 }
