@@ -27,7 +27,7 @@ export interface IGenderFormProps
     genderId?: TEntityId
 }
 
-const GenderForm = ({
+const GenderCreateUpdateForm = ({
     genderId,
     readOnly,
     className,
@@ -137,7 +137,7 @@ const GenderForm = ({
     )
 }
 
-export const GenderCreateFormModal = ({
+export const GenderCreateUpdateFormModal = ({
     title = 'Create Gender',
     description = 'Fill out the form to add a new gender.',
     className,
@@ -153,9 +153,9 @@ export const GenderCreateFormModal = ({
             className={cn('', className)}
             {...props}
         >
-            <GenderForm {...formProps} />
+            <GenderCreateUpdateForm {...formProps} />
         </Modal>
     )
 }
 
-export default GenderForm
+export default GenderCreateUpdateForm
