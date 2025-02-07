@@ -32,7 +32,8 @@ engine/main
 .env.staging
 .env.production
 
-./server/tmp/*
+server/tmp/build-errors.log
+server/main
 
 ./client/stats.html
 client/stats.html
