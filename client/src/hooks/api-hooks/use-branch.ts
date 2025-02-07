@@ -40,7 +40,7 @@ export const branchLoader = (
 
 // Create branch
 export const useCreateBranch = ({
-    preloads=  ['Company', 'Company.Media'],
+    preloads = ['Company', 'Company.Media'],
     onError,
     onSuccess,
 }: IOperationCallbacks<IBranchResource, string> & IAPIPreloads) => {

@@ -124,7 +124,10 @@ const PageBreadCrumb = ({ className, homeUrl }: Props) => {
                                     <BreadcrumbEllipsis className="h-4 w-4" />
                                     <span className="sr-only">Toggle menu</span>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="center" className="max-h-60 ecoop-scroll overflow-y-scroll [&::-webkit-scrollbar]:w-[1px]">
+                                <DropdownMenuContent
+                                    align="center"
+                                    className="ecoop-scroll max-h-60 overflow-y-scroll [&::-webkit-scrollbar]:w-[1px]"
+                                >
                                     {paths.midPart.map((path) => (
                                         <DropdownMenuItem className="focus:bg-secondary focus:text-secondary-foreground">
                                             <BreadcrumbItem className="w-full">

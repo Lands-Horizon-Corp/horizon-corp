@@ -2,7 +2,13 @@ import MultiSelectFilter, {
     IMultiSelectOption,
 } from '@/components/multi-select-filter'
 
-import { filterModeMap, IFilterComponentProps, TColumnDataTypes, TSearchFilter, useFilter } from '@/contexts/filter-context'
+import {
+    filterModeMap,
+    IFilterComponentProps,
+    TColumnDataTypes,
+    TSearchFilter,
+    useFilter,
+} from '@/contexts/filter-context'
 
 type AllowedMode<T extends keyof typeof filterModeMap> =
     (typeof filterModeMap)[T][number]['value']
@@ -22,11 +28,7 @@ const DataTableMultiSelectFilter = <TData, TValue>({
     displayText,
     multiSelectOptions,
 }: IDatatableMultiFilter<TData, TValue>) => {
-    const { filters, setFilter } = useFilter<
-        string,
-        typeof field,
-        TValue[]
-    >()
+    const { filters, setFilter } = useFilter<string, typeof field, TValue[]>()
 
     const filterVal: TSearchFilter<string, TValue[]> = filters[field] ?? {
         displayText,

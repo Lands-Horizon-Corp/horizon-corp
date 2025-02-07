@@ -8,7 +8,10 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Link } from '@tanstack/react-router'
 import { useImagePreview } from '@/store/image-preview-store'
-import { ImagePreview, ImagePreviewContent } from '@/components/ui/image-preview'
+import {
+    ImagePreview,
+    ImagePreviewContent,
+} from '@/components/ui/image-preview'
 import { sampleMediaResourceList } from '@/modules/test/testSampleData'
 
 const LandingPage = () => {

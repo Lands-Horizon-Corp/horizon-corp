@@ -89,7 +89,12 @@ export default class CompanyService {
         return response.data
     }
 
-    public static async getCompanies({ filters, preloads, pagination, sort } : {
+    public static async getCompanies({
+        filters,
+        preloads,
+        pagination,
+        sort,
+    }: {
         sort?: string
         filters?: string
         preloads?: string[]

@@ -10,7 +10,7 @@ type TSentTo = { key: string; accountType: TAccountType }
 interface Props {
     duration: number
     interval: number
-    onSuccess? : () => void
+    onSuccess?: () => void
     onErrorMessage: (errorMessage: string) => void
     sentTo: TSentTo
 }

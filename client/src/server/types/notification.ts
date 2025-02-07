@@ -1,4 +1,4 @@
-import { TEntityId } from "./common"
+import { TEntityId } from './common'
 
 export type TNotificationPriority = 'low' | 'medium' | 'high'
 

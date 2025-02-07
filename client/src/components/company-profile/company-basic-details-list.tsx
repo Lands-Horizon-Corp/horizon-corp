@@ -17,12 +17,7 @@ interface Props extends IBaseCompNoChild {
 
 const CompanyBasicDetailsList = ({ company, className }: Props) => {
     return (
-        <div
-            className={cn(
-                'flex flex-col justify-start gap-y-4',
-                className
-            )}
-        >
+        <div className={cn('flex flex-col justify-start gap-y-4', className)}>
             <span className="inline-flex items-center gap-x-2">
                 <TelephoneIcon className="text-foreground/70" />
                 {company.contactNumber}

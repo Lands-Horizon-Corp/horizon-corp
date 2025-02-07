@@ -125,7 +125,7 @@ const OwnerCompanyProfilePage = () => {
                                         ]}
                                     />
                                 ) : (
-                                    <div className="col-span-3 flex min-h-40 items-center justify-center rounded-lg border p-4 text-foreground/50 bg-popover">
+                                    <div className="col-span-3 flex min-h-40 items-center justify-center rounded-lg border bg-popover p-4 text-foreground/50">
                                         <p>
                                             Unable to show company location map
                                         </p>

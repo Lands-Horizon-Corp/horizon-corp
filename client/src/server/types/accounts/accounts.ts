@@ -1,5 +1,5 @@
-import { ITimeStamps, TEntityId } from "../common"
-import { IPaginatedResult } from "../paginated-result"
+import { ITimeStamps, TEntityId } from '../common'
+import { IPaginatedResult } from '../paginated-result'
 
 export type TAccountingAccounts =
     | 'Deposit'
@@ -11,13 +11,13 @@ export type TAccountingAccounts =
     | 'SVF-Ledger'
     | 'W-Off'
     | 'A/P-Ledger'
-    | 'Other';
+    | 'Other'
 
 export type TEarnedUnearnedInterest =
     | 'By Formula'
     | 'By Formula + Actual Pay'
     | 'By Advance Int. + Actual Pay'
-    | 'None';
+    | 'None'
 
 export type TOtherAccountInformation =
     | 'None'
@@ -26,8 +26,7 @@ export type TOtherAccountInformation =
     | 'Grocery'
     | 'Track Loan Ded'
     | 'CIB/CIK Acct.'
-    | 'COH Acct.';
-
+    | 'COH Acct.'
 
 export interface IAccountRequest {
     id: TEntityId
@@ -48,8 +47,8 @@ export interface IAccountRequest {
     taxable?: boolean
     finesAmort?: number
     finesMaturity?: number
-    interestStandard?: number 
-    interestSecured?: number 
+    interestStandard?: number
+    interestSecured?: number
     schemeNo?: number
     altCode?: number
     glCode?: number
@@ -80,8 +79,8 @@ export interface IAccountResource extends ITimeStamps {
     taxable?: boolean
     finesAmort?: number
     finesMaturity?: number
-    interestStandard?: number 
-    interestSecured?: number 
+    interestStandard?: number
+    interestSecured?: number
     schemeNo?: number
     altCode?: number
     glCode?: number

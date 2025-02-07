@@ -3,7 +3,7 @@
 // const ImageDetail = ({ images1w }) => {
 //   const match = useMatch(); // Try logging the output here
 //   console.log('match:', match); // Debugging: Check if match contains `params.id`
-  
+
 //   const { id } = match?.params || {}; // Safe destructuring to avoid errors
 //   const navigate = useNavigate();
 //   console.log('id', id); // Debugging: Check if match contains `params.id`

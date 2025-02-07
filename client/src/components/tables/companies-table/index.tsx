@@ -104,7 +104,7 @@ const CompaniesTable = ({
             columnPinning: { left: ['select'] },
         },
         state: {
-            sorting : tableSorting,
+            sorting: tableSorting,
             pagination,
             columnOrder,
             rowSelection: rowSelectionState.rowSelection,

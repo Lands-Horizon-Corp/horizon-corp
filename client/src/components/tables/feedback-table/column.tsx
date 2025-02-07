@@ -1,32 +1,34 @@
-import { ColumnDef, Row } from "@tanstack/react-table"
-import { Link, ReactNode } from "@tanstack/react-router"
+import { ColumnDef, Row } from '@tanstack/react-table'
+import { Link, ReactNode } from '@tanstack/react-router'
 
-import { Checkbox } from "@/components/ui/checkbox"
-import { PushPinSlashIcon } from "@/components/icons"
-import TextFilter from "@/components/data-table/data-table-filters/text-filter"
-import DataTableColumnHeader from "@/components/data-table/data-table-column-header"
-import ColumnActions from "@/components/data-table/data-table-column-header/column-actions"
-import { IGlobalSearchTargets } from "@/components/data-table/data-table-filters/data-table-global-search"
+import { Checkbox } from '@/components/ui/checkbox'
+import { PushPinSlashIcon } from '@/components/icons'
+import TextFilter from '@/components/data-table/data-table-filters/text-filter'
+import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
+import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
+import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
-import { IFeedbackResource } from "@/server/types"
+import { IFeedbackResource } from '@/server/types'
 
 export const FeedbackGlobalSearchTargets: IGlobalSearchTargets<IFeedbackResource>[] =
-[
-    { field: 'email', displayText: 'email' },
-    { field: 'feedbackType', displayText: 'feedbackType' },
-    { field: 'description', displayText: 'description' },
-]
+    [
+        { field: 'email', displayText: 'email' },
+        { field: 'feedbackType', displayText: 'feedbackType' },
+        { field: 'description', displayText: 'description' },
+    ]
 
 export interface IFeedBackTableActionComponentProp {
     row: Row<IFeedbackResource>
 }
 
 export interface IFeedbackTableColumnProps {
-    actionComponent?: (props: IFeedBackTableActionComponentProp) => ReactNode 
+    actionComponent?: (props: IFeedBackTableActionComponentProp) => ReactNode
 }
 
-const AdminCompaniesFeedbackTableColumns = (opts: IFeedbackTableColumnProps): ColumnDef<IFeedbackResource>[] => {
-      return [
+const AdminCompaniesFeedbackTableColumns = (
+    opts: IFeedbackTableColumnProps
+): ColumnDef<IFeedbackResource>[] => {
+    return [
         {
             id: 'select',
             header: ({ table, column }) => (
@@ -94,7 +96,11 @@ const AdminCompaniesFeedbackTableColumns = (opts: IFeedbackTableColumnProps): Co
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Description">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Description"
+                >
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -102,17 +108,17 @@ const AdminCompaniesFeedbackTableColumns = (opts: IFeedbackTableColumnProps): Co
                 row: {
                     original: { description },
                 },
-            }) => (
-                <div>
-                    {description}
-                </div>
-            ),
+            }) => <div>{description}</div>,
         },
         {
             id: 'feedbackType',
             accessorKey: 'feedbackType',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Feedback Type">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Feedback Type"
+                >
                     <ColumnActions {...props}>
                         <TextFilter
                             field="feedbackType"
@@ -127,7 +133,7 @@ const AdminCompaniesFeedbackTableColumns = (opts: IFeedbackTableColumnProps): Co
                     original: { feedbackType },
                 },
             }) => <div>{feedbackType}</div>,
-         },
+        },
     ]
 }
 

@@ -89,4 +89,3 @@ export interface IChangeUsernameRequest {
     password: string
     username: string
 }
-

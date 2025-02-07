@@ -16,7 +16,7 @@ export const ownerCompanyBranchIndexRoute = createRoute({
 
 const OwnerBranchRoute = ownerBranchRoute.addChildren([
     ownerCompanyBranchIndexRoute,
-    OwnerBranchIdRoute
+    OwnerBranchIdRoute,
 ])
 
 export default OwnerBranchRoute

@@ -16,12 +16,7 @@ interface Props extends IBaseCompNoChild {
 
 const BranchBasicDetailsList = ({ branch, className }: Props) => {
     return (
-        <div
-            className={cn(
-                'flex flex-col justify-start gap-y-4',
-                className
-            )}
-        >
+        <div className={cn('flex flex-col justify-start gap-y-4', className)}>
             <span className="inline-flex items-center gap-x-2">
                 <TelephoneIcon className="text-foreground/70" />
                 {branch.contactNumber}
@@ -35,7 +30,8 @@ const BranchBasicDetailsList = ({ branch, className }: Props) => {
                 {branch.address}
             </span>
             <span className="inline-flex items-center gap-x-2">
-                <Users3Icon className="text-foreground/70" /> {branch.members?.length || 0} Members
+                <Users3Icon className="text-foreground/70" />{' '}
+                {branch.members?.length || 0} Members
             </span>
         </div>
     )

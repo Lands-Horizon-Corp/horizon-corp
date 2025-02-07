@@ -28,7 +28,11 @@ const ImageDisplay = ({
                 src={src ?? '-'}
             />
             <AvatarFallback className={fallbackClassName}>
-                {fallback ? fallback : <Image2Icon className='text-foreground/20 size-[50%]' />}
+                {fallback ? (
+                    fallback
+                ) : (
+                    <Image2Icon className="size-[50%] text-foreground/20" />
+                )}
             </AvatarFallback>
             {children}
         </Avatar>

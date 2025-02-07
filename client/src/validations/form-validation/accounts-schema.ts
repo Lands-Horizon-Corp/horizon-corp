@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from 'zod'
 
 export const TAccountingAccountsEnum = z.enum([
     'Deposit',
@@ -10,15 +10,15 @@ export const TAccountingAccountsEnum = z.enum([
     'SVF-Ledger',
     'W-Off',
     'A/P-Ledger',
-    'Other'
-]);
+    'Other',
+])
 
 export const TEarnedUnearnedInterestEnum = z.enum([
     'By Formula',
     'By Formula + Actual Pay',
     'By Advance Int. + Actual Pay',
-    'None'
-]);
+    'None',
+])
 
 export const TOtherAccountInformationEnum = z.enum([
     'None',
@@ -27,16 +27,16 @@ export const TOtherAccountInformationEnum = z.enum([
     'Grocery',
     'Track Loan Ded',
     'CIB/CIK Acct.',
-    'COH Acct.'
-]);
+    'COH Acct.',
+])
 
 export const AccountRequestSchema = z.object({
     id: z.string(),
     companyId: z.string(),
-    accountCode:  z.string().min(5, 'Account Code is required'),
-    description:  z.string().min(1, 'Description is required'),
+    accountCode: z.string().min(5, 'Account Code is required'),
+    description: z.string().min(1, 'Description is required'),
     altDescription: z.string().optional(),
-    type:TAccountingAccountsEnum.default('Deposit'),
+    type: TAccountingAccountsEnum.default('Deposit'),
     maxAmount: z.coerce.number().optional(),
     minAmount: z.coerce.number().optional(),
     computationType: z.string().optional(),
@@ -59,18 +59,18 @@ export const AccountRequestSchema = z.object({
     noGracePeriodDaily: z.boolean(),
     finesGpMaturity: z.coerce.number().optional(),
     earnedUnearnedInterest: TEarnedUnearnedInterestEnum.optional(),
-    otherInformationOfAnAccount: TOtherAccountInformationEnum.optional()
-});
+    otherInformationOfAnAccount: TOtherAccountInformationEnum.optional(),
+})
 
 export const AccountResourceSchema = AccountRequestSchema.extend({
     createdAt: z.string(),
     updatedAt: z.string(),
-    deletedAt: z.string().nullable().optional()
-});
+    deletedAt: z.string().nullable().optional(),
+})
 
 export const AccountPaginatedResourceSchema = z.object({
     data: z.array(AccountResourceSchema),
     total: z.number(),
     page: z.number(),
     perPage: z.number(),
-});
+})

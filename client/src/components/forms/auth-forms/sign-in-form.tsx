@@ -56,7 +56,7 @@ const SignInForm = ({
             password: '',
             key: '',
             accountType: 'Member',
-            ...defaultValues
+            ...defaultValues,
         },
     })
 

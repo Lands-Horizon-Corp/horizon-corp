@@ -9,11 +9,11 @@ const TestLayout = () => {
     // if wanted to use current Position or List of Markers
 
     return (
-        <div className="mx-auto flex flex-col h-[500px] w-[80%]">
+        <div className="mx-auto flex h-[500px] w-[80%] flex-col">
             <MainMapContainer
                 center={defaultCenter}
                 zoom={defaultZoom}
-                className='flex-grow !p-0'
+                className="flex-grow !p-0"
                 // onMultipleCoordinatesChange={(coor)=> console.log(coor)}
                 viewOnly
                 hideControls

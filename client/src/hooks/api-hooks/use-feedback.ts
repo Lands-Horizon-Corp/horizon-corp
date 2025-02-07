@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-
 import {
     IAPIPreloads,
     IOperationCallbacks,
@@ -132,7 +131,13 @@ export const useFilteredPaginatedFeedbacks = ({
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IFilterPaginatedHookProps = {}) => {
     return useQuery<IFeedbackPaginatedResource, string>({
-        queryKey: ['feedback', 'resource-query', filterPayload, pagination, sort],
+        queryKey: [
+            'feedback',
+            'resource-query',
+            filterPayload,
+            pagination,
+            sort,
+        ],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 FeedbackService.getFeedbacks({

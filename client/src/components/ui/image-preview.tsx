@@ -221,7 +221,7 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
     const [isDragging, setIsDragging] = useState(false)
     const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 })
     const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
-    const animationFrameId = useRef<number | null>(null);
+    const animationFrameId = useRef<number | null>(null)
 
     // console.log('isDragging', isDragging)
     //  console.log('previewPosition', previewPosition)
@@ -623,8 +623,8 @@ const ImagePreviewContent = React.forwardRef<
         const isMultipleImage = Images.length > 1
 
         return (
-            <div className='h-full w-full'>
-                <h1 className=''>Hello world</h1>
+            <div className="h-full w-full">
+                <h1 className="">Hello world</h1>
                 <ImagePreviewPortal>
                     <ImagePreviewOverlay
                         className={cn(

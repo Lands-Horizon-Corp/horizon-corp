@@ -12,9 +12,19 @@ import DateRange from './date-range'
 
 import { isDate } from '@/helpers'
 
-import { filterModeMap, IFilterComponentProps, TFilterModes, TSearchFilter, useFilter } from '@/contexts/filter-context'
+import {
+    filterModeMap,
+    IFilterComponentProps,
+    TFilterModes,
+    TSearchFilter,
+    useFilter,
+} from '@/contexts/filter-context'
 
-const DateFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentProps<T, 'date'>) => {
+const DateFilter = <T,>({
+    field,
+    displayText,
+    defaultMode,
+}: IFilterComponentProps<T, 'date'>) => {
     const { filters, setFilter } = useFilter<Date, typeof field>()
 
     const filterModeOptions = filterModeMap['date']

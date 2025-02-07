@@ -49,7 +49,9 @@ const CompanyBasicInfoFormSchema = z.object({
     latitude: z.coerce.number().optional(),
     longitude: z.coerce.number().optional(),
     address: z.string().min(1, 'Company address is required').optional(),
-    ownerId: z.coerce.string({ invalid_type_error: 'Invalid Owner' }).optional(),
+    ownerId: z.coerce
+        .string({ invalid_type_error: 'Invalid Owner' })
+        .optional(),
 })
 
 const CompanyCreateForm = ({

@@ -1,5 +1,5 @@
-import { TEntityId } from "./common"
-import { IMediaResource } from "./media"
+import { TEntityId } from './common'
+import { IMediaResource } from './media'
 
 export interface ITimeInRequest {
     timeIn: Date

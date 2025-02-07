@@ -13,7 +13,7 @@ import {
 import { cn } from '@/lib'
 import { IUserData } from '@/server/types'
 import { IBaseComp, TPageType } from '@/types'
-import { TAccountType  } from '@/server/types'
+import { TAccountType } from '@/server/types'
 import { useUserAuthStore } from '@/store/user-auth-store'
 import { isUserHasUnverified, isUserUnverified } from '@/helpers'
 

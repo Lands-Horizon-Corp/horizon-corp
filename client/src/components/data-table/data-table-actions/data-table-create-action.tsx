@@ -24,7 +24,6 @@ const DataTableCreateAction = ({
     onClick,
     ...other
 }: IDataTableCreateActionProps) => {
-
     return (
         <Button
             size={other.size ?? 'sm'}

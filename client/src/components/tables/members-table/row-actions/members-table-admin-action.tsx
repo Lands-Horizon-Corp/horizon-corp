@@ -16,12 +16,10 @@ interface IMembersTableAdminActionProps
     onMemberUpdate?: () => void
 }
 
-const MembersTableAdminAction = (
-    {
-        row,
-        onDeleteSuccess,
-    }: IMembersTableAdminActionProps
-) => {
+const MembersTableAdminAction = ({
+    row,
+    onDeleteSuccess,
+}: IMembersTableAdminActionProps) => {
     const member = row.original
 
     // const router = useRouter()

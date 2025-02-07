@@ -167,7 +167,7 @@ import {
     FaPhoneAlt as PhoneIcon,
 } from 'react-icons/fa'
 
-import { FaVenusMars as GendersIcon } from "react-icons/fa6";
+import { FaVenusMars as GendersIcon } from 'react-icons/fa6'
 
 import {
     RiListCheck3 as TransactionListIcon,
@@ -188,11 +188,14 @@ import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
 
 import { GrPowerReset as PowerResetIcon } from 'react-icons/gr'
 
-import { VscLocation as LocationPinOutlineIcon, VscError as ErrorIcon  } from 'react-icons/vsc'
+import {
+    VscLocation as LocationPinOutlineIcon,
+    VscError as ErrorIcon,
+} from 'react-icons/vsc'
 
-import { BiErrorCircle as WarningIcon } from "react-icons/bi";
+import { BiErrorCircle as WarningIcon } from 'react-icons/bi'
 
-import { SlOptions as OptionsIcon } from "react-icons/sl";
+import { SlOptions as OptionsIcon } from 'react-icons/sl'
 
 // Export section
 export {

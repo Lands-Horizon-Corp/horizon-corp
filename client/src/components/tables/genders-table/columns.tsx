@@ -12,10 +12,11 @@ import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters
 import { toReadableDate } from '@/utils'
 import { IGenderResource } from '@/server/types'
 
-export const genderGlobalSearchTargets: IGlobalSearchTargets<IGenderResource>[] = [
-    { field: 'name', displayText: 'Name' },
-    { field: 'description', displayText: 'Description' },
-]
+export const genderGlobalSearchTargets: IGlobalSearchTargets<IGenderResource>[] =
+    [
+        { field: 'name', displayText: 'Name' },
+        { field: 'description', displayText: 'Description' },
+    ]
 
 export interface IGenderTableActionComponentProp {
     row: Row<IGenderResource>
@@ -75,14 +76,22 @@ const genderTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { name } } }) => <div>{name}</div>,
+            cell: ({
+                row: {
+                    original: { name },
+                },
+            }) => <div>{name}</div>,
             enableMultiSort: true,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Description">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Description"
+                >
                     <ColumnActions {...props}>
                         <TextFilter<IGenderResource>
                             displayText="Description"
@@ -91,14 +100,22 @@ const genderTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { description } } }) => <div>{description}</div>,
+            cell: ({
+                row: {
+                    original: { description },
+                },
+            }) => <div>{description}</div>,
             enableMultiSort: true,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Date Created">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Date Created"
+                >
                     <ColumnActions {...props}>
                         <DateFilter<IGenderResource>
                             displayText="Date Created"
@@ -107,7 +124,11 @@ const genderTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { createdAt } } }) => <div>{toReadableDate(createdAt)}</div>,
+            cell: ({
+                row: {
+                    original: { createdAt },
+                },
+            }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
         },
     ]

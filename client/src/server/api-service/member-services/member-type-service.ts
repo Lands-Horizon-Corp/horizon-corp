@@ -88,8 +88,7 @@ export default class MemberTypeService {
             { skipNull: true }
         )
 
-        const response =
-            await APIService.get<TMemberTypePaginatedResource>(url)
+        const response = await APIService.get<TMemberTypePaginatedResource>(url)
         return response.data
     }
 

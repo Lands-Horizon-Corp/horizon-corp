@@ -10,7 +10,7 @@ const ErrorPage = ({ error }: ErrorComponentProps) => {
     const errorMessage = allErrorMessageExtractor({ error })
 
     return (
-        <div className="flex h-[80dvh]  w-full flex-col items-center justify-center gap-y-4 p-4">
+        <div className="flex h-[80dvh] w-full flex-col items-center justify-center gap-y-4 p-4">
             <h1 className="text-4xl font-medium">Oops!</h1>
             <p className="text-foreground/70">{errorMessage}</p>
             <Button

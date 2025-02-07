@@ -43,14 +43,14 @@ const imageDetailRoute = createRoute({
     component: lazyRouteComponent(
         () => import('@/components/image-preview/image-details')
     ),
-});
+})
 
 const LandingRoute = landingRoute.addChildren([
     aboutRoute,
     contactRoute,
     developersRoute,
     landingIndexRoute,
-    imageDetailRoute
+    imageDetailRoute,
 ])
 
 export default LandingRoute

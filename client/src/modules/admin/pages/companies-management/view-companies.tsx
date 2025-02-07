@@ -6,7 +6,7 @@ import CompaniesTable from '@/components/tables/companies-table'
 import CompaniesTableAdminAction from '@/components/tables/companies-table/row-actions/companies-table-admin-action'
 
 const AdminViewCompaniesPage = () => {
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
     const [createModal, setCreateModal] = useState(false)
 
     return (
@@ -15,9 +15,10 @@ const AdminViewCompaniesPage = () => {
                 open={createModal}
                 onOpenChange={(newState) => setCreateModal(newState)}
                 formProps={{
-                    onSuccess : () => queryClient.invalidateQueries({
-                        queryKey : ['company', 'resource-query']
-                    })
+                    onSuccess: () =>
+                        queryClient.invalidateQueries({
+                            queryKey: ['company', 'resource-query'],
+                        }),
                 }}
             />
             <CompaniesTable
