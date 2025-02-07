@@ -68,3 +68,16 @@ export default tseslint.config({
     },
 })
 ```
+
+# Developer Checklist
+
+Before you commit or push your work, please run the following commands:
+
+1. `pnpm fc`  
+   Runs a format check. If there are any format errors, run **`pnpm fw`** to format the code.
+
+2. `pnpm lint`  
+   Checks for TypeScript errors and enforces code style rules.
+
+3. `pnpm build`  
+   Builds the project to ensure that the build process completes successfully.
