@@ -236,4 +236,4 @@ body[data-scroll-locked] {
 
 .PopoverContent {
     z-index: 1000; /* Ensure it’s above other elements */
-  }
+}

@@ -5,9 +5,12 @@ import ActionTooltip from '@/components/action-tooltip'
 import { MagnifyingGlassIcon, XIcon } from '@/components/icons'
 import { DebouncedInput } from '@/components/ui/debounced-input'
 
-
 import { KeysOfOrString } from '@/types'
-import { TFilterModes, TSearchFilter, useFilter } from '@/contexts/filter-context'
+import {
+    TFilterModes,
+    TSearchFilter,
+    useFilter,
+} from '@/contexts/filter-context'
 
 export interface IGlobalSearchTargets<T> {
     field: (string & {}) | keyof T

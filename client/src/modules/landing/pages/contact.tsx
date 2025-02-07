@@ -33,7 +33,6 @@ import UseCooldown from '@/hooks/use-cooldown'
 import { serverRequestErrExtractor } from '@/helpers'
 import ContactService from '@/server/api-service/contact-service'
 
-
 type TContact = z.infer<typeof contactFormSchema>
 
 const contactInputClasses =

@@ -26,7 +26,6 @@ const NotificationsItems = ({
     handleDeleteNotification,
     handleMarkItemAsRead,
 }: INotificationsItemsProps) => {
-
     const [hoveredId, setHoveredId] = useState<TEntityId | null>(null)
     const [openPopoverId, setOpenPopoverId] = useState<TEntityId | null>(null)
 

@@ -4,7 +4,7 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 
 interface Props extends IBaseCompNoChild {
-    description? : string
+    description?: string
 }
 
 const CompanyDescription = ({ className, description }: Props) => {
@@ -18,7 +18,7 @@ const CompanyDescription = ({ className, description }: Props) => {
                 ),
             }}
             className={cn(
-                'prose dark:prose-invert !max-w-full rounded-xl bg-secondary p-4 text-sm text-foreground/70 prose-h1: prose-p:text-foreground/80 prose-strong:text-foreground dark:bg-popover sm:text-sm',
+                'prose-h1: prose !max-w-full rounded-xl bg-secondary p-4 text-sm text-foreground/70 dark:prose-invert prose-p:text-foreground/80 prose-strong:text-foreground dark:bg-popover sm:text-sm',
                 className
             )}
         />

@@ -1,5 +1,5 @@
-import PageContainer from "@/components/containers/page-container"
-import EnsureOwnerCompany from "@/modules/owner/components/ensure-company"
+import PageContainer from '@/components/containers/page-container'
+import EnsureOwnerCompany from '@/modules/owner/components/ensure-company'
 
 const OwnerViewEmployeesPage = () => {
     return (

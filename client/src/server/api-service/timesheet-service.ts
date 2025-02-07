@@ -11,10 +11,10 @@ export default class TimesheetService {
         timeInData: ITimeInRequest
     ): Promise<ITimesheetResource> {
         const endpoint = `${TimesheetService.BASE_ENDPOINT}/time-in`
-        const response = await APIService.post<ITimeInRequest, ITimesheetResource>(
-            endpoint,
-            timeInData
-        )
+        const response = await APIService.post<
+            ITimeInRequest,
+            ITimesheetResource
+        >(endpoint, timeInData)
         return response.data
     }
 
@@ -31,7 +31,9 @@ export default class TimesheetService {
 
     public static async getCurrentEmployeeTime(): Promise<ITimesheetResource | null> {
         const endpoint = `${TimesheetService.BASE_ENDPOINT}/current`
-        const response = await APIService.get<ITimesheetResource | null>(endpoint)
+        const response = await APIService.get<ITimesheetResource | null>(
+            endpoint
+        )
         return response.data
     }
 }

@@ -16,10 +16,7 @@ interface Props extends IBaseCompNoChild {
 const CompanyBanner = ({ className, company }: Props) => {
     return (
         <div
-            className={cn(
-                'bg-cover bg-no-repeat bg-center',
-                className
-            )}
+            className={cn('bg-cover bg-center bg-no-repeat', className)}
             style={{
                 backgroundImage: `url(${BannerBgImage})`,
             }}

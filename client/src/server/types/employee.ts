@@ -1,10 +1,10 @@
-import { IUserBase } from "./common";
-import { IRolesResource } from "./role";
-import { IBranchResource } from "./branch";
-import { IFootstepResource } from "./footstep";
-import { ITimesheetResource } from "./timesheet";
+import { IUserBase } from './common'
+import { IRolesResource } from './role'
+import { IBranchResource } from './branch'
+import { IFootstepResource } from './footstep'
+import { ITimesheetResource } from './timesheet'
 
-export interface IEmployeeResource extends IUserBase{
+export interface IEmployeeResource extends IUserBase {
     accountType: string
     branch?: IBranchResource
     longitude?: number

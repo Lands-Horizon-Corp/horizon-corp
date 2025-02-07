@@ -33,7 +33,7 @@ const DataTableColumnHeader = <TData, TValue>({
             id: header.column.id,
         })
 
-    const style : CSSProperties = {
+    const style: CSSProperties = {
         opacity: isDragging ? 0.8 : 1,
         position: 'relative',
         transform: CSS.Translate.toString(transform),

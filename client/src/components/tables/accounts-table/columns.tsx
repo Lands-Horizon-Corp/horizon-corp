@@ -1,9 +1,7 @@
 import { ReactNode } from 'react'
 import { ColumnDef, Row } from '@tanstack/react-table'
 
-import {
-    PushPinSlashIcon,
-} from '@/components/icons'
+import { PushPinSlashIcon } from '@/components/icons'
 import { Checkbox } from '@/components/ui/checkbox'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
@@ -24,9 +22,15 @@ export const accountsGlobalSearchTargets: IGlobalSearchTargets<IAccountResource>
         { field: 'maxAmount', displayText: 'Max Amount' },
         { field: 'minAmount', displayText: 'Min Amount' },
         { field: 'computationType', displayText: 'Computation Type' },
-        { field: 'earnedUnearnedInterest', displayText: 'Earned/Unearned Interest' },
-        { field: 'otherInformationOfAnAccount', displayText: 'Other Information' },
-    ];
+        {
+            field: 'earnedUnearnedInterest',
+            displayText: 'Earned/Unearned Interest',
+        },
+        {
+            field: 'otherInformationOfAnAccount',
+            displayText: 'Other Information',
+        },
+    ]
 
 export interface IAccountsTableActionComponentProp {
     row: Row<IAccountResource>
@@ -77,122 +81,223 @@ const AccountsTableColumns = (
             id: 'accountCode',
             accessorKey: 'accountCode',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Account Code">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Account Code"
+                >
                     <ColumnActions {...props}>
-                        <TextFilter field="accountCode" displayText="Account Code" defaultMode="contains" />
+                        <TextFilter
+                            field="accountCode"
+                            displayText="Account Code"
+                            defaultMode="contains"
+                        />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { accountCode } } }) => <div>{accountCode}</div>,
+            cell: ({
+                row: {
+                    original: { accountCode },
+                },
+            }) => <div>{accountCode}</div>,
             enableMultiSort: true,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Description">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Description"
+                >
                     <ColumnActions {...props}>
-                        <TextFilter field="description" displayText="Description" defaultMode="contains" />
+                        <TextFilter
+                            field="description"
+                            displayText="Description"
+                            defaultMode="contains"
+                        />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { description } } }) => <div>{description}</div>,
+            cell: ({
+                row: {
+                    original: { description },
+                },
+            }) => <div>{description}</div>,
             enableMultiSort: true,
         },
         {
             id: 'altDescription',
             accessorKey: 'altDescription',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Alternative Description">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Alternative Description"
+                >
                     <ColumnActions {...props}>
-                        <TextFilter field="altDescription" displayText="Alternative Description" defaultMode="contains" />
+                        <TextFilter
+                            field="altDescription"
+                            displayText="Alternative Description"
+                            defaultMode="contains"
+                        />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { altDescription } } }) => <div>{altDescription}</div>,
+            cell: ({
+                row: {
+                    original: { altDescription },
+                },
+            }) => <div>{altDescription}</div>,
             enableMultiSort: true,
         },
         {
             id: 'type',
             accessorKey: 'type',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Account Type">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Account Type"
+                >
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { type } } }) => <div>{type}</div>,
+            cell: ({
+                row: {
+                    original: { type },
+                },
+            }) => <div>{type}</div>,
             enableSorting: true,
         },
         {
             id: 'maxAmount',
             accessorKey: 'maxAmount',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Max Amount">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Max Amount"
+                >
                     <ColumnActions {...props}>
-                        <NumberFilter field="maxAmount" displayText="Max Amount" />
+                        <NumberFilter
+                            field="maxAmount"
+                            displayText="Max Amount"
+                        />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { maxAmount } } }) => <div>{maxAmount}</div>,
+            cell: ({
+                row: {
+                    original: { maxAmount },
+                },
+            }) => <div>{maxAmount}</div>,
             enableSorting: true,
         },
         {
             id: 'minAmount',
             accessorKey: 'minAmount',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Min Amount">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Min Amount"
+                >
                     <ColumnActions {...props}>
-                        <NumberFilter field="minAmount" displayText="Min Amount" />
+                        <NumberFilter
+                            field="minAmount"
+                            displayText="Min Amount"
+                        />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { minAmount } } }) => <div>{minAmount}</div>,
+            cell: ({
+                row: {
+                    original: { minAmount },
+                },
+            }) => <div>{minAmount}</div>,
             enableSorting: true,
         },
         {
             id: 'computationType',
             accessorKey: 'computationType',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Computation Type">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Computation Type"
+                >
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { computationType } } }) => <div>{computationType}</div>,
+            cell: ({
+                row: {
+                    original: { computationType },
+                },
+            }) => <div>{computationType}</div>,
             enableSorting: true,
         },
         {
             id: 'earnedUnearnedInterest',
             accessorKey: 'earnedUnearnedInterest',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Earned/Unearned Interest">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Earned/Unearned Interest"
+                >
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { earnedUnearnedInterest } } }) => <div>{earnedUnearnedInterest}</div>,
+            cell: ({
+                row: {
+                    original: { earnedUnearnedInterest },
+                },
+            }) => <div>{earnedUnearnedInterest}</div>,
             enableSorting: true,
         },
         {
             id: 'otherInformationOfAnAccount',
             accessorKey: 'otherInformationOfAnAccount',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Other Information">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Other Information"
+                >
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { otherInformationOfAnAccount } } }) => <div>{otherInformationOfAnAccount}</div>,
+            cell: ({
+                row: {
+                    original: { otherInformationOfAnAccount },
+                },
+            }) => <div>{otherInformationOfAnAccount}</div>,
             enableSorting: true,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Date Created">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Date Created"
+                >
                     <ColumnActions {...props}>
-                        <DateFilter<IAccountResource> displayText="Date Created" field="createdAt" />
+                        <DateFilter<IAccountResource>
+                            displayText="Date Created"
+                            field="createdAt"
+                        />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { createdAt } } }) => <div>{toReadableDate(createdAt)}</div>,
+            cell: ({
+                row: {
+                    original: { createdAt },
+                },
+            }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
         },
     ]

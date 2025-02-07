@@ -5,7 +5,7 @@ import { cn } from '@/lib'
 import { TNotification } from '@/server/types'
 
 interface NotificationTypeProps {
-    type: TNotification 
+    type: TNotification
     message?: string
     icon?: React.ReactNode
     IconClassName?: string

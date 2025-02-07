@@ -2,7 +2,12 @@ import BannerBgImage from '@/assets/images/banner-bg-element-1.png'
 
 import BranchLogo from './branch-logo'
 import BranchBadge from './branch-badge'
-import { CalendarIcon, EmailIcon, LocationPinIcon, TelephoneIcon } from '../icons'
+import {
+    CalendarIcon,
+    EmailIcon,
+    LocationPinIcon,
+    TelephoneIcon,
+} from '../icons'
 
 import { cn } from '@/lib'
 import { toReadableDate } from '@/utils'
@@ -45,13 +50,11 @@ const BranchBanner = ({ className, branch }: Props) => {
                 <p className="text-lg font-medium">
                     {name} <BranchBadge className="inline" branch={branch} />
                 </p>
-                <div className="pointer-events-auto flex justify-center max-w-lg flex-wrap gap-x-4 text-sm text-foreground/50">
+                <div className="pointer-events-auto flex max-w-lg flex-wrap justify-center gap-x-4 text-sm text-foreground/50">
                     {contactNumber && (
                         <InfoItem icon={TelephoneIcon} text={contactNumber} />
                     )}
-                    {email && (
-                        <InfoItem icon={EmailIcon} text={email} />
-                    )}
+                    {email && <InfoItem icon={EmailIcon} text={email} />}
                     {createdAt && (
                         <InfoItem
                             icon={CalendarIcon}

@@ -1,4 +1,4 @@
-import APIService from "./api-service"
+import APIService from './api-service'
 
 export default class Connection {
     private static readonly BASE_ENDPOINT = '/'

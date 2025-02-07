@@ -42,7 +42,11 @@ const TimePickerWithApply = ({
     )
 }
 
-const TimeFilter = <T,>({ field, displayText, defaultMode }: IFilterComponentProps<T, 'time'>) => {
+const TimeFilter = <T,>({
+    field,
+    displayText,
+    defaultMode,
+}: IFilterComponentProps<T, 'time'>) => {
     const { filters, setFilter } = useFilter<Date, typeof field>()
 
     const filterModeOptions = filterModeMap['time']

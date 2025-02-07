@@ -1,4 +1,3 @@
-
 export const formatNumber = (
     value: number,
     minimumFractionDigits = 0,

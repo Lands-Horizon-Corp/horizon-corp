@@ -12,7 +12,7 @@ import {
 import { CameraIcon, RefreshIcon } from '@/components/icons'
 
 import { cn } from '@/lib/utils'
-import { withCatchAsync } from "@/utils"
+import { withCatchAsync } from '@/utils'
 import { IBaseComp } from '@/types/component'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 

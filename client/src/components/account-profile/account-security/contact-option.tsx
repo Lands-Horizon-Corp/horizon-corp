@@ -42,7 +42,7 @@ const contactOptionSchema = z.object({
 const ContactOption = ({ contact, verified, onSave }: Props) => {
     const [pwdModalState, setPwdModalState] = useState(false)
     const { isPending, mutate: saveContact } = useUpdateAccountContactNumber({
-        onSuccess : onSave
+        onSuccess: onSave,
     })
 
     const form = useForm<z.infer<typeof contactOptionSchema>>({

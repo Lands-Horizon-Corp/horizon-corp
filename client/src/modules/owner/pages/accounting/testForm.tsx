@@ -28,8 +28,7 @@ const AccountsCreateForm = () => {
         },
     })
 
-    function onSubmit() {
-    }
+    function onSubmit() {}
 
     return (
         <Form {...form}>

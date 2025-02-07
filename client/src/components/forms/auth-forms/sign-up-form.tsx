@@ -141,7 +141,6 @@ const SignUpForm = ({
                                     </FormControl>
                                     <ValueChecklistMeter
                                         value={field.value}
-
                                         checkList={ChecklistTemplate[
                                             'password-checklist'
                                         ].concat([

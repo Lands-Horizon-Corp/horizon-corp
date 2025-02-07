@@ -42,7 +42,7 @@ const emailOptionSchema = z.object({
 const EmailOption = ({ email, verified, onSave }: Props) => {
     const [pwdModalState, setPwdModalState] = useState(false)
     const { isPending, mutate: saveEmail } = useUpdateAccountEmail({
-        onSuccess : onSave
+        onSuccess: onSave,
     })
 
     const form = useForm<z.infer<typeof emailOptionSchema>>({

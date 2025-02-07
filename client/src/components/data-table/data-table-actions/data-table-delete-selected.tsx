@@ -17,7 +17,7 @@ export interface IDataTableDeleteSelectedProps<T> extends IBaseCompNoChild {
     table: Table<T>
     disabled?: boolean
     canDelete?: boolean
-    onDeleteSuccess? : () => void
+    onDeleteSuccess?: () => void
     onDelete: (selectedRows: T[]) => Promise<void>
 }
 
@@ -27,7 +27,7 @@ const DataTableDeleteSelected = <T,>({
     className,
     canDelete = true,
     onDelete,
-    onDeleteSuccess
+    onDeleteSuccess,
 }: IDataTableDeleteSelectedProps<T>) => {
     const { onOpen } = useConfirmModalStore()
 

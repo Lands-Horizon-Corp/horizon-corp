@@ -14,7 +14,7 @@ const OwnerMembersActivityPage = () => {
                             mode: 'equal',
                             value: 'Member',
                             dataType: 'text',
-                            isStaticFilter : true,
+                            isStaticFilter: true,
                             displayText: 'Account Type',
                         },
                     }}

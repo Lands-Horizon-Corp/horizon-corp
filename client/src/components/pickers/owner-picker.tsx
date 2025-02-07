@@ -50,7 +50,7 @@ const OwnerPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
         useFilteredPaginatedOwners({
             filterPayload: finalFilterPayload,
             pagination,
-            enabled : !disabled
+            enabled: !disabled,
         })
 
     const owner = useOwner({ ownerId: value as TEntityId })

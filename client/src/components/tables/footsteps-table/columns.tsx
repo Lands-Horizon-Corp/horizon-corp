@@ -34,7 +34,7 @@ export interface IFootstepTableColumnProps {
 const footstepTableColumns = (
     opts?: IFootstepTableColumnProps
 ): ColumnDef<IFootstepResource>[] => {
-    const displayUserMediaAndName = (user? : IUserBase) => {
+    const displayUserMediaAndName = (user?: IUserBase) => {
         if (!user) {
             return <span className="italic text-foreground/40">No data</span>
         }

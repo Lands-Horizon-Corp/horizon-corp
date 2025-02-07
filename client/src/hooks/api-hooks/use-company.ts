@@ -69,7 +69,7 @@ export const useCompany = ({
 
 // create company
 export const useCreateCompany = ({
-    preloads=['Media', 'Owner', 'Owner.Media'],
+    preloads = ['Media', 'Owner', 'Owner.Media'],
     onError,
     onSuccess,
 }: IOperationCallbacks<ICompanyResource> & IAPIPreloads) => {
@@ -233,7 +233,11 @@ export const useUpdateCompanyProfilePicture = ({
         mutationKey: ['company', 'update', 'logo'],
         mutationFn: async ({ companyId, mediaResource }) => {
             const [error, data] = await withCatchAsync(
-                CompanyService.ProfilePicture(companyId, mediaResource, preloads)
+                CompanyService.ProfilePicture(
+                    companyId,
+                    mediaResource,
+                    preloads
+                )
             )
 
             if (error) {

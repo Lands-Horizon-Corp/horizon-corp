@@ -52,7 +52,7 @@ const Signature = ({ className }: SignatureProps) => {
         SignatureModes.DRAW
     )
     const signatureRef = useRef<SignaturePad | null>(null)
-    const [,setCurrentFile] = useState<FileWithPath | null>()
+    const [, setCurrentFile] = useState<FileWithPath | null>()
     const [trimmedData, setTrimmedData] = useState<string | null>('')
     const [isFullScreenMode, setIsFullScreenMode] = useState(false)
 

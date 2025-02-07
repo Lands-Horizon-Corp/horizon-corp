@@ -316,7 +316,7 @@ const AccountsCreateForm = ({
                     </fieldset>
 
                     {/* Additional Settings */}
-                    <fieldset className=" flex col-span-3  justify-between items-center">
+                    <fieldset className="col-span-3 flex items-center justify-between">
                         <legend className="text-lg font-semibold text-secondary-foreground">
                             Additional Settings
                         </legend>
@@ -337,36 +337,40 @@ const AccountsCreateForm = ({
                                 </FormItem>
                             )}
                         />
-                        <div className='w-full flex p-5 items-center justify-start  space-x-5'>
-                        {(
-                            [
-                                'print',
-                                'addOn',
-                                'allowRebate',
-                                'taxable',
-                                'noGracePeriodDaily'
-                            ] as const
-                        ).map((fieldName) => (
-                            <FormField
-                                key={fieldName}
-                                name={fieldName}
-                                control={form.control}
-                                render={({ field }) => 
-                                    <FormItem className="flex flex-row items-center space-x-2 ">
-                                        <FormControl className=''>
-                                            <Checkbox
-                                                checked={field.value}
-                                                onCheckedChange={field.onChange}
-                                            />
-                                        </FormControl>
-                                        <FormLabel className="text-sm font-medium -translate-y-1 text-secondary-foreground">
-                                            {fieldName.charAt(0).toUpperCase() +
-                                                fieldName.slice(1)}
-                                        </FormLabel>
-                                    </FormItem>
-                                }
-                            />
-                        ))}
+                        <div className="flex w-full items-center justify-start space-x-5 p-5">
+                            {(
+                                [
+                                    'print',
+                                    'addOn',
+                                    'allowRebate',
+                                    'taxable',
+                                    'noGracePeriodDaily',
+                                ] as const
+                            ).map((fieldName) => (
+                                <FormField
+                                    key={fieldName}
+                                    name={fieldName}
+                                    control={form.control}
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-row items-center space-x-2">
+                                            <FormControl className="">
+                                                <Checkbox
+                                                    checked={field.value}
+                                                    onCheckedChange={
+                                                        field.onChange
+                                                    }
+                                                />
+                                            </FormControl>
+                                            <FormLabel className="-translate-y-1 text-sm font-medium text-secondary-foreground">
+                                                {fieldName
+                                                    .charAt(0)
+                                                    .toUpperCase() +
+                                                    fieldName.slice(1)}
+                                            </FormLabel>
+                                        </FormItem>
+                                    )}
+                                />
+                            ))}
                         </div>
                     </fieldset>
                 </fieldset>

@@ -49,13 +49,13 @@ export const createMemberProfileSchema = z.object({
     isMutualFundMember: z.boolean().default(false),
     isMicroFinanceMember: z.boolean().default(false),
 
-    mediaId : entityIdSchema.optional(),
+    mediaId: entityIdSchema.optional(),
     memberId: entityIdSchema.optional(),
 
     memberTypeId: entityIdSchema.optional(),
     memberClassificationId: entityIdSchema.optional(),
     memberGenderId: entityIdSchema.optional(),
-    branchId : entityIdSchema.optional(),
+    branchId: entityIdSchema.optional(),
     memberCenterId: entityIdSchema.optional(),
     memberEducationalAttainmentId: entityIdSchema.optional(),
 

@@ -12,28 +12,28 @@ import DataTableToolbar, {
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 
-import companyColumns, {
-    companyGlobalSearchTargets,
-    ICompaniesTableColumnProps,
+import genderTableColumns, {
+    IGenderTableColumnProps,
+    genderGlobalSearchTargets,
 } from './columns'
 
 import { cn } from '@/lib'
 import { usePagination } from '@/hooks/use-pagination'
 import useDatableFilterState from '@/hooks/use-filter-state'
-import CompanyService from '@/server/api-service/company-service'
+import GenderService from '@/server/api-service/gender-service'
 import FilterContext from '@/contexts/filter-context/filter-context'
+import { useFilteredPaginatedGenders } from '@/hooks/api-hooks/use-gender'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
-import { useFilteredPaginatedCompanies } from '@/hooks/api-hooks/use-company'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
 import { TableProps } from '../types'
-import { ICompanyResource } from '@/server/types'
+import { IGenderResource } from '@/server/types'
 
-export interface CompaniesTableProps
-    extends TableProps<ICompanyResource>,
-        ICompaniesTableColumnProps {
+export interface GenderTableProps
+    extends TableProps<IGenderResource>,
+        IGenderTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<ICompanyResource>,
+        IDataTableToolbarProps<IGenderResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -44,13 +44,13 @@ export interface CompaniesTableProps
     >
 }
 
-const CompaniesTable = ({
+const GenderTable = ({
     className,
     toolbarProps,
     defaultFilter,
     onSelectData,
     actionComponent,
-}: CompaniesTableProps) => {
+}: GenderTableProps) => {
     const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
     const { sortingState, tableSorting, setTableSorting } =
@@ -58,7 +58,7 @@ const CompaniesTable = ({
 
     const columns = useMemo(
         () =>
-            companyColumns({
+            genderTableColumns({
                 actionComponent,
             }),
         [actionComponent]
@@ -74,7 +74,7 @@ const CompaniesTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<ICompanyResource>({
+    } = useDataTableState<IGenderResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
@@ -89,7 +89,7 @@ const CompaniesTable = ({
         isRefetching,
         data: { data, totalPage, pageSize, totalSize },
         refetch,
-    } = useFilteredPaginatedCompanies({
+    } = useFilteredPaginatedGenders({
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
@@ -132,7 +132,7 @@ const CompaniesTable = ({
                 <DataTableToolbar
                     globalSearchProps={{
                         defaultMode: 'equal',
-                        targets: companyGlobalSearchTargets,
+                        targets: genderGlobalSearchTargets,
                     }}
                     table={table}
                     refreshActionProps={{
@@ -142,10 +142,10 @@ const CompaniesTable = ({
                     deleteActionProps={{
                         onDeleteSuccess: () =>
                             queryClient.invalidateQueries({
-                                queryKey: ['company', 'resource-query'],
+                                queryKey: ['gender', 'resource-query'],
                             }),
                         onDelete: (selectedData) =>
-                            CompanyService.deleteMany(
+                            GenderService.deleteMany(
                                 selectedData.map((data) => data.id)
                             ),
                     }}
@@ -155,14 +155,13 @@ const CompaniesTable = ({
                         isLoading: isPending,
                         filters: filterState.finalFilterPayload,
                         disabled: isPending || isRefetching,
-                        exportAll: CompanyService.exportAll,
-                        exportAllFiltered: CompanyService.exportAllFiltered,
+                        exportAll: GenderService.exportAll,
                         exportCurrentPage: (ids) =>
-                            CompanyService.exportSelected(
+                            GenderService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                         exportSelected: (ids) =>
-                            CompanyService.exportSelected(
+                            GenderService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                     }}
@@ -186,4 +185,4 @@ const CompaniesTable = ({
     )
 }
 
-export default CompaniesTable
+export default GenderTable

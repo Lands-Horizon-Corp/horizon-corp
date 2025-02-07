@@ -12,7 +12,7 @@ const AdminLayout = () => {
                 <SidebarProvider>
                     <AdminSidebar />
                     <main className="ecoop-scroll relative max-h-screen overflow-y-scroll">
-                        <UserNav homeUrl='/admin' />
+                        <UserNav homeUrl="/admin" />
                         <Outlet />
                     </main>
                 </SidebarProvider>

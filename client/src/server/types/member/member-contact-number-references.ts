@@ -12,4 +12,3 @@ export interface IMemberContactNumberReferencesRequest {
     description: string
     contactNumber: string
 }
-

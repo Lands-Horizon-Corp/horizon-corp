@@ -87,6 +87,16 @@ export default class GenderService {
         return response.data
     }
 
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
+        const endpoint = `${GenderService.BASE_ENDPOINT}/bulk-delete`
+
+        // Construct the request payload
+        const payload = { ids }
+
+        // Make the DELETE request with the payload
+        await APIService.delete<void>(endpoint, payload)
+    }
+
     public static async exportAll(): Promise<void> {
         const url = `${GenderService.BASE_ENDPOINT}/export`
         await downloadFile(url, 'all_genders_export.xlsx')

@@ -9,8 +9,13 @@ import NumberRange from './number-range'
 import { Button } from '@/components/ui/button'
 import { DebouncedInput } from '@/components/ui/debounced-input'
 
-
-import { filterModeMap, IFilterComponentProps, TFilterModes, TSearchFilter, useFilter } from '@/contexts/filter-context'
+import {
+    filterModeMap,
+    IFilterComponentProps,
+    TFilterModes,
+    TSearchFilter,
+    useFilter,
+} from '@/contexts/filter-context'
 
 const NumberFilter = <T,>({
     field,

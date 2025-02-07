@@ -27,18 +27,18 @@ export interface TLatLngExpressionWithDesc {
 export interface TMainMapProps extends Partial<MapContainerProps> {
     viewOnly?: boolean
     multiplePins?: boolean
-    hideControls? : boolean,
+    hideControls?: boolean
     markerPosition?: { x: number; y: number }
     onCoordinateClick?: (coords: LatLngExpression) => void
     onMultipleCoordinatesChange?: (coords: LatLngExpression[]) => void
     defaultMarkerPins?: { lat: number; lng: number }[]
     searchClassName?: string
-    hideLayersControl?: boolean 
+    hideLayersControl?: boolean
     mapContainerClassName?: string
 }
 
 export interface TMapProps {
-    handleMapCreated?: (map: L.Map) => void,
+    handleMapCreated?: (map: L.Map) => void
 }
 
 export interface TMapWithClickProps {

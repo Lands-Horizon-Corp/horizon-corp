@@ -76,10 +76,7 @@ const TextEditor = ({
                     isHeadingDisabled={isHeadingDisabled}
                 />
             )}
-            <EditorContent
-                editor={editor}
-                disabled={disabled}
-            />
+            <EditorContent editor={editor} disabled={disabled} />
         </div>
     )
 }

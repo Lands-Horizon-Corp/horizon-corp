@@ -1,4 +1,4 @@
-import { TEntityId } from "./common"
+import { TEntityId } from './common'
 
 export interface IMediaResource {
     id: TEntityId

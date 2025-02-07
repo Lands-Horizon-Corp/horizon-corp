@@ -37,7 +37,7 @@ const OwnerViewBranch = () => {
                     defaultValues: {
                         ...data,
                     },
-                    disabledFields : ['companyId']
+                    disabledFields: ['companyId'],
                 }}
             />
             <BranchBanner branch={data} />

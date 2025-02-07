@@ -88,11 +88,7 @@ export type TFilterObject<T = unknown, TValue = T> = {
     [key: string]: TSearchFilter<T, TValue> | undefined
 }
 
-export interface IFilterState<
-    T = unknown,
-    TField = string,
-    TValue = T,
-> {
+export interface IFilterState<T = unknown, TField = string, TValue = T> {
     filterLogic: TFilterLogic
     filters: TFilterObject<T, TValue>
     finalFilterPayload: TFilterPayload
@@ -115,8 +111,8 @@ export interface IFilterComponentProps<
     defaultMode?: (typeof filterModeMap)[F][number]['value']
 }
 
-const FilterContext = createContext<
-    IFilterState<unknown> | undefined
->(undefined)
+const FilterContext = createContext<IFilterState<unknown> | undefined>(
+    undefined
+)
 
 export default FilterContext

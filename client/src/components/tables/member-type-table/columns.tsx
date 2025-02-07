@@ -76,7 +76,11 @@ const memberTypeTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { name } } }) => <div>{name}</div>,
+            cell: ({
+                row: {
+                    original: { name },
+                },
+            }) => <div>{name}</div>,
             enableMultiSort: true,
         },
         {
@@ -92,14 +96,22 @@ const memberTypeTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { prefix } } }) => <div>{prefix}</div>,
+            cell: ({
+                row: {
+                    original: { prefix },
+                },
+            }) => <div>{prefix}</div>,
             enableMultiSort: true,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Description">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Description"
+                >
                     <ColumnActions {...props}>
                         <TextFilter<IMemberTypeResource>
                             displayText="Description"
@@ -108,14 +120,22 @@ const memberTypeTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { description } } }) => <div>{description}</div>,
+            cell: ({
+                row: {
+                    original: { description },
+                },
+            }) => <div>{description}</div>,
             enableMultiSort: true,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Date Created">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Date Created"
+                >
                     <ColumnActions {...props}>
                         <DateFilter<IMemberTypeResource>
                             displayText="Date Created"
@@ -124,7 +144,11 @@ const memberTypeTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { createdAt } } }) => <div>{toReadableDate(createdAt)}</div>,
+            cell: ({
+                row: {
+                    original: { createdAt },
+                },
+            }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
         },
     ]

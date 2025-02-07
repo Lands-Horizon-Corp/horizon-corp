@@ -1,38 +1,39 @@
+import { ReactNode } from 'react'
 import { ColumnDef, Row } from '@tanstack/react-table'
-import { Link, ReactNode } from '@tanstack/react-router'
 
 import { Checkbox } from '@/components/ui/checkbox'
 import { PushPinSlashIcon } from '@/components/icons'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
+import DateFilter from '@/components/data-table/data-table-filters/date-filter'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
-import { IFeedbackResource } from '@/server/types'
+import { toReadableDate } from '@/utils'
+import { IGenderResource } from '@/server/types'
 
-export const FeedbackGlobalSearchTargets: IGlobalSearchTargets<IFeedbackResource>[] =
+export const genderGlobalSearchTargets: IGlobalSearchTargets<IGenderResource>[] =
     [
-        { field: 'email', displayText: 'email' },
-        { field: 'feedbackType', displayText: 'feedbackType' },
-        { field: 'description', displayText: 'description' },
+        { field: 'name', displayText: 'Name' },
+        { field: 'description', displayText: 'Description' },
     ]
 
-export interface IFeedBackTableActionComponentProp {
-    row: Row<IFeedbackResource>
+export interface IGenderTableActionComponentProp {
+    row: Row<IGenderResource>
 }
 
-export interface IFeedbackTableColumnProps {
-    actionComponent?: (props: IFeedBackTableActionComponentProp) => ReactNode
+export interface IGenderTableColumnProps {
+    actionComponent?: (props: IGenderTableActionComponentProp) => ReactNode
 }
 
-const AdminCompaniesFeedbackTableColumns = (
-    opts: IFeedbackTableColumnProps
-): ColumnDef<IFeedbackResource>[] => {
+const genderTableColumns = (
+    opts?: IGenderTableColumnProps
+): ColumnDef<IGenderResource>[] => {
     return [
         {
             id: 'select',
             header: ({ table, column }) => (
-                <div className={'flex w-fit items-center gap-x-1 px-2'}>
+                <div className="flex w-fit items-center gap-x-1 px-2">
                     <Checkbox
                         checked={table.getIsAllPageRowsSelected()}
                         onCheckedChange={(value) =>
@@ -63,34 +64,24 @@ const AdminCompaniesFeedbackTableColumns = (
             maxSize: 80,
         },
         {
-            id: 'email',
-            accessorKey: 'email',
+            id: 'name',
+            accessorKey: 'name',
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Name">
                     <ColumnActions {...props}>
-                        <TextFilter
-                            field="email"
-                            displayText="email"
-                            defaultMode="contains"
+                        <TextFilter<IGenderResource>
+                            displayText="Name"
+                            field="name"
                         />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
             cell: ({
                 row: {
-                    original: { id, email },
+                    original: { name },
                 },
-            }) => (
-                <div onClick={(e) => e.stopPropagation()}>
-                    <Link
-                        params={{ companyId: id }}
-                        to="/admin"
-                        className="hover:underline"
-                    >
-                        {email}
-                    </Link>
-                </div>
-            ),
+            }) => <div>{name}</div>,
+            enableMultiSort: true,
         },
         {
             id: 'description',
@@ -101,7 +92,12 @@ const AdminCompaniesFeedbackTableColumns = (
                     isResizable
                     title="Description"
                 >
-                    <ColumnActions {...props} />
+                    <ColumnActions {...props}>
+                        <TextFilter<IGenderResource>
+                            displayText="Description"
+                            field="description"
+                        />
+                    </ColumnActions>
                 </DataTableColumnHeader>
             ),
             cell: ({
@@ -109,32 +105,33 @@ const AdminCompaniesFeedbackTableColumns = (
                     original: { description },
                 },
             }) => <div>{description}</div>,
+            enableMultiSort: true,
         },
         {
-            id: 'feedbackType',
-            accessorKey: 'feedbackType',
+            id: 'createdAt',
+            accessorKey: 'createdAt',
             header: (props) => (
                 <DataTableColumnHeader
                     {...props}
                     isResizable
-                    title="Feedback Type"
+                    title="Date Created"
                 >
                     <ColumnActions {...props}>
-                        <TextFilter
-                            field="feedbackType"
-                            displayText="feedbackType"
-                            defaultMode="contains"
+                        <DateFilter<IGenderResource>
+                            displayText="Date Created"
+                            field="createdAt"
                         />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
             cell: ({
                 row: {
-                    original: { feedbackType },
+                    original: { createdAt },
                 },
-            }) => <div>{feedbackType}</div>,
+            }) => <div>{toReadableDate(createdAt)}</div>,
+            enableMultiSort: true,
         },
     ]
 }
 
-export default AdminCompaniesFeedbackTableColumns
+export default genderTableColumns

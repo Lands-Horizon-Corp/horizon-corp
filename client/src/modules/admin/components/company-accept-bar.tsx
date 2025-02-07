@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 
-import { ICompanyResource } from '@/server' 
+import { ICompanyResource } from '@/server'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { useApproveCompany } from '@/hooks/api-hooks/use-company'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
@@ -34,7 +34,7 @@ const CompanyAcceptBar = ({ company }: Props) => {
                             onConfirm: () => approve(company.id),
                         })
                     }
-                    className="h-fit  py-2 text-xs hover:text-primary"
+                    className="h-fit py-2 text-xs hover:text-primary"
                 >
                     {isApproving && <LoadingSpinner />}
                     Approve
