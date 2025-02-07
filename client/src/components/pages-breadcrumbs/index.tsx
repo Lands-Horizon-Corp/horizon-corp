@@ -129,7 +129,10 @@ const PageBreadCrumb = ({ className, homeUrl }: Props) => {
                                     className="ecoop-scroll max-h-60 overflow-y-scroll [&::-webkit-scrollbar]:w-[1px]"
                                 >
                                     {paths.midPart.map((path) => (
-                                        <DropdownMenuItem className="focus:bg-secondary focus:text-secondary-foreground">
+                                        <DropdownMenuItem
+                                            key={path.urlPath}
+                                            className="focus:bg-secondary focus:text-secondary-foreground"
+                                        >
                                             <BreadcrumbItem className="w-full">
                                                 <BreadcrumbLink asChild>
                                                     <Link to={path.urlPath}>
