@@ -1,38 +1,38 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useForm } from 'react-hook-form'
-import { useMutation } from '@tanstack/react-query'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { REGEXP_ONLY_DIGITS_AND_CHARS } from 'input-otp'
 
 import {
     Form,
-    FormControl,
-    FormField,
     FormItem,
+    FormField,
+    FormControl,
     FormMessage,
 } from '@/components/ui/form'
 import {
     InputOTP,
+    InputOTPSlot,
     InputOTPGroup,
     InputOTPSeparator,
-    InputOTPSlot,
 } from '@/components/ui/input-otp'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib'
+import { IUserData } from '@/server'
 import { otpSchema } from '@/validations'
 import UseCooldown from '@/hooks/use-cooldown'
-import { UserData } from '@/horizon-corp/types'
-import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import {
+    useSendUserContactOTPVerification,
+    useVerify,
+} from '@/hooks/api-hooks/use-auth'
 
 type TVerifyMode = 'email' | 'mobile'
 
 interface Props {
     autoFocus?: boolean
     verifyMode: TVerifyMode
-    onSuccess?: (newUserData: UserData) => void
+    onSuccess?: (newUserData: IUserData) => void
 }
 
 const VerifyContactBar = ({
@@ -48,44 +48,10 @@ const VerifyContactBar = ({
         },
     })
 
-    const { mutate: handleVerify, isPending } = useMutation<
-        UserData,
-        string,
-        z.infer<typeof otpSchema>
-    >({
-        mutationKey: ['verify', verifyMode],
-        mutationFn: async (data) => {
-            try {
-                if (verifyMode === 'email') {
-                    const response = await UserService.VerifyEmail(data)
-                    onSuccess?.(response.data)
-                    toast.success('Email verified')
-                    return response.data
-                }
-
-                if (verifyMode === 'mobile') {
-                    const response = await UserService.VerifyContactNumber(data)
-                    onSuccess?.(response.data)
-                    toast.success('Contact verified')
-                    return response.data
-                }
-
-                throw 'Unknown verify mode'
-            } catch (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-        },
+    const { mutate: handleVerify, isPending } = useVerify({
+        verifyMode,
+        onSuccess,
     })
-
-    /*
-Security
-- username
-- email
-- password
-- contact number
-*/
 
     return (
         <div className="flex flex-col justify-between gap-y-4 rounded-xl border border-orange-400/20 bg-secondary/70 p-3 lg:flex-row">
@@ -189,30 +155,11 @@ const ResendCode = ({
     })
 
     const { mutate: resendOtpVerification, isPending: isResending } =
-        useMutation<void, string>({
-            mutationKey: ['verify-resend', verifyMode],
-            mutationFn: async () => {
-                try {
-                    if (verifyMode === 'email') {
-                        await UserService.SendEmailVerification()
-                        startCooldown()
-                        return
-                    }
-
-                    if (verifyMode === 'mobile') {
-                        await UserService.SendContactVerification()
-                        startCooldown()
-                        return
-                    }
-
-                    throw 'Unkown verify mode'
-                } catch (error) {
-                    const errorMessage = serverRequestErrExtractor({ error })
-                    toast.error(errorMessage)
-                    throw errorMessage
-                }
-            },
+        useSendUserContactOTPVerification({
+            verifyMode,
+            onSuccess: () => startCooldown(),
         })
+
     return (
         <span
             className={cn(

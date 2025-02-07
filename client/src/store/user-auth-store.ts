@@ -1,19 +1,19 @@
 import { create } from 'zustand'
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server'
 
 type TAuthStoreStatus = 'loading' | 'authorized' | 'unauthorized' | 'error'
 
 interface UserAuthStore {
-    currentUser: UserData | null
+    currentUser: IUserData | null
     authStatus: TAuthStoreStatus
-    setCurrentUser: (newUserData: UserData | null) => void
+    setCurrentUser: (newUserData: IUserData | null) => void
     setAuthStatus: (status: TAuthStoreStatus) => void
 }
 
 export const useUserAuthStore = create<UserAuthStore>((set) => ({
     currentUser: null,
     authStatus: 'loading',
-    setCurrentUser: (newUserData: UserData | null) =>
+    setCurrentUser: (newUserData: IUserData | null) =>
         set({
             currentUser: newUserData,
             authStatus: newUserData ? 'authorized' : 'unauthorized',

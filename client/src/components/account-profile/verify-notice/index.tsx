@@ -1,10 +1,10 @@
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server/types'
 import VerifyContactBar from './verify-contact-bar'
 import { useRouterState } from '@tanstack/react-router'
 
 interface Props {
-    currentUser: UserData
-    onSuccess: (newUserData: UserData) => void
+    currentUser: IUserData
+    onSuccess: (newUserData: IUserData) => void
 }
 
 const VerifyNotice = ({ currentUser, onSuccess }: Props) => {

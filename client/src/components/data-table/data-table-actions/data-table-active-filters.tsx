@@ -2,26 +2,33 @@ import { useMemo } from 'react'
 
 import { Button } from '@/components/ui/button'
 import FilterChip from '@/components/filter-chip'
-import { TrashBinIcon } from '@/components/icons'
+import { TrashIcon } from '@/components/icons'
 import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import { useDataTableFilter } from '../data-table-filters/data-table-filter-context'
+import { useFilter } from '@/contexts/filter-context'
 
 const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
-    const { filters, resetFilter, removeFilter } = useDataTableFilter()
+    const { filters, resetFilter, removeFilter } = useFilter()
 
     const mappedFilters = useMemo(() => {
         return Object.entries(filters)
             .map(([key, value]) => ({
                 field: key,
+                displayText: value?.displayText,
                 ...value,
             }))
             .filter((filter) => {
-                if (filter.field === 'globalSearch') return false
+                if (filter.field === 'globalSearch' || filter.isStaticFilter)
+                    return false
                 if (Array.isArray(filter.value) && filter.value.length === 0)
                     return false
+
+                if (filter.value === 0 || filter.value) {
+                    return true
+                }
+
                 return filter.value || (filter.from && filter.to)
             })
     }, [filters])
@@ -39,13 +46,13 @@ const DataTableActiveFilters = ({ className }: IBaseCompNoChild) => {
                         className="size-fit p-1 text-xs text-foreground/60"
                         onClick={() => resetFilter()}
                     >
-                        <TrashBinIcon />
+                        <TrashIcon />
                     </Button>
                 </ActionTooltip>
                 {mappedFilters.map((filter) => (
                     <FilterChip
                         key={filter.field}
-                        label={filter.field}
+                        label={filter.displayText ?? filter.field}
                         tooltipDescription="Remove Filter"
                         onClick={() => removeFilter(filter.field)}
                     />

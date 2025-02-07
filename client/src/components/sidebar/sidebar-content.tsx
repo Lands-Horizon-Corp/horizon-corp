@@ -16,7 +16,6 @@ export interface ISidebarProps extends IBaseComp {
     items: TSidebarItem[]
     enableCollapse?: boolean
     logoRedirectUrl?: string
-    enableFocusBlur?: boolean
     defaultExpanded?: boolean
 }
 const SidebarContent = ({
@@ -24,7 +23,6 @@ const SidebarContent = ({
     className,
     logoRedirectUrl = '/',
     enableCollapse = false,
-    enableFocusBlur = false,
 }: ISidebarProps) => {
     const { isExpanded, toggleExpanded, isMobileSidebarVisible } =
         useSidebarContext()
@@ -75,8 +73,7 @@ const SidebarContent = ({
                 <div
                     className={cn(
                         'ecoop-scroll z-0 flex max-h-full flex-col gap-y-2 overflow-y-scroll px-4 py-4',
-                        isExpanded && 'gap-y-1',
-                        enableFocusBlur && 'group'
+                        isExpanded && 'gap-y-0 group',
                     )}
                 >
                     {items.map((prop, key) => (

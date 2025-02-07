@@ -1,8 +1,8 @@
 import { ReactNode } from 'react'
 
 import {
+    TrashIcon,
     EyeNoneIcon,
-    TrashBinIcon,
     DotsVerticalIcon,
     PencilOutlineIcon,
 } from '@/components/icons'
@@ -42,9 +42,10 @@ const RowActionsGroup = ({ onDelete, onView, onEdit, otherActions }: Props) => {
                     <DotsVerticalIcon />
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
+            <DropdownMenuContent onClick={(e) => e.stopPropagation()}>
                 <DropdownMenuLabel>Action</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {otherActions}
                 {onView && (
                     <DropdownMenuItem
                         disabled={!onView.isAllowed}
@@ -69,10 +70,9 @@ const RowActionsGroup = ({ onDelete, onView, onEdit, otherActions }: Props) => {
                         className="text-rose-400 focus:bg-destructive"
                         onClick={onDelete.onClick}
                     >
-                        <TrashBinIcon className="mr-2" /> {onDelete.text}
+                        <TrashIcon className="mr-2" /> {onDelete.text}
                     </DropdownMenuItem>
                 )}
-                {otherActions}
             </DropdownMenuContent>
         </DropdownMenu>
     )

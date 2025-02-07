@@ -13,8 +13,7 @@ const TestLayout = () => {
             <MainMapContainer
                 center={defaultCenter}
                 zoom={defaultZoom}
-                className='flex-grow'
-                onCoordinateClick={(coor)=> console.log(coor)}
+                className='flex-grow !p-0'
                 onMultipleCoordinatesChange={(coor)=> console.log(coor)}
                 viewOnly
                 hideControls

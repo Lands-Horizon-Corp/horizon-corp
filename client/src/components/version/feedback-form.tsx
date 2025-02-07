@@ -1,18 +1,7 @@
 import z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
-import { serverRequestErrExtractor } from '@/helpers'
-import { cn, withCatchAsync } from '@/lib/utils'
 
-import { Button } from '@/components/ui/button'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
 import {
     Form,
     FormControl,
@@ -20,16 +9,23 @@ import {
     FormItem,
     FormLabel,
 } from '@/components/ui/form'
-import { Input } from '../ui/input'
-
-import { FeedbackFormSchema } from './validations'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import TextEditor from '@/components/text-editor'
+import { LoadingCircleIcon } from '@/components/icons'
 import FormErrorMessage from '@/components/ui/form-error-message'
-import { UpdateStatus } from '@/types/constants'
-import TextEditor from '../text-editor'
-import FeedbackService from '@/horizon-corp/server/common/FeedbackService'
-import { toast } from 'sonner'
 
-import { LoadingCircleIcon } from '../icons'
+import { cn } from '@/lib/utils'
+import { UpdateStatus } from '@/types/constants'
+import { FeedbackFormSchema } from './validations'
+import { useCreateFeedback } from '@/hooks/api-hooks/use-feedback'
 
 type TFeedBack = z.infer<typeof FeedbackFormSchema>
 
@@ -47,28 +43,8 @@ const FeedbackForm = () => {
         defaultValues,
     })
 
-    const { mutate: sendFeedbackMessage, isPending } = useMutation<
-        void,
-        string,
-        TFeedBack
-    >({
-        mutationKey: ['send-feedback-message'],
-        mutationFn: async (feedbackRequest: TFeedBack) => {
-            if (!feedbackRequest) return
-
-            const [error] = await withCatchAsync(
-                FeedbackService.create(feedbackRequest)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                return
-            }
-
-            feedbackForm.reset()
-            toast.success(`Feedback Message was Already Sent!`)
-        },
+    const { mutate: sendFeedbackMessage, isPending } = useCreateFeedback({
+        onSuccess: () => feedbackForm.reset(),
     })
 
     const handleFeedBackSubmit = (data: TFeedBack) => {

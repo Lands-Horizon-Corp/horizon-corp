@@ -5,31 +5,28 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
+import NumberRange from './number-range'
 import { Button } from '@/components/ui/button'
 import { DebouncedInput } from '@/components/ui/debounced-input'
 
-import {
-    filterModeMap,
-    TFilterModes,
-    TSearchFilter,
-    useDataTableFilter,
-} from './data-table-filter-context'
-import NumberRange from './number-range'
 
-const NumberFilter = <TData,>({
-    accessorKey,
-}: {
-    accessorKey: keyof TData
-}) => {
+import { filterModeMap, IFilterComponentProps, TFilterModes, TSearchFilter, useFilter } from '@/contexts/filter-context'
+
+const NumberFilter = <T,>({
+    field,
+    displayText,
+    defaultMode,
+}: IFilterComponentProps<T, 'number'>) => {
     const filterModeOptions = filterModeMap['number']
-    const { filters, setFilter } = useDataTableFilter<number, keyof TData>()
+    const { filters, setFilter } = useFilter<number, typeof field>()
 
-    const filterVal: TSearchFilter<number> = filters[accessorKey as string] ?? {
-        dataType: 'number',
-        mode: filterModeOptions[0].value,
-        value: undefined,
-        from: undefined,
+    const filterVal: TSearchFilter<number> = filters[field] ?? {
+        displayText,
         to: undefined,
+        from: undefined,
+        value: undefined,
+        dataType: 'number',
+        mode: defaultMode ?? filterModeOptions[0].value,
     }
 
     return (
@@ -39,7 +36,7 @@ const NumberFilter = <TData,>({
                 value={filterVal.mode}
                 onValueChange={(val) => {
                     const newFilterMode = val as TFilterModes
-                    setFilter(accessorKey, {
+                    setFilter(field, {
                         ...filterVal,
                         mode: newFilterMode,
                     })
@@ -62,10 +59,10 @@ const NumberFilter = <TData,>({
             {filterVal.mode !== 'range' ? (
                 <DebouncedInput
                     type="number"
-                    value={filterVal.value}
+                    value={filterVal.value ?? ''}
                     className="w-full"
                     onChange={(inpt) =>
-                        setFilter(accessorKey, {
+                        setFilter(field, {
                             ...filterVal,
                             value: inpt as number,
                             from: undefined,
@@ -78,7 +75,7 @@ const NumberFilter = <TData,>({
                 <NumberRange
                     value={{ from: filterVal.from, to: filterVal.to }}
                     onChange={(val) =>
-                        setFilter(accessorKey, {
+                        setFilter(field, {
                             ...filterVal,
                             ...val,
                             value: undefined,
@@ -90,7 +87,7 @@ const NumberFilter = <TData,>({
                 size="sm"
                 className="w-full"
                 variant="secondary"
-                onClick={() => setFilter(accessorKey)}
+                onClick={() => setFilter(field)}
             >
                 Clear Filter
             </Button>

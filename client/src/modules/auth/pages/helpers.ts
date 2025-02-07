@@ -1,7 +1,7 @@
 import { toast } from 'sonner'
-import { AccountStatus } from '@/horizon-corp/types'
+import { TAccountStatus } from '@/server/types'
 
-export const toastAccountStatus = (accountStatus: AccountStatus) => {
+export const toastAccountStatus = (accountStatus: TAccountStatus) => {
     switch (accountStatus) {
         case 'Pending':
             return toast.warning('Account pending')

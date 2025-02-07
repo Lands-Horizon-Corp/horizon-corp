@@ -6,7 +6,7 @@ import {
     DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu'
 
-export interface DataTableScrollableOptionProps {
+export interface IDataTableScrollableOptionProps {
     isScrollable: boolean
     setIsScrollable: (val: boolean) => void
 }
@@ -14,7 +14,7 @@ export interface DataTableScrollableOptionProps {
 const DataTableScrollOption = ({
     isScrollable,
     setIsScrollable,
-}: DataTableScrollableOptionProps) => {
+}: IDataTableScrollableOptionProps) => {
     return (
         <DropdownMenuGroup>
             <DropdownMenuLabel>Table Display</DropdownMenuLabel>

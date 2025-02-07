@@ -1,85 +1,37 @@
-import { useState } from 'react'
 import { format } from 'date-fns'
 
-import {
-    Dialog,
-    DialogTitle,
-    DialogHeader,
-    DialogContent,
-    DialogDescription,
-} from '@/components/ui/dialog'
-import ProfileUpload from './profile-upload'
-import { Button } from '@/components/ui/button'
-import UserAvatar from '@/components/user-avatar'
-import ActionTooltip from '@/components/action-tooltip'
 import {
     EmailIcon,
     CalendarIcon,
     DotMediumIcon,
-    CameraFillIcon,
     PhoneOutlineIcon,
     CalendarCheckIcon,
 } from '@/components/icons'
+import AccountQr from './account-qr'
+import UserProfilePicture from './profile-picture'
 
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server/types'
 
 const AccountProfileBanner = ({
     currentUser,
     updateUserData,
 }: {
-    currentUser: UserData
-    updateUserData: (newUserData: UserData) => void
+    currentUser: IUserData
+    updateUserData: (newUserData: IUserData) => void
 }) => {
-    const [uploadState, toggleProfileUpload] = useState(false)
-
     return (
         <div className="overflow-clip rounded-2xl bg-secondary shadow-md">
-            <Dialog open={uploadState} onOpenChange={toggleProfileUpload}>
-                <DialogContent
-                    closeButtonClassName="sm:hidden"
-                    className="!rounded-2xl"
-                >
-                    <DialogHeader>
-                        <DialogTitle>Change Profile Picture</DialogTitle>
-                        <DialogDescription>
-                            Change your profile photo
-                        </DialogDescription>
-                    </DialogHeader>
-                    <ProfileUpload
-                        currentUser={currentUser}
-                        onUploadComplete={(newUserData) => {
-                            updateUserData(newUserData)
-                            toggleProfileUpload(false)
-                        }}
-                    />
-                </DialogContent>
-            </Dialog>
-
             <div className="h-[180px] bg-[url('/profile-cover.png')] bg-cover bg-center" />
             <div className="relative p-3 sm:p-5">
-                <div className="group absolute -top-24 left-8 size-fit">
-                    <div className="relative size-fit">
-                        <UserAvatar
-                            className="size-28 border-4 border-popover shadow-sm"
-                            src={currentUser.media?.downloadURL ?? ''}
-                            fallback={currentUser.username.charAt(0) ?? '-'}
-                        />
-                        <ActionTooltip
-                            tooltipContent="Change Profile Photo"
-                            align="center"
-                            side="right"
-                        >
-                            <Button
-                                variant="secondary"
-                                onClick={() => toggleProfileUpload(true)}
-                                className="absolute bottom-2 right-2 size-fit rounded-full border border-transparent p-1 hover:border-foreground/20"
-                            >
-                                <CameraFillIcon className="size-4 opacity-50 duration-300 ease-in-out group-hover:opacity-80" />
-                            </Button>
-                        </ActionTooltip>
-                    </div>
-                </div>
+                <UserProfilePicture
+                    userData={currentUser}
+                    onUploadSuccess={updateUserData}
+                    className="absolute -top-28 left-4 z-20 size-32"
+                />
                 <p className="text-2xl font-medium">{currentUser.username}</p>
+                <AccountQr
+                    fileName={`${currentUser.id}-${currentUser.firstName}-${currentUser.lastName}-profile-qr-${new Date().toISOString()}`}
+                />
                 <span className="text-sm text-foreground/80">
                     {currentUser.firstName} {currentUser.lastName}
                 </span>

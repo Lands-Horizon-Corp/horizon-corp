@@ -1,8 +1,10 @@
 import { createRoute, lazyRouteComponent } from '@tanstack/react-router'
 
 import { rootRoute } from '@/root-route'
+import AdminMemberManagementRoute from './pages/members/route'
+import AdminCompaniesManagementRoute from './pages/companies-management/route'
 
-const adminRoute = createRoute({
+export const adminRoute = createRoute({
     getParentRoute: () => rootRoute,
     path: 'admin',
     component: lazyRouteComponent(() => import('./layout')),
@@ -11,41 +13,13 @@ const adminRoute = createRoute({
 const adminLandingRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: '/',
-    component: lazyRouteComponent(() => import('./pages/')),
+    component: lazyRouteComponent(() => import('./pages')),
 })
 
 const adminDashboardRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'dashboard',
     component: lazyRouteComponent(() => import('./pages/dashboard')),
-})
-
-const adminViewMembersRoute = createRoute({
-    getParentRoute: () => adminRoute,
-    path: 'members-management/view-members',
-    component: lazyRouteComponent(() => import('./pages/members/view-members')),
-})
-
-const adminMembersFeedbackRoute = createRoute({
-    getParentRoute: () => adminRoute,
-    path: 'members-management/feedbacks',
-    component: lazyRouteComponent(() => import('./pages/members/feedbacks')),
-})
-
-const adminViewCompaniesRoute = createRoute({
-    getParentRoute: () => adminRoute,
-    path: 'companies-management/view-companies',
-    component: lazyRouteComponent(
-        () => import('./pages/companies-management/view-companies')
-    ),
-})
-
-const adminCompaniesFeedbackRoute = createRoute({
-    getParentRoute: () => adminRoute,
-    path: 'companies-management/feedbacks',
-    component: lazyRouteComponent(
-        () => import('./pages/companies-management/feedbacks')
-    ),
 })
 
 const adminFootstepTrackingRoute = createRoute({
@@ -63,7 +37,7 @@ const adminProfileRoute = createRoute({
 const adminNotificationsRoute = createRoute({
     getParentRoute: () => adminRoute,
     path: 'notifications',
-    component: lazyRouteComponent(() => import('./pages/notifications')),
+    component: lazyRouteComponent(() => import('./pages/notifications/view-notifications')),
 })
 
 const adminSettingsRoute = createRoute({
@@ -72,17 +46,25 @@ const adminSettingsRoute = createRoute({
     component: lazyRouteComponent(() => import('./pages/settings')),
 })
 
+const adminFeedbacksRoute = createRoute({
+    getParentRoute: () => adminRoute,
+    path: 'feedbacks',
+    component: lazyRouteComponent(() => import('./pages/feedbacks/view-feedback')),
+
+})
+
 const AdminRoute = adminRoute.addChildren([
     adminLandingRoute,
     adminDashboardRoute,
-    adminViewMembersRoute,
-    adminMembersFeedbackRoute,
-    adminViewCompaniesRoute,
-    adminCompaniesFeedbackRoute,
-    adminFootstepTrackingRoute,
+
+    AdminMemberManagementRoute,
+    AdminCompaniesManagementRoute,
+
     adminProfileRoute,
-    adminNotificationsRoute,
     adminSettingsRoute,
+    adminNotificationsRoute,
+    adminFootstepTrackingRoute,
+    adminFeedbacksRoute
 ])
 
 export default AdminRoute

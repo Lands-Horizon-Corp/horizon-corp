@@ -113,14 +113,24 @@ const ColumnActions = <TData, TValue>({
                             <DropdownMenuLabel>Sorting</DropdownMenuLabel>
                             <DropdownMenuItem
                                 className="gap-x-2 px-2"
-                                onClick={() => column.toggleSorting(false)}
+                                onClick={() =>
+                                    column.toggleSorting(
+                                        false,
+                                        column.getCanMultiSort()
+                                    )
+                                }
                             >
                                 <ArrowUpIcon className="mr-2 size-3.5" />
                                 Ascending
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 className="gap-x-2 px-2"
-                                onClick={() => column.toggleSorting(true)}
+                                onClick={() =>
+                                    column.toggleSorting(
+                                        true,
+                                        column.getCanMultiSort()
+                                    )
+                                }
                             >
                                 <ArrowDownIcon className="mr-2 size-3.5" />
                                 Descending

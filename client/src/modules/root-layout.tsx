@@ -12,7 +12,7 @@ const RootLayout = () => {
     return (
         <div className="relative">
             <Outlet />
-            <Toaster richColors />
+            <Toaster richColors closeButton />
             <ConnectionProvider />
             <CookieConsent />
             <ConfirmModal />

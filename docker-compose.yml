@@ -27,21 +27,23 @@ services:
     networks:
       - app-network
 
-  server:
+  engine:
     restart: always
     build:
-      context: ./server
+      context: ./engine
       dockerfile: Dockerfile
     platform: linux/amd64
     env_file: ./.env
     volumes:
-      - ./server:/app
+      - ./engine:/app>
     ports:
       - "${APP_PORT}:${APP_FORWARD_PORT}"
     environment:
       - APP_ENV=${APP_ENV}
+      - APP_VERSION=${APP_VERSION}
       - APP_CLIENT_URL=${APP_CLIENT_URL}
       - APP_PORT=${APP_PORT}
+      - APP_SEEDER=${APP_SEEDER}
       - APP_TOKEN=${APP_TOKEN}
       - LOG_LEVEL=${LOG_LEVEL}
       - DB_USERNAME=${DB_USERNAME}
@@ -52,6 +54,8 @@ services:
       - DB_CHARSET=${DB_CHARSET}
       - DB_PARSE_TIME=${DB_PARSE_TIME}
       - DB_LOC=${DB_LOC}
+      - DB_MAX_RETRIES=${DB_MAX_RETRIES}
+      - DB_RETRY_DELAY=${DB_RETRY_DELAY}
       - STORAGE_ENDPOINT=${STORAGE_ENDPOINT}
       - STORAGE_REGION=${STORAGE_REGION}
       - STORAGE_ACCESS_KEY=${STORAGE_ACCESS_KEY}
@@ -62,6 +66,14 @@ services:
       - CACHE_PORT=${CACHE_PORT}
       - CACHE_DB=${CACHE_DB}
       - CACHE_URL=${CACHE_URL}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - OWNER_EMAIL=${OWNER_EMAIL}
+      - OWNER_PASSWORD=${OWNER_PASSWORD}
+      - MEMBER_EMAIL=${MEMBER_EMAIL}
+      - MEMBER_PASSWORD=${MEMBER_PASSWORD}
+      - EMPLOYEE_EMAIL=${EMPLOYEE_EMAIL}
+      - EMPLOYEE_PASSWORD=${EMPLOYEE_PASSWORD}
     depends_on:
       db:
         condition: service_healthy
@@ -149,26 +161,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-    networks:
-      - app-network
-
-  flyway:
-    build:
-      context: ./migration
-      dockerfile: Dockerfile
-    env_file: ./.env
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DB_HOST: db
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_CHARSET: ${DB_CHARSET}
-      DB_PARSE_TIME: ${DB_PARSE_TIME}
-    entrypoint: ["flyway", "migrate"]
     networks:
       - app-network
 

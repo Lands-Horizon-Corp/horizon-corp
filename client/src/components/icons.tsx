@@ -9,7 +9,6 @@ import {
 } from 'react-icons/ci'
 
 import {
-    GoTrash as TrashBinIcon,
     GoDotFill as DotBigIcon,
     GoArrowLeft as ArrowLeftIcon,
     GoSearch as MagnifyingGlassIcon,
@@ -24,13 +23,16 @@ import {
 import {
     LuUndo2 as UndoIcon,
     LuRedo2 as RedoIcon,
+    LuTrash as TrashIcon,
     LuImage as ImageIcon,
     LuFileX as FileXIcon,
     LuClock8 as ClockIcon,
+    LuQrCode as QrCodeIcon,
     LuCalendar as CalendarIcon,
     LuCameraOff as CameraOffIcon,
     LuListOrdered as ListOrderedIcon,
     LuCalendarCheck as CalendarCheckIcon,
+    LuChevronsUpDown as ChevronsUpDownIcon,
     LuHardDriveUpload as HardDriveUploadIcon,
 } from 'react-icons/lu'
 
@@ -45,9 +47,11 @@ import {
     LiaShieldAltSolid as ShieldIcon,
     LiaUserClockSolid as UserClockIcon,
     LiaUserShieldSolid as UserShieldIcon,
+    LiaMapMarkedAltSolid as MapMarkedIcon,
 } from 'react-icons/lia'
 
 import {
+    PiPlus as PlusIcon,
     PiPushPin as PushPinIcon,
     PiUserList as UserListIcon,
     PiBuilding as BuildingIcon,
@@ -71,8 +75,9 @@ import {
     HiOutlineBell as NotificationIcon,
     HiOutlineArrowDown as ArrowDownIcon,
     HiOutlinePencil as PencilOutlineIcon,
-    HiAdjustmentsHorizontal as AdjustIcon,
     HiOutlineSquaresPlus as DashboardIcon,
+    HiAdjustmentsHorizontal as AdjustIcon,
+    HiOutlineChevronDown as ChevronDownIcon,
     HiOutlineChevronLeft as ChevronLeftIcon,
     HiOutlineArrowsUpDown as ArrowUpDownIcon,
     HiOutlineChevronRight as ChevronRightIcon,
@@ -86,6 +91,7 @@ import {
 
 import {
     AiOutlineKey as KeyIcon,
+    AiFillHome as HomeFillIcon,
     AiOutlineClear as SmallBrushIcon,
     AiOutlineFullscreen as FullscreenIcon,
     AiOutlineLoading as LoadingCircleIcon,
@@ -110,20 +116,30 @@ import {
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
 } from 'react-icons/md'
+
 import {
+    BsImage as Image2Icon,
     BsZoomIn as ZoomInIcon,
     BsZoomOut as ZoomOutIcon,
     BsCameraFill as CameraFillIcon,
     BsPatchCheck as VerifiedPatchIcon,
-    BsFillPatchMinusFill as PatchMinusIcon,
-    BsFillPatchCheckFill as PatchCheckIcon,
+    BsPatchQuestion as BadgeQuestionIcon,
+    BsPatchQuestionFill as BadgeQuestionFillIcon,
+    BsPatchMinusFill as BadgeMinusIcon,
+    BsFillPatchMinusFill as BadgeMinusFillIcon,
+    BsPatchCheckFill as BadgeCheckIcon,
+    BsFillPatchCheckFill as BadgeCheckFillIcon,
     BsLayoutSidebarInset as SidebarLeftIcon,
-    BsPatchExclamationFill as PatchExclamationIcon,
+    BsDashSquareDotted as DashSquareDottedIcon,
+    BsPatchExclamation as BadgeExclamationIcon,
+    BsPatchExclamationFill as BadgeExclamationFillIcon,
+    BsFillQuestionCircleFill as QuestionCircleFillIcon,
 } from 'react-icons/bs'
 
 import {
     IoReload as ReloadIcon,
     IoRefresh as RefreshIcon,
+    IoStorefront as StoreIcon,
     IoCloseOutline as CloseIcon,
     IoCallOutline as TelephoneIcon,
     IoCheckmarkOutline as CheckIcon,
@@ -134,7 +150,6 @@ import {
 
 import {
     RxReset as ResetIcon,
-    RxTrash as TrashIcon,
     RxEyeNone as EyeNoneIcon,
     RxFontItalic as ToolbarItalicIcon,
     RxDotsVertical as DotsVerticalIcon,
@@ -143,10 +158,12 @@ import {
 } from 'react-icons/rx'
 
 import {
+    FaRegMap as MapIcon,
     FaRegEye as EyeIcon,
     FaBold as FaBoldIcon,
-    FaPhoneAlt as PhoneIcon,
     FaFileCsv as CsvIcon,
+    FaPhoneAlt as PhoneIcon,
+
 } from 'react-icons/fa'
 
 import {
@@ -157,7 +174,10 @@ import {
     RiFlipHorizontalLine as FlipHorizontalLineIcon,
 } from 'react-icons/ri'
 
-import { FiCamera as CameraIcon } from 'react-icons/fi'
+import {
+    FiCamera as CameraIcon,
+    FiDownload as DownloadIcon,
+} from 'react-icons/fi'
 
 import { CgFacebook as FacebookIcon } from 'react-icons/cg'
 
@@ -165,15 +185,22 @@ import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
 
 import { GrPowerReset as PowerResetIcon } from 'react-icons/gr'
 
-import { VscLocation as LocationPinOutlineIcon } from 'react-icons/vsc'
+import { VscLocation as LocationPinOutlineIcon, VscError as ErrorIcon  } from 'react-icons/vsc'
 
+import { BiErrorCircle as WarningIcon } from "react-icons/bi";
+
+import { SlOptions as OptionsIcon } from "react-icons/sl";
+
+// Export section
 export {
     XIcon,
+    MapIcon,
     CsvIcon,
     SunIcon,
     KeyIcon,
     DevIcon,
     EyeIcon,
+    PlusIcon,
     UndoIcon,
     RedoIcon,
     UserIcon,
@@ -188,8 +215,10 @@ export {
     CheckIcon,
     PhoneIcon,
     ExcelIcon,
+    StoreIcon,
     ResetIcon,
     ReloadIcon,
+    QrCodeIcon,
     DotBigIcon,
     CameraIcon,
     FaBoldIcon,
@@ -199,6 +228,7 @@ export {
     ExportIcon,
     ZoomInIcon,
     AdjustIcon,
+    Image2Icon,
     RefreshIcon,
     ArrowUpIcon,
     SidebarIcon,
@@ -208,7 +238,7 @@ export {
     PushPinIcon,
     EyeNoneIcon,
     PaymentsIcon,
-    TrashBinIcon,
+    HomeFillIcon,
     FacebookIcon,
     QuestionIcon,
     SettingsIcon,
@@ -216,7 +246,9 @@ export {
     MessagesIcon,
     FeedbackIcon,
     BuildingIcon,
+    DownloadIcon,
     CalendarIcon,
+    MapMarkedIcon,
     CodeBlockIcon,
     ArrowLeftIcon,
     ArrowDownIcon,
@@ -234,9 +266,9 @@ export {
     BlockQuoteIcon,
     DragHandleIcon,
     CameraFillIcon,
-    PatchMinusIcon,
     EditPencilIcon,
-    PatchCheckIcon,
+    BadgeMinusIcon,
+    BadgeCheckIcon,
     EmailCheckIcon,
     CameraFlipIcon,
     UserShieldIcon,
@@ -247,6 +279,7 @@ export {
     ListOrderedIcon,
     RotateRightIcon,
     LocationPinIcon,
+    ChevronDownIcon,
     NotificationIcon,
     ChevronsLeftIcon,
     PhoneOutlineIcon,
@@ -257,6 +290,7 @@ export {
     ChevronRightIcon,
     CameraSelectIcon,
     SidebarRightIcon,
+    BadgeQuestionIcon,
     RotateBoxLeftIcon,
     ToolbarItalicIcon,
     ChevronsRightIcon,
@@ -268,8 +302,11 @@ export {
     PencilOutlineIcon,
     FlipHorizontalIcon,
     RotateBoxRightIcon,
+    BadgeCheckFillIcon,
+    BadgeMinusFillIcon,
     BuildingBranchIcon,
     LoadingSpinnerIcon,
+    ChevronsUpDownIcon,
     AccountSettingIcon,
     FullscreenExitIcon,
     MessageOutlineIcon,
@@ -278,11 +315,18 @@ export {
     ListBulletsBoldIcon,
     MixerHorizontalIcon,
     TransactionListIcon,
-    PatchExclamationIcon,
+    DashSquareDottedIcon,
     FlipVerticalLineIcon,
+    BadgeExclamationIcon,
+    BadgeQuestionFillIcon,
     LocationPinOutlineIcon,
+    QuestionCircleFillIcon,
     FlipHorizontalLineIcon,
     Rotate90DegreeLeftIcon,
     Rotate90DegreeRightIcon,
+    BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
+    ErrorIcon,
+    WarningIcon,
+    OptionsIcon,
 }

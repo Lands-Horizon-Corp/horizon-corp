@@ -1,29 +1,25 @@
-import { toast } from 'sonner'
 import { useState } from 'react'
 
 import EcoopLogo from '@/components/ecoop-logo'
 import StepIndicator from '@/components/steps-indicator'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-import VerifyForm from '@/modules/auth/components/forms/verify-form'
+import VerifyForm from '@/components/forms/auth-forms/verify-form'
 
-import { withCatchAsync } from '@/lib'
+import { IUserData } from '@/server'
 import { IBaseComp } from '@/types/component'
-import { UserData } from '@/horizon-corp/types'
-import { useMutation } from '@tanstack/react-query'
-import { serverRequestErrExtractor } from '@/helpers'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import { useSkipUserContactVerification } from '@/hooks/api-hooks/use-auth'
 
 interface Props extends IBaseComp {
     readOnly?: boolean
-    userData: UserData
+    userData: IUserData
 
     onSkip: () => void
-    onVerifyChange?: (newUserData: UserData) => void
-    onVerifyComplete?: (newUserData: UserData) => void
+    onVerifyChange?: (newUserData: IUserData) => void
+    onVerifyComplete?: (newUserData: IUserData) => void
 }
 
-const countCompleted = (userData: UserData) => {
+const countCompleted = (userData: IUserData) => {
     let completed = 0
 
     if (userData.isEmailVerified) completed++
@@ -44,28 +40,13 @@ const VerifyRoot = ({
 
     const completedCount = countCompleted(userStoredData)
 
-    const { mutate: handleSkip, isPending: isSkipping } = useMutation<
-        UserData,
-        string
-    >({
-        mutationKey: ['skip-verification'],
-        mutationFn: async () => {
-            const [error, response] = await withCatchAsync(
-                UserService.SkipVerification()
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            onSkip()
-            setCurrentUser(response.data)
-
-            return response.data
-        },
-    })
+    const { mutate: handleSkip, isPending: isSkipping } =
+        useSkipUserContactVerification({
+            onSuccess: (data) => {
+                setCurrentUser(data)
+                onSkip()
+            },
+        })
 
     if (completedCount === 2) {
         onVerifyComplete?.(userData)

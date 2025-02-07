@@ -1,27 +1,29 @@
 import { Table } from '@tanstack/react-table'
 
-import { Button } from '@/components/ui/button'
 import {
     Select,
-    SelectContent,
     SelectItem,
-    SelectTrigger,
     SelectValue,
+    SelectContent,
+    SelectTrigger,
 } from '@/components/ui/select'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+
 import {
     ChevronLeftIcon,
     ChevronRightIcon,
     ChevronsLeftIcon,
     ChevronsRightIcon,
 } from '@/components/icons'
+
+import { cn } from '@/lib/utils'
 import { PAGE_SIZES_DENSE } from '@/constants'
 
 interface DataTablePaginationProps<TData> {
-    table: Table<TData>
     className?: string
-    pageSizes?: number[]
     totalSize: number
+    table: Table<TData>
+    pageSizes?: number[]
     hideSelectedIndicator?: boolean
 }
 
@@ -32,7 +34,8 @@ const DataTablePagination = <TData,>({
     pageSizes = PAGE_SIZES_DENSE,
     hideSelectedIndicator = false,
 }: DataTablePaginationProps<TData>) => {
-    const finalPageSizes = pageSizes.filter((size) => size < totalSize)
+    const currentPageSize = table.getState().pagination.pageSize
+    const finalPageSizes = pageSizes
 
     return (
         <div
@@ -44,25 +47,21 @@ const DataTablePagination = <TData,>({
         >
             {!hideSelectedIndicator && (
                 <div className="flex-1 text-sm text-muted-foreground">
-                    {table.getFilteredSelectedRowModel().rows.length} of{' '}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
+                    {table.getFilteredSelectedRowModel().rows.length} row(s) selected.
                 </div>
             )}
-            <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-6 md:space-y-0 lg:space-x-8">
+            <div className="flex flex-col items-center space-y-4 md:flex-row md:space-x-3 md:space-y-0 lg:space-x-8">
                 <div className="flex items-center space-x-2">
                     <p className="text-sm font-medium">Rows per page</p>
                     <Select
-                        value={`${table.getState().pagination.pageSize}`}
+                        disabled={totalSize === 0}
+                        value={`${currentPageSize}`}
                         onValueChange={(value) => {
                             table.setPageSize(Number(value))
                         }}
                     >
                         <SelectTrigger className="h-8 w-[70px]">
-                            <SelectValue
-                                placeholder={
-                                    table.getState().pagination.pageSize
-                                }
-                            />
+                            <SelectValue placeholder={currentPageSize} />
                         </SelectTrigger>
                         <SelectContent side="top">
                             {finalPageSizes.map((pageSize) => (
@@ -73,7 +72,11 @@ const DataTablePagination = <TData,>({
                                     {pageSize}
                                 </SelectItem>
                             ))}
-                            <SelectItem value={`${totalSize}`}>All</SelectItem>
+                            {!finalPageSizes.includes(totalSize) && (
+                                <SelectItem value={`${totalSize}`}>
+                                    All
+                                </SelectItem>
+                            )}
                         </SelectContent>
                     </Select>
                 </div>

@@ -15,14 +15,6 @@ const testLandingRoute = createRoute({
     component: React.lazy(() => import('./pages/upload')),
 })
 
-const imageDetailRoute = createRoute({
-    getParentRoute: () => testRoute, // Sets `landingRoute` as the parent route
-    path: `image/$imageId`, // Dynamic path with `id` parameter
-    component: lazyRouteComponent(
-        () => import('@/components/image-preview/image-details')
-    ),
-});
-
-const TestRoute = testRoute.addChildren([testLandingRoute, imageDetailRoute])
+const TestRoute = testRoute.addChildren([testLandingRoute])
 
 export default TestRoute

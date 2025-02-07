@@ -1,7 +1,5 @@
 import z from 'zod'
-import { toast } from 'sonner'
 import { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
 import { useParams, useRouter } from '@tanstack/react-router'
 
 import { GoArrowLeft } from 'react-icons/go'
@@ -11,11 +9,9 @@ import { KeyIcon } from '@/components/icons'
 import GuestGuard from '@/components/wrappers/guest-guard'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
-import ResetPasswordForm from '@/modules/auth/components/forms/reset-password-form'
+import ResetPasswordForm from '@/components/forms/auth-forms/reset-password-form'
 
-import { withCatchAsync } from '@/lib'
-import { serverRequestErrExtractor } from '@/helpers'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import { useCheckResetId } from '@/hooks/api-hooks/use-auth'
 
 export const PasswordResetPagePathSchema = z.object({
     resetId: z.string({ required_error: 'Missing Reset Link' }),
@@ -30,23 +26,7 @@ const PasswordResetPage = () => {
         data: resetEntry,
         isPending,
         isFetching,
-    } = useQuery<null | boolean, string>({
-        queryKey: ['password-reset-link', pathParams.resetId],
-        queryFn: async () => {
-            const [error] = await withCatchAsync(
-                UserService.CheckResetLink(pathParams.resetId)
-            )
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.message(errorMessage)
-                throw errorMessage
-            }
-
-            return true
-        },
-        initialData: null,
-    })
+    } = useCheckResetId({ resetId: pathParams.resetId })
 
     return (
         <GuestGuard>

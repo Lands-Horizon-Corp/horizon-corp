@@ -1,11 +1,11 @@
 import { AxiosError } from 'axios'
 
 import { TErrorMessageExtractor } from '.'
-import { ErrorResponse } from '@/horizon-corp/types'
-import { axiosErrorMessageExtractor } from '@/horizon-corp/helpers'
+import { IErrorResponse } from '@/server/types'
+import { axiosErrorMessageExtractor } from '@/server/helpers'
 
 export const axiosErrExtractor: TErrorMessageExtractor = [
-    AxiosError<ErrorResponse>,
+    AxiosError<IErrorResponse>,
     (err: Error) =>
-        axiosErrorMessageExtractor(err as AxiosError<ErrorResponse>),
+        axiosErrorMessageExtractor(err as AxiosError<IErrorResponse>),
 ]

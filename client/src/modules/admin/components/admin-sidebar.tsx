@@ -29,11 +29,6 @@ export const adminSidebarItems: TSidebarItem[] = [
                 url: '/view-members',
                 Icon: UserIcon,
             },
-            {
-                text: 'Feedbacks',
-                url: '/feedbacks',
-                Icon: FeedbackIcon,
-            },
         ],
     },
     {
@@ -45,11 +40,6 @@ export const adminSidebarItems: TSidebarItem[] = [
                 text: 'View Companies',
                 url: '/view-companies',
                 Icon: BuildingBranchIcon,
-            },
-            {
-                text: 'Feedbacks',
-                url: '/feedbacks',
-                Icon: FeedbackIcon,
             },
         ],
     },
@@ -69,6 +59,11 @@ export const adminSidebarItems: TSidebarItem[] = [
         Icon: NotificationIcon,
     },
     {
+        text: 'Feedbacks',
+        url: '/admin/feedbacks',
+        Icon: FeedbackIcon,
+    },
+    {
         text: 'Settings',
         url: '/admin/settings',
         Icon: SettingsIcon,
@@ -79,7 +74,6 @@ const AdminSidebar = ({ className }: IBaseComp) => {
     return (
         <Sidebar
             enableCollapse
-            enableFocusBlur
             className={className}
             logoRedirectUrl="/admin"
             items={adminSidebarItems}

@@ -1,80 +1,94 @@
 import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import ActionTooltip from '@/components/action-tooltip'
 import { MagnifyingGlassIcon, XIcon } from '@/components/icons'
 import { DebouncedInput } from '@/components/ui/debounced-input'
 
-import {
-    TFilterModes,
-    TSearchFilter,
-    useDataTableFilter,
-} from './data-table-filter-context'
 
-type KeysOfType<T, ValueType> = {
-    [K in keyof T]: T[K] extends ValueType ? K : never
-}[keyof T]
+import { KeysOfOrString } from '@/types'
+import { TFilterModes, TSearchFilter, useFilter } from '@/contexts/filter-context'
 
-interface Props<T> {
-    keysToSearch: Array<KeysOfType<T, string>>
-    defaultMode: TFilterModes
+export interface IGlobalSearchTargets<T> {
+    field: (string & {}) | keyof T
+    displayText: string
+}
+
+export interface IGlobalSearchProps<T> {
     placeHolder?: string
+    defaultMode: TFilterModes
+    targets: IGlobalSearchTargets<T>[]
 }
 
 const accessorKey = 'globalSearch'
 
 const DataTableGlobalSearch = <T,>({
-    keysToSearch,
+    targets,
     defaultMode,
     ...otherProps
-}: Props<T>) => {
+}: IGlobalSearchProps<T>) => {
     const [visible, setVisible] = useState(false)
-    const { filters, setFilter, bulkSetFilter } = useDataTableFilter()
+    const { filters, setFilter, bulkSetFilter } = useFilter<
+        unknown,
+        KeysOfOrString<T>
+    >()
 
     const filterVal: TSearchFilter = filters[accessorKey as string] ?? {
+        value: '',
+        to: undefined,
+        from: undefined,
         dataType: 'text',
         mode: defaultMode,
-        value: '',
-        from: undefined,
-        to: undefined,
+        displayText: 'Global Search',
     }
+
+    if (targets.length === 0) return
 
     return (
         <div className="flex items-center gap-x-1">
             <Button
-                variant="secondary"
                 size="sm"
+                variant="secondary"
                 onClick={() => setVisible((prev) => !prev)}
             >
                 <MagnifyingGlassIcon />
             </Button>
-            {visible && (
-                <span className="relative">
-                    <DebouncedInput
-                        className="text-xs animate-in fade-in-75"
-                        value={filterVal.value}
-                        placeholder={
-                            otherProps.placeHolder ??
-                            'Global Search (Text Only)'
-                        }
-                        onChange={(val) => {
-                            setFilter(accessorKey, { ...filterVal, value: val })
-                            bulkSetFilter(keysToSearch as string[], {
-                                ...filterVal,
-                                value: val,
-                            })
-                        }}
-                    />
-                    <Button
-                        variant="ghost"
-                        className="p-.5 absolute right-2 top-1/2 size-fit -translate-y-1/2 rounded-full"
-                        onClick={() => {
-                            setFilter(accessorKey)
-                            bulkSetFilter(keysToSearch as string[])
-                        }}
-                    >
-                        <XIcon className="size-4" />
-                    </Button>
-                </span>
+            {visible && targets.length > 0 && (
+                <ActionTooltip
+                    side="bottom"
+                    tooltipContent="Global search will only apply on fields that are text searchable"
+                >
+                    <span className="relative">
+                        <DebouncedInput
+                            className="text-xs animate-in fade-in-75"
+                            value={filterVal.value}
+                            placeholder={
+                                otherProps.placeHolder ??
+                                'Global Search (Text Only)'
+                            }
+                            onChange={(val) => {
+                                setFilter(accessorKey, {
+                                    ...filterVal,
+                                    value: val,
+                                })
+                                bulkSetFilter(targets, {
+                                    ...filterVal,
+                                    value: val,
+                                })
+                            }}
+                        />
+                        <Button
+                            variant="ghost"
+                            className="p-.5 absolute right-2 top-1/2 size-fit -translate-y-1/2 rounded-full"
+                            onClick={() => {
+                                setFilter(accessorKey)
+                                bulkSetFilter(targets)
+                            }}
+                        >
+                            <XIcon className="size-4" />
+                        </Button>
+                    </span>
+                </ActionTooltip>
             )}
         </div>
     )

@@ -1,44 +1,23 @@
-import { toast } from 'sonner'
 import { useEffect, useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
-import { useMutation } from '@tanstack/react-query'
 
 import VerifyRoot from '@/modules/auth/components/verify-root'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import AuthPageWrapper from '@/modules/auth/components/auth-page-wrapper'
 import ShowAccountStatus from '../components/verify-root/show-account-status'
 
-import {
-    isUserHasUnverified,
-    serverRequestErrExtractor,
-    getUsersAccountTypeRedirectPage,
-} from '@/helpers'
-import { withCatchAsync } from '@/lib'
+import { useSignOut } from '@/hooks/api-hooks/use-auth'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import UserService from '@/horizon-corp/server/auth/UserService'
+import { isUserHasUnverified, getUsersAccountTypeRedirectPage } from '@/helpers'
 
 const Verify = () => {
     const router = useRouter()
     const { currentUser, setCurrentUser, authStatus } = useUserAuthStore()
 
-    const { mutate: onBackSignOut, isPending: isSigningOut } = useMutation<
-        void,
-        string
-    >({
-        mutationKey: ['sign-out'],
-        mutationFn: async () => {
-            const [error] = await withCatchAsync(UserService.SignOut())
-
-            if (error) {
-                const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
-                throw errorMessage
-            }
-
-            router.navigate({ to: '/auth' })
-
+    const { mutate: onBackSignOut, isPending: isSigningOut } = useSignOut({
+        onSuccess: () => {
             setCurrentUser(null)
-            return
+            router.navigate({ to: '/auth' })
         },
     })
 

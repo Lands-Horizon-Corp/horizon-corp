@@ -2,7 +2,6 @@ import z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import { Form, FormItem, FormField } from '@/components/ui/form'
 import {
     Dialog,
     DialogTitle,
@@ -13,9 +12,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import PasswordInput from '@/components/ui/password-input'
+import { Form, FormItem, FormField } from '@/components/ui/form'
+import FormErrorMessage from '@/components/ui/form-error-message'
 
 import { passwordSchema } from '@/validations/common'
-import FormErrorMessage from '@/components/ui/form-error-message'
 
 type Props<T> = {
     state: boolean

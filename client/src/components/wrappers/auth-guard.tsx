@@ -5,15 +5,16 @@ import { Button } from '@/components/ui/button'
 import UserAvatar from '@/components/user-avatar'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import {
-    PatchCheckIcon,
-    PatchExclamationIcon,
-    PatchMinusIcon,
+    BadgeMinusFillIcon,
+    BadgeCheckFillIcon,
+    BadgeExclamationFillIcon,
 } from '@/components/icons'
 
 import { cn } from '@/lib'
-import { UserData } from '@/horizon-corp/types'
+import { IUserData } from '@/server/types'
+import { IBaseComp, TPageType } from '@/types'
+import { TAccountType  } from '@/server/types'
 import { useUserAuthStore } from '@/store/user-auth-store'
-import { IBaseComp, TAccountType, TPageType } from '@/types'
 import { isUserHasUnverified, isUserUnverified } from '@/helpers'
 
 interface Props extends IBaseComp {
@@ -113,7 +114,7 @@ const AccountInfoContent = ({
 }: {
     infoTitle: string
     infoDescription: string
-    currentUser: UserData
+    currentUser: IUserData
 }) => {
     return (
         <>
@@ -123,10 +124,10 @@ const AccountInfoContent = ({
                 className="size-36 border-4 text-2xl font-medium"
             />
             {currentUser.status === 'Pending' && (
-                <PatchMinusIcon className="size-8 text-amber-500" />
+                <BadgeMinusFillIcon className="size-8 text-amber-500" />
             )}
             {currentUser.status === 'Verified' && (
-                <PatchCheckIcon
+                <BadgeCheckFillIcon
                     className={cn(
                         'size-8 text-primary',
                         isUserHasUnverified(currentUser) && 'text-amber-500'
@@ -134,7 +135,7 @@ const AccountInfoContent = ({
                 />
             )}
             {currentUser.status === 'Not Allowed' && (
-                <PatchExclamationIcon className="size-8 text-rose-400" />
+                <BadgeExclamationFillIcon className="size-8 text-rose-400" />
             )}
             <p className="text-xl font-medium">{infoTitle}</p>
             <p className="max-w-xl text-center text-foreground/80">
