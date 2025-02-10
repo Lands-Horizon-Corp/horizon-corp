@@ -27,10 +27,10 @@ import {
 import { useForm } from 'react-hook-form'
 import { Separator } from '@/components/ui/separator'
 import { IBaseCompNoChild } from '@/types'
-import { useCreateAccounts } from '@/hooks/api-hooks/use-accounting'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import { AccountRequestSchema, TAccountingAccountsEnum, TOtherAccountInformationEnum, TEarnedUnearnedInterestEnum } from '@/validations/form-validation/accounts-schema'
+import { useCreateAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
 
 type TAccountsCreateForm = z.infer<typeof AccountRequestSchema>
 

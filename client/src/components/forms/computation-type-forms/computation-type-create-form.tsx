@@ -16,10 +16,11 @@ import {
 import { useForm } from 'react-hook-form'
 import { Separator } from '@/components/ui/separator'
 import { IBaseCompNoChild } from '@/types'
-// import LoadingSpinner from '@/components/spinners/loading-spinner'
-// import FormErrorMessage from '@/components/ui/form-error-message'
 import { AccountsComputationTypeRequestSchema } from '@/validations/accounting/computation-type-schema'
 import { IAccountsComputationTypeRequest } from '@/server/types/accounts/computation-type'
+import { useCreateComputationType } from '@/hooks/api-hooks/accounting/use-computation-type'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
+import FormErrorMessage from '@/components/ui/form-error-message'
 
 type TComputationTypeCreateForm = z.infer<typeof AccountsComputationTypeRequestSchema>
 
@@ -45,27 +46,27 @@ const ComputationTypeCreateForm = ({
         },
     })
 
-    // const {
-    //     isPending: isCreating,
-    //     mutate: createComputationType,
-    //     error,
-    //     reset,
-    // } = useCreateComputationType({
-    //     onSuccess: (data) => {
-    //         onSuccess?.(data)
-    //         form.reset()
-    //     },
-    //     onError: (err) => {
-    //         onError?.(err as string)
-    //     }
-    // })
+    const {
+        isPending: isCreating,
+        mutate: createComputationType,
+        error,
+        reset,
+    } = useCreateComputationType({
+        onSuccess: (data) => {
+            onSuccess?.(data)
+            form.reset()
+        },
+        onError: (err) => {
+            onError?.(err as string)
+        }
+    })
 
     return (
         <Form {...form}>
             <Separator />
             <form
                 onSubmit={form.handleSubmit((formData) => {
-                    // createComputationType(formData)
+                    createComputationType(formData)
                 })}
                 className={cn('flex max-w-3xl flex-col gap-y-6', className)}
             >
@@ -100,14 +101,14 @@ const ComputationTypeCreateForm = ({
                         )}
                     />
                 </fieldset>
-                {/* <FormErrorMessage errorMessage={error} /> */}
+                <FormErrorMessage errorMessage={error} />
                 <div className="flex items-center justify-end gap-x-2">
                     <Button
                         type="button"
                         variant="ghost"
                         onClick={() => {
                             form.reset()
-                            // reset()
+                            reset()
                         }}
                         className="w-full self-end px-8 sm:w-fit"
                     >
@@ -118,8 +119,7 @@ const ComputationTypeCreateForm = ({
                         disabled={false}
                         className="w-full self-end px-8 sm:w-fit"
                     >
-                        {/* {isCreating ? <LoadingSpinner /> : 'Create'} */}
-                        Create
+                        {isCreating ? <LoadingSpinner /> : 'Create'}
                     </Button>
                 </div>
             </form>

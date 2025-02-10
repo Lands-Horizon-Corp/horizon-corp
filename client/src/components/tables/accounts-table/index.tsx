@@ -24,8 +24,8 @@ import accountTableColumns, {
     IAccountsTableColumnProps,
 } from './columns'
 import { DummyAccountsData } from './dummy-accounts'
-import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/use-accounting'
 // import { useQueryClient } from '@tanstack/react-query'
+import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
 
 export interface AccountsTableProps
     extends TableProps<IAccountsResource>,
