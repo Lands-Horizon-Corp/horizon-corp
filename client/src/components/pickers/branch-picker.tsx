@@ -9,7 +9,6 @@ import ImageDisplay from '@/components/image-display'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import MiniPaginationBar from '@/components/pagination-bars/mini-pagination-bar'
 
-
 import useFilterState from '@/hooks/use-filter-state'
 import { abbreviateUUID } from '@/utils/formatting-utils'
 import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
