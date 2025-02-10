@@ -63,6 +63,7 @@ import {
     PiMicrosoftExcelLogoFill as ExcelIcon,
     PiBuildingOffice as BuildingBranchIcon,
     PiListBulletsBold as ListBulletsBoldIcon,
+    PiGraduationCapFill as GraduationCapIcon,
     PiWarningCircleFill as WarningCircleIcon,
     PiTextStrikethroughLight as TextStrikethroughLightIcon,
 } from 'react-icons/pi'
@@ -300,6 +301,7 @@ export {
     CameraSelectIcon,
     SidebarRightIcon,
     BadgeQuestionIcon,
+    GraduationCapIcon,
     RotateBoxLeftIcon,
     ToolbarItalicIcon,
     ChevronsRightIcon,
