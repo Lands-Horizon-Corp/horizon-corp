@@ -545,7 +545,7 @@ const ImagePreviewContent = React.forwardRef<
                     imageRef.current.src = ImageToDownload.url
                 }
             }
-        }, [api, focusIndex])
+        }, [api, focusIndex, Images])
 
         const handleSelect = useCallback(() => {
             if (api) {

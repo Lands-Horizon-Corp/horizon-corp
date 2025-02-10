@@ -53,8 +53,7 @@ const AccountsComputationTypeTable = ({
 }: AccountsComputationTypeTableProps) => {
     // const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
-    const { sortingState, tableSorting, setTableSorting } =
-        useDataTableSorting()
+    const { tableSorting, setTableSorting } = useDataTableSorting()
 
     const columns = useMemo(
         () =>
