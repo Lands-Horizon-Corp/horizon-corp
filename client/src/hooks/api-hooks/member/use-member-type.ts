@@ -83,7 +83,7 @@ export const useUpdateMemberType = ({
     preloads = ['Owner', 'Media', 'Owner.Media'],
     onSuccess,
     onError,
-}: IOperationCallbacks<IMemberTypeResource> & IAPIPreloads) => {
+}: IOperationCallbacks<IMemberTypeResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<

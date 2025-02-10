@@ -4,7 +4,7 @@ import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { useDeleteMemberType } from '@/hooks/api-hooks/member/use-member-type'
-import { MemberTypeUpdateFormModal } from '@/components/forms/member-forms/member-type-update-form'
+import { MemberTypeCreateUpdateFormModal } from '@/components/forms/member-forms/member-type-create-update-form'
 
 interface IMemberTypeTableOwnerActionProps
     extends IMemberTypeTableActionComponentProp {
@@ -29,13 +29,15 @@ const MemberTypeTableOwnerAction = ({
     return (
         <>
             <div onClick={(e) => e.stopPropagation()}>
-                <MemberTypeUpdateFormModal
+                <MemberTypeCreateUpdateFormModal
                     formProps={{
                         memberTypeId: memberType.id,
                         defaultValues: {
                             ...memberType,
                         },
                     }}
+                    title="Update Member Type"
+                    description="Modify/Update members type..."
                     open={updateModalForm}
                     onOpenChange={setUpdateModalForm}
                 />
