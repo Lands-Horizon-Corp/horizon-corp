@@ -54,10 +54,10 @@ export default class ComputationTypeService {
     ): Promise<IAccountsComputationTypeResource> {
         const url = this.buildUrl('', { preloads })
         return this.makeRequest(() =>
-            APIService.post<IAccountsComputationTypeRequest, IAccountsComputationTypeResource>(
-                url,
-                computationTypeData
-            )
+            APIService.post<
+                IAccountsComputationTypeRequest,
+                IAccountsComputationTypeResource
+            >(url, computationTypeData)
         )
     }
 
@@ -79,10 +79,10 @@ export default class ComputationTypeService {
     ): Promise<IAccountsComputationTypeResource> {
         const url = this.buildUrl(`/${id}`, { preloads })
         return this.makeRequest(() =>
-            APIService.put<IAccountsComputationTypeRequest, IAccountsComputationTypeResource>(
-                url,
-                computationTypeData
-            )
+            APIService.put<
+                IAccountsComputationTypeRequest,
+                IAccountsComputationTypeResource
+            >(url, computationTypeData)
         )
     }
 
