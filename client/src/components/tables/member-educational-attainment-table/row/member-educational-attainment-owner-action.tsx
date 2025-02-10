@@ -3,6 +3,7 @@ import { IMemberEducationalAttainmentTableActionComponentProp } from '../columns
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { useDeleteMemberEducationalAttainment } from '@/hooks/api-hooks/member/use-member-educational-attainment'
+import { MemberEducationalAttainmentCreateUpdateFormModal } from '@/components/forms/member-forms/member-educational-attainment-create-update-form'
 // import { MemberEducationalAttainmentUpdateFormModal } from '@/components/forms/member-forms/member-educational-attainment-update-form'
 
 export interface IMemberEducationalAttainmentTableOwnerActionProps
@@ -15,7 +16,7 @@ const MemberEducationalAttainmentTableOwnerAction = ({
     row,
     onDeleteSuccess,
 }: IMemberEducationalAttainmentTableOwnerActionProps) => {
-    const [, setUpdateModalForm] = useState(false)
+    const [updateModalForm, setUpdateModalForm] = useState(false)
     const educationalAttainment = row.original
 
     const { onOpen } = useConfirmModalStore()
@@ -28,14 +29,16 @@ const MemberEducationalAttainmentTableOwnerAction = ({
     return (
         <>
             <div onClick={(e) => e.stopPropagation()}>
-                {/* <MemberEducationalAttainmentUpdateFormModal
+                <MemberEducationalAttainmentCreateUpdateFormModal
                     formProps={{
-                        attainmentId: educationalAttainment.id,
+                        memberEducationalAttainmentId: educationalAttainment.id,
                         defaultValues: { ...educationalAttainment },
                     }}
+                    title="Update Educational Attainment"
+                    description="Edit/Update educational attainment details"
                     open={updateModalForm}
                     onOpenChange={setUpdateModalForm}
-                /> */}
+                />
             </div>
             <RowActionsGroup
                 onDelete={{
