@@ -4,6 +4,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Path, useFieldArray, useForm } from 'react-hook-form'
 
 import {
+    XIcon,
+    PlusIcon,
+    TrashIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    VerifiedPatchIcon,
+} from '@/components/icons'
+import {
     Form,
     FormItem,
     FormLabel,
@@ -20,32 +28,26 @@ import {
 import { Input } from '@/components/ui/input'
 import { IForm } from '@/types/component/form'
 import { Button } from '@/components/ui/button'
+import TextEditor from '@/components/text-editor'
+import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
+import GenderSelect from '@/components/selects/gender-select'
+import BranchPicker from '@/components/pickers/branch-picker'
+import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import { PhoneInput } from '@/components/contact-input/contact-input'
+import MemberTypeSelect from '@/components/selects/member-type-select'
+import MemberEducationalAttainmentPicker from '@/components/comboboxes/member-educational-attainment-combobox'
 
 import { useCreateMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
 import { createMemberProfileSchema } from '@/validations/form-validation/member-schema'
 
-import {
-    XIcon,
-    PlusIcon,
-    TrashIcon,
-    VerifiedPatchIcon,
-    ChevronLeftIcon,
-    ChevronRightIcon,
-} from '@/components/icons'
-import TextEditor from '@/components/text-editor'
-import { Textarea } from '@/components/ui/textarea'
-import FormFieldWrapper from '@/components/ui/form-field-wrapper'
-import { PhoneInput } from '@/components/contact-input/contact-input'
-
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
-import useConfirmModalStore from '@/store/confirm-modal-store'
-import MemberTypeSelect from '@/components/selects/member-type-select'
 import { TFilterObject } from '@/contexts/filter-context'
+import useConfirmModalStore from '@/store/confirm-modal-store'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -68,10 +70,12 @@ const Steps: Step[] = [
             'passbookNumber',
             'oldReferenceId',
             'status',
+            'branchId',
             'isMutualFundMember',
             'isMicroFinanceMember',
             'contactNumber',
             'civilStatus',
+            'memberGenderId',
             'occupation',
             'businessAddress',
             'businessContact',
@@ -262,20 +266,30 @@ const MemberApplicationForm = ({
                                     <legend>Identification & Reference</legend>
                                     <Separator />
                                     <FormFieldWrapper
+                                        name="memberId"
+                                        control={form.control}
+                                        label="Member Account ID"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    id={field.name}
+                                                    placeholder="Member Account ID"
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
                                         name="memberTypeId"
                                         control={form.control}
                                         label="Member Type"
                                         hiddenFields={hiddenFields}
                                         render={({ field }) => (
                                             <FormControl>
-                                                {/* <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    placeholder="Member Type"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
-                                                /> */}
                                                 <MemberTypeSelect
                                                     {...field}
                                                     filter={
@@ -327,19 +341,19 @@ const MemberApplicationForm = ({
                                         )}
                                     />
                                     <FormFieldWrapper
-                                        name="memberId"
+                                        name="branchId"
                                         control={form.control}
-                                        label="Member Account ID"
+                                        label="Member Branch"
                                         hiddenFields={hiddenFields}
                                         render={({ field }) => (
                                             <FormControl>
-                                                <Input
+                                                <BranchPicker
                                                     {...field}
-                                                    id={field.name}
-                                                    placeholder="Member Account ID"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
+                                                    onSelect={(branch) =>
+                                                        field.onChange(
+                                                            branch.id
+                                                        )
+                                                    }
                                                 />
                                             </FormControl>
                                         )}
@@ -530,6 +544,34 @@ const MemberApplicationForm = ({
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
+                                        name="memberGenderId"
+                                        control={form.control}
+                                        label="Gender"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <GenderSelect
+                                                {...field}
+                                                onChange={(gender) =>
+                                                    field.onChange(gender.id)
+                                                }
+                                            />
+                                        )}
+                                    />
+                                    <FormFieldWrapper
+                                        name="memberEducationalAttainmentId"
+                                        control={form.control}
+                                        label="Educational Attainment"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <MemberEducationalAttainmentPicker
+                                                {...field}
+                                                onChange={(selected) =>
+                                                    field.onChange(selected.id)
+                                                }
+                                            />
                                         )}
                                     />
                                     <FormFieldWrapper

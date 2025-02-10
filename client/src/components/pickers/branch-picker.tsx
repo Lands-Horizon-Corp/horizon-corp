@@ -44,6 +44,7 @@ const BranchPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
             filterPayload: finalFilterPayload,
             pagination,
             enabled: !disabled,
+            showMessage: false,
         })
 
     const selectedBranch = data.data.find((branch) => branch.id === value)
