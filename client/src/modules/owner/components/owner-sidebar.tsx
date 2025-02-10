@@ -3,6 +3,7 @@ import {
     UserIcon,
     ShieldIcon,
     Users3Icon,
+    UserCogIcon,
     GendersIcon,
     ReportsIcon,
     BuildingIcon,
@@ -14,8 +15,8 @@ import {
     UserShieldIcon,
     BuildingCogIcon,
     NotificationIcon,
+    GraduationCapIcon,
     BuildingBranchIcon,
-    UserCogIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
@@ -52,6 +53,11 @@ const ownerSidebarItem: TSidebarItem[] = [
                         text: 'Member Types',
                         url: '/member-types',
                         Icon: UserCogIcon,
+                    },
+                    {
+                        text: 'Educational Attainments',
+                        url: '/member-educational-attainments',
+                        Icon: GraduationCapIcon,
                     },
                 ],
             },
