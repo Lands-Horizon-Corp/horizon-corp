@@ -26,8 +26,7 @@ export type TOtherAccountInformation =
     | 'Grocery'
     | 'Track Loan Ded'
     | 'CIB/CIK Acct.'
-    | 'COH Acct.';
-
+    | 'COH Acct.'
 
 export interface IAccountsRequest {
     id: TEntityId
@@ -60,7 +59,6 @@ export interface IAccountsRequest {
     earnedUnearnedInterest?: TEarnedUnearnedInterest
     otherInformationOfAnAccount?: TOtherAccountInformation
 }
-    
 
 export interface IAccountsResource extends ITimeStamps {
     id: TEntityId

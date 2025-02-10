@@ -17,4 +17,18 @@ export interface IAPIPreloads {
 
 export interface IQueryProps {
     enabled?: boolean
+    showMessage?: boolean
 }
+
+export interface IMutationProps {
+    showMessage?: boolean
+}
+
+export interface IAPIHook<TData = unknown, TError = unknown>
+    extends IOperationCallbacks<TData, TError>,
+        IAPIPreloads {}
+
+export interface IAPIFilteredPaginatedHook<TData = unknown, TError = unknown>
+    extends IQueryProps,
+        IOperationCallbacks<TData, TError>,
+        IFilterPaginatedHookProps {}
