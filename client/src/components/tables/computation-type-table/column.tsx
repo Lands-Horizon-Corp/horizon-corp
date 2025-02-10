@@ -12,17 +12,20 @@ import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters
 import { toReadableDate } from '@/utils'
 import { IAccountsComputationTypeResource } from '@/server/types/accounts/computation-type'
 
-export const accountComputationTypeGlobalSearchTargets: IGlobalSearchTargets<IAccountsComputationTypeResource>[] = [
-    { field: 'name', displayText: 'Name' },
-    { field: 'description', displayText: 'Description' },
-]
+export const accountComputationTypeGlobalSearchTargets: IGlobalSearchTargets<IAccountsComputationTypeResource>[] =
+    [
+        { field: 'name', displayText: 'Name' },
+        { field: 'description', displayText: 'Description' },
+    ]
 
 export interface IAccountsComputationTypeTableActionComponentProp {
     row: Row<IAccountsComputationTypeResource>
 }
 
 export interface IAccountsComputationTypeTableColumnProps {
-    actionComponent?: (props: IAccountsComputationTypeTableActionComponentProp) => ReactNode
+    actionComponent?: (
+        props: IAccountsComputationTypeTableActionComponentProp
+    ) => ReactNode
 }
 
 const AccountsComputationTypeTableColumns = (

@@ -16,10 +16,11 @@ export const AccountsComputationTypeRequestSchema = z.object({
 })
 
 // Resource Schema (Extends Request + Timestamps + Created/Updated By)
-export const AccountsComputationTypeResourceSchema = AccountsComputationTypeRequestSchema.extend({
-    createdBy: z.string(),
-    updatedBy: z.string(),
-}).merge(TimeStampsSchema)
+export const AccountsComputationTypeResourceSchema =
+    AccountsComputationTypeRequestSchema.extend({
+        createdBy: z.string(),
+        updatedBy: z.string(),
+    }).merge(TimeStampsSchema)
 
 // Paginated Response Schema
 export const AccountsComputationTypePaginatedResourceSchema = z.object({

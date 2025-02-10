@@ -12,7 +12,6 @@ import DataTableToolbar, {
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 
-
 import { cn } from '@/lib'
 import { usePagination } from '@/hooks/use-pagination'
 import useDatableFilterState from '@/hooks/use-filter-state'
@@ -21,9 +20,14 @@ import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
 import { TableProps } from '../types'
-import AccountsComputationTypeTableColumns, { IAccountsComputationTypeTableColumnProps } from './column'
+import AccountsComputationTypeTableColumns, {
+    IAccountsComputationTypeTableColumnProps,
+} from './column'
 import { genderGlobalSearchTargets } from '../genders-table/columns'
-import { dummyAccountComputationTypeData, IAccountsComputationTypeResource } from '@/server/types/accounts/computation-type'
+import {
+    dummyAccountComputationTypeData,
+    IAccountsComputationTypeResource,
+} from '@/server/types/accounts/computation-type'
 
 export interface AccountsComputationTypeTableProps
     extends TableProps<IAccountsComputationTypeResource>,
@@ -91,7 +95,9 @@ const AccountsComputationTypeTable = ({
     //     filterPayload: filterState.finalFilterPayload,
     // })
 
-    const handleRowSelectionChange = createHandleRowSelectionChange(dummyAccountComputationTypeData)
+    const handleRowSelectionChange = createHandleRowSelectionChange(
+        dummyAccountComputationTypeData
+    )
 
     const table = useReactTable({
         columns,

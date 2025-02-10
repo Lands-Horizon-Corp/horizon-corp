@@ -93,8 +93,7 @@ const AccountsTable = ({
         filterPayload: filterState.finalFilterPayload,
     })
 
-    const handleRowSelectionChange =
-        createHandleRowSelectionChange(data)
+    const handleRowSelectionChange = createHandleRowSelectionChange(data)
 
     const table = useReactTable({
         columns,

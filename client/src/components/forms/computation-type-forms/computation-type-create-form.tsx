@@ -22,7 +22,9 @@ import { useCreateComputationType } from '@/hooks/api-hooks/accounting/use-compu
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/components/ui/form-error-message'
 
-type TComputationTypeCreateForm = z.infer<typeof AccountsComputationTypeRequestSchema>
+type TComputationTypeCreateForm = z.infer<
+    typeof AccountsComputationTypeRequestSchema
+>
 
 interface IComputationTypeCreateFormProps
     extends IBaseCompNoChild,
@@ -58,7 +60,7 @@ const ComputationTypeCreateForm = ({
         },
         onError: (err) => {
             onError?.(err as string)
-        }
+        },
     })
 
     return (
@@ -81,7 +83,10 @@ const ComputationTypeCreateForm = ({
                             <FormItem className="space-y-1">
                                 <FormLabel>Name</FormLabel>
                                 <FormControl>
-                                    <Input {...field} placeholder="Enter Name" />
+                                    <Input
+                                        {...field}
+                                        placeholder="Enter Name"
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -94,7 +99,10 @@ const ComputationTypeCreateForm = ({
                             <FormItem className="space-y-1">
                                 <FormLabel>Description</FormLabel>
                                 <FormControl>
-                                    <Input {...field} placeholder="Enter Description" />
+                                    <Input
+                                        {...field}
+                                        placeholder="Enter Description"
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -141,7 +149,9 @@ export const ComputationTypeCreateFormModal = ({
             className={cn('sm:max-w-full lg:max-w-3xl', className)}
             {...props}
         >
-            <ComputationTypeCreateForm {...(formProps as IComputationTypeCreateFormProps)} />
+            <ComputationTypeCreateForm
+                {...(formProps as IComputationTypeCreateFormProps)}
+            />
         </Modal>
     )
 }

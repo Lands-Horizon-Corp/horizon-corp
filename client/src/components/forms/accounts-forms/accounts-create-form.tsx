@@ -29,7 +29,12 @@ import { Separator } from '@/components/ui/separator'
 import { IBaseCompNoChild } from '@/types'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/components/ui/form-error-message'
-import { AccountRequestSchema, TAccountingAccountsEnum, TOtherAccountInformationEnum, TEarnedUnearnedInterestEnum } from '@/validations/form-validation/accounts-schema'
+import {
+    AccountRequestSchema,
+    TAccountingAccountsEnum,
+    TOtherAccountInformationEnum,
+    TEarnedUnearnedInterestEnum,
+} from '@/validations/form-validation/accounts-schema'
 import { useCreateAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
 
 type TAccountsCreateForm = z.infer<typeof AccountRequestSchema>
@@ -93,7 +98,7 @@ const AccountsCreateForm = ({
         },
         onError: (err) => {
             onError?.(err as string)
-        }
+        },
     })
 
     return (
@@ -425,7 +430,7 @@ const AccountsCreateForm = ({
                                 ))}
                             </div>
 
-                            <div className="flex w-full items-start flex-col justify-start  py-5">
+                            <div className="flex w-full flex-col items-start justify-start py-5">
                                 {(
                                     [
                                         { label: 'Print', value: 'print' },

@@ -8,12 +8,12 @@ const AccountsComputationPage = () => {
 
     return (
         <PageContainer>
-         <ComputationTypeCreateFormModal
-         open={createModal}
-         onOpenChange={setCreateModal}
-         className='w-[30rem]'
-         />
-            
+            <ComputationTypeCreateFormModal
+                open={createModal}
+                onOpenChange={setCreateModal}
+                className="w-[30rem]"
+            />
+
             <AccountsComputationTypeTable
                 toolbarProps={{
                     createActionProps: {
