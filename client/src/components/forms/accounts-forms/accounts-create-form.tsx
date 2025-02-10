@@ -1,6 +1,6 @@
 import Modal, { IModalProps } from '@/components/modals/modal'
 import { cn } from '@/lib'
-import { IAccountRequest } from '@/server/types/accounts/accounts'
+import { IAccountsRequest } from '@/server/types/accounts/accounts'
 import { IForm } from '@/types/component/form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -13,12 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select'
-import {
-    AccountRequestSchema,
-    TAccountingAccountsEnum,
-    TEarnedUnearnedInterestEnum,
-    TOtherAccountInformationEnum,
-} from '@/validations/form-validation/accounts-schema'
+
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import {
@@ -32,17 +27,22 @@ import {
 import { useForm } from 'react-hook-form'
 import { Separator } from '@/components/ui/separator'
 import { IBaseCompNoChild } from '@/types'
+import { useCreateAccounts } from '@/hooks/api-hooks/use-accounting'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
+import FormErrorMessage from '@/components/ui/form-error-message'
+import { AccountRequestSchema, TAccountingAccountsEnum, TOtherAccountInformationEnum, TEarnedUnearnedInterestEnum } from '@/validations/form-validation/accounts-schema'
 
 type TAccountsCreateForm = z.infer<typeof AccountRequestSchema>
 
 interface IAccountsCreateFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IAccountRequest>, unknown, string> {}
+        IForm<Partial<IAccountsRequest>, unknown, string> {}
 
 const AccountsCreateForm = ({
     readOnly,
     className,
     onSuccess,
+    onError,
 }: IAccountsCreateFormProps) => {
     const form = useForm<TAccountsCreateForm>({
         resolver: zodResolver(AccountRequestSchema),
@@ -81,12 +81,27 @@ const AccountsCreateForm = ({
         },
     })
 
+    const {
+        isPending: isCreating,
+        mutate: createAccount,
+        error,
+        reset,
+    } = useCreateAccounts({
+        onSuccess: (data) => {
+            onSuccess?.(data)
+            form.reset()
+        },
+        onError: (err) => {
+            onError?.(err as string)
+        }
+    })
+
     return (
         <Form {...form}>
             <Separator />
             <form
                 onSubmit={form.handleSubmit((formData) => {
-                    onSuccess?.(formData)
+                    createAccount(formData)
                 })}
                 className={cn('flex w-full flex-col gap-y-6', className)}
             >
@@ -117,7 +132,38 @@ const AccountsCreateForm = ({
                                 </FormItem>
                             )}
                         />
-
+                        <FormField
+                            name="type"
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem className="col-span-1 space-y-1">
+                                    <FormLabel>Account Type</FormLabel>
+                                    <FormControl>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Account Type" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {TAccountingAccountsEnum.options.map(
+                                                    (option) => (
+                                                        <SelectItem
+                                                            key={option}
+                                                            value={option}
+                                                        >
+                                                            {option}
+                                                        </SelectItem>
+                                                    )
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                         <FormField
                             name="description"
                             control={form.control}
@@ -155,82 +201,6 @@ const AccountsCreateForm = ({
                                 </FormItem>
                             )}
                         />
-                    </fieldset>
-
-                    {/* Account Type & Related Info */}
-                    <fieldset className="space-y-3">
-                        <legend className="text-lg font-semibold text-secondary-foreground">
-                            Account Type & Information
-                        </legend>
-
-                        <FormField
-                            name="type"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel>Account Type</FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select Account Type" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {TAccountingAccountsEnum.options.map(
-                                                    (option) => (
-                                                        <SelectItem
-                                                            key={option}
-                                                            value={option}
-                                                        >
-                                                            {option}
-                                                        </SelectItem>
-                                                    )
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            name="earnedUnearnedInterest"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel>
-                                        Earned/Unearned Interest
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Select
-                                            onValueChange={field.onChange}
-                                            defaultValue={field.value}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Select Earned/Unearned Interest" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                {TEarnedUnearnedInterestEnum.options.map(
-                                                    (option) => (
-                                                        <SelectItem
-                                                            key={option}
-                                                            value={option}
-                                                        >
-                                                            {option}
-                                                        </SelectItem>
-                                                    )
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
-                            )}
-                        />
-
                         <FormField
                             name="otherInformationOfAnAccount"
                             control={form.control}
@@ -266,85 +236,37 @@ const AccountsCreateForm = ({
                             )}
                         />
                     </fieldset>
-
-                    {/* Boolean Settings */}
-                    {/* <fieldset className="space-y-3">
-                        <legend className="text-lg font-semibold text-secondary-foreground">
-                            Settings
-                        </legend>
-                    </fieldset> */}
-
                     {/* Financial Details */}
                     <fieldset className="space-y-3">
                         <legend className="text-lg font-semibold text-secondary-foreground">
-                            Financial Details
-                        </legend>
-
-                        {(
-                            [
-                                'finesAmort',
-                                'finesMaturity',
-                                'interestStandard',
-                                'interestSecured',
-                            ] as const
-                        ).map((fieldName) => (
-                            <FormField
-                                key={fieldName}
-                                name={fieldName}
-                                control={form.control}
-                                render={({ field }) => (
-                                    <FormItem className="col-span-1 space-y-1">
-                                        <FormLabel>
-                                            {fieldName
-                                                .replace(/([A-Z])/g, ' $1')
-                                                .replace(/^./, (str) =>
-                                                    str.toUpperCase()
-                                                )}
-                                        </FormLabel>
-                                        <FormControl>
-                                            <Input
-                                                type="number"
-                                                {...field}
-                                                placeholder={`Enter ${fieldName}`}
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )}
-                            />
-                        ))}
-                    </fieldset>
-
-                    {/* Additional Settings */}
-                    <fieldset className="col-span-3 flex items-center justify-between">
-                        <legend className="text-lg font-semibold text-secondary-foreground">
-                            Additional Settings
+                            Financial Loans Details
                         </legend>
                         <FormField
-                            name="finesGpMaturity"
+                            name="computationType"
                             control={form.control}
                             render={({ field }) => (
                                 <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel>Fines GP Maturity</FormLabel>
+                                    <FormLabel>Computation type</FormLabel>
                                     <FormControl>
                                         <Input
-                                            type="number"
                                             {...field}
-                                            placeholder="Enter Fines GP Maturity"
+                                            placeholder="Enter computation type"
                                         />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
                             )}
                         />
-                        <div className="flex w-full items-center justify-start space-x-5 p-5">
+                        <fieldset className="grid grid-cols-2 gap-2">
                             {(
                                 [
-                                    'print',
-                                    'addOn',
-                                    'allowRebate',
-                                    'taxable',
-                                    'noGracePeriodDaily',
+                                    'finesAmort',
+                                    'finesMaturity',
+                                    'interestStandard',
+                                    'interestSecured',
+                                    'finesGpAmort',
+                                    'schemeNo',
+                                    'altCode',
                                 ] as const
                             ).map((fieldName) => (
                                 <FormField
@@ -352,35 +274,218 @@ const AccountsCreateForm = ({
                                     name={fieldName}
                                     control={form.control}
                                     render={({ field }) => (
-                                        <FormItem className="flex flex-row items-center space-x-2">
-                                            <FormControl className="">
-                                                <Checkbox
-                                                    checked={field.value}
-                                                    onCheckedChange={
-                                                        field.onChange
-                                                    }
+                                        <FormItem className="">
+                                            <FormLabel>
+                                                {fieldName
+                                                    .replace(/([A-Z])/g, ' $1')
+                                                    .replace(/^./, (str) =>
+                                                        str.toUpperCase()
+                                                    )}
+                                            </FormLabel>
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    placeholder={`Enter ${fieldName}`}
                                                 />
                                             </FormControl>
-                                            <FormLabel className="-translate-y-1 text-sm font-medium text-secondary-foreground">
-                                                {fieldName
-                                                    .charAt(0)
-                                                    .toUpperCase() +
-                                                    fieldName.slice(1)}
-                                            </FormLabel>
+                                            <FormMessage />
                                         </FormItem>
                                     )}
                                 />
                             ))}
-                        </div>
+                            <FormField
+                                name="addtlGp"
+                                control={form.control}
+                                render={({ field }) => (
+                                    <FormItem className="col-span-1 space-y-1">
+                                        <FormLabel>Additional G. P.</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                {...field}
+                                                placeholder="Enter additional G. P."
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </fieldset>
+                        <FormField
+                            name="earnedUnearnedInterest"
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem className="col-span-1 space-y-1">
+                                    <FormLabel>
+                                        Earned/Unearned Interest
+                                    </FormLabel>
+                                    <FormControl>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Select Earned/Unearned Interest" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {TEarnedUnearnedInterestEnum.options.map(
+                                                    (option) => (
+                                                        <SelectItem
+                                                            key={option}
+                                                            value={option}
+                                                        >
+                                                            {option}
+                                                        </SelectItem>
+                                                    )
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
                     </fieldset>
+                    {/* Deposit Details */}
+                    <fieldset className="space-y-3">
+                        <legend className="text-lg font-semibold text-secondary-foreground">
+                            Deposit Details
+                        </legend>
+                        <FormField
+                            key={'maxAmount'}
+                            name={'maxAmount'}
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem className="col-span-1 space-y-1">
+                                    <FormLabel>max Amount</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            placeholder={`Enter max Amount`}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            key={'minAmount'}
+                            name={'minAmount'}
+                            control={form.control}
+                            render={({ field }) => (
+                                <FormItem className="col-span-1 space-y-1">
+                                    <FormLabel>min Amount</FormLabel>
+                                    <FormControl>
+                                        <Input
+                                            {...field}
+                                            placeholder={`Enter min Amount`}
+                                        />
+                                    </FormControl>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                        <fieldset className="col-span-3 flex w-full flex-col items-center justify-start">
+                            <legend className="text-lg font-semibold text-secondary-foreground">
+                                Additional Settings
+                            </legend>
+                            <div className="flex w-full justify-start space-x-2">
+                                {(
+                                    [
+                                        'headerRow',
+                                        'centerRow',
+                                        'totalRow',
+                                    ] as const
+                                ).map((fieldName) => (
+                                    <FormField
+                                        key={fieldName}
+                                        name={fieldName}
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem className="col-span-1 space-y-1">
+                                                <FormLabel>
+                                                    {fieldName
+                                                        .replace(
+                                                            /([A-Z])/g,
+                                                            ' $1'
+                                                        )
+                                                        .replace(/^./, (str) =>
+                                                            str.toUpperCase()
+                                                        )}
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        placeholder={`Enter ${fieldName}`}
+                                                    />
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+                                ))}
+                            </div>
+
+                            <div className="flex w-full items-start flex-col justify-start  py-5">
+                                {(
+                                    [
+                                        { label: 'Print', value: 'print' },
+                                        { label: 'Add On', value: 'addOn' },
+                                        {
+                                            label: 'Allow Rebate',
+                                            value: 'allowRebate',
+                                        },
+                                        { label: 'Taxable', value: 'taxable' },
+                                        {
+                                            label: 'No Grace Period Daily',
+                                            value: 'noGracePeriodDaily',
+                                        },
+                                    ] as const
+                                ).map((fieldName) => (
+                                    <FormField
+                                        key={fieldName.value}
+                                        name={fieldName.value}
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem className="flex flex-row items-center space-x-2">
+                                                <FormControl className="">
+                                                    <Checkbox
+                                                        checked={field.value}
+                                                        onCheckedChange={
+                                                            field.onChange
+                                                        }
+                                                    />
+                                                </FormControl>
+                                                <FormLabel className="-translate-y-1 text-sm font-medium text-secondary-foreground">
+                                                    {fieldName.label}
+                                                </FormLabel>
+                                            </FormItem>
+                                        )}
+                                    />
+                                ))}
+                            </div>
+                        </fieldset>
+                    </fieldset>
+                    {/* Account Type & Related Info */}
+                    {/* Boolean Settings */}
+                    {/* <fieldset className="space-y-3">
+                        <legend className="text-lg font-semibold text-secondary-foreground">
+                            Settings
+                        </legend>
+                    </fieldset> */}
+
+                    {/* Additional Settings */}
                 </fieldset>
+                <FormErrorMessage errorMessage={error} />
                 <div>
                     {/* <Separator className="my-2 sm:my-4" /> */}
                     <div className="flex items-center justify-end gap-x-2">
                         <Button
                             type="button"
                             variant="ghost"
-                            onClick={() => form.reset()}
+                            onClick={() => {
+                                form.reset()
+                                reset()
+                            }}
                             className="w-full self-end px-8 sm:w-fit"
                         >
                             Reset
@@ -390,8 +495,7 @@ const AccountsCreateForm = ({
                             disabled={false}
                             className="w-full self-end px-8 sm:w-fit"
                         >
-                            Create
-                            {/* {isCreating ? <LoadingSpinner /> : 'Create'} */}
+                            {isCreating ? <LoadingSpinner /> : 'Create'}
                         </Button>
                     </div>
                 </div>
