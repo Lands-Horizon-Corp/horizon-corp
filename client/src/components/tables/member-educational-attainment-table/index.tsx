@@ -1,37 +1,40 @@
-import DataTable from '@/components/data-table'
-import DataTablePagination from '@/components/data-table/data-table-pagination'
-import DataTableToolbar, {
-    IDataTableToolbarProps,
-} from '@/components/data-table/data-table-toolbar'
-import FilterContext from '@/contexts/filter-context/filter-context'
-import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
-import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
-import { usePagination } from '@/hooks/use-pagination'
-import { cn } from '@/lib'
-import { IAccountsResource } from '@/server/types/accounts/accounts'
-// import { useQueryClient } from "@tanstack/react-query";
+// tables/member-educational-attainment/index.tsx
 import {
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
 import { useMemo } from 'react'
-import { TableProps } from '../types'
-import useDatableFilterState from '@/hooks/use-filter-state'
+import { useQueryClient } from '@tanstack/react-query'
 
-import accountTableColumns, {
-    accountsGlobalSearchTargets,
-    IAccountsTableColumnProps,
+import DataTable from '@/components/data-table'
+import DataTableToolbar, {
+    IDataTableToolbarProps,
+} from '@/components/data-table/data-table-toolbar'
+import DataTablePagination from '@/components/data-table/data-table-pagination'
+
+import memberEducationalAttainmentTableColumns, {
+    IMemberEducationalAttainmentTableColumnProps,
+    memberEducationalAttainmentGlobalSearchTargets,
 } from './columns'
-import { DummyAccountsData } from './dummy-accounts'
-// import { useQueryClient } from '@tanstack/react-query'
-import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
 
-export interface AccountsTableProps
-    extends TableProps<IAccountsResource>,
-        IAccountsTableColumnProps {
+import { cn } from '@/lib'
+import { usePagination } from '@/hooks/use-pagination'
+import useDatableFilterState from '@/hooks/use-filter-state'
+import FilterContext from '@/contexts/filter-context/filter-context'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
+
+import { TableProps } from '../types'
+import { IMemberEducationalAttainmentResource } from '@/server/types'
+import MemberEducationalAttainmentService from '@/server/api-service/member-services/member-educational-attainment'
+import { useFilteredPaginatedMemberEducationalAttainments } from '@/hooks/api-hooks/member/use-member-educational-attainment'
+
+export interface MemberEducationalAttainmentTableProps
+    extends TableProps<IMemberEducationalAttainmentResource>,
+        IMemberEducationalAttainmentTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<IAccountsResource>,
+        IDataTableToolbarProps<IMemberEducationalAttainmentResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -42,21 +45,21 @@ export interface AccountsTableProps
     >
 }
 
-const AccountsTable = ({
+const MemberEducationalAttainmentTable = ({
     className,
     toolbarProps,
     defaultFilter,
     onSelectData,
     actionComponent,
-}: AccountsTableProps) => {
-    // const queryClient = useQueryClient()
+}: MemberEducationalAttainmentTableProps) => {
+    const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
-    const { tableSorting, setTableSorting, sortingState } =
+    const { sortingState, tableSorting, setTableSorting } =
         useDataTableSorting()
 
     const columns = useMemo(
         () =>
-            accountTableColumns({
+            memberEducationalAttainmentTableColumns({
                 actionComponent,
             }),
         [actionComponent]
@@ -72,7 +75,7 @@ const AccountsTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<IAccountsResource>({
+    } = useDataTableState<IMemberEducationalAttainmentResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
@@ -87,7 +90,7 @@ const AccountsTable = ({
         isRefetching,
         data: { data, totalPage, pageSize, totalSize },
         refetch,
-    } = useFilteredPaginatedAccounts({
+    } = useFilteredPaginatedMemberEducationalAttainments({
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
@@ -97,7 +100,7 @@ const AccountsTable = ({
 
     const table = useReactTable({
         columns,
-        data: DummyAccountsData,
+        data: data,
         initialState: {
             columnPinning: { left: ['select'] },
         },
@@ -128,15 +131,27 @@ const AccountsTable = ({
         <FilterContext.Provider value={filterState}>
             <div className={cn('flex h-full flex-col gap-y-2', className)}>
                 <DataTableToolbar
-                    className=""
                     globalSearchProps={{
                         defaultMode: 'equal',
-                        targets: accountsGlobalSearchTargets,
+                        targets: memberEducationalAttainmentGlobalSearchTargets,
                     }}
                     table={table}
                     refreshActionProps={{
                         onClick: () => refetch(),
                         isLoading: isPending || isRefetching,
+                    }}
+                    deleteActionProps={{
+                        onDeleteSuccess: () =>
+                            queryClient.invalidateQueries({
+                                queryKey: [
+                                    'member-educational-attainment',
+                                    'resource-query',
+                                ],
+                            }),
+                        onDelete: (selectedData) =>
+                            MemberEducationalAttainmentService.deleteMany(
+                                selectedData.map((data) => data.id)
+                            ),
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
@@ -144,16 +159,16 @@ const AccountsTable = ({
                         isLoading: isPending,
                         filters: filterState.finalFilterPayload,
                         disabled: isPending || isRefetching,
-                        // exportAll: AccountService.exportAll,
-                        // exportAllFiltered: AccountService.exportAllFiltered,
-                        // exportCurrentPage: (ids) =>
-                        //     AccountService.exportSelected(
-                        //         ids.map((data) => data.id)
-                        //     ),
-                        // exportSelected: (ids) =>
-                        //     AccountService.exportSelected(
-                        //         ids.map((data) => data.id)
-                        //     ),
+                        exportAll: MemberEducationalAttainmentService.exportAll,
+                        // exportAllFiltered: MemberEducationalAttainmentService.exportAllFiltered,
+                        exportCurrentPage: (ids) =>
+                            MemberEducationalAttainmentService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
+                        exportSelected: (ids) =>
+                            MemberEducationalAttainmentService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
                     }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,
@@ -175,4 +190,4 @@ const AccountsTable = ({
     )
 }
 
-export default AccountsTable
+export default MemberEducationalAttainmentTable

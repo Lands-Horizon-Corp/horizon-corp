@@ -1,4 +1,4 @@
-import { IAccountResource } from '@/server/types/accounts/accounts'
+import { IAccountsResource } from '@/server/types/accounts/accounts'
 
 export const TAccountingAccounts = [
     'Deposit',
@@ -39,7 +39,7 @@ const generateRandomId = (length = 12) => {
     ).join('')
 }
 
-export const generateDummyAccounts = (count: number): IAccountResource[] => {
+export const generateDummyAccounts = (count: number): IAccountsResource[] => {
     return Array.from({ length: count }, () => ({
         id: generateRandomId(),
         companyId: generateRandomId(),
