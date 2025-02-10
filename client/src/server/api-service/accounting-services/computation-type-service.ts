@@ -1,17 +1,17 @@
 import {
-    IAccountsPaginatedResource,
-    IAccountsRequest,
-    IAccountsResource,
-} from '../types/accounts/accounts'
+    IAccountsComputationTypePaginatedResource,
+    IAccountsComputationTypeRequest,
+    IAccountsComputationTypeResource,
+} from '../../types/accounts/computation-type'
 import qs from 'query-string'
-import APIService from './api-service'
-import { TEntityId } from '../types'
+import APIService from '../api-service'
+import { TEntityId } from '../../types'
 
 /**
- * Service class to handle CRUD operations for Accounts.
+ * Service class to handle CRUD operations for Computation Types.
  */
-export default class AccountsService {
-    private static readonly BASE_ENDPOINT = '/account'
+export default class ComputationTypeService {
+    private static readonly BASE_ENDPOINT = '/computation-type'
 
     /**
      * Constructs the request URL with optional preloads.
@@ -36,32 +36,33 @@ export default class AccountsService {
                 query: {
                     sort,
                     preloads,
-                    filters, // Spread filters to ensure dynamic query keys
+                    filters,
                     pageIndex: pagination?.pageIndex,
                     pageSize: pagination?.pageSize,
                 },
             },
-            { skipNull: true, skipEmptyString: true } // Avoid sending empty strings or nulls
+            { skipNull: true, skipEmptyString: true }
         )
     }
+
     /**
-     * Creates a new account.
+     * Creates a new computation type.
      */
     public static async create(
-        accountsData: IAccountsRequest,
+        computationTypeData: IAccountsComputationTypeRequest,
         preloads?: string[]
-    ): Promise<IAccountsResource> {
+    ): Promise<IAccountsComputationTypeResource> {
         const url = this.buildUrl('', { preloads })
         return this.makeRequest(() =>
-            APIService.post<IAccountsRequest, IAccountsResource>(
+            APIService.post<IAccountsComputationTypeRequest, IAccountsComputationTypeResource>(
                 url,
-                accountsData
+                computationTypeData
             )
         )
     }
 
     /**
-     * Deletes an account by ID.
+     * Deletes a computation type by ID.
      */
     public static async delete(id: TEntityId): Promise<void> {
         const url = this.buildUrl(`/${id}`, {})
@@ -69,23 +70,26 @@ export default class AccountsService {
     }
 
     /**
-     * Updates an account by ID.
+     * Updates a computation type by ID.
      */
     public static async update(
         id: TEntityId,
-        accountData: IAccountsRequest,
+        computationTypeData: IAccountsComputationTypeRequest,
         preloads?: string[]
-    ): Promise<IAccountsResource> {
+    ): Promise<IAccountsComputationTypeResource> {
         const url = this.buildUrl(`/${id}`, { preloads })
         return this.makeRequest(() =>
-            APIService.put<IAccountsRequest, IAccountsResource>(
+            APIService.put<IAccountsComputationTypeRequest, IAccountsComputationTypeResource>(
                 url,
-                accountData
+                computationTypeData
             )
         )
     }
 
-    public static async getAccounts({
+    /**
+     * Fetches computation types with optional filters, preloads, sorting, and pagination.
+     */
+    public static async getComputationTypes({
         sort,
         filters,
         preloads,
@@ -99,7 +103,7 @@ export default class AccountsService {
         const url = this.buildUrl(``, { filters, preloads, pagination, sort })
 
         return this.makeRequest(() =>
-            APIService.get<IAccountsPaginatedResource>(url)
+            APIService.get<IAccountsComputationTypePaginatedResource>(url)
         )
     }
 

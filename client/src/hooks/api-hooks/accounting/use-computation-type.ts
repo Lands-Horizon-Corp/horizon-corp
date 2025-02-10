@@ -7,25 +7,25 @@ import {
     IAPIPreloads,
     IFilterPaginatedHookProps,
     IQueryProps,
-} from './types'
+} from '../types'
 import {
-    IAccountsPaginatedResource,
-    IAccountsRequest,
-    IAccountsResource,
-} from '@/server/types/accounts/accounts'
-import AccountsService from '@/server/api-service/owner-accounts-service'
+    IAccountsComputationTypePaginatedResource,
+    IAccountsComputationTypeRequest,
+    IAccountsComputationTypeResource,
+} from '@/server/types/accounts/computation-type'
+import ComputationTypeService from '@/server/api-service/accounting-services/computation-type-service'
 import { TEntityId } from '@/server/types'
 
-export const useFilteredPaginatedAccounts = ({
+export const useFilteredPaginatedComputationTypes = ({
     sort,
     enabled,
     filterPayload,
     preloads,
     pagination = { pageSize: 20, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
-    return useQuery<IAccountsPaginatedResource, string>({
+    return useQuery<IAccountsComputationTypePaginatedResource, string>({
         queryKey: [
-            'accounts',
+            'computation-types',
             'resource-query',
             filterPayload,
             pagination,
@@ -33,7 +33,7 @@ export const useFilteredPaginatedAccounts = ({
         ],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
-                AccountsService.getAccounts({
+                ComputationTypeService.getComputationTypes({
                     preloads,
                     pagination,
                     sort: sort && toBase64(sort),
@@ -61,17 +61,17 @@ export const useFilteredPaginatedAccounts = ({
     })
 }
 
-export const useDeleteAccounts = ({
+export const useDeleteComputationType = ({
     onSuccess,
     onError,
 }: undefined | IOperationCallbacks<undefined> = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, TEntityId>({
-        mutationKey: ['accounts', 'delete'],
-        mutationFn: async (accountsId) => {
+        mutationKey: ['computation-types', 'delete'],
+        mutationFn: async (computationTypeId) => {
             const [error] = await withCatchAsync(
-                AccountsService.delete(accountsId)
+                ComputationTypeService.delete(computationTypeId)
             )
 
             if (error) {
@@ -82,34 +82,34 @@ export const useDeleteAccounts = ({
             }
 
             queryClient.invalidateQueries({
-                queryKey: ['accounts', 'resource-query'],
+                queryKey: ['computation-types', 'resource-query'],
             })
 
             queryClient.invalidateQueries({
-                queryKey: ['accounts', accountsId],
+                queryKey: ['computation-types', computationTypeId],
             })
             queryClient.removeQueries({
-                queryKey: ['accounts', 'loader', accountsId],
+                queryKey: ['computation-types', 'loader', computationTypeId],
             })
 
-            toast.success('accounts deleted')
+            toast.success('Computation type deleted')
             onSuccess?.(undefined)
         },
     })
 }
 
-export const useCreateAccounts = ({
+export const useCreateComputationType = ({
     preloads = [],
     onError,
     onSuccess,
-}: IOperationCallbacks<IAccountsResource> & IAPIPreloads) => {
+}: IOperationCallbacks<IAccountsComputationTypeResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, IAccountsRequest>({
-        mutationKey: ['accounts', 'create'],
-        mutationFn: async (newAccountData) => {
+    return useMutation<void, string, IAccountsComputationTypeRequest>({
+        mutationKey: ['computation-types', 'create'],
+        mutationFn: async (newComputationTypeData) => {
             const [error, data] = await withCatchAsync(
-                AccountsService.create(newAccountData, preloads)
+                ComputationTypeService.create(newComputationTypeData, preloads)
             )
 
             if (error) {
@@ -119,41 +119,41 @@ export const useCreateAccounts = ({
                 throw errorMessage
             }
 
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', data.id],
+            queryClient.setQueryData<IAccountsComputationTypeResource>(
+                ['computation-types', data.id],
                 data
             )
 
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', 'loader', data.id],
+            queryClient.setQueryData<IAccountsComputationTypeResource>(
+                ['computation-types', 'loader', data.id],
                 data
             )
 
-            toast.success('Accounts Created')
+            toast.success('Computation Type Created')
             onSuccess?.(data)
         },
     })
 }
 
-export const useUpdateAccounts = ({
+export const useUpdateComputationType = ({
     preloads,
     onSuccess,
     onError,
-}: IOperationCallbacks<IAccountsResource, string> & IAPIPreloads) => {
+}: IOperationCallbacks<IAccountsComputationTypeResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
-        IAccountsResource,
+        IAccountsComputationTypeResource,
         string,
         {
             id: TEntityId
-            data: IAccountsRequest
+            data: IAccountsComputationTypeRequest
         }
     >({
-        mutationKey: ['accounts', 'update'],
+        mutationKey: ['computation-types', 'update'],
         mutationFn: async ({ id, data }) => {
             const [error, response] = await withCatchAsync(
-                AccountsService.update(id, data, preloads)
+                ComputationTypeService.update(id, data, preloads)
             )
 
             if (error) {
@@ -163,31 +163,31 @@ export const useUpdateAccounts = ({
                 throw errorMessage
             }
 
-            queryClient.setQueriesData<IAccountsPaginatedResource>(
-                { queryKey: ['accounts', 'resource-query'], exact: false },
+            queryClient.setQueriesData<IAccountsComputationTypePaginatedResource>(
+                { queryKey: ['computation-types', 'resource-query'], exact: false },
                 (oldData) => {
                     if (!oldData) return oldData
 
                     return {
                         ...oldData,
-                        data: oldData.data.map((accounts) =>
-                            accounts.id === id ? response : accounts
+                        data: oldData.data.map((compType) =>
+                            compType.id === id ? response : compType
                         ),
                     }
                 }
             )
 
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', id],
+            queryClient.setQueryData<IAccountsComputationTypeResource>(
+                ['computation-types', id],
                 response
             )
 
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', 'loader', id],
+            queryClient.setQueryData<IAccountsComputationTypeResource>(
+                ['computation-types', 'loader', id],
                 response
             )
 
-            toast.success('accounts updated')
+            toast.success('Computation Type Updated')
 
             onSuccess?.(response)
             return response
