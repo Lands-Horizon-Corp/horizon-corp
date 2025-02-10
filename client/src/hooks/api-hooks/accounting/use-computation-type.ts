@@ -139,7 +139,8 @@ export const useUpdateComputationType = ({
     preloads,
     onSuccess,
     onError,
-}: IOperationCallbacks<IAccountsComputationTypeResource, string> & IAPIPreloads) => {
+}: IOperationCallbacks<IAccountsComputationTypeResource, string> &
+    IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -164,7 +165,10 @@ export const useUpdateComputationType = ({
             }
 
             queryClient.setQueriesData<IAccountsComputationTypePaginatedResource>(
-                { queryKey: ['computation-types', 'resource-query'], exact: false },
+                {
+                    queryKey: ['computation-types', 'resource-query'],
+                    exact: false,
+                },
                 (oldData) => {
                     if (!oldData) return oldData
 
