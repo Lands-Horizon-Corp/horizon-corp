@@ -1,11 +1,20 @@
-import { serverRequestErrExtractor } from "@/helpers"
-import { toBase64, withCatchAsync } from "@/utils"
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query"
-import { toast } from "sonner"
-import { IOperationCallbacks, IAPIPreloads, IFilterPaginatedHookProps, IQueryProps } from "./types"
-import { IAccountsPaginatedResource, IAccountsRequest, IAccountsResource } from "@/server/types/accounts/accounts"
-import AccountsService from "@/server/api-service/owner-accounts-service"
-import { TEntityId } from "@/server/types"
+import { serverRequestErrExtractor } from '@/helpers'
+import { toBase64, withCatchAsync } from '@/utils'
+import { useQueryClient, useMutation, useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
+import {
+    IOperationCallbacks,
+    IAPIPreloads,
+    IFilterPaginatedHookProps,
+    IQueryProps,
+} from './types'
+import {
+    IAccountsPaginatedResource,
+    IAccountsRequest,
+    IAccountsResource,
+} from '@/server/types/accounts/accounts'
+import AccountsService from '@/server/api-service/owner-accounts-service'
+import { TEntityId } from '@/server/types'
 
 export const useFilteredPaginatedAccounts = ({
     sort,
@@ -76,7 +85,9 @@ export const useDeleteAccounts = ({
                 queryKey: ['accounts', 'resource-query'],
             })
 
-            queryClient.invalidateQueries({ queryKey: ['accounts', accountsId] })
+            queryClient.invalidateQueries({
+                queryKey: ['accounts', accountsId],
+            })
             queryClient.removeQueries({
                 queryKey: ['accounts', 'loader', accountsId],
             })
@@ -97,8 +108,9 @@ export const useCreateAccounts = ({
     return useMutation<void, string, IAccountsRequest>({
         mutationKey: ['accounts', 'create'],
         mutationFn: async (newAccountData) => {
-
-            const [error, data] = await withCatchAsync(AccountsService.create(newAccountData, preloads))
+            const [error, data] = await withCatchAsync(
+                AccountsService.create(newAccountData, preloads)
+            )
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })

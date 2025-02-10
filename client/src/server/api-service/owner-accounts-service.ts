@@ -1,14 +1,17 @@
-import { IAccountsPaginatedResource, IAccountsRequest, IAccountsResource } from "../types/accounts/accounts";
-import qs from "query-string";
-import APIService from "./api-service";
-import { TEntityId } from "../types";
-
+import {
+    IAccountsPaginatedResource,
+    IAccountsRequest,
+    IAccountsResource,
+} from '../types/accounts/accounts'
+import qs from 'query-string'
+import APIService from './api-service'
+import { TEntityId } from '../types'
 
 /**
  * Service class to handle CRUD operations for Accounts.
  */
 export default class AccountsService {
-    private static readonly BASE_ENDPOINT = "/account";
+    private static readonly BASE_ENDPOINT = '/account'
 
     /**
      * Constructs the request URL with optional preloads.
@@ -21,10 +24,10 @@ export default class AccountsService {
             pagination,
             sort,
         }: {
-            filters?: string;
-            preloads?: string[];
-            pagination?: { pageIndex: number; pageSize: number };
-            sort?: string;
+            filters?: string
+            preloads?: string[]
+            pagination?: { pageIndex: number; pageSize: number }
+            sort?: string
         }
     ): string {
         return qs.stringifyUrl(
@@ -39,7 +42,7 @@ export default class AccountsService {
                 },
             },
             { skipNull: true, skipEmptyString: true } // Avoid sending empty strings or nulls
-        );
+        )
     }
     /**
      * Creates a new account.
@@ -48,16 +51,21 @@ export default class AccountsService {
         accountsData: IAccountsRequest,
         preloads?: string[]
     ): Promise<IAccountsResource> {
-        const url = this.buildUrl("", { preloads });
-        return this.makeRequest(() => APIService.post<IAccountsRequest, IAccountsResource>(url, accountsData));
+        const url = this.buildUrl('', { preloads })
+        return this.makeRequest(() =>
+            APIService.post<IAccountsRequest, IAccountsResource>(
+                url,
+                accountsData
+            )
+        )
     }
 
     /**
      * Deletes an account by ID.
      */
     public static async delete(id: TEntityId): Promise<void> {
-        const url = this.buildUrl(`/${id}`, {});
-        return this.makeRequest(() => APIService.delete(url));
+        const url = this.buildUrl(`/${id}`, {})
+        return this.makeRequest(() => APIService.delete(url))
     }
 
     /**
@@ -68,15 +76,23 @@ export default class AccountsService {
         accountData: IAccountsRequest,
         preloads?: string[]
     ): Promise<IAccountsResource> {
-        const url = this.buildUrl(`/${id}`, { preloads });
+        const url = this.buildUrl(`/${id}`, { preloads })
         return this.makeRequest(() =>
-            APIService.put<IAccountsRequest, IAccountsResource>(url, accountData)
-        );
+            APIService.put<IAccountsRequest, IAccountsResource>(
+                url,
+                accountData
+            )
+        )
     }
 
-    public static async getAccounts({ sort, filters, preloads, pagination }: {
+    public static async getAccounts({
+        sort,
+        filters,
+        preloads,
+        pagination,
+    }: {
         sort?: string
-        filters?: string;
+        filters?: string
         preloads?: string[]
         pagination?: { pageIndex: number; pageSize: number }
     }) {
@@ -84,19 +100,21 @@ export default class AccountsService {
 
         return this.makeRequest(() =>
             APIService.get<IAccountsPaginatedResource>(url)
-        );
+        )
     }
 
     /**
      * Centralized request handling for better error management.
      */
-    private static async makeRequest<T>(apiCall: () => Promise<{ data: T }>): Promise<T> {
+    private static async makeRequest<T>(
+        apiCall: () => Promise<{ data: T }>
+    ): Promise<T> {
         try {
-            const response = await apiCall();
-            return response.data;
+            const response = await apiCall()
+            return response.data
         } catch (error) {
-            console.error("API Request Failed:", error);
-            throw error;
+            console.error('API Request Failed:', error)
+            throw error
         }
     }
 }
