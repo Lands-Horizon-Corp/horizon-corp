@@ -218,6 +218,7 @@ export const useDeleteBranch = ({
 export const useFilteredPaginatedBranch = ({
     sort,
     enabled,
+    showMessage = true,
     filterPayload,
     preloads = ['Media', 'Company'],
     pagination = { pageSize: 10, pageIndex: 1 },
@@ -236,7 +237,7 @@ export const useFilteredPaginatedBranch = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 throw errorMessage
             }
 

@@ -17,10 +17,10 @@ import {
     IMemberPaginatedResource,
 } from '@/server/types'
 import {
+    IAPIHook,
     IQueryProps,
-    IAPIPreloads,
-    IOperationCallbacks,
-    IFilterPaginatedHookProps,
+    IMutationProps,
+    IAPIFilteredPaginatedHook,
 } from '../types'
 
 export const memberLoader = (
@@ -37,12 +37,11 @@ export const memberLoader = (
     })
 
 export const useCreateMember = ({
+    showMessage = true,
     preloads = ['Media'],
     onSuccess,
     onError,
-}:
-    | undefined
-    | (IOperationCallbacks<IMemberResource, string> & IAPIPreloads) = {}) => {
+}: undefined | (IAPIHook<IMemberResource, string> & IQueryProps) = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<IMemberResource, string, IMemberRequest>({
@@ -54,7 +53,7 @@ export const useCreateMember = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -70,7 +69,7 @@ export const useCreateMember = ({
                 queryKey: ['member', 'loader', newMember.id],
             })
 
-            toast.success('New Member Account Created')
+            if (showMessage) toast.success('New Member Account Created')
             onSuccess?.(newMember)
 
             return newMember
@@ -79,9 +78,10 @@ export const useCreateMember = ({
 }
 
 export const useDeleteMember = ({
+    showMessage = true,
     onSuccess,
     onError,
-}: IOperationCallbacks) => {
+}: IAPIHook<unknown, string> & IMutationProps) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, TEntityId>({
@@ -91,7 +91,7 @@ export const useDeleteMember = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -105,7 +105,7 @@ export const useDeleteMember = ({
                 queryKey: ['member', 'loader', memberId],
             })
 
-            toast.success('Member deleted')
+            if (showMessage) toast.success('Member deleted')
             onSuccess?.(undefined)
         },
     })
@@ -114,10 +114,12 @@ export const useDeleteMember = ({
 export const useFilteredPaginatedMembers = ({
     sort,
     enabled,
+    showMessage = true,
     filterPayload,
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps & IQueryProps = {}) => {
+}: IAPIFilteredPaginatedHook<IMemberPaginatedResource, string> &
+    IQueryProps = {}) => {
     return useQuery<IMemberPaginatedResource, string>({
         queryKey: ['member', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
@@ -132,7 +134,7 @@ export const useFilteredPaginatedMembers = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 throw errorMessage
             }
 
