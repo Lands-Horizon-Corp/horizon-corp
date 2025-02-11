@@ -18,9 +18,13 @@ import { Separator } from '@/components/ui/separator'
 import { IBaseCompNoChild } from '@/types'
 import { AccountsComputationTypeRequestSchema } from '@/validations/accounting/computation-type-schema'
 import { IAccountsComputationTypeRequest } from '@/server/types/accounts/computation-type'
-import { useCreateComputationType } from '@/hooks/api-hooks/accounting/use-computation-type'
+import {
+    useCreateComputationType,
+    useUpdateComputationType,
+} from '@/hooks/api-hooks/accounting/use-computation-type'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import FormErrorMessage from '@/components/ui/form-error-message'
+import { TEntityId } from '@/server'
 
 type TComputationTypeCreateForm = z.infer<
     typeof AccountsComputationTypeRequestSchema
@@ -28,14 +32,19 @@ type TComputationTypeCreateForm = z.infer<
 
 interface IComputationTypeCreateFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IAccountsComputationTypeRequest>, unknown, string> {}
+        IForm<Partial<IAccountsComputationTypeRequest>, unknown, string> {
+    computationTypeId?: TEntityId
+}
 
 const ComputationTypeCreateForm = ({
     readOnly,
     className,
     onSuccess,
     onError,
+    computationTypeId,
 }: IComputationTypeCreateFormProps) => {
+    const isUpdateMode = Boolean(computationTypeId)
+
     const form = useForm<TComputationTypeCreateForm>({
         resolver: zodResolver(AccountsComputationTypeRequestSchema),
         reValidateMode: 'onChange',
@@ -49,27 +58,40 @@ const ComputationTypeCreateForm = ({
     })
 
     const {
+        error: createError,
         isPending: isCreating,
         mutate: createComputationType,
-        error,
-        reset,
     } = useCreateComputationType({
-        onSuccess: (data) => {
-            onSuccess?.(data)
-            form.reset()
-        },
+        onSuccess,
         onError: (err) => {
             onError?.(err as string)
         },
     })
 
+    const {
+        error: updateError,
+        isPending: isUpdating,
+        mutate: updateComputationType,
+    } = useUpdateComputationType({
+        onSuccess,
+        onError: (err) => {
+            onError?.(err as string)
+        },
+    })
+
+    const onSubmit = (formData: TComputationTypeCreateForm) => {
+        if (isUpdateMode && computationTypeId) {
+            updateComputationType({ id: computationTypeId, data: formData })
+        } else {
+            createComputationType(formData)
+        }
+    }
+
     return (
         <Form {...form}>
             <Separator />
             <form
-                onSubmit={form.handleSubmit((formData) => {
-                    createComputationType(formData)
-                })}
+                onSubmit={form.handleSubmit(onSubmit)}
                 className={cn('flex max-w-3xl flex-col gap-y-6', className)}
             >
                 <fieldset
@@ -109,22 +131,20 @@ const ComputationTypeCreateForm = ({
                         )}
                     />
                 </fieldset>
-                <FormErrorMessage errorMessage={error} />
+                <FormErrorMessage errorMessage={createError || updateError} />
                 <div className="flex items-center justify-end gap-x-2">
                     <Button
                         type="button"
                         variant="ghost"
-                        onClick={() => {
-                            form.reset()
-                            reset()
-                        }}
+                        disabled={isCreating || isUpdating || readOnly}
+                        onClick={() => form.reset()}
                         className="w-full self-end px-8 sm:w-fit"
                     >
                         Reset
                     </Button>
                     <Button
                         type="submit"
-                        disabled={false}
+                        disabled={isCreating || isUpdating || readOnly}
                         className="w-full self-end px-8 sm:w-fit"
                     >
                         {isCreating ? <LoadingSpinner /> : 'Create'}
@@ -141,7 +161,9 @@ export const ComputationTypeCreateFormModal = ({
     className,
     formProps,
     ...props
-}: IModalProps & { formProps?: Partial<IComputationTypeCreateFormProps> }) => {
+}: IModalProps & {
+    formProps?: Omit<IComputationTypeCreateFormProps, 'className'>
+}) => {
     return (
         <Modal
             title={title}
@@ -149,9 +171,7 @@ export const ComputationTypeCreateFormModal = ({
             className={cn('sm:max-w-full lg:max-w-3xl', className)}
             {...props}
         >
-            <ComputationTypeCreateForm
-                {...(formProps as IComputationTypeCreateFormProps)}
-            />
+            <ComputationTypeCreateForm {...formProps} />
         </Modal>
     )
 }

@@ -1,6 +1,7 @@
 import PageContainer from '@/components/containers/page-container'
-import { ComputationTypeCreateFormModal } from '@/components/forms/computation-type-forms/computation-type-create-form'
+import { ComputationTypeCreateFormModal } from '@/components/forms/computation-type-forms/computation-type-create-update-form'
 import AccountsComputationTypeTable from '@/components/tables/computation-type-table'
+import ComputationTypeTableOwnerAction from '@/components/tables/computation-type-table/row-actions/computation-type-actions'
 import { useState } from 'react'
 
 const AccountsComputationPage = () => {
@@ -21,7 +22,9 @@ const AccountsComputationPage = () => {
                     },
                 }}
                 className="min-h-[90vh] w-full"
-                actionComponent={() => <></>}
+                actionComponent={(props) => (
+                    <ComputationTypeTableOwnerAction {...props} />
+                )}
             />
         </PageContainer>
     )
