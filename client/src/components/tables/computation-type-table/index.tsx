@@ -21,13 +21,16 @@ import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sort
 
 import { TableProps } from '../types'
 import AccountsComputationTypeTableColumns, {
+    accountComputationTypeGlobalSearchTargets,
     IAccountsComputationTypeTableColumnProps,
 } from './column'
-import { genderGlobalSearchTargets } from '../genders-table/columns'
+
 import {
     dummyAccountComputationTypeData,
     IAccountsComputationTypeResource,
 } from '@/server/types/accounts/computation-type'
+import { useFilteredPaginatedComputationTypes } from '@/hooks/api-hooks/accounting/use-computation-type'
+import ComputationTypeService from '@/server/api-service/accounting-services/computation-type-service'
 
 export interface AccountsComputationTypeTableProps
     extends TableProps<IAccountsComputationTypeResource>,
@@ -53,7 +56,8 @@ const AccountsComputationTypeTable = ({
 }: AccountsComputationTypeTableProps) => {
     // const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
-    const { tableSorting, setTableSorting } = useDataTableSorting()
+    const { sortingState, tableSorting, setTableSorting } =
+        useDataTableSorting()
 
     const columns = useMemo(
         () =>
@@ -83,20 +87,18 @@ const AccountsComputationTypeTable = ({
         onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
     })
 
-    // const {
-    //     isPending,
-    //     isRefetching,
-    //     data: { data, totalPage, pageSize, totalSize },
-    //     refetch,
-    // } = useFilteredPaginatedAccountComputationTypes({
-    //     pagination,
-    //     sort: sortingState,
-    //     filterPayload: filterState.finalFilterPayload,
-    // })
+    const {
+        isPending,
+        isRefetching,
+        data: { data, totalPage, pageSize, totalSize },
+        refetch,
+    } = useFilteredPaginatedComputationTypes({
+        pagination,
+        sort: sortingState,
+        filterPayload: filterState.finalFilterPayload,
+    })
 
-    const handleRowSelectionChange = createHandleRowSelectionChange(
-        dummyAccountComputationTypeData
-    )
+    const handleRowSelectionChange = createHandleRowSelectionChange(data)
 
     const table = useReactTable({
         columns,
@@ -111,9 +113,9 @@ const AccountsComputationTypeTable = ({
             rowSelection: rowSelectionState.rowSelection,
             columnVisibility,
         },
-        // rowCount: pageSize,
+        rowCount: pageSize,
         manualSorting: true,
-        // pageCount: totalPage,
+        pageCount: totalPage,
         enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
@@ -133,12 +135,12 @@ const AccountsComputationTypeTable = ({
                 <DataTableToolbar
                     globalSearchProps={{
                         defaultMode: 'equal',
-                        targets: genderGlobalSearchTargets,
+                        targets: accountComputationTypeGlobalSearchTargets,
                     }}
                     table={table}
                     refreshActionProps={{
-                        onClick: () => {},
-                        // isLoading: isPending || isRefetching,
+                        onClick: () => refetch(),
+                        isLoading: isPending || isRefetching,
                     }}
                     // deleteActionProps={{
                     //     onDeleteSuccess: () =>
@@ -146,25 +148,25 @@ const AccountsComputationTypeTable = ({
                     //             queryKey: ['account-computation-type', 'resource-query'],
                     //         }),
                     //     onDelete: (selectedData) =>
-                    //         AccountComputationTypeService.deleteMany(
+                    //         ComputationTypeService.deleteMany(
                     //             selectedData.map((data) => data.id)
                     //         ),
                     // }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
                         pagination,
-                        // isLoading: isPending,
+                        isLoading: isPending,
                         filters: filterState.finalFilterPayload,
-                        // disabled: isPending || isRefetching,
-                        // exportAll: AccountComputationTypeService.exportAll,
-                        // exportCurrentPage: (ids) =>
-                        //     AccountComputationTypeService.exportSelected(
-                        //         ids.map((data) => data.id)
-                        //     ),
-                        // exportSelected: (ids) =>
-                        //     AccountComputationTypeService.exportSelected(
-                        //         ids.map((data) => data.id)
-                        //     ),
+                        disabled: isPending || isRefetching,
+                        exportAll: ComputationTypeService.exportAll,
+                        exportCurrentPage: (ids) =>
+                            ComputationTypeService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
+                        exportSelected: (ids) =>
+                            ComputationTypeService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
                     }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,
@@ -180,7 +182,7 @@ const AccountsComputationTypeTable = ({
                     setColumnOrder={setColumnOrder}
                     className="mb-2"
                 />
-                <DataTablePagination table={table} totalSize={0} />
+                <DataTablePagination table={table} totalSize={totalSize} />
             </div>
         </FilterContext.Provider>
     )

@@ -9,7 +9,6 @@ import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { usePagination } from '@/hooks/use-pagination'
 import { cn } from '@/lib'
 import { IAccountsResource } from '@/server/types/accounts/accounts'
-// import { useQueryClient } from "@tanstack/react-query";
 import {
     useReactTable,
     getCoreRowModel,
@@ -26,6 +25,7 @@ import accountTableColumns, {
 import { DummyAccountsData } from './dummy-accounts'
 // import { useQueryClient } from '@tanstack/react-query'
 import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
+import AccountsService from '@/server/api-service/accounting-services/accounts-service'
 
 export interface AccountsTableProps
     extends TableProps<IAccountsResource>,
@@ -144,16 +144,16 @@ const AccountsTable = ({
                         isLoading: isPending,
                         filters: filterState.finalFilterPayload,
                         disabled: isPending || isRefetching,
-                        // exportAll: AccountService.exportAll,
-                        // exportAllFiltered: AccountService.exportAllFiltered,
-                        // exportCurrentPage: (ids) =>
-                        //     AccountService.exportSelected(
-                        //         ids.map((data) => data.id)
-                        //     ),
-                        // exportSelected: (ids) =>
-                        //     AccountService.exportSelected(
-                        //         ids.map((data) => data.id)
-                        //     ),
+                        exportAll: AccountsService.exportAll,
+                        exportAllFiltered: AccountsService.exportAllFiltered,
+                        exportCurrentPage: (ids) =>
+                            AccountsService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
+                        exportSelected: (ids) =>
+                            AccountsService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
                     }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,
