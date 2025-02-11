@@ -119,6 +119,14 @@ export default class AccountsService {
         )
     }
 
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
+        const endpoint = `${AccountsService.BASE_ENDPOINT}/bulk-delete`
+
+        const payload = { ids }
+
+        await APIService.delete<void>(endpoint, payload)
+    }
+
     public static async exportAll(): Promise<void> {
         const url = this.buildUrl(`/export`, {})
         await downloadFile(url, 'all_accounts_export.xlsx')
