@@ -48,6 +48,7 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { TFilterObject } from '@/contexts/filter-context'
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import MemberClassificationCombobox from '@/components/comboboxes/member-classification-combobox'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -76,6 +77,7 @@ const Steps: Step[] = [
             'contactNumber',
             'civilStatus',
             'memberGenderId',
+            'memberClassificationId',
             'occupation',
             'businessAddress',
             'businessContact',
@@ -266,24 +268,6 @@ const MemberApplicationForm = ({
                                     <legend>Identification & Reference</legend>
                                     <Separator />
                                     <FormFieldWrapper
-                                        name="memberId"
-                                        control={form.control}
-                                        label="Member Account ID"
-                                        hiddenFields={hiddenFields}
-                                        render={({ field }) => (
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    placeholder="Member Account ID"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
-                                                />
-                                            </FormControl>
-                                        )}
-                                    />
-                                    <FormFieldWrapper
                                         name="memberTypeId"
                                         control={form.control}
                                         label="Member Type"
@@ -298,6 +282,24 @@ const MemberApplicationForm = ({
                                                     onChange={(memberType) =>
                                                         field.onChange(
                                                             memberType.id
+                                                        )
+                                                    }
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
+                                        name="memberClassificationId"
+                                        control={form.control}
+                                        label="Member Classification"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <MemberClassificationCombobox
+                                                    {...field}
+                                                    onChange={(memClass) =>
+                                                        field.onChange(
+                                                            memClass.id
                                                         )
                                                     }
                                                 />
@@ -354,6 +356,24 @@ const MemberApplicationForm = ({
                                                             branch.id
                                                         )
                                                     }
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
+                                        name="memberId"
+                                        control={form.control}
+                                        label="Member Account ID"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    id={field.name}
+                                                    placeholder="Member Account ID"
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
                                                 />
                                             </FormControl>
                                         )}
