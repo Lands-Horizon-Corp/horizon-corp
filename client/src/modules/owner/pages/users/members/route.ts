@@ -44,11 +44,18 @@ const ownerEducationalAttainmentRoute = createRoute({
     ),
 })
 
+const ownerMemberClassificationRoute = createRoute({
+    getParentRoute: () => ownerUserMemberRoute,
+    path: '/member-classification',
+    component: lazyRouteComponent(() => import('./member-classification-page')),
+})
+
 const OwnerUserMemberRoute = ownerUserMemberRoute.addChildren([
     ownerUserMemberIndexRoute,
     ownerViewMembersRoute,
     ownerMembersActivityRoute,
     ownerEducationalAttainmentRoute,
+    ownerMemberClassificationRoute,
     ownerMemberTypesRoute,
     OwnerMemberIdRoute,
 ])
