@@ -123,6 +123,14 @@ export default class ComputationTypeService {
         )
     }
 
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
+        const endpoint = `${ComputationTypeService.BASE_ENDPOINT}/bulk-delete`
+
+        const payload = { ids }
+
+        await APIService.delete<void>(endpoint, payload)
+    }
+
     public static async exportAll(): Promise<void> {
         const url = this.buildUrl(`/export`, {})
         await downloadFile(url, 'all_computation_type_export.xlsx')
