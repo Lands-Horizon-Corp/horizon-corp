@@ -12,68 +12,68 @@ import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { IMemberTypeRequest, TEntityId } from '@/server/types'
 import {
-    useCreateMemberType,
-    useUpdateMemberType,
-} from '@/hooks/api-hooks/member/use-member-type'
-import { createMemberTypeSchema } from '@/validations/form-validation/member/member-type-schema'
+    useCreateMemberClassification,
+    useUpdateMemberClassification,
+} from '@/hooks/api-hooks/member/use-member-classification'
+import { memberClassificationSchema } from '@/validations/form-validation/member/member-classification'
 
-type TMemberTypeForm = z.infer<typeof createMemberTypeSchema>
+import { IBaseCompNoChild } from '@/types'
+import { IMemberClassificationRequest, TEntityId } from '@/server/types'
 
-export interface IMemberTypeCreateUpdateFormProps
+type TMemberClassificationForm = z.infer<typeof memberClassificationSchema>
+
+export interface IMemberClassificationCreateUpdateFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IMemberTypeRequest>, unknown, string> {
-    memberTypeId?: TEntityId
+        IForm<Partial<IMemberClassificationRequest>, unknown, string> {
+    memberClassificationId?: TEntityId
 }
 
-const MemberTypeCreateUpdateForm = ({
-    memberTypeId,
+const MemberClassificationCreateUpdateForm = ({
+    memberClassificationId,
     readOnly,
     className,
     defaultValues,
     onError,
     onSuccess,
-}: IMemberTypeCreateUpdateFormProps) => {
-    const isUpdateMode = Boolean(memberTypeId)
+}: IMemberClassificationCreateUpdateFormProps) => {
+    const isUpdateMode = Boolean(memberClassificationId)
 
-    const form = useForm<TMemberTypeForm>({
-        resolver: zodResolver(createMemberTypeSchema),
+    const form = useForm<TMemberClassificationForm>({
+        resolver: zodResolver(memberClassificationSchema),
         reValidateMode: 'onChange',
         mode: 'onSubmit',
         defaultValues: {
             name: '',
-            prefix: '',
             description: '',
             ...defaultValues,
         },
     })
 
-    // Create hook (for create mode)
     const {
         error: createError,
         isPending: isCreating,
-        mutate: createMemberType,
-    } = useCreateMemberType({ onSuccess, onError })
+        mutate: createMemberClassification,
+    } = useCreateMemberClassification({ onSuccess, onError })
 
-    // Update hook (for update mode)
     const {
         error: updateError,
         isPending: isUpdating,
-        mutate: updateMemberType,
-    } = useUpdateMemberType({ onSuccess, onError })
+        mutate: updateMemberClassification,
+    } = useUpdateMemberClassification({ onSuccess, onError })
 
-    const onSubmit = (formData: TMemberTypeForm) => {
-        if (isUpdateMode && memberTypeId) {
-            updateMemberType({ memberTypeId, data: formData })
+    const onSubmit = (formData: TMemberClassificationForm) => {
+        if (isUpdateMode && memberClassificationId) {
+            updateMemberClassification({
+                classificationId: memberClassificationId,
+                data: formData,
+            })
         } else {
-            createMemberType(formData)
+            createMemberClassification(formData)
         }
     }
 
-    // Combine any errors from both operations
     const combinedError = createError || updateError
 
     return (
@@ -90,33 +90,14 @@ const MemberTypeCreateUpdateForm = ({
                         <FormFieldWrapper
                             control={form.control}
                             name="name"
-                            label="Name"
+                            label="Name *"
                             render={({ field }) => (
                                 <Input
                                     {...field}
                                     id={field.name}
-                                    placeholder="Member Type Name"
-                                    autoComplete="member-type-name"
-                                    disabled={
-                                        isCreating || isUpdating || readOnly
-                                    }
-                                />
-                            )}
-                        />
-
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="prefix"
-                            label="Prefix"
-                            render={({ field }) => (
-                                <Input
-                                    {...field}
-                                    id={field.name}
-                                    placeholder="Prefix"
-                                    autoComplete="member-type-prefix"
-                                    disabled={
-                                        isCreating || isUpdating || readOnly
-                                    }
+                                    placeholder="Member Classification Name"
+                                    autoComplete="member-classification-name"
+                                    disabled={isCreating || isUpdating}
                                 />
                             )}
                         />
@@ -129,11 +110,9 @@ const MemberTypeCreateUpdateForm = ({
                                 <Input
                                     {...field}
                                     id={field.name}
-                                    placeholder="Description"
-                                    autoComplete="member-type-description"
-                                    disabled={
-                                        isCreating || isUpdating || readOnly
-                                    }
+                                    placeholder="Description *"
+                                    autoComplete="member-classification-description"
+                                    disabled={isCreating || isUpdating}
                                 />
                             )}
                         />
@@ -173,14 +152,14 @@ const MemberTypeCreateUpdateForm = ({
     )
 }
 
-export const MemberTypeCreateUpdateFormModal = ({
-    title = 'Create Member Type',
-    description = 'Fill out the form to add a new member type.',
+export const MemberClassificationCreateUpdateFormModal = ({
+    title = 'Create Member Classification',
+    description = 'Fill out the form to add a new member classification.',
     className,
     formProps,
     ...props
 }: IModalProps & {
-    formProps?: Omit<IMemberTypeCreateUpdateFormProps, 'className'>
+    formProps?: Omit<IMemberClassificationCreateUpdateFormProps, 'className'>
 }) => {
     return (
         <Modal
@@ -189,9 +168,9 @@ export const MemberTypeCreateUpdateFormModal = ({
             className={cn('', className)}
             {...props}
         >
-            <MemberTypeCreateUpdateForm {...formProps} />
+            <MemberClassificationCreateUpdateForm {...formProps} />
         </Modal>
     )
 }
 
-export default MemberTypeCreateUpdateForm
+export default MemberClassificationCreateUpdateForm

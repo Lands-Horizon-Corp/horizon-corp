@@ -10,7 +10,7 @@ import {
     contactNumberSchema,
     permanentAddressSchema,
     entityIdSchema,
-} from '../common'
+} from '../../common'
 
 export const createMemberSchema = z.object({
     email: emailSchema,

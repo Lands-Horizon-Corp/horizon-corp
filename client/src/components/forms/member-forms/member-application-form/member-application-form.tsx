@@ -42,7 +42,7 @@ import MemberTypeSelect from '@/components/selects/member-type-select'
 import MemberEducationalAttainmentPicker from '@/components/comboboxes/member-educational-attainment-combobox'
 
 import { useCreateMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
-import { createMemberProfileSchema } from '@/validations/form-validation/member-schema'
+import { createMemberProfileSchema } from '@/validations/form-validation/member/member-schema'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'

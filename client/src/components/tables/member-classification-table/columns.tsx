@@ -10,26 +10,27 @@ import ColumnActions from '@/components/data-table/data-table-column-header/colu
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
-import { IMemberTypeResource } from '@/server/types'
+import { IMemberClassificationResource } from '@/server/types'
 
-export const memberTypeGlobalSearchTargets: IGlobalSearchTargets<IMemberTypeResource>[] =
+export const memberClassificationGlobalSearchTargets: IGlobalSearchTargets<IMemberClassificationResource>[] =
     [
         { field: 'name', displayText: 'Name' },
         { field: 'description', displayText: 'Description' },
-        { field: 'prefix', displayText: 'Prefix' },
     ]
 
-export interface IMemberTypeTableActionComponentProp {
-    row: Row<IMemberTypeResource>
+export interface IMemberClassificationTableActionComponentProp {
+    row: Row<IMemberClassificationResource>
 }
 
-export interface IMemberTypeTableColumnProps {
-    actionComponent?: (props: IMemberTypeTableActionComponentProp) => ReactNode
+export interface IMemberClassificationTableColumnProps {
+    actionComponent?: (
+        props: IMemberClassificationTableActionComponentProp
+    ) => ReactNode
 }
 
-const memberTypeTableColumns = (
-    opts?: IMemberTypeTableColumnProps
-): ColumnDef<IMemberTypeResource>[] => {
+const memberClassificationTableColumns = (
+    opts?: IMemberClassificationTableColumnProps
+): ColumnDef<IMemberClassificationResource>[] => {
     return [
         {
             id: 'select',
@@ -70,7 +71,7 @@ const memberTypeTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Name">
                     <ColumnActions {...props}>
-                        <TextFilter<IMemberTypeResource>
+                        <TextFilter<IMemberClassificationResource>
                             displayText="Name"
                             field="name"
                         />
@@ -85,26 +86,6 @@ const memberTypeTableColumns = (
             enableMultiSort: true,
         },
         {
-            id: 'prefix',
-            accessorKey: 'prefix',
-            header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Prefix">
-                    <ColumnActions {...props}>
-                        <TextFilter<IMemberTypeResource>
-                            displayText="Prefix"
-                            field="prefix"
-                        />
-                    </ColumnActions>
-                </DataTableColumnHeader>
-            ),
-            cell: ({
-                row: {
-                    original: { prefix },
-                },
-            }) => <div>{prefix}</div>,
-            enableMultiSort: true,
-        },
-        {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
@@ -114,7 +95,7 @@ const memberTypeTableColumns = (
                     title="Description"
                 >
                     <ColumnActions {...props}>
-                        <TextFilter<IMemberTypeResource>
+                        <TextFilter<IMemberClassificationResource>
                             displayText="Description"
                             field="description"
                         />
@@ -138,7 +119,7 @@ const memberTypeTableColumns = (
                     title="Date Created"
                 >
                     <ColumnActions {...props}>
-                        <DateFilter<IMemberTypeResource>
+                        <DateFilter<IMemberClassificationResource>
                             displayText="Date Created"
                             field="createdAt"
                         />
@@ -155,4 +136,4 @@ const memberTypeTableColumns = (
     ]
 }
 
-export default memberTypeTableColumns
+export default memberClassificationTableColumns

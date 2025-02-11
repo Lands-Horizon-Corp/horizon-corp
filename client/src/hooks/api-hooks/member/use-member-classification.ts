@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 
 import { toBase64, withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
-import MemberEducationalAttainmentService from '@/server/api-service/member-services/member-educational-attainment-service'
+import MemberClassificationService from '@/server/api-service/member-services/member-classification-service'
 
 import {
     IAPIHook,
@@ -19,20 +19,20 @@ import {
 } from '../types'
 import {
     TEntityId,
-    IMemberEducationalAttainmentRequest,
-    IMemberEducationalAttainmentResource,
-    TMemberEducationalAttainmentPaginatedResource,
+    IMemberClassificationRequest,
+    IMemberClassificationResource,
+    TMemberClassificationPaginatedResource,
 } from '@/server/types'
 
-export const memberEducationalAttainmentLoader = (
-    attainmentId: TEntityId,
+export const memberClassificationLoader = (
+    classificationId: TEntityId,
     preloads: string[] = []
 ) =>
-    queryOptions<IMemberEducationalAttainmentResource>({
-        queryKey: ['member-educational-attainment', 'loader', attainmentId],
+    queryOptions<IMemberClassificationResource>({
+        queryKey: ['member-classification', 'loader', classificationId],
         queryFn: async () => {
-            const data = await MemberEducationalAttainmentService.getById(
-                attainmentId,
+            const data = await MemberClassificationService.getById(
+                classificationId,
                 preloads
             )
             return data
@@ -40,23 +40,23 @@ export const memberEducationalAttainmentLoader = (
         retry: 0,
     })
 
-export const useCreateMemberEducationalAttainment = ({
+export const useCreateMemberClassification = ({
     preloads = [],
     showMessage = true,
     onSuccess,
     onError,
-}: IAPIHook<IMemberEducationalAttainmentResource, string> & IMutationProps) => {
+}: IAPIHook<IMemberClassificationResource, string> & IMutationProps) => {
     const queryClient = useQueryClient()
 
     return useMutation<
-        IMemberEducationalAttainmentResource,
+        IMemberClassificationResource,
         string,
-        IMemberEducationalAttainmentRequest
+        IMemberClassificationRequest
     >({
-        mutationKey: ['member-educational-attainment', 'create'],
+        mutationKey: ['member-classification', 'create'],
         mutationFn: async (data) => {
-            const [error, newAttainment] = await withCatchAsync(
-                MemberEducationalAttainmentService.create(data, preloads)
+            const [error, newClassification] = await withCatchAsync(
+                MemberClassificationService.create(data, preloads)
             )
 
             if (error) {
@@ -67,46 +67,45 @@ export const useCreateMemberEducationalAttainment = ({
             }
 
             queryClient.invalidateQueries({
-                queryKey: ['member-educational-attainment', 'resource-query'],
+                queryKey: ['member-classification', 'resource-query'],
             })
             queryClient.invalidateQueries({
-                queryKey: ['member-educational-attainment', newAttainment.id],
+                queryKey: ['member-classification', newClassification.id],
             })
             queryClient.removeQueries({
                 queryKey: [
-                    'member-educational-attainment',
+                    'member-classification',
                     'loader',
-                    newAttainment.id,
+                    newClassification.id,
                 ],
             })
 
-            if (showMessage)
-                toast.success('New Member Educational Attainment Created')
-            onSuccess?.(newAttainment)
+            if (showMessage) toast.success('New Member Classification Created')
+            onSuccess?.(newClassification)
 
-            return newAttainment
+            return newClassification
         },
     })
 }
 
-export const useUpdateMemberEducationalAttainment = ({
+export const useUpdateMemberClassification = ({
     preloads = [],
     showMessage = true,
     onSuccess,
     onError,
-}: IAPIHook<IMemberEducationalAttainmentResource, string> & IMutationProps) => {
+}: IAPIHook<IMemberClassificationResource, string> & IMutationProps) => {
     const queryClient = useQueryClient()
 
     return useMutation<
-        IMemberEducationalAttainmentResource,
+        IMemberClassificationResource,
         string,
-        { attainmentId: TEntityId; data: IMemberEducationalAttainmentRequest }
+        { classificationId: TEntityId; data: IMemberClassificationRequest }
     >({
-        mutationKey: ['member-educational-attainment', 'update'],
-        mutationFn: async ({ attainmentId, data }) => {
+        mutationKey: ['member-classification', 'update'],
+        mutationFn: async ({ classificationId, data }) => {
             const [error, result] = await withCatchAsync(
-                MemberEducationalAttainmentService.update(
-                    attainmentId,
+                MemberClassificationService.update(
+                    classificationId,
                     data,
                     preloads
                 )
@@ -120,21 +119,16 @@ export const useUpdateMemberEducationalAttainment = ({
             }
 
             queryClient.invalidateQueries({
-                queryKey: ['member-educational-attainment', 'resource-query'],
+                queryKey: ['member-classification', 'resource-query'],
             })
             queryClient.invalidateQueries({
-                queryKey: ['member-educational-attainment', attainmentId],
+                queryKey: ['member-classification', classificationId],
             })
             queryClient.removeQueries({
-                queryKey: [
-                    'member-educational-attainment',
-                    'loader',
-                    attainmentId,
-                ],
+                queryKey: ['member-classification', 'loader', classificationId],
             })
 
-            if (showMessage)
-                toast.success('Member Educational Attainment updated')
+            if (showMessage) toast.success('Member Classification updated')
             onSuccess?.(result)
 
             return result
@@ -142,7 +136,7 @@ export const useUpdateMemberEducationalAttainment = ({
     })
 }
 
-export const useDeleteMemberEducationalAttainment = ({
+export const useDeleteMemberClassification = ({
     showMessage = true,
     onError,
     onSuccess,
@@ -150,10 +144,10 @@ export const useDeleteMemberEducationalAttainment = ({
     const queryClient = useQueryClient()
 
     return useMutation<void, string, TEntityId>({
-        mutationKey: ['member-educational-attainment', 'delete'],
-        mutationFn: async (attainmentId) => {
+        mutationKey: ['member-classification', 'delete'],
+        mutationFn: async (classificationId) => {
             const [error] = await withCatchAsync(
-                MemberEducationalAttainmentService.delete(attainmentId)
+                MemberClassificationService.delete(classificationId)
             )
 
             if (error) {
@@ -164,27 +158,22 @@ export const useDeleteMemberEducationalAttainment = ({
             }
 
             queryClient.invalidateQueries({
-                queryKey: ['member-educational-attainment', 'resource-query'],
+                queryKey: ['member-classification', 'resource-query'],
             })
             queryClient.invalidateQueries({
-                queryKey: ['member-educational-attainment', attainmentId],
+                queryKey: ['member-classification', classificationId],
             })
             queryClient.removeQueries({
-                queryKey: [
-                    'member-educational-attainment',
-                    'loader',
-                    attainmentId,
-                ],
+                queryKey: ['member-classification', 'loader', classificationId],
             })
 
-            if (showMessage)
-                toast.success('Member Educational Attainment deleted')
+            if (showMessage) toast.success('Member Classification deleted')
             onSuccess?.(undefined)
         },
     })
 }
 
-export const useFilteredPaginatedMemberEducationalAttainments = ({
+export const useFilteredPaginatedMemberClassifications = ({
     sort,
     enabled,
     showMessage,
@@ -192,12 +181,12 @@ export const useFilteredPaginatedMemberEducationalAttainments = ({
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IAPIFilteredPaginatedHook<
-    TMemberEducationalAttainmentPaginatedResource,
+    TMemberClassificationPaginatedResource,
     string
 > = {}) => {
-    return useQuery<TMemberEducationalAttainmentPaginatedResource, string>({
+    return useQuery<TMemberClassificationPaginatedResource, string>({
         queryKey: [
-            'member-educational-attainment',
+            'member-classification',
             'resource-query',
             filterPayload,
             pagination,
@@ -205,14 +194,12 @@ export const useFilteredPaginatedMemberEducationalAttainments = ({
         ],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
-                MemberEducationalAttainmentService.getMemberEducationalAttainments(
-                    {
-                        preloads,
-                        pagination,
-                        sort: sort && toBase64(sort),
-                        filters: filterPayload && toBase64(filterPayload),
-                    }
-                )
+                MemberClassificationService.getMemberClassifications({
+                    preloads,
+                    pagination,
+                    sort: sort && toBase64(sort),
+                    filters: filterPayload && toBase64(filterPayload),
+                })
             )
 
             if (error) {
