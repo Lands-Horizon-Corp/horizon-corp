@@ -61,11 +61,14 @@ import {
     PiUsersThree as Users3Icon,
     PiCodeBlock as CodeBlockIcon,
     PiPushPinSlash as PushPinSlashIcon,
+    PiHandCoinsDuotone as HandCoinsIcon,
     PiMicrosoftExcelLogoFill as ExcelIcon,
     PiBuildingOffice as BuildingBranchIcon,
+    PiHandDepositDuotone as HandDepositIcon,
     PiListBulletsBold as ListBulletsBoldIcon,
     PiGraduationCapFill as GraduationCapIcon,
     PiWarningCircleFill as WarningCircleIcon,
+    PiHandWithdrawDuotone as HandWithdrawIcon,
     PiTextStrikethroughLight as TextStrikethroughLightIcon,
 } from 'react-icons/pi'
 
@@ -184,6 +187,8 @@ import {
     FiDownload as DownloadIcon,
 } from 'react-icons/fi'
 
+import { GiWallet as WalletIcon } from 'react-icons/gi'
+
 import { CgFacebook as FacebookIcon } from 'react-icons/cg'
 
 import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
@@ -237,6 +242,7 @@ export {
     ExportIcon,
     ZoomInIcon,
     AdjustIcon,
+    WalletIcon,
     Image2Icon,
     UserCogIcon,
     GendersIcon,
@@ -260,6 +266,7 @@ export {
     BuildingIcon,
     DownloadIcon,
     CalendarIcon,
+    HandCoinsIcon,
     MapMarkedIcon,
     CodeBlockIcon,
     ArrowLeftIcon,
@@ -291,6 +298,7 @@ export {
     ListOrderedIcon,
     RotateRightIcon,
     LocationPinIcon,
+    HandDepositIcon,
     ChevronDownIcon,
     NotificationIcon,
     ChevronsLeftIcon,
@@ -302,6 +310,7 @@ export {
     ChevronRightIcon,
     CameraSelectIcon,
     SidebarRightIcon,
+    HandWithdrawIcon,
     BadgeQuestionIcon,
     GraduationCapIcon,
     RotateBoxLeftIcon,
