@@ -44,6 +44,7 @@ import {
 
 import {
     LiaUser as UserIcon,
+    LiaUserTagSolid as UserTagIcon,
     LiaUserCogSolid as UserCogIcon,
     LiaShieldAltSolid as ShieldIcon,
     LiaUserClockSolid as UserClockIcon,
@@ -247,6 +248,7 @@ export {
     ReportsIcon,
     PushPinIcon,
     EyeNoneIcon,
+    UserTagIcon,
     PaymentsIcon,
     HomeFillIcon,
     FacebookIcon,
