@@ -1,6 +1,6 @@
 import Modal, { IModalProps } from '@/components/modals/modal'
 import { cn } from '@/lib'
-import { IAccountRequest } from '@/server/types/accounts/accounts'
+import { IAccountsRequest } from '@/server/types/accounts/accounts'
 import { IForm } from '@/types/component/form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -37,7 +37,7 @@ type TAccountsCreateForm = z.infer<typeof AccountRequestSchema>
 
 interface IAccountsCreateFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IAccountRequest>, unknown, string> {}
+        IForm<Partial<IAccountsRequest>, unknown, string> {}
 
 const AccountsCreateForm = ({
     readOnly,

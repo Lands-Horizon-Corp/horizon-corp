@@ -8,7 +8,7 @@ import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sort
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { usePagination } from '@/hooks/use-pagination'
 import { cn } from '@/lib'
-import { IAccountResource } from '@/server/types/accounts/accounts'
+import { IAccountsResource } from '@/server/types/accounts/accounts'
 // import { useQueryClient } from "@tanstack/react-query";
 import {
     useReactTable,
@@ -26,10 +26,10 @@ import accountTableColumns, {
 import { DummyAccountsData } from './dummy-accounts'
 
 export interface AccountsTableProps
-    extends TableProps<IAccountResource>,
+    extends TableProps<IAccountsResource>,
         IAccountsTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<IAccountResource>,
+        IDataTableToolbarProps<IAccountsResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -69,7 +69,7 @@ const AccountsTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<IAccountResource>({
+    } = useDataTableState<IAccountsResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
