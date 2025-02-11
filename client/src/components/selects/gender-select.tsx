@@ -46,6 +46,7 @@ const GenderSelect = ({
             pageSize: PICKERS_SELECT_PAGE_SIZE,
         },
         enabled: !disabled,
+        showMessage: false,
     })
 
     return (
