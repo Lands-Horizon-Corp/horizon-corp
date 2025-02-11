@@ -184,6 +184,8 @@ import {
     FiDownload as DownloadIcon,
 } from 'react-icons/fi'
 
+import { GiWallet as WalletIcon } from "react-icons/gi";
+
 import { CgFacebook as FacebookIcon } from 'react-icons/cg'
 
 import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
@@ -237,6 +239,7 @@ export {
     ExportIcon,
     ZoomInIcon,
     AdjustIcon,
+    WalletIcon,
     Image2Icon,
     UserCogIcon,
     GendersIcon,
