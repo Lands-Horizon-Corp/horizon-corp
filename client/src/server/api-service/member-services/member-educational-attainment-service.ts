@@ -28,7 +28,7 @@ export default class MemberEducationalAttainmentService {
         const response =
             await APIService.get<IMemberEducationalAttainmentResource>(url, {
                 headers: {
-                    Authorization: `Bearer YOUR_TOKEN`, // Replace with actual token if needed
+                    Authorization: `Bearer YOUR_TOKEN`, 
                 },
             })
 
