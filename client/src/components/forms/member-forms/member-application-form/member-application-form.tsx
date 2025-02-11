@@ -1095,6 +1095,7 @@ const MemberApplicationForm = ({
                                                                             field.name
                                                                         }
                                                                         placeholder="Country"
+                                                                        autoComplete="country"
                                                                         disabled={isDisabled(
                                                                             field.name
                                                                         )}

@@ -6,12 +6,28 @@ import {
 import qs from 'query-string'
 import APIService from '../api-service'
 import { TEntityId } from '../../types'
+import { downloadFile } from '@/server/helpers'
 
 /**
  * Service class to handle CRUD operations for Accounts.
  */
 export default class AccountsService {
     private static readonly BASE_ENDPOINT = '/account'
+
+    /**
+     * Centralized request handling for better error management.
+     */
+    private static async makeRequest<T>(
+        apiCall: () => Promise<{ data: T }>
+    ): Promise<T> {
+        try {
+            const response = await apiCall()
+            return response.data
+        } catch (error) {
+            console.error('API Request Failed:', error)
+            throw error
+        }
+    }
 
     /**
      * Constructs the request URL with optional preloads.
@@ -36,12 +52,12 @@ export default class AccountsService {
                 query: {
                     sort,
                     preloads,
-                    filters, // Spread filters to ensure dynamic query keys
+                    filters,
                     pageIndex: pagination?.pageIndex,
                     pageSize: pagination?.pageSize,
                 },
             },
-            { skipNull: true, skipEmptyString: true } // Avoid sending empty strings or nulls
+            { skipNull: true, skipEmptyString: true }
         )
     }
     /**
@@ -103,18 +119,38 @@ export default class AccountsService {
         )
     }
 
-    /**
-     * Centralized request handling for better error management.
-     */
-    private static async makeRequest<T>(
-        apiCall: () => Promise<{ data: T }>
-    ): Promise<T> {
-        try {
-            const response = await apiCall()
-            return response.data
-        } catch (error) {
-            console.error('API Request Failed:', error)
-            throw error
-        }
+    public static async deleteMany(ids: TEntityId[]): Promise<void> {
+        const endpoint = `${AccountsService.BASE_ENDPOINT}/bulk-delete`
+
+        const payload = { ids }
+
+        await APIService.delete<void>(endpoint, payload)
+    }
+
+    public static async exportAll(): Promise<void> {
+        const url = this.buildUrl(`/export`, {})
+        await downloadFile(url, 'all_accounts_export.xlsx')
+    }
+
+    public static async exportAllFiltered(filters?: string): Promise<void> {
+        const url = this.buildUrl(`/export-search?filter=${filters || ''}`, {})
+        await downloadFile(url, 'filtered_accounts_export.xlsx')
+    }
+
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
+        const url = qs.stringifyUrl(
+            {
+                url: `${AccountsService.BASE_ENDPOINT}/export-selected`,
+                query: { ids },
+            },
+            { skipNull: true }
+        )
+
+        await downloadFile(url, 'selected_accounts_export.xlsx')
+    }
+
+    public static async exportCurrentPage(page: number): Promise<void> {
+        const url = this.buildUrl(`/export-current-page/${page}`, {})
+        await downloadFile(url, `current_page_accounts_${page}_export.xlsx`)
     }
 }
