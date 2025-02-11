@@ -28,7 +28,7 @@ export type TOtherAccountInformation =
     | 'CIB/CIK Acct.'
     | 'COH Acct.'
 
-export interface IAccountRequest {
+export interface IAccountsRequest {
     id: TEntityId
     companyId: TEntityId
     accountCode: string
@@ -60,7 +60,7 @@ export interface IAccountRequest {
     otherInformationOfAnAccount?: TOtherAccountInformation
 }
 
-export interface IAccountResource extends ITimeStamps {
+export interface IAccountsResource extends ITimeStamps {
     id: TEntityId
     companyId: TEntityId
     accountCode: string
@@ -92,4 +92,4 @@ export interface IAccountResource extends ITimeStamps {
     otherInformationOfAnAccount?: TOtherAccountInformation
 }
 
-export type IAccountPaginatedResource = IPaginatedResult<IAccountResource>
+export type IAccountsPaginatedResource = IPaginatedResult<IAccountsResource>

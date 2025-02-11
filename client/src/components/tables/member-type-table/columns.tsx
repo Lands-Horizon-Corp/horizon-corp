@@ -8,6 +8,7 @@ import DateFilter from '@/components/data-table/data-table-filters/date-filter'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
+
 import { toReadableDate } from '@/utils'
 import { IMemberTypeResource } from '@/server/types'
 

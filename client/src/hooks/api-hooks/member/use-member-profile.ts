@@ -8,17 +8,17 @@ import {
     IMemberProfileRequest,
     IMemberProfileResource,
 } from '@/server/types/member/member-profile'
-import { IAPIPreloads, IOperationCallbacks } from '../types'
+import { IAPIHook, IQueryProps } from '../types'
 import MemberProfileService from '@/server/api-service/member-services/member-profile-service'
 
 export const useCreateMemberProfile = ({
+    showMessage = true,
     preloads = ['Media'],
     onSuccess,
     onError,
 }:
     | undefined
-    | (IOperationCallbacks<IMemberProfileResource, string> &
-          IAPIPreloads) = {}) => {
+    | (IAPIHook<IMemberProfileResource, string> & IQueryProps) = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<IMemberProfileResource, string, IMemberProfileRequest>({
@@ -30,7 +30,7 @@ export const useCreateMemberProfile = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -46,7 +46,7 @@ export const useCreateMemberProfile = ({
                 queryKey: ['member', 'loader', newMember.id],
             })
 
-            toast.success('New Member Account Created')
+            if (showMessage) toast.success('New Member Account Created')
             onSuccess?.(newMember)
 
             return newMember

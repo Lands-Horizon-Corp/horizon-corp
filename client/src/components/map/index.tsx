@@ -55,32 +55,56 @@ const CustomSearch = ({
 }: TCustomSearchProps) => {
     const [results, setResults] = useState<TLatLngExpressionWithDesc[]>([])
     const [query, setQuery] = useState('')
+    const [searchQuery, setSearchQuery] = useState('')
 
     const { mutate: handleSearchMutation, isPending } = useMutation<
-        void,
-        unknown,
+        TLatLngExpressionWithDesc[],
+        string,
         string
     >({
         mutationKey: ['handleSearch'],
         mutationFn: async (query: string) => {
-            if (!query) return
-            const searchLocation = await axios.get(
-                `https://nominatim.openstreetmap.org/search?q=${query}&format=json&addressdetails=1&limit=5`
-            )
-            const locations: TLatLngExpressionWithDesc[] =
-                searchLocation.data.map((result: any) => ({
-                    lat: result.lat,
-                    lng: result.lon,
-                    desc: result.display_name,
-                }))
+            if (!query.trim()) return []
+
+            try {
+                const { data } = await axios.get(
+                    `https://nominatim.openstreetmap.org/search?q=${query}&format=json&addressdetails=1&limit=5`
+                )
+
+                return data.map(
+                    (result: {
+                        lat: string
+                        lon: string
+                        display_name: string
+                    }) => ({
+                        lat: parseFloat(result.lat),
+                        lng: parseFloat(result.lon),
+                        desc: result.display_name,
+                    })
+                )
+            } catch (error) {
+                console.error(error)
+            }
+        },
+        onSuccess: (locations) => {
             setResults(locations)
+        },
+        onError: (error) => {
+            console.error('Search failed:', error)
         },
     })
 
-    const debouncedSearch = useCallback(
-        debounce((query: string) => handleSearchMutation(query), 500),
-        [handleSearchMutation]
-    )
+    useEffect(() => {
+        const debouncedSearch = debounce((query: string) => {
+            handleSearchMutation(query)
+        }, 500)
+
+        if (searchQuery) debouncedSearch(searchQuery)
+
+        return () => {
+            debouncedSearch.cancel()
+        }
+    }, [searchQuery, handleSearchMutation])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value ?? ''
@@ -88,7 +112,7 @@ const CustomSearch = ({
             setResults([])
         }
         setQuery(value)
-        debouncedSearch(value)
+        setSearchQuery(value)
     }
 
     const handleOnLocationFound = (lat: number, lng: number) => {

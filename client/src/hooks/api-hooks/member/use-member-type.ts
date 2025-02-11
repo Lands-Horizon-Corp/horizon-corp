@@ -11,10 +11,10 @@ import { serverRequestErrExtractor } from '@/helpers'
 import MemberTypeService from '@/server/api-service/member-services/member-type-service'
 
 import {
+    IAPIHook,
     IQueryProps,
-    IAPIPreloads,
-    IOperationCallbacks,
-    IFilterPaginatedHookProps,
+    IMutationProps,
+    IAPIFilteredPaginatedHook,
 } from '../types'
 import {
     TEntityId,
@@ -38,12 +38,10 @@ export const memberTypeLoader = (
 
 export const useCreateMemberType = ({
     preloads = [],
+    showMessage = true,
     onSuccess,
     onError,
-}:
-    | undefined
-    | (IOperationCallbacks<IMemberTypeResource, string> &
-          IAPIPreloads) = {}) => {
+}: undefined | (IAPIHook<IMemberTypeResource, string> & IQueryProps) = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<IMemberTypeResource, string, IMemberTypeRequest>({
@@ -55,7 +53,7 @@ export const useCreateMemberType = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -71,7 +69,7 @@ export const useCreateMemberType = ({
                 queryKey: ['member-type', 'loader', newMemberType.id],
             })
 
-            toast.success('New Member Type Created')
+            if (showMessage) toast.success('New Member Type Created')
             onSuccess?.(newMemberType)
 
             return newMemberType
@@ -80,10 +78,11 @@ export const useCreateMemberType = ({
 }
 
 export const useUpdateMemberType = ({
+    showMessage = true,
     preloads = ['Owner', 'Media', 'Owner.Media'],
     onSuccess,
     onError,
-}: IOperationCallbacks<IMemberTypeResource> & IAPIPreloads) => {
+}: IAPIHook<IMemberTypeResource, string> & IMutationProps) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -99,7 +98,7 @@ export const useUpdateMemberType = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -115,16 +114,17 @@ export const useUpdateMemberType = ({
                 queryKey: ['member-type', 'loader', memberTypeId],
             })
 
-            toast.success('Member Type updated')
+            if (showMessage) toast.success('Member Type updated')
             onSuccess?.(result)
         },
     })
 }
 
 export const useDeleteMemberType = ({
+    showMessage = false,
     onSuccess,
     onError,
-}: IOperationCallbacks) => {
+}: IAPIHook & IMutationProps) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, TEntityId>({
@@ -136,7 +136,7 @@ export const useDeleteMemberType = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -152,7 +152,7 @@ export const useDeleteMemberType = ({
                 queryKey: ['member-type', 'loader', memberTypeId],
             })
 
-            toast.success('Member Type deleted')
+            if (showMessage) toast.success('Member Type deleted')
             onSuccess?.(undefined)
         },
     })
@@ -163,8 +163,10 @@ export const useFilteredPaginatedMemberTypes = ({
     enabled,
     filterPayload,
     preloads = [],
+    showMessage = true,
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps & IQueryProps = {}) => {
+}: IAPIFilteredPaginatedHook<TMemberTypePaginatedResource, string> &
+    IQueryProps = {}) => {
     return useQuery<TMemberTypePaginatedResource, string>({
         queryKey: [
             'member-type',
@@ -185,7 +187,7 @@ export const useFilteredPaginatedMemberTypes = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 throw errorMessage
             }
 

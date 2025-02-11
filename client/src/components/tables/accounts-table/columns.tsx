@@ -11,9 +11,9 @@ import ColumnActions from '@/components/data-table/data-table-column-header/colu
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
-import { IAccountResource } from '@/server/types/accounts/accounts'
+import { IAccountsResource } from '@/server/types/accounts/accounts'
 
-export const accountsGlobalSearchTargets: IGlobalSearchTargets<IAccountResource>[] =
+export const accountsGlobalSearchTargets: IGlobalSearchTargets<IAccountsResource>[] =
     [
         { field: 'accountCode', displayText: 'Account Code' },
         { field: 'description', displayText: 'Description' },
@@ -33,7 +33,7 @@ export const accountsGlobalSearchTargets: IGlobalSearchTargets<IAccountResource>
     ]
 
 export interface IAccountsTableActionComponentProp {
-    row: Row<IAccountResource>
+    row: Row<IAccountsResource>
 }
 
 export interface IAccountsTableColumnProps {
@@ -42,7 +42,7 @@ export interface IAccountsTableColumnProps {
 
 const AccountsTableColumns = (
     opts?: IAccountsTableColumnProps
-): ColumnDef<IAccountResource>[] => {
+): ColumnDef<IAccountsResource>[] => {
     return [
         {
             id: 'select',
@@ -286,7 +286,7 @@ const AccountsTableColumns = (
                     title="Date Created"
                 >
                     <ColumnActions {...props}>
-                        <DateFilter<IAccountResource>
+                        <DateFilter<IAccountsResource>
                             displayText="Date Created"
                             field="createdAt"
                         />

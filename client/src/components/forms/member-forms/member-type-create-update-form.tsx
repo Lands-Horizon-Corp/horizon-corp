@@ -1,5 +1,5 @@
 import z from 'zod'
-import { Path, useForm } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Form } from '@/components/ui/form'
@@ -15,27 +15,30 @@ import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { IMemberTypeRequest, TEntityId } from '@/server/types'
-import { useUpdateMemberType } from '@/hooks/api-hooks/member/use-member-type'
+import {
+    useCreateMemberType,
+    useUpdateMemberType,
+} from '@/hooks/api-hooks/member/use-member-type'
 import { createMemberTypeSchema } from '@/validations/form-validation/member/member-type-schema'
 
 type TMemberTypeForm = z.infer<typeof createMemberTypeSchema>
 
-interface IMemberTypeFormProps
+export interface IMemberTypeCreateUpdateFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IMemberTypeRequest>, unknown, unknown> {
-    memberTypeId: TEntityId
+        IForm<Partial<IMemberTypeRequest>, unknown, string> {
+    memberTypeId?: TEntityId
 }
 
-const MemberTypeUpdateForm = ({
+const MemberTypeCreateUpdateForm = ({
     memberTypeId,
     readOnly,
     className,
-    hiddenFields,
     defaultValues,
-    disabledFields,
     onError,
     onSuccess,
-}: IMemberTypeFormProps) => {
+}: IMemberTypeCreateUpdateFormProps) => {
+    const isUpdateMode = Boolean(memberTypeId)
+
     const form = useForm<TMemberTypeForm>({
         resolver: zodResolver(createMemberTypeSchema),
         reValidateMode: 'onChange',
@@ -48,56 +51,72 @@ const MemberTypeUpdateForm = ({
         },
     })
 
+    // Create hook (for create mode)
     const {
-        error,
+        error: createError,
+        isPending: isCreating,
+        mutate: createMemberType,
+    } = useCreateMemberType({ onSuccess, onError })
+
+    // Update hook (for update mode)
+    const {
+        error: updateError,
         isPending: isUpdating,
         mutate: updateMemberType,
     } = useUpdateMemberType({ onSuccess, onError })
 
-    const isDisabled = (field: Path<TMemberTypeForm>) =>
-        readOnly || disabledFields?.includes(field) || false
+    const onSubmit = (formData: TMemberTypeForm) => {
+        if (isUpdateMode && memberTypeId) {
+            updateMemberType({ memberTypeId, data: formData })
+        } else {
+            createMemberType(formData)
+        }
+    }
+
+    // Combine any errors from both operations
+    const combinedError = createError || updateError
 
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit((formData) =>
-                    updateMemberType({ memberTypeId, data: formData })
-                )}
+                onSubmit={form.handleSubmit(onSubmit)}
                 className={cn('flex w-full flex-col gap-y-4', className)}
             >
                 <fieldset
-                    disabled={isUpdating || readOnly}
+                    disabled={isCreating || isUpdating || readOnly}
                     className="grid gap-x-6 gap-y-4 sm:gap-y-3"
                 >
                     <fieldset className="space-y-3">
                         <FormFieldWrapper
+                            control={form.control}
                             name="name"
                             label="Name"
-                            control={form.control}
-                            hiddenFields={hiddenFields}
                             render={({ field }) => (
                                 <Input
                                     {...field}
                                     id={field.name}
                                     placeholder="Member Type Name"
                                     autoComplete="member-type-name"
-                                    disabled={isDisabled(field.name)}
+                                    disabled={
+                                        isCreating || isUpdating || readOnly
+                                    }
                                 />
                             )}
                         />
 
                         <FormFieldWrapper
+                            control={form.control}
                             name="prefix"
                             label="Prefix"
-                            control={form.control}
-                            hiddenFields={hiddenFields}
                             render={({ field }) => (
                                 <Input
                                     {...field}
                                     id={field.name}
                                     placeholder="Prefix"
                                     autoComplete="member-type-prefix"
-                                    disabled={isDisabled(field.name)}
+                                    disabled={
+                                        isCreating || isUpdating || readOnly
+                                    }
                                 />
                             )}
                         />
@@ -112,14 +131,17 @@ const MemberTypeUpdateForm = ({
                                     id={field.name}
                                     placeholder="Description"
                                     autoComplete="member-type-description"
-                                    disabled={isDisabled(field.name)}
+                                    disabled={
+                                        isCreating || isUpdating || readOnly
+                                    }
                                 />
                             )}
                         />
                     </fieldset>
                 </fieldset>
 
-                <FormErrorMessage errorMessage={error} />
+                <FormErrorMessage errorMessage={combinedError} />
+
                 <div>
                     <Separator className="my-2 sm:my-4" />
                     <div className="flex items-center justify-end gap-x-2">
@@ -133,10 +155,16 @@ const MemberTypeUpdateForm = ({
                         </Button>
                         <Button
                             type="submit"
-                            disabled={isUpdating}
+                            disabled={isCreating || isUpdating}
                             className="w-full self-end px-8 sm:w-fit"
                         >
-                            {isUpdating ? <LoadingSpinner /> : 'Update'}
+                            {isCreating || isUpdating ? (
+                                <LoadingSpinner />
+                            ) : isUpdateMode ? (
+                                'Update'
+                            ) : (
+                                'Create'
+                            )}
                         </Button>
                     </div>
                 </div>
@@ -145,14 +173,14 @@ const MemberTypeUpdateForm = ({
     )
 }
 
-export const MemberTypeUpdateFormModal = ({
-    title = 'Update Member Type',
-    description = 'Fill out the form to update member type.',
+export const MemberTypeCreateUpdateFormModal = ({
+    title = 'Create Member Type',
+    description = 'Fill out the form to add a new member type.',
     className,
     formProps,
     ...props
 }: IModalProps & {
-    formProps: Omit<IMemberTypeFormProps, 'className'>
+    formProps?: Omit<IMemberTypeCreateUpdateFormProps, 'className'>
 }) => {
     return (
         <Modal
@@ -161,9 +189,9 @@ export const MemberTypeUpdateFormModal = ({
             className={cn('', className)}
             {...props}
         >
-            <MemberTypeUpdateForm {...formProps} />
+            <MemberTypeCreateUpdateForm {...formProps} />
         </Modal>
     )
 }
 
-export default MemberTypeUpdateForm
+export default MemberTypeCreateUpdateForm

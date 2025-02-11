@@ -6,9 +6,10 @@ import { serverRequestErrExtractor } from '@/helpers'
 import GenderService from '@/server/api-service/gender-service'
 
 import {
+    IAPIHook,
     IQueryProps,
     IOperationCallbacks,
-    IFilterPaginatedHookProps,
+    IAPIFilteredPaginatedHook,
 } from './types'
 import {
     TEntityId,
@@ -18,9 +19,10 @@ import {
 } from '@/server/types'
 
 export const useCreateGender = ({
+    showMessage = true,
     onError,
     onSuccess,
-}: IOperationCallbacks<IGenderResource, string> = {}) => {
+}: IAPIHook<IGenderResource, string> & IQueryProps = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<IGenderResource, string, IGenderRequest>({
@@ -32,7 +34,7 @@ export const useCreateGender = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -47,7 +49,7 @@ export const useCreateGender = ({
                 queryKey: ['gender', 'loader', newGender.id],
             })
 
-            toast.success('New Gender Created')
+            if (showMessage) toast.success('New Gender Created')
             onSuccess?.(newGender)
 
             return newGender
@@ -136,8 +138,10 @@ export const useFilteredPaginatedGenders = ({
     enabled,
     filterPayload,
     preloads = [],
+    showMessage = true,
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps & IQueryProps = {}) => {
+}: IAPIFilteredPaginatedHook<IGenderPaginatedResource, string> &
+    IQueryProps = {}) => {
     return useQuery<IGenderPaginatedResource, string>({
         queryKey: ['gender', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
@@ -152,7 +156,7 @@ export const useFilteredPaginatedGenders = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 throw errorMessage
             }
 

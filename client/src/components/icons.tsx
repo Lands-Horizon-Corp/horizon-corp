@@ -44,6 +44,7 @@ import {
 
 import {
     LiaUser as UserIcon,
+    LiaUserTagSolid as UserTagIcon,
     LiaUserCogSolid as UserCogIcon,
     LiaShieldAltSolid as ShieldIcon,
     LiaUserClockSolid as UserClockIcon,
@@ -63,6 +64,7 @@ import {
     PiMicrosoftExcelLogoFill as ExcelIcon,
     PiBuildingOffice as BuildingBranchIcon,
     PiListBulletsBold as ListBulletsBoldIcon,
+    PiGraduationCapFill as GraduationCapIcon,
     PiWarningCircleFill as WarningCircleIcon,
     PiTextStrikethroughLight as TextStrikethroughLightIcon,
 } from 'react-icons/pi'
@@ -246,6 +248,7 @@ export {
     ReportsIcon,
     PushPinIcon,
     EyeNoneIcon,
+    UserTagIcon,
     PaymentsIcon,
     HomeFillIcon,
     FacebookIcon,
@@ -300,6 +303,7 @@ export {
     CameraSelectIcon,
     SidebarRightIcon,
     BadgeQuestionIcon,
+    GraduationCapIcon,
     RotateBoxLeftIcon,
     ToolbarItalicIcon,
     ChevronsRightIcon,
