@@ -27,7 +27,7 @@ import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sort
 
 import { TableProps } from '../types'
 import { IMemberEducationalAttainmentResource } from '@/server/types'
-import MemberEducationalAttainmentService from '@/server/api-service/member-services/member-educational-attainment'
+import MemberEducationalAttainmentService from '@/server/api-service/member-services/member-educational-attainment-service'
 import { useFilteredPaginatedMemberEducationalAttainments } from '@/hooks/api-hooks/member/use-member-educational-attainment'
 
 export interface MemberEducationalAttainmentTableProps
