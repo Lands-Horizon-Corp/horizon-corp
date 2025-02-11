@@ -4,7 +4,7 @@ import {
     getSortedRowModel,
 } from '@tanstack/react-table'
 import { useMemo } from 'react'
-// import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar, {
@@ -54,7 +54,7 @@ const AccountsComputationTypeTable = ({
     onSelectData,
     actionComponent,
 }: AccountsComputationTypeTableProps) => {
-    // const queryClient = useQueryClient()
+    const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
     const { sortingState, tableSorting, setTableSorting } =
         useDataTableSorting()
@@ -142,16 +142,19 @@ const AccountsComputationTypeTable = ({
                         onClick: () => refetch(),
                         isLoading: isPending || isRefetching,
                     }}
-                    // deleteActionProps={{
-                    //     onDeleteSuccess: () =>
-                    //         queryClient.invalidateQueries({
-                    //             queryKey: ['account-computation-type', 'resource-query'],
-                    //         }),
-                    //     onDelete: (selectedData) =>
-                    //         ComputationTypeService.deleteMany(
-                    //             selectedData.map((data) => data.id)
-                    //         ),
-                    // }}
+                    deleteActionProps={{
+                        onDeleteSuccess: () =>
+                            queryClient.invalidateQueries({
+                                queryKey: [
+                                    'computation-type',
+                                    'resource-query',
+                                ],
+                            }),
+                        onDelete: (selectedData) =>
+                            ComputationTypeService.deleteMany(
+                                selectedData.map((data) => data.id)
+                            ),
+                    }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
                         pagination,

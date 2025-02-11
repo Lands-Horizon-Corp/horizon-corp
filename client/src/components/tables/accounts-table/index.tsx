@@ -23,7 +23,7 @@ import accountTableColumns, {
     IAccountsTableColumnProps,
 } from './columns'
 import { DummyAccountsData } from './dummy-accounts'
-// import { useQueryClient } from '@tanstack/react-query'
+import { useQueryClient } from '@tanstack/react-query'
 import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
 import AccountsService from '@/server/api-service/accounting-services/accounts-service'
 
@@ -49,7 +49,7 @@ const AccountsTable = ({
     onSelectData,
     actionComponent,
 }: AccountsTableProps) => {
-    // const queryClient = useQueryClient()
+    const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
     const { tableSorting, setTableSorting, sortingState } =
         useDataTableSorting()
@@ -137,6 +137,16 @@ const AccountsTable = ({
                     refreshActionProps={{
                         onClick: () => refetch(),
                         isLoading: isPending || isRefetching,
+                    }}
+                    deleteActionProps={{
+                        onDeleteSuccess: () =>
+                            queryClient.invalidateQueries({
+                                queryKey: ['accounts', 'resource-query'],
+                            }),
+                        onDelete: (selectedData) =>
+                            AccountsService.deleteMany(
+                                selectedData.map((data) => data.id)
+                            ),
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
