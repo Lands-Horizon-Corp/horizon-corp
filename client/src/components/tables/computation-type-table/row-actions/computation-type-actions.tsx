@@ -21,21 +21,23 @@ const ComputationTypeTableOwnerAction = ({
 
     const { onOpen } = useConfirmModalStore()
 
-    const { isPending: isDeletingComputationType, mutate: deleteComputationType } =
-        useDeleteComputationType({
-            onSuccess: onDeleteSuccess,
-        })
+    const {
+        isPending: isDeletingComputationType,
+        mutate: deleteComputationType,
+    } = useDeleteComputationType({
+        onSuccess: onDeleteSuccess,
+    })
 
     return (
         <>
             <div onClick={(e) => e.stopPropagation()}>
                 <ComputationTypeCreateFormModal
-                   formProps={{
-                    computationTypeId: computationType.id,
-                    defaultValues: {
-                        ...computationType,
-                    },
-                }}
+                    formProps={{
+                        computationTypeId: computationType.id,
+                        defaultValues: {
+                            ...computationType,
+                        },
+                    }}
                     title="Update Computation Type"
                     description="Modify/Update computation type..."
                     open={updateModalForm}
@@ -51,7 +53,8 @@ const ComputationTypeTableOwnerAction = ({
                             title: 'Delete Computation Type',
                             description:
                                 'Are you sure you want to delete this Computation Type?',
-                            onConfirm: () => deleteComputationType(computationType.id),
+                            onConfirm: () =>
+                                deleteComputationType(computationType.id),
                         })
                     },
                 }}

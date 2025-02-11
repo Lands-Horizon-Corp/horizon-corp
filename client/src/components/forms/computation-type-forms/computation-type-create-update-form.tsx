@@ -56,7 +56,7 @@ const ComputationTypeCreateForm = ({
             description: '',
         },
     })
-    
+
     const {
         error: createError,
         isPending: isCreating,
