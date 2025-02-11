@@ -18,10 +18,10 @@ import {
     IBranchPaginatedResource,
 } from '@/server/types'
 import {
-    IAPIPreloads,
-    IFilterPaginatedHookProps,
-    IOperationCallbacks,
+    IAPIHook,
     IQueryProps,
+    IMutationProps,
+    IAPIFilteredPaginatedHook,
 } from './types'
 
 // for route pathParam loader
@@ -40,10 +40,11 @@ export const branchLoader = (
 
 // Create branch
 export const useCreateBranch = ({
+    showMessage = true,
     preloads = ['Company', 'Company.Media'],
     onError,
     onSuccess,
-}: IOperationCallbacks<IBranchResource, string> & IAPIPreloads) => {
+}: IAPIHook<IBranchResource, string> & IMutationProps) => {
     const queryClient = useQueryClient()
 
     return useMutation<IBranchResource, string, IBranchRequest>({
@@ -55,7 +56,7 @@ export const useCreateBranch = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -63,7 +64,7 @@ export const useCreateBranch = ({
             queryClient.setQueryData(['branch', data.id], data)
             queryClient.setQueryData(['branch', 'loader', data.id], data)
 
-            toast.success('Branch Created')
+            if (showMessage) toast.success('Branch Created')
             onSuccess?.(data)
 
             return data
@@ -73,10 +74,11 @@ export const useCreateBranch = ({
 
 // Update branch
 export const useUpdateBranch = ({
-    onSuccess,
-    onError,
+    showMessage = true,
     preloads = ['Media', 'Owner', 'Owner.Media'],
-}: IOperationCallbacks<IBranchResource, string> & IAPIPreloads) => {
+    onError,
+    onSuccess,
+}: IAPIHook<IBranchResource, string> & IMutationProps) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -95,8 +97,8 @@ export const useUpdateBranch = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                if (onError) onError(errorMessage)
-                else toast.error(errorMessage)
+                onError?.(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 throw errorMessage
             }
 
@@ -121,7 +123,7 @@ export const useUpdateBranch = ({
 
             onSuccess?.(response)
 
-            toast.success('Branch updated.')
+            if (showMessage) toast.success('Branch updated.')
             return response
         },
     })
@@ -129,9 +131,10 @@ export const useUpdateBranch = ({
 
 // Update branch logo
 export const useUpdateBranchProfilePicture = ({
+    showMessage = true,
     onSuccess,
     onError,
-}: IOperationCallbacks<IBranchResource>) => {
+}: IAPIHook<IBranchResource, string> & IMutationProps) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -147,7 +150,8 @@ export const useUpdateBranchProfilePicture = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(`Failed to update branch: ${errorMessage}`)
+                if (showMessage)
+                    toast.error(`Failed to update branch: ${errorMessage}`)
                 onError?.(errorMessage)
                 throw new Error(errorMessage)
             }
@@ -174,7 +178,7 @@ export const useUpdateBranchProfilePicture = ({
                 data
             )
 
-            toast.success('Branch Logo Updated')
+            if (showMessage) toast.success('Branch Logo Updated')
             onSuccess?.(data)
         },
     })
@@ -182,9 +186,10 @@ export const useUpdateBranchProfilePicture = ({
 
 // Delete branch
 export const useDeleteBranch = ({
+    showMessage = true,
     onSuccess,
     onError,
-}: undefined | IOperationCallbacks = {}) => {
+}: undefined | (IAPIHook & IQueryProps) = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, TEntityId>({
@@ -194,7 +199,7 @@ export const useDeleteBranch = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw new Error(errorMessage)
             }
@@ -209,7 +214,7 @@ export const useDeleteBranch = ({
                 queryKey: ['branch', 'loader', branchId],
             })
 
-            toast.success('Branch deleted')
+            if (showMessage) toast.success('Branch deleted')
             onSuccess?.(undefined)
         },
     })
@@ -222,7 +227,8 @@ export const useFilteredPaginatedBranch = ({
     filterPayload,
     preloads = ['Media', 'Company'],
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps & IQueryProps = {}) => {
+}: IAPIFilteredPaginatedHook<IBranchPaginatedResource, string> &
+    IQueryProps = {}) => {
     return useQuery<IBranchPaginatedResource, string>({
         queryKey: ['branch', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
