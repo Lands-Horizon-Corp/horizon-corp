@@ -9,6 +9,7 @@ import {
     IQueryProps,
     IOperationCallbacks,
     IFilterPaginatedHookProps,
+    IAPIHook,
 } from './types'
 import {
     TEntityId,
@@ -18,9 +19,10 @@ import {
 } from '@/server/types'
 
 export const useCreateGender = ({
+    showMessage = true,
     onError,
     onSuccess,
-}: IOperationCallbacks<IGenderResource, string> = {}) => {
+}: IAPIHook<IGenderResource, string> & IQueryProps = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<IGenderResource, string, IGenderRequest>({
@@ -32,7 +34,7 @@ export const useCreateGender = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -47,7 +49,7 @@ export const useCreateGender = ({
                 queryKey: ['gender', 'loader', newGender.id],
             })
 
-            toast.success('New Gender Created')
+            if (showMessage) toast.success('New Gender Created')
             onSuccess?.(newGender)
 
             return newGender
