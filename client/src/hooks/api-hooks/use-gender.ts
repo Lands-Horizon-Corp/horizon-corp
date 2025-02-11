@@ -6,10 +6,10 @@ import { serverRequestErrExtractor } from '@/helpers'
 import GenderService from '@/server/api-service/gender-service'
 
 import {
+    IAPIHook,
     IQueryProps,
     IOperationCallbacks,
-    IFilterPaginatedHookProps,
-    IAPIHook,
+    IAPIFilteredPaginatedHook,
 } from './types'
 import {
     TEntityId,
@@ -138,8 +138,10 @@ export const useFilteredPaginatedGenders = ({
     enabled,
     filterPayload,
     preloads = [],
+    showMessage = true,
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps & IQueryProps = {}) => {
+}: IAPIFilteredPaginatedHook<IGenderPaginatedResource, string> &
+    IQueryProps = {}) => {
     return useQuery<IGenderPaginatedResource, string>({
         queryKey: ['gender', 'resource-query', filterPayload, pagination, sort],
         queryFn: async () => {
@@ -154,7 +156,7 @@ export const useFilteredPaginatedGenders = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 throw errorMessage
             }
 

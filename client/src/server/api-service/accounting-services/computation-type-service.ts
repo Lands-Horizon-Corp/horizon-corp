@@ -6,12 +6,28 @@ import {
 import qs from 'query-string'
 import APIService from '../api-service'
 import { TEntityId } from '../../types'
+import { downloadFile } from '@/server/helpers'
 
 /**
  * Service class to handle CRUD operations for Computation Types.
  */
 export default class ComputationTypeService {
     private static readonly BASE_ENDPOINT = '/computation-type'
+
+    /**
+     * Centralized request handling for better error management.
+     */
+    private static async makeRequest<T>(
+        apiCall: () => Promise<{ data: T }>
+    ): Promise<T> {
+        try {
+            const response = await apiCall()
+            return response.data
+        } catch (error) {
+            console.error('API Request Failed:', error)
+            throw error
+        }
+    }
 
     /**
      * Constructs the request URL with optional preloads.
@@ -107,18 +123,33 @@ export default class ComputationTypeService {
         )
     }
 
-    /**
-     * Centralized request handling for better error management.
-     */
-    private static async makeRequest<T>(
-        apiCall: () => Promise<{ data: T }>
-    ): Promise<T> {
-        try {
-            const response = await apiCall()
-            return response.data
-        } catch (error) {
-            console.error('API Request Failed:', error)
-            throw error
-        }
+    public static async exportAll(): Promise<void> {
+        const url = this.buildUrl(`/export`, {})
+        await downloadFile(url, 'all_computation_type_export.xlsx')
+    }
+
+    public static async exportAllFiltered(filters?: string): Promise<void> {
+        const url = this.buildUrl(`/export-search?filter=${filters || ''}`, {})
+        await downloadFile(url, 'filtered_computation_type_export.xlsx')
+    }
+
+    public static async exportSelected(ids: TEntityId[]): Promise<void> {
+        const url = qs.stringifyUrl(
+            {
+                url: `${ComputationTypeService.BASE_ENDPOINT}/export-selected`,
+                query: { ids },
+            },
+            { skipNull: true }
+        )
+
+        await downloadFile(url, 'selected_computation_type_export.xlsx')
+    }
+
+    public static async exportCurrentPage(page: number): Promise<void> {
+        const url = this.buildUrl(`/export-current-page/${page}`, {})
+        await downloadFile(
+            url,
+            `current_page_computation_type_${page}_export.xlsx`
+        )
     }
 }
