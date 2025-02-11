@@ -45,6 +45,7 @@ const MemberEducationalAttainmentSelect: React.FC<
                 pageSize: PICKERS_SELECT_PAGE_SIZE,
             },
             enabled: !disabled,
+            showMessage: false,
         })
 
     return (

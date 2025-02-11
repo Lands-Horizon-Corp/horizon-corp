@@ -51,6 +51,7 @@ const OwnerPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
             filterPayload: finalFilterPayload,
             pagination,
             enabled: !disabled,
+            showMessage: false,
         })
 
     const owner = useOwner({ ownerId: value as TEntityId })
