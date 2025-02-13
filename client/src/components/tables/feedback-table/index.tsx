@@ -159,7 +159,7 @@ const FeedBackTable = ({
                 className={cn(
                     'flex h-full flex-col gap-y-2',
                     className,
-                    !isScrollable && 'max-h-none h-fit'
+                    !isScrollable && 'h-fit max-h-none'
                 )}
             >
                 <DataTableToolbar
