@@ -22,6 +22,7 @@ import {
     HandDepositIcon,
     HandCoinsIcon,
     HandWithdrawIcon,
+    BriefCaseIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
@@ -86,6 +87,11 @@ const ownerSidebarItem: TSidebarItem[] = [
                         text: 'Member Classification',
                         url: '/member-classification',
                         Icon: UserTagIcon,
+                    },
+                    {
+                        text: 'Member Occupation',
+                        url: '/member-occupation',
+                        Icon: BriefCaseIcon,
                     },
                 ],
             },

@@ -50,6 +50,12 @@ const ownerMemberClassificationRoute = createRoute({
     component: lazyRouteComponent(() => import('./member-classification-page')),
 })
 
+const ownerMemberOccupationRoute = createRoute({
+    getParentRoute: () => ownerUserMemberRoute,
+    path: '/member-occupation',
+    component: lazyRouteComponent(() => import('./member-occupation-page')),
+})
+
 const OwnerUserMemberRoute = ownerUserMemberRoute.addChildren([
     ownerUserMemberIndexRoute,
     ownerViewMembersRoute,
@@ -57,6 +63,7 @@ const OwnerUserMemberRoute = ownerUserMemberRoute.addChildren([
     ownerEducationalAttainmentRoute,
     ownerMemberClassificationRoute,
     ownerMemberTypesRoute,
+    ownerMemberOccupationRoute,
     OwnerMemberIdRoute,
 ])
 
