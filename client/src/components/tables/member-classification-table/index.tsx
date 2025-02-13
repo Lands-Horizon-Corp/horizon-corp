@@ -125,7 +125,13 @@ const MemberClassificationTable = ({
 
     return (
         <FilterContext.Provider value={filterState}>
-            <div className={cn('flex h-full flex-col gap-y-2', className)}>
+            <div
+                className={cn(
+                    'flex h-full flex-col gap-y-2',
+                    className,
+                    !isScrollable && 'max-h-none h-fit'
+                )}
+            >
                 <DataTableToolbar
                     globalSearchProps={{
                         defaultMode: 'equal',
