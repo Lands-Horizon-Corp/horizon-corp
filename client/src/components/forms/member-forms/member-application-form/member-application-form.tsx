@@ -71,6 +71,7 @@ const Steps: Step[] = [
             'passbookNumber',
             'oldReferenceId',
             'status',
+            'memberTypeId',
             'branchId',
             'isMutualFundMember',
             'isMicroFinanceMember',
@@ -270,7 +271,7 @@ const MemberApplicationForm = ({
                                     <FormFieldWrapper
                                         name="memberTypeId"
                                         control={form.control}
-                                        label="Member Type"
+                                        label="Member Type *"
                                         hiddenFields={hiddenFields}
                                         render={({ field }) => (
                                             <FormControl>
@@ -282,24 +283,6 @@ const MemberApplicationForm = ({
                                                     onChange={(memberType) =>
                                                         field.onChange(
                                                             memberType.id
-                                                        )
-                                                    }
-                                                />
-                                            </FormControl>
-                                        )}
-                                    />
-                                    <FormFieldWrapper
-                                        name="memberClassificationId"
-                                        control={form.control}
-                                        label="Member Classification"
-                                        hiddenFields={hiddenFields}
-                                        render={({ field }) => (
-                                            <FormControl>
-                                                <MemberClassificationCombobox
-                                                    {...field}
-                                                    onChange={(memClass) =>
-                                                        field.onChange(
-                                                            memClass.id
                                                         )
                                                     }
                                                 />
@@ -361,9 +344,28 @@ const MemberApplicationForm = ({
                                         )}
                                     />
                                     <FormFieldWrapper
+                                        name="memberClassificationId"
+                                        control={form.control}
+                                        label="Member Classification"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <MemberClassificationCombobox
+                                                    {...field}
+                                                    onChange={(memClass) =>
+                                                        field.onChange(
+                                                            memClass.id
+                                                        )
+                                                    }
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
                                         name="memberId"
                                         control={form.control}
                                         label="Member Account ID"
+                                        description='System generated unique ID for member'
                                         hiddenFields={hiddenFields}
                                         render={({ field }) => (
                                             <FormControl>
