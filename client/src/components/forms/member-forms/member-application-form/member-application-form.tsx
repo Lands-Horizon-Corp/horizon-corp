@@ -52,6 +52,7 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { TFilterObject } from '@/contexts/filter-context'
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -82,7 +83,7 @@ const Steps: Step[] = [
             'civilStatus',
             'memberGenderId',
             'memberClassificationId',
-            'occupation',
+            'occupationId',
             'businessAddress',
             'businessContact',
             'memberAddress',
@@ -137,7 +138,6 @@ const MemberApplicationForm = ({
         mode: 'onChange',
         defaultValues: {
             notes: '',
-            occupation: '',
             description: '',
             contactNumber: '',
             civilStatus: 'Single',
@@ -602,16 +602,20 @@ const MemberApplicationForm = ({
                                         )}
                                     />
                                     <FormFieldWrapper
-                                        name="occupation"
+                                        name="occupationId"
                                         control={form.control}
                                         label="Occupation"
                                         hiddenFields={hiddenFields}
                                         render={({ field }) => (
                                             <FormControl>
-                                                <Input
+                                                <MemberOccupationCombobox
                                                     {...field}
-                                                    id={field.name}
-                                                    placeholder="Enter Occupation"
+                                                    onChange={(occupation) =>
+                                                        field.onChange(
+                                                            occupation.id
+                                                        )
+                                                    }
+                                                    placeholder="Select Occupation"
                                                     disabled={isDisabled(
                                                         field.name
                                                     )}
