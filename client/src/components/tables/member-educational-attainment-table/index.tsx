@@ -133,7 +133,7 @@ const MemberEducationalAttainmentTable = ({
                 className={cn(
                     'flex h-full flex-col gap-y-2',
                     className,
-                    !isScrollable && 'h-fit max-h-none'
+                    !isScrollable && 'h-fit !max-h-none'
                 )}
             >
                 <DataTableToolbar
