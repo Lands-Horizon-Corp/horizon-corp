@@ -83,7 +83,7 @@ const Steps: Step[] = [
             'civilStatus',
             'memberGenderId',
             'memberClassificationId',
-            'occupation',
+            'occupationId',
             'businessAddress',
             'businessContact',
             'memberAddress',
