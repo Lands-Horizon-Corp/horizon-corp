@@ -36,7 +36,7 @@ export const createMemberProfileSchema = z.object({
     civilStatus: z
         .enum(['Married', 'Single', 'Widowed', 'Separated', 'N/A'])
         .default('Single'),
-    occupation: z.string().optional(),
+    occupationId: entityIdSchema.optional(),
     sssNumber: z.string().optional(),
     businessAddress: z.string().optional(),
     businessContact: z.string().optional(),
