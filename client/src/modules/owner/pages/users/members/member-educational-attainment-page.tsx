@@ -15,7 +15,7 @@ const OwnerMemberEducationalAttainmentPage = () => {
                 onOpenChange={setCreateModal}
             />
             <MemberEducationalAttainmentTable
-                className="min-h-[90vh] w-full"
+                className="max-h-[90vh] min-h-[90vh] w-full"
                 actionComponent={(props) => (
                     <MemberEducationalAttainmentTableOwnerAction {...props} />
                 )}

@@ -93,6 +93,11 @@ const ownerSidebarItem: TSidebarItem[] = [
                         url: '/member-occupation',
                         Icon: BriefCaseIcon,
                     },
+                    {
+                        text: 'Genders',
+                        Icon: GendersIcon,
+                        url: '/genders',
+                    },
                 ],
             },
             {
@@ -111,11 +116,6 @@ const ownerSidebarItem: TSidebarItem[] = [
                         Icon: FootstepsIcon,
                     },
                 ],
-            },
-            {
-                text: 'Genders',
-                Icon: GendersIcon,
-                url: '/genders',
             },
         ],
     },

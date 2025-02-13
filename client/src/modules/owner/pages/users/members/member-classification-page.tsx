@@ -15,7 +15,7 @@ const MemberClassificationPage = () => {
                 onOpenChange={setCreateModal}
             />
             <MemberClassificationTable
-                className="min-h-[90vh] w-full"
+                className="max-h-[90vh] w-full"
                 toolbarProps={{
                     createActionProps: { onClick: () => setCreateModal(true) },
                 }}

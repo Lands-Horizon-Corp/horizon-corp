@@ -7,7 +7,7 @@ const OwnerMembersActivityPage = () => {
         <PageContainer>
             <EnsureOwnerCompany disabled>
                 <FootstepTable
-                    className="min-h-[90vh] w-full"
+                    className="max-h-[90vh] min-h-[90vh] w-full"
                     mode="team"
                     defaultFilter={{
                         accountType: {

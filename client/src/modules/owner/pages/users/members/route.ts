@@ -56,7 +56,14 @@ const ownerMemberOccupationRoute = createRoute({
     component: lazyRouteComponent(() => import('./member-occupation-page')),
 })
 
+export const ownerGenderRoute = createRoute({
+    path: 'genders',
+    getParentRoute: () => ownerUserMemberRoute,
+    component: lazyRouteComponent(() => import('./genders-page')),
+})
+
 const OwnerUserMemberRoute = ownerUserMemberRoute.addChildren([
+    ownerGenderRoute,
     ownerUserMemberIndexRoute,
     ownerViewMembersRoute,
     ownerMembersActivityRoute,
