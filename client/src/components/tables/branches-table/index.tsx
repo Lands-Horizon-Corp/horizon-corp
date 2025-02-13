@@ -130,7 +130,7 @@ const BranchesTable = ({
                 className={cn(
                     'flex h-full flex-col gap-y-2',
                     className,
-                    !isScrollable && 'max-h-none'
+                    !isScrollable && 'h-fit max-h-none'
                 )}
             >
                 <DataTableToolbar
