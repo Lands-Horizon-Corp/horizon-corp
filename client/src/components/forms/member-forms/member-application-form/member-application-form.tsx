@@ -365,7 +365,7 @@ const MemberApplicationForm = ({
                                         name="memberId"
                                         control={form.control}
                                         label="Member Account ID"
-                                        description='System generated unique ID for member'
+                                        description="System generated unique ID for member"
                                         hiddenFields={hiddenFields}
                                         render={({ field }) => (
                                             <FormControl>
