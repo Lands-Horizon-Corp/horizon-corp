@@ -31,7 +31,7 @@ export interface IMemberProfileRequest {
     contactNumber: string
     tinNumber?: string
     civilStatus: TCivilStatus
-    occupationId: TEntityId
+    occupationId?: TEntityId
     sssNumber?: string
     businessAddress?: string
     businessContact?: string
