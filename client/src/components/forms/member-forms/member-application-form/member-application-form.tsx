@@ -39,6 +39,10 @@ import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { PhoneInput } from '@/components/contact-input/contact-input'
 import MemberTypeSelect from '@/components/selects/member-type-select'
+import ProvinceCombobox from '@/components/comboboxes/province-combobox'
+import BarangayCombobox from '@/components/comboboxes/barangay-combobox'
+import MunicipalityCombobox from '@/components/comboboxes/municipality-combobox'
+import MemberClassificationCombobox from '@/components/comboboxes/member-classification-combobox'
 import MemberEducationalAttainmentPicker from '@/components/comboboxes/member-educational-attainment-combobox'
 
 import { useCreateMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
@@ -48,7 +52,6 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { TFilterObject } from '@/contexts/filter-context'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import MemberClassificationCombobox from '@/components/comboboxes/member-classification-combobox'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -71,6 +74,7 @@ const Steps: Step[] = [
             'passbookNumber',
             'oldReferenceId',
             'status',
+            'memberTypeId',
             'branchId',
             'isMutualFundMember',
             'isMicroFinanceMember',
@@ -165,6 +169,8 @@ const MemberApplicationForm = ({
         control: form.control,
         name: 'memberAddress',
     })
+
+    form.watch('memberAddress')
 
     const memberContactNumberReferences = useFieldArray({
         control: form.control,
@@ -270,7 +276,7 @@ const MemberApplicationForm = ({
                                     <FormFieldWrapper
                                         name="memberTypeId"
                                         control={form.control}
-                                        label="Member Type"
+                                        label="Member Type *"
                                         hiddenFields={hiddenFields}
                                         render={({ field }) => (
                                             <FormControl>
@@ -282,24 +288,6 @@ const MemberApplicationForm = ({
                                                     onChange={(memberType) =>
                                                         field.onChange(
                                                             memberType.id
-                                                        )
-                                                    }
-                                                />
-                                            </FormControl>
-                                        )}
-                                    />
-                                    <FormFieldWrapper
-                                        name="memberClassificationId"
-                                        control={form.control}
-                                        label="Member Classification"
-                                        hiddenFields={hiddenFields}
-                                        render={({ field }) => (
-                                            <FormControl>
-                                                <MemberClassificationCombobox
-                                                    {...field}
-                                                    onChange={(memClass) =>
-                                                        field.onChange(
-                                                            memClass.id
                                                         )
                                                     }
                                                 />
@@ -361,9 +349,28 @@ const MemberApplicationForm = ({
                                         )}
                                     />
                                     <FormFieldWrapper
+                                        name="memberClassificationId"
+                                        control={form.control}
+                                        label="Member Classification"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <MemberClassificationCombobox
+                                                    {...field}
+                                                    onChange={(memClass) =>
+                                                        field.onChange(
+                                                            memClass.id
+                                                        )
+                                                    }
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
                                         name="memberId"
                                         control={form.control}
                                         label="Member Account ID"
+                                        description="System generated unique ID for member"
                                         hiddenFields={hiddenFields}
                                         render={({ field }) => (
                                             <FormControl>
@@ -680,10 +687,10 @@ const MemberApplicationForm = ({
                                                         className="flex w-full flex-col gap-4 md:flex-row"
                                                     >
                                                         <FormFieldWrapper
+                                                            name={`memberAddress.${index}.label`}
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberAddress.${index}.label`}
                                                             label="Label *"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -703,11 +710,11 @@ const MemberApplicationForm = ({
                                                             )}
                                                         />
                                                         <FormFieldWrapper
+                                                            name={`memberAddress.${index}.province`}
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberAddress.${index}.barangay`}
-                                                            label="Barangay *"
+                                                            label="Province *"
                                                             hiddenFields={
                                                                 hiddenFields
                                                             }
@@ -715,21 +722,105 @@ const MemberApplicationForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <Input
+                                                                    <ProvinceCombobox
                                                                         {...field}
                                                                         id={
                                                                             field.name
                                                                         }
-                                                                        placeholder="Barangay"
+                                                                        placeholder="Province"
                                                                     />
                                                                 </FormControl>
                                                             )}
                                                         />
                                                         <FormFieldWrapper
+                                                            name={`memberAddress.${index}.city`}
                                                             control={
                                                                 form.control
                                                             }
+                                                            label="City *"
+                                                            hiddenFields={
+                                                                hiddenFields
+                                                            }
+                                                            render={({
+                                                                field,
+                                                            }) => {
+                                                                const isProvinceValid =
+                                                                    !!form.watch(
+                                                                        `memberAddress.${index}.province`
+                                                                    ) &&
+                                                                    !form
+                                                                        .formState
+                                                                        .errors
+                                                                        .memberAddress?.[
+                                                                        index
+                                                                    ]?.province
+
+                                                                return (
+                                                                    <FormControl>
+                                                                        <MunicipalityCombobox
+                                                                            {...field}
+                                                                            id={
+                                                                                field.name
+                                                                            }
+                                                                            province={form.getValues(
+                                                                                `memberAddress.${index}.province`
+                                                                            )}
+                                                                            disabled={
+                                                                                !isProvinceValid
+                                                                            }
+                                                                            placeholder="City"
+                                                                        />
+                                                                    </FormControl>
+                                                                )
+                                                            }}
+                                                        />
+                                                        <FormFieldWrapper
+                                                            name={`memberAddress.${index}.barangay`}
+                                                            control={
+                                                                form.control
+                                                            }
+                                                            label="Barangay *"
+                                                            hiddenFields={
+                                                                hiddenFields
+                                                            }
+                                                            render={({
+                                                                field,
+                                                            }) => {
+                                                                const isCityValid =
+                                                                    !!form.watch(
+                                                                        `memberAddress.${index}.city`
+                                                                    ) &&
+                                                                    !form
+                                                                        .formState
+                                                                        .errors
+                                                                        .memberAddress?.[
+                                                                        index
+                                                                    ]?.province
+
+                                                                return (
+                                                                    <FormControl>
+                                                                        <BarangayCombobox
+                                                                            {...field}
+                                                                            id={
+                                                                                field.name
+                                                                            }
+                                                                            municipality={form.getValues(
+                                                                                `memberAddress.${index}.city`
+                                                                            )}
+                                                                            disabled={
+                                                                                !isCityValid
+                                                                            }
+                                                                            placeholder="Barangay"
+                                                                        />
+                                                                    </FormControl>
+                                                                )
+                                                            }}
+                                                        />
+                                                        <FormFieldWrapper
                                                             name={`memberAddress.${index}.postalCode`}
+                                                            control={
+                                                                form.control
+                                                            }
                                                             label="Postal Code *"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -744,52 +835,6 @@ const MemberApplicationForm = ({
                                                                             field.name
                                                                         }
                                                                         placeholder="Postal Code"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberAddress.${index}.city`}
-                                                            label="City *"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="City"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberAddress.${index}.province`}
-                                                            label="Province *"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Province"
                                                                     />
                                                                 </FormControl>
                                                             )}

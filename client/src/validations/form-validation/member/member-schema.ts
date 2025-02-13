@@ -52,7 +52,10 @@ export const createMemberProfileSchema = z.object({
     mediaId: entityIdSchema.optional(),
     memberId: entityIdSchema.optional(),
 
-    memberTypeId: entityIdSchema.optional(),
+    memberTypeId: z
+        .string()
+        .min(1, 'Member Type is required')
+        .uuid('Invalid member type'),
     memberClassificationId: entityIdSchema.optional(),
     memberGenderId: entityIdSchema.optional(),
     branchId: entityIdSchema.optional(),
@@ -72,10 +75,10 @@ export const createMemberProfileSchema = z.object({
         .array(
             z.object({
                 postalCode: z.string().min(1, 'Postal Code is required'),
-                province: z.string().min(1, 'Postal Code is required'),
-                city: z.string().min(1, 'Postal Code is required'),
-                barangay: z.string().min(1, 'Postal Code is required'),
-                label: z.string().min(1, 'Postal Code is required'),
+                province: z.string().min(1, 'Province is required'),
+                city: z.string().min(1, 'City is required'),
+                barangay: z.string().min(1, 'Barangay is required'),
+                label: z.string().min(1, 'Label is required'),
             })
         )
         .min(1, 'Must provide at least 1 address'),
