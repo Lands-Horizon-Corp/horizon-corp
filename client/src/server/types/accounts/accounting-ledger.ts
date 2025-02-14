@@ -1,7 +1,7 @@
 import { ITimeStamps, TEntityId } from "../common";
 import { IPaginatedResult } from "../paginated-result";
 
-export type AccountingLedger = {
+export type IAccountingLedgerRequest = {
   id: TEntityId;
   description: string;
   notes: string;
