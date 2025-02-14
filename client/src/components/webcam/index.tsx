@@ -1,6 +1,6 @@
 import { toast } from 'sonner'
 import Webcam from 'react-webcam'
-import { forwardRef, useCallback, useRef, useState } from 'react'
+import { forwardRef, useCallback, useState } from 'react'
 
 import {
     CameraFlipIcon,
@@ -17,13 +17,11 @@ import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types/component'
 
 interface Props extends IBaseCompNoChild {
-    enableBleed?: boolean
-    bleedClassName?: string
+
 }
 
 const WebCam = forwardRef<Webcam, Props>(
-    ({ className, bleedClassName, enableBleed = false }: Props, ref) => {
-        const bleedRef = useRef<HTMLVideoElement>(null)
+    ({ className }: Props, ref) => {
         const [camActive, setCamActive] = useState(false)
         const [camId, setCamId] = useState<string | undefined>(undefined)
         const [error, setError] = useState<string | DOMException | null>(null)
@@ -31,20 +29,10 @@ const WebCam = forwardRef<Webcam, Props>(
             'user'
         )
 
-        const handleOnStream = useCallback(
-            (stream: MediaStream) => {
-                setError(null)
-                setCamActive(true)
-                if (!bleedRef || !bleedRef.current || !enableBleed) return
-
-                const bleedVid = bleedRef.current
-                bleedVid.srcObject = stream
-                bleedVid.onloadedmetadata = () => {
-                    bleedVid.play()
-                }
-            },
-            [bleedRef, enableBleed]
-        )
+        const handleOnStream = useCallback(() => {
+            setError(null)
+            setCamActive(true)
+        }, [])
 
         return (
             <div
@@ -99,17 +87,6 @@ const WebCam = forwardRef<Webcam, Props>(
                             onUserMedia={handleOnStream}
                         />
                     </div>
-                    {enableBleed && camActive && (
-                        <video
-                            ref={bleedRef}
-                            muted
-                            disablePictureInPicture
-                            className={cn(
-                                'fade-in-anims absolute inset-0 left-1/2 -z-10 -translate-x-1/2 scale-x-110 blur-md',
-                                bleedClassName
-                            )}
-                        />
-                    )}
                 </div>
                 <div className="absolute bottom-2 right-2 flex items-center gap-x-2">
                     <ActionTooltip
