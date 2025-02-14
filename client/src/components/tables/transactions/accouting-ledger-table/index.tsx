@@ -2,31 +2,31 @@ import {
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
-} from '@tanstack/react-table';
-import { useMemo } from 'react';
+} from '@tanstack/react-table'
+import { useMemo } from 'react'
 // import { useQueryClient } from '@tanstack/react-query';
 
-import DataTable from '@/components/data-table';
+import DataTable from '@/components/data-table'
 import DataTableToolbar, {
     IDataTableToolbarProps,
-} from '@/components/data-table/data-table-toolbar';
-import DataTablePagination from '@/components/data-table/data-table-pagination';
+} from '@/components/data-table/data-table-toolbar'
+import DataTablePagination from '@/components/data-table/data-table-pagination'
 
 import IAccountingLedgerRequestTableColumns, {
     IIAccountingLedgerRequestTableColumnProps,
     IAccountingLedgerRequestGlobalSearchTargets,
-} from './columns';
+} from './columns'
 
-import { cn } from '@/lib';
-import { usePagination } from '@/hooks/use-pagination';
-import useDatableFilterState from '@/hooks/use-filter-state';
-import FilterContext from '@/contexts/filter-context/filter-context';
-import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state';
-import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting';
+import { cn } from '@/lib'
+import { usePagination } from '@/hooks/use-pagination'
+import useDatableFilterState from '@/hooks/use-filter-state'
+import FilterContext from '@/contexts/filter-context/filter-context'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
-import { IAccountingLedgerRequest } from '@/server/types/accounts/accounting-ledger';
-import { TableProps } from '../../types';
-import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/accounting-ledger';
+import { IAccountingLedgerRequest } from '@/server/types/accounts/accounting-ledger'
+import { TableProps } from '../../types'
+import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
 
 export interface IAccountingLedgerRequestTableProps
     extends TableProps<IAccountingLedgerRequest>,
@@ -51,9 +51,9 @@ const IAccountingLedgerRequestTable = ({
     actionComponent,
 }: IAccountingLedgerRequestTableProps) => {
     // const queryClient = useQueryClient();
-    const { pagination, setPagination } = usePagination();
+    const { pagination, setPagination } = usePagination()
     const { sortingState, tableSorting, setTableSorting } =
-        useDataTableSorting();
+        useDataTableSorting()
 
     const columns = useMemo(
         () =>
@@ -61,7 +61,7 @@ const IAccountingLedgerRequestTable = ({
                 actionComponent,
             }),
         [actionComponent]
-    );
+    )
 
     const {
         getRowIdFn,
@@ -76,12 +76,12 @@ const IAccountingLedgerRequestTable = ({
     } = useDataTableState<IAccountingLedgerRequest>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
-    });
+    })
 
     const filterState = useDatableFilterState({
         defaultFilter,
         onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
-    });
+    })
 
     const {
         isPending,
@@ -92,9 +92,9 @@ const IAccountingLedgerRequestTable = ({
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
-    });
+    })
 
-    const handleRowSelectionChange = createHandleRowSelectionChange(data);
+    const handleRowSelectionChange = createHandleRowSelectionChange(data)
 
     const table = useReactTable({
         columns,
@@ -123,7 +123,7 @@ const IAccountingLedgerRequestTable = ({
         getSortedRowModel: getSortedRowModel(),
         onColumnVisibilityChange: setColumnVisibility,
         onRowSelectionChange: handleRowSelectionChange,
-    });
+    })
 
     return (
         <FilterContext.Provider value={filterState}>
@@ -168,7 +168,7 @@ const IAccountingLedgerRequestTable = ({
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>
         </FilterContext.Provider>
-    );
-};
+    )
+}
 
-export default IAccountingLedgerRequestTable;
+export default IAccountingLedgerRequestTable

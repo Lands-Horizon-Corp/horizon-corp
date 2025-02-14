@@ -1,29 +1,32 @@
-import { ReactNode } from 'react';
-import { ColumnDef, Row } from '@tanstack/react-table';
+import { ReactNode } from 'react'
+import { ColumnDef, Row } from '@tanstack/react-table'
 
-import { Checkbox } from '@/components/ui/checkbox';
-import { PushPinSlashIcon } from '@/components/icons';
-import TextFilter from '@/components/data-table/data-table-filters/text-filter';
-import DateFilter from '@/components/data-table/data-table-filters/date-filter';
-import DataTableColumnHeader from '@/components/data-table/data-table-column-header';
-import ColumnActions from '@/components/data-table/data-table-column-header/column-actions';
-import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search';
+import { Checkbox } from '@/components/ui/checkbox'
+import { PushPinSlashIcon } from '@/components/icons'
+import TextFilter from '@/components/data-table/data-table-filters/text-filter'
+import DateFilter from '@/components/data-table/data-table-filters/date-filter'
+import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
+import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
+import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
-import { toReadableDate } from '@/utils';
-import { IAccountingLedgerRequest } from '@/server/types/accounts/accounting-ledger';
+import { toReadableDate } from '@/utils'
+import { IAccountingLedgerRequest } from '@/server/types/accounts/accounting-ledger'
 
-export const IAccountingLedgerRequestGlobalSearchTargets: IGlobalSearchTargets<IAccountingLedgerRequest>[] = [
-    { field: 'description', displayText: 'Description' },
-    { field: 'or_number', displayText: 'OR Number' },
-    { field: 'transaction_source', displayText: 'Transaction Source' },
-];
+export const IAccountingLedgerRequestGlobalSearchTargets: IGlobalSearchTargets<IAccountingLedgerRequest>[] =
+    [
+        { field: 'description', displayText: 'Description' },
+        { field: 'or_number', displayText: 'OR Number' },
+        { field: 'transaction_source', displayText: 'Transaction Source' },
+    ]
 
 export interface IIAccountingLedgerRequestTableActionComponentProp {
-    row: Row<IAccountingLedgerRequest>;
+    row: Row<IAccountingLedgerRequest>
 }
 
 export interface IIAccountingLedgerRequestTableColumnProps {
-    actionComponent?: (props: IIAccountingLedgerRequestTableActionComponentProp) => ReactNode;
+    actionComponent?: (
+        props: IIAccountingLedgerRequestTableActionComponentProp
+    ) => ReactNode
 }
 
 const IAccountingLedgerRequestTableColumns = (
@@ -67,7 +70,11 @@ const IAccountingLedgerRequestTableColumns = (
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Description">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Description"
+                >
                     <ColumnActions {...props}>
                         <TextFilter<IAccountingLedgerRequest>
                             displayText="Description"
@@ -76,7 +83,11 @@ const IAccountingLedgerRequestTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { description } } }) => <div>{description}</div>,
+            cell: ({
+                row: {
+                    original: { description },
+                },
+            }) => <div>{description}</div>,
             enableMultiSort: true,
         },
         {
@@ -92,14 +103,22 @@ const IAccountingLedgerRequestTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { or_number } } }) => <div>{or_number}</div>,
+            cell: ({
+                row: {
+                    original: { or_number },
+                },
+            }) => <div>{or_number}</div>,
             enableMultiSort: true,
         },
         {
             id: 'transaction_date',
             accessorKey: 'transaction_date',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Transaction Date">
+                <DataTableColumnHeader
+                    {...props}
+                    isResizable
+                    title="Transaction Date"
+                >
                     <ColumnActions {...props}>
                         <DateFilter<IAccountingLedgerRequest>
                             displayText="Transaction Date"
@@ -108,10 +127,14 @@ const IAccountingLedgerRequestTableColumns = (
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
-            cell: ({ row: { original: { transaction_date } } }) => <div>{toReadableDate(transaction_date)}</div>,
+            cell: ({
+                row: {
+                    original: { transaction_date },
+                },
+            }) => <div>{toReadableDate(transaction_date)}</div>,
             enableMultiSort: true,
         },
-    ];
-};
+    ]
+}
 
-export default IAccountingLedgerRequestTableColumns;
+export default IAccountingLedgerRequestTableColumns

@@ -1,18 +1,24 @@
 // import { TEntityId } from "@/server/types";
-import { IAccountingLedgerRequest, IAccountingLedgerPaginatedResource, IAccountingLedgerResource } from "@/server/types/accounts/accounting-ledger";
+import {
+    IAccountingLedgerRequest,
+    IAccountingLedgerPaginatedResource,
+    IAccountingLedgerResource,
+} from '@/server/types/accounts/accounting-ledger'
 import qs from 'query-string'
-import APIService from "../api-service";
+import APIService from '../api-service'
 
 export default class IAccountingLedgerService {
-    private static readonly BASE_ENDPOINT = '/accounting-ledger';
+    private static readonly BASE_ENDPOINT = '/accounting-ledger'
 
-    private static async makeRequest<T>(apiCall: () => Promise<{ data: T }>): Promise<T> {
+    private static async makeRequest<T>(
+        apiCall: () => Promise<{ data: T }>
+    ): Promise<T> {
         try {
-            const response = await apiCall();
-            return response.data;
+            const response = await apiCall()
+            return response.data
         } catch (error) {
-            console.error('API Request Failed:', error);
-            throw error;
+            console.error('API Request Failed:', error)
+            throw error
         }
     }
 
@@ -24,10 +30,10 @@ export default class IAccountingLedgerService {
             pagination,
             sort,
         }: {
-            filters?: string;
-            preloads?: string[];
-            pagination?: { pageIndex: number; pageSize: number };
-            sort?: string;
+            filters?: string
+            preloads?: string[]
+            pagination?: { pageIndex: number; pageSize: number }
+            sort?: string
         }
     ): string {
         return qs.stringify(
@@ -42,17 +48,20 @@ export default class IAccountingLedgerService {
                 },
             },
             { skipNull: true, skipEmptyString: true }
-        );
+        )
     }
 
     public static async create(
         ledgerData: IAccountingLedgerRequest,
         preloads?: string[]
     ): Promise<IAccountingLedgerResource> {
-        const url = this.buildUrl('', { preloads });
+        const url = this.buildUrl('', { preloads })
         return this.makeRequest(() =>
-            APIService.post<IAccountingLedgerRequest, IAccountingLedgerResource>(url, ledgerData)
-        );
+            APIService.post<
+                IAccountingLedgerRequest,
+                IAccountingLedgerResource
+            >(url, ledgerData)
+        )
     }
 
     public static async getLedgers({
@@ -61,15 +70,15 @@ export default class IAccountingLedgerService {
         preloads,
         pagination,
     }: {
-        sort?: string;
-        filters?: string;
-        preloads?: string[];
-        pagination?: { pageIndex: number; pageSize: number };
+        sort?: string
+        filters?: string
+        preloads?: string[]
+        pagination?: { pageIndex: number; pageSize: number }
     }) {
-        const url = this.buildUrl('', { filters, preloads, pagination, sort });
+        const url = this.buildUrl('', { filters, preloads, pagination, sort })
         return this.makeRequest(() =>
             APIService.get<IAccountingLedgerPaginatedResource>(url)
-        );
+        )
     }
 
     // public static async delete(id: TEntityId): Promise<void> {
@@ -87,6 +96,4 @@ export default class IAccountingLedgerService {
     //         APIService.put<IAccountingLedgerRequest, IAccountingLedgerRequest>(url, ledgerData)
     //     );
     // }
-
-
 }
