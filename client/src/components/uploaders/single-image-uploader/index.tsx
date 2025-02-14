@@ -65,7 +65,7 @@ const SingleImageUploader = ({
                 }
             >
                 <ScrollArea>
-                    <TabsList className="relative justify-start mb-3 h-auto w-full gap-0.5 bg-transparent p-0 before:absolute before:inset-x-0 before:bottom-0 before:h-px before:bg-border">
+                    <TabsList className="relative mb-3 h-auto w-full justify-start gap-0.5 bg-transparent p-0 before:absolute before:inset-x-0 before:bottom-0 before:h-px before:bg-border">
                         <TabsTrigger
                             value="file"
                             className="overflow-hidden rounded-b-none border-x border-t border-border bg-muted py-2 data-[state=active]:z-10 data-[state=active]:shadow-none"

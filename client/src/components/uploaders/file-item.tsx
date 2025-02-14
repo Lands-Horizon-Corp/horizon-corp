@@ -26,11 +26,14 @@ const FileItem = ({
     onRemoveFile,
 }: FileItemProps) => {
     return (
-        <div onClick={(e)=>e.stopPropagation()} className="space-y-2 rounded-lg border border-secondary bg-popover p-3">
+        <div
+            onClick={(e) => e.stopPropagation()}
+            className="space-y-2 rounded-lg border border-secondary bg-popover p-3"
+        >
             <div className="flex space-x-3">
                 {media ? (
                     <div className="size-12">
-                        <AspectRatio ratio={1/1}>
+                        <AspectRatio ratio={1 / 1}>
                             <ImageDisplay
                                 src={media.downloadURL}
                                 className="size-full rounded-none object-cover"

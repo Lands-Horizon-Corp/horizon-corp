@@ -1,6 +1,6 @@
-import { IBaseCompNoChild } from "@/types"
+import { IBaseCompNoChild } from '@/types'
 
 export interface IDropAreaProps extends IBaseCompNoChild {
-    isDraggingAbove? : boolean
-    dropText? : string
+    isDraggingAbove?: boolean
+    dropText?: string
 }
