@@ -1,9 +1,9 @@
 // import { TEntityId } from "@/server/types";
-import { AccountingLedger } from "@/server/types/accounts/accounting-ledger";
+import { IAccountingLedgerRequest, IAccountingLedgerPaginatedResource, IAccountingLedgerResource } from "@/server/types/accounts/accounting-ledger";
 import qs from 'query-string'
 import APIService from "../api-service";
 
-export default class AccountingLedgerService {
+export default class IAccountingLedgerService {
     private static readonly BASE_ENDPOINT = '/accounting-ledger';
 
     private static async makeRequest<T>(apiCall: () => Promise<{ data: T }>): Promise<T> {
@@ -46,12 +46,12 @@ export default class AccountingLedgerService {
     }
 
     public static async create(
-        ledgerData: AccountingLedger,
+        ledgerData: IAccountingLedgerRequest,
         preloads?: string[]
-    ): Promise<AccountingLedger> {
+    ): Promise<IAccountingLedgerResource> {
         const url = this.buildUrl('', { preloads });
         return this.makeRequest(() =>
-            APIService.post<AccountingLedger, AccountingLedger>(url, ledgerData)
+            APIService.post<IAccountingLedgerRequest, IAccountingLedgerResource>(url, ledgerData)
         );
     }
 
@@ -68,7 +68,7 @@ export default class AccountingLedgerService {
     }) {
         const url = this.buildUrl('', { filters, preloads, pagination, sort });
         return this.makeRequest(() =>
-            APIService.get<{ data: AccountingLedger[] }>(url)
+            APIService.get<IAccountingLedgerPaginatedResource>(url)
         );
     }
 
@@ -79,14 +79,14 @@ export default class AccountingLedgerService {
 
     // public static async update(
     //     id: TEntityId,
-    //     ledgerData: AccountingLedger,
+    //     ledgerData: IAccountingLedgerRequest,
     //     preloads?: string[]
-    // ): Promise<AccountingLedger> {
+    // ): Promise<IAccountingLedgerRequest> {
     //     const url = this.buildUrl(`/${id}`, { preloads });
     //     return this.makeRequest(() =>
-    //         APIService.put<AccountingLedger, AccountingLedger>(url, ledgerData)
+    //         APIService.put<IAccountingLedgerRequest, IAccountingLedgerRequest>(url, ledgerData)
     //     );
     // }
 
-    
+
 }
