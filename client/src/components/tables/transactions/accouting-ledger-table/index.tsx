@@ -4,7 +4,6 @@ import {
     getSortedRowModel,
 } from '@tanstack/react-table'
 import { useMemo } from 'react'
-// import { useQueryClient } from '@tanstack/react-query';
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar, {
@@ -13,8 +12,7 @@ import DataTableToolbar, {
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 
 import IAccountingLedgerRequestTableColumns, {
-    IIAccountingLedgerRequestTableColumnProps,
-    IAccountingLedgerRequestGlobalSearchTargets,
+    IAccountingLedgerTableColumnProps,
 } from './columns'
 
 import { cn } from '@/lib'
@@ -30,7 +28,7 @@ import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transac
 
 export interface IAccountingLedgerRequestTableProps
     extends TableProps<IAccountingLedgerRequest>,
-        IIAccountingLedgerRequestTableColumnProps {
+        IAccountingLedgerTableColumnProps {
     toolbarProps?: Omit<
         IDataTableToolbarProps<IAccountingLedgerRequest>,
         | 'table'
@@ -50,7 +48,6 @@ const IAccountingLedgerRequestTable = ({
     onSelectData,
     actionComponent,
 }: IAccountingLedgerRequestTableProps) => {
-    // const queryClient = useQueryClient();
     const { pagination, setPagination } = usePagination()
     const { sortingState, tableSorting, setTableSorting } =
         useDataTableSorting()
@@ -135,22 +132,12 @@ const IAccountingLedgerRequestTable = ({
                 )}
             >
                 <DataTableToolbar
-                    globalSearchProps={{
-                        defaultMode: 'equal',
-                        targets: IAccountingLedgerRequestGlobalSearchTargets,
-                    }}
                     table={table}
                     refreshActionProps={{
                         onClick: () => refetch(),
                         isLoading: isPending || isRefetching,
                     }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
-                    exportActionProps={{
-                        pagination,
-                        isLoading: isPending,
-                        filters: filterState.finalFilterPayload,
-                        disabled: isPending || isRefetching,
-                    }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,
                         setFilterLogic: filterState.setFilterLogic,

@@ -12,25 +12,28 @@ import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters
 import { toReadableDate } from '@/utils'
 import { IAccountingLedgerRequest } from '@/server/types/accounts/accounting-ledger'
 
-export const IAccountingLedgerRequestGlobalSearchTargets: IGlobalSearchTargets<IAccountingLedgerRequest>[] =
+export const accountingLedgerGlobalSearchTargets: IGlobalSearchTargets<IAccountingLedgerRequest>[] =
     [
         { field: 'description', displayText: 'Description' },
         { field: 'or_number', displayText: 'OR Number' },
         { field: 'transaction_source', displayText: 'Transaction Source' },
+        { field: 'debit', displayText: 'Debit' },
+        { field: 'credit', displayText: 'Credit' },
+        { field: 'balance', displayText: 'Balance' },
     ]
 
-export interface IIAccountingLedgerRequestTableActionComponentProp {
+export interface IAccountingLedgerTableActionComponentProp {
     row: Row<IAccountingLedgerRequest>
 }
 
-export interface IIAccountingLedgerRequestTableColumnProps {
+export interface IAccountingLedgerTableColumnProps {
     actionComponent?: (
-        props: IIAccountingLedgerRequestTableActionComponentProp
+        props: IAccountingLedgerTableActionComponentProp
     ) => ReactNode
 }
 
-const IAccountingLedgerRequestTableColumns = (
-    opts?: IIAccountingLedgerRequestTableColumnProps
+const accountingLedgerTableColumns = (
+    opts?: IAccountingLedgerTableColumnProps
 ): ColumnDef<IAccountingLedgerRequest>[] => {
     return [
         {
@@ -134,7 +137,47 @@ const IAccountingLedgerRequestTableColumns = (
             }) => <div>{toReadableDate(transaction_date)}</div>,
             enableMultiSort: true,
         },
+        {
+            id: 'debit',
+            accessorKey: 'debit',
+            header: (props) => (
+                <DataTableColumnHeader {...props} isResizable title="Debit">
+                    <ColumnActions {...props}>
+                        <TextFilter<IAccountingLedgerRequest>
+                            displayText="Debit"
+                            field="debit"
+                        />
+                    </ColumnActions>
+                </DataTableColumnHeader>
+            ),
+            cell: ({
+                row: {
+                    original: { debit },
+                },
+            }) => <div>{debit}</div>,
+            enableMultiSort: true,
+        },
+        {
+            id: 'credit',
+            accessorKey: 'credit',
+            header: (props) => (
+                <DataTableColumnHeader {...props} isResizable title="Credit">
+                    <ColumnActions {...props}>
+                        <TextFilter<IAccountingLedgerRequest>
+                            displayText="Credit"
+                            field="credit"
+                        />
+                    </ColumnActions>
+                </DataTableColumnHeader>
+            ),
+            cell: ({
+                row: {
+                    original: { credit },
+                },
+            }) => <div>{credit}</div>,
+            enableMultiSort: true,
+        },
     ]
 }
 
-export default IAccountingLedgerRequestTableColumns
+export default accountingLedgerTableColumns
