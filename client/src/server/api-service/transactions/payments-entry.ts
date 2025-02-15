@@ -1,26 +1,26 @@
 import APIService from '../api-service'
 import {
-    IPaymentTransactionRequest,
-    IPaymentTransactionResource,
-} from '@/server/types/transactions/payment-transaction'
+    IPaymentsEntryRequest,
+    IPaymentsEntryResource,
+} from '@/server/types/transactions/payments-Entry'
 
-export default class PaymentService {
+export default class PaymentsEntryService {
     private static readonly BASE_ENDPOINT = '/payments'
 
-    public static async getAll(): Promise<IPaymentTransactionResource[]> {
-        const response = await APIService.get<IPaymentTransactionResource[]>(
-            PaymentService.BASE_ENDPOINT
+    public static async getAll(): Promise<IPaymentsEntryResource[]> {
+        const response = await APIService.get<IPaymentsEntryResource[]>(
+            PaymentsEntryService.BASE_ENDPOINT
         )
         return response.data
     }
 
     public static async create(
-        paymentData: IPaymentTransactionRequest
-    ): Promise<IPaymentTransactionResource> {
+        paymentData: IPaymentsEntryRequest
+    ): Promise<IPaymentsEntryResource> {
         const response = await APIService.post<
-            IPaymentTransactionRequest,
-            IPaymentTransactionResource
-        >(PaymentService.BASE_ENDPOINT, paymentData)
+            IPaymentsEntryRequest,
+            IPaymentsEntryResource
+        >(PaymentsEntryService.BASE_ENDPOINT, paymentData)
         return response.data
     }
 }

@@ -1,6 +1,6 @@
 import { TEntityId } from '../common'
 
-export interface IPaymentTransactionRequest {
+export interface IPaymentsEntryRequest {
     memberId: TEntityId
     ORNumber: string
     memberType: string
@@ -9,8 +9,8 @@ export interface IPaymentTransactionRequest {
     amount: number
 }
 
-export interface IPaymentTransactionResource
-    extends IPaymentTransactionRequest {
+export interface IPaymentsEntryResource
+    extends IPaymentsEntryRequest {
     id: TEntityId
     createdAt: Date
     updatedAt: Date

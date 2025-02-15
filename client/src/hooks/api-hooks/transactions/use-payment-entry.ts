@@ -1,5 +1,5 @@
-import PaymentService from '@/server/api-service/transactions/payments-entry'
-import { IPaymentTransactionRequest } from '@/server/types/transactions/payment-transaction'
+import PaymentsEntryService from '@/server/api-service/transactions/payments-entry'
+import { IPaymentsEntryRequest } from '@/server/types/transactions/payments-Entry'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -9,12 +9,12 @@ export const useProcessPayment = () => {
     const createPayments = useMutation<
         void,
         string,
-        IPaymentTransactionRequest
+        IPaymentsEntryRequest
     >({
         mutationKey: ['payment', 'process'],
         mutationFn: async (paymentData) => {
             try {
-                await PaymentService.create(paymentData)
+                await PaymentsEntryService.create(paymentData)
 
                 // Invalidate queries to update affected ledgers
                 queryClient.invalidateQueries({
