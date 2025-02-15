@@ -70,7 +70,7 @@ const TimeInTimeOut = ({
     return (
         <div className={cn('space-y-4', className)}>
             <div className="relative m-4 mx-auto">
-                <WebCam ref={camRef} enableBleed className="rounded-2xl" />
+                <WebCam ref={camRef} className="rounded-2xl" />
             </div>
             <div className="flex flex-col items-center gap-y-6 px-4">
                 <p
