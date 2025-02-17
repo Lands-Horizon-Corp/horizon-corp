@@ -9,8 +9,7 @@ export interface IPaymentsEntryRequest {
     amount: number
 }
 
-export interface IPaymentsEntryResource
-    extends IPaymentsEntryRequest {
+export interface IPaymentsEntryResource extends IPaymentsEntryRequest {
     id: TEntityId
     createdAt: Date
     updatedAt: Date

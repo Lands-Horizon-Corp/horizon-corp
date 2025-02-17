@@ -3,14 +3,10 @@ import { IPaymentsEntryRequest } from '@/server/types/transactions/payments-Entr
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-export const useProcessPayment = () => {
+export const usePaymentsEntry = () => {
     const queryClient = useQueryClient()
 
-    const createPayments = useMutation<
-        void,
-        string,
-        IPaymentsEntryRequest
-    >({
+    const createPayments = useMutation<void, string, IPaymentsEntryRequest>({
         mutationKey: ['payment', 'process'],
         mutationFn: async (paymentData) => {
             try {
