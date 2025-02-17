@@ -90,39 +90,39 @@ jobs:
     #         - name: Run Vite Build
     #           run: pnpm run build
     #           working-directory: ./client
-deploy:
-    runs-on: ubuntu-latest
-    env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-    steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v3
+  deploy:
+      runs-on: ubuntu-latest
+      env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      steps:
+          - name: Checkout Repository
+            uses: actions/checkout@v3
 
-        - name: Set up Node.js
-          uses: actions/setup-node@v3
-          with:
-              node-version: "22.11.0"
+          - name: Set up Node.js
+            uses: actions/setup-node@v3
+            with:
+                node-version: "22.11.0"
 
-        - name: Check Node.js version
-          run: |
-              node --version
-              npx --version
+          - name: Check Node.js version
+            run: |
+                node --version
+                npx --version
 
-        - name: Install pnpm (v9.14.3)
-          run: npm install -g pnpm@9.14.3
+          - name: Install pnpm (v9.14.3)
+            run: npm install -g pnpm@9.14.3
 
-        - name: Install Dependencies
-          working-directory: client
-          run: pnpm install
+          - name: Install Dependencies
+            working-directory: client
+            run: pnpm install
 
-        - name: Build React App
-          working-directory: client
-          run: pnpm run build
+          - name: Build React App
+            working-directory: client
+            run: pnpm run build
 
-        - name: Install s3-deploy
-          run: npm install -g s3-deploy
+          - name: Install s3-deploy
+            run: npm install -g s3-deploy
 
-        - name: Deploy to S3 & Invalidate CloudFront
-          run: npx s3-deploy@1.4.0 ./** --bucket ${{ secrets.STORAGE_BUCKET_NAME }} --cwd . --distId ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --etag --gzip xml,html,htm,js,css,ttf,otf,svg,txt --invalidate /* --noCache
+          - name: Deploy to S3 & Invalidate CloudFront
+            run: npx s3-deploy@1.4.0 ./** --bucket ${{ secrets.STORAGE_BUCKET_NAME }} --cwd . --distId ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --etag --gzip xml,html,htm,js,css,ttf,otf,svg,txt --invalidate /* --noCache
