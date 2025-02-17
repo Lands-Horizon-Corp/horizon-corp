@@ -3,10 +3,11 @@ import { TEntityId } from '../common'
 export interface IPaymentsEntryRequest {
     memberId: TEntityId
     ORNumber: string
-    memberType: string
-    idNumber: string
-    accountNumber: TEntityId
     amount: number
+    accountsId: TEntityId
+    transactionType: TEntityId
+    isPrinted: boolean
+    notes: string
 }
 
 export interface IPaymentsEntryResource extends IPaymentsEntryRequest {
