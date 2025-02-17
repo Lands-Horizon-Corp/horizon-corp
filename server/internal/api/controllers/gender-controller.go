@@ -47,7 +47,7 @@ func (c *GenderController) Show(ctx *gin.Context) {}
 
 //	Admin: Can create gender but need to assign owner
 //	Owner: Can create gender and automaticall assign owner
-//	Employee: Not allowed
+//	Employee: Not Allowed
 //	Member: Only own gender
 //
 // Endpoint: POST /api/v1/gender
@@ -57,8 +57,8 @@ func (c *GenderController) Store(ctx *gin.Context) {}
 //
 // - Admin: Allowed.
 // - Owner: Allowed but only his gender
-// - Employee: Not allowed.
-// - Member: Not allowed.
+// - Employee: Not Allowed.
+// - Member: Not Allowed.
 // Endpoint: PUT /api/v1/gender/:id
 func (c *GenderController) Update(ctx *gin.Context) {}
 

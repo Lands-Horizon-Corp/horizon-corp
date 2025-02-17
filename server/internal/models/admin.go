@@ -165,7 +165,6 @@ func (m *ModelRepository) AdminSearch(input string, preloads ...string) (*Admin,
 	}
 }
 func (m *ModelRepository) AdminCreate(admin *Admin, preloads ...string) (*Admin, error) {
-	admin.Status = providers.NotAllowedStatus
 	repo := NewGenericRepository[Admin](m.db.Client)
 	newPassword, err := m.cryptoHelpers.HashPassword(admin.Password)
 	admin.Status = providers.NotAllowedStatus
@@ -173,7 +172,7 @@ func (m *ModelRepository) AdminCreate(admin *Admin, preloads ...string) (*Admin,
 		return nil, err
 	}
 	admin.Password = newPassword
-	return repo.GetByID(admin.ID.String(), preloads...)
+	return repo.Create(admin, preloads...)
 }
 
 func (m *ModelRepository) AdminUpdate(admin *Admin, preloads ...string) (*Admin, error) {

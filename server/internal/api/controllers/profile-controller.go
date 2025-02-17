@@ -10,9 +10,11 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 )
 
 type ProfileController struct {
+	authHandler   *handlers.AuthHandler
 	repository    *models.ModelRepository
 	transformer   *models.ModelTransformer
 	footstep      *handlers.FootstepHandler
@@ -28,6 +30,8 @@ type ProfileController struct {
 }
 
 func NewProfileController(
+	authHandler *handlers.AuthHandler,
+
 	repository *models.ModelRepository,
 	transformer *models.ModelTransformer,
 	footstep *handlers.FootstepHandler,
@@ -42,6 +46,8 @@ func NewProfileController(
 	memberController *MemberController,
 ) *ProfileController {
 	return &ProfileController{
+		authHandler: authHandler,
+
 		repository:    repository,
 		transformer:   transformer,
 		footstep:      footstep,
@@ -57,7 +63,18 @@ func NewProfileController(
 	}
 }
 
-func (as *ProfileController) ProfilePicture(ctx *gin.Context) {}
+func (as *ProfileController) ProfilePicture(ctx *gin.Context) {
+	// ProfilePicture
+	var req MediaStoreRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+}
 
 type AccountSettingRequest struct {
 	BirthDate        time.Time `json:"birthDate" validate:"required"`
@@ -69,103 +86,145 @@ type AccountSettingRequest struct {
 }
 
 func (as *ProfileController) ProfileAccountSetting(ctx *gin.Context) {
+	var req AccountSettingRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.ProfileAccountSetting(ctx)
-	case "Admin":
-		as.adminController.ProfileAccountSetting(ctx)
-	case "Owner":
-		as.ownerController.ProfileAccountSetting(ctx)
-	case "Employee":
-		as.employeeController.ProfileAccountSetting(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	updatedUser, err := as.authHandler.ProfileAccountSetting(ctx, user.AccountType,
+		req.BirthDate,
+		req.FirstName,
+		req.MiddleName,
+		req.LastName,
+		req.Description,
+		req.PermanentAddress,
+	)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, updatedUser)
+}
+
+type ChangeEmailRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Email    string `json:"email" validate:"required,email"`
 }
 
 func (as *ProfileController) ProfileChangeEmail(ctx *gin.Context) {
+	var req ChangeEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.ProfileChangeEmail(ctx)
-	case "Admin":
-		as.adminController.ProfileChangeEmail(ctx)
-	case "Owner":
-		as.ownerController.ProfileChangeEmail(ctx)
-	case "Employee":
-		as.employeeController.ProfileChangeEmail(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	updatedUser, err := as.authHandler.ProfileChangeEmail(ctx, user.AccountType, req.Email, req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, updatedUser)
+}
+
+type ChangeContactNumberRequest struct {
+	Password      string `json:"password" validate:"required,min=8,max=255"`
+	ContactNumber string `json:"contactNumber" validate:"required,min=10,max=15"`
 }
 
 func (as *ProfileController) ProfileChangeContactNumber(ctx *gin.Context) {
+	var req ChangeContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.ProfileChangeContactNumber(ctx)
-	case "Admin":
-		as.adminController.ProfileChangeContactNumber(ctx)
-	case "Owner":
-		as.ownerController.ProfileChangeContactNumber(ctx)
-	case "Employee":
-		as.employeeController.ProfileChangeContactNumber(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	updatedUser, err := as.authHandler.ProfileChangeContactNumber(ctx, user.AccountType, req.ContactNumber, req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, updatedUser)
+}
+
+type ProfileChangePasswordRequest struct {
+	OldPassword     string `json:"old_password" validate:"required,min=8,max=255"`
+	NewPassword     string `json:"new_password" validate:"required,min=8,max=255"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,min=8,max=255"`
 }
 
 func (as *ProfileController) ProfileChangePassword(ctx *gin.Context) {
+	var req ProfileChangePasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.ChangePassword(ctx)
-	case "Admin":
-		as.adminController.ChangePassword(ctx)
-	case "Owner":
-		as.ownerController.ChangePassword(ctx)
-	case "Employee":
-		as.employeeController.ChangePassword(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	updatedUser, err := as.authHandler.ChangePassword(ctx, user.AccountType, req.OldPassword, req.NewPassword, req.ConfirmPassword)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, updatedUser)
+}
+
+type ProfileChangeUsernameRequest struct {
+	Password string `json:"password" validate:"required,min=8,max=255"`
+	Username string `json:"username" validate:"required,min=5,max=255"`
 }
 
 func (as *ProfileController) ProfileChangeUsername(ctx *gin.Context) {
-
+	var req ProfileChangeUsernameRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.ProfileChangeUsername(ctx)
-	case "Admin":
-		as.adminController.ProfileChangeUsername(ctx)
-	case "Owner":
-		as.ownerController.ProfileChangeUsername(ctx)
-	case "Employee":
-		as.employeeController.ProfileChangeUsername(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	updatedUser, err := as.authHandler.ProfileChangeUsername(ctx, user.AccountType, req.Password, req.Username)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
+	ctx.JSON(http.StatusOK, updatedUser)
 
 }

@@ -11,6 +11,7 @@ import {
     SettingsIcon,
     UserListIcon,
     DashboardIcon,
+    BriefCaseIcon,
     FootstepsIcon,
     UserClockIcon,
     UserShieldIcon,
@@ -18,10 +19,6 @@ import {
     NotificationIcon,
     GraduationCapIcon,
     BuildingBranchIcon,
-    WalletIcon,
-    HandDepositIcon,
-    HandCoinsIcon,
-    HandWithdrawIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
@@ -33,24 +30,6 @@ const ownerSidebarItem: TSidebarItem[] = [
         text: 'Dashboard',
         url: '/owner/dashboard',
         Icon: DashboardIcon,
-    },
-    {
-        text: 'Transactions',
-        Icon: WalletIcon,
-        baseUrl: '/owner/transaction',
-        subItems: [
-            { text: 'Deposit', url: '/deposit-entry', Icon: HandDepositIcon },
-            {
-                Icon: HandCoinsIcon,
-                text: 'Payments',
-                url: '/payments-entry',
-            },
-            {
-                Icon: HandWithdrawIcon,
-                text: 'Withdrawal',
-                url: '/withdrawals',
-            },
-        ],
     },
     {
         text: 'Users',
@@ -87,6 +66,16 @@ const ownerSidebarItem: TSidebarItem[] = [
                         url: '/member-classification',
                         Icon: UserTagIcon,
                     },
+                    {
+                        text: 'Member Occupation',
+                        url: '/member-occupation',
+                        Icon: BriefCaseIcon,
+                    },
+                    {
+                        text: 'Genders',
+                        Icon: GendersIcon,
+                        url: '/genders',
+                    },
                 ],
             },
             {
@@ -105,11 +94,6 @@ const ownerSidebarItem: TSidebarItem[] = [
                         Icon: FootstepsIcon,
                     },
                 ],
-            },
-            {
-                text: 'Genders',
-                Icon: GendersIcon,
-                url: '/genders',
             },
         ],
     },

@@ -53,7 +53,8 @@ import { IBaseCompNoChild } from '@/types'
 import { TFilterObject } from '@/contexts/filter-context'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
-import { ImageUploadField } from './image-upload-field'
+import { SingleImageUploadField } from './single-image-upload-field'
+import logger from '@/helpers/loggers/logger'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -149,6 +150,8 @@ const MemberApplicationForm = ({
             ...defaultValues,
         },
     })
+
+    logger.log(form.formState.errors)
 
     const isDisabled = (field: Path<TMemberProfileForm>) =>
         readOnly || disabledFields?.includes(field) || false
@@ -1250,16 +1253,23 @@ const MemberApplicationForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <ImageUploadField
-                                                                        placeholder="ID front picture"
+                                                                    <SingleImageUploadField
+                                                                        placeholder="Government ID Front Picture"
                                                                         {...field}
+                                                                        mediaImage={form.getValues(
+                                                                            `memberGovernmentBenefits.${index}.frontMediaResource`
+                                                                        )}
                                                                         onChange={(
                                                                             mediaUploaded
-                                                                        ) =>
+                                                                        ) => {
                                                                             field.onChange(
                                                                                 mediaUploaded?.id
                                                                             )
-                                                                        }
+                                                                            form.setValue(
+                                                                                `memberGovernmentBenefits.${index}.frontMediaResource`,
+                                                                                mediaUploaded
+                                                                            )
+                                                                        }}
                                                                     />
                                                                 </FormControl>
                                                             )}
@@ -1278,16 +1288,23 @@ const MemberApplicationForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <ImageUploadField
-                                                                        placeholder="ID Back Picture"
+                                                                    <SingleImageUploadField
+                                                                        placeholder="Government ID Back Picture"
                                                                         {...field}
+                                                                        mediaImage={form.getValues(
+                                                                            `memberGovernmentBenefits.${index}.backMediaResource`
+                                                                        )}
                                                                         onChange={(
                                                                             mediaUploaded
-                                                                        ) =>
+                                                                        ) => {
                                                                             field.onChange(
                                                                                 mediaUploaded?.id
                                                                             )
-                                                                        }
+                                                                            form.setValue(
+                                                                                `memberGovernmentBenefits.${index}.backMediaResource`,
+                                                                                mediaUploaded
+                                                                            )
+                                                                        }}
                                                                     />
                                                                 </FormControl>
                                                             )}
