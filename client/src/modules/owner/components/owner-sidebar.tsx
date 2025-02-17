@@ -11,6 +11,7 @@ import {
     SettingsIcon,
     UserListIcon,
     DashboardIcon,
+    BriefCaseIcon,
     FootstepsIcon,
     UserClockIcon,
     UserShieldIcon,
