@@ -2,7 +2,7 @@ import APIService from '../api-service'
 import {
     IPaymentsEntryRequest,
     IPaymentsEntryResource,
-} from '@/server/types/transactions/payments-Entry'
+} from '@/server/types/transactions/payments-entry'
 
 export default class PaymentsEntryService {
     private static readonly BASE_ENDPOINT = '/payments'
