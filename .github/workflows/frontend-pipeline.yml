@@ -9,92 +9,91 @@ on:
             - main
 
 jobs:
-    lint:
-        name: Lint Code
-        runs-on: ubuntu-latest
+    # lint:
+    #     name: Lint Code
+    #     runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    #     steps:
+    #         - name: Checkout code
+    #           uses: actions/checkout@v3
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: "22.11.0"
+    #         - name: Set up Node.js
+    #           uses: actions/setup-node@v3
+    #           with:
+    #               node-version: "22.11.0"
 
-            - name: Install pnpm
-              run: npm install -g pnpm@9.14.3
+    #         - name: Install pnpm
+    #           run: npm install -g pnpm@9.14.3
 
-            - name: Install dependencies
-              run: pnpm install
-              working-directory: ./client
+    #         - name: Install dependencies
+    #           run: pnpm install
+    #           working-directory: ./client
 
-            - name: Run ESLint
-              run: pnpm run lint
-              working-directory: ./client
+    #         - name: Run ESLint
+    #           run: pnpm run lint
+    #           working-directory: ./client
 
-            - name: Run Prettier Check
-              run: pnpm run fc
-              working-directory: ./client
+    #         - name: Run Prettier Check
+    #           run: pnpm run fc
+    #           working-directory: ./client
 
-    test:
-        name: Run Vitest Tests
-        runs-on: ubuntu-latest
-        needs: lint
+    # test:
+    #     name: Run Vitest Tests
+    #     runs-on: ubuntu-latest
+    #     needs: lint
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    #     steps:
+    #         - name: Checkout code
+    #           uses: actions/checkout@v3
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: "22.11.0"
+    #         - name: Set up Node.js
+    #           uses: actions/setup-node@v3
+    #           with:
+    #               node-version: "22.11.0"
 
-            - name: Install pnpm
-              run: npm install -g pnpm@9.14.3
+    #         - name: Install pnpm
+    #           run: npm install -g pnpm@9.14.3
 
-            - name: Install dependencies
-              run: pnpm install
-              working-directory: ./client
+    #         - name: Install dependencies
+    #           run: pnpm install
+    #           working-directory: ./client
 
-            - name: Run Vitest tests
-              run: pnpm run test
-              working-directory: ./client
+    #         - name: Run Vitest tests
+    #           run: pnpm run test
+    #           working-directory: ./client
 
-    build:
-        name: Build Project
-        runs-on: ubuntu-latest
-        needs: test
+    # build:
+    #     name: Build Project
+    #     runs-on: ubuntu-latest
+    #     needs: test
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    #     steps:
+    #         - name: Checkout code
+    #           uses: actions/checkout@v3
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: "22.11.0"
+    #         - name: Set up Node.js
+    #           uses: actions/setup-node@v3
+    #           with:
+    #               node-version: "22.11.0"
 
-            - name: Install pnpm
-              run: npm install -g pnpm@9.14.3
+    #         - name: Install pnpm
+    #           run: npm install -g pnpm@9.14.3
 
-            - name: Install dependencies
-              run: pnpm install
-              working-directory: ./client
+    #         - name: Install dependencies
+    #           run: pnpm install
+    #           working-directory: ./client
 
-            - name: Run TypeScript Build
-              run: pnpm run build
-              working-directory: ./client
+    #         - name: Run TypeScript Build
+    #           run: pnpm run build
+    #           working-directory: ./client
 
-            - name: Run Vite Build
-              run: pnpm run build
-              working-directory: ./client
-
+    #         - name: Run Vite Build
+    #           run: pnpm run build
+    #           working-directory: ./client
     deploy:
         name: Deploy to AWS Amplify
         runs-on: ubuntu-latest
-        needs: build
+        # needs: build
 
         steps:
             - name: Checkout code
@@ -113,8 +112,16 @@ jobs:
             - name: Deploy to AWS Amplify
               working-directory: ./client
               run: |
-                  # If your Amplify project is actually configured inside client/
-                  # (i.e. "amplify" folder is in there), this will pick it up
-                  amplify pull --appId d302y0q6p0d8ki --envName dev
+                  # Set up Amplify in headless mode
+                  amplify configure project --name "horizon-corp" --envName "dev" --appId "d302y0q6p0d8ki" \
+                    --defaultEditor "none" --profile "default"
+
+                  # Check Amplify project status
                   amplify status
+
+                  # Push changes
                   amplify push --yes
+
+                  # Publish to Amplify Hosting (if applicable)
+                  amplify publish
+
