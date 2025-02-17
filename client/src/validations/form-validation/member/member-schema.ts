@@ -1,6 +1,7 @@
 import z from 'zod'
 import {
     emailSchema,
+    entityIdSchema,
     lastNameSchema,
     passwordSchema,
     userNameSchema,
@@ -9,8 +10,20 @@ import {
     middleNameSchema,
     contactNumberSchema,
     permanentAddressSchema,
-    entityIdSchema,
 } from '../../common'
+
+export const mediaResourceSchema = z.object({
+    id: entityIdSchema,
+    fileName: z.string(),
+    fileSize: z.number(),
+    fileType: z.string(),
+    storageKey: z.string(),
+    url: z.string().optional(),
+    bucketName: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    downloadURL: z.string(),
+})
 
 export const createMemberSchema = z.object({
     email: emailSchema,
@@ -170,6 +183,8 @@ export const createMemberProfileSchema = z.object({
                 description: z.string().min(1, 'Description is required'),
                 value: z.string().min(1, 'Value is required'),
                 frontMediaId: entityIdSchema.optional(),
+                frontMediaResource: mediaResourceSchema.optional(),
+                backMediaResource: mediaResourceSchema.optional(),
                 backMediaId: entityIdSchema.optional(),
             })
         )
