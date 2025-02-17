@@ -92,8 +92,12 @@ jobs:
     #           working-directory: ./client
   deploy:
       runs-on: ubuntu-latest
+      env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       steps:
-          - name: Checkout code
+          - name: Checkout Repository
             uses: actions/checkout@v3
 
           - name: Set up Node.js
@@ -101,26 +105,21 @@ jobs:
             with:
                 node-version: "22.11.0"
 
-          - name: Install pnpm
+          - name: Install pnpm (v9.14.3)
             run: npm install -g pnpm@9.14.3
 
-          - name: Install dependencies
+          - name: Install Dependencies
             working-directory: client
             run: pnpm install
 
-          - name: Build React app
+          - name: Build React App
             working-directory: client
             run: pnpm run build
 
-          - name: Zip build folder
-            working-directory: client
-            run: zip -r horizon-client.zip ./dist
-
-          - name: Set up AWS CLI
-            run: |
-                aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-                aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                aws configure set region ${{ secrets.AWS_DEFAULT_REGION }}
-
-          - name: Deploy to S3
-            run: aws s3 sync client/build s3://${{ secrets.STORAGE_BUCKET_NAME }} --delete --endpoint-url ${{ secrets.STORAGE_ENDPOINT }}
+          - name: Deploy to S3 & Invalidate CloudFront
+            uses: lbertenasco/s3-deploy@v1
+            with:
+                folder: client/build # Adjust this if your build folder differs
+                bucket: ${{ secrets.STORAGE_BUCKET_NAME }}
+                dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+                invalidation: "/*"
