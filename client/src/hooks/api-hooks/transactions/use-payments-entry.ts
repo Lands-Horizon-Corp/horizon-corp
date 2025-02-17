@@ -6,11 +6,7 @@ import { toast } from 'sonner'
 export const useProcessPayment = () => {
     const queryClient = useQueryClient()
 
-    const createPayments = useMutation<
-        void,
-        string,
-        IPaymentsEntryRequest
-    >({
+    const createPayments = useMutation<void, string, IPaymentsEntryRequest>({
         mutationKey: ['payment', 'process'],
         mutationFn: async (paymentData) => {
             try {
