@@ -119,7 +119,7 @@ jobs:
           - name: Deploy to S3 & Invalidate CloudFront
             uses: lbertenasco/s3-deploy@v1
             with:
-                folder: client/build # Adjust this if your build folder differs
+                folder: client/.dist # Adjust this if your build folder differs
                 bucket: ${{ secrets.STORAGE_BUCKET_NAME }}
                 dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
                 invalidation: "/*"
