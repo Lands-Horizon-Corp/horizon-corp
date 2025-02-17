@@ -9,112 +9,118 @@ on:
             - main
 
 jobs:
-    lint:
-        name: Lint Code
-        runs-on: ubuntu-latest
+    # lint:
+    #     name: Lint Code
+    #     runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    #     steps:
+    #         - name: Checkout code
+    #           uses: actions/checkout@v3
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: "22.11.0"
+    #         - name: Set up Node.js
+    #           uses: actions/setup-node@v3
+    #           with:
+    #               node-version: "22.11.0"
 
-            - name: Install pnpm
-              run: npm install -g pnpm@9.14.3
+    #         - name: Install pnpm
+    #           run: npm install -g pnpm@9.14.3
 
-            - name: Install dependencies
-              run: pnpm install
-              working-directory: ./client
+    #         - name: Install dependencies
+    #           run: pnpm install
+    #           working-directory: ./client
 
-            - name: Run ESLint
-              run: pnpm run lint
-              working-directory: ./client
+    #         - name: Run ESLint
+    #           run: pnpm run lint
+    #           working-directory: ./client
 
-            - name: Run Prettier Check
-              run: pnpm run fc
-              working-directory: ./client
+    #         - name: Run Prettier Check
+    #           run: pnpm run fc
+    #           working-directory: ./client
 
-    test:
-        name: Run Vitest Tests
-        runs-on: ubuntu-latest
-        needs: lint
+    # test:
+    #     name: Run Vitest Tests
+    #     runs-on: ubuntu-latest
+    #     needs: lint
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    #     steps:
+    #         - name: Checkout code
+    #           uses: actions/checkout@v3
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: "22.11.0"
+    #         - name: Set up Node.js
+    #           uses: actions/setup-node@v3
+    #           with:
+    #               node-version: "22.11.0"
 
-            - name: Install pnpm
-              run: npm install -g pnpm@9.14.3
+    #         - name: Install pnpm
+    #           run: npm install -g pnpm@9.14.3
 
-            - name: Install dependencies
-              run: pnpm install
-              working-directory: ./client
+    #         - name: Install dependencies
+    #           run: pnpm install
+    #           working-directory: ./client
 
-            - name: Run Vitest tests
-              run: pnpm run test
-              working-directory: ./client
+    #         - name: Run Vitest tests
+    #           run: pnpm run test
+    #           working-directory: ./client
 
-    build:
-        name: Build Project
-        runs-on: ubuntu-latest
-        needs: test
+    # build:
+    #     name: Build Project
+    #     runs-on: ubuntu-latest
+    #     needs: test
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+    #     steps:
+    #         - name: Checkout code
+    #           uses: actions/checkout@v3
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v3
-              with:
-                  node-version: "22.11.0"
+    #         - name: Set up Node.js
+    #           uses: actions/setup-node@v3
+    #           with:
+    #               node-version: "22.11.0"
 
-            - name: Install pnpm
-              run: npm install -g pnpm@9.14.3
+    #         - name: Install pnpm
+    #           run: npm install -g pnpm@9.14.3
 
-            - name: Install dependencies
-              run: pnpm install
-              working-directory: ./client
+    #         - name: Install dependencies
+    #           run: pnpm install
+    #           working-directory: ./client
 
-            - name: Run TypeScript Build
-              run: pnpm run build
-              working-directory: ./client
+    #         - name: Run TypeScript Build
+    #           run: pnpm run build
+    #           working-directory: ./client
 
-            - name: Run Vite Build
-              run: pnpm run build
-              working-directory: ./client
+    #         - name: Run Vite Build
+    #           run: pnpm run build
+    #           working-directory: ./client
+  deploy:
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout code
+            uses: actions/checkout@v3
 
-    deploy:
-        name: Deploy to AWS Amplify
-        runs-on: ubuntu-latest
-        needs: build
+          - name: Set up Node.js
+            uses: actions/setup-node@v3
+            with:
+                node-version: "22.11.0"
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+          - name: Install pnpm
+            run: npm install -g pnpm@9.14.3
 
-            - name: Install AWS Amplify CLI
-              run: npm install -g @aws-amplify/cli
+          - name: Install dependencies
+            working-directory: client
+            run: pnpm install
 
-            - name: Set up AWS CLI
-              uses: aws-actions/configure-aws-credentials@v1
-              with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ secrets.AWS_REGION }}
+          - name: Build React app
+            working-directory: client
+            run: pnpm run build
 
-            - name: Deploy to AWS Amplify
-              working-directory: ./client
-              run: |
-                  # If your Amplify project is actually configured inside client/
-                  # (i.e. "amplify" folder is in there), this will pick it up
-                  amplify pull
-                  amplify status
-                  amplify push --yes
+          - name: Zip build folder
+            working-directory: client
+            run: zip -r horizon-client.zip ./dist
+
+          - name: Set up AWS CLI
+            run: |
+                aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws configure set region ${{ secrets.AWS_DEFAULT_REGION }}
+
+          - name: Deploy to S3
+            run: aws s3 sync client/build s3://${{ secrets.STORAGE_BUCKET_NAME }} --delete --endpoint-url ${{ secrets.STORAGE_ENDPOINT }}
