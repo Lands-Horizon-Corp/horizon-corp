@@ -115,6 +115,6 @@ jobs:
               run: |
                   # If your Amplify project is actually configured inside client/
                   # (i.e. "amplify" folder is in there), this will pick it up
-                  amplify pull
+                  amplify pull --appId d302y0q6p0d8ki --envName dev
                   amplify status
                   amplify push --yes
