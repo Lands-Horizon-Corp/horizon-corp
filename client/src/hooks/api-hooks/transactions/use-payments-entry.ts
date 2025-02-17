@@ -1,8 +1,7 @@
-import PaymentsEntryService from "@/server/api-service/transactions/payments-entry"
-import { IPaymentsEntryRequest } from "@/server/types/transactions/payments-entry"
-import { useMutation } from "@tanstack/react-query"
-import { toast } from "sonner"
-
+import PaymentsEntryService from '@/server/api-service/transactions/payments-entry'
+import { IPaymentsEntryRequest } from '@/server/types/transactions/payments-entry'
+import { useMutation } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 export const useCreatePaymentEntry = ({
     onSuccess,
