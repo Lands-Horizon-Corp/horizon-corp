@@ -90,38 +90,37 @@ jobs:
     #         - name: Run Vite Build
     #           run: pnpm run build
     #           working-directory: ./client
-    deploy:
-        name: Deploy to AWS Amplify
-        runs-on: ubuntu-latest
-        # needs: build
+  deploy:
+      runs-on: ubuntu-latest
+      steps:
+          - name: Checkout code
+            uses: actions/checkout@v3
 
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v3
+          - name: Set up Node.js
+            uses: actions/setup-node@v3
+            with:
+                node-version: "22.11.0"
 
-            - name: Install AWS Amplify CLI
-              run: npm install -g @aws-amplify/cli
+          - name: Install pnpm
+            run: npm install -g pnpm@9.14.3
 
-            - name: Set up AWS CLI
-              uses: aws-actions/configure-aws-credentials@v1
-              with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ secrets.AWS_REGION }}
+          - name: Install dependencies
+            working-directory: client
+            run: pnpm install
 
-            - name: Deploy to AWS Amplify
-              working-directory: ./client
-              run: |
-                  # Set up Amplify in headless mode
-                  amplify configure project --name "horizon-corp" --envName "dev" --appId "d302y0q6p0d8ki" \
-                    --defaultEditor "none" --profile "default"
+          - name: Build React app
+            working-directory: client
+            run: pnpm run build
 
-                  # Check Amplify project status
-                  amplify status
+          - name: Zip build folder
+            working-directory: client
+            run: zip -r horizon-client.zip ./dist
 
-                  # Push changes
-                  amplify push --yes
+          - name: Set up AWS CLI
+            run: |
+                aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+                aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                aws configure set region ${{ secrets.AWS_DEFAULT_REGION }}
 
-                  # Publish to Amplify Hosting (if applicable)
-                  amplify publish
-
+          - name: Deploy to S3
+            run: aws s3 sync client/build s3://${{ secrets.STORAGE_BUCKET_NAME }} --delete --endpoint-url ${{ secrets.STORAGE_ENDPOINT }}
