@@ -53,6 +53,7 @@ import { IBaseCompNoChild } from '@/types'
 import { TFilterObject } from '@/contexts/filter-context'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
+import { ImageUploadField } from './image-upload-field'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -130,7 +131,7 @@ const MemberApplicationForm = ({
     onSuccess,
 }: IMemberApplicationFormProps) => {
     const { onOpen } = useConfirmModalStore()
-    const [step, setStep] = useState(0)
+    const [step, setStep] = useState(1)
 
     const form = useForm<TMemberProfileForm>({
         resolver: zodResolver(createMemberProfileSchema),
@@ -1244,24 +1245,22 @@ const MemberApplicationForm = ({
                                                                 hiddenFields
                                                             }
                                                             className="col-span-2"
-                                                            label="ID Front"
+                                                            label="ID Front Photo"
                                                             render={({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <div>
-                                                                        <Input
-                                                                            {...field}
-                                                                            id={
-                                                                                field.name
-                                                                            }
-                                                                            placeholder="Front Media ID"
-                                                                            disabled={isDisabled(
-                                                                                field.name
-                                                                            )}
-                                                                            className="w-full"
-                                                                        />
-                                                                    </div>
+                                                                    <ImageUploadField
+                                                                        placeholder="ID front picture"
+                                                                        {...field}
+                                                                        onChange={(
+                                                                            mediaUploaded
+                                                                        ) =>
+                                                                            field.onChange(
+                                                                                mediaUploaded?.id
+                                                                            )
+                                                                        }
+                                                                    />
                                                                 </FormControl>
                                                             )}
                                                         />
@@ -1270,7 +1269,7 @@ const MemberApplicationForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            label="ID Back"
+                                                            label="ID Back Photo"
                                                             className="col-span-2"
                                                             hiddenFields={
                                                                 hiddenFields
@@ -1279,16 +1278,16 @@ const MemberApplicationForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <Input
+                                                                    <ImageUploadField
+                                                                        placeholder="ID Back Picture"
                                                                         {...field}
-                                                                        id={
-                                                                            field.name
+                                                                        onChange={(
+                                                                            mediaUploaded
+                                                                        ) =>
+                                                                            field.onChange(
+                                                                                mediaUploaded?.id
+                                                                            )
                                                                         }
-                                                                        placeholder="Back Media ID"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
                                                                     />
                                                                 </FormControl>
                                                             )}
