@@ -7,5 +7,5 @@ export interface IPaymentsEntryRequest {
     accountsId: TEntityId
     transactionType: TEntityId
     isPrinted: boolean
-    notes: string
+    notes?: string
 }
