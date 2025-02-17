@@ -11,6 +11,7 @@ import {
     SettingsIcon,
     UserListIcon,
     DashboardIcon,
+    BriefCaseIcon,
     FootstepsIcon,
     UserClockIcon,
     UserShieldIcon,
@@ -65,6 +66,16 @@ const ownerSidebarItem: TSidebarItem[] = [
                         url: '/member-classification',
                         Icon: UserTagIcon,
                     },
+                    {
+                        text: 'Member Occupation',
+                        url: '/member-occupation',
+                        Icon: BriefCaseIcon,
+                    },
+                    {
+                        text: 'Genders',
+                        Icon: GendersIcon,
+                        url: '/genders',
+                    },
                 ],
             },
             {
@@ -83,11 +94,6 @@ const ownerSidebarItem: TSidebarItem[] = [
                         Icon: FootstepsIcon,
                     },
                 ],
-            },
-            {
-                text: 'Genders',
-                Icon: GendersIcon,
-                url: '/genders',
             },
         ],
     },

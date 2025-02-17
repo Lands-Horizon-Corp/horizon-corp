@@ -155,13 +155,7 @@ const FeedBackTable = ({
 
     return (
         <FilterContext.Provider value={filterState}>
-            <div
-                className={cn(
-                    'flex h-full flex-col gap-y-2',
-                    className,
-                    !isScrollable && 'h-fit !max-h-none'
-                )}
-            >
+            <div className={cn('flex h-full flex-col gap-y-2', className)}>
                 <DataTableToolbar
                     hideCreateButton
                     globalSearchProps={{

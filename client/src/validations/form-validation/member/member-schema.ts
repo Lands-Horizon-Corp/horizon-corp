@@ -18,7 +18,7 @@ export const mediaResourceSchema = z.object({
     fileSize: z.number(),
     fileType: z.string(),
     storageKey: z.string(),
-    url: z.string().optional(),
+    url: z.string().optional().default(''),
     bucketName: z.string(),
     createdAt: z.string(),
     updatedAt: z.string(),

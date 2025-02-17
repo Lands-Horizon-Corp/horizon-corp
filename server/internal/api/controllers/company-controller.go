@@ -49,7 +49,7 @@ func (c *CompanyController) Show(ctx *gin.Context) {}
 
 //	Admin: Can create company but need to assign owner
 //	Owner: Can create company and automaticall assign owner
-//	Employee: Not allowed
+//	Employee: Not Allowed
 //	Member: Only own company
 //
 // Endpoint: POST /api/v1/company
@@ -59,8 +59,8 @@ func (c *CompanyController) Store(ctx *gin.Context) {}
 //
 // - Admin: Allowed.
 // - Owner: Allowed but only his company
-// - Employee: Not allowed.
-// - Member: Not allowed.
+// - Employee: Not Allowed.
+// - Member: Not Allowed.
 // Endpoint: PUT /api/v1/company/:id
 func (c *CompanyController) Update(ctx *gin.Context) {}
 

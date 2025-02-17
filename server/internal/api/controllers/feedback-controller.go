@@ -28,17 +28,17 @@ func NewFeedbackController(
 // Retrieve feedback with optional filtering for pagination or no pagination. Results can be converted to records.
 //
 //	Admin: Allowed
-//	Employee: Not allowed
-//	Owner: Not allowed
-//	Member: Not allowed
+//	Employee: Not Allowed
+//	Owner: Not Allowed
+//	Member: Not Allowed
 func (c *FeedbackController) Index(ctx *gin.Context) {}
 
 // GET: /api/v1/feedback/:id
 //
 //	Admin: Allowed
-//	Employee: Not allowed
-//	Owner: Not allowed
-//	Member: Not allowed
+//	Employee: Not Allowed
+//	Owner: Not Allowed
+//	Member: Not Allowed
 //
 // Endpoint: GET /api/v1/feedback/:id
 func (c *FeedbackController) Show(ctx *gin.Context) {}
@@ -48,9 +48,9 @@ func (c *FeedbackController) Show(ctx *gin.Context) {}
 func (c *FeedbackController) Store(ctx *gin.Context) {}
 
 //	Admin: Allowed
-//	Employee: Not allowed
-//	Owner: Not allowed
-//	Member: Not allowed
+//	Employee: Not Allowed
+//	Owner: Not Allowed
+//	Member: Not Allowed
 //
 // Endpoint: DELETE /api/v1/feedback/:id
 func (c *FeedbackController) Destroy(ctx *gin.Context) {}

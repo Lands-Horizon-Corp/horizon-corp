@@ -25,7 +25,7 @@ const OwnerViewMemberTypesPage = () => {
                     actionComponent={(prop) => (
                         <MemberTypeTableOwnerAction {...prop} />
                     )}
-                    className="min-h-[90vh] w-full"
+                    className="max-h-[90vh] min-h-[90vh] w-full"
                 />
             </EnsureOwnerCompany>
         </PageContainer>

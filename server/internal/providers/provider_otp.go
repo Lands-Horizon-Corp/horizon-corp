@@ -56,7 +56,7 @@ func NewOTPProvider(
 
 // cacheKey generates a cache key for storing OTPs.
 func (os *OTPService) cacheKey(msg OTPMessage) string {
-	return fmt.Sprintf("otp:%s:%s:%s:%s", msg.AccountType, msg.ID, msg.MediumType, msg.Reference)
+	return fmt.Sprintf("otp_%s_%s_%s_%s", msg.AccountType, msg.ID, msg.MediumType, msg.Reference)
 }
 
 // SendEmailOTP generates an OTP, stores it, and sends it via email.
@@ -114,22 +114,20 @@ func (os *OTPService) generateAndStoreOTP(msg OTPMessage) (string, error) {
 	expiration := 10 * time.Minute
 
 	storedOTP := otpStr
+	if os.cfg.AppEnv == "development" {
+		os.logger.Info(fmt.Sprintf("[DEBUG] OTP before hashing: %s", otpStr))
+	}
 	if os.isHashingEnabled() {
-		if os.cfg.AppEnv == "development" {
-			fmt.Println("[DEBUG] OTP before hashing:", otpStr)
-		}
 		storedOTP, err = os.helpers.HashPassword(otpStr)
 		if err != nil {
 			os.logger.Error("Failed to hash OTP", zap.Error(err))
 			return "", eris.Wrap(err, "failed to hash OTP")
 		}
 	}
-
 	if err := os.cacheService.Set(key, storedOTP, expiration); err != nil {
 		os.logger.Error("Failed to store OTP in cache", zap.Error(err))
 		return "", eris.Wrap(err, "failed to store OTP in cache")
 	}
-
 	return otpStr, nil
 }
 

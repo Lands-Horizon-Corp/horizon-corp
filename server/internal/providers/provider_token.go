@@ -16,7 +16,7 @@ type UserStatus string
 const (
 	PendingStatus    UserStatus = "Pending"
 	VerifiedStatus   UserStatus = "Verified"
-	NotAllowedStatus UserStatus = "Not allowed"
+	NotAllowedStatus UserStatus = "Not Allowed"
 )
 
 type UserClaims struct {
