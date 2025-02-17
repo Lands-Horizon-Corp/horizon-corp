@@ -85,28 +85,31 @@ type MemberProfileResource struct {
 	UpdatedAt string    `json:"updatedAt"`
 	DeletedAt string    `json:"deletedAt"`
 
-	Description            string                        `json:"description"`
-	Notes                  string                        `json:"notes"`
-	ContactNumber          string                        `json:"contactNumber"`
-	OldReferenceID         string                        `json:"oldReferenceID,omitempty"`
-	Status                 string                        `json:"status"`
-	PassbookNumber         string                        `json:"passbookNumber,omitempty"`
-	IsClosed               bool                          `json:"isClosed"`
-	Occupation             string                        `json:"occupation,omitempty"`
-	BusinessAddress        string                        `json:"businessAddress,omitempty"`
-	BusinessContact        string                        `json:"businessContact,omitempty"`
-	TinNumber              string                        `json:"tinNumber,omitempty"`
-	CivilStatus            string                        `json:"civilStatus"`
-	SSSNumber              string                        `json:"sssNumber,omitempty"`
-	PagibigNumber          string                        `json:"pagibigNumber,omitempty"`
-	PhilhealthNumber       string                        `json:"philhealthNumber,omitempty"`
-	IsMutualFundMember     bool                          `json:"isMutualFundMember"`
-	IsMicroFinanceMember   bool                          `json:"isMicroFinanceMember"`
-	MemberTypeID           *uuid.UUID                    `json:"memberTypeID,omitempty"`
-	MemberType             *MemberTypeResource           `json:"memberType,omitempty"`
-	MemberID               *uuid.UUID                    `json:"memberID,omitempty"`
-	Member                 *MemberResource               `json:"member,omitempty"`
-	MediaID                *uuid.UUID                    `json:"mediaID,omitempty"`
+	Description          string              `json:"description"`
+	Notes                string              `json:"notes"`
+	ContactNumber        string              `json:"contactNumber"`
+	OldReferenceID       string              `json:"oldReferenceID,omitempty"`
+	Status               string              `json:"status"`
+	PassbookNumber       string              `json:"passbookNumber,omitempty"`
+	IsClosed             bool                `json:"isClosed"`
+	Occupation           string              `json:"occupation,omitempty"`
+	BusinessAddress      string              `json:"businessAddress,omitempty"`
+	BusinessContact      string              `json:"businessContact,omitempty"`
+	TinNumber            string              `json:"tinNumber,omitempty"`
+	CivilStatus          string              `json:"civilStatus"`
+	SSSNumber            string              `json:"sssNumber,omitempty"`
+	PagibigNumber        string              `json:"pagibigNumber,omitempty"`
+	PhilhealthNumber     string              `json:"philhealthNumber,omitempty"`
+	IsMutualFundMember   bool                `json:"isMutualFundMember"`
+	IsMicroFinanceMember bool                `json:"isMicroFinanceMember"`
+	MemberTypeID         *uuid.UUID          `json:"memberTypeID,omitempty"`
+	MemberType           *MemberTypeResource `json:"memberType,omitempty"`
+	MemberID             *uuid.UUID          `json:"memberID,omitempty"`
+	Member               *MemberResource     `json:"member,omitempty"`
+
+	MediaID          *uuid.UUID `json:"mediaID,omitempty"`
+	SignatureMediaID *uuid.UUID `json:"signatureMediaID,omitempty"`
+
 	MemberClassificationID *uuid.UUID                    `json:"memberClassificationID,omitempty"`
 	MemberClassification   *MemberClassificationResource `json:"memberClassification,omitempty"`
 	MemberGenderID         *uuid.UUID                    `json:"memberGenderID,omitempty"`

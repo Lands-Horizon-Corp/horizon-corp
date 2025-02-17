@@ -127,9 +127,10 @@ func (ah *AuthHandler) SignUp(
 	birthDate time.Time, username, email, password, contactNumber string, mediaID, roleID, genderID *uuid.UUID,
 	emailTemplate, contactTemplate string,
 ) (interface{}, error) {
+
 	switch accountType {
 	case "Admin":
-		admin, err := ah.repository.AdminCreate(&models.Admin{
+		user, err := ah.repository.AdminCreate(&models.Admin{
 			FirstName:          firstName,
 			LastName:           lastName,
 			MiddleName:         middleName,
@@ -151,12 +152,14 @@ func (ah *AuthHandler) SignUp(
 		if err != nil {
 			return nil, eris.Wrap(err, "failed to create admin")
 		}
-		if err := ah.sendVerificationOTPs(accountType, admin.ID.String(), email, contactNumber, firstName, lastName, emailTemplate, contactTemplate); err != nil {
+
+		if err := ah.sendSignUpOTPs("Admin", user.ID.String(), user.Email, user.ContactNumber, firstName, lastName, emailTemplate, contactTemplate); err != nil {
 			return nil, err
 		}
-		return ah.transformer.AdminToResource(admin), nil
+		return ah.transformer.AdminToResource(user), nil
+
 	case "Member":
-		member, err := ah.repository.MemberCreate(&models.Member{
+		user, err := ah.repository.MemberCreate(&models.Member{
 			FirstName:          firstName,
 			LastName:           lastName,
 			MiddleName:         middleName,
@@ -178,12 +181,14 @@ func (ah *AuthHandler) SignUp(
 		if err != nil {
 			return nil, eris.Wrap(err, "failed to create member")
 		}
-		if err := ah.sendVerificationOTPs(accountType, member.ID.String(), email, contactNumber, firstName, lastName, emailTemplate, contactTemplate); err != nil {
+
+		if err := ah.sendSignUpOTPs("Member", user.ID.String(), user.Email, user.ContactNumber, firstName, lastName, emailTemplate, contactTemplate); err != nil {
 			return nil, err
 		}
-		return ah.transformer.MemberToResource(member), nil
+		return ah.transformer.MemberToResource(user), nil
+
 	case "Employee":
-		employee, err := ah.repository.EmployeeCreate(&models.Employee{
+		user, err := ah.repository.EmployeeCreate(&models.Employee{
 			FirstName:          firstName,
 			LastName:           lastName,
 			MiddleName:         middleName,
@@ -206,13 +211,13 @@ func (ah *AuthHandler) SignUp(
 			return nil, eris.Wrap(err, "failed to create employee")
 		}
 
-		if err := ah.sendVerificationOTPs(accountType, employee.ID.String(), email, contactNumber, firstName, lastName, emailTemplate, contactTemplate); err != nil {
+		if err := ah.sendSignUpOTPs("Employee", user.ID.String(), user.Email, user.ContactNumber, firstName, lastName, emailTemplate, contactTemplate); err != nil {
 			return nil, err
 		}
-		return ah.transformer.EmployeeToResource(employee), nil
+		return ah.transformer.EmployeeToResource(user), nil
 
 	case "Owner":
-		owner, err := ah.repository.OwnerCreate(&models.Owner{
+		user, err := ah.repository.OwnerCreate(&models.Owner{
 			FirstName:          firstName,
 			LastName:           lastName,
 			MiddleName:         middleName,
@@ -234,10 +239,10 @@ func (ah *AuthHandler) SignUp(
 		if err != nil {
 			return nil, eris.Wrap(err, "failed to create owner")
 		}
-		if err := ah.sendVerificationOTPs(accountType, owner.ID.String(), email, contactNumber, firstName, lastName, emailTemplate, contactTemplate); err != nil {
+		if err := ah.sendSignUpOTPs("Owner", user.ID.String(), user.Email, user.ContactNumber, firstName, lastName, emailTemplate, contactTemplate); err != nil {
 			return nil, err
 		}
-		return ah.transformer.OwnerToResource(owner), nil
+		return ah.transformer.OwnerToResource(user), nil
 	default:
 		return nil, eris.New("invalid account type")
 	}
@@ -661,7 +666,7 @@ func (ah *AuthHandler) SendContactNumberVerification(ctx *gin.Context, accountTy
 		otpMessage := providers.OTPMessage{
 			AccountType: "Admin",
 			ID:          user.ID.String(),
-			MediumType:  providers.Email,
+			MediumType:  providers.SMS,
 			Reference:   "send-contact-number-verification",
 		}
 		contactReq := providers.SMSRequest{
@@ -681,7 +686,7 @@ func (ah *AuthHandler) SendContactNumberVerification(ctx *gin.Context, accountTy
 		otpMessage := providers.OTPMessage{
 			AccountType: "Member",
 			ID:          user.ID.String(),
-			MediumType:  providers.Email,
+			MediumType:  providers.SMS,
 			Reference:   "send-contact-number-verification",
 		}
 		contactReq := providers.SMSRequest{
@@ -700,7 +705,7 @@ func (ah *AuthHandler) SendContactNumberVerification(ctx *gin.Context, accountTy
 		otpMessage := providers.OTPMessage{
 			AccountType: "Employee",
 			ID:          user.ID.String(),
-			MediumType:  providers.Email,
+			MediumType:  providers.SMS,
 			Reference:   "send-contact-number-verification",
 		}
 		contactReq := providers.SMSRequest{
@@ -721,7 +726,7 @@ func (ah *AuthHandler) SendContactNumberVerification(ctx *gin.Context, accountTy
 		otpMessage := providers.OTPMessage{
 			AccountType: "Owner",
 			ID:          user.ID.String(),
-			MediumType:  providers.Email,
+			MediumType:  providers.SMS,
 			Reference:   "send-contact-number-verification",
 		}
 		contactReq := providers.SMSRequest{
@@ -876,7 +881,7 @@ func (ah *AuthHandler) VerifyContactNumber(ctx *gin.Context, accountType string,
 		otpMessage := providers.OTPMessage{
 			AccountType: "Admin",
 			ID:          user.ID.String(),
-			MediumType:  providers.Email,
+			MediumType:  providers.SMS,
 			Reference:   "send-contact-number-verification",
 		}
 		isValid, err := ah.otpService.ValidateOTP(otpMessage, otp)
@@ -898,7 +903,7 @@ func (ah *AuthHandler) VerifyContactNumber(ctx *gin.Context, accountType string,
 		otpMessage := providers.OTPMessage{
 			AccountType: "Member",
 			ID:          user.ID.String(),
-			MediumType:  providers.Email,
+			MediumType:  providers.SMS,
 			Reference:   "send-contact-number-verification",
 		}
 		isValid, err := ah.otpService.ValidateOTP(otpMessage, otp)
@@ -921,7 +926,7 @@ func (ah *AuthHandler) VerifyContactNumber(ctx *gin.Context, accountType string,
 		otpMessage := providers.OTPMessage{
 			AccountType: "Employee",
 			ID:          user.ID.String(),
-			MediumType:  providers.Email,
+			MediumType:  providers.SMS,
 			Reference:   "send-contact-number-verification",
 		}
 		isValid, err := ah.otpService.ValidateOTP(otpMessage, otp)
@@ -944,7 +949,7 @@ func (ah *AuthHandler) VerifyContactNumber(ctx *gin.Context, accountType string,
 		otpMessage := providers.OTPMessage{
 			AccountType: "Owner",
 			ID:          user.ID.String(),
-			MediumType:  providers.Email,
+			MediumType:  providers.SMS,
 			Reference:   "send-contact-number-verification",
 		}
 		isValid, err := ah.otpService.ValidateOTP(otpMessage, otp)
@@ -1166,35 +1171,41 @@ func (ah *AuthHandler) ForceChangePassword(ctx *gin.Context, accountType, key, n
 	}
 }
 
-func (ah *AuthHandler) sendVerificationOTPs(
+func (ah *AuthHandler) sendSignUpOTPs(
 	accountType, accountID, email, contactNumber, firstName, lastName, emailTemplate, contactTemplate string,
 ) error {
-	if err := ah.otpService.SendEmailOTP(providers.OTPMessage{
-		AccountType: accountType,
-		ID:          accountID,
-		MediumType:  providers.Email,
-		Reference:   "send-email-verification",
-	}, providers.EmailRequest{
-		To:      email,
-		Subject: "ECOOP: Email Verification",
-		Body:    emailTemplate,
-	}); err != nil {
-		return eris.Wrap(err, "failed to send email verification")
-	}
-
-	if err := ah.otpService.SendContactNumberOTP(providers.OTPMessage{
+	// Send contact number OTP
+	otpMessageSMS := providers.OTPMessage{
 		AccountType: accountType,
 		ID:          accountID,
 		MediumType:  providers.SMS,
 		Reference:   "send-contact-number-verification",
-	}, providers.SMSRequest{
+	}
+	contactReq := providers.SMSRequest{
 		To:   contactNumber,
 		Body: contactTemplate,
 		Vars: &map[string]string{
 			"name": fmt.Sprintf("%s %s", firstName, lastName),
 		},
-	}); err != nil {
-		return eris.Wrap(err, "failed to send contact number verification")
+	}
+	if err := ah.otpService.SendContactNumberOTP(otpMessageSMS, contactReq); err != nil {
+		return eris.New("failed to send OTP to your phone")
+	}
+
+	// Send email OTP
+	otpMessageEmail := providers.OTPMessage{
+		AccountType: accountType,
+		ID:          accountID,
+		MediumType:  providers.Email,
+		Reference:   "send-email-verification",
+	}
+	emailRequest := providers.EmailRequest{
+		To:      email,
+		Subject: "ECOOP: Email Verification",
+		Body:    emailTemplate,
+	}
+	if err := ah.otpService.SendEmailOTP(otpMessageEmail, emailRequest); err != nil {
+		return eris.New("failed to send OTP to your email")
 	}
 
 	return nil

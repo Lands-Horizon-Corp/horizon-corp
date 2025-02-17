@@ -63,7 +63,18 @@ func NewProfileController(
 	}
 }
 
-func (as *ProfileController) ProfilePicture(ctx *gin.Context) {}
+func (as *ProfileController) ProfilePicture(ctx *gin.Context) {
+	// ProfilePicture
+	var req MediaStoreRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
+}
 
 type AccountSettingRequest struct {
 	BirthDate        time.Time `json:"birthDate" validate:"required"`

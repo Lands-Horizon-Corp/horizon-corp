@@ -33,3 +33,10 @@ export const useDataTableSorting = () => {
 
     return { sortingState, setSortingState, tableSorting, setTableSorting }
 }
+
+
+
+
+async function create(value: IAccount): Promse<IAccount>{
+  return value
+}

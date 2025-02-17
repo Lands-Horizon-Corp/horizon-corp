@@ -49,6 +49,7 @@ func (m *Middleware) handleForbidden(ctx *gin.Context, roles []string) {
 	ctx.JSON(http.StatusForbidden, gin.H{
 		"error": fmt.Sprintf("Forbidden: %s access required", strings.Join(roles, " or ")),
 	})
+	m.tokenProvider.ClearTokenCookie(ctx)
 	ctx.Abort()
 }
 
