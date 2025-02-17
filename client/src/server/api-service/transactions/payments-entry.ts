@@ -14,7 +14,7 @@ export default class PaymentsEntryService {
         return response.data as IPaymentsEntryRequest
     }
 
-    public static async update(){
+    public static async update() {
         //test
     }
 }
