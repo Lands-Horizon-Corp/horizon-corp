@@ -14,7 +14,10 @@ import { IMemberRecruitsResource } from './member-recruits'
 import { IMemberOccupationResource } from './member-occupation'
 import { IMemberDescriptionResource } from './member-description'
 import { IMemberCloseRemarksResource } from './member-close-remarks'
-import { IMemberJointAccountsResource } from './member-joint-accounts'
+import {
+    IMemberJointAccountsRequest,
+    IMemberJointAccountsResource,
+} from './member-joint-accounts'
 import { IMemberClassificationResource } from './member-classification'
 import { IMemberRelativeAccountsResource } from './member-relative-accounts'
 import { IMemberGovernmentBenefitsResource } from './member-government-benefits'
@@ -45,6 +48,7 @@ export interface IMemberProfileRequest {
     isMicroFinanceMember: boolean
 
     mediaId?: TEntityId
+    media?: IMediaResource
     memberId?: TEntityId
 
     branchId?: TEntityId
@@ -97,13 +101,7 @@ export interface IMemberProfileRequest {
         description: string
     }[]
 
-    memberJointAccounts?: {
-        description: string
-        firstName: string
-        lastName: string
-        middleName?: string
-        familyRelationship?: string
-    }[]
+    memberJointAccounts?: IMemberJointAccountsRequest[]
 
     memberRecruits?: {
         membersProfileId: TEntityId
