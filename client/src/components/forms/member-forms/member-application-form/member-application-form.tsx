@@ -56,6 +56,7 @@ import { TFilterObject } from '@/contexts/filter-context'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { SingleImageUploadField } from './single-image-upload-field'
 import { SignatureUploadField } from './signature-upload-field'
+import { AvatarUploadField } from './avatar-upload-field'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -505,6 +506,35 @@ const MemberApplicationForm = ({
                                 <div className="space-y-4">
                                     <legend>Personal Information</legend>
                                     <Separator />
+                                    <FormFieldWrapper
+                                        name="mediaId"
+                                        control={form.control}
+                                        label="Picture"
+                                        className="col-span-1"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <AvatarUploadField
+                                                    placeholder="Upload Person Picture"
+                                                    {...field}
+                                                    mediaImage={form.getValues(
+                                                        'media'
+                                                    )}
+                                                    onChange={(
+                                                        mediaUploaded
+                                                    ) => {
+                                                        field.onChange(
+                                                            mediaUploaded?.id
+                                                        )
+                                                        form.setValue(
+                                                            'media',
+                                                            mediaUploaded
+                                                        )
+                                                    }}
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
                                     <FormFieldWrapper
                                         name="contactNumber"
                                         control={form.control}
