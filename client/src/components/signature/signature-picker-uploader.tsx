@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import Signature from '.'
 import { Button } from '../ui/button'
@@ -19,6 +19,11 @@ const SignaturePickerUploader = ({ onSignatureUpload }: Props) => {
     const [progress, setProgress] = useState(0)
     const [file, setFile] = useState<File | undefined>(undefined)
 
+    const objectUrl = useMemo(
+        () => (file ? URL.createObjectURL(file) : undefined),
+        [file]
+    )
+
     const { isPending: isUploading, mutate: uploadSignature } =
         useSinglePictureUpload({
             onSuccess: (media) => {
@@ -36,7 +41,7 @@ const SignaturePickerUploader = ({ onSignatureUpload }: Props) => {
                         fallbackClassName="rounded-none"
                         imageClassName="object-contain rounded-none"
                         className="min-h-60 w-full rounded-lg border bg-background"
-                        src={URL.createObjectURL(file)}
+                        src={objectUrl}
                     />
                     <FileItem
                         file={file}

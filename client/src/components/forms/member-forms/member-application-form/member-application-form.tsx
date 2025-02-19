@@ -2167,7 +2167,7 @@ const MemberApplicationForm = ({
                                                                 }) => (
                                                                     <FormControl>
                                                                         <SingleImageUploadField
-                                                                            placeholder="Picture"
+                                                                            placeholder="Upload Person Picture"
                                                                             {...field}
                                                                             mediaImage={form.getValues(
                                                                                 `memberJointAccounts.${index}.media`
@@ -2202,7 +2202,7 @@ const MemberApplicationForm = ({
                                                                 }) => (
                                                                     <FormControl>
                                                                         <SignatureUploadField
-                                                                            placeholder="Signature Photo"
+                                                                            placeholder="Upload Signature Photo"
                                                                             {...field}
                                                                             mediaImage={form.getValues(
                                                                                 `memberJointAccounts.${index}.signatureMedia`
