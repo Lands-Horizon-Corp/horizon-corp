@@ -10,6 +10,7 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
     VerifiedPatchIcon,
+    SignatureLightIcon,
 } from '@/components/icons'
 import {
     Form,
@@ -42,6 +43,7 @@ import MemberTypeSelect from '@/components/selects/member-type-select'
 import ProvinceCombobox from '@/components/comboboxes/province-combobox'
 import BarangayCombobox from '@/components/comboboxes/barangay-combobox'
 import MunicipalityCombobox from '@/components/comboboxes/municipality-combobox'
+import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
 import MemberClassificationCombobox from '@/components/comboboxes/member-classification-combobox'
 import MemberEducationalAttainmentPicker from '@/components/comboboxes/member-educational-attainment-combobox'
 
@@ -52,9 +54,8 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { TFilterObject } from '@/contexts/filter-context'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
 import { SingleImageUploadField } from './single-image-upload-field'
-import logger from '@/helpers/loggers/logger'
+import { SignatureUploadField } from './signature-upload-field'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -150,8 +151,6 @@ const MemberApplicationForm = ({
             ...defaultValues,
         },
     })
-
-    logger.log(form.formState.errors)
 
     const isDisabled = (field: Path<TMemberProfileForm>) =>
         readOnly || disabledFields?.includes(field) || false
@@ -2040,10 +2039,10 @@ const MemberApplicationForm = ({
                                                 (jointField, index) => (
                                                     <div
                                                         key={jointField.id}
-                                                        className="flex w-full flex-col gap-4 md:flex-row"
+                                                        className="flex w-full flex-col items-start gap-4 border-b pb-2 md:flex-row"
                                                     >
-                                                        <div className="grid grow gap-4 sm:grid-cols-2">
-                                                            <div className="col-span-2 grid grid-cols-4 gap-4">
+                                                        <div className="grid grow gap-x-4 gap-y-2 sm:grid-cols-2">
+                                                            <div className="col-span-2 grid gap-4 sm:grid-cols-4">
                                                                 <FormFieldWrapper
                                                                     control={
                                                                         form.control
@@ -2154,6 +2153,41 @@ const MemberApplicationForm = ({
                                                                 />
                                                             </div>
                                                             <FormFieldWrapper
+                                                                name={`memberJointAccounts.${index}.mediaId`}
+                                                                control={
+                                                                    form.control
+                                                                }
+                                                                label="Picture"
+                                                                className="col-span-1"
+                                                                hiddenFields={
+                                                                    hiddenFields
+                                                                }
+                                                                render={({
+                                                                    field,
+                                                                }) => (
+                                                                    <FormControl>
+                                                                        <SingleImageUploadField
+                                                                            placeholder="Picture"
+                                                                            {...field}
+                                                                            mediaImage={form.getValues(
+                                                                                `memberJointAccounts.${index}.media`
+                                                                            )}
+                                                                            onChange={(
+                                                                                mediaUploaded
+                                                                            ) => {
+                                                                                field.onChange(
+                                                                                    mediaUploaded?.id
+                                                                                )
+                                                                                form.setValue(
+                                                                                    `memberJointAccounts.${index}.media`,
+                                                                                    mediaUploaded
+                                                                                )
+                                                                            }}
+                                                                        />
+                                                                    </FormControl>
+                                                                )}
+                                                            />
+                                                            <FormFieldWrapper
                                                                 name={`memberJointAccounts.${index}.signatureMediaId`}
                                                                 control={
                                                                     form.control
@@ -2167,12 +2201,15 @@ const MemberApplicationForm = ({
                                                                     field,
                                                                 }) => (
                                                                     <FormControl>
-                                                                        <SingleImageUploadField
+                                                                        <SignatureUploadField
                                                                             placeholder="Signature Photo"
                                                                             {...field}
                                                                             mediaImage={form.getValues(
                                                                                 `memberJointAccounts.${index}.signatureMedia`
                                                                             )}
+                                                                            DisplayIcon={
+                                                                                SignatureLightIcon
+                                                                            }
                                                                             onChange={(
                                                                                 mediaUploaded
                                                                             ) => {
@@ -2181,41 +2218,6 @@ const MemberApplicationForm = ({
                                                                                 )
                                                                                 form.setValue(
                                                                                     `memberJointAccounts.${index}.signatureMedia`,
-                                                                                    mediaUploaded
-                                                                                )
-                                                                            }}
-                                                                        />
-                                                                    </FormControl>
-                                                                )}
-                                                            />
-                                                            <FormFieldWrapper
-                                                                name={`memberJointAccounts.${index}.mediaId`}
-                                                                control={
-                                                                    form.control
-                                                                }
-                                                                label="Signature"
-                                                                className="col-span-1"
-                                                                hiddenFields={
-                                                                    hiddenFields
-                                                                }
-                                                                render={({
-                                                                    field,
-                                                                }) => (
-                                                                    <FormControl>
-                                                                        <SingleImageUploadField
-                                                                            placeholder="Signature Photo"
-                                                                            {...field}
-                                                                            mediaImage={form.getValues(
-                                                                                `memberJointAccounts.${index}.media`
-                                                                            )}
-                                                                            onChange={(
-                                                                                mediaUploaded
-                                                                            ) => {
-                                                                                field.onChange(
-                                                                                    mediaUploaded?.id
-                                                                                )
-                                                                                form.setValue(
-                                                                                    `memberJointAccounts.${index}.media`,
                                                                                     mediaUploaded
                                                                                 )
                                                                             }}
@@ -2248,6 +2250,22 @@ const MemberApplicationForm = ({
                                                                     </FormControl>
                                                                 )}
                                                             />
+                                                            <Button
+                                                                size="sm"
+                                                                type="button"
+                                                                variant="secondary"
+                                                                onClick={() =>
+                                                                    removeJoint(
+                                                                        index
+                                                                    )
+                                                                }
+                                                                disabled={isDisabled(
+                                                                    'memberJointAccounts'
+                                                                )}
+                                                                className="col-span-2 block p-2 sm:hidden"
+                                                            >
+                                                                Remove
+                                                            </Button>
                                                         </div>
                                                         <Button
                                                             size="icon"
@@ -2261,7 +2279,7 @@ const MemberApplicationForm = ({
                                                             disabled={isDisabled(
                                                                 'memberJointAccounts'
                                                             )}
-                                                            className="self-center rounded-full p-2"
+                                                            className="hidden size-fit rounded-full p-2 sm:block"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>

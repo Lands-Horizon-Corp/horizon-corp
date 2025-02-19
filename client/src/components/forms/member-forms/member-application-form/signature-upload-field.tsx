@@ -1,17 +1,17 @@
 import { toast } from 'sonner'
+import { IconType } from 'react-icons/lib'
 import { useState, forwardRef } from 'react'
 
 import { Button } from '@/components/ui/button'
 import ImageDisplay from '@/components/image-display'
 import { ImageIcon, TrashIcon } from '@/components/icons'
-import { SingleImageUploaderModal } from '@/components/uploaders/single-image-uploader'
+import { SignaturePickerUploaderModal } from '@/components/signature/signature-picker-uploader'
 
 import { formatBytes } from '@/helpers'
 import { IMediaResource, TEntityId } from '@/server'
 import { abbreviateUUID } from '@/utils/formatting-utils'
-import { IconType } from 'react-icons/lib'
 
-export interface SingleImageUploadFieldProps {
+export interface SignatureUploadField {
     id?: string
     name?: string
     value?: TEntityId
@@ -21,9 +21,9 @@ export interface SingleImageUploadFieldProps {
     onChange?: (media: IMediaResource | undefined) => void
 }
 
-export const SingleImageUploadField = forwardRef<
+export const SignatureUploadField = forwardRef<
     HTMLButtonElement,
-    SingleImageUploadFieldProps
+    SignatureUploadField
 >(
     (
         {
@@ -40,15 +40,15 @@ export const SingleImageUploadField = forwardRef<
 
         return (
             <div>
-                <SingleImageUploaderModal
-                    title="Upload Image"
-                    description="Choose/Upload single image. You may also capture using camera."
+                <SignaturePickerUploaderModal
+                    title="Upload Signature"
+                    description="Create,Capture or Upload your signature."
                     open={uploaderModal}
                     onOpenChange={setUploaderModal}
-                    singleImageUploaderProp={{
-                        onSuccess: (media: IMediaResource) => {
+                    signatureUploadProps={{
+                        onSignatureUpload: (media) => {
                             toast.success(
-                                `Image Uploaded ${media.fileName} with ID: ${media.id}`
+                                `Signature Uploaded ${media.fileName} with ID: ${media.id}`
                             )
                             onChange?.({
                                 ...media,
@@ -56,9 +56,8 @@ export const SingleImageUploadField = forwardRef<
                             })
                             setUploaderModal(false)
                         },
-                        className: 'p-0',
                     }}
-                    className="max-w-xl bg-popover p-8"
+                    className="min-w-fit bg-popover p-8"
                 />
                 {mediaImage ? (
                     <div className="flex items-center gap-x-2 rounded-md border bg-background p-2">
@@ -100,7 +99,7 @@ export const SingleImageUploadField = forwardRef<
                                 {abbreviateUUID(value, 14)} (Uploaded Image)
                             </span>
                         ) : (
-                            (placeholder ?? 'Upload Image')
+                            (placeholder ?? 'Upload Signature')
                         )}
                         <DisplayIcon className="shrink-0 text-muted-foreground/80" />
                     </Button>
@@ -110,4 +109,4 @@ export const SingleImageUploadField = forwardRef<
     }
 )
 
-SingleImageUploadField.displayName = 'SingleImageUploadField'
+SignatureUploadField.displayName = 'SignatureUploadField'
