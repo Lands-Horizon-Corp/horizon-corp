@@ -134,7 +134,7 @@ const MemberApplicationForm = ({
     onSuccess,
 }: IMemberApplicationFormProps) => {
     const { onOpen } = useConfirmModalStore()
-    const [step, setStep] = useState(3)
+    const [step, setStep] = useState(0)
 
     const form = useForm<TMemberProfileForm>({
         resolver: zodResolver(createMemberProfileSchema),
