@@ -24,6 +24,7 @@ import { IMemberGovernmentBenefitsResource } from './member-government-benefits'
 import { ITimeStamps, TAccountStatus, TCivilStatus, TEntityId } from '../common'
 import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history'
 import { IMemberContactNumberReferencesResource } from './member-contact-number-references'
+import { IPaginatedResult } from '../paginated-result'
 
 export interface IMemberProfileRequest {
     oldReferenceId?: string
@@ -188,3 +189,11 @@ export interface IMemberProfileResource extends ITimeStamps {
     memberMutualFundsHistory?: IMemberMutualFundsHistoryResource[]
     memberAssets?: IMemberAssetsResource[]
 }
+
+export type IMemberProfilePicker = Pick<
+    IMemberProfileResource,
+    'id' | 'oldReferenceId' | 'passbookNumber' | 'notes' | 'description'
+>
+
+export type IMemberProfilePaginatedPicker =
+    IPaginatedResult<IMemberProfilePicker>
