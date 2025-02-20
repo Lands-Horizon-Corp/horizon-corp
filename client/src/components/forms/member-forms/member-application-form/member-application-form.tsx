@@ -35,9 +35,12 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import GenderSelect from '@/components/selects/gender-select'
 import BranchPicker from '@/components/pickers/branch-picker'
+import { AvatarUploadField } from './avatar-upload-field'
+import { SignatureUploadField } from './signature-upload-field'
 import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import { SingleImageUploadField } from './single-image-upload-field'
 import { PhoneInput } from '@/components/contact-input/contact-input'
 import MemberTypeSelect from '@/components/selects/member-type-select'
 import ProvinceCombobox from '@/components/comboboxes/province-combobox'
@@ -54,9 +57,6 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { TFilterObject } from '@/contexts/filter-context'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import { SingleImageUploadField } from './single-image-upload-field'
-import { SignatureUploadField } from './signature-upload-field'
-import { AvatarUploadField } from './avatar-upload-field'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -438,7 +438,7 @@ const MemberApplicationForm = ({
                                                         disabled={isDisabled(
                                                             field.name
                                                         )}
-                                                        checked={field.value}
+                                                        // checked={field.value}
                                                         onCheckedChange={(
                                                             checked
                                                         ) =>
@@ -1231,7 +1231,7 @@ const MemberApplicationForm = ({
                                                                         id={
                                                                             field.name
                                                                         }
-                                                                        placeholder="0"
+                                                                        placeholder="Value"
                                                                         disabled={isDisabled(
                                                                             field.name
                                                                         )}
