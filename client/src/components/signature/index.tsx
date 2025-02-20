@@ -34,9 +34,13 @@ import UploadSignature from './upload-signature'
 import DrawSignature from './draw-signature'
 import CaptureSignature from './capture-signature'
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import { format } from 'date-fns'
 
-interface SignatureProps {
+export interface ISignatureProps {
     className?: string
+    hideDownload?: boolean
+    disableFullScreen?: boolean
+    onSignatureChange?: (signature: File | undefined) => void
 }
 
 enum SignatureModes {
@@ -47,7 +51,12 @@ enum SignatureModes {
 
 type SignatureModeType = SignatureModes
 
-const Signature = ({ className }: SignatureProps) => {
+const Signature = ({
+    className,
+    hideDownload = false,
+    disableFullScreen = false,
+    onSignatureChange,
+}: ISignatureProps) => {
     const [currentMode, setCurrentMode] = useState<SignatureModeType | null>(
         SignatureModes.DRAW
     )
@@ -70,12 +79,14 @@ const Signature = ({ className }: SignatureProps) => {
     const handleOnUploadSignatureFileChange = (file: FileWithPath[]) => {
         setCurrentFile(file[0])
         setFile(file[0])
+        onSignatureChange?.(file[0])
     }
 
     const handleClear = () => {
         setCurrentFile(null)
         setTrimmedData(null)
         handleClearCanvas()
+        onSignatureChange?.(undefined)
     }
 
     const handleClearCanvas = () => {
@@ -95,9 +106,13 @@ const Signature = ({ className }: SignatureProps) => {
             const trimmedData = signatureRef.current
                 .getTrimmedCanvas()
                 .toDataURL('image/png')
-            const convertedData = dataUrlToFile(trimmedData, 'signature')
+            const convertedData = dataUrlToFile(
+                trimmedData,
+                `SIGNATURE_PAD_SIGN_${format(new Date(), 'yyyyMMdd_HHmmss')}`
+            )
             setTrimmedData(trimmedData)
             setFile(convertedData)
+            onSignatureChange?.(convertedData)
         }
     }
 
@@ -112,9 +127,10 @@ const Signature = ({ className }: SignatureProps) => {
         setTrimmedData(imageSrc)
         const convertedImageToData = dataUrlToFile(
             imageSrc,
-            'capture-signature'
+            `SIGNATURE_CAPTURE_${format(new Date(), 'yyyyMMdd_HHmmss')}`
         )
         setFile(convertedImageToData)
+        onSignatureChange?.(convertedImageToData)
         if (imageSrc) {
             toast.success('Capture Image')
         }
@@ -271,52 +287,60 @@ const Signature = ({ className }: SignatureProps) => {
                     </Button>
                 </div>
                 <div className="flex w-fit items-center justify-center">
-                    {isFullScreenMode ? (
+                    {disableFullScreen && (
                         <>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            onClick={handleIsFullScreenMode}
-                                            size={'sm'}
-                                            variant={'ghost'}
-                                        >
-                                            <FullscreenIcon
-                                                size={24}
-                                                className="ease-in-out hover:scale-105 hover:cursor-pointer"
-                                            />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p className="text-xs">
-                                            Exit Full Screen Mode
-                                        </p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
-                        </>
-                    ) : (
-                        <>
-                            <TooltipProvider>
-                                <Tooltip>
-                                    <TooltipTrigger asChild>
-                                        <Button
-                                            onClick={handleIsFullScreenMode}
-                                            variant={'ghost'}
-                                        >
-                                            <FullscreenExitIcon
-                                                size={24}
-                                                className="ease-in-out hover:scale-105 hover:cursor-pointer"
-                                            />
-                                        </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                        <p className="text-xs">
-                                            Enter fullscreen mode
-                                        </p>
-                                    </TooltipContent>
-                                </Tooltip>
-                            </TooltipProvider>
+                            {isFullScreenMode ? (
+                                <>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    onClick={
+                                                        handleIsFullScreenMode
+                                                    }
+                                                    size={'sm'}
+                                                    variant={'ghost'}
+                                                >
+                                                    <FullscreenIcon
+                                                        size={24}
+                                                        className="ease-in-out hover:scale-105 hover:cursor-pointer"
+                                                    />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p className="text-xs">
+                                                    Exit Full Screen Mode
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </>
+                            ) : (
+                                <>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button
+                                                    onClick={
+                                                        handleIsFullScreenMode
+                                                    }
+                                                    variant={'ghost'}
+                                                >
+                                                    <FullscreenExitIcon
+                                                        size={24}
+                                                        className="ease-in-out hover:scale-105 hover:cursor-pointer"
+                                                    />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p className="text-xs">
+                                                    Enter fullscreen mode
+                                                </p>
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </>
+                            )}
                         </>
                     )}
                 </div>
@@ -398,7 +422,7 @@ const Signature = ({ className }: SignatureProps) => {
                         capture
                     </Button>
                 )}
-                {currentMode !== SignatureModes.UPLOAD && (
+                {currentMode !== SignatureModes.UPLOAD && !hideDownload && (
                     <Button
                         className={cn('text-xs', trimmedData ? '' : 'hidden')}
                         size={'sm'}

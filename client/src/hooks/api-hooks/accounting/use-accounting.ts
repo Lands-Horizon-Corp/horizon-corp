@@ -14,11 +14,11 @@ import {
     IAccountsResource,
 } from '@/server/types/accounts/accounts'
 import AccountsService from '@/server/api-service/accounting-services/accounts-service'
-import { TEntityId } from '@/server/types'
+import { TEntityId } from '@/server'
 
 export const useFilteredPaginatedAccounts = ({
     sort,
-    enabled,
+    enabled = true,
     filterPayload,
     preloads,
     pagination = { pageSize: 20, pageIndex: 1 },
@@ -51,10 +51,11 @@ export const useFilteredPaginatedAccounts = ({
         },
         initialData: {
             data: [],
-            pages: [],
-            totalSize: 0,
+            pageIndex: pagination.pageIndex,
+            pageSize: pagination.pageSize,
             totalPage: 1,
-            ...pagination,
+            totalSize: 0,
+            pages: [],
         },
         enabled,
         retry: 1,

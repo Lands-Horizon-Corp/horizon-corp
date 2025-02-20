@@ -63,6 +63,7 @@ export const createMemberProfileSchema = z.object({
     isMicroFinanceMember: z.boolean().default(false),
 
     mediaId: entityIdSchema.optional(),
+    media: mediaResourceSchema.optional(),
     memberId: entityIdSchema.optional(),
 
     memberTypeId: z
@@ -159,6 +160,12 @@ export const createMemberProfileSchema = z.object({
                 lastName: z.string().min(1, 'Last name is required'),
                 middleName: z.string().optional(),
                 familyRelationship: z.string().optional(),
+
+                // new properties
+                mediaId: entityIdSchema.optional(),
+                media: mediaResourceSchema.optional(),
+                signatureMediaId: entityIdSchema.optional(),
+                signatureMedia: mediaResourceSchema.optional(),
             })
         )
         .optional(),
