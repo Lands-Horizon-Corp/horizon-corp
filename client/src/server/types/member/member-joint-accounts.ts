@@ -9,10 +9,9 @@ export interface IMemberJointAccountsRequest {
     description: string
     middleName?: string
     familyRelationship?: string
-    membersProfileId?: TEntityId // This should be optional @Zalven
+    membersProfileId?: TEntityId
     membersProfile?: IMemberProfileResource
 
-    // TODO:Zalven NOTE: Tell Zalven to add these properties bellow
     mediaId?: TEntityId
     media?: IMediaResource
     signatureMediaId?: TEntityId
@@ -26,10 +25,9 @@ export interface IMemberJointAccountsResource extends ITimeStamps {
     description: string
     middleName?: string
     familyRelationship?: string
-    membersProfileId: TEntityId // This should be optional @Zalven
-    membersProfile?: IMemberProfileResource
+    membersProfileId: TEntityId
+    membersProfile: IMemberProfileResource
 
-    // TODO:Zalven NOTE: Tell Zalven to add these properties bellow
     mediaId?: TEntityId
     media?: IMediaResource
     signatureMediaId?: TEntityId
