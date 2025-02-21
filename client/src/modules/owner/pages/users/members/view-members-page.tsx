@@ -88,6 +88,7 @@ const OwnerViewMembersPage = () => {
                 onOpenChange={setCreateModal}
                 formProps={{
                     defaultValues: {
+                        mode: 'create',
                         companyId: company?.id,
                     },
                     onSuccess: () => {},
