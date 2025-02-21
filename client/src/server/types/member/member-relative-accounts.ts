@@ -3,7 +3,7 @@ import { IMemberProfileResource } from './member-profile'
 
 export interface IMemberRelativeAccountsRequest {
     id?: TEntityId
-    membersProfileId: TEntityId
+    membersProfileId?: TEntityId
     relativeProfileMemberId: TEntityId
     familyRelationship: string
     description: string
