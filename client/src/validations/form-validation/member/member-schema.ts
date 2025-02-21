@@ -39,6 +39,7 @@ export const createMemberSchema = z.object({
 })
 
 export const createMemberProfileSchema = z.object({
+    id: entityIdSchema.optional(),
     oldReferenceId: z.string().optional(),
     passbookNumber: z.string().optional(),
 
@@ -146,7 +147,7 @@ export const createMemberProfileSchema = z.object({
             z.object({
                 name: z.string().min(1, 'Name is required'),
                 date: z.string().min(1, 'Date is required'),
-                amount: z.number().min(0, 'Amount must be non-negative'),
+                amount: z.coerce.number().min(0, 'Amount must be non-negative'),
                 description: z.string().min(1, 'Description is required'),
             })
         )

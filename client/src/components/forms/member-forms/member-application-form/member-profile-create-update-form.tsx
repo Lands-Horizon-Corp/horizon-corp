@@ -33,9 +33,9 @@ import TextEditor from '@/components/text-editor'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
+import { AvatarUploadField } from './avatar-upload-field'
 import GenderSelect from '@/components/selects/gender-select'
 import BranchPicker from '@/components/pickers/branch-picker'
-import { AvatarUploadField } from './avatar-upload-field'
 import { SignatureUploadField } from './signature-upload-field'
 import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import FormErrorMessage from '@/components/ui/form-error-message'
@@ -50,20 +50,26 @@ import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-
 import MemberClassificationCombobox from '@/components/comboboxes/member-classification-combobox'
 import MemberEducationalAttainmentPicker from '@/components/comboboxes/member-educational-attainment-combobox'
 
-import { useCreateMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
+import {
+    useCreateMemberProfile,
+    useUpdateMemberProfile,
+} from '@/hooks/api-hooks/member/use-member-profile'
+import { TFilterObject } from '@/contexts/filter-context'
+import useConfirmModalStore from '@/store/confirm-modal-store'
 import { createMemberProfileSchema } from '@/validations/form-validation/member/member-schema'
 
 import { cn } from '@/lib'
+import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
-import { TFilterObject } from '@/contexts/filter-context'
-import useConfirmModalStore from '@/store/confirm-modal-store'
+import Modal, { IModalProps } from '@/components/modals/modal'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
-interface IMemberApplicationFormProps
+interface IMemberProfileCreateUpdateFormProps
     extends IBaseCompNoChild,
         IForm<Partial<TMemberProfileForm>, unknown, string> {
     memberTypeOptionsFilter?: TFilterObject
+    profileId?: TEntityId
 }
 
 type Step = {
@@ -123,7 +129,7 @@ const Steps: Step[] = [
     },
 ]
 
-const MemberApplicationForm = ({
+const MemberProfileCreateUpdateForm = ({
     readOnly,
     className,
     hiddenFields,
@@ -132,7 +138,7 @@ const MemberApplicationForm = ({
     memberTypeOptionsFilter,
     onError,
     onSuccess,
-}: IMemberApplicationFormProps) => {
+}: IMemberProfileCreateUpdateFormProps) => {
     const { onOpen } = useConfirmModalStore()
     const [step, setStep] = useState(0)
 
@@ -169,12 +175,11 @@ const MemberApplicationForm = ({
         name: 'memberDescriptions',
     })
 
+    form.watch('memberAddress')
     const memberAddress = useFieldArray({
         control: form.control,
         name: 'memberAddress',
     })
-
-    form.watch('memberAddress')
 
     const memberContactNumberReferences = useFieldArray({
         control: form.control,
@@ -245,17 +250,32 @@ const MemberApplicationForm = ({
     })
 
     const {
-        error,
+        error: createError,
         isPending: isCreating,
         mutate: createMemberProfile,
     } = useCreateMemberProfile({ onSuccess, onError })
 
+    const {
+        error: updateError,
+        isPending: isUpdating,
+        mutate: updateMemberProfile,
+    } = useUpdateMemberProfile({ onSuccess, onError })
+
+    const handleSubmit = (data: TMemberProfileForm) => {
+        if (data.id) {
+            updateMemberProfile({ id: data.id, data })
+        } else {
+            createMemberProfile(data)
+        }
+    }
+
+    const error = createError || updateError
+    const isLoading = isCreating || isUpdating
+
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit((formData) =>
-                    createMemberProfile(formData)
-                )}
+                onSubmit={form.handleSubmit(handleSubmit)}
                 className={cn('flex w-full flex-col gap-y-4', className)}
             >
                 <div className="flex items-center justify-between">
@@ -269,7 +289,7 @@ const MemberApplicationForm = ({
 
                 <fieldset
                     className="min-h-[60vh] gap-x-4 gap-y-4 space-y-5"
-                    disabled={isCreating || readOnly}
+                    disabled={isLoading || readOnly}
                 >
                     {step === 0 && (
                         <>
@@ -2733,7 +2753,13 @@ const MemberApplicationForm = ({
                             disabled={isCreating || step !== Steps.length - 1}
                             className="w-full self-end px-8 sm:w-fit"
                         >
-                            {isCreating ? <LoadingSpinner /> : 'Create'}
+                            {isLoading ? (
+                                <LoadingSpinner />
+                            ) : defaultValues.id ? (
+                                'Save'
+                            ) : (
+                                'Create'
+                            )}
                         </Button>
                     </div>
                 </div>
@@ -2742,4 +2768,25 @@ const MemberApplicationForm = ({
     )
 }
 
-export default MemberApplicationForm
+export const MemberProfileCreateUpdateFormModal = ({
+    title = 'Member Application Form',
+    description = 'Fill out the form to setup member profile.',
+    className,
+    formProps,
+    ...props
+}: IModalProps & {
+    formProps?: Omit<IMemberProfileCreateUpdateFormProps, 'className'>
+}) => {
+    return (
+        <Modal
+            title={title}
+            description={description}
+            className={cn('', className)}
+            {...props}
+        >
+            <MemberProfileCreateUpdateForm {...formProps} />
+        </Modal>
+    )
+}
+
+export default MemberProfileCreateUpdateForm
