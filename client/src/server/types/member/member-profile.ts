@@ -162,6 +162,3 @@ export type IMemberProfilePicker = Pick<
     IMemberProfileResource,
     'id' | 'oldReferenceId' | 'passbookNumber' | 'notes' | 'description'
 >
-
-export type IMemberProfilePaginatedPicker =
-    IPaginatedResult<IMemberProfilePicker>

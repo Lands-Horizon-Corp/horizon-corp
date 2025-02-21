@@ -37,13 +37,13 @@ export interface IMemberResource extends IUserBase, ITimeStamps {
     isContactVerified: boolean
     isSkipVerification: boolean
 
-    role?: IRolesResource 
-    gender?: IGenderResource 
+    role?: IRolesResource
+    gender?: IGenderResource
 
-    status: TAccountStatus 
+    status: TAccountStatus
 
-    footsteps?: IFootstepResource[] 
-    memberProfile?: IMemberProfileResource; 
+    footsteps?: IFootstepResource[]
+    memberProfile?: IMemberProfileResource
 }
 
 export type IMemberPaginatedResource = IPaginatedResult<IMemberResource>
