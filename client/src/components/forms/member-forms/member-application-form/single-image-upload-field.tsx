@@ -19,6 +19,8 @@ export interface SingleImageUploadFieldProps {
     placeholder?: string
     mediaImage?: IMediaResource | undefined
     onChange?: (media: IMediaResource | undefined) => void
+    uploaderModalTitle?: string
+    uploaderModalDescription?: string
 }
 
 export const SingleImageUploadField = forwardRef<
@@ -30,6 +32,8 @@ export const SingleImageUploadField = forwardRef<
             value,
             mediaImage,
             placeholder,
+            uploaderModalTitle = 'Upload Image',
+            uploaderModalDescription = 'Choose/Upload single image. You may also capture using camera.',
             DisplayIcon = ImageIcon,
             onChange,
             ...other
@@ -41,8 +45,8 @@ export const SingleImageUploadField = forwardRef<
         return (
             <div>
                 <SingleImageUploaderModal
-                    title="Upload Image"
-                    description="Choose/Upload single image. You may also capture using camera."
+                    title={uploaderModalTitle}
+                    description={uploaderModalDescription}
                     open={uploaderModal}
                     onOpenChange={setUploaderModal}
                     singleImageUploaderProp={{
