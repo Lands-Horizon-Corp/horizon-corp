@@ -4,6 +4,7 @@ import { IGenderResource } from '../gender'
 import { IFootstepResource } from '../footstep'
 import { IPaginatedResult } from '../paginated-result'
 import { ITimeStamps, IUserBase, TAccountStatus, TEntityId } from '../common'
+import { IMemberProfileResource } from './member-profile'
 
 export interface IMemberRequest {
     username: string
@@ -36,13 +37,13 @@ export interface IMemberResource extends IUserBase, ITimeStamps {
     isContactVerified: boolean
     isSkipVerification: boolean
 
-    role?: IRolesResource // Optional due to `omitempty`
-    gender?: IGenderResource // Optional due to `omitempty`
+    role?: IRolesResource
+    gender?: IGenderResource
 
-    status: TAccountStatus // Assuming `providers.UserStatus` maps to a string; adjust if it's an enum
+    status: TAccountStatus
 
-    footsteps?: IFootstepResource[] // Array of `FootstepResource`
-    // memberProfile?: MemberProfileResource; // Optional due to `omitempty`
+    footsteps?: IFootstepResource[]
+    memberProfile?: IMemberProfileResource
 }
 
 export type IMemberPaginatedResource = IPaginatedResult<IMemberResource>
