@@ -304,21 +304,23 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
     return (
         <div className="relative overflow-hidden rounded-lg">
             <p className="py-1 text-xs">{media.fileName}</p>
-            <img
-                ref={imageRef}
-                onLoad={handleImageLoad}
-                style={{
-                    width: '100vw',
-                    height: 'auto',
-                    transform: `scale(${scale}) translate(${previewPosition.x}px, ${previewPosition.y}px) rotate(${rotateDegree}deg) ${flipScale}`,
-                    transition: 'transform 0.1s ease-in-out',
-                    cursor: isDragging ? 'grabbing' : 'move',
-                }}
-                onMouseDown={onMouseDown}
-                crossOrigin="anonymous"
-                src={media.url}
-                alt="Zoomable"
-            />
+            <div className="flex items-center justify-center">
+                <img
+                    ref={imageRef}
+                    onLoad={handleImageLoad}
+                    style={{
+                        width: '70%',
+                        height: 'auto',
+                        transform: `scale(${scale}) translate(${previewPosition.x}px, ${previewPosition.y}px) rotate(${rotateDegree}deg) ${flipScale}`,
+                        transition: 'transform 0.1s ease-in-out',
+                        cursor: isDragging ? 'grabbing' : 'move',
+                    }}
+                    onMouseDown={onMouseDown}
+                    crossOrigin="anonymous"
+                    src={media.url}
+                    alt="Zoomable"
+                />
+            </div>
             <div className="flex w-full justify-between">
                 <Button
                     variant={'link'}

@@ -1,44 +1,8 @@
 import z from 'zod'
-import {
-    emailSchema,
-    entityIdSchema,
-    lastNameSchema,
-    passwordSchema,
-    userNameSchema,
-    birthDateSchema,
-    firstNameSchema,
-    middleNameSchema,
-    contactNumberSchema,
-    permanentAddressSchema,
-} from '../../common'
-
-export const mediaResourceSchema = z.object({
-    id: entityIdSchema,
-    fileName: z.string(),
-    fileSize: z.number(),
-    fileType: z.string(),
-    storageKey: z.string(),
-    url: z.string().optional().default(''),
-    bucketName: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    downloadURL: z.string(),
-})
-
-export const createMemberSchema = z.object({
-    email: emailSchema,
-    username: userNameSchema,
-    firstName: firstNameSchema,
-    middleName: middleNameSchema.optional(),
-    lastName: lastNameSchema,
-    birthDate: birthDateSchema,
-    contactNumber: contactNumberSchema,
-    permanentAddress: permanentAddressSchema,
-    password: passwordSchema,
-    confirmPassword: passwordSchema,
-})
+import { entityIdSchema, mediaResourceSchema } from '../../common'
 
 export const createMemberProfileSchema = z.object({
+    id: entityIdSchema.optional(),
     oldReferenceId: z.string().optional(),
     passbookNumber: z.string().optional(),
 
@@ -63,6 +27,7 @@ export const createMemberProfileSchema = z.object({
     isMicroFinanceMember: z.boolean().default(false),
 
     mediaId: entityIdSchema.optional(),
+    media: mediaResourceSchema.optional(),
     memberId: entityIdSchema.optional(),
 
     memberTypeId: z
@@ -120,7 +85,7 @@ export const createMemberProfileSchema = z.object({
     memberRelativeAccounts: z
         .array(
             z.object({
-                membersProfileId: entityIdSchema,
+                membersProfileId: entityIdSchema.optional(),
                 relativeProfileMemberId: entityIdSchema,
                 familyRelationship: z
                     .string()
@@ -145,7 +110,7 @@ export const createMemberProfileSchema = z.object({
             z.object({
                 name: z.string().min(1, 'Name is required'),
                 date: z.string().min(1, 'Date is required'),
-                amount: z.number().min(0, 'Amount must be non-negative'),
+                amount: z.coerce.number().min(0, 'Amount must be non-negative'),
                 description: z.string().min(1, 'Description is required'),
             })
         )
@@ -159,6 +124,12 @@ export const createMemberProfileSchema = z.object({
                 lastName: z.string().min(1, 'Last name is required'),
                 middleName: z.string().optional(),
                 familyRelationship: z.string().optional(),
+
+                // new properties
+                mediaId: entityIdSchema.optional(),
+                media: mediaResourceSchema.optional(),
+                signatureMediaId: entityIdSchema.optional(),
+                signatureMedia: mediaResourceSchema.optional(),
             })
         )
         .optional(),

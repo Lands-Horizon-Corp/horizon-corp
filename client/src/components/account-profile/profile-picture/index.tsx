@@ -34,13 +34,15 @@ const UserProfilePicture = ({
     return (
         <div className={cn('relative size-24', className)}>
             <SingleImageUploaderModal
-                modalState={modal}
-                setModalState={toggleModal}
-                modalTitle="Update Profile Image"
-                defaultFileName={`user-${userData.id}`}
-                onUploadComplete={(newMediaResource) => {
-                    updateUserProfilePicture(newMediaResource)
-                    toggleModal(false)
+                open={modal}
+                onOpenChange={toggleModal}
+                title="Update Profile Image"
+                singleImageUploadProps={{
+                    defaultFileName: `user-${userData.id}`,
+                    onUploadComplete: (newMediaResource) => {
+                        updateUserProfilePicture(newMediaResource)
+                        toggleModal(false)
+                    },
                 }}
             />
             <ImageDisplay

@@ -13,7 +13,7 @@ export type IAccountingLedgerRequest = {
     transaction_source: TransactionSource
     debit: number
     credit: number
-    balance: Date
+    balance: number
     transaction_date: Date
     entry_date: Date
     line_number?: number | null
@@ -34,7 +34,7 @@ export interface IAccountingLedgerResource extends ITimeStamps {
     transaction_source: TransactionSource
     debit: number
     credit: number
-    balance: Date
+    balance: number
     transaction_date: Date
     entry_date: Date
     line_number?: number | null

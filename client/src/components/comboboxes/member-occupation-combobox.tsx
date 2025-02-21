@@ -19,6 +19,7 @@ import { ChevronDownIcon } from '../icons'
 import { Button } from '@/components/ui/button'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
+import { PICKERS_SELECT_PAGE_SIZE } from '@/constants'
 import { TEntityId, IMemberOccupationResource } from '@/server/types'
 import { useFilteredPaginatedMemberOccupations } from '@/hooks/api-hooks/member/use-member-occupation'
 
@@ -44,7 +45,7 @@ const MemberOccupationCombobox = ({
         isLoading,
     } = useFilteredPaginatedMemberOccupations({
         filterPayload: {},
-        pagination: { pageIndex: 0, pageSize: 100 },
+        pagination: { pageIndex: 0, pageSize: PICKERS_SELECT_PAGE_SIZE },
         enabled: !disabled,
         showMessage: false,
     })
@@ -77,7 +78,7 @@ const MemberOccupationCombobox = ({
                             Loading...
                         </CommandEmpty>
                     ) : (
-                        <CommandList>
+                        <CommandList className="ecoop-scroll">
                             <CommandEmpty>
                                 No Member Occupation found.
                             </CommandEmpty>

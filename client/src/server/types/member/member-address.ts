@@ -14,6 +14,7 @@ export interface IMemberAddressResource extends ITimeStamps {
 }
 
 export interface IMemberAddressRequest {
+    id?: TEntityId
     postalCode: string
     province: string
     city: string
