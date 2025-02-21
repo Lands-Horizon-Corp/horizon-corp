@@ -1,8 +1,5 @@
 import { ReactNode } from 'react'
 import { ColumnDef, Row } from '@tanstack/react-table'
-
-import { Checkbox } from '@/components/ui/checkbox'
-import { PushPinSlashIcon } from '@/components/icons'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
@@ -32,152 +29,167 @@ export interface IAccountingLedgerTableColumnProps {
     ) => ReactNode
 }
 
-const accountingLedgerTableColumns = (
-    opts?: IAccountingLedgerTableColumnProps
-): ColumnDef<IAccountingLedgerRequest>[] => {
-    return [
-        {
-            id: 'select',
-            header: ({ table, column }) => (
-                <div className="flex w-fit items-center gap-x-1 px-2">
-                    <Checkbox
-                        checked={table.getIsAllPageRowsSelected()}
-                        onCheckedChange={(value) =>
-                            table.toggleAllPageRowsSelected(!!value)
-                        }
-                        aria-label="Select all"
-                    />
-                    {!column.getIsPinned() && (
-                        <PushPinSlashIcon
-                            onClick={() => column.pin('left')}
-                            className="mr-2 size-3.5 cursor-pointer"
-                        />
-                    )}
-                </div>
-            ),
-            cell: ({ row }) => (
-                <div className="flex w-fit items-center gap-x-1 px-0">
-                    {opts?.actionComponent?.({ row })}
-                    <Checkbox
-                        checked={row.getIsSelected()}
-                        onCheckedChange={(value) => row.toggleSelected(!!value)}
-                        aria-label="Select row"
-                    />
-                </div>
-            ),
-            enableSorting: false,
-            enableHiding: false,
-            maxSize: 80,
-        },
-        {
-            id: 'description',
-            accessorKey: 'description',
-            header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
-                    <ColumnActions {...props}>
-                        <TextFilter<IAccountingLedgerRequest>
-                            displayText="Description"
-                            field="description"
-                        />
-                    </ColumnActions>
-                </DataTableColumnHeader>
-            ),
-            cell: ({
-                row: {
-                    original: { description },
-                },
-            }) => <div>{description}</div>,
-            enableMultiSort: true,
-        },
-        {
-            id: 'or_number',
-            accessorKey: 'or_number',
-            header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="OR Number">
-                    <ColumnActions {...props}>
-                        <TextFilter<IAccountingLedgerRequest>
-                            displayText="OR Number"
-                            field="or_number"
-                        />
-                    </ColumnActions>
-                </DataTableColumnHeader>
-            ),
-            cell: ({
-                row: {
-                    original: { or_number },
-                },
-            }) => <div>{or_number}</div>,
-            enableMultiSort: true,
-        },
-        {
-            id: 'transaction_date',
-            accessorKey: 'transaction_date',
-            header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Transaction Date"
-                >
-                    <ColumnActions {...props}>
-                        <DateFilter<IAccountingLedgerRequest>
-                            displayText="Transaction Date"
-                            field="transaction_date"
-                        />
-                    </ColumnActions>
-                </DataTableColumnHeader>
-            ),
-            cell: ({
-                row: {
-                    original: { transaction_date },
-                },
-            }) => <div>{toReadableDate(transaction_date)}</div>,
-            enableMultiSort: true,
-        },
-        {
-            id: 'debit',
-            accessorKey: 'debit',
-            header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Debit">
-                    <ColumnActions {...props}>
-                        <TextFilter<IAccountingLedgerRequest>
-                            displayText="Debit"
-                            field="debit"
-                        />
-                    </ColumnActions>
-                </DataTableColumnHeader>
-            ),
-            cell: ({
-                row: {
-                    original: { debit },
-                },
-            }) => <div>{debit}</div>,
-            enableMultiSort: true,
-        },
-        {
-            id: 'credit',
-            accessorKey: 'credit',
-            header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Credit">
-                    <ColumnActions {...props}>
-                        <TextFilter<IAccountingLedgerRequest>
-                            displayText="Credit"
-                            field="credit"
-                        />
-                    </ColumnActions>
-                </DataTableColumnHeader>
-            ),
-            cell: ({
-                row: {
-                    original: { credit },
-                },
-            }) => <div>{credit}</div>,
-            enableMultiSort: true,
-        },
-    ]
-}
+const accountingLedgerTableColumns =
+    (): ColumnDef<IAccountingLedgerRequest>[] => {
+        return [
+            {
+                id: 'description',
+                accessorKey: 'description',
+                header: (props) => (
+                    <DataTableColumnHeader
+                        {...props}
+                        isResizable
+                        title="Account title"
+                    >
+                        <ColumnActions {...props}>
+                            <TextFilter
+                                displayText="Account title"
+                                field="description"
+                            />
+                        </ColumnActions>
+                    </DataTableColumnHeader>
+                ),
+                cell: ({ row: { original } }) => (
+                    <div>{original.description}</div>
+                ),
+                enableMultiSort: true,
+            },
+            {
+                id: 'or_number',
+                accessorKey: 'or_number',
+                header: (props) => (
+                    <DataTableColumnHeader
+                        {...props}
+                        isResizable
+                        title="OR Number"
+                    >
+                        <ColumnActions {...props}>
+                            <TextFilter
+                                displayText="OR Number"
+                                field="or_number"
+                            />
+                        </ColumnActions>
+                    </DataTableColumnHeader>
+                ),
+                cell: ({ row: { original } }) => (
+                    <div>{original.or_number}</div>
+                ),
+                enableMultiSort: true,
+            },
+            {
+                id: 'transaction_date',
+                accessorKey: 'transaction_date',
+                header: (props) => (
+                    <DataTableColumnHeader
+                        {...props}
+                        isResizable
+                        title="Transaction Date"
+                    >
+                        <ColumnActions {...props}>
+                            <DateFilter
+                                displayText="Transaction Date"
+                                field="transaction_date"
+                            />
+                        </ColumnActions>
+                    </DataTableColumnHeader>
+                ),
+                cell: ({ row: { original } }) => (
+                    <div>{toReadableDate(original.transaction_date)}</div>
+                ),
+                enableMultiSort: true,
+            },
+            {
+                id: 'debit',
+                accessorKey: 'debit',
+                header: (props) => (
+                    <DataTableColumnHeader {...props} isResizable title="Debit">
+                        <ColumnActions {...props}>
+                            <TextFilter displayText="Debit" field="debit" />
+                        </ColumnActions>
+                    </DataTableColumnHeader>
+                ),
+                cell: ({ row: { original } }) => <div>{original.debit}</div>,
+                enableMultiSort: true,
+            },
+            {
+                id: 'credit',
+                accessorKey: 'credit',
+                header: (props) => (
+                    <DataTableColumnHeader
+                        {...props}
+                        isResizable
+                        title="Credit"
+                    >
+                        <ColumnActions {...props}>
+                            <TextFilter displayText="Credit" field="credit" />
+                        </ColumnActions>
+                    </DataTableColumnHeader>
+                ),
+                cell: ({ row: { original } }) => <div>{original.credit}</div>,
+                enableMultiSort: true,
+            },
+            {
+                id: 'balance',
+                accessorKey: 'balance',
+                header: (props) => (
+                    <DataTableColumnHeader
+                        {...props}
+                        isResizable
+                        title="Balance"
+                    >
+                        <ColumnActions {...props}>
+                            <TextFilter displayText="Balance" field="balance" />
+                        </ColumnActions>
+                    </DataTableColumnHeader>
+                ),
+                cell: ({ row: { original } }) => <div>{original.balance}</div>,
+                enableMultiSort: true,
+            },
+            {
+                id: 'transaction_source',
+                accessorKey: 'transaction_source',
+                header: (props) => (
+                    <DataTableColumnHeader
+                        {...props}
+                        isResizable
+                        title="Transaction Source"
+                    >
+                        <ColumnActions {...props}>
+                            <TextFilter
+                                displayText="Transaction Source"
+                                field="transaction_source"
+                            />
+                        </ColumnActions>
+                    </DataTableColumnHeader>
+                ),
+                cell: ({ row: { original } }) => (
+                    <div>{original.transaction_source}</div>
+                ),
+                enableMultiSort: true,
+            },
+            {
+                id: 'created_at',
+                accessorKey: 'created_at',
+                header: (props) => (
+                    <DataTableColumnHeader
+                        {...props}
+                        isResizable
+                        title="Created At"
+                    >
+                        <ColumnActions {...props}>
+                            <DateFilter
+                                displayText="Created At"
+                                field="created_at"
+                            />
+                        </ColumnActions>
+                    </DataTableColumnHeader>
+                ),
+                cell: ({ row: { original } }) => (
+                    <div>{toReadableDate(original.created_at)}</div>
+                ),
+                enableMultiSort: true,
+            },
+        ]
+    }
 
 export default accountingLedgerTableColumns
