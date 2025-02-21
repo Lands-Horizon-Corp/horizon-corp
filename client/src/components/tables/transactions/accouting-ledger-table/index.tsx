@@ -25,6 +25,7 @@ import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sort
 import { IAccountingLedgerRequest } from '@/server/types/accounts/accounting-ledger'
 import { TableProps } from '../../types'
 import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
+import { sampleLedgerData } from '@/components/forms/transactions/dummy-account-ledger'
 
 export interface IAccountingLedgerRequestTableProps
     extends TableProps<IAccountingLedgerRequest>,
@@ -41,7 +42,7 @@ export interface IAccountingLedgerRequestTableProps
     >
 }
 
-const IAccountingLedgerRequestTable = ({
+const AccountsLedgerTable = ({
     className,
     toolbarProps,
     defaultFilter,
@@ -53,10 +54,7 @@ const IAccountingLedgerRequestTable = ({
         useDataTableSorting()
 
     const columns = useMemo(
-        () =>
-            IAccountingLedgerRequestTableColumns({
-                actionComponent,
-            }),
+        () => IAccountingLedgerRequestTableColumns(),
         [actionComponent]
     )
 
@@ -95,9 +93,9 @@ const IAccountingLedgerRequestTable = ({
 
     const table = useReactTable({
         columns,
-        data: data,
+        data: sampleLedgerData,
         initialState: {
-            columnPinning: { left: ['select'] },
+            columnPinning: { left: ['select', 'description', 'balance'] },
         },
         state: {
             sorting: tableSorting,
@@ -126,7 +124,7 @@ const IAccountingLedgerRequestTable = ({
         <FilterContext.Provider value={filterState}>
             <div
                 className={cn(
-                    'flex h-full flex-col gap-y-2',
+                    'flex h-full w-full flex-col gap-y-2',
                     className,
                     !isScrollable && 'h-fit !max-h-none'
                 )}
@@ -158,4 +156,4 @@ const IAccountingLedgerRequestTable = ({
     )
 }
 
-export default IAccountingLedgerRequestTable
+export default AccountsLedgerTable
