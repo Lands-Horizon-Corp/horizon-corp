@@ -36,16 +36,18 @@ const CompanyLogo = ({
     return (
         <div className={cn('relative size-36', className)}>
             <SingleImageUploaderModal
-                modalState={modal}
-                setModalState={toggleModal}
-                modalTitle="Update Company Image"
-                defaultFileName={`company-${company.id}`}
-                onUploadComplete={(newMediaResource) => {
-                    updateCompanyProfile({
-                        companyId: company.id,
-                        mediaResource: newMediaResource,
-                    })
-                    toggleModal(false)
+                open={modal}
+                onOpenChange={toggleModal}
+                title="Update Company Image"
+                singleImageUploadProps={{
+                    defaultFileName: `company-${company.id}`,
+                    onUploadComplete: (newMediaResource) => {
+                        updateCompanyProfile({
+                            companyId: company.id,
+                            mediaResource: newMediaResource,
+                        })
+                        toggleModal(false)
+                    },
                 }}
             />
             <ImageDisplay

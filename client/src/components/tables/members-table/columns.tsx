@@ -165,6 +165,31 @@ const membersTableColumns = (
             enableMultiSort: true,
         },
         {
+            id: 'Passbook',
+            accessorKey: 'memberProfile.passbookNumber',
+            header: (props) => (
+                <DataTableColumnHeader {...props} isResizable title="PB">
+                    <ColumnActions {...props}>
+                        <TextFilter
+                            field="memberProfile.passbookNumber"
+                            displayText="Passbook"
+                            defaultMode="equal"
+                        />
+                    </ColumnActions>
+                </DataTableColumnHeader>
+            ),
+            cell: ({
+                row: {
+                    original: { memberProfile },
+                },
+            }) => (
+                <div onClick={(e) => e.stopPropagation()}>
+                    {memberProfile?.passbookNumber}
+                </div>
+            ),
+            enableMultiSort: true,
+        },
+        {
             id: 'permanentAddress',
             accessorKey: 'permanentAddress',
             header: (props) => (

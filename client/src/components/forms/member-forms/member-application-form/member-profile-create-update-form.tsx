@@ -10,6 +10,7 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
     VerifiedPatchIcon,
+    SignatureLightIcon,
 } from '@/components/icons'
 import {
     Form,
@@ -32,36 +33,43 @@ import TextEditor from '@/components/text-editor'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
+import { AvatarUploadField } from './avatar-upload-field'
 import GenderSelect from '@/components/selects/gender-select'
 import BranchPicker from '@/components/pickers/branch-picker'
+import { SignatureUploadField } from './signature-upload-field'
 import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import { SingleImageUploadField } from './single-image-upload-field'
 import { PhoneInput } from '@/components/contact-input/contact-input'
 import MemberTypeSelect from '@/components/selects/member-type-select'
 import ProvinceCombobox from '@/components/comboboxes/province-combobox'
 import BarangayCombobox from '@/components/comboboxes/barangay-combobox'
 import MunicipalityCombobox from '@/components/comboboxes/municipality-combobox'
+import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
 import MemberClassificationCombobox from '@/components/comboboxes/member-classification-combobox'
 import MemberEducationalAttainmentPicker from '@/components/comboboxes/member-educational-attainment-combobox'
 
-import { useCreateMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
+import {
+    useCreateMemberProfile,
+    useUpdateMemberProfile,
+} from '@/hooks/api-hooks/member/use-member-profile'
+import { TFilterObject } from '@/contexts/filter-context'
+import useConfirmModalStore from '@/store/confirm-modal-store'
 import { createMemberProfileSchema } from '@/validations/form-validation/member/member-schema'
 
 import { cn } from '@/lib'
+import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
-import { TFilterObject } from '@/contexts/filter-context'
-import useConfirmModalStore from '@/store/confirm-modal-store'
-import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
-import { SingleImageUploadField } from './single-image-upload-field'
-import logger from '@/helpers/loggers/logger'
+import Modal, { IModalProps } from '@/components/modals/modal'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
-interface IMemberApplicationFormProps
+interface IMemberProfileCreateUpdateFormProps
     extends IBaseCompNoChild,
         IForm<Partial<TMemberProfileForm>, unknown, string> {
     memberTypeOptionsFilter?: TFilterObject
+    profileId?: TEntityId
 }
 
 type Step = {
@@ -121,7 +129,7 @@ const Steps: Step[] = [
     },
 ]
 
-const MemberApplicationForm = ({
+const MemberProfileCreateUpdateForm = ({
     readOnly,
     className,
     hiddenFields,
@@ -130,9 +138,9 @@ const MemberApplicationForm = ({
     memberTypeOptionsFilter,
     onError,
     onSuccess,
-}: IMemberApplicationFormProps) => {
+}: IMemberProfileCreateUpdateFormProps) => {
     const { onOpen } = useConfirmModalStore()
-    const [step, setStep] = useState(1)
+    const [step, setStep] = useState(0)
 
     const form = useForm<TMemberProfileForm>({
         resolver: zodResolver(createMemberProfileSchema),
@@ -151,8 +159,6 @@ const MemberApplicationForm = ({
         },
     })
 
-    logger.log(form.formState.errors)
-
     const isDisabled = (field: Path<TMemberProfileForm>) =>
         readOnly || disabledFields?.includes(field) || false
 
@@ -169,12 +175,11 @@ const MemberApplicationForm = ({
         name: 'memberDescriptions',
     })
 
+    form.watch('memberAddress')
     const memberAddress = useFieldArray({
         control: form.control,
         name: 'memberAddress',
     })
-
-    form.watch('memberAddress')
 
     const memberContactNumberReferences = useFieldArray({
         control: form.control,
@@ -245,17 +250,32 @@ const MemberApplicationForm = ({
     })
 
     const {
-        error,
+        error: createError,
         isPending: isCreating,
         mutate: createMemberProfile,
     } = useCreateMemberProfile({ onSuccess, onError })
 
+    const {
+        error: updateError,
+        isPending: isUpdating,
+        mutate: updateMemberProfile,
+    } = useUpdateMemberProfile({ onSuccess, onError })
+
+    const handleSubmit = (data: TMemberProfileForm) => {
+        if (data.id) {
+            updateMemberProfile({ id: data.id, data })
+        } else {
+            createMemberProfile(data)
+        }
+    }
+
+    const error = createError || updateError
+    const isLoading = isCreating || isUpdating
+
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit((formData) =>
-                    createMemberProfile(formData)
-                )}
+                onSubmit={form.handleSubmit(handleSubmit)}
                 className={cn('flex w-full flex-col gap-y-4', className)}
             >
                 <div className="flex items-center justify-between">
@@ -269,7 +289,7 @@ const MemberApplicationForm = ({
 
                 <fieldset
                     className="min-h-[60vh] gap-x-4 gap-y-4 space-y-5"
-                    disabled={isCreating || readOnly}
+                    disabled={isLoading || readOnly}
                 >
                     {step === 0 && (
                         <>
@@ -438,7 +458,7 @@ const MemberApplicationForm = ({
                                                         disabled={isDisabled(
                                                             field.name
                                                         )}
-                                                        checked={field.value}
+                                                        // checked={field.value}
                                                         onCheckedChange={(
                                                             checked
                                                         ) =>
@@ -506,6 +526,35 @@ const MemberApplicationForm = ({
                                 <div className="space-y-4">
                                     <legend>Personal Information</legend>
                                     <Separator />
+                                    <FormFieldWrapper
+                                        name="mediaId"
+                                        control={form.control}
+                                        label="Picture"
+                                        className="col-span-1"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <AvatarUploadField
+                                                    placeholder="Upload Person Picture"
+                                                    {...field}
+                                                    mediaImage={form.getValues(
+                                                        'media'
+                                                    )}
+                                                    onChange={(
+                                                        mediaUploaded
+                                                    ) => {
+                                                        field.onChange(
+                                                            mediaUploaded?.id
+                                                        )
+                                                        form.setValue(
+                                                            'media',
+                                                            mediaUploaded
+                                                        )
+                                                    }}
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
                                     <FormFieldWrapper
                                         name="contactNumber"
                                         control={form.control}
@@ -1202,7 +1251,7 @@ const MemberApplicationForm = ({
                                                                         id={
                                                                             field.name
                                                                         }
-                                                                        placeholder="0"
+                                                                        placeholder="Value"
                                                                         disabled={isDisabled(
                                                                             field.name
                                                                         )}
@@ -2040,143 +2089,234 @@ const MemberApplicationForm = ({
                                                 (jointField, index) => (
                                                     <div
                                                         key={jointField.id}
-                                                        className="flex w-full flex-col gap-4 md:flex-row"
+                                                        className="flex w-full flex-col items-start gap-4 border-b pb-2 md:flex-row"
                                                     >
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberJointAccounts.${index}.firstName`}
-                                                            label="First Name"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="e.g. John"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberJointAccounts.${index}.lastName`}
-                                                            label="Last Name"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="e.g. Doe"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberJointAccounts.${index}.middleName`}
-                                                            label="Middle Name"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="e.g. M."
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberJointAccounts.${index}.familyRelationship`}
-                                                            label="Family Relationship"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="e.g. Cousin, Spouse"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberJointAccounts.${index}.description`}
-                                                            label="Description"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Textarea
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Description"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="min-h-0"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
+                                                        <div className="grid grow gap-x-4 gap-y-2 sm:grid-cols-2">
+                                                            <div className="col-span-2 grid gap-4 sm:grid-cols-4">
+                                                                <FormFieldWrapper
+                                                                    control={
+                                                                        form.control
+                                                                    }
+                                                                    name={`memberJointAccounts.${index}.firstName`}
+                                                                    label="First Name"
+                                                                    hiddenFields={
+                                                                        hiddenFields
+                                                                    }
+                                                                    render={({
+                                                                        field,
+                                                                    }) => (
+                                                                        <FormControl>
+                                                                            <Input
+                                                                                {...field}
+                                                                                id={
+                                                                                    field.name
+                                                                                }
+                                                                                placeholder="e.g. John"
+                                                                                disabled={isDisabled(
+                                                                                    field.name
+                                                                                )}
+                                                                                className="w-full"
+                                                                            />
+                                                                        </FormControl>
+                                                                    )}
+                                                                />
+                                                                <FormFieldWrapper
+                                                                    control={
+                                                                        form.control
+                                                                    }
+                                                                    name={`memberJointAccounts.${index}.lastName`}
+                                                                    label="Last Name"
+                                                                    hiddenFields={
+                                                                        hiddenFields
+                                                                    }
+                                                                    render={({
+                                                                        field,
+                                                                    }) => (
+                                                                        <FormControl>
+                                                                            <Input
+                                                                                {...field}
+                                                                                id={
+                                                                                    field.name
+                                                                                }
+                                                                                placeholder="e.g. Doe"
+                                                                                disabled={isDisabled(
+                                                                                    field.name
+                                                                                )}
+                                                                                className="w-full"
+                                                                            />
+                                                                        </FormControl>
+                                                                    )}
+                                                                />
+                                                                <FormFieldWrapper
+                                                                    control={
+                                                                        form.control
+                                                                    }
+                                                                    name={`memberJointAccounts.${index}.middleName`}
+                                                                    label="Middle Name"
+                                                                    hiddenFields={
+                                                                        hiddenFields
+                                                                    }
+                                                                    render={({
+                                                                        field,
+                                                                    }) => (
+                                                                        <FormControl>
+                                                                            <Input
+                                                                                {...field}
+                                                                                id={
+                                                                                    field.name
+                                                                                }
+                                                                                placeholder="e.g. M."
+                                                                                disabled={isDisabled(
+                                                                                    field.name
+                                                                                )}
+                                                                                className="w-full"
+                                                                            />
+                                                                        </FormControl>
+                                                                    )}
+                                                                />
+                                                                <FormFieldWrapper
+                                                                    control={
+                                                                        form.control
+                                                                    }
+                                                                    name={`memberJointAccounts.${index}.familyRelationship`}
+                                                                    label="Family Relationship"
+                                                                    hiddenFields={
+                                                                        hiddenFields
+                                                                    }
+                                                                    render={({
+                                                                        field,
+                                                                    }) => (
+                                                                        <FormControl>
+                                                                            <Input
+                                                                                {...field}
+                                                                                id={
+                                                                                    field.name
+                                                                                }
+                                                                                placeholder="e.g. Cousin, Spouse"
+                                                                                disabled={isDisabled(
+                                                                                    field.name
+                                                                                )}
+                                                                                className="w-full"
+                                                                            />
+                                                                        </FormControl>
+                                                                    )}
+                                                                />
+                                                            </div>
+                                                            <FormFieldWrapper
+                                                                name={`memberJointAccounts.${index}.mediaId`}
+                                                                control={
+                                                                    form.control
+                                                                }
+                                                                label="Picture"
+                                                                className="col-span-1"
+                                                                hiddenFields={
+                                                                    hiddenFields
+                                                                }
+                                                                render={({
+                                                                    field,
+                                                                }) => (
+                                                                    <FormControl>
+                                                                        <SingleImageUploadField
+                                                                            placeholder="Upload Person Picture"
+                                                                            {...field}
+                                                                            mediaImage={form.getValues(
+                                                                                `memberJointAccounts.${index}.media`
+                                                                            )}
+                                                                            onChange={(
+                                                                                mediaUploaded
+                                                                            ) => {
+                                                                                field.onChange(
+                                                                                    mediaUploaded?.id
+                                                                                )
+                                                                                form.setValue(
+                                                                                    `memberJointAccounts.${index}.media`,
+                                                                                    mediaUploaded
+                                                                                )
+                                                                            }}
+                                                                        />
+                                                                    </FormControl>
+                                                                )}
+                                                            />
+                                                            <FormFieldWrapper
+                                                                name={`memberJointAccounts.${index}.signatureMediaId`}
+                                                                control={
+                                                                    form.control
+                                                                }
+                                                                label="Signature"
+                                                                className="col-span-1"
+                                                                hiddenFields={
+                                                                    hiddenFields
+                                                                }
+                                                                render={({
+                                                                    field,
+                                                                }) => (
+                                                                    <FormControl>
+                                                                        <SignatureUploadField
+                                                                            placeholder="Upload Signature Photo"
+                                                                            {...field}
+                                                                            mediaImage={form.getValues(
+                                                                                `memberJointAccounts.${index}.signatureMedia`
+                                                                            )}
+                                                                            DisplayIcon={
+                                                                                SignatureLightIcon
+                                                                            }
+                                                                            onChange={(
+                                                                                mediaUploaded
+                                                                            ) => {
+                                                                                field.onChange(
+                                                                                    mediaUploaded?.id
+                                                                                )
+                                                                                form.setValue(
+                                                                                    `memberJointAccounts.${index}.signatureMedia`,
+                                                                                    mediaUploaded
+                                                                                )
+                                                                            }}
+                                                                        />
+                                                                    </FormControl>
+                                                                )}
+                                                            />
+                                                            <FormFieldWrapper
+                                                                control={
+                                                                    form.control
+                                                                }
+                                                                name={`memberJointAccounts.${index}.description`}
+                                                                label="Description"
+                                                                className="col-span-2"
+                                                                hiddenFields={
+                                                                    hiddenFields
+                                                                }
+                                                                render={({
+                                                                    field,
+                                                                }) => (
+                                                                    <FormControl>
+                                                                        <TextEditor
+                                                                            {...field}
+                                                                            placeholder="Description"
+                                                                            disabled={isDisabled(
+                                                                                field.name
+                                                                            )}
+                                                                            className="min-h-0 w-full"
+                                                                        />
+                                                                    </FormControl>
+                                                                )}
+                                                            />
+                                                            <Button
+                                                                size="sm"
+                                                                type="button"
+                                                                variant="secondary"
+                                                                onClick={() =>
+                                                                    removeJoint(
+                                                                        index
+                                                                    )
+                                                                }
+                                                                disabled={isDisabled(
+                                                                    'memberJointAccounts'
+                                                                )}
+                                                                className="col-span-2 block p-2 sm:hidden"
+                                                            >
+                                                                Remove
+                                                            </Button>
+                                                        </div>
                                                         <Button
                                                             size="icon"
                                                             type="button"
@@ -2189,7 +2329,7 @@ const MemberApplicationForm = ({
                                                             disabled={isDisabled(
                                                                 'memberJointAccounts'
                                                             )}
-                                                            className="self-center rounded-full p-2"
+                                                            className="hidden size-fit rounded-full p-2 sm:block"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
@@ -2613,7 +2753,13 @@ const MemberApplicationForm = ({
                             disabled={isCreating || step !== Steps.length - 1}
                             className="w-full self-end px-8 sm:w-fit"
                         >
-                            {isCreating ? <LoadingSpinner /> : 'Create'}
+                            {isLoading ? (
+                                <LoadingSpinner />
+                            ) : defaultValues?.id ? (
+                                'Save'
+                            ) : (
+                                'Create'
+                            )}
                         </Button>
                     </div>
                 </div>
@@ -2622,4 +2768,25 @@ const MemberApplicationForm = ({
     )
 }
 
-export default MemberApplicationForm
+export const MemberProfileCreateUpdateFormModal = ({
+    title = 'Member Application Form',
+    description = 'Fill out the form to setup member profile.',
+    className,
+    formProps,
+    ...props
+}: IModalProps & {
+    formProps?: Omit<IMemberProfileCreateUpdateFormProps, 'className'>
+}) => {
+    return (
+        <Modal
+            title={title}
+            description={description}
+            className={cn('', className)}
+            {...props}
+        >
+            <MemberProfileCreateUpdateForm {...formProps} />
+        </Modal>
+    )
+}
+
+export default MemberProfileCreateUpdateForm

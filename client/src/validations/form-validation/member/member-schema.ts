@@ -26,6 +26,7 @@ export const mediaResourceSchema = z.object({
 })
 
 export const createMemberSchema = z.object({
+    id: entityIdSchema.optional(),
     email: emailSchema,
     username: userNameSchema,
     firstName: firstNameSchema,
@@ -39,6 +40,7 @@ export const createMemberSchema = z.object({
 })
 
 export const createMemberProfileSchema = z.object({
+    id: entityIdSchema.optional(),
     oldReferenceId: z.string().optional(),
     passbookNumber: z.string().optional(),
 
@@ -63,6 +65,7 @@ export const createMemberProfileSchema = z.object({
     isMicroFinanceMember: z.boolean().default(false),
 
     mediaId: entityIdSchema.optional(),
+    media: mediaResourceSchema.optional(),
     memberId: entityIdSchema.optional(),
 
     memberTypeId: z
@@ -145,7 +148,7 @@ export const createMemberProfileSchema = z.object({
             z.object({
                 name: z.string().min(1, 'Name is required'),
                 date: z.string().min(1, 'Date is required'),
-                amount: z.number().min(0, 'Amount must be non-negative'),
+                amount: z.coerce.number().min(0, 'Amount must be non-negative'),
                 description: z.string().min(1, 'Description is required'),
             })
         )
@@ -159,6 +162,12 @@ export const createMemberProfileSchema = z.object({
                 lastName: z.string().min(1, 'Last name is required'),
                 middleName: z.string().optional(),
                 familyRelationship: z.string().optional(),
+
+                // new properties
+                mediaId: entityIdSchema.optional(),
+                media: mediaResourceSchema.optional(),
+                signatureMediaId: entityIdSchema.optional(),
+                signatureMedia: mediaResourceSchema.optional(),
             })
         )
         .optional(),
