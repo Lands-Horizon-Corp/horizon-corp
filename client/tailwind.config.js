@@ -4,12 +4,15 @@ export default {
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     theme: {
     	extend: {
-            fontFamily : {
-                inter : ["Inter", "sans-serif"]
-            },
-            boxShadow : {
-                "center-md" : "0 0px 8px -1px rgb(0 0 0 / 0.2)"
-            },
+    		fontFamily: {
+    			inter: [
+    				'Inter',
+    				'sans-serif'
+    			]
+    		},
+    		boxShadow: {
+    			'center-md': '0 0px 8px -1px rgb(0 0 0 / 0.2)'
+    		},
     		borderRadius: {
     			lg: 'var(--radius)',
     			md: 'calc(var(--radius) - 2px)',
@@ -55,17 +58,39 @@ export default {
     				'3': 'hsl(var(--chart-3))',
     				'4': 'hsl(var(--chart-4))',
     				'5': 'hsl(var(--chart-5))'
-    			},
+    			}
     		},
-			keyframes: {
-				bump: {
-				  '0%, 100%': { transform: 'scale(1)' },
-				  '50%': { transform: 'scale(1.1)' },
-				},
-			  },
-			  animation: {
-				bump: 'bump 0.3s ease-in-out',
-			  },
+    		keyframes: {
+    			bump: {
+    				'0%, 100%': {
+    					transform: 'scale(1)'
+    				},
+    				'50%': {
+    					transform: 'scale(1.1)'
+    				}
+    			},
+    			'accordion-down': {
+    				from: {
+    					height: '0'
+    				},
+    				to: {
+    					height: 'var(--radix-accordion-content-height)'
+    				}
+    			},
+    			'accordion-up': {
+    				from: {
+    					height: 'var(--radix-accordion-content-height)'
+    				},
+    				to: {
+    					height: '0'
+    				}
+    			}
+    		},
+    		animation: {
+    			bump: 'bump 0.3s ease-in-out',
+    			'accordion-down': 'accordion-down 0.2s ease-out',
+    			'accordion-up': 'accordion-up 0.2s ease-out'
+    		}
     	}
     },
     plugins: [
