@@ -33,6 +33,7 @@ export const createMemberSchema = z.object({
     middleName: middleNameSchema.optional(),
     lastName: lastNameSchema,
     birthDate: birthDateSchema,
+    companyId: entityIdSchema,
     contactNumber: contactNumberSchema,
     permanentAddress: permanentAddressSchema,
     password: passwordSchema,
@@ -123,7 +124,7 @@ export const createMemberProfileSchema = z.object({
     memberRelativeAccounts: z
         .array(
             z.object({
-                membersProfileId: entityIdSchema,
+                membersProfileId: entityIdSchema.optional(),
                 relativeProfileMemberId: entityIdSchema,
                 familyRelationship: z
                     .string()
