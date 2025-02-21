@@ -32,6 +32,7 @@ export interface IMemberResource extends IUserBase, ITimeStamps {
     accountType: 'Member'
 
     username: string
+    fullName: string
     description?: string
     isEmailVerified: boolean
     isContactVerified: boolean
