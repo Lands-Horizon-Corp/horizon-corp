@@ -31,5 +31,5 @@ export interface IMemberJointAccountsResource extends ITimeStamps {
     mediaId?: TEntityId
     media?: IMediaResource
     signatureMediaId?: TEntityId
-    signatureMedia?: TEntityId
+    signatureMedia?: IMediaResource
 }
