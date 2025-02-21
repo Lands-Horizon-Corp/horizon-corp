@@ -56,7 +56,7 @@ export const passwordSchema = z
         `Password must atleast ${PASSWORD_MIN_LENGTH} characters`
     )
 
-export const birthDateSchema = z.date().refine(
+export const birthDateSchema = z.coerce.date().refine(
     (date) => {
         const today = new Date()
         today.setHours(0, 0, 0, 0)

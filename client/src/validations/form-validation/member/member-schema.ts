@@ -26,6 +26,7 @@ export const mediaResourceSchema = z.object({
 })
 
 export const createMemberSchema = z.object({
+    id: entityIdSchema.optional(),
     email: emailSchema,
     username: userNameSchema,
     firstName: firstNameSchema,

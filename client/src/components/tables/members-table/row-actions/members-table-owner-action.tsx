@@ -5,6 +5,7 @@ import { UserIcon } from '@/components/icons'
 import { IMemberTableActionComponentProp } from '../columns'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
+import { MemberCreateUpdateFormModal } from '@/components/forms/member-forms/member-create-update-form'
 import { MemberProfileCreateUpdateFormModal } from '@/components/forms/member-forms/member-application-form/member-profile-create-update-form'
 
 import useConfirmModalStore from '@/store/confirm-modal-store'
@@ -23,6 +24,7 @@ const MembersTableOwnerAction = ({
     const member = row.original
     const router = useRouter()
     const [editModal, setEditModal] = useState(false)
+    const [editAccountModal, setEditAccountModal] = useState(false)
 
     const { onOpen } = useConfirmModalStore()
 
@@ -43,6 +45,18 @@ const MembersTableOwnerAction = ({
                     formProps={{
                         defaultValues: member.memberProfile,
                         disabledFields: ['memberId'],
+                    }}
+                />
+                <MemberCreateUpdateFormModal
+                    title="Update Member Account"
+                    description="Update member account details."
+                    open={editAccountModal}
+                    onOpenChange={setEditAccountModal}
+                    formProps={{
+                        defaultValues: {
+                            ...member,
+                            birthDate: new Date(member.birthDate),
+                        },
                     }}
                 />
             </div>
