@@ -1921,7 +1921,7 @@ const MemberProfileCreateUpdateForm = ({
                                                         key={relField.id}
                                                         className="flex w-full flex-col gap-4 md:flex-row"
                                                     >
-                                                        <FormFieldWrapper
+                                                        {/* <FormFieldWrapper
                                                             control={
                                                                 form.control
                                                             }
@@ -1947,26 +1947,27 @@ const MemberProfileCreateUpdateForm = ({
                                                                     />
                                                                 </FormControl>
                                                             )}
-                                                        />
+                                                        /> */}
                                                         <FormFieldWrapper
                                                             control={
                                                                 form.control
                                                             }
                                                             name={`memberRelativeAccounts.${index}.relativeProfileMemberId`}
-                                                            label="Relative Profile Member ID"
+                                                            label="Relative Member"
                                                             hiddenFields={
                                                                 hiddenFields
                                                             }
                                                             render={({
                                                                 field,
                                                             }) => (
+                                                                // TODO: Add here member picker
                                                                 <FormControl>
                                                                     <Input
                                                                         {...field}
                                                                         id={
                                                                             field.name
                                                                         }
-                                                                        placeholder="Relative Profile Member ID"
+                                                                        placeholder="Select relative account"
                                                                         disabled={isDisabled(
                                                                             field.name
                                                                         )}
@@ -2055,7 +2056,6 @@ const MemberProfileCreateUpdateForm = ({
                                             variant="secondary"
                                             onClick={() =>
                                                 addRelative({
-                                                    membersProfileId: '',
                                                     relativeProfileMemberId: '',
                                                     familyRelationship: '',
                                                     description: '',

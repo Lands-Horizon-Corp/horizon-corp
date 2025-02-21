@@ -1,43 +1,5 @@
 import z from 'zod'
-import {
-    emailSchema,
-    entityIdSchema,
-    lastNameSchema,
-    passwordSchema,
-    userNameSchema,
-    birthDateSchema,
-    firstNameSchema,
-    middleNameSchema,
-    contactNumberSchema,
-    permanentAddressSchema,
-} from '../../common'
-
-export const mediaResourceSchema = z.object({
-    id: entityIdSchema,
-    fileName: z.string(),
-    fileSize: z.number(),
-    fileType: z.string(),
-    storageKey: z.string(),
-    url: z.string().optional().default(''),
-    bucketName: z.string(),
-    createdAt: z.string(),
-    updatedAt: z.string(),
-    downloadURL: z.string(),
-})
-
-export const createMemberSchema = z.object({
-    id: entityIdSchema.optional(),
-    email: emailSchema,
-    username: userNameSchema,
-    firstName: firstNameSchema,
-    middleName: middleNameSchema.optional(),
-    lastName: lastNameSchema,
-    birthDate: birthDateSchema,
-    contactNumber: contactNumberSchema,
-    permanentAddress: permanentAddressSchema,
-    password: passwordSchema,
-    confirmPassword: passwordSchema,
-})
+import { entityIdSchema, mediaResourceSchema } from '../../common'
 
 export const createMemberProfileSchema = z.object({
     id: entityIdSchema.optional(),
@@ -123,7 +85,7 @@ export const createMemberProfileSchema = z.object({
     memberRelativeAccounts: z
         .array(
             z.object({
-                membersProfileId: entityIdSchema,
+                membersProfileId: entityIdSchema.optional(),
                 relativeProfileMemberId: entityIdSchema,
                 familyRelationship: z
                     .string()
