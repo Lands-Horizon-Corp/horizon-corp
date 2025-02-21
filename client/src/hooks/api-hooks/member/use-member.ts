@@ -15,6 +15,7 @@ import {
     IMemberRequest,
     IMemberResource,
     IMemberPaginatedResource,
+    IMemberRequestNoPassword,
 } from '@/server/types'
 import {
     IAPIHook,
@@ -88,7 +89,10 @@ export const useUpdateMember = ({
     return useMutation<
         IMemberResource,
         string,
-        { id: TEntityId; data: IMemberRequest }
+        {
+            id: TEntityId
+            data: IMemberRequest | IMemberRequestNoPassword
+        }
     >({
         mutationKey: ['member', 'update'],
         mutationFn: async ({ id, data }) => {
