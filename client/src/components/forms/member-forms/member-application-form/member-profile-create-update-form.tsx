@@ -1240,7 +1240,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            label="Value"
+                                                            label="ID"
                                                             hiddenFields={
                                                                 hiddenFields
                                                             }
@@ -1310,6 +1310,8 @@ const MemberProfileCreateUpdateForm = ({
                                                                         mediaImage={form.getValues(
                                                                             `memberGovernmentBenefits.${index}.frontMediaResource`
                                                                         )}
+                                                                        uploaderModalTitle="ID Front Photo"
+                                                                        uploaderModalDescription="Upload your ID front photo"
                                                                         onChange={(
                                                                             mediaUploaded
                                                                         ) => {
@@ -1345,6 +1347,8 @@ const MemberProfileCreateUpdateForm = ({
                                                                         mediaImage={form.getValues(
                                                                             `memberGovernmentBenefits.${index}.backMediaResource`
                                                                         )}
+                                                                        uploaderModalTitle="ID Back Photo"
+                                                                        uploaderModalDescription="Upload your ID back photo"
                                                                         onChange={(
                                                                             mediaUploaded
                                                                         ) => {
@@ -2218,6 +2222,8 @@ const MemberProfileCreateUpdateForm = ({
                                                                             mediaImage={form.getValues(
                                                                                 `memberJointAccounts.${index}.media`
                                                                             )}
+                                                                            uploaderModalTitle="Upload Person Photo"
+                                                                            uploaderModalDescription="Upload a clear photo of the person linked to this joint account for identification purposes"
                                                                             onChange={(
                                                                                 mediaUploaded
                                                                             ) => {
