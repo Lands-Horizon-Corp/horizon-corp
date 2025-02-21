@@ -76,7 +76,13 @@ const MemberCreateUpdateForm = ({
         error: updateError,
         isPending: isUpdating,
         mutate: updateMember,
-    } = useUpdateMember({ onSuccess, onError })
+    } = useUpdateMember({
+        onSuccess: (data) => {
+            form.reset({ ...data, birthDate: new Date(data.birthDate) })
+            onSuccess?.(data)
+        },
+        onError,
+    })
 
     const handleSubmit = (data: TMemberCreateUpdateForm) => {
         if (data.id) {
@@ -375,6 +381,7 @@ const MemberCreateUpdateForm = ({
                         <Button
                             type="button"
                             variant="ghost"
+                            disabled={isLoading}
                             onClick={() => form.reset()}
                             className="w-full self-end px-8 sm:w-fit"
                         >
@@ -382,10 +389,16 @@ const MemberCreateUpdateForm = ({
                         </Button>
                         <Button
                             type="submit"
-                            disabled={isCreating}
+                            disabled={isLoading}
                             className="w-full self-end px-8 sm:w-fit"
                         >
-                            {isCreating ? <LoadingSpinner /> : 'Create'}
+                            {isLoading ? (
+                                <LoadingSpinner />
+                            ) : defaultValues?.id ? (
+                                'Save'
+                            ) : (
+                                'Create'
+                            )}
                         </Button>
                     </div>
                 </div>
