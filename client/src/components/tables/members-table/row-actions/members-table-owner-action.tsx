@@ -54,6 +54,7 @@ const MembersTableOwnerAction = ({
                     onOpenChange={setEditAccountModal}
                     formProps={{
                         defaultValues: {
+                            mode: 'update',
                             ...member,
                             birthDate: new Date(member.birthDate),
                         },
@@ -75,12 +76,7 @@ const MembersTableOwnerAction = ({
                 onEdit={{
                     text: 'Edit Account',
                     isAllowed: true,
-                    onClick: () => {
-                        // router.navigate({
-                        //     to: '/admin/companies-management/$companyId/edit',
-                        //     params: { companyId: member.id },
-                        // })
-                    },
+                    onClick: () => setEditAccountModal((prev) => !prev),
                 }}
                 // onView={{
                 //     text: 'View',
