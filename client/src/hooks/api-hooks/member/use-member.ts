@@ -114,7 +114,7 @@ export const useUpdateMember = ({
                 queryKey: ['member', 'loader', updatedMember.id],
             })
 
-            if (showMessage) toast.success('New Member Account Created')
+            if (showMessage) toast.success('Member account details updated')
             onSuccess?.(updatedMember)
 
             return updatedMember
