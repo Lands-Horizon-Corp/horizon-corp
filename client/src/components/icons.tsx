@@ -76,6 +76,7 @@ import {
 import {
     HiOutlineSun as SunIcon,
     HiOutlineMoon as MoonIcon,
+    HiPencil as PencilFillIcon,
     HiOutlineCog as SettingsIcon,
     HiOutlineCodeBracket as DevIcon,
     HiOutlineArrowUp as ArrowUpIcon,
@@ -284,6 +285,7 @@ export {
     DashboardIcon,
     IoIosCodeIcon,
     TelephoneIcon,
+    PencilFillIcon,
     SmallBrushIcon,
     FullscreenIcon,
     RotateLeftIcon,
