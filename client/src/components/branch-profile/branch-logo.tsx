@@ -36,16 +36,18 @@ const BranchLogo = ({
     return (
         <div className={cn('relative size-36', className)}>
             <SingleImageUploaderModal
-                modalState={modal}
-                setModalState={toggleModal}
-                modalTitle="Update Branch Image"
-                defaultFileName={`branch-${branch.id}`}
-                onUploadComplete={(newMediaResource) => {
-                    updateBranchProfile({
-                        branchId: branch.id,
-                        mediaResource: newMediaResource,
-                    })
-                    toggleModal(false)
+                open={modal}
+                onOpenChange={toggleModal}
+                title="Update Branch Image"
+                singleImageUploadProps={{
+                    defaultFileName: `branch-${branch.id}`,
+                    onUploadComplete: (newMediaResource) => {
+                        updateBranchProfile({
+                            branchId: branch.id,
+                            mediaResource: newMediaResource,
+                        })
+                        toggleModal(false)
+                    },
                 }}
             />
             <ImageDisplay

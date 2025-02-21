@@ -2755,7 +2755,7 @@ const MemberProfileCreateUpdateForm = ({
                         >
                             {isLoading ? (
                                 <LoadingSpinner />
-                            ) : defaultValues.id ? (
+                            ) : defaultValues?.id ? (
                                 'Save'
                             ) : (
                                 'Create'
