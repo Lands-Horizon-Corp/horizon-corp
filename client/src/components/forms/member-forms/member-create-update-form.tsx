@@ -2,14 +2,6 @@ import z from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
-import {
-    Form,
-    FormItem,
-    FormLabel,
-    FormField,
-    FormControl,
-    FormMessage,
-} from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import {
     ChecklistTemplate,
@@ -18,8 +10,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { VerifiedPatchIcon } from '@/components/icons'
+import { Form, FormControl } from '@/components/ui/form'
 import PasswordInput from '@/components/ui/password-input'
 import Modal, { IModalProps } from '@/components/modals/modal'
+import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { PhoneInput } from '@/components/contact-input/contact-input'
@@ -27,14 +21,18 @@ import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 
 import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types'
-import { IForm } from '@/types/component/form'
 import {
     useCreateMember,
     useUpdateMember,
 } from '@/hooks/api-hooks/member/use-member'
-import { createMemberSchema } from '@/validations/form-validation/member/member-schema'
+import { IForm } from '@/types/component/form'
+import {
+    createMemberAccountSchema,
+    updateMemberAccountSchema,
+    memberCreateUpdateAccountSchema,
+} from '@/validations/form-validation/member/member-account-schema'
 
-type TMemberCreateUpdateForm = z.infer<typeof createMemberSchema>
+type TMemberCreateUpdateForm = z.infer<typeof memberCreateUpdateAccountSchema>
 
 interface IMemberCreateUpdateFormProps
     extends IBaseCompNoChild,
@@ -43,12 +41,13 @@ interface IMemberCreateUpdateFormProps
 const MemberCreateUpdateForm = ({
     readOnly,
     className,
+    hiddenFields,
     defaultValues,
     onError,
     onSuccess,
 }: IMemberCreateUpdateFormProps) => {
     const form = useForm<TMemberCreateUpdateForm>({
-        resolver: zodResolver(createMemberSchema),
+        resolver: zodResolver(memberCreateUpdateAccountSchema),
         reValidateMode: 'onChange',
         mode: 'onSubmit',
         defaultValues: {
@@ -60,8 +59,6 @@ const MemberCreateUpdateForm = ({
             contactNumber: '',
             permanentAddress: '',
             email: '',
-            password: '',
-            confirmPassword: '',
             ...defaultValues,
         },
     })
@@ -86,9 +83,16 @@ const MemberCreateUpdateForm = ({
 
     const handleSubmit = (data: TMemberCreateUpdateForm) => {
         if (data.id) {
-            updateMember({ id: data.id, data })
+            updateMember({
+                id: data.id,
+                data: data as unknown as z.infer<
+                    typeof updateMemberAccountSchema
+                >,
+            })
         } else {
-            createMember(data)
+            createMember(
+                data as unknown as z.infer<typeof createMemberAccountSchema>
+            )
         }
     }
 
@@ -105,43 +109,34 @@ const MemberCreateUpdateForm = ({
                     disabled={isLoading || readOnly}
                     className="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-3 sm:gap-y-3"
                 >
-                    <fieldset className="space-y-3">
+                    <div className="space-y-3">
                         <legend>Account Information</legend>
-                        <FormField
-                            name="username"
+
+                        <FormFieldWrapper
                             control={form.control}
+                            name="username"
+                            label="Username"
+                            hiddenFields={hiddenFields}
                             render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        Username
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            autoComplete="username"
-                                            placeholder="Username"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        id={field.name}
+                                        autoComplete="username"
+                                        placeholder="Username"
+                                    />
+                                </FormControl>
                             )}
                         />
-                        <FormField
-                            name="password"
+
+                        <FormFieldWrapper
                             control={form.control}
+                            name="password"
+                            label="Password"
+                            hiddenFields={hiddenFields}
                             render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        Password
-                                    </FormLabel>
-                                    <FormControl>
+                                <FormControl>
+                                    <div className="space-y-1">
                                         <PasswordInput
                                             {...field}
                                             maxLength={50}
@@ -149,229 +144,180 @@ const MemberCreateUpdateForm = ({
                                             placeholder="Password"
                                             autoComplete="new-password"
                                         />
-                                    </FormControl>
-                                    <ValueChecklistMeter
-                                        value={field.value}
-                                        checkList={ChecklistTemplate[
-                                            'password-checklist'
-                                        ].concat([
-                                            {
-                                                regex: /^.{0,50}$/,
-                                                text: 'No more than 50 characters',
-                                            },
-                                        ])}
-                                    />
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
+                                        {field.value && (
+                                            <ValueChecklistMeter
+                                                value={field.value}
+                                                checkList={ChecklistTemplate[
+                                                    'password-checklist'
+                                                ].concat([
+                                                    {
+                                                        regex: /^.{0,50}$/,
+                                                        text: 'No more than 50 characters',
+                                                    },
+                                                ])}
+                                            />
+                                        )}
+                                    </div>
+                                </FormControl>
                             )}
                         />
-                        <FormField
-                            name="confirmPassword"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        Confirm Password
-                                    </FormLabel>
-                                    <FormControl>
-                                        <PasswordInput
-                                            {...field}
-                                            id={field.name}
-                                            autoComplete="off"
-                                            placeholder="Confirm Password"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                    </fieldset>
 
-                    <fieldset className="space-y-3">
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="confirmPassword"
+                            label="Confirm Password"
+                            hiddenFields={hiddenFields}
+                            render={({ field }) => (
+                                <FormControl>
+                                    <PasswordInput
+                                        {...field}
+                                        id={field.name}
+                                        autoComplete="off"
+                                        placeholder="Confirm Password"
+                                    />
+                                </FormControl>
+                            )}
+                        />
+                    </div>
+
+                    <div className="space-y-3">
                         <legend>Personal Information</legend>
-                        <FormField
+
+                        <FormFieldWrapper
                             control={form.control}
                             name="firstName"
+                            label="First Name"
+                            hiddenFields={hiddenFields}
                             render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        First Name
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            autoComplete="given-name"
-                                            placeholder="First Name"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        id={field.name}
+                                        autoComplete="given-name"
+                                        placeholder="First Name"
+                                    />
+                                </FormControl>
                             )}
                         />
-                        <FormField
+
+                        <FormFieldWrapper
                             control={form.control}
                             name="middleName"
+                            label="Middle Name"
+                            hiddenFields={hiddenFields}
                             render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        Middle Name
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            placeholder="Middle Name"
-                                            autoComplete="additional-name"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        id={field.name}
+                                        placeholder="Middle Name"
+                                        autoComplete="additional-name"
+                                    />
+                                </FormControl>
                             )}
                         />
-                        <FormField
+
+                        <FormFieldWrapper
                             control={form.control}
                             name="lastName"
+                            label="Last Name"
+                            hiddenFields={hiddenFields}
                             render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        Last Name
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            placeholder="Last Name"
-                                            autoComplete="family-name"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        id={field.name}
+                                        placeholder="Last Name"
+                                        autoComplete="family-name"
+                                    />
+                                </FormControl>
                             )}
                         />
-                        <FormField
+
+                        <FormFieldWrapper
                             control={form.control}
                             name="birthDate"
+                            label="Birth Date"
+                            hiddenFields={hiddenFields}
                             render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        Birth Date
-                                    </FormLabel>
-                                    <FormControl>
-                                        <InputDatePicker
-                                            id={field.name}
-                                            value={field.value}
-                                            onChange={field.onChange}
-                                            captionLayout="dropdown-buttons"
-                                            disabled={(date) =>
-                                                date > new Date()
-                                            }
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
+                                <FormControl>
+                                    <InputDatePicker
+                                        id={field.name}
+                                        value={field.value}
+                                        onChange={field.onChange}
+                                        captionLayout="dropdown-buttons"
+                                        disabled={(date) => date > new Date()}
+                                    />
+                                </FormControl>
                             )}
                         />
-                    </fieldset>
+                    </div>
 
-                    <fieldset className="space-y-3">
+                    <div className="space-y-3">
                         <legend>Contact Information</legend>
-                        <FormField
-                            name="email"
+
+                        <FormFieldWrapper
                             control={form.control}
+                            name="email"
+                            label="Email"
+                            hiddenFields={hiddenFields}
                             render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        Email
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            autoComplete="email"
-                                            placeholder="Email"
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        id={field.name}
+                                        autoComplete="email"
+                                        placeholder="Email"
+                                    />
+                                </FormControl>
                             )}
                         />
-                        <FormField
-                            name="contactNumber"
+
+                        <FormFieldWrapper
                             control={form.control}
+                            name="contactNumber"
+                            label="Contact Number"
+                            hiddenFields={hiddenFields}
                             render={({
                                 field,
                                 fieldState: { invalid, error },
                             }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        Contact Number
-                                    </FormLabel>
-                                    <FormControl>
-                                        <div className="relative flex flex-1 items-center gap-x-2">
-                                            <VerifiedPatchIcon
-                                                className={cn(
-                                                    'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
-                                                    (invalid || error) &&
-                                                        'text-destructive'
-                                                )}
-                                            />
-                                            <PhoneInput
-                                                {...field}
-                                                className="w-full"
-                                                defaultCountry="PH"
-                                            />
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="permanentAddress"
-                            control={form.control}
-                            render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="w-full text-right text-sm font-medium"
-                                    >
-                                        Permanent Address
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            autoComplete="street-address"
-                                            placeholder="Permanent Address"
+                                <FormControl>
+                                    <div className="relative flex flex-1 items-center gap-x-2">
+                                        <VerifiedPatchIcon
+                                            className={cn(
+                                                'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
+                                                (invalid || error) &&
+                                                    'text-destructive'
+                                            )}
                                         />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
+                                        <PhoneInput
+                                            {...field}
+                                            className="w-full"
+                                            defaultCountry="PH"
+                                        />
+                                    </div>
+                                </FormControl>
                             )}
                         />
-                    </fieldset>
+
+                        <FormFieldWrapper
+                            control={form.control}
+                            name="permanentAddress"
+                            label="Permanent Address"
+                            hiddenFields={hiddenFields}
+                            render={({ field }) => (
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        id={field.name}
+                                        autoComplete="street-address"
+                                        placeholder="Permanent Address"
+                                    />
+                                </FormControl>
+                            )}
+                        />
+                    </div>
                 </fieldset>
 
                 <FormErrorMessage errorMessage={error} />
