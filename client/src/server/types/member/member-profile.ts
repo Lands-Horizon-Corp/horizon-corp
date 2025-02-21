@@ -98,7 +98,7 @@ export interface IMemberProfileResource extends ITimeStamps {
     description: string
     contactNumber: string
     tinNumber?: string
-    civilStatus: string
+    civilStatus: TCivilStatus
     sssNumber?: string
     businessAddress?: string
     businessContact?: string

@@ -18,7 +18,7 @@ export interface IMemberGovernmentBenefitsResource extends ITimeStamps {
     country: string
     name: string
     description: string
-    value: number
+    value: string
     frontMediaId?: TEntityId
     backMediaId?: TEntityId
     membersProfile?: IMemberProfileResource
