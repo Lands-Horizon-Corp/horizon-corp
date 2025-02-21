@@ -4,9 +4,9 @@ import MembersTable from '@/components/tables/members-table'
 import PageContainer from '@/components/containers/page-container'
 import EnsureOwnerCompany from '@/modules/owner/components/ensure-company'
 import { MemberCreateUpdateFormModal } from '@/components/forms/member-forms/member-create-update-form'
+import MembersTableOwnerAction from '@/components/tables/members-table/row-actions/members-table-owner-action'
 
 import { ICompanyResource } from '@/server'
-import MembersTableOwnerAction from '@/components/tables/members-table/row-actions/members-table-owner-action'
 
 const OwnerViewMembersPage = () => {
     const [createModal, setCreateModal] = useState(false)
@@ -88,6 +88,7 @@ const OwnerViewMembersPage = () => {
                 onOpenChange={setCreateModal}
                 formProps={{
                     defaultValues: {
+                        mode: 'create',
                         companyId: company?.id,
                     },
                     onSuccess: () => {},
