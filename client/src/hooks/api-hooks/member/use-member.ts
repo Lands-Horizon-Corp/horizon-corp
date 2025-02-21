@@ -165,7 +165,7 @@ export const useFilteredPaginatedMembers = ({
     enabled,
     showMessage = true,
     filterPayload,
-    preloads = [],
+    preloads = ['memberProfile', 'memberProfile.media'],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IAPIFilteredPaginatedHook<IMemberPaginatedResource, string> &
     IQueryProps = {}) => {
