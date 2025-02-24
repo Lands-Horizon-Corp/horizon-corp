@@ -62,6 +62,8 @@ import { cn } from '@/lib'
 import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
 import Modal, { IModalProps } from '@/components/modals/modal'
+import MemberPicker from '@/components/pickers/member-picker'
+import { toast } from 'sonner'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -1238,7 +1240,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            label="Value"
+                                                            label="ID"
                                                             hiddenFields={
                                                                 hiddenFields
                                                             }
@@ -1308,6 +1310,8 @@ const MemberProfileCreateUpdateForm = ({
                                                                         mediaImage={form.getValues(
                                                                             `memberGovernmentBenefits.${index}.frontMediaResource`
                                                                         )}
+                                                                        uploaderModalTitle="ID Front Photo"
+                                                                        uploaderModalDescription="Upload your ID front photo"
                                                                         onChange={(
                                                                             mediaUploaded
                                                                         ) => {
@@ -1343,6 +1347,8 @@ const MemberProfileCreateUpdateForm = ({
                                                                         mediaImage={form.getValues(
                                                                             `memberGovernmentBenefits.${index}.backMediaResource`
                                                                         )}
+                                                                        uploaderModalTitle="ID Back Photo"
+                                                                        uploaderModalDescription="Upload your ID back photo"
                                                                         onChange={(
                                                                             mediaUploaded
                                                                         ) => {
@@ -1921,33 +1927,6 @@ const MemberProfileCreateUpdateForm = ({
                                                         key={relField.id}
                                                         className="flex w-full flex-col gap-4 md:flex-row"
                                                     >
-                                                        {/* <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberRelativeAccounts.${index}.membersProfileId`}
-                                                            label="Member's Profile ID"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Member's Profile ID"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        /> */}
                                                         <FormFieldWrapper
                                                             control={
                                                                 form.control
@@ -1960,9 +1939,30 @@ const MemberProfileCreateUpdateForm = ({
                                                             render={({
                                                                 field,
                                                             }) => (
-                                                                // TODO: Add here member picker
                                                                 <FormControl>
-                                                                    <Input
+                                                                    <MemberPicker
+                                                                        {...field}
+                                                                        onSelect={(
+                                                                            member
+                                                                        ) => {
+                                                                            if (
+                                                                                !member.memberProfile
+                                                                            )
+                                                                                return toast.warning(
+                                                                                    "Can't select a member that has no profile yet."
+                                                                                )
+                                                                            field.onChange(
+                                                                                member
+                                                                                    .memberProfile
+                                                                                    .id
+                                                                            )
+                                                                        }}
+                                                                        placeholder="Select relative member"
+                                                                        disabled={isDisabled(
+                                                                            field.name
+                                                                        )}
+                                                                    />
+                                                                    {/* <Input
                                                                         {...field}
                                                                         id={
                                                                             field.name
@@ -1972,7 +1972,7 @@ const MemberProfileCreateUpdateForm = ({
                                                                             field.name
                                                                         )}
                                                                         className="w-full"
-                                                                    />
+                                                                    /> */}
                                                                 </FormControl>
                                                             )}
                                                         />
@@ -2222,6 +2222,8 @@ const MemberProfileCreateUpdateForm = ({
                                                                             mediaImage={form.getValues(
                                                                                 `memberJointAccounts.${index}.media`
                                                                             )}
+                                                                            uploaderModalTitle="Upload Person Photo"
+                                                                            uploaderModalDescription="Upload a clear photo of the person linked to this joint account for identification purposes"
                                                                             onChange={(
                                                                                 mediaUploaded
                                                                             ) => {

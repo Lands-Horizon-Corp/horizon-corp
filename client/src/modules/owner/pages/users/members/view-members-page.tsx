@@ -3,7 +3,7 @@ import { useState } from 'react'
 import MembersTable from '@/components/tables/members-table'
 import PageContainer from '@/components/containers/page-container'
 import EnsureOwnerCompany from '@/modules/owner/components/ensure-company'
-import { MemberCreateFormModal } from '@/components/forms/member-forms/member-create-form'
+import { MemberCreateUpdateFormModal } from '@/components/forms/member-forms/member-create-update-form'
 
 import { ICompanyResource } from '@/server'
 import MembersTableOwnerAction from '@/components/tables/members-table/row-actions/members-table-owner-action'
@@ -83,11 +83,12 @@ const OwnerViewMembersPage = () => {
 
     return (
         <PageContainer>
-            <MemberCreateFormModal
+            <MemberCreateUpdateFormModal
                 open={createModal}
                 onOpenChange={setCreateModal}
                 formProps={{
                     defaultValues: {
+                        mode: 'create',
                         companyId: company?.id,
                     },
                     onSuccess: () => {},
