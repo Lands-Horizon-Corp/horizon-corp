@@ -23,6 +23,7 @@ import {
     IMutationProps,
     IAPIFilteredPaginatedHook,
 } from '../types'
+import { sampleMemberPaginatedResource } from '@/server/types/transactions/transaction-dummy-data'
 
 export const memberLoader = (
     memberId: TEntityId,
@@ -190,10 +191,7 @@ export const useFilteredPaginatedMembers = ({
             return result
         },
         initialData: {
-            data: [],
-            pages: [],
-            totalSize: 0,
-            totalPage: 1,
+            ...sampleMemberPaginatedResource,
             ...pagination,
         },
         enabled,
