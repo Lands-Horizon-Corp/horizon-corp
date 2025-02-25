@@ -71,7 +71,7 @@ export const PaymentsEntryForm = () => {
         useState<IMemberResource | null>(null)
     const [openModal, setIsOpenModal] = useState(false)
 
-    const totalAmount = sampleLedgerData.reduce(
+    const totalAmount = sampleLedgerData.data.reduce(
         (acc, ledger) => acc + ledger.credit,
         0
     )
@@ -120,7 +120,7 @@ export const PaymentsEntryForm = () => {
                     <div className="col-span-2">
                         <PaymentsEntryProfile profile={selectedMember} />
                         <div className="max-h-96 space-y-4 overflow-auto py-4">
-                            {sampleLedgerData.map((ledger) => (
+                            {sampleLedgerData.data.map((ledger) => (
                                 <LedgerCard key={ledger.id} ledger={ledger} />
                             ))}
                         </div>
