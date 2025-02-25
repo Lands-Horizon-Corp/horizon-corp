@@ -1,6 +1,12 @@
 import { ITimeStamps, TEntityId } from '../common'
 import { IPaginatedResult } from '../paginated-result'
 
+interface IAccountLedgerSummaryResource {
+    debit: number
+    credit: number
+    balance: number
+}
+
 export type IAccountingLedgerRequest = {
     id: TEntityId
     description: string
@@ -41,6 +47,7 @@ export interface IAccountingLedgerResource extends ITimeStamps {
     transaction_type_id: string
     created_by: TEntityId
     created_at: Date
+    summary: IAccountLedgerSummaryResource
 }
 
 export type IAccountingLedgerPaginatedResource =
