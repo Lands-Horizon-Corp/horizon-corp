@@ -71,6 +71,7 @@ import {
     PiWarningCircleFill as WarningCircleIcon,
     PiHandWithdrawDuotone as HandWithdrawIcon,
     PiTextStrikethroughLight as TextStrikethroughLightIcon,
+    PiEmpty as EmptyIcon,
 } from 'react-icons/pi'
 
 import {
@@ -357,4 +358,5 @@ export {
     Rotate90DegreeRightIcon,
     BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
+    EmptyIcon,
 }
