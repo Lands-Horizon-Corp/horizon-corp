@@ -15,7 +15,6 @@ import {
 } from '@/server/types/accounts/accounts'
 import AccountsService from '@/server/api-service/accounting-services/accounts-service'
 import { TEntityId } from '@/server'
-import { SampleAccountsData } from '@/server/types/transactions/transaction-dummy-data'
 
 export const useFilteredPaginatedAccounts = ({
     sort,
@@ -50,7 +49,13 @@ export const useFilteredPaginatedAccounts = ({
 
             return result
         },
-        initialData: { ...SampleAccountsData },
+        initialData: {
+            data: [],
+            pages: [],
+            totalSize: 0,
+            totalPage: 1,
+            ...pagination,
+        },
         enabled,
         retry: 1,
     })
