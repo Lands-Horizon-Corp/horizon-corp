@@ -626,7 +626,6 @@ const ImagePreviewContent = React.forwardRef<
 
         return (
             <div className="h-full w-full">
-                <h1 className="">Hello world</h1>
                 <ImagePreviewPortal>
                     <ImagePreviewOverlay
                         className={cn(

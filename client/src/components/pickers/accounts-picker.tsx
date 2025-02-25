@@ -14,7 +14,6 @@ import useFilterState from '@/hooks/use-filter-state'
 import { TEntityId } from '@/server/types'
 import { IAccountsResource } from '@/server/types/accounts/accounts'
 import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
-import { DummyAccountsData } from '../tables/accounts-table/dummy-accounts'
 
 interface Props {
     value?: TEntityId
@@ -51,7 +50,7 @@ const AccountsPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
     return (
         <>
             <GenericPicker
-                items={data.data || DummyAccountsData}
+                items={data.data}
                 open={pickerState}
                 listHeading={`Matched Results (${data.totalSize})`}
                 searchPlaceHolder="Search accounts..."
