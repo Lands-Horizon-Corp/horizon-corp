@@ -22,7 +22,6 @@ import accountTableColumns, {
     accountsGlobalSearchTargets,
     IAccountsTableColumnProps,
 } from './columns'
-import { DummyAccountsData } from './dummy-accounts'
 import { useQueryClient } from '@tanstack/react-query'
 import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
 import AccountsService from '@/server/api-service/accounting-services/accounts-service'
@@ -97,7 +96,7 @@ const AccountsTable = ({
 
     const table = useReactTable({
         columns,
-        data: DummyAccountsData,
+        data: data,
         initialState: {
             columnPinning: { left: ['select'] },
         },
