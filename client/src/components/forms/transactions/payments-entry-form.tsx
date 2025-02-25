@@ -24,13 +24,13 @@ import AccountsPicker from '@/components/pickers/accounts-picker'
 import AccountsLedgerTable from '@/components/tables/transactions/accouting-ledger-table'
 import PaymentsEntryProfile from '@/components/transaction-profile/payments-entry-profile'
 import LedgerCard from '@/components/accounts-card'
-import { sampleLedgerData } from './transaction-dummy-data'
 import { Card, CardContent } from '@/components/ui/card'
 import MemberPicker from '@/components/pickers/member-picker'
 import Modal from '@/components/modals/modal'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
+import { sampleLedgerData } from '@/server/types/transactions/transaction-dummy-data'
 
 export const paymentsEntrySchema = z.object({
     ORNumber: z.string().min(1, 'OR Number is required'),
