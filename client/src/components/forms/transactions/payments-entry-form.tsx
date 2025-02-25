@@ -23,14 +23,14 @@ import { IMemberProfileResource, IMemberResource, TEntityId } from '@/server'
 import AccountsPicker from '@/components/pickers/accounts-picker'
 import AccountsLedgerTable from '@/components/tables/transactions/accouting-ledger-table'
 import PaymentsEntryProfile from '@/components/transaction-profile/payments-entry-profile'
-import LedgerCard from '@/components/accounts-card'
 import { Card, CardContent } from '@/components/ui/card'
 import MemberPicker from '@/components/pickers/member-picker'
 import Modal from '@/components/modals/modal'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
-import { sampleLedgerData } from '@/server/types/transactions/transaction-dummy-data'
+import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
+import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payments-entry/current-transaction-ledger'
 
 export const paymentsEntrySchema = z.object({
     ORNumber: z.string().min(1, 'OR Number is required'),
@@ -71,7 +71,18 @@ export const PaymentsEntryForm = () => {
         useState<IMemberResource | null>(null)
     const [openModal, setIsOpenModal] = useState(false)
 
-    const totalAmount = sampleLedgerData.data.reduce(
+    const {
+        isPending,
+        isRefetching,
+        data: { data: sampleLedgerData },
+        refetch,
+    } = useFilteredPaginatedIAccountingLedger()
+
+    const refetchAccountingLedger = () => {
+        refetch()
+    }
+
+    const totalAmount = sampleLedgerData.reduce(
         (acc, ledger) => acc + ledger.credit,
         0
     )
@@ -120,9 +131,12 @@ export const PaymentsEntryForm = () => {
                     <div className="col-span-2">
                         <PaymentsEntryProfile profile={selectedMember} />
                         <div className="max-h-96 space-y-4 overflow-auto py-4">
-                            {sampleLedgerData.data.map((ledger) => (
-                                <LedgerCard key={ledger.id} ledger={ledger} />
-                            ))}
+                            <CurrentPaymentAccountingTransactionLedger
+                                isRefetching={isRefetching}
+                                isPending={isPending}
+                                data={sampleLedgerData}
+                                onRefetch={refetchAccountingLedger}
+                            />
                         </div>
                     </div>
                     <div className="col-span-1 md:col-span-2">
