@@ -55,7 +55,7 @@ const ownerSidebarItem: TSidebarItem[] = [
             {
                 Icon: BillIcon,
                 text: 'Payment Types',
-                url: '/transaction-payments-type',
+                url: '/payment-types',
             },
         ],
     },

@@ -35,7 +35,7 @@ export const ownerTransactionWithdrawal = createRoute({
 
 export const ownerTransactionPaymentType = createRoute({
     getParentRoute: () => ownerTransactionRoute,
-    path: '/transaction-payments-type',
+    path: '/payment-types',
     component: lazyRouteComponent(
         () => import('./transaction-payment-type-page')
     ),
