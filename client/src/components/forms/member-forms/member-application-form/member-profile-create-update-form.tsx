@@ -53,7 +53,9 @@ import MemberTypeSelect from '@/components/selects/member-type-select'
 import ProvinceCombobox from '@/components/comboboxes/province-combobox'
 import BarangayCombobox from '@/components/comboboxes/barangay-combobox'
 import MunicipalityCombobox from '@/components/comboboxes/municipality-combobox'
-import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
+import MemberOccupationCombobox, {
+    IMemberOccupationComboboxCreateProps,
+} from '@/components/comboboxes/member-occupation-combobox'
 import MemberClassificationCombobox, {
     IMemberClassificationComboboxCreateProps,
 } from '@/components/comboboxes/member-classification-combobox'
@@ -85,6 +87,7 @@ interface IMemberProfileCreateUpdateFormProps
     branchPickerCreateProps?: IBranchPickerCreateProps
     memberGenderCreateProps?: IGenderSelectCreateProps
     memberClassificationCreateProps?: IMemberClassificationComboboxCreateProps
+    memberOccupationComboboxCreateProps?: IMemberOccupationComboboxCreateProps
     educationalAttainmentComboboxCreateProps?: IMemberEducationalAttainmentComboboxCreateProps
 }
 
@@ -155,6 +158,7 @@ const MemberProfileCreateUpdateForm = ({
     memberTypeOptionsFilter,
     memberGenderCreateProps,
     memberClassificationCreateProps,
+    memberOccupationComboboxCreateProps,
     educationalAttainmentComboboxCreateProps,
     onError,
     onSuccess,
@@ -562,6 +566,7 @@ const MemberProfileCreateUpdateForm = ({
                                             <FormControl>
                                                 <AvatarUploadField
                                                     placeholder="Upload Person Picture"
+                                                    description="Upload Member Picture/Photo"
                                                     {...field}
                                                     mediaImage={form.getValues(
                                                         'media'
@@ -695,15 +700,18 @@ const MemberProfileCreateUpdateForm = ({
                                             <FormControl>
                                                 <MemberOccupationCombobox
                                                     {...field}
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
                                                     onChange={(occupation) =>
                                                         field.onChange(
                                                             occupation.id
                                                         )
                                                     }
                                                     placeholder="Select Occupation"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
+                                                    memberOccupationComboboxCreateProps={
+                                                        memberOccupationComboboxCreateProps
+                                                    }
                                                 />
                                             </FormControl>
                                         )}

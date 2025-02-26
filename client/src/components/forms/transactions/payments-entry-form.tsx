@@ -65,7 +65,6 @@ export const PaymentsEntryForm = () => {
         memberProfileId: selectedMember?.memberProfile?.id,
     })
 
-
     const refetchAccountingLedger = () => {
         refetch()
     }
