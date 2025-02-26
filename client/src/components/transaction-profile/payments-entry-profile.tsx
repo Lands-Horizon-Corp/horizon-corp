@@ -5,10 +5,10 @@ import { ImagePreview, ImagePreviewContent } from '../ui/image-preview'
 import { useImagePreview } from '@/store/image-preview-store'
 import { useCallback } from 'react'
 import { Image2Icon } from '../icons'
-import { IMemberCardResource } from '../forms/transactions/payments-entry-form'
+import { IMemberResource } from '@/server'
 
 type PaymentsEntryProfileProps = {
-    profile: IMemberCardResource | null
+    profile: IMemberResource | null
 }
 
 const NoMemberSelected = () => (
@@ -31,7 +31,7 @@ const PaymentsEntryProfile = ({ profile }: PaymentsEntryProfileProps) => {
 
     if (!profile) return <NoMemberSelected />
 
-    const { id, passbookNumber, fullName, permanentAddress, media } = profile
+    const { id, memberProfile, fullName, permanentAddress, media } = profile
 
     return (
         <Card className="flex items-center gap-6 rounded-2xl p-6 shadow-md">
@@ -63,7 +63,7 @@ const PaymentsEntryProfile = ({ profile }: PaymentsEntryProfileProps) => {
                         {fullName}
                     </h2>
                     <p className="text-sm text-gray-500">
-                        Passbook No: {passbookNumber}
+                        Passbook No: {memberProfile?.passbookNumber}
                     </p>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Link
