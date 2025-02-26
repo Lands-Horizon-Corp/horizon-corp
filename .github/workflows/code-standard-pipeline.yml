@@ -1,18 +1,16 @@
-name: Code Quality Standard
+name: Frontend Quality Checks Pipeline
 
 on:
     push:
         branches:
+            - main
             - development
             - staging
-            - 78-feature/components
-            - 71-feature/api-service-layer
     pull_request:
         branches:
+            - main
             - development
             - staging
-            - 78-feature/components
-            - 71-feature/api-service-layer
 
 jobs:
     lint:
