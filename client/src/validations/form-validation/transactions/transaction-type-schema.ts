@@ -6,4 +6,3 @@ export const TransactionTypeRequestSchema = z.object({
     description: z.string().min(1, 'Description is required'),
     cheque_id: z.string().min(1, 'Cheque ID is required'),
 })
-

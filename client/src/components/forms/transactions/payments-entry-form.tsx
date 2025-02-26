@@ -31,7 +31,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
 import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payments-entry/current-transaction-ledger'
-import { IAccountsResource } from '@/server/types/accounts/accounts'
 
 export const paymentsEntrySchema = z.object({
     ORNumber: z.string().min(1, 'OR Number is required'),
@@ -154,9 +153,6 @@ const FormModal = ({
     onError,
     selectedMemberId,
 }: IPaymentFormProps) => {
-    const [selectedAccounts, setSelectedAccounts] =
-        useState<IAccountsResource | null>(null)
-
     const form = useForm<TPaymentFormValues>({
         resolver: zodResolver(paymentsEntrySchema),
         reValidateMode: 'onChange',
@@ -179,7 +175,6 @@ const FormModal = ({
     })
 
     const onSubmit = form.handleSubmit((data) => {
-        console.log('Form data:', data)
         createMutation.mutate({
             memberId: selectedMemberId ?? '',
             ...data,
@@ -259,7 +254,6 @@ const FormModal = ({
                                         value={field.value}
                                         onSelect={(accounts) => {
                                             field.onChange(accounts.id)
-                                            setSelectedAccounts(accounts)
                                         }}
                                         placeholder="Select Accounts"
                                     />
