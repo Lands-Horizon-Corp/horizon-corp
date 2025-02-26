@@ -25,7 +25,12 @@ const MemberApplication = () => {
                     // TODO: Must have default company id provided
                     disabledFields: ['companyId'],
                 }}
+                memberGenderCreateProps={{}}
+                memberTypeOptionsFilter={{}}
                 disabledFields={['memberId']}
+                memberClassificationCreateProps={{}}
+                memberOccupationComboboxCreateProps={{}}
+                educationalAttainmentComboboxCreateProps={{}}
             />
         </PageContainer>
     )
