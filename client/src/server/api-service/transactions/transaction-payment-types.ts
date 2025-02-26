@@ -1,8 +1,8 @@
 import {
-    ITransactionTypePaginatedResource,
-    ITransactionTypeRequest,
-    ITransactionTypeResource,
-} from '../../types/transactions/transaction-type'
+    ITransactionPaymentTypePaginatedResource,
+    ITransactionPaymentTypesRequest,
+    ITransactionPaymentTypesResource,
+} from '../../types/transactions/transaction-payment-types'
 import qs from 'query-string'
 import APIService from '../api-service'
 import { TEntityId } from '../../types'
@@ -65,15 +65,15 @@ export default class TransactionPaymentTypesService {
      * Creates a new transaction type.
      */
     public static async create(
-        transactionTypeData: ITransactionTypeRequest,
+        transactionTypeData: ITransactionPaymentTypesRequest,
         preloads?: string[]
-    ): Promise<ITransactionTypeResource> {
+    ): Promise<ITransactionPaymentTypesResource> {
         const url = this.buildUrl('', { preloads })
         return this.makeRequest(() =>
-            APIService.post<ITransactionTypeRequest, ITransactionTypeResource>(
-                url,
-                transactionTypeData
-            )
+            APIService.post<
+                ITransactionPaymentTypesRequest,
+                ITransactionPaymentTypesResource
+            >(url, transactionTypeData)
         )
     }
 
@@ -90,15 +90,15 @@ export default class TransactionPaymentTypesService {
      */
     public static async update(
         id: TEntityId,
-        transactionTypeData: ITransactionTypeRequest,
+        transactionTypeData: ITransactionPaymentTypesRequest,
         preloads?: string[]
-    ): Promise<ITransactionTypeResource> {
+    ): Promise<ITransactionPaymentTypesResource> {
         const url = this.buildUrl(`/${id}`, { preloads })
         return this.makeRequest(() =>
-            APIService.put<ITransactionTypeRequest, ITransactionTypeResource>(
-                url,
-                transactionTypeData
-            )
+            APIService.put<
+                ITransactionPaymentTypesRequest,
+                ITransactionPaymentTypesResource
+            >(url, transactionTypeData)
         )
     }
 
@@ -119,7 +119,7 @@ export default class TransactionPaymentTypesService {
         const url = this.buildUrl(``, { filters, preloads, pagination, sort })
 
         return this.makeRequest(() =>
-            APIService.get<ITransactionTypePaginatedResource>(url)
+            APIService.get<ITransactionPaymentTypePaginatedResource>(url)
         )
     }
 

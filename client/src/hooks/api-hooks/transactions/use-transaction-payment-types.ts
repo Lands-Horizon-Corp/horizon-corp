@@ -9,10 +9,10 @@ import {
     IQueryProps,
 } from '../types'
 import {
-    ITransactionTypePaginatedResource,
-    ITransactionTypeRequest,
-    ITransactionTypeResource,
-} from '@/server/types/transactions/transaction-type'
+    ITransactionPaymentTypePaginatedResource,
+    ITransactionPaymentTypesRequest,
+    ITransactionPaymentTypesResource,
+} from '@/server/types/transactions/transaction-payment-types'
 import TransactionPaymentTypesService from '@/server/api-service/transactions/transaction-payment-types'
 import { TEntityId } from '@/server/types'
 
@@ -23,7 +23,7 @@ export const useFilteredPaginatedTransactionPaymentTypes = ({
     preloads,
     pagination = { pageSize: 20, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
-    return useQuery<ITransactionTypePaginatedResource, string>({
+    return useQuery<ITransactionPaymentTypePaginatedResource, string>({
         queryKey: [
             'transaction-types',
             'resource-query',
@@ -102,10 +102,10 @@ export const useCreateTransactionType = ({
     preloads = [],
     onError,
     onSuccess,
-}: IOperationCallbacks<ITransactionTypeResource> & IAPIPreloads) => {
+}: IOperationCallbacks<ITransactionPaymentTypesResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, ITransactionTypeRequest>({
+    return useMutation<void, string, ITransactionPaymentTypesRequest>({
         mutationKey: ['transaction-types', 'create'],
         mutationFn: async (newTransactionTypeData) => {
             const [error, data] = await withCatchAsync(
@@ -122,12 +122,12 @@ export const useCreateTransactionType = ({
                 throw errorMessage
             }
 
-            queryClient.setQueryData<ITransactionTypeResource>(
+            queryClient.setQueryData<ITransactionPaymentTypesResource>(
                 ['transaction-types', data.id],
                 data
             )
 
-            queryClient.setQueryData<ITransactionTypeResource>(
+            queryClient.setQueryData<ITransactionPaymentTypesResource>(
                 ['transaction-types', 'loader', data.id],
                 data
             )
@@ -142,15 +142,16 @@ export const useUpdateTransactionType = ({
     preloads,
     onSuccess,
     onError,
-}: IOperationCallbacks<ITransactionTypeResource, string> & IAPIPreloads) => {
+}: IOperationCallbacks<ITransactionPaymentTypesResource, string> &
+    IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
-        ITransactionTypeResource,
+        ITransactionPaymentTypesResource,
         string,
         {
             id: TEntityId
-            data: ITransactionTypeRequest
+            data: ITransactionPaymentTypesRequest
         }
     >({
         mutationKey: ['transaction-types', 'update'],
@@ -166,7 +167,7 @@ export const useUpdateTransactionType = ({
                 throw errorMessage
             }
 
-            queryClient.setQueriesData<ITransactionTypePaginatedResource>(
+            queryClient.setQueriesData<ITransactionPaymentTypePaginatedResource>(
                 {
                     queryKey: ['transaction-types', 'resource-query'],
                     exact: false,
@@ -183,12 +184,12 @@ export const useUpdateTransactionType = ({
                 }
             )
 
-            queryClient.setQueryData<ITransactionTypeResource>(
+            queryClient.setQueryData<ITransactionPaymentTypesResource>(
                 ['transaction-types', id],
                 response
             )
 
-            queryClient.setQueryData<ITransactionTypeResource>(
+            queryClient.setQueryData<ITransactionPaymentTypesResource>(
                 ['transaction-types', 'loader', id],
                 response
             )
