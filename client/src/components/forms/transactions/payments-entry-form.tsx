@@ -1,9 +1,9 @@
 import * as z from 'zod'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
@@ -15,210 +15,119 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form'
-import { cn } from '@/lib/utils'
-
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { IPaymentsEntryRequest } from '@/server/types/transactions/payments-entry'
 import { useCreatePaymentEntry } from '@/hooks/api-hooks/transactions/use-payments-entry'
-import { IMemberProfileResource, IMemberResource, TEntityId } from '@/server'
+import { IMemberResource, TEntityId } from '@/server'
 import AccountsPicker from '@/components/pickers/accounts-picker'
-import AccountsLedgerTable from '@/components/tables/transactions/accouting-ledger-table'
+import AccountsLedgerTable from '@/components/tables/transactions-table/accouting-ledger-table'
 import PaymentsEntryProfile from '@/components/transaction-profile/payments-entry-profile'
-import LedgerCard from '@/components/accounts-card'
-
-import { sampleLedgerData } from './dummy-account-ledger'
-import MembersPicker from '@/components/pickers/members-picker'
 import { Card, CardContent } from '@/components/ui/card'
-
-export type memberPassbookNumber = Pick<
-    IMemberProfileResource,
-    'passbookNumber'
->
-export interface IMemberCardResource
-    extends memberPassbookNumber,
-        Pick<
-            IMemberResource,
-            | 'id'
-            | 'fullName'
-            | 'contactNumber'
-            | 'email'
-            | 'media'
-            | 'permanentAddress'
-        > {}
-
-export const sampleMemberCardResource: IMemberCardResource = {
-    id: 'member-001',
-    fullName: 'Jane Smith',
-    contactNumber: '+1-234-567-8901',
-    email: 'jane.smith@example.com',
-    passbookNumber: '1234567890',
-    media: {
-        id: '7f76efd0-940a-42f9-afa9-8644453e20aa',
-        fileName: 'sample-image.png',
-        fileSize: 5242880, // 5 MB in bytes
-        fileType: 'image/jpeg',
-        storageKey: 'media/resources/sample-image.jpg',
-        url: 'https://images.pexels.com/photos/1462980/pexels-photo-1462980.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1', // This is viewable directly in the browser
-        bucketName: 'example-media-bucket',
-        createdAt: '2024-10-29T08:45:00Z',
-        updatedAt: '2024-10-29T10:20:00Z',
-        downloadURL: 'https://cdn.example.com/media/resources/sample-image.jpg',
-    },
-    permanentAddress: '123 Main Street, Los Angeles, CA 90001',
-}
+import MemberPicker from '@/components/pickers/member-picker'
+import Modal from '@/components/modals/modal'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Textarea } from '@/components/ui/textarea'
+import { toast } from 'sonner'
+import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
+import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payments-entry/current-transaction-ledger'
 
 export const paymentsEntrySchema = z.object({
-    memberId: z.string().min(5, { message: 'Invalid Member ID' }),
     ORNumber: z.string().min(1, 'OR Number is required'),
     amount: z.coerce.number().positive('Amount must be greater than 0'),
-    accountsId: z.string().min(1, 'accounts is required'),
-    transactionType: z
-        .string()
-        .uuid({ message: 'Invalid Transaction Type ID' }),
-    isPrinted: z.boolean(),
+    accountsId: z.string().min(1, 'Accounts is required'),
+    isPrinted: z.boolean().optional(),
     notes: z.string().optional(),
 })
+
 type TPaymentFormValues = z.infer<typeof paymentsEntrySchema>
 
 export interface IPaymentFormProps
     extends IBaseCompNoChild,
         IForm<Partial<IPaymentsEntryRequest>, unknown, string> {
-    paymentId?: TEntityId
+    open: boolean
+    onOpenChange: (open: boolean) => void
+    selectedMemberId?: TEntityId
 }
 
-export const PaymentsEntryForm = ({
-    paymentId,
-    // readOnly,
-    className,
-    defaultValues,
-    onError,
-    onSuccess,
-}: IPaymentFormProps) => {
-    const form = useForm<TPaymentFormValues>({
-        resolver: zodResolver(paymentsEntrySchema),
-        reValidateMode: 'onChange',
-        mode: 'onSubmit',
-        defaultValues: {
-            memberId: '',
-            ORNumber: '',
-            amount: 0,
-            accountsId: '',
-            transactionType: '',
-            isPrinted: false,
-            notes: '',
-            ...defaultValues,
-        },
-    })
+export const PaymentsEntryForm = () => {
+    const [selectedMember, setSelectedMember] =
+        useState<IMemberResource | null>(null)
+    const [openModal, setIsOpenModal] = useState(false)
 
-    const createMutation = useCreatePaymentEntry({ onSuccess, onError })
+    const {
+        isPending,
+        isRefetching,
+        data: { data: SampleLedgerData },
+        refetch,
+    } = useFilteredPaginatedIAccountingLedger()
 
-    const onSubmit = form.handleSubmit((formData) => {
-        createMutation.mutate(formData)
-    })
+    const refetchAccountingLedger = () => {
+        refetch()
+    }
 
-    const { error, isPending } = createMutation
-
-    const totalAmount = sampleLedgerData.reduce(
+    const totalAmount = SampleLedgerData.reduce(
         (acc, ledger) => acc + ledger.credit,
         0
     )
 
+    const isAllowedToCreatePayment = selectedMember !== null
+
+    const handleOpenCreateModal = () => {
+        if (isAllowedToCreatePayment) {
+            setIsOpenModal(true)
+        }
+        toast.warning('Please select member first.')
+    }
+
     return (
-        <Form {...form}>
-            <form
-                onSubmit={onSubmit}
-                className={cn('flex w-full flex-col gap-y-4 p-5', className)}
-            >
-                <div
-                    // disabled={isPending || readOnly}
-                    className="grid grid-cols-1 gap-x-4 gap-y-4 lg:grid-cols-4"
-                >
+        <>
+            <FormModal
+                selectedMemberId={selectedMember?.id}
+                open={openModal}
+                onOpenChange={setIsOpenModal}
+            />
+            <div className="flex w-full flex-col gap-y-4 p-5">
+                <div className="grid grid-cols-1 gap-x-4 gap-y-4 lg:grid-cols-4">
                     <legend className="text-lg font-semibold text-secondary-foreground">
                         Payment Transactions
                     </legend>
-                    <div className="col-span-2 grid items-center gap-5 lg:col-span-4 lg:grid-cols-4">
-                        <FormField
-                            control={form.control}
-                            name="memberId"
-                            render={({ field }) => {
-                                return (
-                                    <FormItem className="col-span-2 space-y-1 sm:col-span-1">
-                                        <FormLabel
-                                            htmlFor={field.name}
-                                            className="text-right text-sm font-normal text-foreground/60"
-                                        >
-                                            Members
-                                        </FormLabel>
-                                        <FormControl>
-                                            <MembersPicker
-                                                value={field.value}
-                                                onSelect={(member) =>
-                                                    field.onChange(member.id)
-                                                }
-                                                placeholder="Select Members"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )
-                            }}
-                        />
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="memberId"
-                            label="Member ID"
-                            render={({ field }) => (
-                                <Input
-                                    {...field}
-                                    id={field.name}
-                                    placeholder="Member ID"
-                                    autoComplete="off"
-                                />
-                            )}
-                        />
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="ORNumber"
-                            label="OR Number"
-                            render={({ field }) => (
-                                <Input
-                                    {...field}
-                                    id={field.name}
-                                    placeholder="OR Number"
-                                    autoComplete="off"
-                                />
-                            )}
-                        />
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="amount"
-                            label="Amount"
-                            render={({ field }) => (
-                                <Input
-                                    {...field}
-                                    id={field.name}
-                                    type="number"
-                                    step="0.01"
-                                    placeholder="Amount"
-                                    autoComplete="off"
-                                />
-                            )}
-                        />
+                    <div className="col-span-2 lg:col-span-4 lg:col-start-1">
+                        <div className="flex space-x-2">
+                            <MemberPicker
+                                value={selectedMember?.id}
+                                onSelect={(member) => {
+                                    setSelectedMember(member)
+                                }}
+                                placeholder="Select Members"
+                            />
+                            <Button
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    handleOpenCreateModal()
+                                }}
+                                disabled={!isAllowedToCreatePayment}
+                            >
+                                create
+                            </Button>
+                        </div>
                     </div>
                     <div className="col-span-2">
-                        <PaymentsEntryProfile {...sampleMemberCardResource} />
+                        <PaymentsEntryProfile profile={selectedMember} />
                         <div className="max-h-96 space-y-4 overflow-auto py-4">
-                            {sampleLedgerData.map((ledger) => (
-                                <LedgerCard key={ledger.id} ledger={ledger} />
-                            ))}
+                            <CurrentPaymentAccountingTransactionLedger
+                                isRefetching={isRefetching}
+                                isPending={isPending}
+                                data={SampleLedgerData}
+                                onRefetch={refetchAccountingLedger}
+                            />
                         </div>
                     </div>
                     <div className="col-span-1 md:col-span-2">
                         <AccountsLedgerTable className="h-full" />
                     </div>
                     <div className="col-span-2 w-full">
-                        <Card className="">
+                        <Card>
                             <CardContent className="flex items-center justify-between gap-x-2 py-5">
                                 <label className="font-bold uppercase">
                                     Total Amount
@@ -231,63 +140,167 @@ export const PaymentsEntryForm = ({
                             </CardContent>
                         </Card>
                     </div>
-                    <div className="col-span-1 w-full md:col-span-2">
-                        <FormField
-                            control={form.control}
-                            name="accountsId"
-                            render={({ field }) => {
-                                return (
-                                    <FormItem className="col-span-2 space-y-1 sm:col-span-1">
-                                        <FormLabel
-                                            htmlFor={field.name}
-                                            className="text-right text-sm font-normal text-foreground/60"
-                                        >
-                                            Accounts
-                                        </FormLabel>
-                                        <FormControl>
-                                            <AccountsPicker
-                                                value={field.value}
-                                                onSelect={(accounts) =>
-                                                    field.onChange(accounts.id)
-                                                }
-                                                placeholder="Select Accounts"
-                                            />
-                                        </FormControl>
-                                        <FormMessage />
-                                    </FormItem>
-                                )
-                            }}
-                        />
-                    </div>
                 </div>
-                <FormErrorMessage errorMessage={error} />
-                <div>
-                    <Separator className="my-2 sm:my-4" />
-                    <div className="flex items-center justify-end gap-x-2">
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            onClick={() => form.reset()}
-                            className="w-full self-end px-8 sm:w-fit"
-                        >
-                            Reset
-                        </Button>
-                        <Button
-                            type="submit"
-                            disabled={isPending}
-                            className="w-full self-end px-8 sm:w-fit"
-                        >
-                            {isPending ? (
-                                <LoadingSpinner />
-                            ) : paymentId ? (
-                                'Update'
-                            ) : (
-                                'Create'
-                            )}
-                        </Button>
-                    </div>
+            </div>
+        </>
+    )
+}
+
+const FormModal = ({
+    open,
+    onOpenChange,
+    onSuccess,
+    onError,
+    selectedMemberId,
+}: IPaymentFormProps) => {
+    const form = useForm<TPaymentFormValues>({
+        resolver: zodResolver(paymentsEntrySchema),
+        reValidateMode: 'onChange',
+        mode: 'onSubmit',
+        defaultValues: {
+            ORNumber: '',
+            amount: 0,
+            accountsId: '',
+            notes: '',
+            isPrinted: false,
+        },
+    })
+
+    const createMutation = useCreatePaymentEntry({
+        onSuccess: (data) => {
+            onSuccess?.(data)
+            onOpenChange(false)
+        },
+        onError,
+    })
+
+    const onSubmit = form.handleSubmit((data) => {
+        createMutation.mutate({
+            memberId: selectedMemberId ?? '',
+            ...data,
+            isPrinted: data.isPrinted ?? false,
+            transactionType: '',
+        })
+    })
+
+    return (
+        <Modal
+            open={open}
+            onOpenChange={onOpenChange}
+            title="Payment Entry Form"
+            description="Fill in the details to create a payment entry."
+            footer={
+                <div className="flex justify-end gap-2 p-4">
+                    <Button
+                        variant="outline"
+                        onClick={() => onOpenChange(false)}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={onSubmit}
+                        type="submit"
+                        disabled={createMutation.isPending}
+                    >
+                        {createMutation.isPending ? (
+                            <LoadingSpinner />
+                        ) : (
+                            'Submit'
+                        )}
+                    </Button>
                 </div>
-            </form>
-        </Form>
+            }
+        >
+            <Form {...form}>
+                <form onSubmit={onSubmit} className="space-y-4">
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="ORNumber"
+                        label="OR Number"
+                        render={({ field }) => (
+                            <Input
+                                {...field}
+                                id={field.name}
+                                placeholder="OR Number"
+                                autoComplete="off"
+                            />
+                        )}
+                    />
+                    <FormFieldWrapper
+                        control={form.control}
+                        name="amount"
+                        label="Amount"
+                        render={({ field }) => (
+                            <Input
+                                {...field}
+                                id={field.name}
+                                type="number"
+                                step="0.01"
+                                placeholder="Amount"
+                                autoComplete="off"
+                            />
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="accountsId"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor={field.name}>
+                                    Accounts
+                                </FormLabel>
+                                <FormControl>
+                                    <AccountsPicker
+                                        value={field.value}
+                                        onSelect={(accounts) => {
+                                            field.onChange(accounts.id)
+                                        }}
+                                        placeholder="Select Accounts"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name="notes"
+                        control={form.control}
+                        render={({ field }) => (
+                            <FormItem className="col-span-1 space-y-1">
+                                <FormLabel>Add some feedback/notes.</FormLabel>
+                                <FormControl>
+                                    <Textarea
+                                        {...field}
+                                        placeholder="Enter some notes."
+                                        className="resize-none"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="isPrinted"
+                        render={({ field }) => (
+                            <FormItem className="flex flex-row items-center space-x-2">
+                                <FormLabel htmlFor={field.name}>
+                                    Allow to make print
+                                </FormLabel>
+                                <FormControl>
+                                    <Checkbox
+                                        className="-translate-y-1"
+                                        checked={field.value}
+                                        onCheckedChange={field.onChange}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormErrorMessage errorMessage={createMutation.error} />
+                </form>
+            </Form>
+        </Modal>
     )
 }

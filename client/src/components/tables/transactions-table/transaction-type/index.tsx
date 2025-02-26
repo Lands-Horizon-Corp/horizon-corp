@@ -1,36 +1,39 @@
-import DataTable from '@/components/data-table'
-import DataTablePagination from '@/components/data-table/data-table-pagination'
-import DataTableToolbar, {
-    IDataTableToolbarProps,
-} from '@/components/data-table/data-table-toolbar'
-import FilterContext from '@/contexts/filter-context/filter-context'
-import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
-import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
-import { usePagination } from '@/hooks/use-pagination'
-import { cn } from '@/lib'
-import { IAccountsResource } from '@/server/types/accounts/accounts'
 import {
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
 import { useMemo } from 'react'
-import { TableProps } from '../types'
-import useDatableFilterState from '@/hooks/use-filter-state'
-
-import accountTableColumns, {
-    accountsGlobalSearchTargets,
-    IAccountsTableColumnProps,
-} from './columns'
 import { useQueryClient } from '@tanstack/react-query'
-import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
-import AccountsService from '@/server/api-service/accounting-services/accounts-service'
 
-export interface AccountsTableProps
-    extends TableProps<IAccountsResource>,
-        IAccountsTableColumnProps {
+import DataTable from '@/components/data-table'
+import DataTableToolbar, {
+    IDataTableToolbarProps,
+} from '@/components/data-table/data-table-toolbar'
+import DataTablePagination from '@/components/data-table/data-table-pagination'
+
+import { cn } from '@/lib'
+import { usePagination } from '@/hooks/use-pagination'
+import useDatableFilterState from '@/hooks/use-filter-state'
+import FilterContext from '@/contexts/filter-context/filter-context'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
+
+import TransactionTypeTableColumns, {
+    transactionTypeGlobalSearchTargets,
+    ITransactionTypeTableColumnProps,
+} from './columns'
+
+import { ITransactionTypeResource } from '@/server/types/transactions/transaction-type'
+import { useFilteredPaginatedTransactionTypes } from '@/hooks/api-hooks/transactions/use-transaction-type'
+import TransactionTypeService from '@/server/api-service/transactions/transaction-type'
+import { TableProps } from '../../types'
+
+export interface ITransactionTypeTableProps
+    extends TableProps<ITransactionTypeResource>,
+        ITransactionTypeTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<IAccountsResource>,
+        IDataTableToolbarProps<ITransactionTypeResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -41,23 +44,20 @@ export interface AccountsTableProps
     >
 }
 
-const AccountsTable = ({
+const TransactionTypeTable = ({
     className,
     toolbarProps,
     defaultFilter,
     onSelectData,
     actionComponent,
-}: AccountsTableProps) => {
+}: ITransactionTypeTableProps) => {
     const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
-    const { tableSorting, setTableSorting, sortingState } =
+    const { sortingState, tableSorting, setTableSorting } =
         useDataTableSorting()
 
     const columns = useMemo(
-        () =>
-            accountTableColumns({
-                actionComponent,
-            }),
+        () => TransactionTypeTableColumns({ actionComponent }),
         [actionComponent]
     )
 
@@ -71,7 +71,7 @@ const AccountsTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<IAccountsResource>({
+    } = useDataTableState<ITransactionTypeResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
@@ -86,7 +86,7 @@ const AccountsTable = ({
         isRefetching,
         data: { data, totalPage, pageSize, totalSize },
         refetch,
-    } = useFilteredPaginatedAccounts({
+    } = useFilteredPaginatedTransactionTypes({
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
@@ -97,9 +97,6 @@ const AccountsTable = ({
     const table = useReactTable({
         columns,
         data: data,
-        initialState: {
-            columnPinning: { left: ['select'] },
-        },
         state: {
             sorting: tableSorting,
             pagination,
@@ -133,10 +130,9 @@ const AccountsTable = ({
                 )}
             >
                 <DataTableToolbar
-                    className=""
                     globalSearchProps={{
                         defaultMode: 'equal',
-                        targets: accountsGlobalSearchTargets,
+                        targets: transactionTypeGlobalSearchTargets,
                     }}
                     table={table}
                     refreshActionProps={{
@@ -146,10 +142,13 @@ const AccountsTable = ({
                     deleteActionProps={{
                         onDeleteSuccess: () =>
                             queryClient.invalidateQueries({
-                                queryKey: ['accounts', 'resource-query'],
+                                queryKey: [
+                                    'transaction-types',
+                                    'resource-query',
+                                ],
                             }),
                         onDelete: (selectedData) =>
-                            AccountsService.deleteMany(
+                            TransactionTypeService.deleteMany(
                                 selectedData.map((data) => data.id)
                             ),
                     }}
@@ -159,14 +158,13 @@ const AccountsTable = ({
                         isLoading: isPending,
                         filters: filterState.finalFilterPayload,
                         disabled: isPending || isRefetching,
-                        exportAll: AccountsService.exportAll,
-                        exportAllFiltered: AccountsService.exportAllFiltered,
+                        exportAll: TransactionTypeService.exportAll,
                         exportCurrentPage: (ids) =>
-                            AccountsService.exportSelected(
+                            TransactionTypeService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                         exportSelected: (ids) =>
-                            AccountsService.exportSelected(
+                            TransactionTypeService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                     }}
@@ -190,4 +188,4 @@ const AccountsTable = ({
     )
 }
 
-export default AccountsTable
+export default TransactionTypeTable

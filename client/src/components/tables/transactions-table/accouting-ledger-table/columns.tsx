@@ -7,9 +7,9 @@ import ColumnActions from '@/components/data-table/data-table-column-header/colu
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
-import { IAccountingLedgerRequest } from '@/server/types/accounts/accounting-ledger'
+import { IAccountingLedgerResource } from '@/server/types/accounts/accounting-ledger'
 
-export const accountingLedgerGlobalSearchTargets: IGlobalSearchTargets<IAccountingLedgerRequest>[] =
+export const accountingLedgerGlobalSearchTargets: IGlobalSearchTargets<IAccountingLedgerResource>[] =
     [
         { field: 'description', displayText: 'Description' },
         { field: 'or_number', displayText: 'OR Number' },
@@ -20,7 +20,7 @@ export const accountingLedgerGlobalSearchTargets: IGlobalSearchTargets<IAccounti
     ]
 
 export interface IAccountingLedgerTableActionComponentProp {
-    row: Row<IAccountingLedgerRequest>
+    row: Row<IAccountingLedgerResource>
 }
 
 export interface IAccountingLedgerTableColumnProps {
@@ -30,7 +30,7 @@ export interface IAccountingLedgerTableColumnProps {
 }
 
 const accountingLedgerTableColumns =
-    (): ColumnDef<IAccountingLedgerRequest>[] => {
+    (): ColumnDef<IAccountingLedgerResource>[] => {
         return [
             {
                 id: 'description',
@@ -142,7 +142,9 @@ const accountingLedgerTableColumns =
                         </ColumnActions>
                     </DataTableColumnHeader>
                 ),
-                cell: ({ row: { original } }) => <div>{original.balance}</div>,
+                cell: ({ row: { original } }) => (
+                    <div>{original.summary.balance}</div>
+                ),
                 enableMultiSort: true,
             },
             {

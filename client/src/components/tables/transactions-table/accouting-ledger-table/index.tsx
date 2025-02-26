@@ -25,7 +25,6 @@ import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sort
 import { IAccountingLedgerRequest } from '@/server/types/accounts/accounting-ledger'
 import { TableProps } from '../../types'
 import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
-import { sampleLedgerData } from '@/components/forms/transactions/dummy-account-ledger'
 
 export interface IAccountingLedgerRequestTableProps
     extends TableProps<IAccountingLedgerRequest>,
@@ -93,7 +92,7 @@ const AccountsLedgerTable = ({
 
     const table = useReactTable({
         columns,
-        data: sampleLedgerData,
+        data: data,
         initialState: {
             columnPinning: { left: ['select', 'description', 'balance'] },
         },
