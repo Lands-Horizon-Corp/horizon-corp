@@ -1,8 +1,8 @@
 import {
-    ITransactionTypePaginatedResource,
-    ITransactionTypeRequest,
-    ITransactionTypeResource,
-} from '../../types/transactions/transaction-type'
+    ITransactionPaymentTypePaginatedResource,
+    ITransactionPaymentTypesRequest,
+    ITransactionPaymentTypesResource,
+} from '../../types/transactions/transaction-payment-types'
 import qs from 'query-string'
 import APIService from '../api-service'
 import { TEntityId } from '../../types'
@@ -11,7 +11,7 @@ import { downloadFile } from '@/server/helpers'
 /**
  * Service class to handle CRUD operations for Transaction Types.
  */
-export default class TransactionTypeService {
+export default class TransactionPaymentTypesService {
     private static readonly BASE_ENDPOINT = '/transaction-type'
 
     /**
@@ -65,15 +65,15 @@ export default class TransactionTypeService {
      * Creates a new transaction type.
      */
     public static async create(
-        transactionTypeData: ITransactionTypeRequest,
+        transactionTypeData: ITransactionPaymentTypesRequest,
         preloads?: string[]
-    ): Promise<ITransactionTypeResource> {
+    ): Promise<ITransactionPaymentTypesResource> {
         const url = this.buildUrl('', { preloads })
         return this.makeRequest(() =>
-            APIService.post<ITransactionTypeRequest, ITransactionTypeResource>(
-                url,
-                transactionTypeData
-            )
+            APIService.post<
+                ITransactionPaymentTypesRequest,
+                ITransactionPaymentTypesResource
+            >(url, transactionTypeData)
         )
     }
 
@@ -90,15 +90,15 @@ export default class TransactionTypeService {
      */
     public static async update(
         id: TEntityId,
-        transactionTypeData: ITransactionTypeRequest,
+        transactionTypeData: ITransactionPaymentTypesRequest,
         preloads?: string[]
-    ): Promise<ITransactionTypeResource> {
+    ): Promise<ITransactionPaymentTypesResource> {
         const url = this.buildUrl(`/${id}`, { preloads })
         return this.makeRequest(() =>
-            APIService.put<ITransactionTypeRequest, ITransactionTypeResource>(
-                url,
-                transactionTypeData
-            )
+            APIService.put<
+                ITransactionPaymentTypesRequest,
+                ITransactionPaymentTypesResource
+            >(url, transactionTypeData)
         )
     }
 
@@ -119,7 +119,7 @@ export default class TransactionTypeService {
         const url = this.buildUrl(``, { filters, preloads, pagination, sort })
 
         return this.makeRequest(() =>
-            APIService.get<ITransactionTypePaginatedResource>(url)
+            APIService.get<ITransactionPaymentTypePaginatedResource>(url)
         )
     }
 
@@ -127,7 +127,7 @@ export default class TransactionTypeService {
      * Deletes multiple transaction types by IDs.
      */
     public static async deleteMany(ids: TEntityId[]): Promise<void> {
-        const endpoint = `${TransactionTypeService.BASE_ENDPOINT}/bulk-delete`
+        const endpoint = `${TransactionPaymentTypesService.BASE_ENDPOINT}/bulk-delete`
         const payload = { ids }
 
         await APIService.delete<void>(endpoint, payload)
@@ -155,7 +155,7 @@ export default class TransactionTypeService {
     public static async exportSelected(ids: TEntityId[]): Promise<void> {
         const url = qs.stringifyUrl(
             {
-                url: `${TransactionTypeService.BASE_ENDPOINT}/export-selected`,
+                url: `${TransactionPaymentTypesService.BASE_ENDPOINT}/export-selected`,
                 query: { ids },
             },
             { skipNull: true }

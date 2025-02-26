@@ -12,15 +12,17 @@ import {
 } from '@/constants'
 import useFilterState from '@/hooks/use-filter-state'
 import { TEntityId } from '@/server/types'
-import { ITransactionTypeResource } from '@/server/types/transactions/transaction-type'
 
-import { useFilteredPaginatedTransactionTypes } from '@/hooks/api-hooks/transactions/use-transaction-type'
+import { useFilteredPaginatedTransactionPaymentTypes } from '@/hooks/api-hooks/transactions/use-transaction-payment-types'
+import { ITransactionPaymentTypesResource } from '@/server/types/transactions/transaction-payment-types'
 
 interface Props {
     value?: TEntityId
     placeholder?: string
     disabled?: boolean
-    onSelect?: (selectedTransactionType: ITransactionTypeResource) => void
+    onSelect?: (
+        selectedTransactionType: ITransactionPaymentTypesResource
+    ) => void
 }
 
 const TransactionPaymentTypesPicker = ({
@@ -31,7 +33,7 @@ const TransactionPaymentTypesPicker = ({
 }: Props) => {
     const [pickerState, setPickerState] = useState(false)
     const [selectedTransactionType, setSelectedTransactionType] =
-        useState<ITransactionTypeResource>()
+        useState<ITransactionPaymentTypesResource>()
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: PAGINATION_INITIAL_INDEX,
         pageSize: PAGINATION_INITIAL_PAGE_SIZE,
@@ -46,7 +48,7 @@ const TransactionPaymentTypesPicker = ({
     })
 
     const { data, isPending, isLoading, isFetching } =
-        useFilteredPaginatedTransactionTypes({
+        useFilteredPaginatedTransactionPaymentTypes({
             filterPayload: finalFilterPayload,
             pagination,
             enabled: !disabled,
