@@ -57,7 +57,9 @@ import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-
 import MemberClassificationCombobox, {
     IMemberClassificationComboboxCreateProps,
 } from '@/components/comboboxes/member-classification-combobox'
-import MemberEducationalAttainmentPicker from '@/components/comboboxes/member-educational-attainment-combobox'
+import MemberEducationalAttainmentPicker, {
+    IMemberEducationalAttainmentComboboxCreateProps,
+} from '@/components/comboboxes/member-educational-attainment-combobox'
 
 import {
     useCreateMemberProfile,
@@ -83,6 +85,7 @@ interface IMemberProfileCreateUpdateFormProps
     branchPickerCreateProps?: IBranchPickerCreateProps
     memberGenderCreateProps?: IGenderSelectCreateProps
     memberClassificationCreateProps?: IMemberClassificationComboboxCreateProps
+    educationalAttainmentComboboxCreateProps?: IMemberEducationalAttainmentComboboxCreateProps
 }
 
 type Step = {
@@ -152,6 +155,7 @@ const MemberProfileCreateUpdateForm = ({
     memberTypeOptionsFilter,
     memberGenderCreateProps,
     memberClassificationCreateProps,
+    educationalAttainmentComboboxCreateProps,
     onError,
     onSuccess,
 }: IMemberProfileCreateUpdateFormProps) => {
@@ -673,6 +677,9 @@ const MemberProfileCreateUpdateForm = ({
                                         render={({ field }) => (
                                             <MemberEducationalAttainmentPicker
                                                 {...field}
+                                                educationalAttainmentComboboxCreateProps={
+                                                    educationalAttainmentComboboxCreateProps
+                                                }
                                                 onChange={(selected) =>
                                                     field.onChange(selected.id)
                                                 }

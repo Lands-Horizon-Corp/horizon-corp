@@ -50,6 +50,7 @@ const MembersTableOwnerAction = ({
                         },
                         memberGenderCreateProps: {},
                         memberClassificationCreateProps: {},
+                        educationalAttainmentComboboxCreateProps: {},
                     }}
                 />
                 <MemberCreateUpdateFormModal
