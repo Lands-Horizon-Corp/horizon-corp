@@ -14,6 +14,7 @@ import {
     IQueryProps,
 } from '../types'
 import IAccountingLedgerService from '@/server/api-service/transactions/accounting-ledger'
+import { TEntityId } from '@/server'
 
 export const useCreateAccountingLedger = ({
     preloads = [],
@@ -57,22 +58,34 @@ export const useFilteredPaginatedIAccountingLedger = ({
     preloads = [],
     showMessage = true,
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IFilterPaginatedHookProps & IQueryProps = {}) => {
+    memberProfileId,
+}: IFilterPaginatedHookProps &
+    IQueryProps & {
+        memberProfileId?: TEntityId
+    } = {}) => {
     return useQuery<IAccountingLedgerPaginatedResource, string>({
         queryKey: [
             'accounting-ledger',
             'resource-query',
             filterPayload,
+            memberProfileId,
             pagination,
             sort,
         ],
         queryFn: async () => {
+            const filters = {
+                ...(filterPayload || {}),
+                ...(memberProfileId && { memberProfileId: memberProfileId }),
+            }
+
             const [error, result] = await withCatchAsync(
                 IAccountingLedgerService.getLedgers({
                     preloads,
                     pagination,
                     sort: sort && toBase64(sort),
-                    filters: filterPayload && toBase64(filterPayload),
+                    filters: Object.keys(filters).length
+                        ? toBase64(JSON.stringify(filters))
+                        : undefined,
                 })
             )
 
