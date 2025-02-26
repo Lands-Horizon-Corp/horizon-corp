@@ -174,8 +174,8 @@ import {
     FaBold as FaBoldIcon,
     FaFileCsv as CsvIcon,
     FaPhoneAlt as PhoneIcon,
+    FaMoneyBill as BillIcon,
 } from 'react-icons/fa'
-
 import { FaVenusMars as GendersIcon } from 'react-icons/fa6'
 
 import {
@@ -207,7 +207,6 @@ import {
 import { BiErrorCircle as WarningIcon } from 'react-icons/bi'
 
 import { SlOptions as OptionsIcon } from 'react-icons/sl'
-
 // Export section
 export {
     XIcon,
@@ -359,4 +358,5 @@ export {
     BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
     EmptyIcon,
+    BillIcon,
 }

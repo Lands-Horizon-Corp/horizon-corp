@@ -19,18 +19,18 @@ export const transactionTypeGlobalSearchTargets: IGlobalSearchTargets<ITransacti
         { field: 'cheque_id', displayText: 'Cheque ID' },
     ]
 
-export interface ITransactionTypeTableActionComponentProp {
+export interface ITransactionPaymentTypesTableActionComponentProp {
     row: Row<ITransactionTypeResource>
 }
 
-export interface ITransactionTypeTableColumnProps {
+export interface ITransactionPaymentTypesTableColumnProps {
     actionComponent?: (
-        props: ITransactionTypeTableActionComponentProp
+        props: ITransactionPaymentTypesTableActionComponentProp
     ) => ReactNode
 }
 
-const TransactionTypeTableColumns = (
-    opts?: ITransactionTypeTableColumnProps
+const TransactionPaymentTypesTableColumns = (
+    opts?: ITransactionPaymentTypesTableColumnProps
 ): ColumnDef<ITransactionTypeResource>[] => {
     return [
         {
@@ -181,4 +181,4 @@ const TransactionTypeTableColumns = (
     ]
 }
 
-export default TransactionTypeTableColumns
+export default TransactionPaymentTypesTableColumns

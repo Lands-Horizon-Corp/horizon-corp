@@ -159,7 +159,7 @@ const TransactionTypeCreateUpdateForm = ({
     )
 }
 
-export const TransactionTypeCreateUpdateFormModal = ({
+export const TransactionPaymentTypesCreateUpdateFormModal = ({
     title = 'Create Transaction Type',
     description = 'Fill out the form to add a new transaction type.',
     className,

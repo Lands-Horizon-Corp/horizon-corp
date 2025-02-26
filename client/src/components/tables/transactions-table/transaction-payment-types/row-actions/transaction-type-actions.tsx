@@ -2,20 +2,20 @@ import { useState } from 'react'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import { ITransactionTypeTableActionComponentProp } from '../columns'
+import { ITransactionPaymentTypesTableActionComponentProp } from '../columns'
 import { useDeleteTransactionType } from '@/hooks/api-hooks/transactions/use-transaction-type'
-import { TransactionTypeCreateUpdateFormModal } from '@/components/forms/transactions/transaction-create-update-form'
+import { TransactionPaymentTypesCreateUpdateFormModal } from '@/components/forms/transactions/transaction-payment-types-create-update-form'
 
-interface ITransactionTypeTableOwnerActionProps
-    extends ITransactionTypeTableActionComponentProp {
+interface ITransactionPaymentTypesTableOwnerActionProps
+    extends ITransactionPaymentTypesTableActionComponentProp {
     onTransactionTypeUpdate?: () => void
     onDeleteSuccess?: () => void
 }
 
-const TransactionTypeTableOwnerAction = ({
+const TransactionPaymentTypesTableOwnerAction = ({
     row,
     onDeleteSuccess,
-}: ITransactionTypeTableOwnerActionProps) => {
+}: ITransactionPaymentTypesTableOwnerActionProps) => {
     const [updateModalForm, setUpdateModalForm] = useState(false)
     const transactionType = row.original
 
@@ -31,7 +31,7 @@ const TransactionTypeTableOwnerAction = ({
     return (
         <>
             <div onClick={(e) => e.stopPropagation()}>
-                <TransactionTypeCreateUpdateFormModal
+                <TransactionPaymentTypesCreateUpdateFormModal
                     formProps={{
                         transactionTypeId: transactionType.id,
                         defaultValues: {
@@ -69,4 +69,4 @@ const TransactionTypeTableOwnerAction = ({
     )
 }
 
-export default TransactionTypeTableOwnerAction
+export default TransactionPaymentTypesTableOwnerAction

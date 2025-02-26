@@ -19,9 +19,9 @@ import FilterContext from '@/contexts/filter-context/filter-context'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
-import TransactionTypeTableColumns, {
+import TransactionPaymentTypesTableColumns, {
     transactionTypeGlobalSearchTargets,
-    ITransactionTypeTableColumnProps,
+    ITransactionPaymentTypesTableColumnProps,
 } from './columns'
 
 import { ITransactionTypeResource } from '@/server/types/transactions/transaction-type'
@@ -29,9 +29,9 @@ import { useFilteredPaginatedTransactionTypes } from '@/hooks/api-hooks/transact
 import TransactionTypeService from '@/server/api-service/transactions/transaction-type'
 import { TableProps } from '../../types'
 
-export interface ITransactionTypeTableProps
+export interface ITransactionPaymentTypesTableProps
     extends TableProps<ITransactionTypeResource>,
-        ITransactionTypeTableColumnProps {
+        ITransactionPaymentTypesTableColumnProps {
     toolbarProps?: Omit<
         IDataTableToolbarProps<ITransactionTypeResource>,
         | 'table'
@@ -44,20 +44,20 @@ export interface ITransactionTypeTableProps
     >
 }
 
-const TransactionTypeTable = ({
+const TransactionPaymentTypesTable = ({
     className,
     toolbarProps,
     defaultFilter,
     onSelectData,
     actionComponent,
-}: ITransactionTypeTableProps) => {
+}: ITransactionPaymentTypesTableProps) => {
     const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
     const { sortingState, tableSorting, setTableSorting } =
         useDataTableSorting()
 
     const columns = useMemo(
-        () => TransactionTypeTableColumns({ actionComponent }),
+        () => TransactionPaymentTypesTableColumns({ actionComponent }),
         [actionComponent]
     )
 
@@ -188,4 +188,4 @@ const TransactionTypeTable = ({
     )
 }
 
-export default TransactionTypeTable
+export default TransactionPaymentTypesTable
