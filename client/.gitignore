@@ -28,3 +28,4 @@ dist-ssr
 **.trash/
 **/tsconfig.app.tsbuildinfo
 bundle-analysis.html
+**/dev-temp-dir/
