@@ -1,4 +1,5 @@
 import z from 'zod'
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Path, useFieldArray, useForm } from 'react-hook-form'
@@ -26,6 +27,9 @@ import {
     SelectTrigger,
     SelectContent,
 } from '@/components/ui/select'
+import BranchPicker, {
+    IBranchPickerCreateProps,
+} from '@/components/pickers/branch-picker'
 import { Input } from '@/components/ui/input'
 import { IForm } from '@/types/component/form'
 import { Button } from '@/components/ui/button'
@@ -35,7 +39,8 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { AvatarUploadField } from './avatar-upload-field'
 import GenderSelect from '@/components/selects/gender-select'
-import BranchPicker from '@/components/pickers/branch-picker'
+import MemberPicker from '@/components/pickers/member-picker'
+import Modal, { IModalProps } from '@/components/modals/modal'
 import { SignatureUploadField } from './signature-upload-field'
 import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import FormErrorMessage from '@/components/ui/form-error-message'
@@ -61,9 +66,6 @@ import { createMemberProfileSchema } from '@/validations/form-validation/member/
 import { cn } from '@/lib'
 import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
-import Modal, { IModalProps } from '@/components/modals/modal'
-import MemberPicker from '@/components/pickers/member-picker'
-import { toast } from 'sonner'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -72,6 +74,9 @@ interface IMemberProfileCreateUpdateFormProps
         IForm<Partial<TMemberProfileForm>, unknown, string> {
     memberTypeOptionsFilter?: TFilterObject
     profileId?: TEntityId
+
+    // Since this form uses pickers and other stuff, they might have create capabilities
+    branchPickerCreateProps?: IBranchPickerCreateProps
 }
 
 type Step = {
@@ -137,6 +142,7 @@ const MemberProfileCreateUpdateForm = ({
     hiddenFields,
     defaultValues,
     disabledFields,
+    branchPickerCreateProps,
     memberTypeOptionsFilter,
     onError,
     onSuccess,
@@ -365,6 +371,9 @@ const MemberProfileCreateUpdateForm = ({
                                             <FormControl>
                                                 <BranchPicker
                                                     {...field}
+                                                    createProps={
+                                                        branchPickerCreateProps
+                                                    }
                                                     onSelect={(branch) =>
                                                         field.onChange(
                                                             branch.id

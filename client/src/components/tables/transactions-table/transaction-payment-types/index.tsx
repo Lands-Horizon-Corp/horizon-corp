@@ -19,21 +19,21 @@ import FilterContext from '@/contexts/filter-context/filter-context'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
-import TransactionTypeTableColumns, {
+import TransactionPaymentTypesTableColumns, {
     transactionTypeGlobalSearchTargets,
-    ITransactionTypeTableColumnProps,
+    ITransactionPaymentTypesTableColumnProps,
 } from './columns'
 
-import { ITransactionTypeResource } from '@/server/types/transactions/transaction-type'
-import { useFilteredPaginatedTransactionTypes } from '@/hooks/api-hooks/transactions/use-transaction-type'
-import TransactionTypeService from '@/server/api-service/transactions/transaction-type'
+import { useFilteredPaginatedTransactionPaymentTypes } from '@/hooks/api-hooks/transactions/use-transaction-payment-types'
 import { TableProps } from '../../types'
+import { ITransactionPaymentTypesResource } from '@/server/types/transactions/transaction-payment-types'
+import TransactionPaymentTypesService from '@/server/api-service/transactions/transaction-payment-types'
 
-export interface ITransactionTypeTableProps
-    extends TableProps<ITransactionTypeResource>,
-        ITransactionTypeTableColumnProps {
+export interface ITransactionPaymentTypesTableProps
+    extends TableProps<ITransactionPaymentTypesResource>,
+        ITransactionPaymentTypesTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<ITransactionTypeResource>,
+        IDataTableToolbarProps<ITransactionPaymentTypesResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -44,20 +44,20 @@ export interface ITransactionTypeTableProps
     >
 }
 
-const TransactionTypeTable = ({
+const TransactionPaymentTypesTable = ({
     className,
     toolbarProps,
     defaultFilter,
     onSelectData,
     actionComponent,
-}: ITransactionTypeTableProps) => {
+}: ITransactionPaymentTypesTableProps) => {
     const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
     const { sortingState, tableSorting, setTableSorting } =
         useDataTableSorting()
 
     const columns = useMemo(
-        () => TransactionTypeTableColumns({ actionComponent }),
+        () => TransactionPaymentTypesTableColumns({ actionComponent }),
         [actionComponent]
     )
 
@@ -71,7 +71,7 @@ const TransactionTypeTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<ITransactionTypeResource>({
+    } = useDataTableState<ITransactionPaymentTypesResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
@@ -86,7 +86,7 @@ const TransactionTypeTable = ({
         isRefetching,
         data: { data, totalPage, pageSize, totalSize },
         refetch,
-    } = useFilteredPaginatedTransactionTypes({
+    } = useFilteredPaginatedTransactionPaymentTypes({
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
@@ -148,7 +148,7 @@ const TransactionTypeTable = ({
                                 ],
                             }),
                         onDelete: (selectedData) =>
-                            TransactionTypeService.deleteMany(
+                            TransactionPaymentTypesService.deleteMany(
                                 selectedData.map((data) => data.id)
                             ),
                     }}
@@ -158,13 +158,13 @@ const TransactionTypeTable = ({
                         isLoading: isPending,
                         filters: filterState.finalFilterPayload,
                         disabled: isPending || isRefetching,
-                        exportAll: TransactionTypeService.exportAll,
+                        exportAll: TransactionPaymentTypesService.exportAll,
                         exportCurrentPage: (ids) =>
-                            TransactionTypeService.exportSelected(
+                            TransactionPaymentTypesService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                         exportSelected: (ids) =>
-                            TransactionTypeService.exportSelected(
+                            TransactionPaymentTypesService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                     }}
@@ -188,4 +188,4 @@ const TransactionTypeTable = ({
     )
 }
 
-export default TransactionTypeTable
+export default TransactionPaymentTypesTable
