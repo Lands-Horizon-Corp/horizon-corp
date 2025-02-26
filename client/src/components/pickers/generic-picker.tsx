@@ -21,10 +21,11 @@ interface GenericPickerProps<T extends { id: TEntityId }> extends IModalProps {
     listHeading?: string
     commandClassName?: string
     searchPlaceHolder?: string
+    customCommands?: React.ReactNode
+    customSearchComponent?: React.ReactNode
     onSelect?: (item: T) => void
     onSearchChange: (val: string) => void
     renderItem: (item: T) => React.ReactNode
-    customSearchComponent?: React.ReactNode
 }
 
 const GenericPicker = <T extends { id: TEntityId }>({
@@ -34,6 +35,7 @@ const GenericPicker = <T extends { id: TEntityId }>({
     isLoading,
     className,
     listHeading,
+    customCommands,
     commandClassName,
     searchPlaceHolder,
     customSearchComponent,
@@ -82,6 +84,7 @@ const GenericPicker = <T extends { id: TEntityId }>({
                             'No Result'
                         )}
                     </CommandEmpty>
+                    {customCommands}
                     {items.length > 0 && (
                         <CommandGroup heading={listHeading}>
                             {items?.map((item) => (
