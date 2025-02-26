@@ -19,9 +19,9 @@ import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { IPaymentsEntryRequest } from '@/server/types/transactions/payments-entry'
 import { useCreatePaymentEntry } from '@/hooks/api-hooks/transactions/use-payments-entry'
-import { IMemberProfileResource, IMemberResource, TEntityId } from '@/server'
+import { IMemberResource, TEntityId } from '@/server'
 import AccountsPicker from '@/components/pickers/accounts-picker'
-import AccountsLedgerTable from '@/components/tables/transactions/accouting-ledger-table'
+import AccountsLedgerTable from '@/components/tables/transactions-table/accouting-ledger-table'
 import PaymentsEntryProfile from '@/components/transaction-profile/payments-entry-profile'
 import { Card, CardContent } from '@/components/ui/card'
 import MemberPicker from '@/components/pickers/member-picker'
@@ -31,6 +31,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
 import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payments-entry/current-transaction-ledger'
+import { IAccountsResource } from '@/server/types/accounts/accounts'
 
 export const paymentsEntrySchema = z.object({
     ORNumber: z.string().min(1, 'OR Number is required'),
@@ -39,22 +40,6 @@ export const paymentsEntrySchema = z.object({
     isPrinted: z.boolean().optional(),
     notes: z.string().optional(),
 })
-
-export type memberPassbookNumber = Pick<
-    IMemberProfileResource,
-    'passbookNumber'
->
-export interface IMemberCardResource
-    extends memberPassbookNumber,
-        Pick<
-            IMemberResource,
-            | 'id'
-            | 'fullName'
-            | 'contactNumber'
-            | 'email'
-            | 'media'
-            | 'permanentAddress'
-        > {}
 
 type TPaymentFormValues = z.infer<typeof paymentsEntrySchema>
 
@@ -74,7 +59,7 @@ export const PaymentsEntryForm = () => {
     const {
         isPending,
         isRefetching,
-        data: { data: sampleLedgerData },
+        data: { data: SampleLedgerData },
         refetch,
     } = useFilteredPaginatedIAccountingLedger()
 
@@ -82,7 +67,7 @@ export const PaymentsEntryForm = () => {
         refetch()
     }
 
-    const totalAmount = sampleLedgerData.reduce(
+    const totalAmount = SampleLedgerData.reduce(
         (acc, ledger) => acc + ledger.credit,
         0
     )
@@ -134,7 +119,7 @@ export const PaymentsEntryForm = () => {
                             <CurrentPaymentAccountingTransactionLedger
                                 isRefetching={isRefetching}
                                 isPending={isPending}
-                                data={sampleLedgerData}
+                                data={SampleLedgerData}
                                 onRefetch={refetchAccountingLedger}
                             />
                         </div>
@@ -169,6 +154,9 @@ const FormModal = ({
     onError,
     selectedMemberId,
 }: IPaymentFormProps) => {
+    const [selectedAccounts, setSelectedAccounts] =
+        useState<IAccountsResource | null>(null)
+
     const form = useForm<TPaymentFormValues>({
         resolver: zodResolver(paymentsEntrySchema),
         reValidateMode: 'onChange',
@@ -269,9 +257,10 @@ const FormModal = ({
                                 <FormControl>
                                     <AccountsPicker
                                         value={field.value}
-                                        onSelect={(accounts) =>
+                                        onSelect={(accounts) => {
                                             field.onChange(accounts.id)
-                                        }
+                                            setSelectedAccounts(accounts)
+                                        }}
                                         placeholder="Select Accounts"
                                     />
                                 </FormControl>
