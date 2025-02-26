@@ -38,7 +38,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { AvatarUploadField } from './avatar-upload-field'
-import GenderSelect from '@/components/selects/gender-select'
+import GenderSelect, {
+    IGenderSelectCreateProps,
+} from '@/components/selects/gender-select'
 import MemberPicker from '@/components/pickers/member-picker'
 import Modal, { IModalProps } from '@/components/modals/modal'
 import { SignatureUploadField } from './signature-upload-field'
@@ -79,6 +81,7 @@ interface IMemberProfileCreateUpdateFormProps
 
     // Since this form uses pickers and other stuff, they might have create capabilities
     branchPickerCreateProps?: IBranchPickerCreateProps
+    memberGenderCreateProps?: IGenderSelectCreateProps
     memberClassificationCreateProps?: IMemberClassificationComboboxCreateProps
 }
 
@@ -147,6 +150,7 @@ const MemberProfileCreateUpdateForm = ({
     disabledFields,
     branchPickerCreateProps,
     memberTypeOptionsFilter,
+    memberGenderCreateProps,
     memberClassificationCreateProps,
     onError,
     onSuccess,
@@ -652,6 +656,9 @@ const MemberProfileCreateUpdateForm = ({
                                         render={({ field }) => (
                                             <GenderSelect
                                                 {...field}
+                                                createGenderProps={
+                                                    memberGenderCreateProps
+                                                }
                                                 onChange={(gender) =>
                                                     field.onChange(gender.id)
                                                 }
