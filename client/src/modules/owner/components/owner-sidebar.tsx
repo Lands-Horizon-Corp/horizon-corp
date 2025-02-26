@@ -23,6 +23,7 @@ import {
     HandCoinsIcon,
     WalletIcon,
     HandDepositIcon,
+    BillIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
@@ -50,6 +51,11 @@ const ownerSidebarItem: TSidebarItem[] = [
                 Icon: HandWithdrawIcon,
                 text: 'Withdrawal',
                 url: '/withdrawals',
+            },
+            {
+                Icon: BillIcon,
+                text: 'Payment Types',
+                url: '/transaction-payments-type',
             },
         ],
     },

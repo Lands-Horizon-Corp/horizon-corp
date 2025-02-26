@@ -33,14 +33,16 @@ export const ownerTransactionWithdrawal = createRoute({
     component: lazyRouteComponent(() => import('./withdrawals-page')),
 })
 
-export const ownerTransactionType = createRoute({
+export const ownerTransactionPaymentType = createRoute({
     getParentRoute: () => ownerTransactionRoute,
-    path: '/transaction-type',
-    component: lazyRouteComponent(() => import('./transaction-type-page')),
+    path: '/transaction-payments-type',
+    component: lazyRouteComponent(
+        () => import('./transaction-payment-type-page')
+    ),
 })
 
 export const OwnerTransactionRoute = ownerTransactionRoute.addChildren([
-    ownerTransactionType,
+    ownerTransactionPaymentType,
     ownerTransactionIndexRoute,
     ownerTransactionWithdrawal,
     ownerTransactionDepositEntry,
