@@ -9,24 +9,24 @@ import {
     IQueryProps,
 } from '../types'
 import {
-    IAccountsPaginatedResource,
-    IAccountsRequest,
-    IAccountsResource,
-} from '@/server/types/accounts/accounts'
-import AccountsService from '@/server/api-service/accounting-services/accounts-service'
-import { TEntityId } from '@/server'
-import { SampleAccountsData } from '@/modules/owner/pages/transaction/transaction-dummy-data'
+    ITransactionTypePaginatedResource,
+    ITransactionTypeRequest,
+    ITransactionTypeResource,
+} from '@/server/types/transactions/transaction-type'
+import TransactionTypeService from '@/server/api-service/transactions/transaction-type'
+import { TEntityId } from '@/server/types'
+import { SampleTransactionTypeData } from '@/modules/owner/pages/transaction/transaction-dummy-data'
 
-export const useFilteredPaginatedAccounts = ({
+export const useFilteredPaginatedTransactionTypes = ({
     sort,
-    enabled = true,
+    enabled,
     filterPayload,
     preloads,
     pagination = { pageSize: 20, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
-    return useQuery<IAccountsPaginatedResource, string>({
+    return useQuery<ITransactionTypePaginatedResource, string>({
         queryKey: [
-            'accounts',
+            'transaction-types',
             'resource-query',
             filterPayload,
             pagination,
@@ -34,7 +34,7 @@ export const useFilteredPaginatedAccounts = ({
         ],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
-                AccountsService.getAccounts({
+                TransactionTypeService.getTransactionTypes({
                     preloads,
                     pagination,
                     sort: sort && toBase64(sort),
@@ -51,7 +51,7 @@ export const useFilteredPaginatedAccounts = ({
             return result
         },
         initialData: {
-            ...SampleAccountsData,
+           ...SampleTransactionTypeData,
             ...pagination,
         },
         enabled,
@@ -59,17 +59,17 @@ export const useFilteredPaginatedAccounts = ({
     })
 }
 
-export const useDeleteAccounts = ({
+export const useDeleteTransactionType = ({
     onSuccess,
     onError,
 }: undefined | IOperationCallbacks<undefined> = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<void, string, TEntityId>({
-        mutationKey: ['accounts', 'delete'],
-        mutationFn: async (accountsId) => {
+        mutationKey: ['transaction-types', 'delete'],
+        mutationFn: async (transactionTypeId) => {
             const [error] = await withCatchAsync(
-                AccountsService.delete(accountsId)
+                TransactionTypeService.delete(transactionTypeId)
             )
 
             if (error) {
@@ -80,34 +80,34 @@ export const useDeleteAccounts = ({
             }
 
             queryClient.invalidateQueries({
-                queryKey: ['accounts', 'resource-query'],
+                queryKey: ['transaction-types', 'resource-query'],
             })
 
             queryClient.invalidateQueries({
-                queryKey: ['accounts', accountsId],
+                queryKey: ['transaction-types', transactionTypeId],
             })
             queryClient.removeQueries({
-                queryKey: ['accounts', 'loader', accountsId],
+                queryKey: ['transaction-types', 'loader', transactionTypeId],
             })
 
-            toast.success('accounts deleted')
+            toast.success('Transaction type deleted')
             onSuccess?.(undefined)
         },
     })
 }
 
-export const useCreateAccounts = ({
+export const useCreateTransactionType = ({
     preloads = [],
     onError,
     onSuccess,
-}: IOperationCallbacks<IAccountsResource> & IAPIPreloads) => {
+}: IOperationCallbacks<ITransactionTypeResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
-    return useMutation<void, string, IAccountsRequest>({
-        mutationKey: ['accounts', 'create'],
-        mutationFn: async (newAccountData) => {
+    return useMutation<void, string, ITransactionTypeRequest>({
+        mutationKey: ['transaction-types', 'create'],
+        mutationFn: async (newTransactionTypeData) => {
             const [error, data] = await withCatchAsync(
-                AccountsService.create(newAccountData, preloads)
+                TransactionTypeService.create(newTransactionTypeData, preloads)
             )
 
             if (error) {
@@ -117,41 +117,41 @@ export const useCreateAccounts = ({
                 throw errorMessage
             }
 
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', data.id],
+            queryClient.setQueryData<ITransactionTypeResource>(
+                ['transaction-types', data.id],
                 data
             )
 
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', 'loader', data.id],
+            queryClient.setQueryData<ITransactionTypeResource>(
+                ['transaction-types', 'loader', data.id],
                 data
             )
 
-            toast.success('Accounts Created')
+            toast.success('Transaction Type Created')
             onSuccess?.(data)
         },
     })
 }
 
-export const useUpdateAccounts = ({
+export const useUpdateTransactionType = ({
     preloads,
     onSuccess,
     onError,
-}: IOperationCallbacks<IAccountsResource, string> & IAPIPreloads) => {
+}: IOperationCallbacks<ITransactionTypeResource, string> & IAPIPreloads) => {
     const queryClient = useQueryClient()
 
     return useMutation<
-        IAccountsResource,
+        ITransactionTypeResource,
         string,
         {
             id: TEntityId
-            data: IAccountsRequest
+            data: ITransactionTypeRequest
         }
     >({
-        mutationKey: ['accounts', 'update'],
+        mutationKey: ['transaction-types', 'update'],
         mutationFn: async ({ id, data }) => {
             const [error, response] = await withCatchAsync(
-                AccountsService.update(id, data, preloads)
+                TransactionTypeService.update(id, data, preloads)
             )
 
             if (error) {
@@ -161,31 +161,34 @@ export const useUpdateAccounts = ({
                 throw errorMessage
             }
 
-            queryClient.setQueriesData<IAccountsPaginatedResource>(
-                { queryKey: ['accounts', 'resource-query'], exact: false },
+            queryClient.setQueriesData<ITransactionTypePaginatedResource>(
+                {
+                    queryKey: ['transaction-types', 'resource-query'],
+                    exact: false,
+                },
                 (oldData) => {
                     if (!oldData) return oldData
 
                     return {
                         ...oldData,
-                        data: oldData.data.map((accounts) =>
-                            accounts.id === id ? response : accounts
+                        data: oldData.data.map((transType) =>
+                            transType.id === id ? response : transType
                         ),
                     }
                 }
             )
 
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', id],
+            queryClient.setQueryData<ITransactionTypeResource>(
+                ['transaction-types', id],
                 response
             )
 
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', 'loader', id],
+            queryClient.setQueryData<ITransactionTypeResource>(
+                ['transaction-types', 'loader', id],
                 response
             )
 
-            toast.success('accounts updated')
+            toast.success('Transaction Type Updated')
 
             onSuccess?.(response)
             return response
