@@ -109,7 +109,10 @@ export const useCreateTransactionType = ({
         mutationKey: ['transaction-types', 'create'],
         mutationFn: async (newTransactionTypeData) => {
             const [error, data] = await withCatchAsync(
-                TransactionPaymentTypesService.create(newTransactionTypeData, preloads)
+                TransactionPaymentTypesService.create(
+                    newTransactionTypeData,
+                    preloads
+                )
             )
 
             if (error) {
