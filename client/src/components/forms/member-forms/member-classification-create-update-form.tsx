@@ -20,21 +20,29 @@ import {
 import { memberClassificationSchema } from '@/validations/form-validation/member/member-classification'
 
 import { IBaseCompNoChild } from '@/types'
-import { IMemberClassificationRequest, TEntityId } from '@/server/types'
+import {
+    IMemberClassificationRequest,
+    IMemberClassificationResource,
+    TEntityId,
+} from '@/server/types'
 
 type TMemberClassificationForm = z.infer<typeof memberClassificationSchema>
 
 export interface IMemberClassificationCreateUpdateFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IMemberClassificationRequest>, unknown, string> {
+        IForm<
+            Partial<IMemberClassificationRequest>,
+            IMemberClassificationResource,
+            string
+        > {
     memberClassificationId?: TEntityId
 }
 
 const MemberClassificationCreateUpdateForm = ({
-    memberClassificationId,
     readOnly,
     className,
     defaultValues,
+    memberClassificationId,
     onError,
     onSuccess,
 }: IMemberClassificationCreateUpdateFormProps) => {

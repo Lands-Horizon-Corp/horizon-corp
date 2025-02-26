@@ -48,6 +48,7 @@ const MembersTableOwnerAction = ({
                         branchPickerCreateProps: {
                             disabledFields: ['companyId'],
                         },
+                        memberClassificationCreateProps: {},
                     }}
                 />
                 <MemberCreateUpdateFormModal

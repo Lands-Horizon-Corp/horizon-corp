@@ -52,7 +52,9 @@ import ProvinceCombobox from '@/components/comboboxes/province-combobox'
 import BarangayCombobox from '@/components/comboboxes/barangay-combobox'
 import MunicipalityCombobox from '@/components/comboboxes/municipality-combobox'
 import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
-import MemberClassificationCombobox from '@/components/comboboxes/member-classification-combobox'
+import MemberClassificationCombobox, {
+    IMemberClassificationComboboxCreateProps,
+} from '@/components/comboboxes/member-classification-combobox'
 import MemberEducationalAttainmentPicker from '@/components/comboboxes/member-educational-attainment-combobox'
 
 import {
@@ -77,6 +79,7 @@ interface IMemberProfileCreateUpdateFormProps
 
     // Since this form uses pickers and other stuff, they might have create capabilities
     branchPickerCreateProps?: IBranchPickerCreateProps
+    memberClassificationCreateProps?: IMemberClassificationComboboxCreateProps
 }
 
 type Step = {
@@ -144,6 +147,7 @@ const MemberProfileCreateUpdateForm = ({
     disabledFields,
     branchPickerCreateProps,
     memberTypeOptionsFilter,
+    memberClassificationCreateProps,
     onError,
     onSuccess,
 }: IMemberProfileCreateUpdateFormProps) => {
@@ -392,6 +396,9 @@ const MemberProfileCreateUpdateForm = ({
                                             <FormControl>
                                                 <MemberClassificationCombobox
                                                     {...field}
+                                                    memberClassificationCreateProps={
+                                                        memberClassificationCreateProps
+                                                    }
                                                     onChange={(memClass) =>
                                                         field.onChange(
                                                             memClass.id
