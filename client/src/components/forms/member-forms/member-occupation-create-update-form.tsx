@@ -14,11 +14,15 @@ import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { IMemberOccupationRequest, TEntityId } from '@/server/types'
 import {
     useCreateMemberOccupation,
     useUpdateMemberOccupation,
 } from '@/hooks/api-hooks/member/use-member-occupation'
+import {
+    TEntityId,
+    IMemberOccupationRequest,
+    IMemberOccupationResource,
+} from '@/server/types'
 
 export const createMemberOccupationSchema = z.object({
     name: z.string().min(1, { message: 'Name is required' }).trim(),
@@ -32,7 +36,11 @@ type TMemberOccupationForm = z.infer<typeof createMemberOccupationSchema>
 
 export interface IMemberOccupationCreateUpdateFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IMemberOccupationRequest>, unknown, string> {
+        IForm<
+            Partial<IMemberOccupationRequest>,
+            IMemberOccupationResource,
+            string
+        > {
     memberOccupationId?: TEntityId
 }
 

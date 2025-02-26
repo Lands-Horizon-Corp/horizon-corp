@@ -11,12 +11,18 @@ import FormErrorMessage from '@/components/ui/form-error-message'
 import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
+import {
+    IMemberEducationalAttainmentRequest,
+    IMemberEducationalAttainmentResource,
+    TEntityId,
+} from '@/server/types'
 import { cn } from '@/lib/utils'
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { IMemberEducationalAttainmentRequest, TEntityId } from '@/server/types'
-import { useCreateMemberEducationalAttainment } from '@/hooks/api-hooks/member/use-member-educational-attainment'
-import { useUpdateMemberEducationalAttainment } from '@/hooks/api-hooks/member/use-member-educational-attainment'
+import {
+    useCreateMemberEducationalAttainment,
+    useUpdateMemberEducationalAttainment,
+} from '@/hooks/api-hooks/member/use-member-educational-attainment'
 
 export const createMemberEducationalAttainmentSchema = z.object({
     name: z.string().min(1, 'Name is required'),
@@ -29,7 +35,11 @@ type TMemberEducationalAttainmentForm = z.infer<
 
 export interface IMemberEducationalAttainmentCreateUpdateFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IMemberEducationalAttainmentRequest>, unknown, string> {
+        IForm<
+            Partial<IMemberEducationalAttainmentRequest>,
+            IMemberEducationalAttainmentResource,
+            string
+        > {
     memberEducationalAttainmentId?: TEntityId
 }
 

@@ -14,6 +14,7 @@ export interface AvatarUploadFieldProps {
     name?: string
     value?: TEntityId
     placeholder?: string
+    description?: string
     mediaImage?: IMediaResource | undefined
     onChange?: (media: IMediaResource | undefined) => void
 }
@@ -21,14 +22,17 @@ export interface AvatarUploadFieldProps {
 export const AvatarUploadField = forwardRef<
     HTMLButtonElement,
     AvatarUploadFieldProps
->(({ mediaImage, onChange }) => {
+>(({ mediaImage, description, onChange }) => {
     const [uploaderModal, setUploaderModal] = useState(false)
 
     return (
         <div className="mx-auto flex justify-center">
             <SingleImageUploaderModal
                 title="Upload Avatar"
-                description="Choose/Upload an avatar image. You may also capture using camera."
+                description={
+                    description ??
+                    'Choose/Upload an avatar image. You may also capture using camera.'
+                }
                 open={uploaderModal}
                 onOpenChange={setUploaderModal}
                 singleImageUploadProps={{
