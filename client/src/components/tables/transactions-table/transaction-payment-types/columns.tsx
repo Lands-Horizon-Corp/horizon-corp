@@ -10,9 +10,9 @@ import ColumnActions from '@/components/data-table/data-table-column-header/colu
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
-import { ITransactionTypeResource } from '@/server/types/transactions/transaction-type'
+import { ITransactionPaymentTypesResource } from '@/server/types/transactions/transaction-payment-types'
 
-export const transactionTypeGlobalSearchTargets: IGlobalSearchTargets<ITransactionTypeResource>[] =
+export const transactionTypeGlobalSearchTargets: IGlobalSearchTargets<ITransactionPaymentTypesResource>[] =
     [
         { field: 'name', displayText: 'Name' },
         { field: 'description', displayText: 'Description' },
@@ -20,7 +20,7 @@ export const transactionTypeGlobalSearchTargets: IGlobalSearchTargets<ITransacti
     ]
 
 export interface ITransactionPaymentTypesTableActionComponentProp {
-    row: Row<ITransactionTypeResource>
+    row: Row<ITransactionPaymentTypesResource>
 }
 
 export interface ITransactionPaymentTypesTableColumnProps {
@@ -31,7 +31,7 @@ export interface ITransactionPaymentTypesTableColumnProps {
 
 const TransactionPaymentTypesTableColumns = (
     opts?: ITransactionPaymentTypesTableColumnProps
-): ColumnDef<ITransactionTypeResource>[] => {
+): ColumnDef<ITransactionPaymentTypesResource>[] => {
     return [
         {
             id: 'select',
@@ -72,7 +72,7 @@ const TransactionPaymentTypesTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Name">
                     <ColumnActions {...props}>
-                        <TextFilter<ITransactionTypeResource>
+                        <TextFilter<ITransactionPaymentTypesResource>
                             displayText="Name"
                             field="name"
                         />
@@ -96,7 +96,7 @@ const TransactionPaymentTypesTableColumns = (
                     title="Description"
                 >
                     <ColumnActions {...props}>
-                        <TextFilter<ITransactionTypeResource>
+                        <TextFilter<ITransactionPaymentTypesResource>
                             displayText="Description"
                             field="description"
                         />
@@ -116,7 +116,7 @@ const TransactionPaymentTypesTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Cheque ID">
                     <ColumnActions {...props}>
-                        <TextFilter<ITransactionTypeResource>
+                        <TextFilter<ITransactionPaymentTypesResource>
                             displayText="Cheque ID"
                             field="cheque_id"
                         />
@@ -140,7 +140,7 @@ const TransactionPaymentTypesTableColumns = (
                     title="Date Created"
                 >
                     <ColumnActions {...props}>
-                        <DateFilter<ITransactionTypeResource>
+                        <DateFilter<ITransactionPaymentTypesResource>
                             displayText="Date Created"
                             field="createdAt"
                         />
@@ -164,7 +164,7 @@ const TransactionPaymentTypesTableColumns = (
                     title="Last Updated"
                 >
                     <ColumnActions {...props}>
-                        <DateFilter<ITransactionTypeResource>
+                        <DateFilter<ITransactionPaymentTypesResource>
                             displayText="Last Updated"
                             field="updatedAt"
                         />

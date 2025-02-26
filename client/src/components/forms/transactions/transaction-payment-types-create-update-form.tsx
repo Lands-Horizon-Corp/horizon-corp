@@ -15,19 +15,19 @@ import { cn } from '@/lib/utils'
 import {
     useCreateTransactionType,
     useUpdateTransactionType,
-} from '@/hooks/api-hooks/transactions/use-transaction-type'
+} from '@/hooks/api-hooks/transactions/use-transaction-payment-types'
 import { TransactionTypeRequestSchema } from '@/validations/form-validation/transactions/transaction-type-schema'
 
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { ITransactionTypeRequest } from '@/server/types/transactions/transaction-type'
 import { TEntityId } from '@/server'
+import { ITransactionPaymentTypesRequest } from '@/server/types/transactions/transaction-payment-types'
 
 type TTransactionTypeFormValues = z.infer<typeof TransactionTypeRequestSchema>
 
 export interface ITransactionTypeFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<ITransactionTypeRequest>, unknown, string> {
+        IForm<Partial<ITransactionPaymentTypesRequest>, unknown, string> {
     transactionTypeId?: TEntityId
 }
 

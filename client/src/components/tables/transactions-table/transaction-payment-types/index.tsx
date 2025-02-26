@@ -24,16 +24,16 @@ import TransactionPaymentTypesTableColumns, {
     ITransactionPaymentTypesTableColumnProps,
 } from './columns'
 
-import { ITransactionTypeResource } from '@/server/types/transactions/transaction-type'
-import { useFilteredPaginatedTransactionTypes } from '@/hooks/api-hooks/transactions/use-transaction-type'
-import TransactionTypeService from '@/server/api-service/transactions/transaction-type'
+import { useFilteredPaginatedTransactionPaymentTypes } from '@/hooks/api-hooks/transactions/use-transaction-payment-types'
 import { TableProps } from '../../types'
+import { ITransactionPaymentTypesResource } from '@/server/types/transactions/transaction-payment-types'
+import TransactionPaymentTypesService from '@/server/api-service/transactions/transaction-payment-types'
 
 export interface ITransactionPaymentTypesTableProps
-    extends TableProps<ITransactionTypeResource>,
+    extends TableProps<ITransactionPaymentTypesResource>,
         ITransactionPaymentTypesTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<ITransactionTypeResource>,
+        IDataTableToolbarProps<ITransactionPaymentTypesResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -71,7 +71,7 @@ const TransactionPaymentTypesTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<ITransactionTypeResource>({
+    } = useDataTableState<ITransactionPaymentTypesResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
@@ -86,7 +86,7 @@ const TransactionPaymentTypesTable = ({
         isRefetching,
         data: { data, totalPage, pageSize, totalSize },
         refetch,
-    } = useFilteredPaginatedTransactionTypes({
+    } = useFilteredPaginatedTransactionPaymentTypes({
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
@@ -148,7 +148,7 @@ const TransactionPaymentTypesTable = ({
                                 ],
                             }),
                         onDelete: (selectedData) =>
-                            TransactionTypeService.deleteMany(
+                            TransactionPaymentTypesService.deleteMany(
                                 selectedData.map((data) => data.id)
                             ),
                     }}
@@ -158,13 +158,13 @@ const TransactionPaymentTypesTable = ({
                         isLoading: isPending,
                         filters: filterState.finalFilterPayload,
                         disabled: isPending || isRefetching,
-                        exportAll: TransactionTypeService.exportAll,
+                        exportAll: TransactionPaymentTypesService.exportAll,
                         exportCurrentPage: (ids) =>
-                            TransactionTypeService.exportSelected(
+                            TransactionPaymentTypesService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                         exportSelected: (ids) =>
-                            TransactionTypeService.exportSelected(
+                            TransactionPaymentTypesService.exportSelected(
                                 ids.map((data) => data.id)
                             ),
                     }}
