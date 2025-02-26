@@ -14,7 +14,6 @@ import {
     IQueryProps,
 } from '../types'
 import IAccountingLedgerService from '@/server/api-service/transactions/accounting-ledger'
-import { SampleLedgerData } from '@/modules/owner/pages/transaction/transaction-dummy-data'
 
 export const useCreateAccountingLedger = ({
     preloads = [],
@@ -85,15 +84,11 @@ export const useFilteredPaginatedIAccountingLedger = ({
 
             return result
         },
-        // initialData: {
-        //     data: [],
-        //     pages: [],
-        //     totalSize: 0,
-        //     totalPage: 1,
-        //     ...pagination,
-        // },
         initialData: {
-            ...SampleLedgerData,
+            data: [],
+            pages: [],
+            totalSize: 0,
+            totalPage: 1,
             ...pagination,
         },
         enabled,
