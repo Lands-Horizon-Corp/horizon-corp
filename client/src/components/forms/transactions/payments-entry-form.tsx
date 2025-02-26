@@ -59,17 +59,18 @@ export const PaymentsEntryForm = () => {
     const {
         isPending,
         isRefetching,
-        data: { data: SampleLedgerData },
+        data: { data: CurrentMemberLedger },
         refetch,
     } = useFilteredPaginatedIAccountingLedger({
         memberProfileId: selectedMember?.memberProfile?.id,
     })
 
+
     const refetchAccountingLedger = () => {
         refetch()
     }
 
-    const totalAmount = SampleLedgerData.reduce(
+    const totalAmount = CurrentMemberLedger.reduce(
         (acc, ledger) => acc + ledger.credit,
         0
     )
@@ -121,7 +122,7 @@ export const PaymentsEntryForm = () => {
                             <CurrentPaymentAccountingTransactionLedger
                                 isRefetching={isRefetching}
                                 isPending={isPending}
-                                data={SampleLedgerData}
+                                data={CurrentMemberLedger}
                                 onRefetch={refetchAccountingLedger}
                             />
                         </div>
