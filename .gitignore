@@ -17,23 +17,30 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+#vscode
+.vscode/
+
 # Go workspace file
 go.work
 go.work.sum
 
 # env file
 .env
-
 server/tmp/main
 server/main
+engine/tmp/*
+engine/main
 
 .env.development
 .env.staging
 .env.production
 
-./server/tmp/*
+server/tmp/build-errors.log
+server/main
 
 ./client/stats.html
 client/stats.html
 
 ./server/tmp/build-errors.log
+client/bundle-analysis.html
+server/tmp/build-errors.log
