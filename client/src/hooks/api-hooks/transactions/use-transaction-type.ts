@@ -51,7 +51,7 @@ export const useFilteredPaginatedTransactionTypes = ({
             return result
         },
         initialData: {
-           ...SampleTransactionTypeData,
+            ...SampleTransactionTypeData,
             ...pagination,
         },
         enabled,
