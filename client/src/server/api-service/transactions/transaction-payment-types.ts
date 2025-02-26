@@ -11,7 +11,7 @@ import { downloadFile } from '@/server/helpers'
 /**
  * Service class to handle CRUD operations for Transaction Types.
  */
-export default class TransactionTypeService {
+export default class TransactionPaymentTypesService {
     private static readonly BASE_ENDPOINT = '/transaction-type'
 
     /**
@@ -127,7 +127,7 @@ export default class TransactionTypeService {
      * Deletes multiple transaction types by IDs.
      */
     public static async deleteMany(ids: TEntityId[]): Promise<void> {
-        const endpoint = `${TransactionTypeService.BASE_ENDPOINT}/bulk-delete`
+        const endpoint = `${TransactionPaymentTypesService.BASE_ENDPOINT}/bulk-delete`
         const payload = { ids }
 
         await APIService.delete<void>(endpoint, payload)
@@ -155,7 +155,7 @@ export default class TransactionTypeService {
     public static async exportSelected(ids: TEntityId[]): Promise<void> {
         const url = qs.stringifyUrl(
             {
-                url: `${TransactionTypeService.BASE_ENDPOINT}/export-selected`,
+                url: `${TransactionPaymentTypesService.BASE_ENDPOINT}/export-selected`,
                 query: { ids },
             },
             { skipNull: true }
