@@ -15,7 +15,6 @@ import {
 } from '@/server/types/transactions/transaction-type'
 import TransactionTypeService from '@/server/api-service/transactions/transaction-type'
 import { TEntityId } from '@/server/types'
-import { SampleTransactionTypeData } from '@/modules/owner/pages/transaction/transaction-dummy-data'
 
 export const useFilteredPaginatedTransactionTypes = ({
     sort,
