@@ -13,10 +13,10 @@ import {
     ITransactionTypeRequest,
     ITransactionTypeResource,
 } from '@/server/types/transactions/transaction-type'
-import TransactionTypeService from '@/server/api-service/transactions/transaction-type'
+import TransactionPaymentTypesService from '@/server/api-service/transactions/transaction-payment-types'
 import { TEntityId } from '@/server/types'
 
-export const useFilteredPaginatedTransactionTypes = ({
+export const useFilteredPaginatedTransactionPaymentTypes = ({
     sort,
     enabled,
     filterPayload,
@@ -33,7 +33,7 @@ export const useFilteredPaginatedTransactionTypes = ({
         ],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
-                TransactionTypeService.getTransactionTypes({
+                TransactionPaymentTypesService.getTransactionTypes({
                     preloads,
                     pagination,
                     sort: sort && toBase64(sort),
@@ -71,7 +71,7 @@ export const useDeleteTransactionType = ({
         mutationKey: ['transaction-types', 'delete'],
         mutationFn: async (transactionTypeId) => {
             const [error] = await withCatchAsync(
-                TransactionTypeService.delete(transactionTypeId)
+                TransactionPaymentTypesService.delete(transactionTypeId)
             )
 
             if (error) {
@@ -109,7 +109,7 @@ export const useCreateTransactionType = ({
         mutationKey: ['transaction-types', 'create'],
         mutationFn: async (newTransactionTypeData) => {
             const [error, data] = await withCatchAsync(
-                TransactionTypeService.create(newTransactionTypeData, preloads)
+                TransactionPaymentTypesService.create(newTransactionTypeData, preloads)
             )
 
             if (error) {
@@ -153,7 +153,7 @@ export const useUpdateTransactionType = ({
         mutationKey: ['transaction-types', 'update'],
         mutationFn: async ({ id, data }) => {
             const [error, response] = await withCatchAsync(
-                TransactionTypeService.update(id, data, preloads)
+                TransactionPaymentTypesService.update(id, data, preloads)
             )
 
             if (error) {
