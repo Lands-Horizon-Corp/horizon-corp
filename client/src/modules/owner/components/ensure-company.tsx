@@ -2,10 +2,10 @@ import CompanySetupBanner from './company-setup-banner'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { IBaseCompChildOnly } from '@/types'
-import { ICompanyResource, TEntityId } from '@/server'
-import { useUserAuthStore } from '@/store/user-auth-store'
+import { useAuthUser } from '@/store/user-auth-store'
 import { useOwnerCompany } from '@/hooks/api-hooks/use-owner'
 import { IOperationCallbacks } from '@/hooks/api-hooks/types'
+import { ICompanyResource, IOwnerResource, TEntityId } from '@/server'
 
 interface Props
     extends IBaseCompChildOnly,
@@ -18,7 +18,7 @@ const EnsureOwnerCompany = ({
     onSuccess,
     disabled = false,
 }: Props) => {
-    const { currentUser } = useUserAuthStore()
+    const { currentUser } = useAuthUser<IOwnerResource>()
 
     const { data, isPending } = useOwnerCompany({
         ownerId: currentUser?.id as TEntityId,
