@@ -7,7 +7,7 @@ import {
     TEntityId,
     IMemberOccupationRequest,
     IMemberOccupationResource,
-    TMemberOccupationPaginatedResource,
+    IMemberOccupationPaginatedResource,
 } from '../../types'
 
 export default class MemberOccupationService {
@@ -92,7 +92,7 @@ export default class MemberOccupationService {
         filters?: string
         preloads?: string[]
         pagination?: { pageIndex: number; pageSize: number }
-    } = {}): Promise<TMemberOccupationPaginatedResource> {
+    } = {}): Promise<IMemberOccupationPaginatedResource> {
         const url = qs.stringifyUrl(
             {
                 url: `${MemberOccupationService.BASE_ENDPOINT}`,
@@ -108,7 +108,7 @@ export default class MemberOccupationService {
         )
 
         const response =
-            await APIService.get<TMemberOccupationPaginatedResource>(url)
+            await APIService.get<IMemberOccupationPaginatedResource>(url)
         return response.data
     }
 

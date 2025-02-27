@@ -20,7 +20,7 @@ import {
     TEntityId,
     IMemberTypeRequest,
     IMemberTypeResource,
-    TMemberTypePaginatedResource,
+    IMemberTypePaginatedResource,
 } from '@/server/types'
 
 export const memberTypeLoader = (
@@ -165,9 +165,9 @@ export const useFilteredPaginatedMemberTypes = ({
     preloads = [],
     showMessage = true,
     pagination = { pageSize: 10, pageIndex: 1 },
-}: IAPIFilteredPaginatedHook<TMemberTypePaginatedResource, string> &
+}: IAPIFilteredPaginatedHook<IMemberTypePaginatedResource, string> &
     IQueryProps = {}) => {
-    return useQuery<TMemberTypePaginatedResource, string>({
+    return useQuery<IMemberTypePaginatedResource, string>({
         queryKey: [
             'member-type',
             'resource-query',

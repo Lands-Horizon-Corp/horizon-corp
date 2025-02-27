@@ -17,8 +17,8 @@ export interface IAccountsComputationTypeResource extends ITimeStamps {
     updatedBy: TEntityId
 }
 
-export type IAccountsComputationTypePaginatedResource =
-    IPaginatedResult<IAccountsComputationTypeResource>
+export interface IAccountsComputationTypePaginatedResource
+    extends IPaginatedResult<IAccountsComputationTypeResource> {}
 
 export const dummyAccountComputationTypeData: IAccountsComputationTypeResource[] =
     [

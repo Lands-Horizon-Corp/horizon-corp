@@ -8,7 +8,7 @@ interface IAccountLedgerSummaryResource {
 }
 
 export type IAccountingLedgerRequest = {
-    id: TEntityId
+    id?: TEntityId
     description: string
     notes: string
     company_id: TEntityId
@@ -50,8 +50,8 @@ export interface IAccountingLedgerResource extends ITimeStamps {
     summary: IAccountLedgerSummaryResource
 }
 
-export type IAccountingLedgerPaginatedResource =
-    IPaginatedResult<IAccountingLedgerResource>
+export interface IAccountingLedgerPaginatedResource
+    extends IPaginatedResult<IAccountingLedgerResource> {}
 
 export enum TransactionSource {
     withdrawal = 'withdrawal',

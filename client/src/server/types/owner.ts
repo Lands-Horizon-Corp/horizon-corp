@@ -11,8 +11,6 @@ export interface IOwnerResource extends IUserBase {
     footsteps?: IFootstepResource[]
 }
 
-export type IOwnerPaginatedResource = IPaginatedResult<IOwnerResource>
-
 export interface IOwnerRequest {
     accountType: TAccountType
     username: string
@@ -30,3 +28,6 @@ export interface IOwnerRequest {
     emailTemplate?: string
     contactTemplate?: string
 }
+
+export interface IOwnerPaginatedResource
+    extends IPaginatedResult<IOwnerResource> {}
