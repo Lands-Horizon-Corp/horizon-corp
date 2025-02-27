@@ -43,6 +43,8 @@ import {
 import useDatableFilterState from '@/hooks/use-filter-state'
 
 import IAccountingLedgerRequestTableColumns from '@/components/tables/transactions-table/accouting-ledger-table/columns'
+import { toast } from 'sonner'
+import { XIcon } from '@/components/icons'
 
 export const paymentsEntrySchema = z.object({
     ORNumber: z.string().min(1, 'OR Number is required'),
@@ -177,11 +179,26 @@ export const PaymentsEntryForm = () => {
                             <MemberPicker
                                 value={selectedMember?.id}
                                 onSelect={(member) => {
+                                    if (!member.memberProfile)
+                                        return toast.warning(
+                                            'Sorry, this member profile is not yet completed'
+                                        )
                                     setSelectedMember(member)
                                     refetchSelectedMemberLedger()
                                 }}
                                 placeholder="Select Members"
                             />
+                            <Button
+                                size="icon"
+                                className=""
+                                variant="destructive"
+                                disabled={!selectedMember}
+                                onClick={() => {
+                                    setSelectedMember(null)
+                                }}
+                            >
+                                <XIcon />
+                            </Button>
                             <Button
                                 onClick={(e) => {
                                     e.preventDefault()
