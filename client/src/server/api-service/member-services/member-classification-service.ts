@@ -7,7 +7,7 @@ import {
     TEntityId,
     IMemberClassificationRequest,
     IMemberClassificationResource,
-    TMemberClassificationPaginatedResource,
+    IMemberClassificationPaginatedResource,
 } from '../../types'
 
 export default class MemberClassificationService {
@@ -95,7 +95,7 @@ export default class MemberClassificationService {
         filters?: string
         preloads?: string[]
         pagination?: { pageIndex: number; pageSize: number }
-    } = {}): Promise<TMemberClassificationPaginatedResource> {
+    } = {}): Promise<IMemberClassificationPaginatedResource> {
         const url = qs.stringifyUrl(
             {
                 url: `${MemberClassificationService.BASE_ENDPOINT}`,
@@ -111,7 +111,7 @@ export default class MemberClassificationService {
         )
 
         const response =
-            await APIService.get<TMemberClassificationPaginatedResource>(url)
+            await APIService.get<IMemberClassificationPaginatedResource>(url)
         return response.data
     }
 

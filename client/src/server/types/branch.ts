@@ -37,4 +37,5 @@ export interface IBranchResource {
     updatedAt: string
 }
 
-export type IBranchPaginatedResource = IPaginatedResult<IBranchResource>
+export interface IBranchPaginatedResource
+    extends IPaginatedResult<IBranchResource> {}

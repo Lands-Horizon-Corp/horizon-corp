@@ -14,5 +14,5 @@ export interface IMemberOccupationResource extends ITimeStamps {
     history?: IMemberOccupationHistoryResource[]
 }
 
-export type TMemberOccupationPaginatedResource =
-    IPaginatedResult<IMemberOccupationResource>
+export interface IMemberOccupationPaginatedResource
+    extends IPaginatedResult<IMemberOccupationResource> {}
