@@ -87,7 +87,7 @@ const TransactionPaymentTypesPicker = ({
                             </span>
                         </div>
                         <span className="text-sm text-foreground/50">
-                            Cheque ID: {transactionType.cheque_id}
+                            Cheque ID: {transactionType.chequeId}
                         </span>
                     </div>
                 )}

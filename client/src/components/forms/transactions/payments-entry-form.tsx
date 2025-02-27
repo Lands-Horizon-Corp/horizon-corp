@@ -1,5 +1,5 @@
 import * as z from 'zod'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '@/components/ui/input'
@@ -31,6 +31,20 @@ import { Textarea } from '@/components/ui/textarea'
 import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
 import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payments-entry/current-transaction-ledger'
 import TransactionPaymentTypesPicker from '@/components/pickers/transaction-payment-types-picker'
+import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
+import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import { usePagination } from '@/hooks/use-pagination'
+import { IAccountingLedgerResource } from '@/server/types/accounts/accounting-ledger'
+import {
+    useReactTable,
+    getCoreRowModel,
+    getSortedRowModel,
+} from '@tanstack/react-table'
+import useDatableFilterState from '@/hooks/use-filter-state'
+
+import IAccountingLedgerRequestTableColumns from '@/components/tables/transactions-table/accouting-ledger-table/columns'
+import { toast } from 'sonner'
+import { XIcon } from '@/components/icons'
 
 export const paymentsEntrySchema = z.object({
     ORNumber: z.string().min(1, 'OR Number is required'),
@@ -57,17 +71,13 @@ export const PaymentsEntryForm = () => {
     const [openModal, setIsOpenModal] = useState(false)
 
     const {
-        isPending,
-        isRefetching,
+        isPending: isPendingCurentMemberLedger,
+        isRefetching: isRefetchingCurentMemberLedger,
         data: { data: CurrentMemberLedger },
-        refetch,
+        refetch: refetchAccountingLedger,
     } = useFilteredPaginatedIAccountingLedger({
         memberProfileId: selectedMember?.memberProfile?.id,
     })
-
-    const refetchAccountingLedger = () => {
-        refetch()
-    }
 
     const totalAmount = CurrentMemberLedger.reduce(
         (acc, ledger) => acc + ledger.credit,
@@ -81,6 +91,76 @@ export const PaymentsEntryForm = () => {
             setIsOpenModal(true)
         }
     }
+
+    const { pagination, setPagination } = usePagination()
+    const { sortingState, tableSorting, setTableSorting } =
+        useDataTableSorting()
+
+    const columns = useMemo(() => IAccountingLedgerRequestTableColumns(), [])
+
+    const {
+        getRowIdFn,
+        columnOrder,
+        setColumnOrder,
+        isScrollable,
+        setIsScrollable,
+        columnVisibility,
+        setColumnVisibility,
+        rowSelectionState,
+        createHandleRowSelectionChange,
+    } = useDataTableState<IAccountingLedgerResource>({})
+
+    const filterState = useDatableFilterState({
+        onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
+    })
+
+    const {
+        isPending: isPendingSelectedMemberLedger,
+        isRefetching: isRefetchingSelectedMemberLedger,
+        data: {
+            data: SelectedMemberLedger,
+            totalPage: selectedMemberTotalPage,
+            pageSize: selectedMemberPageSize,
+            totalSize: SelectedMemberTotalSize,
+        },
+        refetch: refetchSelectedMemberLedger,
+    } = useFilteredPaginatedIAccountingLedger({
+        pagination,
+        sort: sortingState,
+        filterPayload: filterState.finalFilterPayload,
+    })
+
+    const handleRowSelectionChange =
+        createHandleRowSelectionChange(SelectedMemberLedger)
+
+    const table = useReactTable({
+        columns,
+        data: SelectedMemberLedger,
+        initialState: {
+            columnPinning: { left: ['description', 'balance'] },
+        },
+        state: {
+            sorting: tableSorting,
+            pagination,
+            columnOrder,
+            rowSelection: rowSelectionState.rowSelection,
+            columnVisibility,
+        },
+        rowCount: selectedMemberPageSize,
+        manualSorting: true,
+        pageCount: selectedMemberTotalPage,
+        enableMultiSort: false,
+        manualFiltering: true,
+        manualPagination: true,
+        getRowId: getRowIdFn,
+        onSortingChange: setTableSorting,
+        onPaginationChange: setPagination,
+        getCoreRowModel: getCoreRowModel(),
+        onColumnOrderChange: setColumnOrder,
+        getSortedRowModel: getSortedRowModel(),
+        onColumnVisibilityChange: setColumnVisibility,
+        onRowSelectionChange: handleRowSelectionChange,
+    })
 
     return (
         <>
@@ -99,11 +179,26 @@ export const PaymentsEntryForm = () => {
                             <MemberPicker
                                 value={selectedMember?.id}
                                 onSelect={(member) => {
+                                    if (!member.memberProfile)
+                                        return toast.warning(
+                                            'Sorry, this member profile is not yet completed'
+                                        )
                                     setSelectedMember(member)
-                                    refetchAccountingLedger()
+                                    refetchSelectedMemberLedger()
                                 }}
                                 placeholder="Select Members"
                             />
+                            <Button
+                                size="icon"
+                                className=""
+                                variant="destructive"
+                                disabled={!selectedMember}
+                                onClick={() => {
+                                    setSelectedMember(null)
+                                }}
+                            >
+                                <XIcon />
+                            </Button>
                             <Button
                                 onClick={(e) => {
                                     e.preventDefault()
@@ -119,15 +214,26 @@ export const PaymentsEntryForm = () => {
                         <PaymentsEntryProfile profile={selectedMember} />
                         <div className="max-h-96 space-y-4 overflow-auto py-4">
                             <CurrentPaymentAccountingTransactionLedger
-                                isRefetching={isRefetching}
-                                isPending={isPending}
+                                isRefetching={isRefetchingCurentMemberLedger}
+                                isPending={isPendingCurentMemberLedger}
                                 data={CurrentMemberLedger}
                                 onRefetch={refetchAccountingLedger}
                             />
                         </div>
                     </div>
                     <div className="col-span-1 md:col-span-2">
-                        <AccountsLedgerTable className="h-full" />
+                        <AccountsLedgerTable
+                            table={table}
+                            isScrollable={isScrollable}
+                            isPending={isPendingSelectedMemberLedger}
+                            isRefetching={isRefetchingSelectedMemberLedger}
+                            totalSize={SelectedMemberTotalSize}
+                            refetch={refetchSelectedMemberLedger}
+                            filterState={filterState}
+                            setColumnOrder={setColumnOrder}
+                            setIsScrollable={setIsScrollable}
+                            className="h-full"
+                        />
                     </div>
                     <div className="col-span-2 w-full">
                         <Card>
@@ -245,6 +351,29 @@ const FormModal = ({
                     />
                     <FormField
                         control={form.control}
+                        name="transactionType"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor={field.name}>
+                                    Payment Types
+                                </FormLabel>
+                                <FormControl>
+                                    <TransactionPaymentTypesPicker
+                                        value={field.value}
+                                        onSelect={(transactionPaymenttypes) => {
+                                            field.onChange(
+                                                transactionPaymenttypes.id
+                                            )
+                                        }}
+                                        placeholder="Select Payment types"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
                         name="accountsId"
                         render={({ field }) => (
                             <FormItem>
@@ -264,29 +393,7 @@ const FormModal = ({
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="transactionType"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel htmlFor={field.name}>
-                                    Accounts
-                                </FormLabel>
-                                <FormControl>
-                                    <TransactionPaymentTypesPicker
-                                        value={field.value}
-                                        onSelect={(transactionPaymenttypes) => {
-                                            field.onChange(
-                                                transactionPaymenttypes.id
-                                            )
-                                        }}
-                                        placeholder="Select Payment types"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+
                     <FormField
                         name="notes"
                         control={form.control}

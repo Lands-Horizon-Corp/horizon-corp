@@ -5,14 +5,14 @@ export interface ITransactionPaymentTypesRequest {
     id?: TEntityId
     name: string
     description: TEntityId
-    cheque_id: TEntityId
+    chequeId: TEntityId
 }
 
 export interface ITransactionPaymentTypesResource extends ITimeStamps {
     id: TEntityId
     name: string
     description: TEntityId
-    cheque_id: TEntityId
+    chequeId: TEntityId
 }
 
 export interface ITransactionPaymentTypePaginatedResource
