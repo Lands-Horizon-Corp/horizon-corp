@@ -22,7 +22,10 @@ import FilterContext from '@/contexts/filter-context/filter-context'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
-import { IAccountingLedgerRequest } from '@/server/types/accounts/accounting-ledger'
+import {
+    IAccountingLedgerRequest,
+    IAccountingLedgerResource,
+} from '@/server/types/accounts/accounting-ledger'
 import { TableProps } from '../../types'
 import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
 
@@ -67,7 +70,7 @@ const AccountsLedgerTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<IAccountingLedgerRequest>({
+    } = useDataTableState<IAccountingLedgerResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })

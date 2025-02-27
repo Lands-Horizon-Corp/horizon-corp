@@ -53,4 +53,5 @@ export interface IMemberResource extends IUserBase, ITimeStamps {
     memberProfile?: IMemberProfileResource
 }
 
-export type IMemberPaginatedResource = IPaginatedResult<IMemberResource>
+export interface IMemberPaginatedResource
+    extends IPaginatedResult<IMemberResource> {}
