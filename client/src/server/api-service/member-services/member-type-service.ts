@@ -8,7 +8,7 @@ import { TEntityId } from '@/server/types'
 import {
     IMemberTypeRequest,
     IMemberTypeResource,
-    TMemberTypePaginatedResource,
+    IMemberTypePaginatedResource,
 } from '@/server/types/member/member-type'
 
 export default class MemberTypeService {
@@ -88,7 +88,7 @@ export default class MemberTypeService {
             { skipNull: true }
         )
 
-        const response = await APIService.get<TMemberTypePaginatedResource>(url)
+        const response = await APIService.get<IMemberTypePaginatedResource>(url)
         return response.data
     }
 

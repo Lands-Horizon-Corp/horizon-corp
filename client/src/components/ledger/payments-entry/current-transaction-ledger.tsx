@@ -58,7 +58,7 @@ const CurrentPaymentAccountingTransactionLedger = ({
                     <LedgerCard
                         key={
                             ledger.id ??
-                            `${ledger.createdAt}-${ledger.or_number}`
+                            `${ledger.createdAt}-${ledger.orNumber}`
                         }
                         ledger={ledger}
                     />

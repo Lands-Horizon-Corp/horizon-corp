@@ -34,4 +34,5 @@ export interface ICompanyResource {
     updatedAt: string
 }
 
-export type ICompanyPaginatedResource = IPaginatedResult<ICompanyResource>
+export interface ICompanyPaginatedResource
+    extends IPaginatedResult<ICompanyResource> {}

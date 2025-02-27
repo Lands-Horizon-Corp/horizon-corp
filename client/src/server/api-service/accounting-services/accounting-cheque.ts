@@ -1,7 +1,12 @@
-import { TEntityId } from '@/server/types'
+// Refactored ChequeService
 import APIService from '../api-service'
 import qs from 'query-string'
-import { Cheque } from '@/server/types/cheque'
+import { TEntityId } from '@/server/types'
+import {
+    IChequeResource,
+    IChequeResponse,
+    IChequePaginatedResource,
+} from '@/server/types/cheque'
 
 export default class ChequeService {
     private static readonly BASE_ENDPOINT = '/cheque'
@@ -48,12 +53,12 @@ export default class ChequeService {
     }
 
     public static async create(
-        chequeData: Cheque,
+        chequeData: IChequeResponse,
         preloads?: string[]
-    ): Promise<Cheque> {
+    ): Promise<IChequeResource> {
         const url = this.buildUrl('', { preloads })
         return this.makeRequest(() =>
-            APIService.post<Cheque, Cheque>(url, chequeData)
+            APIService.post<IChequeResponse, IChequeResource>(url, chequeData)
         )
     }
 
@@ -64,12 +69,12 @@ export default class ChequeService {
 
     public static async update(
         id: TEntityId,
-        chequeData: Cheque,
+        chequeData: IChequeResponse,
         preloads?: string[]
-    ): Promise<Cheque> {
+    ): Promise<IChequeResource> {
         const url = this.buildUrl(`/${id}`, { preloads })
         return this.makeRequest(() =>
-            APIService.put<Cheque, Cheque>(url, chequeData)
+            APIService.put<IChequeResponse, IChequeResource>(url, chequeData)
         )
     }
 
@@ -83,9 +88,11 @@ export default class ChequeService {
         filters?: string
         preloads?: string[]
         pagination?: { pageIndex: number; pageSize: number }
-    }) {
+    }): Promise<IChequePaginatedResource> {
         const url = this.buildUrl('', { filters, preloads, pagination, sort })
-        return this.makeRequest(() => APIService.get<{ data: Cheque[] }>(url))
+        return this.makeRequest(() =>
+            APIService.get<IChequePaginatedResource>(url)
+        )
     }
 
     public static async deleteMany(ids: TEntityId[]): Promise<void> {

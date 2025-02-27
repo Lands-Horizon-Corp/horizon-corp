@@ -30,7 +30,7 @@ import {
     createMemberAccountSchema,
     updateMemberAccountSchema,
     memberCreateUpdateAccountSchema,
-} from '@/validations/form-validation/member/member-account-schema'
+} from '@/validations/member/member-account-schema'
 
 type TMemberCreateUpdateForm = z.infer<typeof memberCreateUpdateAccountSchema>
 

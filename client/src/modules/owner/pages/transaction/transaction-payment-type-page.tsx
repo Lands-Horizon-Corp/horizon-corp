@@ -4,7 +4,7 @@ import TransactionPaymentTypesTable from '@/components/tables/transactions-table
 import TransactionPaymentTypesTableOwnerAction from '@/components/tables/transactions-table/transaction-payment-types/row-actions/transaction-type-actions'
 import { useState } from 'react'
 
-const ownerTransactionPaymentTypePage = () => {
+const OwnerTransactionPaymentTypePage = () => {
     const [createModal, setCreateModal] = useState(false)
 
     return (
@@ -30,4 +30,4 @@ const ownerTransactionPaymentTypePage = () => {
     )
 }
 
-export default ownerTransactionPaymentTypePage
+export default OwnerTransactionPaymentTypePage

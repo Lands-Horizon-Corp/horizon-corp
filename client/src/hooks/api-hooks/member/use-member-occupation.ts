@@ -21,7 +21,7 @@ import {
     TEntityId,
     IMemberOccupationRequest,
     IMemberOccupationResource,
-    TMemberOccupationPaginatedResource,
+    IMemberOccupationPaginatedResource,
 } from '@/server/types'
 
 export const memberOccupationLoader = (
@@ -173,10 +173,10 @@ export const useFilteredPaginatedMemberOccupations = ({
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IAPIFilteredPaginatedHook<
-    TMemberOccupationPaginatedResource,
+    IMemberOccupationPaginatedResource,
     string
 > = {}) => {
-    return useQuery<TMemberOccupationPaginatedResource, string>({
+    return useQuery<IMemberOccupationPaginatedResource, string>({
         queryKey: [
             'member-occupation',
             'resource-query',

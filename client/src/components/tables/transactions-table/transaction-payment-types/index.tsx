@@ -72,7 +72,7 @@ const TransactionPaymentTypesTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<ITransactionPaymentTypesResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 

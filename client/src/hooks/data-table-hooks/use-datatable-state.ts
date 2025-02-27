@@ -4,7 +4,8 @@ import { OnChangeFn, RowSelectionState } from '@tanstack/react-table'
 export type TDataTableDisplayType = 'Default' | 'Full'
 
 interface Props<TData> {
-    columnOrder?: string[]
+    defaultColumnOrder?: string[]
+    defaultColumnVisibility?: { [key: string]: boolean }
     onSelectData?: (data: TData[]) => void
 }
 
@@ -13,19 +14,21 @@ interface RowSelectionStateWithData<TData> {
     selectedRowsData: Map<string | number, TData>
 }
 
-const useDataTableState = <TData extends { id: string | number }>(
-    props?: Props<TData>
-) => {
+const useDataTableState = <TData extends { id: string | number }>({
+    defaultColumnOrder = [],
+    defaultColumnVisibility = {},
+    onSelectData,
+}: Props<TData> = {}) => {
     const [rowSelectionState, setRowSelectionState] = useState<
         RowSelectionStateWithData<TData>
     >({
         rowSelection: {},
         selectedRowsData: new Map(),
     })
-    const [columnOrder, setColumnOrder] = useState<string[]>(
-        props?.columnOrder ?? []
+    const [columnOrder, setColumnOrder] = useState<string[]>(defaultColumnOrder)
+    const [columnVisibility, setColumnVisibility] = useState(
+        defaultColumnVisibility
     )
-    const [columnVisibility, setColumnVisibility] = useState({})
     const [isScrollable, setIsScrollable] = useState<boolean>(true)
 
     const getRowIdFn = useCallback((row: TData) => `${row.id}`, [])
@@ -50,7 +53,7 @@ const useDataTableState = <TData extends { id: string | number }>(
                     }
                 })
 
-                props?.onSelectData?.(Array.from(newSelectedRowsData.values()))
+                onSelectData?.(Array.from(newSelectedRowsData.values()))
 
                 return {
                     rowSelection: newRowSelection,

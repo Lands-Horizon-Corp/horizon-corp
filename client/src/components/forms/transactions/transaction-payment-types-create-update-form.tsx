@@ -47,7 +47,7 @@ const TransactionTypeCreateUpdateForm = ({
         defaultValues: {
             name: '',
             description: '',
-            cheque_id: '',
+            chequeId: '',
             ...defaultValues,
         },
     })
@@ -113,7 +113,7 @@ const TransactionTypeCreateUpdateForm = ({
 
                         <FormFieldWrapper
                             control={form.control}
-                            name="cheque_id"
+                            name="chequeId"
                             label="Cheque ID"
                             render={({ field }) => (
                                 <Input

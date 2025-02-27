@@ -12,4 +12,5 @@ export interface IGenderResource extends ITimeStamps {
     description: string
 }
 
-export type IGenderPaginatedResource = IPaginatedResult<IGenderResource>
+export interface IGenderPaginatedResource
+    extends IPaginatedResult<IGenderResource> {}

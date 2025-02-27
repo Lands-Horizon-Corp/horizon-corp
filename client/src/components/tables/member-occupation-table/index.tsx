@@ -72,7 +72,7 @@ const MemberOccupationTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IMemberOccupationResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 

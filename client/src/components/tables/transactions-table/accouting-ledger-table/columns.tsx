@@ -12,8 +12,8 @@ import { IAccountingLedgerResource } from '@/server/types/accounts/accounting-le
 export const accountingLedgerGlobalSearchTargets: IGlobalSearchTargets<IAccountingLedgerResource>[] =
     [
         { field: 'description', displayText: 'Description' },
-        { field: 'or_number', displayText: 'OR Number' },
-        { field: 'transaction_source', displayText: 'Transaction Source' },
+        { field: 'orNumber', displayText: 'OR Number' },
+        { field: 'transactionSource', displayText: 'Transaction Source' },
         { field: 'debit', displayText: 'Debit' },
         { field: 'credit', displayText: 'Credit' },
         { field: 'balance', displayText: 'Balance' },
@@ -55,8 +55,8 @@ const accountingLedgerTableColumns =
                 enableMultiSort: true,
             },
             {
-                id: 'or_number',
-                accessorKey: 'or_number',
+                id: 'orNumber',
+                accessorKey: 'orNumber',
                 header: (props) => (
                     <DataTableColumnHeader
                         {...props}
@@ -66,19 +66,17 @@ const accountingLedgerTableColumns =
                         <ColumnActions {...props}>
                             <TextFilter
                                 displayText="OR Number"
-                                field="or_number"
+                                field="orNumber"
                             />
                         </ColumnActions>
                     </DataTableColumnHeader>
                 ),
-                cell: ({ row: { original } }) => (
-                    <div>{original.or_number}</div>
-                ),
+                cell: ({ row: { original } }) => <div>{original.orNumber}</div>,
                 enableMultiSort: true,
             },
             {
-                id: 'transaction_date',
-                accessorKey: 'transaction_date',
+                id: 'transactionDate',
+                accessorKey: 'transactionDate',
                 header: (props) => (
                     <DataTableColumnHeader
                         {...props}
@@ -88,13 +86,13 @@ const accountingLedgerTableColumns =
                         <ColumnActions {...props}>
                             <DateFilter
                                 displayText="Transaction Date"
-                                field="transaction_date"
+                                field="transactionDate"
                             />
                         </ColumnActions>
                     </DataTableColumnHeader>
                 ),
                 cell: ({ row: { original } }) => (
-                    <div>{toReadableDate(original.transaction_date)}</div>
+                    <div>{toReadableDate(original.transactionDate)}</div>
                 ),
                 enableMultiSort: true,
             },
@@ -148,8 +146,8 @@ const accountingLedgerTableColumns =
                 enableMultiSort: true,
             },
             {
-                id: 'transaction_source',
-                accessorKey: 'transaction_source',
+                id: 'transactionSource',
+                accessorKey: 'transactionSource',
                 header: (props) => (
                     <DataTableColumnHeader
                         {...props}
@@ -159,19 +157,19 @@ const accountingLedgerTableColumns =
                         <ColumnActions {...props}>
                             <TextFilter
                                 displayText="Transaction Source"
-                                field="transaction_source"
+                                field="transactionSource"
                             />
                         </ColumnActions>
                     </DataTableColumnHeader>
                 ),
                 cell: ({ row: { original } }) => (
-                    <div>{original.transaction_source}</div>
+                    <div>{original.transactionSource}</div>
                 ),
                 enableMultiSort: true,
             },
             {
-                id: 'created_at',
-                accessorKey: 'created_at',
+                id: 'createdAt',
+                accessorKey: 'createdAt',
                 header: (props) => (
                     <DataTableColumnHeader
                         {...props}
@@ -181,13 +179,13 @@ const accountingLedgerTableColumns =
                         <ColumnActions {...props}>
                             <DateFilter
                                 displayText="Created At"
-                                field="created_at"
+                                field="createdAt"
                             />
                         </ColumnActions>
                     </DataTableColumnHeader>
                 ),
                 cell: ({ row: { original } }) => (
-                    <div>{toReadableDate(original.created_at)}</div>
+                    <div>{toReadableDate(original.createdAt)}</div>
                 ),
                 enableMultiSort: true,
             },

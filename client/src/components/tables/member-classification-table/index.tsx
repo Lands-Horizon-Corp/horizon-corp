@@ -72,7 +72,7 @@ const MemberClassificationTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IMemberClassificationResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 

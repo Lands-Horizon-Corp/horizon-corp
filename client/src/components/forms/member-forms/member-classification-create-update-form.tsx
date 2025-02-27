@@ -17,7 +17,7 @@ import {
     useCreateMemberClassification,
     useUpdateMemberClassification,
 } from '@/hooks/api-hooks/member/use-member-classification'
-import { memberClassificationSchema } from '@/validations/form-validation/member/member-classification'
+import { memberClassificationSchema } from '@/validations/member/member-classification'
 
 import { IBaseCompNoChild } from '@/types'
 import {

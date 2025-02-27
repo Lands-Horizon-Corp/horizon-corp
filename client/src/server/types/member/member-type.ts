@@ -15,4 +15,5 @@ export interface IMemberTypeResource extends ITimeStamps {
     prefix: string
 }
 
-export type TMemberTypePaginatedResource = IPaginatedResult<IMemberTypeResource>
+export interface IMemberTypePaginatedResource
+    extends IPaginatedResult<IMemberTypeResource> {}
