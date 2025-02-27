@@ -80,20 +80,4 @@ export default class IAccountingLedgerService {
             APIService.get<IAccountingLedgerPaginatedResource>(url)
         )
     }
-
-    // public static async delete(id: TEntityId): Promise<void> {
-    //     const url = this.buildUrl(`/${id}`, {});
-    //     return this.makeRequest(() => APIService.delete(url));
-    // }
-
-    // public static async update(
-    //     id: TEntityId,
-    //     ledgerData: IAccountingLedgerRequest,
-    //     preloads?: string[]
-    // ): Promise<IAccountingLedgerRequest> {
-    //     const url = this.buildUrl(`/${id}`, { preloads });
-    //     return this.makeRequest(() =>
-    //         APIService.put<IAccountingLedgerRequest, IAccountingLedgerRequest>(url, ledgerData)
-    //     );
-    // }
 }
