@@ -5,7 +5,7 @@ import { IPaginatedResult } from './paginated-result'
 import { IMediaRequest, IMediaResource } from './media'
 
 export interface IOwnerResource extends IUserBase {
-    accountType: string
+    accountType: 'Owner'
     media?: IMediaResource
     companies?: ICompanyResource[]
     footsteps?: IFootstepResource[]
