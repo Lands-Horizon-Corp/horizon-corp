@@ -16,7 +16,7 @@ interface RowSelectionStateWithData<TData> {
 
 const useDataTableState = <TData extends { id: string | number }>({
     defaultColumnOrder = [],
-    defaultColumnVisibility,
+    defaultColumnVisibility = {},
     onSelectData,
 }: Props<TData> = {}) => {
     const [rowSelectionState, setRowSelectionState] = useState<

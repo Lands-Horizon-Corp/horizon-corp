@@ -75,7 +75,7 @@ const MembersTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IMemberResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 

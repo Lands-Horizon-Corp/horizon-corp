@@ -71,7 +71,7 @@ const AccountsLedgerTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IAccountingLedgerResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 

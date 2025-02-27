@@ -75,7 +75,7 @@ const GenderTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IGenderResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 

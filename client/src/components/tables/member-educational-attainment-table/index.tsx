@@ -76,7 +76,7 @@ const MemberEducationalAttainmentTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IMemberEducationalAttainmentResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 

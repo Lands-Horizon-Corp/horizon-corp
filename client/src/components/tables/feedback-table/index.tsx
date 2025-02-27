@@ -114,7 +114,7 @@ const FeedBackTable = ({
         columnVisibility,
         setColumnVisibility,
     } = useDataTableState<IFeedbackResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
