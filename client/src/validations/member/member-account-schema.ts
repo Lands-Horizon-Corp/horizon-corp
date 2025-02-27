@@ -11,7 +11,7 @@ import {
     middleNameSchema,
     contactNumberSchema,
     permanentAddressSchema,
-} from '../../common'
+} from '../common'
 
 export const baseMemberAccountSchema = z.object({
     id: entityIdSchema.optional(),

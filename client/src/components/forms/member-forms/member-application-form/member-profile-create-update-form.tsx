@@ -69,7 +69,7 @@ import {
 } from '@/hooks/api-hooks/member/use-member-profile'
 import { TFilterObject } from '@/contexts/filter-context'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import { createMemberProfileSchema } from '@/validations/form-validation/member/member-schema'
+import { createMemberProfileSchema } from '@/validations/member/member-profile-schema'
 
 import { cn } from '@/lib'
 import { TEntityId } from '@/server'
