@@ -16,7 +16,7 @@ export const transactionTypeGlobalSearchTargets: IGlobalSearchTargets<ITransacti
     [
         { field: 'name', displayText: 'Name' },
         { field: 'description', displayText: 'Description' },
-        { field: 'cheque_id', displayText: 'Cheque ID' },
+        { field: 'chequeId', displayText: 'Cheque ID' },
     ]
 
 export interface ITransactionPaymentTypesTableActionComponentProp {
@@ -111,23 +111,23 @@ const TransactionPaymentTypesTableColumns = (
             enableMultiSort: true,
         },
         {
-            id: 'cheque_id',
-            accessorKey: 'cheque_id',
+            id: 'chequeId',
+            accessorKey: 'chequeId',
             header: (props) => (
                 <DataTableColumnHeader {...props} isResizable title="Cheque ID">
                     <ColumnActions {...props}>
                         <TextFilter<ITransactionPaymentTypesResource>
                             displayText="Cheque ID"
-                            field="cheque_id"
+                            field="chequeId"
                         />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
             cell: ({
                 row: {
-                    original: { cheque_id },
+                    original: { chequeId },
                 },
-            }) => <div>{cheque_id}</div>,
+            }) => <div>{chequeId}</div>,
             enableMultiSort: true,
         },
         {
