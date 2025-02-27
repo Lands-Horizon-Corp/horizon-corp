@@ -17,13 +17,13 @@ import { createGenderSchema } from '@/validations/form-validation/gender-schema'
 
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { IGenderRequest, TEntityId } from '@/server/types'
+import { IGenderRequest, IGenderResource, TEntityId } from '@/server/types'
 
 type TGenderFormValues = z.infer<typeof createGenderSchema>
 
 export interface IGenderFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IGenderRequest>, unknown, string> {
+        IForm<Partial<IGenderRequest>, IGenderResource, string> {
     genderId?: TEntityId
 }
 

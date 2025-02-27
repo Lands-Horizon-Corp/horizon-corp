@@ -1,4 +1,5 @@
 import z from 'zod'
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Path, useFieldArray, useForm } from 'react-hook-form'
@@ -26,6 +27,9 @@ import {
     SelectTrigger,
     SelectContent,
 } from '@/components/ui/select'
+import BranchPicker, {
+    IBranchPickerCreateProps,
+} from '@/components/pickers/branch-picker'
 import { Input } from '@/components/ui/input'
 import { IForm } from '@/types/component/form'
 import { Button } from '@/components/ui/button'
@@ -34,8 +38,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Separator } from '@/components/ui/separator'
 import { AvatarUploadField } from './avatar-upload-field'
-import GenderSelect from '@/components/selects/gender-select'
-import BranchPicker from '@/components/pickers/branch-picker'
+import GenderSelect, {
+    IGenderSelectCreateProps,
+} from '@/components/selects/gender-select'
+import MemberPicker from '@/components/pickers/member-picker'
+import Modal, { IModalProps } from '@/components/modals/modal'
 import { SignatureUploadField } from './signature-upload-field'
 import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import FormErrorMessage from '@/components/ui/form-error-message'
@@ -46,9 +53,15 @@ import MemberTypeSelect from '@/components/selects/member-type-select'
 import ProvinceCombobox from '@/components/comboboxes/province-combobox'
 import BarangayCombobox from '@/components/comboboxes/barangay-combobox'
 import MunicipalityCombobox from '@/components/comboboxes/municipality-combobox'
-import MemberOccupationCombobox from '@/components/comboboxes/member-occupation-combobox'
-import MemberClassificationCombobox from '@/components/comboboxes/member-classification-combobox'
-import MemberEducationalAttainmentPicker from '@/components/comboboxes/member-educational-attainment-combobox'
+import MemberOccupationCombobox, {
+    IMemberOccupationComboboxCreateProps,
+} from '@/components/comboboxes/member-occupation-combobox'
+import MemberClassificationCombobox, {
+    IMemberClassificationComboboxCreateProps,
+} from '@/components/comboboxes/member-classification-combobox'
+import MemberEducationalAttainmentPicker, {
+    IMemberEducationalAttainmentComboboxCreateProps,
+} from '@/components/comboboxes/member-educational-attainment-combobox'
 
 import {
     useCreateMemberProfile,
@@ -61,9 +74,6 @@ import { createMemberProfileSchema } from '@/validations/form-validation/member/
 import { cn } from '@/lib'
 import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
-import Modal, { IModalProps } from '@/components/modals/modal'
-import MemberPicker from '@/components/pickers/member-picker'
-import { toast } from 'sonner'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -72,6 +82,13 @@ interface IMemberProfileCreateUpdateFormProps
         IForm<Partial<TMemberProfileForm>, unknown, string> {
     memberTypeOptionsFilter?: TFilterObject
     profileId?: TEntityId
+
+    // Since this form uses pickers and other stuff, they might have create capabilities
+    branchPickerCreateProps?: IBranchPickerCreateProps
+    memberGenderCreateProps?: IGenderSelectCreateProps
+    memberClassificationCreateProps?: IMemberClassificationComboboxCreateProps
+    memberOccupationComboboxCreateProps?: IMemberOccupationComboboxCreateProps
+    educationalAttainmentComboboxCreateProps?: IMemberEducationalAttainmentComboboxCreateProps
 }
 
 type Step = {
@@ -137,7 +154,12 @@ const MemberProfileCreateUpdateForm = ({
     hiddenFields,
     defaultValues,
     disabledFields,
+    branchPickerCreateProps,
     memberTypeOptionsFilter,
+    memberGenderCreateProps,
+    memberClassificationCreateProps,
+    memberOccupationComboboxCreateProps,
+    educationalAttainmentComboboxCreateProps,
     onError,
     onSuccess,
 }: IMemberProfileCreateUpdateFormProps) => {
@@ -365,6 +387,9 @@ const MemberProfileCreateUpdateForm = ({
                                             <FormControl>
                                                 <BranchPicker
                                                     {...field}
+                                                    createProps={
+                                                        branchPickerCreateProps
+                                                    }
                                                     onSelect={(branch) =>
                                                         field.onChange(
                                                             branch.id
@@ -383,6 +408,9 @@ const MemberProfileCreateUpdateForm = ({
                                             <FormControl>
                                                 <MemberClassificationCombobox
                                                     {...field}
+                                                    memberClassificationCreateProps={
+                                                        memberClassificationCreateProps
+                                                    }
                                                     onChange={(memClass) =>
                                                         field.onChange(
                                                             memClass.id
@@ -538,6 +566,7 @@ const MemberProfileCreateUpdateForm = ({
                                             <FormControl>
                                                 <AvatarUploadField
                                                     placeholder="Upload Person Picture"
+                                                    description="Upload Member Picture/Photo"
                                                     {...field}
                                                     mediaImage={form.getValues(
                                                         'media'
@@ -636,6 +665,9 @@ const MemberProfileCreateUpdateForm = ({
                                         render={({ field }) => (
                                             <GenderSelect
                                                 {...field}
+                                                createGenderProps={
+                                                    memberGenderCreateProps
+                                                }
                                                 onChange={(gender) =>
                                                     field.onChange(gender.id)
                                                 }
@@ -650,6 +682,9 @@ const MemberProfileCreateUpdateForm = ({
                                         render={({ field }) => (
                                             <MemberEducationalAttainmentPicker
                                                 {...field}
+                                                educationalAttainmentComboboxCreateProps={
+                                                    educationalAttainmentComboboxCreateProps
+                                                }
                                                 onChange={(selected) =>
                                                     field.onChange(selected.id)
                                                 }
@@ -665,15 +700,18 @@ const MemberProfileCreateUpdateForm = ({
                                             <FormControl>
                                                 <MemberOccupationCombobox
                                                     {...field}
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
                                                     onChange={(occupation) =>
                                                         field.onChange(
                                                             occupation.id
                                                         )
                                                     }
                                                     placeholder="Select Occupation"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
+                                                    memberOccupationComboboxCreateProps={
+                                                        memberOccupationComboboxCreateProps
+                                                    }
                                                 />
                                             </FormControl>
                                         )}

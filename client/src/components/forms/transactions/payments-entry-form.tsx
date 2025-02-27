@@ -28,9 +28,9 @@ import MemberPicker from '@/components/pickers/member-picker'
 import Modal from '@/components/modals/modal'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from 'sonner'
 import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
 import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payments-entry/current-transaction-ledger'
+import TransactionPaymentTypesPicker from '@/components/pickers/transaction-payment-types-picker'
 
 export const paymentsEntrySchema = z.object({
     ORNumber: z.string().min(1, 'OR Number is required'),
@@ -38,6 +38,7 @@ export const paymentsEntrySchema = z.object({
     accountsId: z.string().min(1, 'Accounts is required'),
     isPrinted: z.boolean().optional(),
     notes: z.string().optional(),
+    transactionType: z.string(),
 })
 
 type TPaymentFormValues = z.infer<typeof paymentsEntrySchema>
@@ -58,15 +59,17 @@ export const PaymentsEntryForm = () => {
     const {
         isPending,
         isRefetching,
-        data: { data: SampleLedgerData },
+        data: { data: CurrentMemberLedger },
         refetch,
-    } = useFilteredPaginatedIAccountingLedger()
+    } = useFilteredPaginatedIAccountingLedger({
+        memberProfileId: selectedMember?.memberProfile?.id,
+    })
 
     const refetchAccountingLedger = () => {
         refetch()
     }
 
-    const totalAmount = SampleLedgerData.reduce(
+    const totalAmount = CurrentMemberLedger.reduce(
         (acc, ledger) => acc + ledger.credit,
         0
     )
@@ -77,7 +80,6 @@ export const PaymentsEntryForm = () => {
         if (isAllowedToCreatePayment) {
             setIsOpenModal(true)
         }
-        toast.warning('Please select member first.')
     }
 
     return (
@@ -98,6 +100,7 @@ export const PaymentsEntryForm = () => {
                                 value={selectedMember?.id}
                                 onSelect={(member) => {
                                     setSelectedMember(member)
+                                    refetchAccountingLedger()
                                 }}
                                 placeholder="Select Members"
                             />
@@ -118,7 +121,7 @@ export const PaymentsEntryForm = () => {
                             <CurrentPaymentAccountingTransactionLedger
                                 isRefetching={isRefetching}
                                 isPending={isPending}
-                                data={SampleLedgerData}
+                                data={CurrentMemberLedger}
                                 onRefetch={refetchAccountingLedger}
                             />
                         </div>
@@ -179,7 +182,6 @@ const FormModal = ({
             memberId: selectedMemberId ?? '',
             ...data,
             isPrinted: data.isPrinted ?? false,
-            transactionType: '',
         })
     })
 
@@ -256,6 +258,29 @@ const FormModal = ({
                                             field.onChange(accounts.id)
                                         }}
                                         placeholder="Select Accounts"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="transactionType"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor={field.name}>
+                                    Accounts
+                                </FormLabel>
+                                <FormControl>
+                                    <TransactionPaymentTypesPicker
+                                        value={field.value}
+                                        onSelect={(transactionPaymenttypes) => {
+                                            field.onChange(
+                                                transactionPaymenttypes.id
+                                            )
+                                        }}
+                                        placeholder="Select Payment types"
                                     />
                                 </FormControl>
                                 <FormMessage />

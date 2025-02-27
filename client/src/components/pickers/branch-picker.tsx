@@ -4,9 +4,11 @@ import { PaginationState } from '@tanstack/react-table'
 
 import GenericPicker from './generic-picker'
 import { Button } from '@/components/ui/button'
-import { ChevronDownIcon } from '@/components/icons'
 import ImageDisplay from '@/components/image-display'
+import { ChevronDownIcon, PlusIcon } from '@/components/icons'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
+import { BranchCreateFormModal, BranchCreateFormProps } from '../forms'
+import { CommandGroup, CommandItem, CommandSeparator } from '../ui/command'
 import MiniPaginationBar from '@/components/pagination-bars/mini-pagination-bar'
 
 import useFilterState from '@/hooks/use-filter-state'
@@ -14,17 +16,32 @@ import { abbreviateUUID } from '@/utils/formatting-utils'
 import { useFilteredPaginatedBranch } from '@/hooks/api-hooks/use-branch'
 import { PAGINATION_INITIAL_INDEX, PICKERS_SELECT_PAGE_SIZE } from '@/constants'
 
+import logger from '@/helpers/loggers/logger'
 import { IBranchResource, TEntityId } from '@/server/types'
 
-interface Props {
+export interface IBranchPickerCreateProps
+    extends Pick<
+        BranchCreateFormProps,
+        'defaultValues' | 'disabledFields' | 'hiddenFields'
+    > {}
+
+export interface IBranchPickerProps {
     value?: TEntityId
-    placeholder?: string
     disabled?: boolean
+    placeholder?: string
+    createProps?: IBranchPickerCreateProps
     onSelect?: (selectedBranch: IBranchResource) => void
 }
 
-const BranchPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
+const BranchPicker = ({
+    value,
+    disabled,
+    placeholder,
+    createProps,
+    onSelect,
+}: IBranchPickerProps) => {
     const queryClient = useQueryClient()
+    const [createModal, setCreateModal] = useState(false)
     const [pickerState, setPickerState] = useState(false)
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: PAGINATION_INITIAL_INDEX,
@@ -51,6 +68,14 @@ const BranchPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
 
     return (
         <>
+            <BranchCreateFormModal
+                open={createModal}
+                formProps={{
+                    ...createProps,
+                    onSuccess: (data) => onSelect?.(data),
+                }}
+                onOpenChange={setCreateModal}
+            />
             <GenericPicker
                 items={data.data}
                 open={pickerState}
@@ -71,6 +96,24 @@ const BranchPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
                         value: searchValue,
                     })
                 }}
+                customCommands={
+                    createProps && (
+                        <>
+                            <CommandGroup>
+                                <CommandItem
+                                    onSelect={() => {
+                                        logger.log('Yes')
+                                        setCreateModal(true)
+                                    }}
+                                    onClick={() => {}}
+                                >
+                                    <PlusIcon /> Create
+                                </CommandItem>
+                            </CommandGroup>
+                            <CommandSeparator />
+                        </>
+                    )
+                }
                 renderItem={(branch) => (
                     <div className="flex w-full items-center justify-between py-1">
                         <div className="flex items-center gap-x-2">

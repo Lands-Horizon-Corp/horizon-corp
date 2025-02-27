@@ -45,6 +45,13 @@ const MembersTableOwnerAction = ({
                     formProps={{
                         defaultValues: member.memberProfile,
                         disabledFields: ['memberId'],
+                        branchPickerCreateProps: {
+                            disabledFields: ['companyId'],
+                        },
+                        memberGenderCreateProps: {},
+                        memberClassificationCreateProps: {},
+                        memberOccupationComboboxCreateProps: {},
+                        educationalAttainmentComboboxCreateProps: {},
                     }}
                 />
                 <MemberCreateUpdateFormModal
