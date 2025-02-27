@@ -334,6 +334,29 @@ const FormModal = ({
                     />
                     <FormField
                         control={form.control}
+                        name="transactionType"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel htmlFor={field.name}>
+                                    Payment Types
+                                </FormLabel>
+                                <FormControl>
+                                    <TransactionPaymentTypesPicker
+                                        value={field.value}
+                                        onSelect={(transactionPaymenttypes) => {
+                                            field.onChange(
+                                                transactionPaymenttypes.id
+                                            )
+                                        }}
+                                        placeholder="Select Payment types"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
                         name="accountsId"
                         render={({ field }) => (
                             <FormItem>
@@ -353,29 +376,7 @@ const FormModal = ({
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="transactionType"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel htmlFor={field.name}>
-                                    Accounts
-                                </FormLabel>
-                                <FormControl>
-                                    <TransactionPaymentTypesPicker
-                                        value={field.value}
-                                        onSelect={(transactionPaymenttypes) => {
-                                            field.onChange(
-                                                transactionPaymenttypes.id
-                                            )
-                                        }}
-                                        placeholder="Select Payment types"
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+
                     <FormField
                         name="notes"
                         control={form.control}
