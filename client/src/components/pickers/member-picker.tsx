@@ -4,7 +4,7 @@ import { PaginationState } from '@tanstack/react-table'
 
 import GenericPicker from './generic-picker'
 import { Button } from '@/components/ui/button'
-import { ChevronDownIcon } from '@/components/icons'
+import { BadgeCheckFillIcon, ChevronDownIcon } from '@/components/icons'
 import ImageDisplay from '@/components/image-display'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import MiniPaginationBar from '@/components/pagination-bars/mini-pagination-bar'
@@ -86,16 +86,14 @@ const MemberPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
                         <div className="flex items-center gap-x-2">
                             <ImageDisplay src={member.media?.downloadURL} />
                             <span className="text-ellipsis text-foreground/80">
-                                {member.fullName}
+                                {member.fullName}{' '}
+                                {member.memberProfile && (
+                                    <BadgeCheckFillIcon className="ml-2 inline size-2 text-primary" />
+                                )}
                             </span>
                         </div>
 
                         <p className="mr-2 font-mono text-xs italic text-foreground/40">
-                            {!member.memberProfile && (
-                                <span className="mr-2 text-ellipsis text-xs italic text-amber-500/40">
-                                    (Non Member)
-                                </span>
-                            )}
                             <span>#{abbreviateUUID(member.id)}</span>
                         </p>
                     </div>
