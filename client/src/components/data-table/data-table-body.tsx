@@ -63,8 +63,9 @@ const DataTableBody = <TData,>({
             {rows.length === 0 && (
                 <TableRow>
                     <TableCell colSpan={colCount} className="h-24 text-center">
-                        <span className="w-full text-center text-xs text-foreground/60">
-                            <MagnifyingGlassIcon />
+                        <span className="w-full text-center text-xs text-muted-foreground/60">
+                            <MagnifyingGlassIcon className="mr-2 inline" /> no
+                            data to display
                         </span>
                     </TableCell>
                 </TableRow>
