@@ -143,12 +143,12 @@
 }
 
 .ecoop-scroll::-webkit-scrollbar {
-    @apply size-[.4vw];
+    @apply h-[.4vh] w-[.3vw];
 }
 
-.ecoop-scroll::-webkit-scrollbar-track {
-    /* box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); */
-}
+/* .ecoop-scroll::-webkit-scrollbar-track {
+     box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); 
+} */
 
 .ecoop-scroll::-webkit-scrollbar-thumb {
     @apply rounded-full bg-stone-800/40 dark:bg-stone-400/40;
@@ -254,13 +254,11 @@ body[data-scroll-locked] {
     z-index: 1000; /* Ensure it’s above other elements */
 }
 
-
-
 @layer base {
-  * {
-    @apply border-border;
+    * {
+        @apply border-border;
     }
-  body {
-    @apply bg-background text-foreground;
+    body {
+        @apply bg-background text-foreground;
     }
 }
