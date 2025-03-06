@@ -71,7 +71,7 @@ const BankPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
                     <div className="flex w-full items-center justify-between py-1">
                         <div className="flex items-center gap-x-2">
                             <span className="text-ellipsis text-foreground/80">
-                                {bank.title} - {bank.description}
+                                {bank.description}
                             </span>
                         </div>
                     </div>
@@ -108,7 +108,7 @@ const BankPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
                             </span>
                         ) : (
                             <span className="mr-1 font-mono text-sm text-foreground/30">
-                                {selectedBank?.title ?? value}
+                                {selectedBank?.name ?? value}
                             </span>
                         )}
                     </span>

@@ -65,7 +65,6 @@ const CheckBankFormModal = ({ bankId, onSuccess, onError }: IBankFormProps) => {
         mutateAsync: uploadPhoto,
     } = useSinglePictureUpload({
         onUploadProgressChange: (progress) => setUploadMediaProgress(progress),
-        useDummy: true,
     })
 
     const onSubmit = form.handleSubmit(async (data) => {
