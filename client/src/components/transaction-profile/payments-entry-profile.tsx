@@ -70,7 +70,7 @@ const PaymentsEntryProfile = ({ profile }: PaymentsEntryProfileProps) => {
                             href={`/members/${id}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-primary-foreground hover:underline"
+                            className="flex items-center gap-1 text-black hover:underline dark:text-primary-foreground"
                         >
                             profile <ArrowUpRight size={14} />
                         </Link>

@@ -34,6 +34,7 @@ import {
     LuCalendarCheck as CalendarCheckIcon,
     LuChevronsUpDown as ChevronsUpDownIcon,
     LuHardDriveUpload as HardDriveUploadIcon,
+    LuReplace as ReplaceIcon,
 } from 'react-icons/lu'
 
 import {
@@ -361,4 +362,5 @@ export {
     TextStrikethroughLightIcon,
     EmptyIcon,
     BillIcon,
+    ReplaceIcon,
 }
