@@ -22,6 +22,7 @@ import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { TEntityId } from '@/server'
 import { ITransactionPaymentTypesRequest } from '@/server/types/transactions/transaction-payment-types'
+import AccountingChequePicker from '@/components/pickers/accounting-cheque-picker'
 
 type TTransactionTypeFormValues = z.infer<typeof TransactionTypeRequestSchema>
 
@@ -114,16 +115,22 @@ const TransactionTypeCreateUpdateForm = ({
                         <FormFieldWrapper
                             control={form.control}
                             name="chequeId"
-                            label="Cheque ID"
-                            render={({ field }) => (
-                                <Input
-                                    {...field}
-                                    id={field.name}
-                                    placeholder="Cheque ID"
-                                    autoComplete="cheque-id"
-                                    disabled={isDisabled(field.name)}
-                                />
-                            )}
+                            label="Cheque"
+                            render={({ field }) => {
+                                return (
+                                    <AccountingChequePicker
+                                        value={
+                                            transactionTypeId
+                                                ? defaultValues?.description
+                                                : field.value
+                                        }
+                                        onSelect={(cheque) => {
+                                            field.onChange(cheque.id)
+                                        }}
+                                        placeholder="Select Cheque"
+                                    />
+                                )
+                            }}
                         />
                     </fieldset>
                 </fieldset>

@@ -1,9 +1,18 @@
-import * as z from 'zod'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import {
+    getCoreRowModel,
+    getSortedRowModel,
+    useReactTable,
+} from '@tanstack/react-table'
+
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Textarea } from '@/components/ui/textarea'
+import { Card, CardContent } from '@/components/ui/card'
 import FormErrorMessage from '@/components/ui/form-error-message'
 import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
@@ -15,36 +24,37 @@ import {
     FormLabel,
     FormMessage,
 } from '@/components/ui/form'
-import { IBaseCompNoChild } from '@/types'
-import { IForm } from '@/types/component/form'
-import { IPaymentsEntryRequest } from '@/server/types/transactions/payments-entry'
-import { useCreatePaymentEntry } from '@/hooks/api-hooks/transactions/use-payments-entry'
-import { IMemberResource, TEntityId } from '@/server'
-import AccountsPicker from '@/components/pickers/accounts-picker'
-import AccountsLedgerTable from '@/components/tables/transactions-table/accouting-ledger-table'
-import PaymentsEntryProfile from '@/components/transaction-profile/payments-entry-profile'
-import { Card, CardContent } from '@/components/ui/card'
-import MemberPicker from '@/components/pickers/member-picker'
 import Modal from '@/components/modals/modal'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Textarea } from '@/components/ui/textarea'
+
+import { XIcon } from '@/components/icons'
+
+import { useCreatePaymentEntry } from '@/hooks/api-hooks/transactions/use-payments-entry'
 import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
-import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payments-entry/current-transaction-ledger'
-import TransactionPaymentTypesPicker from '@/components/pickers/transaction-payment-types-picker'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { usePagination } from '@/hooks/use-pagination'
-import { IAccountingLedgerResource } from '@/server/types/accounts/accounting-ledger'
-import {
-    useReactTable,
-    getCoreRowModel,
-    getSortedRowModel,
-} from '@tanstack/react-table'
 import useDatableFilterState from '@/hooks/use-filter-state'
 
+import { IBaseCompNoChild } from '@/types'
+import { IForm } from '@/types/component/form'
+import { IPaymentsEntryRequest } from '@/server/types/transactions/payments-entry'
+import { IMemberResource, TEntityId } from '@/server'
+import { IAccountingLedgerResource } from '@/server/types/accounts/accounting-ledger'
+
+import AccountsPicker from '@/components/pickers/accounts-picker'
+import MemberPicker from '@/components/pickers/member-picker'
+import TransactionPaymentTypesPicker from '@/components/pickers/transaction-payment-types-picker'
+
+import AccountsLedgerTable from '@/components/tables/transactions-table/accouting-ledger-table'
 import IAccountingLedgerRequestTableColumns from '@/components/tables/transactions-table/accouting-ledger-table/columns'
 import { toast } from 'sonner'
 import { XIcon } from '@/components/icons'
+
+import PaymentsEntryProfile from '@/components/transaction-profile/payments-entry-profile'
+import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payments-entry/current-transaction-ledger'
+
+import { toast } from 'sonner'
+import CheckBankFormModal from '../check-bank-forms/check-bank-forms'
 
 export const paymentsEntrySchema = z.object({
     ORNumber: z.string().min(1, 'OR Number is required'),
@@ -68,7 +78,8 @@ export interface IPaymentFormProps
 export const PaymentsEntryForm = () => {
     const [selectedMember, setSelectedMember] =
         useState<IMemberResource | null>(null)
-    const [openModal, setIsOpenModal] = useState(false)
+    const [openPaymentsEntryModal, setIsOpenPaymentsEntryModal] =
+        useState(false)
 
     const {
         isPending: isPendingCurentMemberLedger,
@@ -88,7 +99,7 @@ export const PaymentsEntryForm = () => {
 
     const handleOpenCreateModal = () => {
         if (isAllowedToCreatePayment) {
-            setIsOpenModal(true)
+            setIsOpenPaymentsEntryModal(true)
         }
     }
 
@@ -164,11 +175,12 @@ export const PaymentsEntryForm = () => {
 
     return (
         <>
-            <FormModal
+            <PaymentsEntryFormModal
                 selectedMemberId={selectedMember?.id}
-                open={openModal}
-                onOpenChange={setIsOpenModal}
+                open={openPaymentsEntryModal}
+                onOpenChange={setIsOpenPaymentsEntryModal}
             />
+
             <div className="flex w-full flex-col gap-y-4 p-5">
                 <div className="grid grid-cols-1 gap-x-4 gap-y-4 lg:grid-cols-4">
                     <legend className="text-lg font-semibold text-secondary-foreground">
@@ -255,13 +267,16 @@ export const PaymentsEntryForm = () => {
     )
 }
 
-const FormModal = ({
+const PaymentsEntryFormModal = ({
     open,
     onOpenChange,
     onSuccess,
     onError,
     selectedMemberId,
 }: IPaymentFormProps) => {
+    const [openCheckClearingFormModal, setIsCheckClearingFormModal] =
+        useState(false)
+
     const form = useForm<TPaymentFormValues>({
         resolver: zodResolver(paymentsEntrySchema),
         reValidateMode: 'onChange',
@@ -284,12 +299,21 @@ const FormModal = ({
     })
 
     const onSubmit = form.handleSubmit((data) => {
+        if (data.transactionType === 'trans-pay-002') {
+            setIsCheckClearingFormModal(true)
+            return
+        }
         createMutation.mutate({
             memberId: selectedMemberId ?? '',
             ...data,
             isPrinted: data.isPrinted ?? false,
         })
     })
+
+    const onCancel = () => {
+        onOpenChange(false)
+        form.reset()
+    }
 
     return (
         <Modal
@@ -299,10 +323,7 @@ const FormModal = ({
             description="Fill in the details to create a payment entry."
             footer={
                 <div className="flex justify-end gap-2 p-4">
-                    <Button
-                        variant="outline"
-                        onClick={() => onOpenChange(false)}
-                    >
+                    <Button variant="outline" onClick={() => onCancel()}>
                         Cancel
                     </Button>
                     <Button
@@ -319,6 +340,10 @@ const FormModal = ({
                 </div>
             }
         >
+            <CheckBankFormModal
+                open={openCheckClearingFormModal}
+                onOpenChange={setIsCheckClearingFormModal}
+            />
             <Form {...form}>
                 <form onSubmit={onSubmit} className="space-y-4">
                     <FormFieldWrapper

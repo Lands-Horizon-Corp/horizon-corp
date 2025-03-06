@@ -34,6 +34,7 @@ import {
     LuCalendarCheck as CalendarCheckIcon,
     LuChevronsUpDown as ChevronsUpDownIcon,
     LuHardDriveUpload as HardDriveUploadIcon,
+    LuReplace as ReplaceIcon,
 } from 'react-icons/lu'
 
 import {
@@ -175,6 +176,7 @@ import {
     FaFileCsv as CsvIcon,
     FaPhoneAlt as PhoneIcon,
     FaMoneyBill as BillIcon,
+    FaUserClock as UserClockFillIcon,
 } from 'react-icons/fa'
 import { FaVenusMars as GendersIcon } from 'react-icons/fa6'
 
@@ -330,6 +332,7 @@ export {
     VerifiedPatchIcon,
     LoadingCircleIcon,
     PencilOutlineIcon,
+    UserClockFillIcon,
     SignatureLightIcon,
     FlipHorizontalIcon,
     RotateBoxRightIcon,
@@ -359,4 +362,5 @@ export {
     TextStrikethroughLightIcon,
     EmptyIcon,
     BillIcon,
+    ReplaceIcon,
 }

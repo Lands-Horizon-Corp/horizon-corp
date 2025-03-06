@@ -20,3 +20,21 @@ export const useUserAuthStore = create<UserAuthStore>((set) => ({
         }),
     setAuthStatus: (authStatus: TAuthStoreStatus) => set({ authStatus }),
 }))
+
+export const useAuthUser = <TUser extends IUserData>() => {
+    const { currentUser, setCurrentUser, setAuthStatus } = useUserAuthStore(
+        (state) => state
+    )
+
+    if (!currentUser) {
+        throw new Error(
+            'User is not authenticated but tried to access protected data'
+        )
+    }
+
+    return {
+        currentUser: currentUser as TUser,
+        setCurrentUser: setCurrentUser as (newUserData: TUser | null) => void,
+        setAuthStatus,
+    }
+}

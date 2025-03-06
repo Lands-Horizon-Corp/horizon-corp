@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
 
-import { UserIcon } from '@/components/icons'
 import { IMemberTableActionComponentProp } from '../columns'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import { UserClockFillIcon, UserIcon } from '@/components/icons'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import { MemberCreateUpdateFormModal } from '@/components/forms/member-forms/member-create-update-form'
 import { MemberProfileCreateUpdateFormModal } from '@/components/forms/member-forms/member-application-form/member-profile-create-update-form'
@@ -110,12 +110,21 @@ const MembersTableOwnerAction = ({
                                 Setup Profile
                             </DropdownMenuItem>
                         ) : (
-                            <DropdownMenuItem
-                                onClick={() => setEditModal((val) => !val)}
-                            >
-                                <UserIcon className="mr-2" />
-                                Edit Profile
-                            </DropdownMenuItem>
+                            <>
+                                <DropdownMenuItem
+                                    onClick={() => setEditModal((val) => !val)}
+                                >
+                                    <UserIcon className="mr-2" />
+                                    Edit Profile
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    <UserClockFillIcon
+                                        className="mr-2"
+                                        strokeWidth={1.5}
+                                    />
+                                    Member History
+                                </DropdownMenuItem>
+                            </>
                         )}
                     </>
                 }

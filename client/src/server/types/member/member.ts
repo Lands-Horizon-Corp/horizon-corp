@@ -4,7 +4,7 @@ import { IGenderResource } from '../gender'
 import { IFootstepResource } from '../footstep'
 import { IPaginatedResult } from '../paginated-result'
 import { IMemberProfileResource } from './member-profile'
-import { ITimeStamps, IUserBase, TAccountStatus, TEntityId } from '../common'
+import { IUserBase, TAccountStatus, TEntityId } from '../common'
 
 export interface IMemberRequest {
     username: string
@@ -33,13 +33,12 @@ export interface IMemberRequestNoPassword
     confirmPassword?: string
 }
 
-export interface IMemberResource extends IUserBase, ITimeStamps {
+export interface IMemberResource extends IUserBase {
     id: TEntityId
     accountType: 'Member'
 
     username: string
     fullName: string
-    description?: string
     isEmailVerified: boolean
     isContactVerified: boolean
     isSkipVerification: boolean
