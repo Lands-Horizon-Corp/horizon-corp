@@ -16,9 +16,13 @@ const ColumnResizeHandle = <TData, TValue>({
     return (
         <div
             className={cn(
-                'absolute right-0 top-0 flex h-full w-[1px] items-center justify-center bg-border/60 duration-100 ease-in-out',
-                header.column.getIsResizing() && 'z-50 bg-foreground/80'
+                'group absolute right-0 top-0 flex h-1/2 w-px translate-y-1/2 cursor-col-resize items-center justify-center duration-100 ease-in-out',
+                header.column.getIsResizing() &&
+                    'z-50 h-full translate-y-0 bg-foreground/80'
             )}
+            onMouseDown={header.getResizeHandler()}
+            onTouchStart={header.getResizeHandler()}
+            onDoubleClick={() => header.column.resetSize()}
             style={{
                 transform:
                     table.options.columnResizeMode === 'onEnd' &&
@@ -35,13 +39,10 @@ const ColumnResizeHandle = <TData, TValue>({
         >
             <span
                 className={cn(
-                    'p-.5 cursor-col-resize touch-none select-none rounded-sm bg-secondary/30 text-foreground/60 hover:bg-secondary/80',
+                    'p-.5 w-px -translate-x-1.5 touch-none select-none rounded-sm bg-secondary/30 text-foreground/60 opacity-0 hover:bg-secondary/80 group-hover:opacity-100',
                     header.column.getIsResizing() &&
-                        'bg-background text-foreground/80 hover:bg-background'
+                        'bg-background text-foreground/80 opacity-100'
                 )}
-                onMouseDown={header.getResizeHandler()}
-                onTouchStart={header.getResizeHandler()}
-                onDoubleClick={() => header.column.resetSize()}
             >
                 <DragHandleIcon className="size-3" />
             </span>
