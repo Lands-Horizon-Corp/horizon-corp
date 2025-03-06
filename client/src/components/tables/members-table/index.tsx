@@ -114,6 +114,7 @@ const MembersTable = ({
             rowSelection: rowSelectionState.rowSelection,
             columnVisibility,
         },
+        columnResizeMode: 'onChange',
         rowCount: pageSize,
         manualSorting: true,
         pageCount: totalPage,
@@ -188,7 +189,7 @@ const MembersTable = ({
                     isStickyFooter
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
+                    className={cn('mb-2', isScrollable && 'flex-1')}
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

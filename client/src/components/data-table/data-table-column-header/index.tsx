@@ -25,7 +25,6 @@ const DataTableColumnHeader = <TData, TValue>({
     header,
     children,
     className,
-    isResizable,
     tooltipDescription,
 }: DataTableColumnHeaderProps<TData, TValue>) => {
     const { attributes, isDragging, listeners, setNodeRef, transform } =
@@ -53,13 +52,7 @@ const DataTableColumnHeader = <TData, TValue>({
 
     return (
         <div className="inline-block flex-1 space-y-1 py-2">
-            <div
-                className={cn(
-                    'flex w-fit items-center gap-x-2',
-                    className,
-                    isResizable && 'pr-1'
-                )}
-            >
+            <div className={cn('flex w-fit items-center gap-x-2', className)}>
                 <div className="inline-flex items-center gap-x-0.5">
                     <Button
                         size="sm"
@@ -73,9 +66,21 @@ const DataTableColumnHeader = <TData, TValue>({
                         {finalTitle}
                     </Button>
                     {children}
-                    {isResizable && (
+
+                    {header.column.getCanResize() && (
                         <ColumnResizeHandle table={table} header={header} />
                     )}
+                    {/* {header.column.getCanResize() && (
+                        <div
+                            {...{
+                                onDoubleClick: () => header.column.resetSize(),
+                                onMouseDown: header.getResizeHandler(),
+                                onTouchStart: header.getResizeHandler(),
+                                className:
+                                    'absolute top-0 h-full w-4 cursor-col-resize user-select-none touch-none -right-2 z-10 flex justify-center before:absolute before:w-px before:inset-y-0 before:bg-border before:-translate-x-px',
+                            }}
+                        />
+                    )} */}
                 </div>
             </div>
         </div>

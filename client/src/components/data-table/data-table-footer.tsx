@@ -3,27 +3,24 @@ import { flexRender, Table } from '@tanstack/react-table'
 import { TableFooter, TableRow, TableCell } from '@/components/ui/table'
 
 import { cn } from '@/lib'
+import { getPinningStyles } from './data-table-utils'
 
 const DataTableFooter = <TData,>({
     table,
-    targetGroup,
     footerTrClassName,
     isStickyFooter = false,
 }: {
     table: Table<TData>
     footerTrClassName?: string
     isStickyFooter?: boolean
-    targetGroup?: 'left' | 'right' | 'center'
 }) => {
-    const NFooter = table
+    const hasFooters = table
         .getFooterGroups()
-        .map((group) =>
-            group.headers.map((header) => header.column.columnDef.footer)
+        .some((group) =>
+            group.headers.some((header) => header.column.columnDef.footer)
         )
-        .flat()
-        .filter(Boolean).length
 
-    if (NFooter === 0) return
+    if (!hasFooters) return null
 
     return (
         <TableFooter
@@ -38,24 +35,41 @@ const DataTableFooter = <TData,>({
                         footerTrClassName
                     )}
                 >
-                    {footerGroup.headers
-                        .filter((grp) => {
-                            const pinnedGroup = grp.column.getIsPinned()
-                            return targetGroup
-                                ? targetGroup === pinnedGroup
-                                : !pinnedGroup
-                        })
-                        .map((tc) => (
+                    {footerGroup.headers.map((header) => {
+                        const { column } = header
+                        const isPinned = column.getIsPinned()
+                        const isLastLeftPinned =
+                            isPinned === 'left' &&
+                            column.getIsLastColumn('left')
+                        const isFirstRightPinned =
+                            isPinned === 'right' &&
+                            column.getIsFirstColumn('right')
+
+                        return (
                             <TableCell
-                                key={tc.id}
-                                className="size-fit text-nowrap font-medium"
+                                key={header.id}
+                                className="size-fit text-nowrap font-medium data-[pinned]:bg-muted/60 data-[pinned]:backdrop-blur-sm [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border"
+                                style={{
+                                    ...getPinningStyles(column),
+                                }}
+                                data-pinned={isPinned || undefined}
+                                data-last-col={
+                                    isLastLeftPinned
+                                        ? 'left'
+                                        : isFirstRightPinned
+                                          ? 'right'
+                                          : undefined
+                                }
                             >
-                                {flexRender(
-                                    tc.column.columnDef.footer,
-                                    tc.getContext()
-                                )}
+                                {header.isPlaceholder
+                                    ? null
+                                    : flexRender(
+                                          header.column.columnDef.footer,
+                                          header.getContext()
+                                      )}
                             </TableCell>
-                        ))}
+                        )
+                    })}
                 </TableRow>
             ))}
         </TableFooter>
