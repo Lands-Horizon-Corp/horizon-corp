@@ -81,7 +81,10 @@ const DataTable = <TData,>({
                     columnOrder={table.getState().columnOrder}
                     headerGroups={table.getHeaderGroups()}
                 />
-                <DataTableBody rows={table.getRowModel().rows} />
+                <DataTableBody
+                    colCount={table.getAllColumns().length}
+                    rows={table.getRowModel().rows}
+                />
                 <DataTableFooter
                     table={table}
                     isStickyFooter={isStickyFooter && isScrollable}

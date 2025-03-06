@@ -1,5 +1,6 @@
 import { flexRender, Row } from '@tanstack/react-table'
 
+import { MagnifyingGlassIcon } from '../icons'
 import { TableBody, TableCell, TableRow } from '@/components/ui/table'
 
 import { getPinningStyles } from './data-table-utils'
@@ -63,7 +64,7 @@ const DataTableBody = <TData,>({
                 <TableRow>
                     <TableCell colSpan={colCount} className="h-24 text-center">
                         <span className="w-full text-center text-xs text-foreground/60">
-                            🫥 no data
+                            <MagnifyingGlassIcon />
                         </span>
                     </TableCell>
                 </TableRow>
