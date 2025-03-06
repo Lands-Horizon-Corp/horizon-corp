@@ -71,6 +71,7 @@ const membersTableColumns = (
                 </div>
             ),
             enableSorting: false,
+            enableResizing: false,
             enableHiding: false,
             maxSize: 80,
         },
@@ -92,6 +93,9 @@ const membersTableColumns = (
                 </div>
             ),
             enableSorting: false,
+            enableResizing: false,
+            enableHiding: false,
+            maxSize: 80,
         },
         {
             id: 'Firstname',
@@ -159,9 +163,9 @@ const membersTableColumns = (
             ),
             cell: ({
                 row: {
-                    original: { middleName },
+                    original: { lastName },
                 },
-            }) => <div onClick={(e) => e.stopPropagation()}>{middleName}</div>,
+            }) => <div onClick={(e) => e.stopPropagation()}>{lastName}</div>,
             enableMultiSort: true,
         },
         {
@@ -209,6 +213,7 @@ const membersTableColumns = (
                 },
             }) => <div>{permanentAddress}</div>,
             enableMultiSort: true,
+            minSize: 400,
         },
         {
             id: 'contactNumber',
@@ -450,6 +455,7 @@ const membersTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            minSize: 180,
         },
     ]
 }

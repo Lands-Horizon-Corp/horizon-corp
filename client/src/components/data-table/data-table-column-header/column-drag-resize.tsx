@@ -13,12 +13,10 @@ const ColumnResizeHandle = <TData, TValue>({
     table,
     header,
 }: Props<TData, TValue>) => {
-    if (!header.column.getIsPinned()) return null
-
     return (
         <div
             className={cn(
-                'absolute right-2 top-0 flex h-full w-[1px] items-center justify-center duration-100 ease-in-out hover:bg-border/40 hover:bg-border/80',
+                'absolute right-0 top-0 flex h-full w-[1px] items-center justify-center bg-border/60 duration-100 ease-in-out',
                 header.column.getIsResizing() && 'z-50 bg-foreground/80'
             )}
             style={{
