@@ -117,10 +117,11 @@ const MembersTable = ({
         rowCount: pageSize,
         manualSorting: true,
         pageCount: totalPage,
-        enableMultiSort: false,
-        manualFiltering: true,
-        manualPagination: true,
         getRowId: getRowIdFn,
+        manualFiltering: true,
+        enableMultiSort: false,
+        manualPagination: true,
+        columnResizeMode: 'onChange',
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
@@ -188,7 +189,7 @@ const MembersTable = ({
                     isStickyFooter
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
+                    className={cn('mb-2', isScrollable && 'flex-1')}
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>
