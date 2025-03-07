@@ -47,14 +47,12 @@ import TransactionPaymentTypesPicker from '@/components/pickers/transaction-paym
 
 import AccountsLedgerTable from '@/components/tables/transactions-table/accouting-ledger-table'
 import IAccountingLedgerRequestTableColumns from '@/components/tables/transactions-table/accouting-ledger-table/columns'
-import { toast } from 'sonner'
-import { XIcon } from '@/components/icons'
 
 import PaymentsEntryProfile from '@/components/transaction-profile/payments-entry-profile'
 import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payments-entry/current-transaction-ledger'
 
-import { toast } from 'sonner'
 import CheckBankFormModal from '../check-bank-forms/check-bank-forms'
+import { toast } from 'sonner'
 
 export const paymentsEntrySchema = z.object({
     ORNumber: z.string().min(1, 'OR Number is required'),

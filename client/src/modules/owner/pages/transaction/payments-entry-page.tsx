@@ -1,5 +1,5 @@
 import PageContainer from '@/components/containers/page-container'
-import { PaymentsEntryForm } from '@/components/forms/transactions/payments-entry-form'
+import { PaymentsEntryForm } from '@/components/forms/transactions-forms/payments-entry-form'
 
 const OwnerPaymentsEntry = () => {
     return (
