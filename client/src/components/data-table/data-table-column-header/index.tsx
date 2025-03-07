@@ -3,18 +3,18 @@ import { CSS } from '@dnd-kit/utilities'
 import { useSortable } from '@dnd-kit/sortable'
 import { Column, Header, Table } from '@tanstack/react-table'
 
-import { Button } from '@/components/ui/button'
 import ColumnResizeHandle from './column-drag-resize'
 import ActionTooltip from '@/components/action-tooltip'
 
 import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { PushPinSlashIcon } from '@/components/icons'
 
 interface DataTableColumnHeaderProps<TData, TValue>
     extends React.HTMLAttributes<HTMLDivElement> {
     title: string
-    tooltipDescription?: string
     table: Table<TData>
-    isResizable?: boolean
+    tooltipDescription?: string
     column: Column<TData, TValue>
     header: Header<TData, TValue>
 }
@@ -51,36 +51,37 @@ const DataTableColumnHeader = <TData, TValue>({
     )
 
     return (
-        <div className="inline-block flex-1 space-y-1 py-2">
-            <div className={cn('flex w-fit items-center gap-x-2', className)}>
-                <div className="inline-flex items-center gap-x-0.5">
-                    <Button
-                        size="sm"
+        <div className="inline-block w-full flex-1 space-y-1 py-2">
+            <div className={cn('flex w-full items-center gap-x-2', className)}>
+                <div className="inline-flex w-full items-center justify-between gap-x-0.5">
+                    <span
+                        // size="sm"
                         style={style}
                         {...listeners}
-                        variant="ghost"
+                        // variant="ghost"
                         {...attributes}
                         ref={setNodeRef}
-                        className="!size-fit cursor-ew-resize gap-x-2 p-1 data-[state=open]:bg-accent"
+                        className="!size-fit cursor-ew-resize gap-x-2 self-start truncate p-1"
                     >
                         {finalTitle}
-                    </Button>
-                    {children}
-
-                    {header.column.getCanResize() && (
-                        <ColumnResizeHandle table={table} header={header} />
-                    )}
-                    {/* {header.column.getCanResize() && (
-                        <div
-                            {...{
-                                onDoubleClick: () => header.column.resetSize(),
-                                onMouseDown: header.getResizeHandler(),
-                                onTouchStart: header.getResizeHandler(),
-                                className:
-                                    'absolute top-0 h-full w-4 cursor-col-resize user-select-none touch-none -right-2 z-10 flex justify-center before:absolute before:w-px before:inset-y-0 before:bg-border before:-translate-x-px',
-                            }}
-                        />
-                    )} */}
+                    </span>
+                    <div className="flex items-center gap-x-2">
+                        {children}
+                        {header.column.getCanPin() &&
+                            header.column.getIsPinned() && (
+                                <Button
+                                    size="icon"
+                                    variant="secondary"
+                                    className="size-fit rounded-md p-1"
+                                    onClick={() => header.column.pin(false)}
+                                >
+                                    <PushPinSlashIcon className="size-3.5" />
+                                </Button>
+                            )}
+                        {header.column.getCanResize() && (
+                            <ColumnResizeHandle table={table} header={header} />
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
