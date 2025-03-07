@@ -5,7 +5,7 @@ export type TNavItemType = 'dropdown' | 'item'
 export interface INavItemBase {
     url?: string
     title: string
-    depth? : number
+    depth?: number
     isSub?: boolean
     icon?: IconType
 }
