@@ -116,6 +116,7 @@ const GenderTable = ({
         enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
+        columnResizeMode: 'onChange',
         getRowId: getRowIdFn,
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,

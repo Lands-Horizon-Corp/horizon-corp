@@ -1,4 +1,3 @@
-// import { TEntityId } from "@/server/types";
 import {
     IAccountingLedgerRequest,
     IAccountingLedgerPaginatedResource,
@@ -6,8 +5,9 @@ import {
 } from '@/server/types/accounts/accounting-ledger'
 import qs from 'query-string'
 import APIService from '../api-service'
+import { TEntityId } from '@/server/types'
 
-export default class IAccountingLedgerService {
+export default class AccountingLedgerService {
     private static readonly BASE_ENDPOINT = '/accounting-ledger'
 
     private static async makeRequest<T>(
@@ -78,6 +78,16 @@ export default class IAccountingLedgerService {
         const url = this.buildUrl('', { filters, preloads, pagination, sort })
         return this.makeRequest(() =>
             APIService.get<IAccountingLedgerPaginatedResource>(url)
+        )
+    }
+
+    public static async getLedgerByMemberId(memberId: TEntityId) {
+        const url = qs.stringifyUrl({
+            url: `${this.BASE_ENDPOINT}/member/${memberId}`,
+        })
+
+        return APIService.get<IAccountingLedgerResource>(url).then(
+            (response) => response.data
         )
     }
 }
