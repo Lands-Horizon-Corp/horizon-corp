@@ -26,6 +26,9 @@ importers:
       '@eslint/plugin-kit':
         specifier: 0.2.3
         version: 0.2.3
+      '@fvilers/disable-react-devtools':
+        specifier: ^1.3.0
+        version: 1.3.0
       '@hookform/resolvers':
         specifier: ^3.9.1
         version: 3.9.1(react-hook-form@7.53.2(react@18.3.1))
@@ -158,6 +161,9 @@ importers:
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
+      detectincognitojs:
+        specifier: ^1.3.7
+        version: 1.3.7
       dompurify:
         specifier: ^3.2.1
         version: 3.2.1
@@ -321,6 +327,12 @@ importers:
       vite:
         specifier: ^6.0.1
         version: 6.0.1(@types/node@22.10.1)(jiti@1.21.6)(sass-embedded@1.81.0)(sass@1.81.0)(tsx@4.19.2)(yaml@2.6.1)
+      vite-plugin-manifest-sri:
+        specifier: ^0.2.0
+        version: 0.2.0
+      vite-plugin-sri:
+        specifier: link:@types/small-tech/vite-plugin-sri
+        version: link:@types/small-tech/vite-plugin-sri
       vite-tsconfig-paths:
         specifier: ^5.1.3
         version: 5.1.3(typescript@5.7.2)(vite@6.0.1(@types/node@22.10.1)(jiti@1.21.6)(sass-embedded@1.81.0)(sass@1.81.0)(tsx@4.19.2)(yaml@2.6.1))
@@ -800,6 +812,9 @@ packages:
 
   '@floating-ui/utils@0.2.8':
     resolution: {integrity: sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==}
+
+  '@fvilers/disable-react-devtools@1.3.0':
+    resolution: {integrity: sha512-LbASP6voPkKS5b6OlQhupEDtMeoAakamauqLEFHatkQUTmblNY5nPK7/eSqKBXxExT6uypVPczpTsJjJIrhpOQ==}
 
   '@hookform/resolvers@3.9.1':
     resolution: {integrity: sha512-ud2HqmGBM0P0IABqoskKWI6PEf6ZDDBZkFqe2Vnl+mTHCEHzr3ISjjZyCwTjC/qpL25JC9aIDkloQejvMeq0ug==}
@@ -2494,6 +2509,9 @@ packages:
   detect-node-es@1.1.0:
     resolution: {integrity: sha512-ypdmJU/TbBby2Dxibuv7ZLW3Bs1QEmM7nHjEANfohJLvE0XVujisn1qPJcZxg+qDucsr+bP6fLD1rPS3AhJ7EQ==}
 
+  detectincognitojs@1.3.7:
+    resolution: {integrity: sha512-8Z90m1utiUMr0hz0eYqg1x0P5uM6hSqGe0TdLtZGunDEptoaoYmcWKbk2qmAezilErNbY9hmqcdNIYooUc925w==}
+
   didyoumean@1.2.2:
     resolution: {integrity: sha512-gxtyfqMg7GKyhQmb056K7M3xszy/myH8w+B4RT+QXBQsvAOdc3XymqDDPHx1BgPgsdAA5SIifona89YtRATDzw==}
 
@@ -3897,6 +3915,9 @@ packages:
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
 
+  vite-plugin-manifest-sri@0.2.0:
+    resolution: {integrity: sha512-Zt5jt19xTIJ91LOuQTCtNG7rTFc5OziAjBz2H5NdCGqaOD1nxrWExLhcKW+W4/q8/jOPCg/n5ncYEQmqCxiGQQ==}
+
   vite-tsconfig-paths@5.1.3:
     resolution: {integrity: sha512-0bz+PDlLpGfP2CigeSKL9NFTF1KtXkeHGZSSaGQSuPZH77GhoiQaA8IjYgOaynSuwlDTolSUEU0ErVvju3NURg==}
     peerDependencies:
@@ -4455,6 +4476,8 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
 
   '@floating-ui/utils@0.2.8': {}
+
+  '@fvilers/disable-react-devtools@1.3.0': {}
 
   '@hookform/resolvers@3.9.1(react-hook-form@7.53.2(react@18.3.1))':
     dependencies:
@@ -6129,6 +6152,8 @@ snapshots:
 
   detect-node-es@1.1.0: {}
 
+  detectincognitojs@1.3.7: {}
+
   didyoumean@1.2.2: {}
 
   dlv@1.1.3: {}
@@ -7492,6 +7517,8 @@ snapshots:
       - terser
       - tsx
       - yaml
+
+  vite-plugin-manifest-sri@0.2.0: {}
 
   vite-tsconfig-paths@5.1.3(typescript@5.7.2)(vite@6.0.1(@types/node@22.10.1)(jiti@1.21.6)(sass-embedded@1.81.0)(sass@1.81.0)(tsx@4.19.2)(yaml@2.6.1)):
     dependencies:

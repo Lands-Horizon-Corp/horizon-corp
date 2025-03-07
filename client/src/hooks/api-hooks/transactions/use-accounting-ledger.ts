@@ -8,12 +8,13 @@ import {
     IAccountingLedgerResource,
 } from '@/server/types/accounts/accounting-ledger'
 import {
+    IAPIHook,
     IAPIPreloads,
     IFilterPaginatedHookProps,
     IOperationCallbacks,
     IQueryProps,
 } from '../types'
-import IAccountingLedgerService from '@/server/api-service/transactions/accounting-ledger'
+import AccountingLedgerService from '@/server/api-service/transactions/accounting-ledger'
 import { TEntityId } from '@/server'
 
 export const useCreateAccountingLedger = ({
@@ -27,7 +28,7 @@ export const useCreateAccountingLedger = ({
         mutationKey: ['accounting-ledger', 'create'],
         mutationFn: async (newAccountingLedger) => {
             const [error, newLedger] = await withCatchAsync(
-                IAccountingLedgerService.create(newAccountingLedger, preloads)
+                AccountingLedgerService.create(newAccountingLedger, preloads)
             )
 
             if (error) {
@@ -79,7 +80,7 @@ export const useFilteredPaginatedIAccountingLedger = ({
             }
 
             const [error, result] = await withCatchAsync(
-                IAccountingLedgerService.getLedgers({
+                AccountingLedgerService.getLedgers({
                     preloads,
                     pagination,
                     sort: sort && toBase64(sort),
@@ -106,5 +107,37 @@ export const useFilteredPaginatedIAccountingLedger = ({
         },
         enabled,
         retry: 1,
+    })
+}
+
+// for getting account ledger base on memberID
+export const useGetAccountLedger = ({
+    memberId,
+    onError,
+    onSuccess,
+}: IAPIHook<IAccountingLedgerResource, string> & { memberId: TEntityId }) => {
+    const queryClient = useQueryClient()
+
+    return useQuery<IAccountingLedgerResource>({
+        queryKey: ['accountLedger', memberId],
+        queryFn: async () => {
+            const [error, data] = await withCatchAsync(
+                AccountingLedgerService.getLedgerByMemberId(memberId)
+            )
+
+            if (error) {
+                const errorMessage = error.message || 'An error occurred'
+                if (onError) onError(errorMessage)
+                else toast.error(errorMessage)
+                throw new Error(errorMessage)
+            }
+
+            if (onSuccess) onSuccess(data)
+
+            queryClient.setQueryData(['accountLedger', memberId], data)
+
+            return data
+        },
+        enabled: !!memberId,
     })
 }
