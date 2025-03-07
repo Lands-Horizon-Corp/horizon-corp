@@ -56,7 +56,7 @@ const AppSidebarButton = React.forwardRef<
                 }
                 onClick?.(some)
             }}
-            isActive={isRouteMatched && item.type == 'item'}
+            isActive={isRouteMatched}
         >
             <div
                 className={cn(
@@ -92,10 +92,10 @@ const AppSidebarItem = ({ navItem }: Props) => {
             <SidebarMenuItem className="my-0">
                 <Collapsible className="group/collapsible [&[data-state=open]>button>svg:last-child]:rotate-90">
                     <CollapsibleTrigger asChild>
-                        <AppSidebarButton item={navItem} />
+                        <AppSidebarButton item={{ ...navItem }} />
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="py-0.5">
-                        <SidebarMenuSub className="mx-0 ml-3 gap-y-1 px-0 pl-2">
+                    <CollapsibleContent className="pt-1.5">
+                        <SidebarMenuSub className="mx-0 ml-3 gap-y-2 px-0 pl-2">
                             {navItem.items.map((subItem, index) => (
                                 <AppSidebarItem
                                     key={index}
