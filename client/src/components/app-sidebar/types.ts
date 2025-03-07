@@ -3,10 +3,11 @@ import { IconType } from 'react-icons/lib'
 export type TNavItemType = 'dropdown' | 'item'
 
 export interface INavItemBase {
+    url?: string
     title: string
+    depth? : number
     isSub?: boolean
     icon?: IconType
-    url?: string
 }
 
 export interface INavItemSingle extends INavItemBase {
