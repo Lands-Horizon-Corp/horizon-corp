@@ -43,7 +43,7 @@ const DataTableHeader = <TData,>({
                                 <TableHead
                                     key={header.id}
                                     className={cn(
-                                        'relative h-10 border-t data-[pinned]:bg-muted/80 data-[pinned]:backdrop-blur-sm [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border'
+                                        'relative h-10 border-t data-[pinned]:bg-muted/90 data-[pinned]:backdrop-blur-md [&:not([data-pinned]):has(+[data-pinned])_div.cursor-col-resize:last-child]:opacity-0 [&[data-last-col=left]_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right]:last-child_div.cursor-col-resize:last-child]:opacity-0 [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border'
                                     )}
                                     colSpan={header.colSpan}
                                     style={{ ...getPinningStyles(column) }}

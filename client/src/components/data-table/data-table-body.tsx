@@ -38,7 +38,7 @@ const DataTableBody = <TData,>({
                         return (
                             <TableCell
                                 key={cell.id}
-                                className="truncate data-[pinned]:bg-muted/60 data-[pinned]:backdrop-blur-sm [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border"
+                                className="data-[pinned]:bg-muted/60 data-[pinned]:backdrop-blur-md [&[data-pinned=left][data-last-col=left]]:border-r [&[data-pinned=right][data-last-col=right]]:border-l [&[data-pinned][data-last-col]]:border-border [&_*]:truncate"
                                 style={{
                                     ...getPinningStyles(column),
                                 }}
