@@ -93,8 +93,8 @@ const AppSidebarItem = ({ navItem }: Props) => {
                     <CollapsibleTrigger asChild>
                         <AppSidebarButton item={navItem} />
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-1.5">
-                        <SidebarMenuSub className="mx-0 ml-3 gap-y-2 px-0 pl-2">
+                    <CollapsibleContent className="py-0.5">
+                        <SidebarMenuSub className="mx-0 ml-3 gap-y-1 px-0 pl-2">
                             {navItem.items.map((subItem, index) => (
                                 <AppSidebarItem
                                     key={index}
