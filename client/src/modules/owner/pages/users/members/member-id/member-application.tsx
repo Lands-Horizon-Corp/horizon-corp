@@ -21,7 +21,16 @@ const MemberApplication = () => {
                     memberId: member.id,
                 }}
                 className="max-w-7xl"
+                branchPickerCreateProps={{
+                    // TODO: Must have default company id provided
+                    disabledFields: ['companyId'],
+                }}
+                memberGenderCreateProps={{}}
+                memberTypeOptionsFilter={{}}
                 disabledFields={['memberId']}
+                memberClassificationCreateProps={{}}
+                memberOccupationComboboxCreateProps={{}}
+                educationalAttainmentComboboxCreateProps={{}}
             />
         </PageContainer>
     )
