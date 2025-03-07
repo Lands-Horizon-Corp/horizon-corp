@@ -17,7 +17,6 @@ import {
     IBankResponse,
 } from '@/server/types/bank'
 import { TEntityId } from '@/server'
-import { SampleBankData } from '@/modules/owner/pages/transaction/transaction-dummy-data'
 
 export const useCreateBank = ({
     showMessage = true,
@@ -153,7 +152,13 @@ export const useFilteredPaginatedBanks = ({
 
             return result
         },
-        initialData: SampleBankData,
+        initialData: {
+            data: [],
+            pages: [],
+            totalSize: 0,
+            totalPage: 1,
+            ...pagination,
+        },
         enabled,
         retry: 1,
     })
