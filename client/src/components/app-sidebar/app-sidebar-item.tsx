@@ -66,14 +66,15 @@ const AppSidebarButton = React.forwardRef<
                 )}
             />
             <span>
-                {item.type === 'dropdown' && item.icon && !item.isSub && (
-                    <item.icon
-                        className={cn(
-                            'mr-2 inline size-[18px] text-muted-foreground/80 duration-500 group-hover/navself:text-foreground',
-                            isRouteMatched && 'text-foreground'
-                        )}
-                    />
-                )}
+                {(item.depth === 1 || item.type === 'dropdown') &&
+                    item.icon && (
+                        <item.icon
+                            className={cn(
+                                'mr-2 inline size-[18px] text-muted-foreground/80 duration-500 group-hover/navself:text-foreground',
+                                isRouteMatched && 'text-foreground'
+                            )}
+                        />
+                    )}
                 {item.title}
             </span>
             {item.type === 'dropdown' && (
