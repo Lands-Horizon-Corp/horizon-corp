@@ -56,7 +56,7 @@ const AppSidebarButton = React.forwardRef<
                 }
                 onClick?.(some)
             }}
-            isActive={isRouteMatched}
+            isActive={isRouteMatched && item.type !== 'dropdown'}
         >
             <div
                 className={cn(
