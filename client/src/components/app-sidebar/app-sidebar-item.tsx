@@ -56,7 +56,11 @@ const AppSidebarButton = React.forwardRef<
                 }
                 onClick?.(some)
             }}
+<<<<<<< Updated upstream
             isActive={isRouteMatched && item.type == 'item'}
+=======
+            isActive={isRouteMatched && item.type !== 'dropdown'}
+>>>>>>> Stashed changes
         >
             <div
                 className={cn(
