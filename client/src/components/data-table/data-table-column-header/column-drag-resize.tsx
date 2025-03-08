@@ -16,7 +16,7 @@ const ColumnResizeHandle = <TData, TValue>({
     return (
         <div
             className={cn(
-                'group absolute right-0 top-0 flex h-1/2 w-px translate-y-1/2 cursor-col-resize items-center justify-center duration-100 ease-in-out',
+                'group absolute right-0 top-0 flex h-1/2 w-px translate-y-1/2 cursor-col-resize items-center justify-center bg-muted-foreground/30 duration-100 ease-in-out',
                 header.column.getIsResizing() &&
                     'z-50 h-full translate-y-0 bg-foreground/80'
             )}
