@@ -61,15 +61,17 @@ const AccountsComputationTypeTableColumns = (
                     />
                 </div>
             ),
+            maxSize: 60,
             enableSorting: false,
             enableHiding: false,
-            maxSize: 80,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter<IAccountsComputationTypeResource>
                             displayText="Name"
@@ -84,16 +86,14 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter<IAccountsComputationTypeResource>
                             displayText="Description"
@@ -108,16 +108,14 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IAccountsComputationTypeResource>
                             displayText="Date Created"
@@ -132,16 +130,14 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'createdBy',
             accessorKey: 'createdBy',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Created By"
-                />
+                <DataTableColumnHeader {...props} title="Created By" />
             ),
             cell: ({
                 row: {
@@ -149,16 +145,14 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{createdBy}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'updatedAt',
             accessorKey: 'updatedAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Last Updated"
-                >
+                <DataTableColumnHeader {...props} title="Last Updated">
                     <ColumnActions {...props}>
                         <DateFilter<IAccountsComputationTypeResource>
                             displayText="Last Updated"
@@ -173,16 +167,14 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{toReadableDate(updatedAt)}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'updatedBy',
             accessorKey: 'updatedBy',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Updated By"
-                />
+                <DataTableColumnHeader {...props} title="Updated By" />
             ),
             cell: ({
                 row: {
@@ -190,6 +182,8 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{updatedBy}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
     ]
 }

@@ -79,7 +79,7 @@ const companiesTableColumns = (
             id: 'Name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="name"
@@ -110,7 +110,7 @@ const companiesTableColumns = (
             id: 'Logo',
             accessorKey: 'media',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Logo">
+                <DataTableColumnHeader {...props} title="Logo">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -129,7 +129,7 @@ const companiesTableColumns = (
             id: 'address',
             accessorKey: 'address',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Address">
+                <DataTableColumnHeader {...props} title="Address">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="address"
@@ -150,7 +150,7 @@ const companiesTableColumns = (
             id: 'branches',
             accessorKey: 'branches',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Branches">
+                <DataTableColumnHeader {...props} title="Branches">
                     <ColumnActions {...props}>
                         <NumberFilter
                             displayText="# Branches"
@@ -170,7 +170,7 @@ const companiesTableColumns = (
             id: 'Owner.username',
             accessorKey: 'owner.username',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Owner">
+                <DataTableColumnHeader {...props} title="Owner">
                     <ColumnActions {...props}>
                         <TextFilter<ICompanyResource>
                             displayText="Owner"
@@ -199,11 +199,7 @@ const companiesTableColumns = (
             id: 'Contact Number',
             accessorKey: 'contactNumber',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Contact Number"
-                >
+                <DataTableColumnHeader {...props} title="Contact Number">
                     <ColumnActions {...props}>
                         <TextFilter<ICompanyResource>
                             displayText="Contact"
@@ -223,7 +219,7 @@ const companiesTableColumns = (
             id: 'Verify Status',
             accessorKey: 'isAdminVerified',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Verified">
+                <DataTableColumnHeader {...props} title="Verified">
                     <ColumnActions {...props}>
                         <DataTableMultiSelectFilter<ICompanyResource, boolean>
                             mode="equal"
@@ -273,11 +269,7 @@ const companiesTableColumns = (
             id: 'Created At',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<ICompanyResource>
                             displayText="Date Created"

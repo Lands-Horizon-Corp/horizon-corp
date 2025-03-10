@@ -188,6 +188,7 @@ const AccountsComputationTypeTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    dynamicTableSize
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
                     className="mb-2"

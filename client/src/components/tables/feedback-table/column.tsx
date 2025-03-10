@@ -66,7 +66,7 @@ const AdminCompaniesFeedbackTableColumns = (
             id: 'email',
             accessorKey: 'email',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="email"
@@ -91,16 +91,13 @@ const AdminCompaniesFeedbackTableColumns = (
                     </Link>
                 </div>
             ),
+            enablePinning: false,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -109,16 +106,13 @@ const AdminCompaniesFeedbackTableColumns = (
                     original: { description },
                 },
             }) => <div>{description}</div>,
+            enablePinning: false,
         },
         {
             id: 'feedbackType',
             accessorKey: 'feedbackType',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Feedback Type"
-                >
+                <DataTableColumnHeader {...props} title="Feedback Type">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="feedbackType"
@@ -133,6 +127,7 @@ const AdminCompaniesFeedbackTableColumns = (
                     original: { feedbackType },
                 },
             }) => <div>{feedbackType}</div>,
+            enablePinning: false,
         },
     ]
 }

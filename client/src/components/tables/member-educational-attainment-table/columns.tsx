@@ -63,8 +63,8 @@ const memberEducationalAttainmentTableColumns = (
             ),
             enableSorting: false,
             enableHiding: false,
-            maxSize: 80,
             minSize: 80,
+            maxSize: 30,
         },
         {
             id: 'name',
@@ -85,6 +85,8 @@ const memberEducationalAttainmentTableColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'description',
@@ -105,6 +107,8 @@ const memberEducationalAttainmentTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'createdAt',
@@ -125,6 +129,8 @@ const memberEducationalAttainmentTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
     ]
 }

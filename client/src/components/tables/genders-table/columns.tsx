@@ -59,15 +59,17 @@ const genderTableColumns = (
                     />
                 </div>
             ),
+            maxSize: 30,
             enableSorting: false,
             enableHiding: false,
-            maxSize: 80,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter<IGenderResource>
                             displayText="Name"
@@ -82,16 +84,15 @@ const genderTableColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
+            enableHiding: false,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter<IGenderResource>
                             displayText="Description"
@@ -106,16 +107,15 @@ const genderTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
+            enableHiding: false,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IGenderResource>
                             displayText="Date Created"
@@ -130,6 +130,9 @@ const genderTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            enableHiding: false,
+            enablePinning: false,
+            enableResizing: false,
         },
     ]
 }
