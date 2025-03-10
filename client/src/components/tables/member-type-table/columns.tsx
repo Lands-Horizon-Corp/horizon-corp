@@ -60,11 +60,11 @@ const memberTypeTableColumns = (
                     />
                 </div>
             ),
+            maxSize: 40,
             enableSorting: false,
-            enableResizing: false,
             enableHiding: false,
-            size: 80,
-            minSize: 80,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'name',
