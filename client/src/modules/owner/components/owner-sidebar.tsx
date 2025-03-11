@@ -78,14 +78,15 @@ const ownerSidebarItem: INavItem[] = [
                 type: 'item',
                 url: '/withdrawals',
             },
+            {
+                icon: BillIcon,
+                title: 'Payment Types',
+                type: 'item',
+                url: '/payment-types',
+            },
         ],
     },
-    {
-        icon: BillIcon,
-        title: 'Payment Types',
-        type: 'item',
-        url: '/payment-types',
-    },
+
     {
         title: 'Users',
         icon: Users3Icon,
