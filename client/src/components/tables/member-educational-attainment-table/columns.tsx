@@ -63,13 +63,14 @@ const memberEducationalAttainmentTableColumns = (
             ),
             enableSorting: false,
             enableHiding: false,
-            maxSize: 80,
+            minSize: 80,
+            maxSize: 30,
         },
         {
             id: 'name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberEducationalAttainmentResource>
                             displayText="Name"
@@ -84,16 +85,14 @@ const memberEducationalAttainmentTableColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberEducationalAttainmentResource>
                             displayText="Description"
@@ -108,16 +107,14 @@ const memberEducationalAttainmentTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IMemberEducationalAttainmentResource>
                             displayText="Date Created"
@@ -132,6 +129,8 @@ const memberEducationalAttainmentTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            enablePinning: false,
+            enableResizing: false,
         },
     ]
 }

@@ -6,7 +6,10 @@ import DataTableToolbar, {
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 
-import { IAccountingLedgerTableColumnProps } from './columns'
+import {
+    accountingLedgerGlobalSearchTargets,
+    IAccountingLedgerTableColumnProps,
+} from './columns'
 
 import { cn } from '@/lib'
 import FilterContext, {
@@ -72,6 +75,10 @@ const AccountsLedgerTable = ({
                 )}
             >
                 <DataTableToolbar
+                    globalSearchProps={{
+                        defaultMode: 'equal',
+                        targets: accountingLedgerGlobalSearchTargets,
+                    }}
                     table={table}
                     refreshActionProps={{
                         onClick: () => refetch(),
@@ -88,6 +95,7 @@ const AccountsLedgerTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    dynamicTableSize
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
                     className="mb-2"

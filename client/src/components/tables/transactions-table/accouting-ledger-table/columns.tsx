@@ -36,11 +36,7 @@ const accountingLedgerTableColumns =
                 id: 'description',
                 accessorKey: 'description',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Account title"
-                    >
+                    <DataTableColumnHeader {...props} title="Account title">
                         <ColumnActions {...props}>
                             <TextFilter
                                 displayText="Account title"
@@ -52,17 +48,18 @@ const accountingLedgerTableColumns =
                 cell: ({ row: { original } }) => (
                     <div>{original.description}</div>
                 ),
+                maxSize: 40,
+                enableHiding: false,
+                enablePinning: false,
+                enableSorting: false,
                 enableMultiSort: true,
+                enableResizing: false,
             },
             {
                 id: 'orNumber',
                 accessorKey: 'orNumber',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="OR Number"
-                    >
+                    <DataTableColumnHeader {...props} title="OR Number">
                         <ColumnActions {...props}>
                             <TextFilter
                                 displayText="OR Number"
@@ -78,11 +75,7 @@ const accountingLedgerTableColumns =
                 id: 'transactionDate',
                 accessorKey: 'transactionDate',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Transaction Date"
-                    >
+                    <DataTableColumnHeader {...props} title="Transaction Date">
                         <ColumnActions {...props}>
                             <DateFilter
                                 displayText="Transaction Date"
@@ -100,7 +93,7 @@ const accountingLedgerTableColumns =
                 id: 'debit',
                 accessorKey: 'debit',
                 header: (props) => (
-                    <DataTableColumnHeader {...props} isResizable title="Debit">
+                    <DataTableColumnHeader {...props} title="Debit">
                         <ColumnActions {...props}>
                             <TextFilter displayText="Debit" field="debit" />
                         </ColumnActions>
@@ -113,11 +106,7 @@ const accountingLedgerTableColumns =
                 id: 'credit',
                 accessorKey: 'credit',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Credit"
-                    >
+                    <DataTableColumnHeader {...props} title="Credit">
                         <ColumnActions {...props}>
                             <TextFilter displayText="Credit" field="credit" />
                         </ColumnActions>
@@ -130,11 +119,7 @@ const accountingLedgerTableColumns =
                 id: 'balance',
                 accessorKey: 'balance',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Balance"
-                    >
+                    <DataTableColumnHeader {...props} title="Balance">
                         <ColumnActions {...props}>
                             <TextFilter displayText="Balance" field="balance" />
                         </ColumnActions>
@@ -151,7 +136,6 @@ const accountingLedgerTableColumns =
                 header: (props) => (
                     <DataTableColumnHeader
                         {...props}
-                        isResizable
                         title="Transaction Source"
                     >
                         <ColumnActions {...props}>
@@ -171,11 +155,7 @@ const accountingLedgerTableColumns =
                 id: 'createdAt',
                 accessorKey: 'createdAt',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Created At"
-                    >
+                    <DataTableColumnHeader {...props} title="Created At">
                         <ColumnActions {...props}>
                             <DateFilter
                                 displayText="Created At"

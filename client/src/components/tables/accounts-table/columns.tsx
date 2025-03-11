@@ -81,11 +81,7 @@ const AccountsTableColumns = (
             id: 'accountCode',
             accessorKey: 'accountCode',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Account Code"
-                >
+                <DataTableColumnHeader {...props} title="Account Code">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="accountCode"
@@ -106,11 +102,7 @@ const AccountsTableColumns = (
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="description"
@@ -133,7 +125,6 @@ const AccountsTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader
                     {...props}
-                    isResizable
                     title="Alternative Description"
                 >
                     <ColumnActions {...props}>
@@ -156,11 +147,7 @@ const AccountsTableColumns = (
             id: 'type',
             accessorKey: 'type',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Account Type"
-                >
+                <DataTableColumnHeader {...props} title="Account Type">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -175,11 +162,7 @@ const AccountsTableColumns = (
             id: 'maxAmount',
             accessorKey: 'maxAmount',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Max Amount"
-                >
+                <DataTableColumnHeader {...props} title="Max Amount">
                     <ColumnActions {...props}>
                         <NumberFilter
                             field="maxAmount"
@@ -199,11 +182,7 @@ const AccountsTableColumns = (
             id: 'minAmount',
             accessorKey: 'minAmount',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Min Amount"
-                >
+                <DataTableColumnHeader {...props} title="Min Amount">
                     <ColumnActions {...props}>
                         <NumberFilter
                             field="minAmount"
@@ -223,11 +202,7 @@ const AccountsTableColumns = (
             id: 'computationType',
             accessorKey: 'computationType',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Computation Type"
-                >
+                <DataTableColumnHeader {...props} title="Computation Type">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -244,7 +219,6 @@ const AccountsTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader
                     {...props}
-                    isResizable
                     title="Earned/Unearned Interest"
                 >
                     <ColumnActions {...props} />
@@ -261,11 +235,7 @@ const AccountsTableColumns = (
             id: 'otherInformationOfAnAccount',
             accessorKey: 'otherInformationOfAnAccount',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Other Information"
-                >
+                <DataTableColumnHeader {...props} title="Other Information">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -280,11 +250,7 @@ const AccountsTableColumns = (
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IAccountsResource>
                             displayText="Date Created"

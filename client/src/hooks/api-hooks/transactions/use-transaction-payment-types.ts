@@ -23,6 +23,16 @@ export const useFilteredPaginatedTransactionPaymentTypes = ({
     preloads,
     pagination = { pageSize: 20, pageIndex: 1 },
 }: IFilterPaginatedHookProps & IQueryProps = {}) => {
+    const queryClient = useQueryClient()
+
+    const cachedData = queryClient.getQueryData([
+        'transaction-types',
+        'resource-query',
+        filterPayload,
+        pagination,
+        sort,
+    ]) as ITransactionPaymentTypePaginatedResource | undefined
+
     return useQuery<ITransactionPaymentTypePaginatedResource, string>({
         queryKey: [
             'transaction-types',
@@ -32,6 +42,9 @@ export const useFilteredPaginatedTransactionPaymentTypes = ({
             sort,
         ],
         queryFn: async () => {
+            if (cachedData) {
+                return cachedData
+            }
             const [error, result] = await withCatchAsync(
                 TransactionPaymentTypesService.getTransactionTypes({
                     preloads,
@@ -40,16 +53,24 @@ export const useFilteredPaginatedTransactionPaymentTypes = ({
                     filters: filterPayload && toBase64(filterPayload),
                 })
             )
-
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 throw errorMessage
             }
-
+            queryClient.setQueryData(
+                [
+                    'transaction-types',
+                    'resource-query',
+                    filterPayload,
+                    pagination,
+                    sort,
+                ],
+                result
+            )
             return result
         },
-        initialData: {
+        initialData: cachedData ?? {
             data: [],
             pages: [],
             totalSize: 0,
@@ -159,14 +180,12 @@ export const useUpdateTransactionType = ({
             const [error, response] = await withCatchAsync(
                 TransactionPaymentTypesService.update(id, data, preloads)
             )
-
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 if (onError) onError(errorMessage)
                 else toast.error(errorMessage)
                 throw errorMessage
             }
-
             queryClient.setQueriesData<ITransactionPaymentTypePaginatedResource>(
                 {
                     queryKey: ['transaction-types', 'resource-query'],
@@ -174,7 +193,6 @@ export const useUpdateTransactionType = ({
                 },
                 (oldData) => {
                     if (!oldData) return oldData
-
                     return {
                         ...oldData,
                         data: oldData.data.map((transType) =>
@@ -183,19 +201,15 @@ export const useUpdateTransactionType = ({
                     }
                 }
             )
-
             queryClient.setQueryData<ITransactionPaymentTypesResource>(
                 ['transaction-types', id],
                 response
             )
-
             queryClient.setQueryData<ITransactionPaymentTypesResource>(
                 ['transaction-types', 'loader', id],
                 response
             )
-
             toast.success('Transaction Type Updated')
-
             onSuccess?.(response)
             return response
         },

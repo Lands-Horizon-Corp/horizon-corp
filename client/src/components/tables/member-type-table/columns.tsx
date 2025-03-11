@@ -51,7 +51,7 @@ const memberTypeTableColumns = (
                 </div>
             ),
             cell: ({ row }) => (
-                <div className="flex w-fit items-center gap-x-1 px-0">
+                <div className="flex w-fit max-w-[80] items-center gap-x-1 px-0">
                     {opts?.actionComponent?.({ row })}
                     <Checkbox
                         checked={row.getIsSelected()}
@@ -60,15 +60,17 @@ const memberTypeTableColumns = (
                     />
                 </div>
             ),
+            maxSize: 40,
             enableSorting: false,
             enableHiding: false,
-            maxSize: 80,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberTypeResource>
                             displayText="Name"
@@ -83,12 +85,14 @@ const memberTypeTableColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
+            enableResizing: false,
+            minSize: 100,
         },
         {
             id: 'prefix',
             accessorKey: 'prefix',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Prefix">
+                <DataTableColumnHeader {...props} title="Prefix">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberTypeResource>
                             displayText="Prefix"
@@ -103,16 +107,14 @@ const memberTypeTableColumns = (
                 },
             }) => <div>{prefix}</div>,
             enableMultiSort: true,
+            enableResizing: false,
+            minSize: 150,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberTypeResource>
                             displayText="Description"
@@ -127,16 +129,14 @@ const memberTypeTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
+            enableResizing: false,
+            minSize: 150,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IMemberTypeResource>
                             displayText="Date Created"
@@ -151,6 +151,8 @@ const memberTypeTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            enableResizing: false,
+            minSize: 150,
         },
     ]
 }

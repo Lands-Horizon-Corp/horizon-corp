@@ -63,13 +63,14 @@ const memberClassificationTableColumns = (
             ),
             enableSorting: false,
             enableHiding: false,
-            maxSize: 80,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberClassificationResource>
                             displayText="Name"
@@ -84,16 +85,15 @@ const memberClassificationTableColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
+            enableHiding: false,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberClassificationResource>
                             displayText="Description"
@@ -108,16 +108,15 @@ const memberClassificationTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
+            enableHiding: false,
+            enablePinning: false,
+            enableResizing: false,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IMemberClassificationResource>
                             displayText="Date Created"
@@ -132,6 +131,9 @@ const memberClassificationTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            enableHiding: false,
+            enablePinning: false,
+            enableResizing: false,
         },
     ]
 }

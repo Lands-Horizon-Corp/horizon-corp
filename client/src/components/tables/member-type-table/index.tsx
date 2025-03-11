@@ -131,7 +131,7 @@ const MemberTypeTable = ({
         <FilterContext.Provider value={filterState}>
             <div
                 className={cn(
-                    'flex h-full flex-col gap-y-2',
+                    'relative z-0 flex h-full flex-col gap-y-2',
                     className,
                     !isScrollable && 'h-fit !max-h-none'
                 )}
@@ -183,9 +183,10 @@ const MemberTypeTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    dynamicTableSize
+                    className="mb-2"
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

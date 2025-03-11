@@ -73,13 +73,14 @@ const membersTableColumns = (
             enableSorting: false,
             enableResizing: false,
             enableHiding: false,
-            maxSize: 80,
+            size: 80,
+            minSize: 80,
         },
         {
             id: 'Media',
             accessorKey: 'media',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Picture">
+                <DataTableColumnHeader {...props} title="Picture">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -88,24 +89,23 @@ const membersTableColumns = (
                     original: { media },
                 },
             }) => (
-                <div>
-                    <ImageDisplay src={media?.downloadURL} className="size-7" />
+                <div className="mx-auto">
+                    <ImageDisplay
+                        src={media?.downloadURL}
+                        className="mx-auto size-7"
+                    />
                 </div>
             ),
             enableSorting: false,
             enableResizing: false,
             enableHiding: false,
-            maxSize: 80,
+            maxSize: 100,
         },
         {
             id: 'Firstname',
             accessorKey: 'firstName',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="First Name"
-                >
+                <DataTableColumnHeader {...props} title="First Name">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="firstName"
@@ -121,16 +121,15 @@ const membersTableColumns = (
                 },
             }) => <div onClick={(e) => e.stopPropagation()}>{firstName}</div>,
             enableMultiSort: true,
+            enableResizing: true,
+            size: 100,
+            minSize: 150,
         },
         {
             id: 'middleName',
             accessorKey: 'middleName',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Middle Name"
-                >
+                <DataTableColumnHeader {...props} title="Middle Name">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="middleName"
@@ -146,12 +145,14 @@ const membersTableColumns = (
                 },
             }) => <div onClick={(e) => e.stopPropagation()}>{middleName}</div>,
             enableMultiSort: true,
+            enableResizing: true,
+            minSize: 150,
         },
         {
             id: 'lastName',
             accessorKey: 'lastName',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Last Name">
+                <DataTableColumnHeader {...props} title="Last Name">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="lastName"
@@ -167,12 +168,14 @@ const membersTableColumns = (
                 },
             }) => <div onClick={(e) => e.stopPropagation()}>{lastName}</div>,
             enableMultiSort: true,
+            enableResizing: true,
+            minSize: 150,
         },
         {
             id: 'Passbook',
             accessorKey: 'memberProfile.passbookNumber',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="PB">
+                <DataTableColumnHeader {...props} title="PB">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="memberProfile.passbookNumber"
@@ -192,12 +195,14 @@ const membersTableColumns = (
                 </div>
             ),
             enableMultiSort: true,
+            enableResizing: true,
+            minSize: 150,
         },
         {
             id: 'permanentAddress',
             accessorKey: 'permanentAddress',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Address">
+                <DataTableColumnHeader {...props} title="Address">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="permanentAddress"
@@ -213,17 +218,14 @@ const membersTableColumns = (
                 },
             }) => <div>{permanentAddress}</div>,
             enableMultiSort: true,
-            minSize: 400,
+            enableResizing: true,
+            minSize: 150,
         },
         {
             id: 'contactNumber',
             accessorKey: 'contactNumber',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Contact Number"
-                >
+                <DataTableColumnHeader {...props} title="Contact Number">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberResource>
                             displayText="Contact"
@@ -247,12 +249,14 @@ const membersTableColumns = (
                 </div>
             ),
             enableMultiSort: true,
+            enableResizing: true,
+            minSize: 150,
         },
         {
             id: 'email',
             accessorKey: 'email',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Email">
+                <DataTableColumnHeader {...props} title="Email">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberResource>
                             displayText="Email"
@@ -276,12 +280,15 @@ const membersTableColumns = (
                 </div>
             ),
             enableMultiSort: true,
+            enableResizing: true,
+            size: 200,
+            minSize: 150,
         },
         {
             id: 'status',
             accessorKey: 'status',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Status">
+                <DataTableColumnHeader {...props} title="Status">
                     <ColumnActions {...props}>
                         <DataTableMultiSelectFilter<
                             IMemberResource,
@@ -343,16 +350,14 @@ const membersTableColumns = (
                 </div>
             ),
             enableMultiSort: true,
+            enableResizing: false,
+            minSize: 120,
         },
         {
             id: 'isEmailVerified',
             accessorKey: 'isEmailVerified',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Email Verified"
-                >
+                <DataTableColumnHeader {...props} title="Email Verified">
                     <ColumnActions {...props}>
                         <DataTableMultiSelectFilter<IMemberResource, boolean>
                             mode="equal"
@@ -392,11 +397,7 @@ const membersTableColumns = (
             id: 'isContactVerified',
             accessorKey: 'isContactVerified',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Contact Verified"
-                >
+                <DataTableColumnHeader {...props} title="Contact Verified">
                     <ColumnActions {...props}>
                         <DataTableMultiSelectFilter<IMemberResource, boolean>
                             mode="equal"
@@ -436,11 +437,7 @@ const membersTableColumns = (
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IMemberResource>
                             displayText="Date Created"
@@ -455,6 +452,7 @@ const membersTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            enableResizing: false,
             minSize: 180,
         },
     ]

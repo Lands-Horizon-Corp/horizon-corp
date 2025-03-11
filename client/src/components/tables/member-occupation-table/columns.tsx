@@ -62,14 +62,15 @@ const memberOccupationColumns = (
                 </div>
             ),
             enableSorting: false,
+            enableResizing: false,
             enableHiding: false,
-            maxSize: 80,
+            maxSize: 30,
         },
         {
             id: 'name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberOccupationResource>
                             displayText="Name"
@@ -84,16 +85,13 @@ const memberOccupationColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
+            enableResizing: false,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter<IMemberOccupationResource>
                             displayText="Description"
@@ -108,16 +106,13 @@ const memberOccupationColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
+            enableResizing: false,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IMemberOccupationResource>
                             displayText="Date Created"
@@ -132,6 +127,7 @@ const memberOccupationColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            enableResizing: false,
         },
     ]
 }

@@ -25,28 +25,33 @@ export const useCreateAccountingLedger = ({
     const queryClient = useQueryClient()
 
     return useMutation<void, string, IAccountingLedgerResource>({
-        mutationKey: ['accounting-ledger', 'create'],
         mutationFn: async (newAccountingLedger) => {
             const [error, newLedger] = await withCatchAsync(
                 AccountingLedgerService.create(newAccountingLedger, preloads)
             )
-
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 onError?.(errorMessage)
                 throw errorMessage
             }
-
-            queryClient.invalidateQueries({
+            const cachedData =
+                queryClient.getQueryData<IAccountingLedgerPaginatedResource>([
+                    'accounting-ledger',
+                    'resource-query',
+                ])
+            if (cachedData) {
+                queryClient.setQueryData<IAccountingLedgerPaginatedResource>(
+                    ['accounting-ledger', 'resource-query'],
+                    {
+                        ...cachedData,
+                        data: [newLedger, ...cachedData.data],
+                    }
+                )
+            }
+            await queryClient.invalidateQueries({
                 queryKey: ['accounting-ledger', 'resource-query'],
             })
-            queryClient.invalidateQueries({
-                queryKey: ['accounting-ledger', newLedger.id],
-            })
-            queryClient.removeQueries({
-                queryKey: ['accounting-ledger', 'loader', newLedger.id],
-            })
-
+            toast.success('Accounting ledger created successfully')
             onSuccess?.(newLedger)
         },
     })
@@ -54,7 +59,7 @@ export const useCreateAccountingLedger = ({
 
 export const useFilteredPaginatedIAccountingLedger = ({
     sort,
-    enabled,
+    enabled = true,
     filterPayload,
     preloads = [],
     showMessage = true,
@@ -68,36 +73,35 @@ export const useFilteredPaginatedIAccountingLedger = ({
         queryKey: [
             'accounting-ledger',
             'resource-query',
-            filterPayload,
+            JSON.stringify(filterPayload),
             memberProfileId,
-            pagination,
-            sort,
+            JSON.stringify(pagination),
+            JSON.stringify(sort),
         ],
         queryFn: async () => {
             const filters = {
                 ...(filterPayload || {}),
-                ...(memberProfileId && { memberProfileId: memberProfileId }),
+                ...(memberProfileId && { memberProfileId }),
             }
-
             const [error, result] = await withCatchAsync(
                 AccountingLedgerService.getLedgers({
                     preloads,
                     pagination,
-                    sort: sort && toBase64(sort),
+                    sort: sort ? toBase64(sort) : undefined,
                     filters: Object.keys(filters).length
                         ? toBase64(JSON.stringify(filters))
                         : undefined,
                 })
             )
-
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 if (showMessage) toast.error(errorMessage)
                 throw errorMessage
             }
-
             return result
         },
+        enabled,
+        retry: 1,
         initialData: {
             data: [],
             pages: [],
@@ -105,8 +109,6 @@ export const useFilteredPaginatedIAccountingLedger = ({
             totalPage: 1,
             ...pagination,
         },
-        enabled,
-        retry: 1,
     })
 }
 
@@ -121,19 +123,21 @@ export const useGetAccountLedger = ({
     return useQuery<IAccountingLedgerResource>({
         queryKey: ['accountLedger', memberId],
         queryFn: async () => {
+            const cachedData =
+                queryClient.getQueryData<IAccountingLedgerResource>([
+                    'accountLedger',
+                    memberId,
+                ])
+            if (cachedData) return cachedData
             const [error, data] = await withCatchAsync(
                 AccountingLedgerService.getLedgerByMemberId(memberId)
             )
-
             if (error) {
                 const errorMessage = error.message || 'An error occurred'
-                if (onError) onError(errorMessage)
-                else toast.error(errorMessage)
+                onError?.(errorMessage) || toast.error(errorMessage)
                 throw new Error(errorMessage)
             }
-
-            if (onSuccess) onSuccess(data)
-
+            onSuccess?.(data)
             queryClient.setQueryData(['accountLedger', memberId], data)
 
             return data

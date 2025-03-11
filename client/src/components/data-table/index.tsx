@@ -21,12 +21,13 @@ import DataTableFooter from './data-table-footer'
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 
-interface Props<TData> extends IBaseCompNoChild {
+interface ITableProps<TData> extends IBaseCompNoChild {
     table: TableInstance<TData>
     rowClassName?: string
     isScrollable?: boolean
     isStickyHeader?: boolean
     isStickyFooter?: boolean
+    dynamicTableSize?: boolean
     setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>
 }
 
@@ -36,8 +37,9 @@ const DataTable = <TData,>({
     isScrollable,
     isStickyHeader,
     isStickyFooter,
+    dynamicTableSize = false,
     setColumnOrder,
-}: Props<TData>) => {
+}: ITableProps<TData>) => {
     const handleDragEnd = (event: DragEndEvent) => {
         if (!setColumnOrder) return
 
@@ -72,9 +74,13 @@ const DataTable = <TData,>({
                     !isScrollable ? 'h-fit max-h-none min-h-fit' : 'h-full'
                 )}
                 className="table-fixed border-separate border-spacing-0 [&_td]:border-border [&_tfoot_td]:border-t [&_th]:border-b [&_th]:border-border [&_tr:not(:last-child)_td]:border-b [&_tr]:border-none"
-                style={{
-                    width: table.getTotalSize(),
-                }}
+                style={
+                    dynamicTableSize
+                        ? {}
+                        : {
+                              width: table.getTotalSize(),
+                          }
+                }
             >
                 <DataTableHeader
                     isStickyHeader={isStickyHeader}

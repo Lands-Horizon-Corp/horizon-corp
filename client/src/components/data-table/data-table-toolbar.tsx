@@ -57,7 +57,7 @@ const DataTableToolbar = <TData,>({
     refreshActionProps,
 }: IDataTableToolbarProps<TData>) => {
     return (
-        <div className="flex w-full max-w-full items-center justify-between gap-x-2">
+        <div className="ecoop-scroll flex w-full max-w-full items-center justify-between gap-x-2 overflow-x-auto">
             <div className="flex items-center gap-x-2">
                 {globalSearchProps ? (
                     <DataTableGlobalSearch {...globalSearchProps} />
