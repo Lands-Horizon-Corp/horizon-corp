@@ -114,3 +114,14 @@ export const isArray = (value: unknown): boolean => {
 export const isBoolean = (value: unknown): boolean => {
     return typeof value === 'boolean' && value !== null && value !== undefined
 }
+
+export const commaSeparators = (num: number | string): string => {
+    const numStr = num.toString()
+    const numParts = numStr.split('.')
+    numParts[0] = numParts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return numParts.join('.')
+}
+
+export const removeCommaSeparators = (num: string): number => {
+    return parseInt(num.replace(/,/g, ''))
+}
