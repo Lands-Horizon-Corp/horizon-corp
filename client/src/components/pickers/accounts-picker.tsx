@@ -19,10 +19,17 @@ interface Props {
     value?: TEntityId
     placeholder?: string
     disabled?: boolean
+    leftIcon?: React.ReactNode
     onSelect?: (selectedAccounts: IAccountsResource) => void
 }
 
-const AccountsPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
+const AccountsPicker = ({
+    value,
+    disabled,
+    placeholder,
+    onSelect,
+    leftIcon,
+}: Props) => {
     const [pickerState, setPickerState] = useState(false)
     const [selectedAccounts, setSelectedAccounts] =
         useState<IAccountsResource>()
@@ -101,14 +108,17 @@ const AccountsPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
                 onClick={() => setPickerState((val) => !val)}
                 className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
             >
-                <span className="justify-betweentext-sm inline-flex w-full items-center text-foreground/90">
-                    <span className="inline-flex w-full items-center gap-x-2">
+                <span className="flex w-full items-center justify-between text-sm text-foreground/90">
+                    {leftIcon && (
+                        <span className="mr-2 flex-shrink-0">{leftIcon}</span>
+                    )}
+                    <span className="flex w-full items-center gap-x-2 overflow-hidden">
                         {!value ? (
-                            <span className="text-foreground/70">
+                            <span className="truncate text-xs text-foreground/40">
                                 {placeholder}
                             </span>
                         ) : (
-                            <span className="mr-1 font-mono text-sm text-foreground/30">
+                            <span className="truncate font-mono text-sm text-foreground">
                                 {selectedAccounts?.description}
                             </span>
                         )}

@@ -16,7 +16,7 @@ import {
     useCreateTransactionType,
     useUpdateTransactionType,
 } from '@/hooks/api-hooks/transactions/use-transaction-payment-types'
-import { TransactionTypeRequestSchema } from '@/validations/form-validation/transactions/transaction-type-schema'
+import { TransactionTypeRequestSchema } from '@/validations/transactions/transaction-type-schema'
 
 import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
