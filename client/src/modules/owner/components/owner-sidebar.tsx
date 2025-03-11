@@ -21,11 +21,11 @@ import {
     NotificationIcon,
     GraduationCapIcon,
     BuildingBranchIcon,
-    HandWithdrawIcon,
-    HandCoinsIcon,
     WalletIcon,
-    HandDepositIcon,
     BillIcon,
+    HandCoinsIcon,
+    HandDepositIcon,
+    HandWithdrawIcon,
 } from '@/components/icons'
 import {
     Sidebar,
@@ -55,27 +55,36 @@ const ownerSidebarItem: INavItem[] = [
         type: 'item',
     },
     {
-        text: 'Transactions',
-        Icon: WalletIcon,
-        baseUrl: '/owner/transaction',
-        subItems: [
-            { text: 'Deposit', url: '/deposit-entry', Icon: HandDepositIcon },
+        title: 'Transactions',
+        icon: WalletIcon,
+        type: 'dropdown',
+        url: '/owner/transaction',
+        items: [
             {
-                Icon: HandCoinsIcon,
-                text: 'Payments',
+                title: 'Deposit Entry',
+                icon: HandDepositIcon,
+                type: 'item',
+                url: '/deposit-entry',
+            },
+            {
+                icon: HandCoinsIcon,
+                title: 'Payments Entry',
+                type: 'item',
                 url: '/payments-entry',
             },
             {
-                Icon: HandWithdrawIcon,
-                text: 'Withdrawal',
+                icon: HandWithdrawIcon,
+                title: 'Withdrawals',
+                type: 'item',
                 url: '/withdrawals',
             },
-            {
-                Icon: BillIcon,
-                text: 'Payment Types',
-                url: '/payment-types',
-            },
         ],
+    },
+    {
+        icon: BillIcon,
+        title: 'Payment Types',
+        type: 'item',
+        url: '/payment-types',
     },
     {
         title: 'Users',
@@ -140,7 +149,7 @@ const ownerSidebarItem: INavItem[] = [
                 icon: UserShieldIcon,
                 items: [
                     {
-                        title: 'View employees',
+                        title: 'View Employees',
                         url: '/view-employees',
                         icon: UserListIcon,
                         type: 'item',
