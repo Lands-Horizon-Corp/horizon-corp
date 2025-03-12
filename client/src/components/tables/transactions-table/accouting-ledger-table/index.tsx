@@ -17,9 +17,9 @@ import FilterContext, {
 } from '@/contexts/filter-context/filter-context'
 
 import {
-    IAccountingLedgerPaginatedResource,
     IAccountingLedgerRequest,
     IAccountingLedgerResource,
+    IAccountingLedgerPaginatedResource,
 } from '@/server/types/accounts/accounting-ledger'
 import { TableProps } from '../../types'
 import { RefetchOptions, QueryObserverResult } from '@tanstack/react-query'
@@ -95,9 +95,9 @@ const AccountsLedgerTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    className="mb-2"
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

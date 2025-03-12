@@ -10,7 +10,9 @@ import MembersTableOwnerAction from '@/components/tables/members-table/row-actio
 
 const OwnerViewMembersPage = () => {
     const [createModal, setCreateModal] = useState(false)
-    const [company, setCompany] = useState<ICompanyResource | undefined>(undefined)
+    const [company, setCompany] = useState<ICompanyResource | undefined>(
+        undefined
+    )
 
     return (
         <PageContainer>
@@ -44,7 +46,7 @@ const OwnerViewMembersPage = () => {
                             isStaticFilter: true,
                         },
                     }}
-                    className="max-h-[90vh] min-h-[90vh] w-full"
+                    className="max-h-[90vh] min-h-[90vh] w-full py-4"
                 />
             </EnsureOwnerCompany>
         </PageContainer>

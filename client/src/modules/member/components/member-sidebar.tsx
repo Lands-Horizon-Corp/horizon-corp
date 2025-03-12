@@ -5,12 +5,8 @@ import {
     DashboardIcon,
     NotificationIcon,
 } from '@/components/icons'
-import Sidebar from '@/components/sidebar'
 
-import { IBaseComp } from '@/types/component'
-import { TSidebarItem } from '@/components/sidebar/sidebar-types'
-
-const memberSidebarItems: TSidebarItem[] = [
+export const memberSidebarItems = [
     {
         text: 'Dashboard',
         url: '/member/dashboard',
@@ -38,14 +34,8 @@ const memberSidebarItems: TSidebarItem[] = [
     },
 ]
 
-const MemberSidebar = ({ className }: IBaseComp) => {
-    return (
-        <Sidebar
-            enableCollapse
-            className={className}
-            items={memberSidebarItems}
-        />
-    )
+const MemberSidebar = () => {
+    return
 }
 
 export default MemberSidebar

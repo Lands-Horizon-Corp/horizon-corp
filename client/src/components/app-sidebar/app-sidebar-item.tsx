@@ -65,7 +65,7 @@ const AppSidebarButton = React.forwardRef<
                     item.isSub && '-left-3'
                 )}
             />
-            <span>
+            <span className="truncate">
                 {(item.depth === 1 || item.type === 'dropdown') &&
                     item.icon && (
                         <item.icon

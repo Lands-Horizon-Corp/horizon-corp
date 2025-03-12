@@ -1,9 +1,9 @@
 import { Outlet } from '@tanstack/react-router'
 
 import UserNav from '@/components/nav/navs/user-nav'
+import OwnerSidebar from './components/owner-sidebar'
 import AuthGuard from '@/components/wrappers/auth-guard'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import OwnerSidebar from './components/owner-sidebar'
 
 const OwnerLayout = () => {
     return (
@@ -22,10 +22,3 @@ const OwnerLayout = () => {
 }
 
 export default OwnerLayout
-{
-    /* <main className="ecoop-scroll max-h-screen overflow-y-scroll"> */
-}
-{
-    /* 
-                    </main> */
-}
