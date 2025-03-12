@@ -9,6 +9,7 @@ import { MemberCreateUpdateFormModal } from '@/components/forms/member-forms/mem
 import { MemberProfileCreateUpdateFormModal } from '@/components/forms/member-forms/member-application-form/member-profile-create-update-form'
 
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import { MemberHistoriesModal } from '@/components/member-histories'
 import { useDeleteMember } from '@/hooks/api-hooks/member/use-member'
 
 interface IMembersTableOwnerActionProps
@@ -24,6 +25,7 @@ const MembersTableOwnerAction = ({
     const member = row.original
     const router = useRouter()
     const [editModal, setEditModal] = useState(false)
+    const [viewHistoryModal, setViewHistoryModal] = useState(false)
     const [editAccountModal, setEditAccountModal] = useState(false)
 
     const { onOpen } = useConfirmModalStore()
@@ -67,6 +69,15 @@ const MembersTableOwnerAction = ({
                         },
                     }}
                 />
+                {member.memberProfile && (
+                    <MemberHistoriesModal
+                        open={viewHistoryModal}
+                        memberHistoryProps={{
+                            profileId: member.memberProfile?.id,
+                        }}
+                        onOpenChange={setViewHistoryModal}
+                    />
+                )}
             </div>
             <RowActionsGroup
                 onDelete={{
@@ -85,16 +96,6 @@ const MembersTableOwnerAction = ({
                     isAllowed: true,
                     onClick: () => setEditAccountModal((prev) => !prev),
                 }}
-                // onView={{
-                //     text: 'View',
-                //     isAllowed: true,
-                //     onClick: () => {
-                //         // router.navigate({
-                //         //     to: '/admin/companies-management/$companyId/view',
-                //         //     params: { companyId: member.id },
-                //         // })
-                //     },
-                // }}
                 otherActions={
                     <>
                         {!member.memberProfile ? (
@@ -117,7 +118,9 @@ const MembersTableOwnerAction = ({
                                     <UserIcon className="mr-2" />
                                     Edit Profile
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setViewHistoryModal(true)}
+                                >
                                     <UserClockFillIcon
                                         className="mr-2"
                                         strokeWidth={1.5}

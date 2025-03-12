@@ -46,7 +46,11 @@ const membersTableColumns = (
             header: ({ table, column }) => (
                 <div className={'flex w-fit items-center gap-x-1 px-2'}>
                     <Checkbox
-                        checked={table.getIsAllPageRowsSelected()}
+                        checked={
+                            table.getIsAllPageRowsSelected() ||
+                            (table.getIsSomePageRowsSelected() &&
+                                'indeterminate')
+                        }
                         onCheckedChange={(value) =>
                             table.toggleAllPageRowsSelected(!!value)
                         }
