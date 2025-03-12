@@ -89,6 +89,9 @@ const AdminCompaniesFeedbackTableColumns = (
                 </div>
             ),
             enablePinning: false,
+            size: 120,
+            minSize: 120,
+            maxSize: 500,
         },
         {
             id: 'description',
@@ -104,6 +107,9 @@ const AdminCompaniesFeedbackTableColumns = (
                 },
             }) => <div>{description}</div>,
             enablePinning: false,
+            size: 400,
+            minSize: 280,
+            maxSize: 500,
         },
         {
             id: 'feedbackType',
@@ -125,6 +131,9 @@ const AdminCompaniesFeedbackTableColumns = (
                 },
             }) => <div>{feedbackType}</div>,
             enablePinning: false,
+            size: 120,
+            minSize: 120,
+            maxSize: 300,
         },
     ]
 }
