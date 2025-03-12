@@ -1,3 +1,5 @@
+import { Link } from '@tanstack/react-router'
+
 import {
     UserIcon,
     Users3Icon,
@@ -8,66 +10,136 @@ import {
     NotificationIcon,
     BuildingBranchIcon,
 } from '@/components/icons'
+import {
+    Sidebar,
+    SidebarRail,
+    SidebarMenu,
+    SidebarGroup,
+    SidebarHeader,
+    SidebarFooter,
+    SidebarContent,
+    SidebarMenuItem,
+    SidebarMenuButton,
+    SidebarGroupLabel,
+    SidebarGroupContent,
+} from '@/components/ui/sidebar'
+import EcoopLogo from '@/components/ecoop-logo'
+import AppSidebarItem from '@/components/app-sidebar/app-sidebar-item'
 
-export const adminSidebarItems = [
+import { IBaseComp } from '@/types/component'
+import { INavItem } from '@/components/app-sidebar/types'
+import AppSidebarUser from '@/components/app-sidebar/app-sidebar-user'
+
+export const adminSidebarItems: INavItem[] = [
     {
-        text: 'Dashboard',
+        title: 'Dashboard',
+        icon: DashboardIcon,
         url: '/admin/dashboard',
-        Icon: DashboardIcon,
+        type: 'item',
     },
     {
-        text: 'Members Management',
-        Icon: Users3Icon,
-        baseUrl: '/admin/members-management',
-        subItems: [
+        title: 'Members Management',
+        icon: Users3Icon,
+        type: 'dropdown',
+        url: '/admin/members-management',
+        items: [
             {
-                text: 'View Members',
+                title: 'View Members',
                 url: '/view-members',
-                Icon: UserIcon,
+                icon: UserIcon,
+                type: 'item',
             },
         ],
     },
     {
-        text: 'Companies Management',
-        Icon: BuildingBranchIcon,
-        baseUrl: '/admin/companies-management',
-        subItems: [
+        title: 'Companies Management',
+        icon: BuildingBranchIcon,
+        type: 'dropdown',
+        url: '/admin/companies-management',
+        items: [
             {
-                text: 'View Companies',
+                title: 'View Companies',
                 url: '/view-companies',
-                Icon: BuildingBranchIcon,
+                icon: BuildingBranchIcon,
+                type: 'item',
             },
         ],
     },
     {
-        text: 'Footstep Tracking',
+        title: 'Footstep Tracking',
+        icon: FootstepsIcon,
+        type: 'item',
         url: '/admin/footstep-tracking',
-        Icon: FootstepsIcon,
     },
     {
-        text: 'Profile',
+        title: 'Profile',
+        icon: UserIcon,
+        type: 'item',
         url: '/admin/profile',
-        Icon: UserIcon,
     },
     {
-        text: 'Notifications',
+        title: 'Notifications',
+        icon: NotificationIcon,
+        type: 'item',
         url: '/admin/notifications',
-        Icon: NotificationIcon,
     },
     {
-        text: 'Feedbacks',
+        title: 'Feedbacks',
+        icon: FeedbackIcon,
+        type: 'item',
         url: '/admin/feedbacks',
-        Icon: FeedbackIcon,
     },
     {
-        text: 'Settings',
+        title: 'Settings',
+        icon: SettingsIcon,
+        type: 'item',
         url: '/admin/settings',
-        Icon: SettingsIcon,
     },
 ]
 
-const AdminSidebar = () => {
-    return
+const AdminSidebar = (props: IBaseComp) => {
+    return (
+        <Sidebar variant="inset" {...props}>
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton size="lg" asChild>
+                            <Link to="/admin">
+                                <EcoopLogo className="size-9" />
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                    <span className="truncate font-semibold">
+                                        eCOOP
+                                    </span>
+                                    <span className="truncate text-xs text-muted-foreground/80">
+                                        Admin
+                                    </span>
+                                </div>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarHeader>
+            <SidebarContent className="ecoop-scroll">
+                <SidebarGroup>
+                    <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            {adminSidebarItems.map((navItem, index) => (
+                                <AppSidebarItem
+                                    key={index}
+                                    navItem={{ ...navItem, depth: 1 }}
+                                />
+                            ))}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+            </SidebarContent>
+            <SidebarFooter>
+                <AppSidebarUser />
+            </SidebarFooter>
+            <SidebarRail />
+        </Sidebar>
+    )
 }
 
 export default AdminSidebar
