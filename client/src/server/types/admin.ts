@@ -3,7 +3,7 @@ import { IRolesResource } from './role'
 import { IFootstepResource } from './footstep'
 
 export interface IAdminResource extends IUserBase {
-    accountType: string
+    accountType: 'Admin'
     description?: string
     role?: IRolesResource
     footsteps?: IFootstepResource[]

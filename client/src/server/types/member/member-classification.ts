@@ -14,5 +14,5 @@ export interface IMemberClassificationRequest {
     description: string
 }
 
-export type TMemberClassificationPaginatedResource =
-    IPaginatedResult<IMemberClassificationResource>
+export interface IMemberClassificationPaginatedResource
+    extends IPaginatedResult<IMemberClassificationResource> {}

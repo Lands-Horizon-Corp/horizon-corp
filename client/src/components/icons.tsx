@@ -1,4 +1,5 @@
 import {
+    TbMinus as MinusIcon,
     TbSunMoon as SunMoonIcon,
     TbBlockquote as BlockQuoteIcon,
 } from 'react-icons/tb'
@@ -34,6 +35,7 @@ import {
     LuCalendarCheck as CalendarCheckIcon,
     LuChevronsUpDown as ChevronsUpDownIcon,
     LuHardDriveUpload as HardDriveUploadIcon,
+    LuReplace as ReplaceIcon,
 } from 'react-icons/lu'
 
 import {
@@ -63,6 +65,7 @@ import {
     PiPushPinSlash as PushPinSlashIcon,
     PiHandCoinsDuotone as HandCoinsIcon,
     PiMicrosoftExcelLogoFill as ExcelIcon,
+    PiSignatureLight as SignatureLightIcon,
     PiBuildingOffice as BuildingBranchIcon,
     PiHandDepositDuotone as HandDepositIcon,
     PiListBulletsBold as ListBulletsBoldIcon,
@@ -70,11 +73,13 @@ import {
     PiWarningCircleFill as WarningCircleIcon,
     PiHandWithdrawDuotone as HandWithdrawIcon,
     PiTextStrikethroughLight as TextStrikethroughLightIcon,
+    PiEmpty as EmptyIcon,
 } from 'react-icons/pi'
 
 import {
     HiOutlineSun as SunIcon,
     HiOutlineMoon as MoonIcon,
+    HiPencil as PencilFillIcon,
     HiOutlineCog as SettingsIcon,
     HiOutlineCodeBracket as DevIcon,
     HiOutlineArrowUp as ArrowUpIcon,
@@ -123,6 +128,7 @@ import {
     MdOutlineLocalPhone as PhoneOutlineIcon,
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
+    MdAccountBalance as AccountsIcon,
 } from 'react-icons/md'
 
 import {
@@ -171,8 +177,9 @@ import {
     FaBold as FaBoldIcon,
     FaFileCsv as CsvIcon,
     FaPhoneAlt as PhoneIcon,
+    FaMoneyBill as BillIcon,
+    FaUserClock as UserClockFillIcon,
 } from 'react-icons/fa'
-
 import { FaVenusMars as GendersIcon } from 'react-icons/fa6'
 
 import {
@@ -188,7 +195,10 @@ import {
     FiDownload as DownloadIcon,
 } from 'react-icons/fi'
 
-import { GiWallet as WalletIcon } from 'react-icons/gi'
+import {
+    GiWallet as WalletIcon,
+    GiTakeMyMoney as MoneyIcon,
+} from 'react-icons/gi'
 
 import { CgFacebook as FacebookIcon } from 'react-icons/cg'
 
@@ -204,7 +214,6 @@ import {
 import { BiErrorCircle as WarningIcon } from 'react-icons/bi'
 
 import { SlOptions as OptionsIcon } from 'react-icons/sl'
-
 // Export section
 export {
     XIcon,
@@ -221,6 +230,8 @@ export {
     UserIcon,
     MoonIcon,
     DrawIcon,
+    MinusIcon,
+    ErrorIcon,
     FileXIcon,
     TrashIcon,
     ClockIcon,
@@ -245,6 +256,8 @@ export {
     AdjustIcon,
     WalletIcon,
     Image2Icon,
+    WarningIcon,
+    OptionsIcon,
     UserCogIcon,
     GendersIcon,
     RefreshIcon,
@@ -280,6 +293,7 @@ export {
     DashboardIcon,
     IoIosCodeIcon,
     TelephoneIcon,
+    PencilFillIcon,
     SmallBrushIcon,
     FullscreenIcon,
     RotateLeftIcon,
@@ -324,6 +338,8 @@ export {
     VerifiedPatchIcon,
     LoadingCircleIcon,
     PencilOutlineIcon,
+    UserClockFillIcon,
+    SignatureLightIcon,
     FlipHorizontalIcon,
     RotateBoxRightIcon,
     BadgeCheckFillIcon,
@@ -350,7 +366,9 @@ export {
     Rotate90DegreeRightIcon,
     BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
-    ErrorIcon,
-    WarningIcon,
-    OptionsIcon,
+    EmptyIcon,
+    BillIcon,
+    ReplaceIcon,
+    MoneyIcon,
+    AccountsIcon,
 }

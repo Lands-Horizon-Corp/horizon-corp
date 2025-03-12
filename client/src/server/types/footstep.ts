@@ -30,4 +30,5 @@ export interface IFootstepResource {
     member?: IMemberResource
 }
 
-export type IFootstepPaginatedResource = IPaginatedResult<IFootstepResource>
+export interface IFootstepPaginatedResource
+    extends IPaginatedResult<IFootstepResource> {}

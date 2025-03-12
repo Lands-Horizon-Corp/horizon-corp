@@ -75,7 +75,7 @@ const MemberTypeTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IMemberTypeResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
@@ -116,6 +116,7 @@ const MemberTypeTable = ({
         enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
+        columnResizeMode: 'onChange',
         getRowId: getRowIdFn,
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
@@ -130,7 +131,7 @@ const MemberTypeTable = ({
         <FilterContext.Provider value={filterState}>
             <div
                 className={cn(
-                    'flex h-full flex-col gap-y-2',
+                    'relative z-0 flex h-full flex-col gap-y-2',
                     className,
                     !isScrollable && 'h-fit !max-h-none'
                 )}
@@ -184,7 +185,7 @@ const MemberTypeTable = ({
                     isStickyFooter
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
+                    className={cn('mb-2', isScrollable && 'flex-1')}
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

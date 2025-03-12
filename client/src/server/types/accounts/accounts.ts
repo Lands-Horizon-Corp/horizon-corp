@@ -29,7 +29,7 @@ export type TOtherAccountInformation =
     | 'COH Acct.'
 
 export interface IAccountsRequest {
-    id: TEntityId
+    id?: TEntityId
     companyId: TEntityId
     accountCode: string
     description: string
@@ -92,4 +92,5 @@ export interface IAccountsResource extends ITimeStamps {
     otherInformationOfAnAccount?: TOtherAccountInformation
 }
 
-export type IAccountsPaginatedResource = IPaginatedResult<IAccountsResource>
+export interface IAccountsPaginatedResource
+    extends IPaginatedResult<IAccountsResource> {}

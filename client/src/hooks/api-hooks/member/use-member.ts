@@ -15,6 +15,7 @@ import {
     IMemberRequest,
     IMemberResource,
     IMemberPaginatedResource,
+    IMemberRequestNoPassword,
 } from '@/server/types'
 import {
     IAPIHook,
@@ -77,6 +78,54 @@ export const useCreateMember = ({
     })
 }
 
+export const useUpdateMember = ({
+    showMessage = true,
+    preloads = ['Media'],
+    onSuccess,
+    onError,
+}: IAPIHook<IMemberResource, string> & IQueryProps) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<
+        IMemberResource,
+        string,
+        {
+            id: TEntityId
+            data: IMemberRequest | IMemberRequestNoPassword
+        }
+    >({
+        mutationKey: ['member', 'update'],
+        mutationFn: async ({ id, data }) => {
+            const [error, updatedMember] = await withCatchAsync(
+                MemberService.update(id, data, preloads)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                if (showMessage) toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            queryClient.invalidateQueries({
+                queryKey: ['member', 'resource-query'],
+            })
+
+            queryClient.invalidateQueries({
+                queryKey: ['member', updatedMember.id],
+            })
+            queryClient.removeQueries({
+                queryKey: ['member', 'loader', updatedMember.id],
+            })
+
+            if (showMessage) toast.success('Member account details updated')
+            onSuccess?.(updatedMember)
+
+            return updatedMember
+        },
+    })
+}
+
 export const useDeleteMember = ({
     showMessage = true,
     onSuccess,
@@ -116,7 +165,7 @@ export const useFilteredPaginatedMembers = ({
     enabled,
     showMessage = true,
     filterPayload,
-    preloads = [],
+    preloads = ['memberProfile', 'memberProfile.media'],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IAPIFilteredPaginatedHook<IMemberPaginatedResource, string> &
     IQueryProps = {}) => {

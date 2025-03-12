@@ -1,50 +1,56 @@
 import { ITimeStamps, TEntityId } from '../common'
 import { IPaginatedResult } from '../paginated-result'
 
-export type IAccountingLedgerRequest = {
-    id: TEntityId
-    description: string
-    notes: string
-    company_id: TEntityId
-    member_profile_id: TEntityId
-    account_id: TEntityId
-    employee_id: TEntityId
-    or_number: string
-    transaction_source: TransactionSource
+interface IAccountLedgerSummaryResource {
     debit: number
     credit: number
-    balance: Date
-    transaction_date: Date
-    entry_date: Date
-    line_number?: number | null
-    transaction_type_id: string
-    created_by: TEntityId
-    created_at: Date
+    balance: number
+}
+
+export type IAccountingLedgerRequest = {
+    id?: TEntityId
+    description: string
+    notes: string
+    companyId: TEntityId
+    memberProfileId: TEntityId
+    accountId: TEntityId
+    employeeId: TEntityId
+    orNumber: string
+    transactionSource: TransactionSource
+    debit: number
+    credit: number
+    balance: number
+    transactionDate: Date
+    entryDate: Date
+    lineNumber?: number | null
+    transactionTypeId: string
+    createdBy: TEntityId
+    createdAt: string
 }
 
 export interface IAccountingLedgerResource extends ITimeStamps {
     id: TEntityId
     description: string
     notes: string
-    company_id: TEntityId
-    member_profile_id: TEntityId
-    account_id: TEntityId
-    employee_id: TEntityId
-    or_number: string
-    transaction_source: TransactionSource
+    companyId: TEntityId
+    memberProfileId: TEntityId
+    accountId: TEntityId
+    employeeId: TEntityId
+    orNumber: string
+    transactionSource: TransactionSource
     debit: number
     credit: number
-    balance: Date
-    transaction_date: Date
-    entry_date: Date
-    line_number?: number | null
-    transaction_type_id: string
-    created_by: TEntityId
-    created_at: Date
+    balance: number
+    transactionDate: Date
+    entryDate: Date
+    lineNumber?: number | null
+    transactionTypeId: string
+    createdBy: TEntityId
+    summary: IAccountLedgerSummaryResource
 }
 
-export type IAccountingLedgerPaginatedResource =
-    IPaginatedResult<IAccountingLedgerResource>
+export interface IAccountingLedgerPaginatedResource
+    extends IPaginatedResult<IAccountingLedgerResource> {}
 
 export enum TransactionSource {
     withdrawal = 'withdrawal',
@@ -55,7 +61,7 @@ export enum TransactionSource {
 export type TransactionType = {
     id: TEntityId
     description: string
-    cheque_id: TEntityId
+    chequeId: TEntityId
 }
 
 export enum TransactionTypeEnum {

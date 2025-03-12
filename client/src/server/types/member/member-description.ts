@@ -1,6 +1,12 @@
 import { ITimeStamps, TEntityId } from '../common'
 import { IMemberProfileResource } from './member-profile'
 
+export interface IMemberDescriptionRequest {
+    id?: TEntityId
+    name: string
+    description: string
+}
+
 export interface IMemberDescriptionResource extends ITimeStamps {
     id: TEntityId
     membersProfileId: TEntityId
@@ -8,9 +14,4 @@ export interface IMemberDescriptionResource extends ITimeStamps {
     description: string
     name: string
     membersProfile?: IMemberProfileResource
-}
-
-export interface IMemberDescriptionRequest {
-    name: string
-    description: string
 }

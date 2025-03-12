@@ -20,12 +20,8 @@ import {
     GraduationCapIcon,
     BuildingBranchIcon,
 } from '@/components/icons'
-import Sidebar from '@/components/sidebar'
 
-import { IBaseComp } from '@/types/component'
-import type { TSidebarItem } from '@/components/sidebar/sidebar-types'
-
-const ownerSidebarItem: TSidebarItem[] = [
+export const ownerSidebarItem = [
     {
         text: 'Dashboard',
         url: '/owner/dashboard',
@@ -159,15 +155,8 @@ const ownerSidebarItem: TSidebarItem[] = [
     },
 ]
 
-const OwnerSidebar = ({ className }: IBaseComp) => {
-    return (
-        <Sidebar
-            enableCollapse
-            className={className}
-            items={ownerSidebarItem}
-            logoRedirectUrl="/owner"
-        />
-    )
+const OwnerSidebar = () => {
+    return
 }
 
 export default OwnerSidebar

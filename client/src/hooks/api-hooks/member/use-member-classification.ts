@@ -21,7 +21,7 @@ import {
     TEntityId,
     IMemberClassificationRequest,
     IMemberClassificationResource,
-    TMemberClassificationPaginatedResource,
+    IMemberClassificationPaginatedResource,
 } from '@/server/types'
 
 export const memberClassificationLoader = (
@@ -181,10 +181,10 @@ export const useFilteredPaginatedMemberClassifications = ({
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IAPIFilteredPaginatedHook<
-    TMemberClassificationPaginatedResource,
+    IMemberClassificationPaginatedResource,
     string
 > = {}) => {
-    return useQuery<TMemberClassificationPaginatedResource, string>({
+    return useQuery<IMemberClassificationPaginatedResource, string>({
         queryKey: [
             'member-classification',
             'resource-query',

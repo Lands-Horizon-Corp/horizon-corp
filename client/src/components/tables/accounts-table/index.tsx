@@ -22,7 +22,6 @@ import accountTableColumns, {
     accountsGlobalSearchTargets,
     IAccountsTableColumnProps,
 } from './columns'
-import { DummyAccountsData } from './dummy-accounts'
 import { useQueryClient } from '@tanstack/react-query'
 import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
 import AccountsService from '@/server/api-service/accounting-services/accounts-service'
@@ -73,7 +72,7 @@ const AccountsTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IAccountsResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
@@ -97,7 +96,7 @@ const AccountsTable = ({
 
     const table = useReactTable({
         columns,
-        data: DummyAccountsData,
+        data: data,
         initialState: {
             columnPinning: { left: ['select'] },
         },
@@ -114,6 +113,7 @@ const AccountsTable = ({
         enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
+        columnResizeMode: 'onChange',
         getRowId: getRowIdFn,
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,

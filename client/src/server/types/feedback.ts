@@ -16,4 +16,5 @@ export interface IFeedbackResource {
     updatedAt: string
 }
 
-export type IFeedbackPaginatedResource = IPaginatedResult<IFeedbackResource>
+export interface IFeedbackPaginatedResource
+    extends IPaginatedResult<IFeedbackResource> {}

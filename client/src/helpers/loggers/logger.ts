@@ -20,10 +20,25 @@ class Logger {
             typeof import.meta.env !== 'undefined' &&
             import.meta.env.VITE_CLIENT_APP_ENV === 'development'
 
-        if (typeof document !== 'undefined') {
+        if (typeof document !== 'undefined' && !this.isDevelopment) {
             document.addEventListener('contextmenu', (event) =>
                 event.preventDefault()
             )
+
+            document.onkeydown = (e) => {
+                if (e.ctrlKey && e.shiftKey && e.key == 'I') {
+                    e.preventDefault()
+                }
+                if (e.ctrlKey && e.shiftKey && e.key == 'C') {
+                    e.preventDefault()
+                }
+                if (e.ctrlKey && e.shiftKey && e.key == 'J') {
+                    e.preventDefault()
+                }
+                if (e.ctrlKey && e.key == 'U') {
+                    e.preventDefault()
+                }
+            }
         }
 
         if (this.isDevelopment) {

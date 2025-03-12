@@ -1,4 +1,5 @@
 import { TEntityId } from '../common'
+import { IPaginatedResult } from '../paginated-result'
 import { IMemberProfileResource } from './member-profile'
 import { IMemberClassificationResource } from './member-classification'
 
@@ -12,3 +13,6 @@ export interface IMemberClassificationHistoryResource {
     memberProfile?: IMemberProfileResource
     memberClassification?: IMemberClassificationResource
 }
+
+export interface IMemberClassificationHistoryPaginatedResource
+    extends IPaginatedResult<IMemberClassificationHistoryResource> {}

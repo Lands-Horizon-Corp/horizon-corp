@@ -14,11 +14,11 @@ import {
     IAccountsResource,
 } from '@/server/types/accounts/accounts'
 import AccountsService from '@/server/api-service/accounting-services/accounts-service'
-import { TEntityId } from '@/server/types'
+import { TEntityId } from '@/server'
 
 export const useFilteredPaginatedAccounts = ({
     sort,
-    enabled,
+    enabled = true,
     filterPayload,
     preloads,
     pagination = { pageSize: 20, pageIndex: 1 },
@@ -27,28 +27,31 @@ export const useFilteredPaginatedAccounts = ({
         queryKey: [
             'accounts',
             'resource-query',
-            filterPayload,
-            pagination,
-            sort,
+            JSON.stringify(filterPayload),
+            JSON.stringify(pagination),
+            JSON.stringify(sort),
         ],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
                 AccountsService.getAccounts({
                     preloads,
                     pagination,
-                    sort: sort && toBase64(sort),
-                    filters: filterPayload && toBase64(filterPayload),
+                    sort: sort ? toBase64(sort) : undefined,
+                    filters: filterPayload
+                        ? toBase64(filterPayload)
+                        : undefined,
                 })
             )
-
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 throw errorMessage
             }
-
             return result
         },
+        staleTime: 1000 * 60 * 2,
+        enabled,
+        retry: 1,
         initialData: {
             data: [],
             pages: [],
@@ -56,8 +59,6 @@ export const useFilteredPaginatedAccounts = ({
             totalPage: 1,
             ...pagination,
         },
-        enabled,
-        retry: 1,
     })
 }
 
@@ -66,33 +67,22 @@ export const useDeleteAccounts = ({
     onError,
 }: undefined | IOperationCallbacks<undefined> = {}) => {
     const queryClient = useQueryClient()
-
     return useMutation<void, string, TEntityId>({
-        mutationKey: ['accounts', 'delete'],
         mutationFn: async (accountsId) => {
             const [error] = await withCatchAsync(
                 AccountsService.delete(accountsId)
             )
-
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw new Error(errorMessage)
             }
-
-            queryClient.invalidateQueries({
+            await queryClient.invalidateQueries({
                 queryKey: ['accounts', 'resource-query'],
             })
-
-            queryClient.invalidateQueries({
-                queryKey: ['accounts', accountsId],
-            })
-            queryClient.removeQueries({
-                queryKey: ['accounts', 'loader', accountsId],
-            })
-
-            toast.success('accounts deleted')
+            queryClient.removeQueries({ queryKey: ['accounts', accountsId] })
+            toast.success('Account deleted successfully')
             onSuccess?.(undefined)
         },
     })
@@ -104,31 +94,21 @@ export const useCreateAccounts = ({
     onSuccess,
 }: IOperationCallbacks<IAccountsResource> & IAPIPreloads) => {
     const queryClient = useQueryClient()
-
     return useMutation<void, string, IAccountsRequest>({
         mutationKey: ['accounts', 'create'],
         mutationFn: async (newAccountData) => {
             const [error, data] = await withCatchAsync(
                 AccountsService.create(newAccountData, preloads)
             )
-
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
                 toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
-
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', data.id],
-                data
-            )
-
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', 'loader', data.id],
-                data
-            )
-
+            await queryClient.invalidateQueries({
+                queryKey: ['accounts', 'resource-query'],
+            })
             toast.success('Accounts Created')
             onSuccess?.(data)
         },
@@ -155,40 +135,25 @@ export const useUpdateAccounts = ({
             const [error, response] = await withCatchAsync(
                 AccountsService.update(id, data, preloads)
             )
-
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                if (onError) onError(errorMessage)
-                else toast.error(errorMessage)
+                onError?.(errorMessage) || toast.error(errorMessage)
                 throw errorMessage
             }
-
-            queryClient.setQueriesData<IAccountsPaginatedResource>(
-                { queryKey: ['accounts', 'resource-query'], exact: false },
-                (oldData) => {
-                    if (!oldData) return oldData
-
-                    return {
-                        ...oldData,
-                        data: oldData.data.map((accounts) =>
-                            accounts.id === id ? response : accounts
-                        ),
-                    }
-                }
-            )
-
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', id],
-                response
-            )
-
-            queryClient.setQueryData<IAccountsResource>(
-                ['accounts', 'loader', id],
-                response
-            )
-
-            toast.success('accounts updated')
-
+            const cachedAccount = queryClient.getQueryData<IAccountsResource>([
+                'accounts',
+                id,
+            ])
+            if (cachedAccount) {
+                queryClient.setQueryData<IAccountsResource>(['accounts', id], {
+                    ...cachedAccount,
+                    ...response,
+                })
+            }
+            await queryClient.invalidateQueries({
+                queryKey: ['accounts', 'resource-query'],
+            })
+            toast.success('Account updated successfully')
             onSuccess?.(response)
             return response
         },

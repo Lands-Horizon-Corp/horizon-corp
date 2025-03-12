@@ -22,12 +22,12 @@ import { usePagination } from '@/hooks/use-pagination'
 import useDatableFilterState from '@/hooks/use-filter-state'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
+import MemberService from '@/server/api-service/member-services/member-service'
 import { useFilteredPaginatedMembers } from '@/hooks/api-hooks/member/use-member'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
 import { TableProps } from '../types'
 import { IMemberResource } from '@/server/types'
-import MemberService from '@/server/api-service/member-services/member-service'
 
 export interface MembersTableProps
     extends TableProps<IMemberResource>,
@@ -75,7 +75,11 @@ const MembersTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IMemberResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnVisibility: {
+            isEmailVerified: false,
+            isContactVerified: false,
+        },
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
@@ -113,10 +117,11 @@ const MembersTable = ({
         rowCount: pageSize,
         manualSorting: true,
         pageCount: totalPage,
-        enableMultiSort: false,
-        manualFiltering: true,
-        manualPagination: true,
         getRowId: getRowIdFn,
+        manualFiltering: true,
+        enableMultiSort: false,
+        manualPagination: true,
+        columnResizeMode: 'onChange',
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),
@@ -130,7 +135,7 @@ const MembersTable = ({
         <FilterContext.Provider value={filterState}>
             <div
                 className={cn(
-                    'flex h-full flex-col gap-y-2',
+                    'relative flex h-full flex-col gap-y-2 py-4',
                     className,
                     !isScrollable && 'h-fit !max-h-none'
                 )}
@@ -184,7 +189,7 @@ const MembersTable = ({
                     isStickyFooter
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
+                    className={cn('mb-2', isScrollable && 'flex-1')}
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

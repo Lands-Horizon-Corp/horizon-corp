@@ -10,15 +10,20 @@ import {
 } from '@/contexts/filter-context'
 import useDebounce from '@/hooks/use-debounce'
 
-const useFilterState = (options?: {
+const useFilterState = ({
+    debounceFinalFilterMs,
+    defaultFilter = {},
+    defaultFilterMode = 'AND',
+    onFilterChange,
+}: {
     onFilterChange?: () => void
     debounceFinalFilterMs?: number
     defaultFilter?: TFilterObject
-}): IFilterState => {
-    const [filters, setFilters] = useState<TFilterObject>(
-        options?.defaultFilter ?? {}
-    )
-    const [filterLogic, setFilterLogic] = useState<TFilterLogic>('AND')
+    defaultFilterMode?: TFilterLogic
+} = {}): IFilterState => {
+    const [filters, setFilters] = useState<TFilterObject>(defaultFilter)
+    const [filterLogic, setFilterLogic] =
+        useState<TFilterLogic>(defaultFilterMode)
 
     const setFilter = (field: string, filter?: TSearchFilter) => {
         setFilters((prev) => ({ ...prev, [field]: filter }))
@@ -51,13 +56,10 @@ const useFilterState = (options?: {
     }
 
     const resetFilter = () => {
-        setFilters(options?.defaultFilter ?? {})
+        setFilters(defaultFilter)
     }
 
-    const debouncedFilter = useDebounce(
-        filters,
-        options?.debounceFinalFilterMs ?? 800
-    )
+    const debouncedFilter = useDebounce(filters, debounceFinalFilterMs ?? 800)
 
     const finalFilterPayload: TFilterPayload = useMemo(() => {
         const filteredFilter: TFinalFilter[] = []
@@ -100,7 +102,7 @@ const useFilterState = (options?: {
             })
         })
 
-        options?.onFilterChange?.()
+        onFilterChange?.()
 
         return { filters: filteredFilter, logic: filterLogic }
 

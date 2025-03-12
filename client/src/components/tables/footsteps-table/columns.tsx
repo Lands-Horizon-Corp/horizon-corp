@@ -71,11 +71,7 @@ const footstepTableColumns = (
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="description"
@@ -95,7 +91,7 @@ const footstepTableColumns = (
             id: 'activity',
             accessorKey: 'activity',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Activity">
+                <DataTableColumnHeader {...props} title="Activity">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="activity"
@@ -115,7 +111,7 @@ const footstepTableColumns = (
             id: 'module',
             accessorKey: 'module',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Module">
+                <DataTableColumnHeader {...props} title="Module">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="module"
@@ -175,7 +171,7 @@ const footstepTableColumns = (
             id: 'timestamp',
             accessorKey: 'timestamp',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Timestamp">
+                <DataTableColumnHeader {...props} title="Timestamp">
                     <ColumnActions {...props}>
                         <DateFilter displayText="Timestamp" field="timestamp" />
                     </ColumnActions>
@@ -191,11 +187,7 @@ const footstepTableColumns = (
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IFootstepResource>
                             displayText="Date Created"
