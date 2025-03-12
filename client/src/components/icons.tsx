@@ -1,4 +1,5 @@
 import {
+    TbMinus as MinusIcon,
     TbSunMoon as SunMoonIcon,
     TbBlockquote as BlockQuoteIcon,
 } from 'react-icons/tb'
@@ -127,6 +128,7 @@ import {
     MdOutlineLocalPhone as PhoneOutlineIcon,
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
+    MdAccountBalance as AccountsIcon,
 } from 'react-icons/md'
 
 import {
@@ -193,7 +195,10 @@ import {
     FiDownload as DownloadIcon,
 } from 'react-icons/fi'
 
-import { GiWallet as WalletIcon } from 'react-icons/gi'
+import {
+    GiWallet as WalletIcon,
+    GiTakeMyMoney as MoneyIcon,
+} from 'react-icons/gi'
 
 import { CgFacebook as FacebookIcon } from 'react-icons/cg'
 
@@ -225,6 +230,7 @@ export {
     UserIcon,
     MoonIcon,
     DrawIcon,
+    MinusIcon,
     ErrorIcon,
     FileXIcon,
     TrashIcon,
@@ -363,4 +369,6 @@ export {
     EmptyIcon,
     BillIcon,
     ReplaceIcon,
+    MoneyIcon,
+    AccountsIcon,
 }

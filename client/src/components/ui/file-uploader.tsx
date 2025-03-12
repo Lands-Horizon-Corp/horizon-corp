@@ -1,7 +1,12 @@
 import { formatBytes } from '@/helpers'
 import { cn } from '@/lib'
-import { useEffect, useState } from 'react'
-import { DropzoneOptions, FileWithPath, useDropzone } from 'react-dropzone'
+import { useCallback, useEffect, useState } from 'react'
+import {
+    DropzoneOptions,
+    FileRejection,
+    FileWithPath,
+    useDropzone,
+} from 'react-dropzone'
 import { FaCloudUploadAlt } from 'react-icons/fa'
 import { toast } from 'sonner'
 import { Button } from './button'
@@ -10,26 +15,29 @@ import { TrashIcon } from '../icons'
 
 interface FileUploaderProps extends DropzoneOptions {
     className?: string
-    onFileChange: (file: File[]) => void
+    itemClassName?: string
+    onFileChange?: (file: File[]) => void
+    selectedPhotos?: (selectedPhoto: string) => void
+    defaultPhotos?: string
 }
 
 const FileUploader = ({
     className,
     onFileChange,
+    selectedPhotos,
+    itemClassName,
+    defaultPhotos,
     ...props
 }: FileUploaderProps) => {
     const [hasError, setHasError] = useState(false)
     const [uploadedFiles, setUploadedFiles] = useState<readonly FileWithPath[]>(
         []
-    ) // Ensure it's initialized as an empty array
-
-    const {
-        getRootProps,
-        getInputProps,
-        acceptedFiles: files,
-        open,
-    } = useDropzone({
-        onDrop: (acceptedFiles, fileRejections) => {
+    )
+    const handleFilesChange = (newFiles: FileWithPath[]) => {
+        setUploadedFiles((prevFiles) => [...prevFiles, ...newFiles])
+    }
+    const onDrop = useCallback(
+        (acceptedFiles: File[], fileRejections: FileRejection[]) => {
             if (fileRejections.length > 0) {
                 const error = fileRejections[0].errors[0]
                 const errorMessage =
@@ -41,10 +49,30 @@ const FileUploader = ({
                 return
             }
 
+            const file = acceptedFiles[0]
+            if (file) {
+                const reader = new FileReader()
+                reader.addEventListener('load', () => {
+                    const newImgUrl = reader.result?.toString() ?? ''
+                    selectedPhotos && selectedPhotos(newImgUrl)
+                })
+                reader.readAsDataURL(file)
+            }
+
             setHasError(false)
-            onFileChange(acceptedFiles)
+            onFileChange && onFileChange(acceptedFiles)
             handleFilesChange(acceptedFiles)
         },
+        [onFileChange, handleFilesChange, selectedPhotos]
+    )
+
+    const {
+        getRootProps,
+        getInputProps,
+        acceptedFiles: files,
+        open,
+    } = useDropzone({
+        onDrop,
         onError: (error) => {
             toast.error(error.message)
         },
@@ -56,33 +84,38 @@ const FileUploader = ({
         setUploadedFiles(files)
     }, [files])
 
-    const handleFilesChange = (newFiles: FileWithPath[]) => {
-        setUploadedFiles((prevFiles) => [...prevFiles, ...newFiles])
-    }
-
     const handleDeleteFile = (index: number) => () => {
         setUploadedFiles((prevFiles) =>
             prevFiles.filter((_, idx) => idx !== index)
         )
     }
 
+    useEffect(() => {
+        if (!defaultPhotos) {
+            setUploadedFiles([])
+        }
+    }, [defaultPhotos])
+
+    const openFile = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>) => {
+        e.preventDefault()
+        open()
+    }
+
     return (
-        <div
-            className={cn(
-                'relative mx-4 min-h-48 min-w-48 cursor-pointer',
-                className
-            )}
-        >
+        <div className="w-full">
             <div
                 {...getRootProps()}
-                className="mb-2 flex h-full min-h-64 w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-800/30 p-2 pb-4 text-sm dark:bg-background"
+                className={cn(
+                    'mb-2 flex h-full min-h-64 w-full flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-800/30 p-2 pb-4 text-sm dark:bg-background',
+                    className
+                )}
                 aria-label="File upload area"
             >
                 <input {...getInputProps()} aria-hidden="true" />
                 <FaCloudUploadAlt className="size-24 text-primary" />
                 <p>
                     <span
-                        onClick={open}
+                        onClick={openFile}
                         className="cursor-pointer font-semibold underline"
                         aria-label="Click to upload files"
                     >
@@ -91,7 +124,7 @@ const FileUploader = ({
                     or Drag and Drop
                 </p>
                 <Button
-                    onClick={open}
+                    onClick={openFile}
                     variant="outline"
                     className="text-xs"
                     aria-label="Select files"
@@ -99,7 +132,7 @@ const FileUploader = ({
                     Select Files
                 </Button>
             </div>
-            <div className="space-y-2">
+            <div className={cn('w-full space-y-2', itemClassName)}>
                 {!hasError &&
                     uploadedFiles.map((file, idx) => (
                         <UploadedFileItem

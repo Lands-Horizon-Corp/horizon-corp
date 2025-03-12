@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import { base64ImagetoFile } from '@/helpers'
+import { cn } from '@/lib'
 
 import {
     Form,
@@ -15,25 +17,21 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Separator } from '@/components/ui/separator'
-
 import FormErrorMessage from '@/components/ui/form-error-message'
 import UserAvatar from '@/components/user-avatar'
 import ActionTooltip from '@/components/action-tooltip'
 import { PlusIcon, ReplaceIcon } from '@/components/icons'
 import Modal, { IModalProps } from '@/components/modals/modal'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-
-import { base64ImagetoFile } from '@/helpers'
-import { cn } from '@/lib'
+import { Progress } from '@/components/ui/progress'
 
 import { IBankResponse } from '@/server/types/bank'
 import { useCreateBank, useUpdateBank } from '@/hooks/api-hooks/use-bank'
 import { useSinglePictureUpload } from '@/hooks/api-hooks/use-media-resource'
-import { Progress } from '@/components/ui/progress'
-import { TBankClearingSchema } from '@/validations/bank/create-bank-schema'
 import { SinglePictureUploadModal } from '@/components/single-image-uploader/single-picture-uploader'
+import { TBankSchema } from '@/validations/check-bank/create-bank-schema'
 
-type TBankFormValues = z.infer<typeof TBankClearingSchema>
+type TBankFormValues = z.infer<typeof TBankSchema>
 
 interface IBankFormProps {
     bankId?: string
@@ -47,7 +45,7 @@ const CheckBankFormModal = ({ bankId, onSuccess, onError }: IBankFormProps) => {
     const [uploadMediaProgress, setUploadMediaProgress] = useState<number>(0)
 
     const form = useForm<TBankFormValues>({
-        resolver: zodResolver(TBankClearingSchema),
+        resolver: zodResolver(TBankSchema),
         defaultValues: {
             mediaId: '',
             name: '',
@@ -68,6 +66,7 @@ const CheckBankFormModal = ({ bankId, onSuccess, onError }: IBankFormProps) => {
     })
 
     const onSubmit = form.handleSubmit(async (data) => {
+        console.log(data)
         try {
             await uploadPhoto(
                 base64ImagetoFile(data.mediaId, `logo.jpg`) as File
@@ -78,6 +77,7 @@ const CheckBankFormModal = ({ bankId, onSuccess, onError }: IBankFormProps) => {
                 await updateMutation.mutateAsync({ bankId, data: requestData })
             } else {
                 await createMutation.mutateAsync(requestData)
+                form.reset()
             }
         } catch (error) {
             console.error('Upload or mutation failed:', error)
@@ -136,10 +136,15 @@ const CheckBankFormModal = ({ bankId, onSuccess, onError }: IBankFormProps) => {
                                                     setOpenImagePicker
                                                 }
                                                 onPhotoChoose={(newImage) => {
+                                                    console.log(
+                                                        'newImage',
+                                                        newImage
+                                                    )
                                                     field.onChange(newImage)
                                                 }}
                                                 defaultImage={field.value ?? ''}
                                             />
+                                            <div></div>
                                             <UserAvatar
                                                 src={field.value ?? ''}
                                                 className="size-48"
