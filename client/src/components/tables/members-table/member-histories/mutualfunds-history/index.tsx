@@ -150,7 +150,6 @@ const MemberMutualFundsHistoryTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
-                    dynamicTableSize
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
                 />

@@ -12,6 +12,7 @@ import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters
 
 import { toReadableDate } from '@/utils'
 import { IAccountsResource } from '@/server/types/accounts/accounts'
+import HeaderToggleSelect from '@/components/data-table/data-table-row-actions/header-toggle-select'
 
 export const accountsGlobalSearchTargets: IGlobalSearchTargets<IAccountsResource>[] =
     [
@@ -47,14 +48,8 @@ const AccountsTableColumns = (
         {
             id: 'select',
             header: ({ table, column }) => (
-                <div className="flex w-fit items-center gap-x-1 px-2">
-                    <Checkbox
-                        checked={table.getIsAllPageRowsSelected()}
-                        onCheckedChange={(value) =>
-                            table.toggleAllPageRowsSelected(!!value)
-                        }
-                        aria-label="Select all"
-                    />
+                <div className={'flex w-fit items-center gap-x-1 px-2'}>
+                    <HeaderToggleSelect table={table} />
                     {!column.getIsPinned() && (
                         <PushPinSlashIcon
                             onClick={() => column.pin('left')}
@@ -67,15 +62,17 @@ const AccountsTableColumns = (
                 <div className="flex w-fit items-center gap-x-1 px-0">
                     {opts?.actionComponent?.({ row })}
                     <Checkbox
+                        aria-label="Select row"
                         checked={row.getIsSelected()}
                         onCheckedChange={(value) => row.toggleSelected(!!value)}
-                        aria-label="Select row"
                     />
                 </div>
             ),
             enableSorting: false,
+            enableResizing: false,
             enableHiding: false,
-            maxSize: 80,
+            size: 80,
+            minSize: 80,
         },
         {
             id: 'accountCode',

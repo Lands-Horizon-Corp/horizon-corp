@@ -143,7 +143,7 @@
 }
 
 .ecoop-scroll::-webkit-scrollbar {
-    @apply h-[.4vh] w-[.3vw];
+    @apply h-2 w-[.5vw];
 }
 
 /* .ecoop-scroll::-webkit-scrollbar-track {
