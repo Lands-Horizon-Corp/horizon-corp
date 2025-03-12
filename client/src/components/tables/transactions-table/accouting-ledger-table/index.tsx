@@ -95,9 +95,9 @@ const AccountsLedgerTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    className="mb-2"
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>
