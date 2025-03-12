@@ -18,6 +18,8 @@ const DataTableUnselect = <T,>({
         .getSelectedRowModel()
         .flatRows.map((row) => row.original)
 
+    if (selectedRows.length === 0) return null
+
     return (
         <ActionTooltip
             tooltipContent={`Unselect ${selectedRows.length} row(s)`}

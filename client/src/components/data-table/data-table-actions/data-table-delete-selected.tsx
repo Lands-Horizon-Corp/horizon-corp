@@ -73,15 +73,15 @@ const DataTableDeleteSelected = <T,>({
             ) : (
                 <span className="inline-flex items-center gap-x-2">
                     <TrashIcon className="inline" />
-                    {selectedRows.length > 0 && (
-                        <Badge
-                            variant="secondary"
-                            className="absolute -right-[0%] top-0 size-fit w-fit -translate-y-1/2 translate-x-1/2 px-1.5 text-xs animate-in fade-in dark:bg-popover/60"
-                        >
-                            {selectedRows.length}
-                        </Badge>
-                    )}
                 </span>
+            )}
+            {selectedRows.length > 0 && (
+                <Badge
+                    variant="secondary"
+                    className="absolute -right-[0%] top-[10px] size-fit w-fit -translate-y-1/2 translate-x-1/2 px-[3px] text-xs animate-in fade-in dark:bg-popover/60"
+                >
+                    {selectedRows.length}
+                </Badge>
             )}
         </Button>
     )
