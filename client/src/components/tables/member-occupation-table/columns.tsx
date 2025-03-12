@@ -7,6 +7,7 @@ import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DateFilter from '@/components/data-table/data-table-filters/date-filter'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
+import HeaderToggleSelect from '@/components/data-table/data-table-row-actions/header-toggle-select'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
@@ -35,18 +36,12 @@ const memberOccupationColumns = (
         {
             id: 'select',
             header: ({ table, column }) => (
-                <div className="flex w-fit items-center gap-x-1 px-2">
-                    <Checkbox
-                        checked={table.getIsAllPageRowsSelected()}
-                        onCheckedChange={(value) =>
-                            table.toggleAllPageRowsSelected(!!value)
-                        }
-                        aria-label="Select all"
-                    />
+                <div className={'flex w-fit items-center gap-x-1 px-2'}>
+                    <HeaderToggleSelect table={table} />
                     {!column.getIsPinned() && (
                         <PushPinSlashIcon
                             onClick={() => column.pin('left')}
-                            className="mr-2 cursor-pointer"
+                            className="mr-2 size-3.5 cursor-pointer"
                         />
                     )}
                 </div>
@@ -55,16 +50,17 @@ const memberOccupationColumns = (
                 <div className="flex w-fit items-center gap-x-1 px-0">
                     {opts?.actionComponent?.({ row })}
                     <Checkbox
+                        aria-label="Select row"
                         checked={row.getIsSelected()}
                         onCheckedChange={(value) => row.toggleSelected(!!value)}
-                        aria-label="Select row"
                     />
                 </div>
             ),
             enableSorting: false,
             enableResizing: false,
             enableHiding: false,
-            maxSize: 30,
+            size: 80,
+            minSize: 80,
         },
         {
             id: 'name',
@@ -84,8 +80,11 @@ const memberOccupationColumns = (
                     original: { name },
                 },
             }) => <div>{name}</div>,
-            enableMultiSort: true,
-            enableResizing: false,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: false,
+            size: 180,
+            minSize: 180,
         },
         {
             id: 'description',
@@ -105,8 +104,11 @@ const memberOccupationColumns = (
                     original: { description },
                 },
             }) => <div>{description}</div>,
-            enableMultiSort: true,
-            enableResizing: false,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: false,
+            size: 200,
+            minSize: 200,
         },
         {
             id: 'createdAt',
@@ -126,8 +128,11 @@ const memberOccupationColumns = (
                     original: { createdAt },
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
-            enableMultiSort: true,
-            enableResizing: false,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: false,
+            size: 180,
+            minSize: 180,
         },
     ]
 }

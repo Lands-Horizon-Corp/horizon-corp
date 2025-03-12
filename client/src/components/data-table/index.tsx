@@ -25,9 +25,9 @@ interface ITableProps<TData> extends IBaseCompNoChild {
     table: TableInstance<TData>
     rowClassName?: string
     isScrollable?: boolean
+    isStaticWidth?: boolean
     isStickyHeader?: boolean
     isStickyFooter?: boolean
-    dynamicTableSize?: boolean
     setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>
 }
 
@@ -37,7 +37,7 @@ const DataTable = <TData,>({
     isScrollable,
     isStickyHeader,
     isStickyFooter,
-    dynamicTableSize = false,
+    isStaticWidth = false,
     setColumnOrder,
 }: ITableProps<TData>) => {
     const handleDragEnd = (event: DragEndEvent) => {
@@ -75,11 +75,11 @@ const DataTable = <TData,>({
                 )}
                 className="table-fixed border-separate border-spacing-0 [&_td]:border-border [&_tfoot_td]:border-t [&_th]:border-b [&_th]:border-border [&_tr:not(:last-child)_td]:border-b [&_tr]:border-none"
                 style={
-                    dynamicTableSize
-                        ? {}
-                        : {
+                    isStaticWidth
+                        ? {
                               width: table.getTotalSize(),
                           }
+                        : {}
                 }
             >
                 <DataTableHeader

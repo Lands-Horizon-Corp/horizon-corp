@@ -183,10 +183,9 @@ const MemberTypeTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
-                    dynamicTableSize
-                    className="mb-2"
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
+                    className={cn('mb-2', isScrollable && 'flex-1')}
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

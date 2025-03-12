@@ -188,10 +188,9 @@ const AccountsComputationTypeTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
-                    dynamicTableSize
+                    className="mb-2"
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>
