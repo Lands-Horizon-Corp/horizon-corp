@@ -11,6 +11,7 @@ import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters
 
 import { toReadableDate } from '@/utils'
 import { IAccountsComputationTypeResource } from '@/server/types/accounts/computation-type'
+import HeaderToggleSelect from '@/components/data-table/data-table-row-actions/header-toggle-select'
 
 export const accountComputationTypeGlobalSearchTargets: IGlobalSearchTargets<IAccountsComputationTypeResource>[] =
     [
@@ -35,14 +36,8 @@ const AccountsComputationTypeTableColumns = (
         {
             id: 'select',
             header: ({ table, column }) => (
-                <div className="flex w-fit items-center gap-x-1 px-2">
-                    <Checkbox
-                        checked={table.getIsAllPageRowsSelected()}
-                        onCheckedChange={(value) =>
-                            table.toggleAllPageRowsSelected(!!value)
-                        }
-                        aria-label="Select all"
-                    />
+                <div className={'flex w-fit items-center gap-x-1 px-2'}>
+                    <HeaderToggleSelect table={table} />
                     {!column.getIsPinned() && (
                         <PushPinSlashIcon
                             onClick={() => column.pin('left')}
@@ -55,17 +50,17 @@ const AccountsComputationTypeTableColumns = (
                 <div className="flex w-fit items-center gap-x-1 px-0">
                     {opts?.actionComponent?.({ row })}
                     <Checkbox
+                        aria-label="Select row"
                         checked={row.getIsSelected()}
                         onCheckedChange={(value) => row.toggleSelected(!!value)}
-                        aria-label="Select row"
                     />
                 </div>
             ),
-            maxSize: 60,
             enableSorting: false,
-            enableHiding: false,
-            enablePinning: false,
             enableResizing: false,
+            enableHiding: false,
+            size: 80,
+            minSize: 80,
         },
         {
             id: 'name',
@@ -86,8 +81,11 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
-            enablePinning: false,
-            enableResizing: false,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: false,
+            size: 180,
+            minSize: 180,
         },
         {
             id: 'description',
@@ -108,8 +106,12 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
-            enablePinning: false,
-            enableResizing: false,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: false,
+            size: 200,
+            minSize: 200,
+            maxSize: 300,
         },
         {
             id: 'createdAt',
@@ -130,8 +132,11 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
-            enablePinning: false,
-            enableResizing: false,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: false,
+            size: 180,
+            minSize: 180,
         },
         {
             id: 'createdBy',
@@ -145,8 +150,11 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{createdBy}</div>,
             enableMultiSort: true,
-            enablePinning: false,
-            enableResizing: false,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: true,
+            size: 180,
+            minSize: 180,
         },
         {
             id: 'updatedAt',
@@ -167,8 +175,11 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{toReadableDate(updatedAt)}</div>,
             enableMultiSort: true,
-            enablePinning: false,
-            enableResizing: false,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: true,
+            size: 180,
+            minSize: 180,
         },
         {
             id: 'updatedBy',
@@ -182,8 +193,11 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{updatedBy}</div>,
             enableMultiSort: true,
-            enablePinning: false,
-            enableResizing: false,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: true,
+            size: 180,
+            minSize: 180,
         },
     ]
 }

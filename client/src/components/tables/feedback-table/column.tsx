@@ -6,6 +6,7 @@ import { PushPinSlashIcon } from '@/components/icons'
 import TextFilter from '@/components/data-table/data-table-filters/text-filter'
 import DataTableColumnHeader from '@/components/data-table/data-table-column-header'
 import ColumnActions from '@/components/data-table/data-table-column-header/column-actions'
+import HeaderToggleSelect from '@/components/data-table/data-table-row-actions/header-toggle-select'
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { IFeedbackResource } from '@/server/types'
@@ -33,13 +34,7 @@ const AdminCompaniesFeedbackTableColumns = (
             id: 'select',
             header: ({ table, column }) => (
                 <div className={'flex w-fit items-center gap-x-1 px-2'}>
-                    <Checkbox
-                        checked={table.getIsAllPageRowsSelected()}
-                        onCheckedChange={(value) =>
-                            table.toggleAllPageRowsSelected(!!value)
-                        }
-                        aria-label="Select all"
-                    />
+                    <HeaderToggleSelect table={table} />
                     {!column.getIsPinned() && (
                         <PushPinSlashIcon
                             onClick={() => column.pin('left')}
@@ -52,15 +47,17 @@ const AdminCompaniesFeedbackTableColumns = (
                 <div className="flex w-fit items-center gap-x-1 px-0">
                     {opts?.actionComponent?.({ row })}
                     <Checkbox
+                        aria-label="Select row"
                         checked={row.getIsSelected()}
                         onCheckedChange={(value) => row.toggleSelected(!!value)}
-                        aria-label="Select row"
                     />
                 </div>
             ),
             enableSorting: false,
+            enableResizing: false,
             enableHiding: false,
-            maxSize: 80,
+            size: 80,
+            minSize: 80,
         },
         {
             id: 'email',

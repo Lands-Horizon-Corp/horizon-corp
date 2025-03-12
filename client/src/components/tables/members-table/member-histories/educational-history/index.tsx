@@ -157,7 +157,6 @@ const MemberEducationalAttainmentHistoryTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
-                    dynamicTableSize
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
                 />
