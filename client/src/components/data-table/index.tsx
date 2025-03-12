@@ -69,9 +69,9 @@ const DataTable = <TData,>({
         >
             <Table
                 wrapperClassName={cn(
-                    'ecoop-scroll rounded-lg border',
+                    'ecoop-scroll rounded-lg border -z-0',
                     className,
-                    !isScrollable ? 'h-fit max-h-none min-h-fit' : 'h-full'
+                    !isScrollable ? 'h-fit max-h-none min-h-fit' : 'h-full grow'
                 )}
                 className="table-fixed border-separate border-spacing-0 [&_td]:border-border [&_tfoot_td]:border-t [&_th]:border-b [&_th]:border-border [&_tr:not(:last-child)_td]:border-b [&_tr]:border-none"
                 style={
@@ -88,7 +88,7 @@ const DataTable = <TData,>({
                     headerGroups={table.getHeaderGroups()}
                 />
                 <DataTableBody
-                    colCount={table.getAllColumns().length}
+                    colCount={table.getVisibleLeafColumns().length}
                     rows={table.getRowModel().rows}
                 />
                 <DataTableFooter

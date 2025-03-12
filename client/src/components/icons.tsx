@@ -1,4 +1,5 @@
 import {
+    TbMinus as MinusIcon,
     TbSunMoon as SunMoonIcon,
     TbBlockquote as BlockQuoteIcon,
 } from 'react-icons/tb'
@@ -229,6 +230,7 @@ export {
     UserIcon,
     MoonIcon,
     DrawIcon,
+    MinusIcon,
     ErrorIcon,
     FileXIcon,
     TrashIcon,

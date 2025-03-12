@@ -4,7 +4,6 @@ import {
     getSortedRowModel,
 } from '@tanstack/react-table'
 import { useMemo } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 
 import DataTable from '@/components/data-table'
 import DataTableToolbar, {
@@ -12,9 +11,9 @@ import DataTableToolbar, {
 } from '@/components/data-table/data-table-toolbar'
 import DataTablePagination from '@/components/data-table/data-table-pagination'
 
-import membersColumns, {
-    IMembersTableColumnProps,
-    memberGlobalSearchTargets,
+import memberEducationalAttainmentHistoryColumns, {
+    IMemberEducationalAttainmentHistoryColumnProps,
+    memberEducationalAttainmentHistoryGlobalSearchTargets,
 } from './columns'
 
 import { cn } from '@/lib'
@@ -22,19 +21,23 @@ import { usePagination } from '@/hooks/use-pagination'
 import useDatableFilterState from '@/hooks/use-filter-state'
 import FilterContext from '@/contexts/filter-context/filter-context'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
-import MemberService from '@/server/api-service/member-services/member-service'
-import { useFilteredPaginatedMembers } from '@/hooks/api-hooks/member/use-member'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 
-import { TableProps } from '../types'
-import { IMemberResource } from '@/server/types'
+import { TableProps } from '../../../types'
+import {
+    IMemberEducationalAttainmentHistoryResource,
+    TEntityId,
+} from '@/server/types'
+import { PAGE_SIZES_SMALL } from '@/constants'
+import { useMemberEducationalAttainmentHistory } from '@/hooks/api-hooks/member/use-member-history'
 
-export interface MembersTableProps
-    extends TableProps<IMemberResource>,
-        IMembersTableColumnProps {
+export interface MemberEducationalAttainmentHistoryTableProps
+    extends TableProps<IMemberEducationalAttainmentHistoryResource>,
+        IMemberEducationalAttainmentHistoryColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<IMemberResource>,
+        IDataTableToolbarProps<IMemberEducationalAttainmentHistoryResource>,
         | 'table'
+        | 'actionComponent'
         | 'refreshActionProps'
         | 'globalSearchProps'
         | 'scrollableProps'
@@ -42,26 +45,23 @@ export interface MembersTableProps
         | 'exportActionProps'
         | 'deleteActionProps'
     >
+    profileId: TEntityId
 }
 
-const MembersTable = ({
+const MemberEducationalAttainmentHistoryTable = ({
+    profileId,
     className,
     toolbarProps,
-    defaultFilter,
-    onSelectData,
-    actionComponent,
-}: MembersTableProps) => {
-    const queryClient = useQueryClient()
-    const { pagination, setPagination } = usePagination()
+}: MemberEducationalAttainmentHistoryTableProps) => {
+    const { pagination, setPagination } = usePagination({
+        pageSize: PAGE_SIZES_SMALL[2],
+    })
     const { sortingState, tableSorting, setTableSorting } =
         useDataTableSorting()
 
     const columns = useMemo(
-        () =>
-            membersColumns({
-                actionComponent,
-            }),
-        [actionComponent]
+        () => memberEducationalAttainmentHistoryColumns(),
+        []
     )
 
     const {
@@ -74,17 +74,11 @@ const MembersTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<IMemberResource>({
-        defaultColumnVisibility: {
-            isEmailVerified: false,
-            isContactVerified: false,
-        },
+    } = useDataTableState<IMemberEducationalAttainmentHistoryResource>({
         defaultColumnOrder: columns.map((c) => c.id!),
-        onSelectData,
     })
 
     const filterState = useDatableFilterState({
-        defaultFilter,
         onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
     })
 
@@ -93,7 +87,8 @@ const MembersTable = ({
         isRefetching,
         data: { data, totalPage, pageSize, totalSize },
         refetch,
-    } = useFilteredPaginatedMembers({
+    } = useMemberEducationalAttainmentHistory({
+        profileId,
         pagination,
         sort: sortingState,
         filterPayload: filterState.finalFilterPayload,
@@ -103,7 +98,7 @@ const MembersTable = ({
 
     const table = useReactTable({
         columns,
-        data: data,
+        data,
         initialState: {
             columnPinning: { left: ['select'] },
         },
@@ -135,7 +130,7 @@ const MembersTable = ({
         <FilterContext.Provider value={filterState}>
             <div
                 className={cn(
-                    'relative flex h-full flex-col gap-y-2 py-4',
+                    'flex h-full flex-col gap-y-2',
                     className,
                     !isScrollable && 'h-fit !max-h-none'
                 )}
@@ -143,40 +138,15 @@ const MembersTable = ({
                 <DataTableToolbar
                     globalSearchProps={{
                         defaultMode: 'equal',
-                        targets: memberGlobalSearchTargets,
+                        targets:
+                            memberEducationalAttainmentHistoryGlobalSearchTargets,
                     }}
                     table={table}
                     refreshActionProps={{
                         onClick: () => refetch(),
                         isLoading: isPending || isRefetching,
                     }}
-                    deleteActionProps={{
-                        onDeleteSuccess: () =>
-                            queryClient.invalidateQueries({
-                                queryKey: ['company', 'resource-query'],
-                            }),
-                        onDelete: (selectedData) =>
-                            MemberService.deleteMany(
-                                selectedData.map((data) => data.id)
-                            ),
-                    }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
-                    exportActionProps={{
-                        pagination,
-                        isLoading: isPending,
-                        filters: filterState.finalFilterPayload,
-                        disabled: isPending || isRefetching,
-                        exportAll: MemberService.exportAll,
-                        exportAllFiltered: MemberService.exportAllFiltered,
-                        exportCurrentPage: (ids) =>
-                            MemberService.exportSelected(
-                                ids.map((data) => data.id)
-                            ),
-                        exportSelected: (ids) =>
-                            MemberService.exportSelected(
-                                ids.map((data) => data.id)
-                            ),
-                    }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,
                         setFilterLogic: filterState.setFilterLogic,
@@ -187,14 +157,18 @@ const MembersTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    dynamicTableSize
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className={cn('mb-2', isScrollable && 'flex-1')}
                 />
-                <DataTablePagination table={table} totalSize={totalSize} />
+                <DataTablePagination
+                    table={table}
+                    totalSize={totalSize}
+                    pageSizes={PAGE_SIZES_SMALL.slice(1)}
+                />
             </div>
         </FilterContext.Provider>
     )
 }
 
-export default MembersTable
+export default MemberEducationalAttainmentHistoryTable
