@@ -48,7 +48,9 @@ const accountingLedgerTableColumns =
                 cell: ({ row: { original } }) => (
                     <div>{original.description}</div>
                 ),
-                maxSize: 40,
+                size: 160,
+                maxSize: 250,
+                minSize: 160,
                 enableHiding: false,
                 enablePinning: false,
                 enableSorting: false,
@@ -129,6 +131,11 @@ const accountingLedgerTableColumns =
                     <div>{original.summary.balance}</div>
                 ),
                 enableMultiSort: true,
+                enableResizing: false,
+                enableSorting: true,
+                enableHiding: false,
+                size: 160,
+                minSize: 160,
             },
             {
                 id: 'transactionSource',
