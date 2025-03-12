@@ -72,6 +72,8 @@ const accountingLedgerTableColumns =
                 ),
                 cell: ({ row: { original } }) => <div>{original.orNumber}</div>,
                 enableMultiSort: true,
+                maxSize: 250,
+                minSize: 160,
             },
             {
                 id: 'transactionDate',
@@ -90,6 +92,8 @@ const accountingLedgerTableColumns =
                     <div>{toReadableDate(original.transactionDate)}</div>
                 ),
                 enableMultiSort: true,
+                maxSize: 250,
+                minSize: 200,
             },
             {
                 id: 'debit',
@@ -103,6 +107,9 @@ const accountingLedgerTableColumns =
                 ),
                 cell: ({ row: { original } }) => <div>{original.debit}</div>,
                 enableMultiSort: true,
+                size: 280,
+                maxSize: 500,
+                minSize: 200,
             },
             {
                 id: 'credit',
@@ -116,6 +123,9 @@ const accountingLedgerTableColumns =
                 ),
                 cell: ({ row: { original } }) => <div>{original.credit}</div>,
                 enableMultiSort: true,
+                size: 280,
+                maxSize: 500,
+                minSize: 200,
             },
             {
                 id: 'balance',
@@ -136,6 +146,7 @@ const accountingLedgerTableColumns =
                 enableHiding: false,
                 size: 160,
                 minSize: 160,
+                maxSize: 500,
             },
             {
                 id: 'transactionSource',
@@ -157,6 +168,9 @@ const accountingLedgerTableColumns =
                     <div>{original.transactionSource}</div>
                 ),
                 enableMultiSort: true,
+                size: 250,
+                maxSize: 500,
+                minSize: 250,
             },
             {
                 id: 'createdAt',
@@ -175,6 +189,8 @@ const accountingLedgerTableColumns =
                     <div>{toReadableDate(original.createdAt)}</div>
                 ),
                 enableMultiSort: true,
+                minSize: 150,
+                maxSize: 200,
             },
         ]
     }
