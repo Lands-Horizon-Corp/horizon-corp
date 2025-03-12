@@ -20,6 +20,7 @@ export const useCreatePaymentEntry = ({
                 return response
             } catch (error) {
                 const errorMessage = 'Failed to create payment entry'
+                console.error(errorMessage, error)
                 toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
