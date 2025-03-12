@@ -29,7 +29,7 @@ import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
 import { IMemberRequest } from '@/server/types'
 import { useCreateMember } from '@/hooks/api-hooks/member/use-member'
-import { createMemberSchema } from '@/validations/form-validation/member-schema'
+import { createMemberSchema } from '@/validations/form-validation/member/member-schema'
 import Modal, { IModalProps } from '@/components/modals/modal'
 
 type TMemberCreateForm = z.infer<typeof createMemberSchema>

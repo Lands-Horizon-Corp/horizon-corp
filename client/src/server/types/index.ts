@@ -29,6 +29,8 @@ export * from './member/member-classification-history'
 export * from './member/member-contact-number-references'
 export * from './member/member-educational-attainment'
 export * from './member/member-educational-attainment-history'
+export * from './member/member-occupation'
+export * from './member/member-occupation-history'
 
 /* Other Types */
 export * from './api'

@@ -38,6 +38,7 @@ var Module = fx.Module(
 		middleware.NewMiddleware,
 		handlers.NewCurrentUser,
 		handlers.NewFootstepHandler,
+		handlers.NewAuthHandler,
 	),
 	fx.Invoke(
 		NewAPIHandlerInvoke,

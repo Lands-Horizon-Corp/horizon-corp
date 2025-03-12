@@ -1,6 +1,7 @@
 import z from 'zod'
 import {
     emailSchema,
+    entityIdSchema,
     lastNameSchema,
     passwordSchema,
     userNameSchema,
@@ -9,8 +10,20 @@ import {
     middleNameSchema,
     contactNumberSchema,
     permanentAddressSchema,
-    entityIdSchema,
-} from '../common'
+} from '../../common'
+
+export const mediaResourceSchema = z.object({
+    id: entityIdSchema,
+    fileName: z.string(),
+    fileSize: z.number(),
+    fileType: z.string(),
+    storageKey: z.string(),
+    url: z.string().optional().default(''),
+    bucketName: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string(),
+    downloadURL: z.string(),
+})
 
 export const createMemberSchema = z.object({
     email: emailSchema,
@@ -36,7 +49,7 @@ export const createMemberProfileSchema = z.object({
     civilStatus: z
         .enum(['Married', 'Single', 'Widowed', 'Separated', 'N/A'])
         .default('Single'),
-    occupation: z.string().optional(),
+    occupationId: entityIdSchema.optional(),
     sssNumber: z.string().optional(),
     businessAddress: z.string().optional(),
     businessContact: z.string().optional(),
@@ -52,7 +65,10 @@ export const createMemberProfileSchema = z.object({
     mediaId: entityIdSchema.optional(),
     memberId: entityIdSchema.optional(),
 
-    memberTypeId: entityIdSchema.optional(),
+    memberTypeId: z
+        .string()
+        .min(1, 'Member Type is required')
+        .uuid('Invalid member type'),
     memberClassificationId: entityIdSchema.optional(),
     memberGenderId: entityIdSchema.optional(),
     branchId: entityIdSchema.optional(),
@@ -72,10 +88,10 @@ export const createMemberProfileSchema = z.object({
         .array(
             z.object({
                 postalCode: z.string().min(1, 'Postal Code is required'),
-                province: z.string().min(1, 'Postal Code is required'),
-                city: z.string().min(1, 'Postal Code is required'),
-                barangay: z.string().min(1, 'Postal Code is required'),
-                label: z.string().min(1, 'Postal Code is required'),
+                province: z.string().min(1, 'Province is required'),
+                city: z.string().min(1, 'City is required'),
+                barangay: z.string().min(1, 'Barangay is required'),
+                label: z.string().min(1, 'Label is required'),
             })
         )
         .min(1, 'Must provide at least 1 address'),
@@ -167,6 +183,8 @@ export const createMemberProfileSchema = z.object({
                 description: z.string().min(1, 'Description is required'),
                 value: z.string().min(1, 'Value is required'),
                 frontMediaId: entityIdSchema.optional(),
+                frontMediaResource: mediaResourceSchema.optional(),
+                backMediaResource: mediaResourceSchema.optional(),
                 backMediaId: entityIdSchema.optional(),
             })
         )

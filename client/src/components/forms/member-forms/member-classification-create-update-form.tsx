@@ -12,82 +12,92 @@ import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 
 import { cn } from '@/lib/utils'
-import { IBaseCompNoChild } from '@/types'
 import { IForm } from '@/types/component/form'
-import { IMemberTypeRequest } from '@/server/types'
-import { useCreateMemberType } from '@/hooks/api-hooks/member/use-member-type'
-import { createMemberTypeSchema } from '@/validations/form-validation/member/member-type-schema'
+import {
+    useCreateMemberClassification,
+    useUpdateMemberClassification,
+} from '@/hooks/api-hooks/member/use-member-classification'
+import { memberClassificationSchema } from '@/validations/form-validation/member/member-classification'
 
-type TMemberTypeCreateForm = z.infer<typeof createMemberTypeSchema>
+import { IBaseCompNoChild } from '@/types'
+import { IMemberClassificationRequest, TEntityId } from '@/server/types'
 
-interface IMemberTypeCreateFormProps
+type TMemberClassificationForm = z.infer<typeof memberClassificationSchema>
+
+export interface IMemberClassificationCreateUpdateFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IMemberTypeRequest>, unknown, string> {}
+        IForm<Partial<IMemberClassificationRequest>, unknown, string> {
+    memberClassificationId?: TEntityId
+}
 
-const MemberTypeCreateForm = ({
+const MemberClassificationCreateUpdateForm = ({
+    memberClassificationId,
     readOnly,
     className,
     defaultValues,
     onError,
     onSuccess,
-}: IMemberTypeCreateFormProps) => {
-    const form = useForm<TMemberTypeCreateForm>({
-        resolver: zodResolver(createMemberTypeSchema),
+}: IMemberClassificationCreateUpdateFormProps) => {
+    const isUpdateMode = Boolean(memberClassificationId)
+
+    const form = useForm<TMemberClassificationForm>({
+        resolver: zodResolver(memberClassificationSchema),
         reValidateMode: 'onChange',
         mode: 'onSubmit',
         defaultValues: {
             name: '',
-            prefix: '',
             description: '',
             ...defaultValues,
         },
     })
 
     const {
-        error,
+        error: createError,
         isPending: isCreating,
-        mutate: createMemberType,
-    } = useCreateMemberType({ onSuccess, onError })
+        mutate: createMemberClassification,
+    } = useCreateMemberClassification({ onSuccess, onError })
+
+    const {
+        error: updateError,
+        isPending: isUpdating,
+        mutate: updateMemberClassification,
+    } = useUpdateMemberClassification({ onSuccess, onError })
+
+    const onSubmit = (formData: TMemberClassificationForm) => {
+        if (isUpdateMode && memberClassificationId) {
+            updateMemberClassification({
+                classificationId: memberClassificationId,
+                data: formData,
+            })
+        } else {
+            createMemberClassification(formData)
+        }
+    }
+
+    const combinedError = createError || updateError
 
     return (
         <Form {...form}>
             <form
-                onSubmit={form.handleSubmit((formData) =>
-                    createMemberType(formData)
-                )}
+                onSubmit={form.handleSubmit(onSubmit)}
                 className={cn('flex w-full flex-col gap-y-4', className)}
             >
                 <fieldset
-                    disabled={isCreating || readOnly}
+                    disabled={isCreating || isUpdating || readOnly}
                     className="grid gap-x-6 gap-y-4 sm:gap-y-3"
                 >
                     <fieldset className="space-y-3">
                         <FormFieldWrapper
                             control={form.control}
                             name="name"
-                            label="Name"
+                            label="Name *"
                             render={({ field }) => (
                                 <Input
                                     {...field}
                                     id={field.name}
-                                    placeholder="Member Type Name"
-                                    autoComplete="member-type-name"
-                                    disabled={isCreating || readOnly}
-                                />
-                            )}
-                        />
-
-                        <FormFieldWrapper
-                            control={form.control}
-                            name="prefix"
-                            label="Prefix"
-                            render={({ field }) => (
-                                <Input
-                                    {...field}
-                                    id={field.name}
-                                    placeholder="Prefix"
-                                    autoComplete="member-type-prefix"
-                                    disabled={isCreating || readOnly}
+                                    placeholder="Member Classification Name"
+                                    autoComplete="member-classification-name"
+                                    disabled={isCreating || isUpdating}
                                 />
                             )}
                         />
@@ -100,16 +110,17 @@ const MemberTypeCreateForm = ({
                                 <Input
                                     {...field}
                                     id={field.name}
-                                    placeholder="Description"
-                                    autoCapitalize="member-type-description"
-                                    disabled={isCreating || readOnly}
+                                    placeholder="Description *"
+                                    autoComplete="member-classification-description"
+                                    disabled={isCreating || isUpdating}
                                 />
                             )}
                         />
                     </fieldset>
                 </fieldset>
 
-                <FormErrorMessage errorMessage={error} />
+                <FormErrorMessage errorMessage={combinedError} />
+
                 <div>
                     <Separator className="my-2 sm:my-4" />
                     <div className="flex items-center justify-end gap-x-2">
@@ -123,10 +134,16 @@ const MemberTypeCreateForm = ({
                         </Button>
                         <Button
                             type="submit"
-                            disabled={isCreating}
+                            disabled={isCreating || isUpdating}
                             className="w-full self-end px-8 sm:w-fit"
                         >
-                            {isCreating ? <LoadingSpinner /> : 'Create'}
+                            {isCreating || isUpdating ? (
+                                <LoadingSpinner />
+                            ) : isUpdateMode ? (
+                                'Update'
+                            ) : (
+                                'Create'
+                            )}
                         </Button>
                     </div>
                 </div>
@@ -135,14 +152,14 @@ const MemberTypeCreateForm = ({
     )
 }
 
-export const MemberTypeCreateFormModal = ({
-    title = 'Create Member Type',
-    description = 'Fill out the form to add a new member type.',
+export const MemberClassificationCreateUpdateFormModal = ({
+    title = 'Create Member Classification',
+    description = 'Fill out the form to add a new member classification.',
     className,
     formProps,
     ...props
 }: IModalProps & {
-    formProps?: Omit<IMemberTypeCreateFormProps, 'className'>
+    formProps?: Omit<IMemberClassificationCreateUpdateFormProps, 'className'>
 }) => {
     return (
         <Modal
@@ -151,9 +168,9 @@ export const MemberTypeCreateFormModal = ({
             className={cn('', className)}
             {...props}
         >
-            <MemberTypeCreateForm {...formProps} />
+            <MemberClassificationCreateUpdateForm {...formProps} />
         </Modal>
     )
 }
 
-export default MemberTypeCreateForm
+export default MemberClassificationCreateUpdateForm

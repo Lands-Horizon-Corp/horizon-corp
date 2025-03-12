@@ -28,17 +28,17 @@ func NewContactController(
 // Retrieve contact with optional filtering for pagination or no pagination. Results can be converted to records.
 //
 //	Admin: Allowed
-//	Employee: Not allowed
-//	Owner: Not allowed
-//	Member: Not allowed
+//	Employee: Not Allowed
+//	Owner: Not Allowed
+//	Member: Not Allowed
 func (c *ContactController) Index(ctx *gin.Context) {}
 
 // GET: /api/v1/contact/:id
 //
 //	Admin: Allowed
-//	Employee: Not allowed
-//	Owner: Not allowed
-//	Member: Not allowed
+//	Employee: Not Allowed
+//	Owner: Not Allowed
+//	Member: Not Allowed
 //
 // Endpoint: GET /api/v1/contact/:id
 func (c *ContactController) Show(ctx *gin.Context) {}
@@ -48,9 +48,9 @@ func (c *ContactController) Show(ctx *gin.Context) {}
 func (c *ContactController) Store(ctx *gin.Context) {}
 
 //	Admin: Allowed
-//	Employee: Not allowed
-//	Owner: Not allowed
-//	Member: Not allowed
+//	Employee: Not Allowed
+//	Owner: Not Allowed
+//	Member: Not Allowed
 //
 // Endpoint: DELETE /api/v1/contact/:id
 func (c *ContactController) Destroy(ctx *gin.Context) {}

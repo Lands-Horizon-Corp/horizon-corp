@@ -1,56 +1,27 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/api/handlers"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/config"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/helpers"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/models"
-	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
 	"github.com/google/uuid"
 )
 
 type OwnerController struct {
-	repository    *models.ModelRepository
-	transformer   *models.ModelTransformer
-	footstep      *handlers.FootstepHandler
-	currentUser   *handlers.CurrentUser
-	otpService    *providers.OTPService
-	tokenProvider *providers.TokenService
-	cfg           *config.AppConfig
-	helpers       *helpers.HelpersFunction
-	smsProvder    *providers.SMSService
-	emailProvider *providers.EmailService
+	authHandler     *handlers.AuthHandler
+	footstepHandler *handlers.FootstepHandler
 }
 
 func NewOwnerController(
-	repository *models.ModelRepository,
-	transformer *models.ModelTransformer,
-	footstep *handlers.FootstepHandler,
-	currentUser *handlers.CurrentUser,
-	otpService *providers.OTPService,
-	tokenProvider *providers.TokenService,
-	cfg *config.AppConfig,
-	helpers *helpers.HelpersFunction,
-	smsProvder *providers.SMSService,
-	emailProvider *providers.EmailService,
+	authHandler *handlers.AuthHandler,
+	footstepHandler *handlers.FootstepHandler,
 ) *OwnerController {
 	return &OwnerController{
-		repository:    repository,
-		transformer:   transformer,
-		footstep:      footstep,
-		currentUser:   currentUser,
-		otpService:    otpService,
-		tokenProvider: tokenProvider,
-		cfg:           cfg,
-		helpers:       helpers,
-		smsProvder:    smsProvder,
-		emailProvider: emailProvider,
+		authHandler:     authHandler,
+		footstepHandler: footstepHandler,
 	}
 }
 
@@ -140,30 +111,12 @@ func (as OwnerController) ChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
 		return
 	}
-
-	owner, err := as.currentUser.Owner(ctx)
+	user, err := as.authHandler.ChangePassword(ctx, "Owner", req.OldPassword, req.NewPassword, req.ConfirmPassword)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	updated, err := as.repository.OwnerChangePassword(
-		owner.ID.String(),
-		req.OldPassword,
-		req.NewPassword,
-		as.helpers.GetPreload(ctx)...,
-	)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Failed to update password"})
-		return
-	}
-	_, err = as.footstep.Create(ctx, "Owner", "ChangePassword", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, as.transformer.OwnerToResource(updated))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type OwnerForgotPasswordRequest struct {
@@ -173,144 +126,57 @@ type OwnerForgotPasswordRequest struct {
 }
 
 func (c *OwnerController) ForgotPassword(ctx *gin.Context) {
-	link := c.ForgotPasswordResetLink(ctx)
+	link, err := c.ForgotPasswordResetLink(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
 	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
 }
 
-func (c *OwnerController) ForgotPasswordResetLink(ctx *gin.Context) *string {
+func (c *OwnerController) ForgotPasswordResetLink(ctx *gin.Context) (string, error) {
 	var req OwnerForgotPasswordRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return nil
+		return "", err
 	}
 	if err := validator.New().Struct(req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return nil
+		return "", err
 	}
-
-	user, err := c.repository.OwnerSearch(req.Key)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-		return nil
-	}
-
-	token, err := c.tokenProvider.GenerateUserToken(providers.UserClaims{
-		ID:          user.ID.String(),
-		AccountType: "Owner",
-		UserStatus:  user.Status,
-	}, time.Minute*10)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate reset token"})
-		return nil
-	}
-
-	resetLink := fmt.Sprintf("%s/auth/password-reset/%s", c.cfg.AppClientUrl, *token)
-	keyType := c.helpers.GetKeyType(req.Key)
-
-	switch keyType {
-	case "contact":
-		contactReq := providers.SMSRequest{
-			To:   req.Key,
-			Body: req.ContactTemplate,
-			Vars: &map[string]string{
-				"name":      fmt.Sprintf("%s %s", user.FirstName, user.LastName),
-				"eventLink": resetLink,
-			},
-		}
-		if err := c.smsProvder.SendSMS(contactReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send SMS for password reset"})
-			return nil
-		}
-		return &resetLink
-	case "email":
-		emailReq := providers.EmailRequest{
-			To:      req.Key,
-			Subject: "ECOOP: Change Password Request",
-			Body:    req.ContactTemplate,
-			Vars: &map[string]string{
-				"name":      fmt.Sprintf("%s %s", user.FirstName, user.LastName),
-				"eventLink": resetLink,
-			},
-		}
-		if err := c.emailProvider.SendEmail(emailReq); err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email for password reset"})
-			return nil
-		}
-		return &resetLink
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid key type"})
-		return nil
-	}
+	return c.authHandler.ForgotPasswordResetLink(ctx, "Owner", req.Key, req.EmailTemplate, req.ContactTemplate)
 }
 
-func (c *OwnerController) Create(ctx *gin.Context) *models.Owner {
+func (c *OwnerController) Create(ctx *gin.Context) {
 	var req OwnerStoreRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return nil
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
-		return nil
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-
-	preloads := c.helpers.GetPreload(ctx)
-	owner, err := c.repository.OwnerCreate(&models.Owner{
-		FirstName:          req.FirstName,
-		LastName:           req.LastName,
-		MiddleName:         req.MiddleName,
-		PermanentAddress:   req.PermanentAddress,
-		Description:        req.Description,
-		BirthDate:          req.BirthDate,
-		Username:           req.Username,
-		Email:              req.Email,
-		Password:           req.Password,
-		ContactNumber:      req.ContactNumber,
-		IsEmailVerified:    false,
-		IsContactVerified:  false,
-		IsSkipVerification: false,
-		Status:             providers.NotAllowedStatus,
-		MediaID:            req.MediaID,
-		RoleID:             req.RoleID,
-		GenderID:           req.GenderID,
-	}, preloads...)
+	user, err := c.authHandler.SignUp(ctx, "Owner",
+		req.FirstName,
+		req.LastName,
+		req.MiddleName,
+		req.PermanentAddress,
+		req.Description,
+		req.BirthDate,
+		req.Username,
+		req.Email,
+		req.Password,
+		req.ContactNumber,
+		req.MediaID,
+		req.RoleID,
+		req.GenderID,
+		req.EmailTemplate,
+		req.ContactTemplate)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Unable to create owner", "details": err.Error()})
-		return nil
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
 	}
-
-	if err := c.otpService.SendEmailOTP(providers.OTPMessage{
-		AccountType: "Owner",
-		ID:          owner.ID.String(),
-		MediumType:  "email",
-		Reference:   "email-verification",
-	}, providers.EmailRequest{
-		To:      req.Email,
-		Subject: "ECOOP: Email Verification",
-		Body:    req.EmailTemplate,
-	}); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
-		return nil
-	}
-
-	if err := c.otpService.SendContactNumberOTP(providers.OTPMessage{
-		AccountType: "Owner",
-		ID:          owner.ID.String(),
-		MediumType:  "sms",
-		Reference:   "sms-verification",
-	}, providers.SMSRequest{
-		To:   req.ContactNumber,
-		Body: req.ContactTemplate,
-		Vars: &map[string]string{
-			"name": fmt.Sprintf("%s %s", req.FirstName, req.LastName),
-		},
-	}); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send contact number verification"})
-		return nil
-	}
-
-	ctx.JSON(http.StatusCreated, c.transformer.OwnerToResource(owner))
-	return owner
+	ctx.JSON(http.StatusOK, user)
 }
 
 type OwnerNewPasswordRequest struct {
@@ -326,54 +192,24 @@ func (c *OwnerController) NewPassword(ctx *gin.Context) {
 		return
 	}
 	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
 		return
 	}
-
-	owner, err := c.currentUser.Owner(ctx)
+	user, err := c.authHandler.NewPassword(ctx, "Owner", req.OldPassword, req.NewPassword)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	updatedOwner, err := c.repository.OwnerChangePassword(
-		owner.ID.String(), req.OldPassword, req.NewPassword,
-		c.helpers.GetPreload(ctx)...,
-	)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update password"})
-		return
-	}
-
-	_, err = c.footstep.Create(ctx, "Owner", "NewPassword", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+	ctx.JSON(http.StatusOK, user)
 }
 
 func (c *OwnerController) SkipVerification(ctx *gin.Context) {
-	owner, err := c.currentUser.Owner(ctx)
+	user, err := c.authHandler.SkipVerification(ctx, "Owner")
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
-		IsSkipVerification: true,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "SkipVerification", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type OwnerSendEmailVerificationRequest struct {
@@ -390,35 +226,10 @@ func (c *OwnerController) SendEmailVerification(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	owner, err := c.currentUser.Owner(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+	if err := c.authHandler.SendEmailVerification(ctx, "Owner", req.EmailTemplate); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	otpMessage := providers.OTPMessage{
-		AccountType: "Owner",
-		ID:          owner.ID.String(),
-		MediumType:  providers.Email,
-		Reference:   "send-email-verification",
-	}
-	emailRequest := providers.EmailRequest{
-		To:      owner.Email,
-		Subject: "ECOOP: Email Verification",
-		Body:    req.EmailTemplate,
-	}
-
-	if err := c.otpService.SendEmailOTP(otpMessage, emailRequest); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send email verification"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "SendEmailVerification", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
 	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Please check your inbox or spam folder"})
 }
 
@@ -436,44 +247,12 @@ func (c *OwnerController) VerifyEmail(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	owner, err := c.currentUser.Owner(ctx)
+	user, err := c.authHandler.VerifyEmail(ctx, "Owner", req.Otp)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	otpMessage := providers.OTPMessage{
-		AccountType: "Owner",
-		ID:          owner.ID.String(),
-		MediumType:  providers.Email,
-		Reference:   "send-email-verification",
-	}
-
-	isValid, err := c.otpService.ValidateOTP(otpMessage, req.Otp)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to validate OTP"})
-		return
-	}
-	if !isValid {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
-		return
-	}
-
-	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
-		IsEmailVerified: true,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "VerifyEmail", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type OwnerSendContactNumberVerificationRequest struct {
@@ -490,37 +269,10 @@ func (c *OwnerController) SendContactNumberVerification(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	owner, err := c.currentUser.Owner(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+	if err := c.authHandler.SendContactNumberVerification(ctx, "Owner", req.ContactTemplate); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	otpMessage := providers.OTPMessage{
-		AccountType: "Owner",
-		ID:          owner.ID.String(),
-		MediumType:  providers.Email,
-		Reference:   "send-contact-number-verification",
-	}
-	contactReq := providers.SMSRequest{
-		To:   owner.ContactNumber,
-		Body: req.ContactTemplate,
-		Vars: &map[string]string{
-			"name": fmt.Sprintf("%s %s", owner.FirstName, owner.LastName),
-		},
-	}
-
-	if err := c.otpService.SendContactNumberOTP(otpMessage, contactReq); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification OTP"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "SendContactNumberVerification", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
 	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully"})
 }
 
@@ -538,44 +290,12 @@ func (c *OwnerController) VerifyContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	owner, err := c.currentUser.Owner(ctx)
+	user, err := c.authHandler.VerifyContactNumber(ctx, "Owner", req.Otp)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
-	otpMessage := providers.OTPMessage{
-		AccountType: "Owner",
-		ID:          owner.ID.String(),
-		MediumType:  providers.Email,
-		Reference:   "send-contact-number-verification",
-	}
-
-	isValid, err := c.otpService.ValidateOTP(otpMessage, req.Otp)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "OTP validation error"})
-		return
-	}
-	if !isValid {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired OTP"})
-		return
-	}
-
-	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
-		IsContactVerified: true,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "VerifyContactNumber", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
-	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+	ctx.JSON(http.StatusOK, user)
 }
 
 func (c *OwnerController) ProfilePicture(ctx *gin.Context) {
@@ -588,29 +308,12 @@ func (c *OwnerController) ProfilePicture(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	owner, err := c.currentUser.Owner(ctx)
+	user, err := c.authHandler.ProfilePicture(ctx, "Owner", req.ID)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
-		MediaID: req.ID,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "ProfilePicture", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type OwnerAccountSettingRequest struct {
@@ -632,34 +335,19 @@ func (c *OwnerController) ProfileAccountSetting(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	owner, err := c.currentUser.Owner(ctx)
+	user, err := c.authHandler.ProfileAccountSetting(ctx, "Owner",
+		req.BirthDate,
+		req.FirstName,
+		req.MiddleName,
+		req.LastName,
+		req.Description,
+		req.PermanentAddress,
+	)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
-		BirthDate:        req.BirthDate,
-		MiddleName:       req.MiddleName,
-		FirstName:        req.FirstName,
-		LastName:         req.LastName,
-		Description:      req.Description,
-		PermanentAddress: req.PermanentAddress,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "ProfileAccountSetting", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type OwnerChangeEmailRequest struct {
@@ -677,33 +365,12 @@ func (c *OwnerController) ProfileChangeEmail(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	owner, err := c.currentUser.Owner(ctx)
+	user, err := c.authHandler.ProfileChangeEmail(ctx, "Owner", req.Password, req.Email)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	if !c.repository.OwnerVerifyPassword(owner.ID.String(), req.Password) {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
-		return
-	}
-	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
-		Email:           req.Email,
-		IsEmailVerified: false,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "ProfileChangeEmail", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+	ctx.JSON(http.StatusOK, user)
 }
 
 type OwnerChangeContactNumberRequest struct {
@@ -721,33 +388,13 @@ func (c *OwnerController) ProfileChangeContactNumber(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	owner, err := c.currentUser.Owner(ctx)
+
+	user, err := c.authHandler.ProfileChangeContactNumber(ctx, "Owner", req.Password, req.ContactNumber)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	if !c.repository.OwnerVerifyPassword(owner.ID.String(), req.Password) {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
-		return
-	}
-	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
-		ContactNumber:     req.ContactNumber,
-		IsContactVerified: false,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "ProfileChangeContactNumber", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
+	ctx.JSON(http.StatusOK, user)
 
 }
 
@@ -766,31 +413,10 @@ func (c *OwnerController) ProfileChangeUsername(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
 		return
 	}
-	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
-		return
-	}
-	owner, err := c.currentUser.Owner(ctx)
+	user, err := c.authHandler.ProfileChangeContactNumber(ctx, "Owner", req.Password, req.Username)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	if !c.repository.OwnerVerifyPassword(owner.ID.String(), req.Password) {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Wrong password"})
-		return
-	}
-	updatedOwner, err := c.repository.OwnerUpdateByID(owner.ID.String(), &models.Owner{
-		Username: req.Username,
-	}, c.helpers.GetPreload(ctx)...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update owner details"})
-		return
-	}
-	_, err = c.footstep.Create(ctx, "Owner", "ProfileChangeUsername", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-	ctx.JSON(http.StatusOK, c.transformer.OwnerToResource(updatedOwner))
-
+	ctx.JSON(http.StatusOK, user)
 }

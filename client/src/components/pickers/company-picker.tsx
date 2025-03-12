@@ -49,6 +49,7 @@ const CompanyPicker = ({ value, disabled, placeholder, onSelect }: Props) => {
             filterPayload: finalFilterPayload,
             pagination,
             enabled: !disabled,
+            showMessage: false,
         })
 
     const company = useCompany({ companyId: value as TEntityId })

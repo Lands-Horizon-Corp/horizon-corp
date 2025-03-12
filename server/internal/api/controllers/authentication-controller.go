@@ -12,58 +12,54 @@ import (
 	"github.com/Lands-Horizon-Corp/horizon-corp/internal/providers"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator"
-	"github.com/google/uuid"
 )
 
 type AuthController struct {
-	repository    *models.ModelRepository
-	transformer   *models.ModelTransformer
-	footstep      *handlers.FootstepHandler
+	authHandler   *handlers.AuthHandler
 	currentUser   *handlers.CurrentUser
 	tokenProvider *providers.TokenService
 	cfg           *config.AppConfig
 	helpers       *helpers.HelpersFunction
-
-	adminController    *AdminController
-	ownerController    *OwnerController
-	employeeController *EmployeeController
-	memberController   *MemberController
 }
 
 func NewAuthController(
-	repository *models.ModelRepository,
-	transformer *models.ModelTransformer,
-	footstep *handlers.FootstepHandler,
+	authHandler *handlers.AuthHandler,
 	currentUser *handlers.CurrentUser,
 	tokenProvider *providers.TokenService,
 	cfg *config.AppConfig,
 	helpers *helpers.HelpersFunction,
-
-	adminController *AdminController,
-	ownerController *OwnerController,
-	employeeController *EmployeeController,
-	memberController *MemberController,
 ) *AuthController {
 	return &AuthController{
-		repository:    repository,
-		transformer:   transformer,
-		footstep:      footstep,
+		authHandler:   authHandler,
 		currentUser:   currentUser,
 		tokenProvider: tokenProvider,
 		cfg:           cfg,
 		helpers:       helpers,
-
-		adminController:    adminController,
-		ownerController:    ownerController,
-		employeeController: employeeController,
-		memberController:   memberController,
 	}
 }
 
 // SignUp handles user registration.
 // Endpoint: POST /api/v1/auth/signup
 type SignUpRequest struct {
-	AccountType string `json:"accountType" validate:"required,max=10"`
+	AccountType      string    `json:"accountType" validate:"required,max=10"`
+	FirstName        string    `json:"firstName" validate:"required,min=2,max=255"`
+	LastName         string    `json:"lastName" validate:"required,min=2,max=255"`
+	MiddleName       string    `json:"middleName" validate:"omitempty,min=2,max=255"`
+	PermanentAddress string    `json:"permanentAddress" validate:"required"`
+	Description      string    `json:"description" validate:"omitempty"`
+	BirthDate        time.Time `json:"birthDate" validate:"required"`
+	Username         string    `json:"username" validate:"required,min=3,max=255"`
+	Email            string    `json:"email" validate:"required,email"`
+	Password         string    `json:"password" validate:"required,min=8,max=255"`
+	ConfirmPassword  string    `json:"confirmPassword" validate:"required,eqfield=Password"`
+	ContactNumber    string    `json:"contactNumber" validate:"required,e164"`
+
+	MediaID  *string `json:"mediaId" validate:"omitempty"`
+	RoleID   *string `json:"roleId" validate:"omitempty"`
+	GenderID *string `json:"genderId" validate:"omitempty"`
+
+	EmailTemplate   string `json:"emailTemplate" validate:"required"`
+	ContactTemplate string `json:"contactTemplate" validate:"required"`
 }
 
 func (as AuthController) SignUp(ctx *gin.Context) {
@@ -72,35 +68,58 @@ func (as AuthController) SignUp(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	if err := validator.New().Struct(req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	var (
-		userID     string
-		userStatus providers.UserStatus
+
+	user, err := as.authHandler.SignUp(
+		ctx,
+		req.AccountType,
+		req.FirstName,
+		req.LastName,
+		req.MiddleName,
+		req.PermanentAddress,
+		req.Description,
+		req.BirthDate,
+		req.Username,
+		req.Email,
+		req.Password,
+		req.ContactNumber,
+		as.helpers.StringToUUID(req.MediaID),
+		as.helpers.StringToUUID(req.RoleID),
+		as.helpers.StringToUUID(req.GenderID),
+		req.EmailTemplate,
+		req.ContactTemplate,
 	)
-	switch req.AccountType {
-	case "Member":
-		member := as.memberController.Create(ctx)
-		userID = member.ID.String()
-		userStatus = member.Status
-	case "Admin":
-		admin := as.adminController.Create(ctx)
-		userID = admin.ID.String()
-		userStatus = admin.Status
-	case "Owner":
-		owner := as.ownerController.Create(ctx)
-		userID = owner.ID.String()
-		userStatus = owner.Status
-	case "Employee":
-		employee := as.employeeController.Create(ctx)
-		userID = employee.ID.String()
-		userStatus = employee.Status
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	var userID string
+	var userStatus providers.UserStatus
+
+	switch u := user.(type) {
+	case *models.AdminResource:
+		userID = u.ID.String()
+		userStatus = u.Status
+	case *models.MemberResource:
+		userID = u.ID.String()
+		userStatus = u.Status
+	case *models.EmployeeResource:
+		userID = u.ID.String()
+		userStatus = u.Status
+	case *models.OwnerResource:
+		userID = u.ID.String()
+		userStatus = u.Status
+	default:
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "unknown account type"})
+		return
+	}
+
 	token, err := as.tokenProvider.GenerateUserToken(
 		providers.UserClaims{
 			ID:          userID,
@@ -109,15 +128,12 @@ func (as AuthController) SignUp(ctx *gin.Context) {
 		},
 		time.Hour*24,
 	)
+
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token"})
 		return
 	}
-	_, err = as.footstep.Create(ctx, "Auth", "SignUp", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
+
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     as.cfg.AppTokenName,
 		Value:    *token,
@@ -127,6 +143,7 @@ func (as AuthController) SignUp(ctx *gin.Context) {
 		SameSite: http.SameSiteNoneMode,
 	})
 
+	ctx.JSON(http.StatusOK, gin.H{"message": "signup successful"})
 }
 
 // SignIn handles user login.
@@ -140,66 +157,18 @@ type SignInRequest struct {
 func (as AuthController) SignIn(ctx *gin.Context) {
 	var req SignInRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request data", "details": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	if err := validator.New().Struct(req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	preloads := as.helpers.GetPreload(ctx)
-	var rawUser interface{}
-	var transformedUser interface{}
-	var id uuid.UUID
-	var err error
-	switch req.AccountType {
-	case "Member":
-		rawUser, err = as.repository.MemberSignIn(req.Key, req.Password, preloads...)
-		if err == nil {
-			id = rawUser.(*models.Member).ID
-			transformedUser = as.transformer.MemberToResource(rawUser.(*models.Member))
-		}
-	case "Admin":
-		rawUser, err = as.repository.AdminSignIn(req.Key, req.Password, preloads...)
-		if err == nil {
-			id = rawUser.(*models.Admin).ID
-			transformedUser = as.transformer.AdminToResource(rawUser.(*models.Admin))
-		}
-	case "Owner":
-		rawUser, err = as.repository.OwnerSignIn(req.Key, req.Password, preloads...)
-		if err == nil {
-			id = rawUser.(*models.Owner).ID
-			transformedUser = as.transformer.OwnerToResource(rawUser.(*models.Owner))
-		}
-	case "Employee":
-		rawUser, err = as.repository.EmployeeSignIn(req.Key, req.Password, preloads...)
-		if err == nil {
-			id = rawUser.(*models.Employee).ID
-			transformedUser = as.transformer.EmployeeToResource(rawUser.(*models.Employee))
-		}
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid account type"})
-		return
-	}
+	user, token, err := as.authHandler.SignIn(ctx, req.AccountType, req.Key, req.Password)
 	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "authentication failed", "details": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	token, err := as.tokenProvider.GenerateUserToken(providers.UserClaims{
-		ID:          id.String(),
-		AccountType: req.AccountType,
-	}, 24*time.Hour)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to generate token", "details": err.Error()})
-		return
-	}
-
-	_, err = as.footstep.Create(ctx, "Auth", "SignIn", fmt.Sprintf("User %s signed in", id.String()))
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
-		return
-	}
-
 	http.SetCookie(ctx.Writer, &http.Cookie{
 		Name:     as.cfg.AppTokenName,
 		Value:    *token,
@@ -208,15 +177,17 @@ func (as AuthController) SignIn(ctx *gin.Context) {
 		Secure:   true,
 		SameSite: http.SameSiteNoneMode,
 	})
-	ctx.JSON(http.StatusOK, transformedUser)
+	ctx.JSON(http.StatusOK, user)
 }
 
 // ForgotPassword handles password reset requests by sending a reset link.
 // Endpoint: POST /api/v1/auth/forgot-password
 
 type ForgotPasswordRequest struct {
-	Key         string `json:"key" validate:"required,max=255"`
-	AccountType string `json:"accountType" validate:"required,max=10"`
+	AccountType     string `json:"accountType" validate:"required,max=10"`
+	Key             string `json:"key" validate:"required,max=255"`
+	EmailTemplate   string `json:"emailTemplate"`
+	ContactTemplate string `json:"contactTemplate"`
 }
 
 func (as AuthController) ForgotPassword(ctx *gin.Context) {
@@ -229,19 +200,11 @@ func (as AuthController) ForgotPassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "validation failed", "details": err.Error()})
 		return
 	}
-	switch req.AccountType {
-	case "Member":
-		as.memberController.ForgotPassword(ctx)
-	case "Admin":
-		as.adminController.ForgotPasswordResetLink(ctx)
-	case "Owner":
-		as.ownerController.ForgotPasswordResetLink(ctx)
-	case "Employee":
-		as.employeeController.ForgotPasswordResetLink(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid account type"})
-		return
+	link, err := as.authHandler.ForgotPasswordResetLink(ctx, req.AccountType, req.Key, req.EmailTemplate, req.ContactTemplate)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 	}
+	ctx.JSON(http.StatusBadRequest, gin.H{"link": link})
 }
 
 // ChangePassword handles changing the user's password.
@@ -268,19 +231,13 @@ func (as AuthController) ChangePassword(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("ChangePassword: Token verification error: %v", err)})
 		return
 	}
-	switch claims.AccountType {
-	case "Member":
-		as.repository.MemberForceChangePassword(claims.ID, req.NewPassword)
-	case "Admin":
-		as.repository.AdminForceChangePassword(claims.ID, req.NewPassword)
-	case "Owner":
-		as.repository.OwnerForceChangePassword(claims.ID, req.NewPassword)
-	case "Employee":
-		as.repository.EmployeeForceChangePassword(claims.ID, req.NewPassword)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
+	user, err := as.authHandler.ForceChangePassword(ctx, claims.AccountType, claims.ID, req.ConfirmPassword)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	as.tokenProvider.DeleteToken(req.ResetID)
+	ctx.JSON(http.StatusOK, user)
 }
 
 func (as AuthController) VerifyResetLink(ctx *gin.Context) {
@@ -297,7 +254,6 @@ func (as AuthController) SignOut(ctx *gin.Context) {
 	as.tokenProvider.ClearTokenCookie(ctx)
 	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully signed out"})
 }
-
 func (as AuthController) CurrentUser(ctx *gin.Context) {
 	user, err := as.currentUser.GenericUser(ctx)
 	if err != nil {
@@ -307,29 +263,34 @@ func (as AuthController) CurrentUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
+type NewPasswordRequest struct {
+	PreviousPassword string `json:"previousPassword" validate:"required,min=8,max=255"`
+	NewPassword      string `json:"newPassword" validate:"required,min=8,max=255"`
+	ConfirmPassword  string `json:"confirmPassword" validate:"required,min=8,max=255,eqfield=NewPassword"`
+}
+
 func (as AuthController) NewPassword(ctx *gin.Context) {
+	var req NewPasswordRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed", "details": err.Error()})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.NewPassword(ctx)
-	case "Admin":
-		as.adminController.NewPassword(ctx)
-	case "Owner":
-		as.ownerController.NewPassword(ctx)
-	case "Employee":
-		as.employeeController.NewPassword(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
-	}
-	_, err = as.footstep.Create(ctx, "Auth", "NewPassword", "")
+
+	updatedUser, err := as.authHandler.NewPassword(ctx, user.AccountType, req.PreviousPassword, req.ConfirmPassword)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.JSON(http.StatusAccepted, updatedUser)
 }
 
 func (as AuthController) SkipVerification(ctx *gin.Context) {
@@ -338,131 +299,117 @@ func (as AuthController) SkipVerification(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.SkipVerification(ctx)
-	case "Admin":
-		as.adminController.SkipVerification(ctx)
-	case "Owner":
-		as.ownerController.SkipVerification(ctx)
-	case "Employee":
-		as.employeeController.SkipVerification(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
-	}
-	_, err = as.footstep.Create(ctx, "Auth", "SkipVerification", "")
+	updatedUser, err := as.authHandler.SkipVerification(ctx, user.AccountType)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.JSON(http.StatusAccepted, updatedUser)
+}
+
+type SendEmailVerificationRequest struct {
+	EmailTemplate string `json:"emailTemplate" validate:"required"`
 }
 
 func (as AuthController) SendEmailVerification(ctx *gin.Context) {
+	var req SendEmailVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.SendEmailVerification(ctx)
-	case "Admin":
-		as.adminController.SendEmailVerification(ctx)
-	case "Owner":
-		as.ownerController.SendEmailVerification(ctx)
-	case "Employee":
-		as.employeeController.SendEmailVerification(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
-	}
-	_, err = as.footstep.Create(ctx, "Auth", "SendEmailVerification", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+	if err := as.authHandler.SendEmailVerification(ctx, user.AccountType, req.EmailTemplate); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Email verification sent successfully. Please check your inbox or spam folder"})
+}
+
+type VerifyEmailRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
 }
 
 func (as AuthController) VerifyEmail(ctx *gin.Context) {
+	var req VerifyEmailRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.VerifyEmail(ctx)
-	case "Admin":
-		as.adminController.VerifyEmail(ctx)
-	case "Owner":
-		as.ownerController.VerifyEmail(ctx)
-	case "Employee":
-		as.employeeController.VerifyEmail(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
-	}
-	_, err = as.footstep.Create(ctx, "Auth", "VerifyEmail", "")
+	updatedUser, err := as.authHandler.VerifyEmail(ctx, user.AccountType, req.Otp)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-
+	ctx.JSON(http.StatusAccepted, updatedUser)
 }
-
-// SendContactNumberVerification sends a verification code to the user's contact number.
-// Endpoint: POST /api/v1/auth/send-contact-number-verification (requires authentication)
 
 type SendContactNumberVerificationRequest struct {
 	ContactTemplate string `json:"contactTemplate" validate:"required"`
 }
 
 func (as AuthController) SendContactNumberVerification(ctx *gin.Context) {
+	var req SendContactNumberVerificationRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.SendContactNumberVerification(ctx)
-	case "Admin":
-		as.adminController.SendContactNumberVerification(ctx)
-	case "Owner":
-		as.ownerController.SendContactNumberVerification(ctx)
-	case "Employee":
-		as.employeeController.SendContactNumberVerification(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
-	}
-	_, err = as.footstep.Create(ctx, "Auth", "SendContactNumberVerification", "")
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+	if err := as.authHandler.SendContactNumberVerification(ctx, user.AccountType, req.ContactTemplate); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "Contact number verification OTP sent successfully"})
+}
 
+type VerifyContactNumberRequest struct {
+	Otp string `json:"otp" validate:"required,len=6"`
 }
 
 func (as AuthController) VerifyContactNumber(ctx *gin.Context) {
+	var req VerifyContactNumberRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+	if err := validator.New().Struct(req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data"})
+		return
+	}
 	user, _, err := as.currentUser.Claims(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
-	switch user.AccountType {
-	case "Member":
-		as.memberController.VerifyContactNumber(ctx)
-	case "Admin":
-		as.adminController.VerifyContactNumber(ctx)
-	case "Owner":
-		as.ownerController.VerifyContactNumber(ctx)
-	case "Employee":
-		as.employeeController.VerifyContactNumber(ctx)
-	default:
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Account type doesn't exist"})
-	}
-	_, err = as.footstep.Create(ctx, "Auth", "VerifyContactNumber", "")
+	updatedUser, err := as.authHandler.VerifyContactNumber(ctx, user.AccountType, req.Otp)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to log activity"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
+	ctx.JSON(http.StatusOK, updatedUser)
 
 }

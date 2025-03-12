@@ -53,32 +53,36 @@ func (c *CurrentUser) Claims(ctx *gin.Context) (*providers.UserClaims, *UserInfo
 		c.tokenProvider.ClearTokenCookie(ctx)
 		return nil, nil, eris.New("failed to cast claims to *auth.UserClaims")
 	}
-
 	latStr := ctx.GetHeader("X-Latitude")
 	lonStr := ctx.GetHeader("X-Longitude")
 
 	var latitude, longitude *float64
-
 	if latStr != "" {
 		if lat, err := strconv.ParseFloat(latStr, 64); err == nil {
 			latitude = &lat
 		}
 	}
-
 	if lonStr != "" {
 		if lon, err := strconv.ParseFloat(lonStr, 64); err == nil {
 			longitude = &lon
 		}
 	}
 
+	var lat, lon float64
+	if latitude != nil {
+		lat = *latitude
+	}
+	if longitude != nil {
+		lon = *longitude
+	}
 	userInfo := &UserInfo{
 		IPAddress:      ctx.ClientIP(),
 		UserAgent:      ctx.GetHeader("User-Agent"),
 		Referer:        ctx.GetHeader("Referer"),
 		Location:       ctx.GetHeader("X-Location"),
 		AcceptLanguage: ctx.GetHeader("Accept-Language"),
-		Latitude:       *latitude,
-		Longitude:      *longitude,
+		Latitude:       lat,
+		Longitude:      lon,
 	}
 
 	return userClaims, userInfo, nil
@@ -97,6 +101,7 @@ func (c *CurrentUser) GenericUser(ctx *gin.Context) (interface{}, error) {
 	case "Admin":
 		admin, err := c.repository.AdminGetByID(claims.ID, preloads...)
 		if err != nil {
+			c.tokenProvider.ClearTokenCookie(ctx)
 			return nil, eris.Wrap(err, "admin not found")
 		}
 		return c.transformer.AdminToResource(admin), nil
@@ -104,6 +109,7 @@ func (c *CurrentUser) GenericUser(ctx *gin.Context) (interface{}, error) {
 	case "Employee":
 		employee, err := c.repository.EmployeeGetByID(claims.ID, preloads...)
 		if err != nil {
+			c.tokenProvider.ClearTokenCookie(ctx)
 			return nil, eris.Wrap(err, "employee not found")
 		}
 		return c.transformer.EmployeeToResource(employee), nil
@@ -111,6 +117,7 @@ func (c *CurrentUser) GenericUser(ctx *gin.Context) (interface{}, error) {
 	case "Owner":
 		owner, err := c.repository.OwnerGetByID(claims.ID, preloads...)
 		if err != nil {
+			c.tokenProvider.ClearTokenCookie(ctx)
 			return nil, eris.Wrap(err, "owner not found")
 		}
 		return c.transformer.OwnerToResource(owner), nil
@@ -118,6 +125,7 @@ func (c *CurrentUser) GenericUser(ctx *gin.Context) (interface{}, error) {
 	case "Member":
 		member, err := c.repository.MemberGetByID(claims.ID, preloads...)
 		if err != nil {
+			c.tokenProvider.ClearTokenCookie(ctx)
 			return nil, eris.Wrap(err, "member not found")
 		}
 		return c.transformer.MemberToResource(member), nil
@@ -138,6 +146,7 @@ func (c *CurrentUser) Admin(ctx *gin.Context) (*models.Admin, error) {
 	}
 	admin, err := c.repository.AdminGetByID(claims.ID)
 	if err != nil {
+		c.tokenProvider.ClearTokenCookie(ctx)
 		return nil, eris.Wrap(err, "admin not found")
 	}
 	return admin, nil
@@ -156,6 +165,7 @@ func (c *CurrentUser) Employee(ctx *gin.Context) (*models.Employee, error) {
 
 	employee, err := c.repository.EmployeeGetByID(claims.ID)
 	if err != nil {
+		c.tokenProvider.ClearTokenCookie(ctx)
 		return nil, eris.Wrap(err, "employee not found")
 	}
 	return employee, nil
@@ -171,6 +181,7 @@ func (c *CurrentUser) Owner(ctx *gin.Context) (*models.Owner, error) {
 	}
 	owner, err := c.repository.OwnerGetByID(claims.ID)
 	if err != nil {
+		c.tokenProvider.ClearTokenCookie(ctx)
 		return nil, eris.Wrap(err, "owner not found")
 	}
 
@@ -188,6 +199,7 @@ func (c *CurrentUser) Member(ctx *gin.Context) (*models.Member, error) {
 	}
 	member, err := c.repository.MemberGetByID(claims.ID)
 	if err != nil {
+		c.tokenProvider.ClearTokenCookie(ctx)
 		return nil, eris.Wrap(err, "member not found")
 	}
 

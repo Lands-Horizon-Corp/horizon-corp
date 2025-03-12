@@ -190,7 +190,7 @@ func (m *ModelRepository) EmployeeSearch(input string, preloads ...string) (*Emp
 func (m *ModelRepository) EmployeeCreate(employee *Employee, preloads ...string) (*Employee, error) {
 	repo := NewGenericRepository[Employee](m.db.Client)
 	newPassword, err := m.cryptoHelpers.HashPassword(employee.Password)
-	employee.Status = providers.NotAllowedStatus
+	employee.Status = providers.PendingStatus
 	if err != nil {
 		return nil, err
 	}

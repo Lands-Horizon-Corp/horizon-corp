@@ -11,3 +11,6 @@ src/utils/config/
 
 # Ignore node_modules
 node_modules/
+
+# Ignore Amplify
+amplify/

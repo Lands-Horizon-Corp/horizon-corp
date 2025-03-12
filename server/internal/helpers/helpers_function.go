@@ -176,3 +176,14 @@ func (hf HelpersFunction) GetPreload(ctx *gin.Context) []string {
 	}
 	return preloads
 }
+
+func (hf HelpersFunction) StringToUUID(id *string) *uuid.UUID {
+	if id == nil {
+		return nil
+	}
+	parsedUUID, err := uuid.Parse(*id)
+	if err != nil {
+		return nil
+	}
+	return &parsedUUID
+}

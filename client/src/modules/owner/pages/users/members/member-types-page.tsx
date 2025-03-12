@@ -3,7 +3,7 @@ import { useState } from 'react'
 import PageContainer from '@/components/containers/page-container'
 import MemberTypeTable from '@/components/tables/member-type-table'
 import EnsureOwnerCompany from '@/modules/owner/components/ensure-company'
-import { MemberTypeCreateFormModal } from '@/components/forms/member-forms/member-type-create-form'
+import { MemberTypeCreateUpdateFormModal } from '@/components/forms/member-forms/member-type-create-update-form'
 import MemberTypeTableOwnerAction from '@/components/tables/member-type-table/row-actions/member-type-owner-action'
 
 const OwnerViewMemberTypesPage = () => {
@@ -12,7 +12,7 @@ const OwnerViewMemberTypesPage = () => {
     return (
         <PageContainer>
             <EnsureOwnerCompany disabled>
-                <MemberTypeCreateFormModal
+                <MemberTypeCreateUpdateFormModal
                     open={modalState}
                     onOpenChange={setModalState}
                 />
@@ -25,7 +25,7 @@ const OwnerViewMemberTypesPage = () => {
                     actionComponent={(prop) => (
                         <MemberTypeTableOwnerAction {...prop} />
                     )}
-                    className="min-h-[90vh] w-full"
+                    className="max-h-[90vh] min-h-[90vh] w-full"
                 />
             </EnsureOwnerCompany>
         </PageContainer>

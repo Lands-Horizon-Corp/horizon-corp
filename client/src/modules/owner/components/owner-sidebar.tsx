@@ -3,19 +3,22 @@ import {
     UserIcon,
     ShieldIcon,
     Users3Icon,
+    UserTagIcon,
+    UserCogIcon,
     GendersIcon,
     ReportsIcon,
     BuildingIcon,
     SettingsIcon,
     UserListIcon,
     DashboardIcon,
+    BriefCaseIcon,
     FootstepsIcon,
     UserClockIcon,
     UserShieldIcon,
     BuildingCogIcon,
     NotificationIcon,
+    GraduationCapIcon,
     BuildingBranchIcon,
-    UserCogIcon,
 } from '@/components/icons'
 import Sidebar from '@/components/sidebar'
 
@@ -53,6 +56,26 @@ const ownerSidebarItem: TSidebarItem[] = [
                         url: '/member-types',
                         Icon: UserCogIcon,
                     },
+                    {
+                        text: 'Educational Attainments',
+                        url: '/member-educational-attainments',
+                        Icon: GraduationCapIcon,
+                    },
+                    {
+                        text: 'Member Classification',
+                        url: '/member-classification',
+                        Icon: UserTagIcon,
+                    },
+                    {
+                        text: 'Member Occupation',
+                        url: '/member-occupation',
+                        Icon: BriefCaseIcon,
+                    },
+                    {
+                        text: 'Genders',
+                        Icon: GendersIcon,
+                        url: '/genders',
+                    },
                 ],
             },
             {
@@ -71,11 +94,6 @@ const ownerSidebarItem: TSidebarItem[] = [
                         Icon: FootstepsIcon,
                     },
                 ],
-            },
-            {
-                text: 'Genders',
-                Icon: GendersIcon,
-                url: '/genders',
             },
         ],
     },

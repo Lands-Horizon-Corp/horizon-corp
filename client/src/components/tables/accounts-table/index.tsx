@@ -8,8 +8,7 @@ import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sort
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { usePagination } from '@/hooks/use-pagination'
 import { cn } from '@/lib'
-import { IAccountResource } from '@/server/types/accounts/accounts'
-// import { useQueryClient } from "@tanstack/react-query";
+import { IAccountsResource } from '@/server/types/accounts/accounts'
 import {
     useReactTable,
     getCoreRowModel,
@@ -24,12 +23,15 @@ import accountTableColumns, {
     IAccountsTableColumnProps,
 } from './columns'
 import { DummyAccountsData } from './dummy-accounts'
+import { useQueryClient } from '@tanstack/react-query'
+import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
+import AccountsService from '@/server/api-service/accounting-services/accounts-service'
 
 export interface AccountsTableProps
-    extends TableProps<IAccountResource>,
+    extends TableProps<IAccountsResource>,
         IAccountsTableColumnProps {
     toolbarProps?: Omit<
-        IDataTableToolbarProps<IAccountResource>,
+        IDataTableToolbarProps<IAccountsResource>,
         | 'table'
         | 'refreshActionProps'
         | 'globalSearchProps'
@@ -47,9 +49,10 @@ const AccountsTable = ({
     onSelectData,
     actionComponent,
 }: AccountsTableProps) => {
-    //   const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
     const { pagination, setPagination } = usePagination()
-    const { tableSorting, setTableSorting } = useDataTableSorting()
+    const { tableSorting, setTableSorting, sortingState } =
+        useDataTableSorting()
 
     const columns = useMemo(
         () =>
@@ -69,7 +72,7 @@ const AccountsTable = ({
         setColumnVisibility,
         rowSelectionState,
         createHandleRowSelectionChange,
-    } = useDataTableState<IAccountResource>({
+    } = useDataTableState<IAccountsResource>({
         columnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
@@ -79,19 +82,18 @@ const AccountsTable = ({
         onFilterChange: () => setPagination({ ...pagination, pageIndex: 0 }),
     })
 
-    // const {
-    //     isPending,
-    //     isRefetching,
-    //     data: { data, totalPage, pageSize, totalSize },
-    //     refetch,
-    // } = useFilteredPaginatedAccounts({
-    //     pagination,
-    //     sort: sortingState,
-    //     filterPayload: filterState.finalFilterPayload,
-    // });
+    const {
+        isPending,
+        isRefetching,
+        data: { data, totalPage, pageSize, totalSize },
+        refetch,
+    } = useFilteredPaginatedAccounts({
+        pagination,
+        sort: sortingState,
+        filterPayload: filterState.finalFilterPayload,
+    })
 
-    const handleRowSelectionChange =
-        createHandleRowSelectionChange(DummyAccountsData)
+    const handleRowSelectionChange = createHandleRowSelectionChange(data)
 
     const table = useReactTable({
         columns,
@@ -106,9 +108,9 @@ const AccountsTable = ({
             rowSelection: rowSelectionState.rowSelection,
             columnVisibility,
         },
-        // rowCount: pageSize,
+        rowCount: pageSize,
         manualSorting: true,
-        // pageCount: totalPage,
+        pageCount: totalPage,
         enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
@@ -124,7 +126,13 @@ const AccountsTable = ({
 
     return (
         <FilterContext.Provider value={filterState}>
-            <div className={cn('flex h-full flex-col gap-y-2', className)}>
+            <div
+                className={cn(
+                    'flex h-full flex-col gap-y-2',
+                    className,
+                    !isScrollable && 'h-fit !max-h-none'
+                )}
+            >
                 <DataTableToolbar
                     className=""
                     globalSearchProps={{
@@ -133,35 +141,35 @@ const AccountsTable = ({
                     }}
                     table={table}
                     refreshActionProps={{
-                        onClick: () => {},
-                        isLoading: false,
+                        onClick: () => refetch(),
+                        isLoading: isPending || isRefetching,
                     }}
-                    // deleteActionProps={{
-                    //     onDeleteSuccess: () =>
-                    //         queryClient.invalidateQueries({
-                    //             queryKey: ['account', 'resource-query'],
-                    //         }),
-                    //     onDelete: (selectedData) =>
-                    //         AccountService.deleteMany(
-                    //         //     selectedData.map((data) => data.id)
-                    //         // ),
-                    // }}
+                    deleteActionProps={{
+                        onDeleteSuccess: () =>
+                            queryClient.invalidateQueries({
+                                queryKey: ['accounts', 'resource-query'],
+                            }),
+                        onDelete: (selectedData) =>
+                            AccountsService.deleteMany(
+                                selectedData.map((data) => data.id)
+                            ),
+                    }}
                     scrollableProps={{ isScrollable, setIsScrollable }}
                     exportActionProps={{
                         pagination,
-                        // isLoading: isPending,
+                        isLoading: isPending,
                         filters: filterState.finalFilterPayload,
-                        // disabled: isPending || isRefetching,
-                        // exportAll: AccountService.exportAll,
-                        // exportAllFiltered: AccountService.exportAllFiltered,
-                        // exportCurrentPage: (ids) =>
-                        //     AccountService.exportSelected(
-                        //         ids.map((data) => data.id)
-                        //     ),
-                        // exportSelected: (ids) =>
-                        //     AccountService.exportSelected(
-                        //         ids.map((data) => data.id)
-                        //     ),
+                        disabled: isPending || isRefetching,
+                        exportAll: AccountsService.exportAll,
+                        exportAllFiltered: AccountsService.exportAllFiltered,
+                        exportCurrentPage: (ids) =>
+                            AccountsService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
+                        exportSelected: (ids) =>
+                            AccountsService.exportSelected(
+                                ids.map((data) => data.id)
+                            ),
                     }}
                     filterLogicProps={{
                         filterLogic: filterState.filterLogic,
@@ -177,7 +185,7 @@ const AccountsTable = ({
                     setColumnOrder={setColumnOrder}
                     className="mb-2"
                 />
-                <DataTablePagination table={table} totalSize={50} />
+                <DataTablePagination table={table} totalSize={totalSize} />
             </div>
         </FilterContext.Provider>
     )

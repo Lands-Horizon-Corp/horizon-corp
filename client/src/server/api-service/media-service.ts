@@ -13,7 +13,7 @@ export default class MediaService {
         const formData = new FormData()
         formData.append('file', file)
         const response = await APIService.uploadFile<IMediaResource>(
-            `${MediaService.BASE_ENDPOINT}`,
+            `${MediaService.BASE_ENDPOINT}/upload`,
             formData,
             {},
             {

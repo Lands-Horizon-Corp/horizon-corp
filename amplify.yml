@@ -1,0 +1,19 @@
+version: 1
+applications:
+    - frontend:
+          phases:
+              preBuild:
+                  commands:
+                      - nvm use 22.11.0
+                      - npm install -g pnpm@9.14.3
+                      - pnpm install
+              build:
+                  commands:
+                      - pnpm build
+          artifacts:
+              baseDirectory: dist
+              files:
+                  - "**/*"
+          cache:
+              paths: [node_modules/**/*]
+      appRoot: client

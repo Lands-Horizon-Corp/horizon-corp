@@ -79,4 +79,4 @@ export const accountStatusSchema = z.enum([
     'Not Allowed',
 ])
 
-export const entityIdSchema = z.string().uuid('Invalid ID')
+export const entityIdSchema = z.coerce.string().uuid('Invalid Id')

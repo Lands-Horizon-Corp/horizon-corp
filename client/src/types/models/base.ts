@@ -29,5 +29,5 @@ export interface UserBase extends BaseModel {
 export enum UserStatus {
     'Pending' = 'Pending',
     'Verified' = 'Verified',
-    'Not allowed' = 'Not allowed',
+    'Not Allowed' = 'Not Allowed',
 }

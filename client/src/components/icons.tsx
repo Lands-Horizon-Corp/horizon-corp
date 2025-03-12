@@ -44,6 +44,7 @@ import {
 
 import {
     LiaUser as UserIcon,
+    LiaUserTagSolid as UserTagIcon,
     LiaUserCogSolid as UserCogIcon,
     LiaShieldAltSolid as ShieldIcon,
     LiaUserClockSolid as UserClockIcon,
@@ -60,10 +61,14 @@ import {
     PiUsersThree as Users3Icon,
     PiCodeBlock as CodeBlockIcon,
     PiPushPinSlash as PushPinSlashIcon,
+    PiHandCoinsDuotone as HandCoinsIcon,
     PiMicrosoftExcelLogoFill as ExcelIcon,
     PiBuildingOffice as BuildingBranchIcon,
+    PiHandDepositDuotone as HandDepositIcon,
     PiListBulletsBold as ListBulletsBoldIcon,
+    PiGraduationCapFill as GraduationCapIcon,
     PiWarningCircleFill as WarningCircleIcon,
+    PiHandWithdrawDuotone as HandWithdrawIcon,
     PiTextStrikethroughLight as TextStrikethroughLightIcon,
 } from 'react-icons/pi'
 
@@ -74,6 +79,7 @@ import {
     HiOutlineCodeBracket as DevIcon,
     HiOutlineArrowUp as ArrowUpIcon,
     HiOutlineBell as NotificationIcon,
+    HiOutlineBriefcase as BriefCaseIcon,
     HiOutlineArrowDown as ArrowDownIcon,
     HiOutlinePencil as PencilOutlineIcon,
     HiOutlineSquaresPlus as DashboardIcon,
@@ -182,6 +188,8 @@ import {
     FiDownload as DownloadIcon,
 } from 'react-icons/fi'
 
+import { GiWallet as WalletIcon } from 'react-icons/gi'
+
 import { CgFacebook as FacebookIcon } from 'react-icons/cg'
 
 import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
@@ -235,6 +243,7 @@ export {
     ExportIcon,
     ZoomInIcon,
     AdjustIcon,
+    WalletIcon,
     Image2Icon,
     UserCogIcon,
     GendersIcon,
@@ -246,6 +255,7 @@ export {
     ReportsIcon,
     PushPinIcon,
     EyeNoneIcon,
+    UserTagIcon,
     PaymentsIcon,
     HomeFillIcon,
     FacebookIcon,
@@ -257,9 +267,11 @@ export {
     BuildingIcon,
     DownloadIcon,
     CalendarIcon,
+    HandCoinsIcon,
     MapMarkedIcon,
     CodeBlockIcon,
     ArrowLeftIcon,
+    BriefCaseIcon,
     ArrowDownIcon,
     CameraOffIcon,
     DotMediumIcon,
@@ -288,6 +300,7 @@ export {
     ListOrderedIcon,
     RotateRightIcon,
     LocationPinIcon,
+    HandDepositIcon,
     ChevronDownIcon,
     NotificationIcon,
     ChevronsLeftIcon,
@@ -299,7 +312,9 @@ export {
     ChevronRightIcon,
     CameraSelectIcon,
     SidebarRightIcon,
+    HandWithdrawIcon,
     BadgeQuestionIcon,
+    GraduationCapIcon,
     RotateBoxLeftIcon,
     ToolbarItalicIcon,
     ChevronsRightIcon,
