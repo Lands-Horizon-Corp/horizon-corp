@@ -145,7 +145,7 @@ const ownerSidebarItem: INavItem[] = [
             },
             {
                 title: 'Employees',
-                url: '/owner/users/employees',
+                url: '/employees',
                 type: 'dropdown',
                 icon: UserShieldIcon,
                 items: [
