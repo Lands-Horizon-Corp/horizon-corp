@@ -3,7 +3,9 @@ import { useCallback } from 'react'
 import { IDetectedBarcode } from '@yudiel/react-qr-scanner'
 
 import QrScanner from './qr-scanner'
+import Modal, { IModalProps } from '../modals/modal'
 
+import { cn } from '@/lib'
 import { IQrScanResult } from '@/types'
 import { IQrCodeScannerProps } from './types'
 import { useQrDecryptData } from '@/hooks/api-hooks/use-qr-crypto'
@@ -17,7 +19,7 @@ const QrCodeScanner = <TData, TErr = string>({
     onErrorDecode,
     onSuccessDecode,
     ...props
-}: Omit<IQrCodeScannerProps<TData, TErr>, 'onError'>) => {
+}: IQrCodeScannerProps<TData, TErr>) => {
     const { mutateAsync, isPending } = useQrDecryptData<TData>()
 
     const handleOnScan = useCallback(
@@ -68,6 +70,33 @@ const QrCodeScanner = <TData, TErr = string>({
             paused={paused || pauseOnDecoding ? isPending : undefined}
             {...props}
         />
+    )
+}
+
+export const QrCodeScannerModal = <TData, TErr>({
+    className,
+    title = 'QR Scan',
+    qrScannerProps: { onScan, onSuccessDecode, ...qrScannerProps },
+    ...props
+}: IModalProps & { qrScannerProps: IQrCodeScannerProps<TData, TErr> }) => {
+    return (
+        <Modal
+            title={title}
+            className={cn('max-h[98vh] size-fit max-w-[98vw]', className)}
+            {...props}
+        >
+            <QrCodeScanner<TData, TErr>
+                onScan={(data) => {
+                    onScan?.(data)
+                    props.onOpenChange?.(false)
+                }}
+                onSuccessDecode={(data) => {
+                    onSuccessDecode?.(data)
+                    props.onOpenChange?.(false)
+                }}
+                {...qrScannerProps}
+            />
+        </Modal>
     )
 }
 
