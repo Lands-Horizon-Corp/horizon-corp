@@ -125,3 +125,30 @@ export const commaSeparators = (num: number | string): string => {
 export const removeCommaSeparators = (num: string): number => {
     return parseInt(num.replace(/,/g, ''))
 }
+
+export const sanitizeNumberInput = (value: string) => {
+    return value.replace(/,/g, '').trim()
+}
+
+export const isValidDecimalInput = (value: string) => {
+    return (
+        /^-?\d*\.?\d{0,2}$/.test(value) &&
+        (value.match(/\./g)?.length ?? 0) <= 1
+    )
+}
+
+export const formatNumberOnBlur = (
+    value: string,
+    onChange: (val: number | undefined) => void
+) => {
+    const sanitized = sanitizeNumberInput(value)
+    if (!sanitized || sanitized === '-') {
+        onChange(undefined)
+        return
+    }
+    let parsedValue = parseFloat(sanitized)
+    if (!isNaN(parsedValue)) {
+        parsedValue = parseFloat(parsedValue.toFixed(2))
+        onChange(parsedValue)
+    }
+}
