@@ -8,7 +8,12 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
-import { XIcon } from '@/components/icons'
+import {
+    HandDepositIcon,
+    HandWithdrawIcon,
+    PaymentsIcon,
+    XIcon,
+} from '@/components/icons'
 
 import { useFilteredPaginatedIAccountingLedger } from '@/hooks/api-hooks/transactions/use-accounting-ledger'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
@@ -29,6 +34,7 @@ import CurrentPaymentAccountingTransactionLedger from '@/components/ledger/payme
 
 import { toast } from 'sonner'
 import PaymentsEntryFormModal from './payments-entry-form'
+import { cn } from '@/lib'
 
 export const PaymentsEntry = () => {
     const [selectedMember, setSelectedMember] =
@@ -44,11 +50,6 @@ export const PaymentsEntry = () => {
     } = useFilteredPaginatedIAccountingLedger({
         memberProfileId: selectedMember?.memberProfile?.id,
     })
-
-    const totalAmount = CurrentMemberLedger.reduce(
-        (acc, ledger) => acc + ledger.credit,
-        0
-    )
 
     const isAllowedToCreatePayment = selectedMember !== null
 
@@ -133,6 +134,11 @@ export const PaymentsEntry = () => {
         setSelectedMember(null)
     }
 
+    const totalAmount = CurrentMemberLedger.reduce(
+        (acc, ledger) => acc + ledger.credit,
+        0
+    )
+
     return (
         <>
             <PaymentsEntryFormModal
@@ -146,11 +152,11 @@ export const PaymentsEntry = () => {
                 onOpenChange={setIsOpenPaymentsEntryModal}
             />
             <div className="flex w-full flex-col gap-y-4 p-5">
+                <legend className="text-lg font-semibold text-secondary-foreground">
+                    Payment Transactions
+                </legend>
                 <div className="grid grid-cols-1 gap-x-4 gap-y-4 lg:grid-cols-4">
-                    <legend className="text-lg font-semibold text-secondary-foreground">
-                        Payment Transactions
-                    </legend>
-                    <div className="col-span-2 lg:col-span-4 lg:col-start-1">
+                    <div className="col-span-2">
                         <div className="flex space-x-2">
                             <MemberPicker
                                 value={selectedMember?.id}
@@ -173,16 +179,47 @@ export const PaymentsEntry = () => {
                             >
                                 <XIcon />
                             </Button>
-                            <Button
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    handleOpenCreateModal()
-                                }}
-                                disabled={!isAllowedToCreatePayment}
-                            >
-                                create
-                            </Button>
                         </div>
+                    </div>
+                    <div className="col-span-2 grid w-full grid-cols-3 gap-x-2">
+                        <Button
+                            onClick={(e) => {
+                                e.preventDefault()
+                                handleOpenCreateModal()
+                            }}
+                            disabled={!isAllowedToCreatePayment}
+                            className={cn('!w-full')}
+                            variant={
+                                isAllowedToCreatePayment
+                                    ? 'outline'
+                                    : 'secondary'
+                            }
+                        >
+                            <PaymentsIcon className="mr-2" />
+                            Pay
+                        </Button>
+                        <Button
+                            disabled={!isAllowedToCreatePayment}
+                            variant={
+                                isAllowedToCreatePayment
+                                    ? 'outline'
+                                    : 'secondary'
+                            }
+                        >
+                            <HandDepositIcon className="mr-2" />
+                            Deposit
+                        </Button>
+                        <Button
+                            disabled={!isAllowedToCreatePayment}
+                            variant={
+                                isAllowedToCreatePayment
+                                    ? 'outline'
+                                    : 'secondary'
+                            }
+                        >
+                            <HandWithdrawIcon className="mr-2" />
+                            widthdraw
+                        </Button>
                     </div>
                     <div className="col-span-2">
                         <PaymentsEntryProfile profile={selectedMember} />
@@ -195,7 +232,7 @@ export const PaymentsEntry = () => {
                             />
                         </div>
                     </div>
-                    <div className="col-span-1 md:col-span-2">
+                    <div className="lg:col-span-2">
                         <AccountsLedgerTable
                             table={table}
                             isScrollable={isScrollable}
@@ -209,7 +246,7 @@ export const PaymentsEntry = () => {
                             className="h-full"
                         />
                     </div>
-                    <div className="col-span-2 w-full">
+                    <div className="col-span-2">
                         <Card>
                             <CardContent className="flex items-center justify-between gap-x-2 py-5">
                                 <label className="font-bold uppercase">

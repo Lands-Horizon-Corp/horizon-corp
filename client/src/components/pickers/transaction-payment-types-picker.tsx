@@ -32,7 +32,6 @@ interface Props {
 const TransactionPaymentTypesPicker = ({
     value,
     disabled,
-    placeholder,
     onSelect,
     leftIcon,
     defaultValue,
@@ -131,8 +130,8 @@ const TransactionPaymentTypesPicker = ({
                     )}
                     <span className="flex w-full items-center gap-x-2 overflow-hidden">
                         {!value ? (
-                            <span className="truncate text-xs text-foreground/40">
-                                {placeholder}
+                            <span className="truncate text-sm text-foreground">
+                                {defaultSelected}
                             </span>
                         ) : (
                             <span className="truncate font-mono text-sm text-foreground">
