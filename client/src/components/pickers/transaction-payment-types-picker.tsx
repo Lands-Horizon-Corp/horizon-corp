@@ -32,7 +32,6 @@ interface Props {
 const TransactionPaymentTypesPicker = ({
     value,
     disabled,
-    placeholder,
     onSelect,
     leftIcon,
     defaultValue,
