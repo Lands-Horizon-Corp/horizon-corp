@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
@@ -32,13 +32,19 @@ import {
     paymentsEntrySchema,
 } from '@/validations/transactions/payments-entry'
 
-import { commaSeparators, removeCommaSeparators } from '@/helpers'
+import {
+    commaSeparators,
+    formatNumberOnBlur,
+    isValidDecimalInput,
+    sanitizeNumberInput,
+} from '@/helpers'
 import { cn } from '@/lib'
 import { TEntityId } from '@/server'
 import { IPaymentsEntryRequest } from '@/server/types/transactions/payments-entry'
 import { IBaseCompNoChild } from '@/types'
 import { Separator } from '@/components/ui/separator'
 import { AccountsIcon, MoneyIcon } from '@/components/icons'
+import useConfirmModalStore from '@/store/confirm-modal-store'
 
 const CHECK_BANK_LIST = ['trans-pay-002', 'trans-pay-003']
 
@@ -51,6 +57,19 @@ export interface IPaymentFormProps
     onOpenChange: (open: boolean) => void
     selectedMemberId: TEntityId
     resetSelectedMember?: () => void
+    form: UseFormReturn<
+        {
+            ORNumber: string
+            amount: number
+            accountsId: string
+            transactionType: string
+            isPrinted?: boolean | undefined
+            notes?: string | undefined
+        },
+        any,
+        undefined
+    >
+    resetForm: () => void
 }
 
 const PaymentsEntryFormModal = ({
@@ -58,22 +77,11 @@ const PaymentsEntryFormModal = ({
     onError,
     selectedMemberId,
     resetSelectedMember,
+    form,
+    resetForm,
 }: Omit<IPaymentFormProps, 'open' | 'onOpenChange'>) => {
     const [openCheckClearingFormModal, setOpenCheckClearingFormModal] =
         useState(false)
-
-    const form = useForm<TPaymentFormValues>({
-        resolver: zodResolver(paymentsEntrySchema),
-        mode: 'onSubmit',
-        defaultValues: {
-            ORNumber: '',
-            amount: undefined,
-            transactionType: DEFAULT_TRANSACTION_TYPE,
-            accountsId: '',
-            notes: '',
-            isPrinted: false,
-        },
-    })
 
     const {
         mutateAsync: createPayment,
@@ -96,21 +104,14 @@ const PaymentsEntryFormModal = ({
 
     const submitPayment = async (values: TPaymentFormValues) => {
         try {
-            const formattedAmount = removeCommaSeparators(
-                values.amount.toString()
-            )
-
             const payload: IPaymentsEntryRequest = {
                 ...values,
                 memberId: selectedMemberId,
                 isPrinted: values.isPrinted ?? false,
-                amount: formattedAmount,
             }
-
             await createPayment(payload)
-
             resetSelectedMember?.()
-            form.reset()
+            resetForm()
         } catch (error) {
             console.error('Error submitting payment:', error)
         }
@@ -121,13 +122,12 @@ const PaymentsEntryFormModal = ({
             <CheckClearingFormModal
                 formProps={{
                     onSubmitPaymentform: async () => {
-                        await submitPayment(form.getValues())
+                        await submitPayment({ ...form.getValues() })
                     },
                 }}
                 open={openCheckClearingFormModal}
                 onOpenChange={setOpenCheckClearingFormModal}
             />
-
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)}>
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -166,32 +166,34 @@ const PaymentsEntryFormModal = ({
                                         placeholder="Enter the payment amount"
                                         autoComplete="off"
                                         value={
-                                            field.value
-                                                ? commaSeparators(field.value)
+                                            field.value !== undefined &&
+                                            field.value !== null
+                                                ? commaSeparators(
+                                                      field.value.toString()
+                                                  )
                                                 : ''
                                         }
                                         onChange={(e) => {
                                             const rawValue =
-                                                e.target.value.replace(/,/g, '') // Remove commas before storing
-                                            if (!isNaN(Number(rawValue))) {
+                                                sanitizeNumberInput(
+                                                    e.target.value
+                                                )
+                                            if (isValidDecimalInput(rawValue)) {
                                                 field.onChange(rawValue)
                                             }
                                         }}
-                                        onBlur={(e) => {
-                                            const formattedValue =
-                                                commaSeparators(
-                                                    e.target.value.replace(
-                                                        /,/g,
-                                                        ''
-                                                    )
-                                                )
-                                            field.onChange(formattedValue)
-                                        }}
+                                        onBlur={(e) =>
+                                            formatNumberOnBlur(
+                                                e.target.value,
+                                                field.onChange
+                                            )
+                                        }
                                     />
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-primary after:content-['₱']"></span>
                                 </div>
                             )}
                         />
+
                         <FormFieldWrapper
                             control={form.control}
                             name="transactionType"
@@ -296,14 +298,16 @@ const PaymentsEntryFormModal = ({
                                 type="button"
                                 variant="ghost"
                                 disabled={isPending}
-                                onClick={() => form.reset()}
+                                onClick={() => resetForm()}
                                 className="w-full self-end px-8 sm:w-fit"
                             >
                                 Reset
                             </Button>
                             <Button
                                 type="submit"
-                                disabled={isPending}
+                                disabled={
+                                    form.formState.isSubmitting || isPending
+                                }
                                 className="w-full self-end px-8 sm:w-fit"
                             >
                                 {isPending ? <LoadingSpinner /> : 'Create'}
@@ -320,22 +324,75 @@ export const TransactionPaymentEntryFormModal = ({
     title = 'Create Payment',
     description = 'Fill out the form to add a new transaction.',
     className,
+    onOpenChange,
     formProps,
     ...props
-}: IModalProps & { formProps?: Omit<IPaymentFormProps, 'className'> }) => {
+}: IModalProps & {
+    formProps?: Omit<IPaymentFormProps, 'className' | 'form' | 'resetForm'>
+}) => {
+    const { onOpen } = useConfirmModalStore()
+
+    const form = useForm<TPaymentFormValues>({
+        resolver: zodResolver(paymentsEntrySchema),
+        mode: 'onSubmit',
+        defaultValues: {
+            ORNumber: '',
+            amount: 0,
+            transactionType: DEFAULT_TRANSACTION_TYPE,
+            accountsId: '',
+            notes: '',
+            isPrinted: false,
+        },
+    })
+
+    const resetForm = () => {
+        form.reset({
+            ORNumber: '',
+            amount: 0,
+            transactionType: DEFAULT_TRANSACTION_TYPE,
+            accountsId: '',
+            notes: '',
+            isPrinted: false,
+        })
+    }
+
+    const onPaymentsEntryModalClose = (isOpen: boolean) => {
+        const { isDirty } = form.formState
+
+        if (!isOpen) {
+            if (!isDirty) {
+                onOpenChange?.(false)
+            } else {
+                onOpen({
+                    title: 'Discard Payment',
+                    description:
+                        'Are you sure you want to discard this transaction?',
+                    onConfirm: () => {
+                        resetForm()
+                        onOpenChange?.(false)
+                    },
+                    confirmString: 'Discard',
+                })
+            }
+        }
+    }
+
     return (
         <Modal
             title={title}
             description={description}
             className={cn('', className)}
+            onOpenChange={onPaymentsEntryModalClose}
             {...props}
         >
             <PaymentsEntryFormModal
                 {...formProps}
+                form={form}
+                resetForm={resetForm}
                 selectedMemberId={formProps?.selectedMemberId ?? ''}
                 onSuccess={(createdData) => {
                     formProps?.onSuccess?.(createdData)
-                    props.onOpenChange?.(false)
+                    onOpenChange?.(false)
                 }}
             />
         </Modal>
