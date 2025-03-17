@@ -151,7 +151,7 @@ export const PaymentsEntry = () => {
                 open={openPaymentsEntryModal}
                 onOpenChange={setIsOpenPaymentsEntryModal}
             />
-            <div className="flex w-full flex-col gap-y-4 p-5">
+            <div className="flex w-full flex-col gap-y-4 p-4 pt-0">
                 <legend className="text-lg font-semibold text-secondary-foreground">
                     Payment Transactions
                 </legend>
@@ -222,7 +222,25 @@ export const PaymentsEntry = () => {
                         </Button>
                     </div>
                     <div className="col-span-2">
-                        <PaymentsEntryProfile profile={selectedMember} />
+                        <div>
+                            <PaymentsEntryProfile profile={selectedMember} />
+                            <Card
+                                className={cn(
+                                    'to-indigo-background/10 mt-4 rounded-2xl border-[0.1px] border-primary/30 bg-gradient-to-br from-primary/10'
+                                )}
+                            >
+                                <CardContent className="flex items-center justify-between gap-x-2 p-5">
+                                    <label className="font-bold uppercase">
+                                        Total Amount
+                                    </label>
+                                    <div className="text-right">
+                                        <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                                            ₱ {totalAmount}
+                                        </p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
                         <div className="max-h-96 space-y-4 overflow-auto py-4">
                             <CurrentPaymentAccountingTransactionLedger
                                 isRefetching={isRefetchingCurentMemberLedger}
@@ -245,20 +263,6 @@ export const PaymentsEntry = () => {
                             setIsScrollable={setIsScrollable}
                             className="h-full"
                         />
-                    </div>
-                    <div className="col-span-2">
-                        <Card>
-                            <CardContent className="flex items-center justify-between gap-x-2 py-5">
-                                <label className="font-bold uppercase">
-                                    Total Amount
-                                </label>
-                                <div className="text-right">
-                                    <p className="text-2xl font-bold text-green-600 dark:text-green-400">
-                                        ₱ {totalAmount}
-                                    </p>
-                                </div>
-                            </CardContent>
-                        </Card>
                     </div>
                 </div>
             </div>
