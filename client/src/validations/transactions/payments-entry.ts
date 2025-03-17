@@ -14,10 +14,14 @@ export const paymentsEntrySchema = z.object({
                     return undefined
                 }
                 const parsed = parseFloat(sanitized)
-                return sanitized === '' || isNaN(parsed) ? undefined : parsed
+                return sanitized === '' || isNaN(parsed) || parsed === 0
+                    ? undefined
+                    : parsed
             }
 
-            return typeof val === 'number' && !isNaN(val) ? val : undefined
+            return typeof val === 'number' && !isNaN(val) && val !== 0
+                ? val
+                : undefined
         },
         z.number({
             required_error: 'Amount is required',
