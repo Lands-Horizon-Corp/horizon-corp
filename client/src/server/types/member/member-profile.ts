@@ -42,6 +42,7 @@ import { IMemberAssetsRequest, IMemberAssetsResource } from './member-assets'
 import { IMemberAddressRequest, IMemberAddressResource } from './member-address'
 import { ITimeStamps, TAccountStatus, TCivilStatus, TEntityId } from '../common'
 import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history'
+import { IMemberEducationalAttainmentResource } from './member-educational-attainment'
 
 export interface IMemberProfileRequest {
     id?: TEntityId
@@ -142,6 +143,7 @@ export interface IMemberProfileResource extends ITimeStamps {
     signatureMedia?: IMediaResource
 
     memberEducationalAttainmentId?: TEntityId
+    memberEducationalAttainment?: IMemberEducationalAttainmentResource
 
     memberAssets?: IMemberAssetsResource[]
     memberIncome?: IMemberIncomeResource[]
