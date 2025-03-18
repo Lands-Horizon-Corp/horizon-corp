@@ -3,7 +3,7 @@ import { entityIdSchema } from '@/validations/common'
 
 export const memberRecruitsSchema = z.object({
     id: entityIdSchema.optional(),
-    membersProfileId: entityIdSchema,
+    membersProfileId: entityIdSchema.optional(),
     membersProfileRecruitedId: entityIdSchema,
     dateRecruited: z.string().min(1, 'Date recruited is required'),
     description: z.string().min(1, 'Description is required'),
