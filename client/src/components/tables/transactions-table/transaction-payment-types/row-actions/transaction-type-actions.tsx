@@ -4,7 +4,7 @@ import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { ITransactionPaymentTypesTableActionComponentProp } from '../columns'
 import { useDeleteTransactionType } from '@/hooks/api-hooks/transactions/use-transaction-payment-types'
-import { TransactionPaymentTypesCreateUpdateFormModal } from '@/components/forms/transactions/transaction-payment-types-create-update-form'
+import { TransactionPaymentTypesCreateUpdateFormModal } from '@/components/forms/transactions-forms/transaction-payment-types-create-update-form'
 
 interface ITransactionPaymentTypesTableOwnerActionProps
     extends ITransactionPaymentTypesTableActionComponentProp {

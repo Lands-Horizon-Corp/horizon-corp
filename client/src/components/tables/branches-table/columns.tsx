@@ -77,7 +77,7 @@ const branchesTableColumns = (
             id: 'Name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter displayText="Name" field="name" />
                     </ColumnActions>
@@ -94,7 +94,7 @@ const branchesTableColumns = (
             id: 'Logo',
             accessorKey: 'media',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Logo">
+                <DataTableColumnHeader {...props} title="Logo">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -113,7 +113,7 @@ const branchesTableColumns = (
             id: 'address',
             accessorKey: 'address',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Address">
+                <DataTableColumnHeader {...props} title="Address">
                     <ColumnActions {...props}>
                         <TextFilter displayText="Address" field="address" />
                     </ColumnActions>
@@ -130,11 +130,7 @@ const branchesTableColumns = (
             id: 'Contact Number',
             accessorKey: 'contactNumber',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Contact Number"
-                >
+                <DataTableColumnHeader {...props} title="Contact Number">
                     <ColumnActions {...props}>
                         <TextFilter<ICompanyResource>
                             displayText="Contact"
@@ -154,7 +150,7 @@ const branchesTableColumns = (
             id: 'Verify Status',
             accessorKey: 'isAdminVerified',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Verified">
+                <DataTableColumnHeader {...props} title="Verified">
                     <ColumnActions {...props}>
                         <DataTableMultiSelectFilter<ICompanyResource, boolean>
                             mode="equal"
@@ -204,11 +200,7 @@ const branchesTableColumns = (
             id: 'Created At',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<ICompanyResource>
                             displayText="Date Created"

@@ -78,7 +78,7 @@ const AccountsComputationTypeTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IAccountsComputationTypeResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
@@ -116,9 +116,10 @@ const AccountsComputationTypeTable = ({
         rowCount: pageSize,
         manualSorting: true,
         pageCount: totalPage,
-        enableMultiSort: false,
         manualFiltering: true,
+        enableMultiSort: false,
         manualPagination: true,
+        columnResizeMode: 'onChange',
         getRowId: getRowIdFn,
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
@@ -187,9 +188,9 @@ const AccountsComputationTypeTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    className="mb-2"
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

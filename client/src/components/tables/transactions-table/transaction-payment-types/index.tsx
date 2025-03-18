@@ -72,7 +72,7 @@ const TransactionPaymentTypesTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<ITransactionPaymentTypesResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
@@ -178,9 +178,9 @@ const TransactionPaymentTypesTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    className="mb-2"
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

@@ -8,12 +8,8 @@ import {
     NotificationIcon,
     BuildingBranchIcon,
 } from '@/components/icons'
-import Sidebar from '@/components/sidebar'
 
-import { IBaseComp } from '@/types/component'
-import { TSidebarItem } from '@/components/sidebar/sidebar-types'
-
-export const employeeSidebarItems: TSidebarItem[] = [
+export const employeeSidebarItems = [
     {
         text: 'Dashboard',
         url: '/employee/dashboard',
@@ -63,15 +59,8 @@ export const employeeSidebarItems: TSidebarItem[] = [
     },
 ]
 
-const EmployeeSidebar = ({ className }: IBaseComp) => {
-    return (
-        <Sidebar
-            enableCollapse
-            className={className}
-            logoRedirectUrl="/employee"
-            items={employeeSidebarItems}
-        />
-    )
+const EmployeeSidebar = () => {
+    return
 }
 
 export default EmployeeSidebar

@@ -1,4 +1,5 @@
 import {
+    TbMinus as MinusIcon,
     TbSunMoon as SunMoonIcon,
     TbBlockquote as BlockQuoteIcon,
 } from 'react-icons/tb'
@@ -21,6 +22,7 @@ import {
 } from 'react-icons/io'
 
 import {
+    LuCopy as CopyIcon,
     LuUndo2 as UndoIcon,
     LuRedo2 as RedoIcon,
     LuTrash as TrashIcon,
@@ -34,6 +36,7 @@ import {
     LuCalendarCheck as CalendarCheckIcon,
     LuChevronsUpDown as ChevronsUpDownIcon,
     LuHardDriveUpload as HardDriveUploadIcon,
+    LuReplace as ReplaceIcon,
 } from 'react-icons/lu'
 
 import {
@@ -126,6 +129,7 @@ import {
     MdOutlineLocalPhone as PhoneOutlineIcon,
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
+    MdAccountBalance as AccountsIcon,
 } from 'react-icons/md'
 
 import {
@@ -175,6 +179,7 @@ import {
     FaFileCsv as CsvIcon,
     FaPhoneAlt as PhoneIcon,
     FaMoneyBill as BillIcon,
+    FaUserClock as UserClockFillIcon,
 } from 'react-icons/fa'
 import { FaVenusMars as GendersIcon } from 'react-icons/fa6'
 
@@ -191,7 +196,10 @@ import {
     FiDownload as DownloadIcon,
 } from 'react-icons/fi'
 
-import { GiWallet as WalletIcon } from 'react-icons/gi'
+import {
+    GiWallet as WalletIcon,
+    GiTakeMyMoney as MoneyIcon,
+} from 'react-icons/gi'
 
 import { CgFacebook as FacebookIcon } from 'react-icons/cg'
 
@@ -216,6 +224,7 @@ export {
     KeyIcon,
     DevIcon,
     EyeIcon,
+    CopyIcon,
     BankIcon,
     PlusIcon,
     UndoIcon,
@@ -223,6 +232,7 @@ export {
     UserIcon,
     MoonIcon,
     DrawIcon,
+    MinusIcon,
     ErrorIcon,
     FileXIcon,
     TrashIcon,
@@ -330,6 +340,7 @@ export {
     VerifiedPatchIcon,
     LoadingCircleIcon,
     PencilOutlineIcon,
+    UserClockFillIcon,
     SignatureLightIcon,
     FlipHorizontalIcon,
     RotateBoxRightIcon,
@@ -359,4 +370,7 @@ export {
     TextStrikethroughLightIcon,
     EmptyIcon,
     BillIcon,
+    ReplaceIcon,
+    MoneyIcon,
+    AccountsIcon,
 }

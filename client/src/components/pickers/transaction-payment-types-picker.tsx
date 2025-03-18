@@ -15,21 +15,26 @@ import { TEntityId } from '@/server/types'
 
 import { useFilteredPaginatedTransactionPaymentTypes } from '@/hooks/api-hooks/transactions/use-transaction-payment-types'
 import { ITransactionPaymentTypesResource } from '@/server/types/transactions/transaction-payment-types'
+import React from 'react'
+import { DEFAULT_TRANSACTION_TYPE } from '@/validations/transactions/payments-entry'
 
 interface Props {
     value?: TEntityId
     placeholder?: string
     disabled?: boolean
+    leftIcon?: React.ReactNode
     onSelect?: (
         selectedTransactionType: ITransactionPaymentTypesResource
     ) => void
+    defaultValue?: string
 }
 
 const TransactionPaymentTypesPicker = ({
     value,
     disabled,
-    placeholder,
     onSelect,
+    leftIcon,
+    defaultValue,
 }: Props) => {
     const [pickerState, setPickerState] = useState(false)
     const [selectedTransactionType, setSelectedTransactionType] =
@@ -54,6 +59,10 @@ const TransactionPaymentTypesPicker = ({
             enabled: !disabled,
             showMessage: false,
         })
+
+    const defaultSelected = data.data.find(
+        (item) => item.id === DEFAULT_TRANSACTION_TYPE
+    )?.name
 
     return (
         <>
@@ -87,7 +96,7 @@ const TransactionPaymentTypesPicker = ({
                             </span>
                         </div>
                         <span className="text-sm text-foreground/50">
-                            Cheque ID: {transactionType.cheque_id}
+                            Cheque ID: {transactionType.chequeId}
                         </span>
                     </div>
                 )}
@@ -115,15 +124,20 @@ const TransactionPaymentTypesPicker = ({
                 onClick={() => setPickerState((val) => !val)}
                 className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
             >
-                <span className="inline-flex w-full items-center justify-between text-sm text-foreground/90">
-                    <span className="inline-flex w-full items-center gap-x-2">
+                <span className="flex w-full items-center justify-between text-sm text-foreground/90">
+                    {leftIcon && (
+                        <span className="mr-2 flex-shrink-0">{leftIcon}</span>
+                    )}
+                    <span className="flex w-full items-center gap-x-2 overflow-hidden">
                         {!value ? (
-                            <span className="text-foreground/70">
-                                {placeholder}
+                            <span className="truncate text-sm text-foreground">
+                                {defaultSelected}
                             </span>
                         ) : (
-                            <span className="mr-1 font-mono text-sm text-foreground/30">
-                                {selectedTransactionType?.name}
+                            <span className="truncate font-mono text-sm text-foreground">
+                                {defaultValue && !selectedTransactionType
+                                    ? defaultSelected
+                                    : selectedTransactionType?.name}
                             </span>
                         )}
                     </span>

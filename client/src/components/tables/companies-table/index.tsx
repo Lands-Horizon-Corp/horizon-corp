@@ -75,7 +75,7 @@ const CompaniesTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<ICompanyResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
@@ -116,6 +116,7 @@ const CompaniesTable = ({
         enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
+        columnResizeMode: 'onChange',
         getRowId: getRowIdFn,
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,

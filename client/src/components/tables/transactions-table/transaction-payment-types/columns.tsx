@@ -16,7 +16,7 @@ export const transactionTypeGlobalSearchTargets: IGlobalSearchTargets<ITransacti
     [
         { field: 'name', displayText: 'Name' },
         { field: 'description', displayText: 'Description' },
-        { field: 'cheque_id', displayText: 'Cheque ID' },
+        { field: 'chequeId', displayText: 'Cheque ID' },
     ]
 
 export interface ITransactionPaymentTypesTableActionComponentProp {
@@ -62,15 +62,18 @@ const TransactionPaymentTypesTableColumns = (
                     />
                 </div>
             ),
-            enableSorting: false,
+            maxSize: 40,
             enableHiding: false,
-            maxSize: 80,
+            enablePinning: false,
+            enableSorting: false,
+            enableMultiSort: true,
+            enableResizing: false,
         },
         {
             id: 'name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter<ITransactionPaymentTypesResource>
                             displayText="Name"
@@ -90,11 +93,7 @@ const TransactionPaymentTypesTableColumns = (
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter<ITransactionPaymentTypesResource>
                             displayText="Description"
@@ -111,34 +110,30 @@ const TransactionPaymentTypesTableColumns = (
             enableMultiSort: true,
         },
         {
-            id: 'cheque_id',
-            accessorKey: 'cheque_id',
+            id: 'chequeId',
+            accessorKey: 'chequeId',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Cheque ID">
+                <DataTableColumnHeader {...props} title="Cheque ID">
                     <ColumnActions {...props}>
                         <TextFilter<ITransactionPaymentTypesResource>
                             displayText="Cheque ID"
-                            field="cheque_id"
+                            field="chequeId"
                         />
                     </ColumnActions>
                 </DataTableColumnHeader>
             ),
             cell: ({
                 row: {
-                    original: { cheque_id },
+                    original: { chequeId },
                 },
-            }) => <div>{cheque_id}</div>,
+            }) => <div>{chequeId}</div>,
             enableMultiSort: true,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<ITransactionPaymentTypesResource>
                             displayText="Date Created"
@@ -158,11 +153,7 @@ const TransactionPaymentTypesTableColumns = (
             id: 'updatedAt',
             accessorKey: 'updatedAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Last Updated"
-                >
+                <DataTableColumnHeader {...props} title="Last Updated">
                     <ColumnActions {...props}>
                         <DateFilter<ITransactionPaymentTypesResource>
                             displayText="Last Updated"

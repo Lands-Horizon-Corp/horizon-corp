@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { useRouter } from '@tanstack/react-router'
 
-import { UserIcon } from '@/components/icons'
 import { IMemberTableActionComponentProp } from '../columns'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import { EyeIcon, UserClockFillIcon, UserIcon } from '@/components/icons'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import { MemberCreateUpdateFormModal } from '@/components/forms/member-forms/member-create-update-form'
 import { MemberProfileCreateUpdateFormModal } from '@/components/forms/member-forms/member-application-form/member-profile-create-update-form'
 
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import { MemberHistoriesModal } from '@/components/member-histories'
 import { useDeleteMember } from '@/hooks/api-hooks/member/use-member'
+import { MemberOverallInfoModal } from '@/components/member-infos/view-member-info'
 
 interface IMembersTableOwnerActionProps
     extends IMemberTableActionComponentProp {
@@ -24,6 +26,8 @@ const MembersTableOwnerAction = ({
     const member = row.original
     const router = useRouter()
     const [editModal, setEditModal] = useState(false)
+    const [viewOverallInfo, setViewOverallInfo] = useState(false)
+    const [viewHistoryModal, setViewHistoryModal] = useState(false)
     const [editAccountModal, setEditAccountModal] = useState(false)
 
     const { onOpen } = useConfirmModalStore()
@@ -67,6 +71,24 @@ const MembersTableOwnerAction = ({
                         },
                     }}
                 />
+                {member.memberProfile && (
+                    <>
+                        <MemberHistoriesModal
+                            open={viewHistoryModal}
+                            memberHistoryProps={{
+                                profileId: member.memberProfile?.id,
+                            }}
+                            onOpenChange={setViewHistoryModal}
+                        />
+                        <MemberOverallInfoModal
+                            overallInfoProps={{
+                                memberProfileId: member.memberProfile.id,
+                            }}
+                            open={viewOverallInfo}
+                            onOpenChange={setViewOverallInfo}
+                        />
+                    </>
+                )}
             </div>
             <RowActionsGroup
                 onDelete={{
@@ -85,16 +107,6 @@ const MembersTableOwnerAction = ({
                     isAllowed: true,
                     onClick: () => setEditAccountModal((prev) => !prev),
                 }}
-                // onView={{
-                //     text: 'View',
-                //     isAllowed: true,
-                //     onClick: () => {
-                //         // router.navigate({
-                //         //     to: '/admin/companies-management/$companyId/view',
-                //         //     params: { companyId: member.id },
-                //         // })
-                //     },
-                // }}
                 otherActions={
                     <>
                         {!member.memberProfile ? (
@@ -110,12 +122,32 @@ const MembersTableOwnerAction = ({
                                 Setup Profile
                             </DropdownMenuItem>
                         ) : (
-                            <DropdownMenuItem
-                                onClick={() => setEditModal((val) => !val)}
-                            >
-                                <UserIcon className="mr-2" />
-                                Edit Profile
-                            </DropdownMenuItem>
+                            <>
+                                <DropdownMenuItem
+                                    onClick={() => setViewOverallInfo(true)}
+                                >
+                                    <EyeIcon
+                                        className="mr-2"
+                                        strokeWidth={1.5}
+                                    />
+                                    View Member&apos;s Info
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setEditModal((val) => !val)}
+                                >
+                                    <UserIcon className="mr-2" />
+                                    Edit Profile
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    onClick={() => setViewHistoryModal(true)}
+                                >
+                                    <UserClockFillIcon
+                                        className="mr-2"
+                                        strokeWidth={1.5}
+                                    />
+                                    Member History
+                                </DropdownMenuItem>
+                            </>
                         )}
                     </>
                 }

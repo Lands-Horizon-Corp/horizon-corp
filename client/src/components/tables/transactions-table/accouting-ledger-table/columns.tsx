@@ -12,8 +12,8 @@ import { IAccountingLedgerResource } from '@/server/types/accounts/accounting-le
 export const accountingLedgerGlobalSearchTargets: IGlobalSearchTargets<IAccountingLedgerResource>[] =
     [
         { field: 'description', displayText: 'Description' },
-        { field: 'or_number', displayText: 'OR Number' },
-        { field: 'transaction_source', displayText: 'Transaction Source' },
+        { field: 'orNumber', displayText: 'OR Number' },
+        { field: 'transactionSource', displayText: 'Transaction Source' },
         { field: 'debit', displayText: 'Debit' },
         { field: 'credit', displayText: 'Credit' },
         { field: 'balance', displayText: 'Balance' },
@@ -36,11 +36,7 @@ const accountingLedgerTableColumns =
                 id: 'description',
                 accessorKey: 'description',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Account title"
-                    >
+                    <DataTableColumnHeader {...props} title="Account title">
                         <ColumnActions {...props}>
                             <TextFilter
                                 displayText="Account title"
@@ -52,57 +48,58 @@ const accountingLedgerTableColumns =
                 cell: ({ row: { original } }) => (
                     <div>{original.description}</div>
                 ),
+                size: 160,
+                maxSize: 250,
+                minSize: 160,
+                enableHiding: false,
+                enablePinning: false,
+                enableSorting: false,
                 enableMultiSort: true,
+                enableResizing: false,
             },
             {
-                id: 'or_number',
-                accessorKey: 'or_number',
+                id: 'orNumber',
+                accessorKey: 'orNumber',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="OR Number"
-                    >
+                    <DataTableColumnHeader {...props} title="OR Number">
                         <ColumnActions {...props}>
                             <TextFilter
                                 displayText="OR Number"
-                                field="or_number"
+                                field="orNumber"
                             />
                         </ColumnActions>
                     </DataTableColumnHeader>
                 ),
-                cell: ({ row: { original } }) => (
-                    <div>{original.or_number}</div>
-                ),
+                cell: ({ row: { original } }) => <div>{original.orNumber}</div>,
                 enableMultiSort: true,
+                maxSize: 250,
+                minSize: 160,
             },
             {
-                id: 'transaction_date',
-                accessorKey: 'transaction_date',
+                id: 'transactionDate',
+                accessorKey: 'transactionDate',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Transaction Date"
-                    >
+                    <DataTableColumnHeader {...props} title="Transaction Date">
                         <ColumnActions {...props}>
                             <DateFilter
                                 displayText="Transaction Date"
-                                field="transaction_date"
+                                field="transactionDate"
                             />
                         </ColumnActions>
                     </DataTableColumnHeader>
                 ),
                 cell: ({ row: { original } }) => (
-                    <div>{toReadableDate(original.transaction_date)}</div>
+                    <div>{toReadableDate(original.transactionDate)}</div>
                 ),
                 enableMultiSort: true,
+                maxSize: 250,
+                minSize: 200,
             },
             {
                 id: 'debit',
                 accessorKey: 'debit',
                 header: (props) => (
-                    <DataTableColumnHeader {...props} isResizable title="Debit">
+                    <DataTableColumnHeader {...props} title="Debit">
                         <ColumnActions {...props}>
                             <TextFilter displayText="Debit" field="debit" />
                         </ColumnActions>
@@ -110,16 +107,15 @@ const accountingLedgerTableColumns =
                 ),
                 cell: ({ row: { original } }) => <div>{original.debit}</div>,
                 enableMultiSort: true,
+                size: 280,
+                maxSize: 500,
+                minSize: 200,
             },
             {
                 id: 'credit',
                 accessorKey: 'credit',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Credit"
-                    >
+                    <DataTableColumnHeader {...props} title="Credit">
                         <ColumnActions {...props}>
                             <TextFilter displayText="Credit" field="credit" />
                         </ColumnActions>
@@ -127,16 +123,15 @@ const accountingLedgerTableColumns =
                 ),
                 cell: ({ row: { original } }) => <div>{original.credit}</div>,
                 enableMultiSort: true,
+                size: 280,
+                maxSize: 500,
+                minSize: 200,
             },
             {
                 id: 'balance',
                 accessorKey: 'balance',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Balance"
-                    >
+                    <DataTableColumnHeader {...props} title="Balance">
                         <ColumnActions {...props}>
                             <TextFilter displayText="Balance" field="balance" />
                         </ColumnActions>
@@ -146,50 +141,56 @@ const accountingLedgerTableColumns =
                     <div>{original.summary.balance}</div>
                 ),
                 enableMultiSort: true,
+                enableResizing: false,
+                enableSorting: true,
+                enableHiding: false,
+                size: 160,
+                minSize: 160,
+                maxSize: 500,
             },
             {
-                id: 'transaction_source',
-                accessorKey: 'transaction_source',
+                id: 'transactionSource',
+                accessorKey: 'transactionSource',
                 header: (props) => (
                     <DataTableColumnHeader
                         {...props}
-                        isResizable
                         title="Transaction Source"
                     >
                         <ColumnActions {...props}>
                             <TextFilter
                                 displayText="Transaction Source"
-                                field="transaction_source"
+                                field="transactionSource"
                             />
                         </ColumnActions>
                     </DataTableColumnHeader>
                 ),
                 cell: ({ row: { original } }) => (
-                    <div>{original.transaction_source}</div>
+                    <div>{original.transactionSource}</div>
                 ),
                 enableMultiSort: true,
+                size: 250,
+                maxSize: 500,
+                minSize: 250,
             },
             {
-                id: 'created_at',
-                accessorKey: 'created_at',
+                id: 'createdAt',
+                accessorKey: 'createdAt',
                 header: (props) => (
-                    <DataTableColumnHeader
-                        {...props}
-                        isResizable
-                        title="Created At"
-                    >
+                    <DataTableColumnHeader {...props} title="Created At">
                         <ColumnActions {...props}>
                             <DateFilter
                                 displayText="Created At"
-                                field="created_at"
+                                field="createdAt"
                             />
                         </ColumnActions>
                     </DataTableColumnHeader>
                 ),
                 cell: ({ row: { original } }) => (
-                    <div>{toReadableDate(original.created_at)}</div>
+                    <div>{toReadableDate(original.createdAt)}</div>
                 ),
                 enableMultiSort: true,
+                minSize: 150,
+                maxSize: 200,
             },
         ]
     }

@@ -43,7 +43,7 @@ const LedgerCard = ({ ledger }: LedgerCardProps) => (
     <Card className="flex flex-col gap-4 rounded-2xl p-6 text-gray-800 shadow-lg dark:text-white">
         <CardContent className="relative flex flex-col p-0">
             <div className="flex w-full justify-end">
-                <TransactionSourceBadge source={ledger.transaction_source} />
+                <TransactionSourceBadge source={ledger.transactionSource} />
             </div>
             <div className="flex items-center justify-between">
                 <div>
@@ -71,7 +71,7 @@ const LedgerCard = ({ ledger }: LedgerCardProps) => (
                         <div className="space-y-4">
                             <DetailRow
                                 label="Transaction Number"
-                                value={ledger.or_number}
+                                value={ledger.orNumber}
                             />
                             <DetailRow
                                 label="Status"
@@ -83,11 +83,11 @@ const LedgerCard = ({ ledger }: LedgerCardProps) => (
                             />
                             <DetailRow
                                 label="Transaction Date"
-                                value={ledger.transaction_date.toLocaleString()}
+                                value={ledger.transactionDate.toLocaleString()}
                             />
                             <DetailRow
                                 label="Recipient"
-                                value={ledger.member_profile_id}
+                                value={ledger.memberProfileId}
                             />
                             <DetailRow
                                 label="Amount Sent"
@@ -95,7 +95,7 @@ const LedgerCard = ({ ledger }: LedgerCardProps) => (
                             />
                             <DetailRow
                                 label="Completed On"
-                                value={ledger.entry_date.toLocaleString()}
+                                value={ledger.entryDate.toLocaleString()}
                             />
                         </div>
                     </AccordionContent>
