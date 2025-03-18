@@ -1,4 +1,4 @@
-import { TEntityId } from './common'
+import { ITimeStamps, TEntityId } from './common'
 import { IMediaResource } from './media'
 import { IMemberResource } from './member/member'
 import { ICompanyResource } from './company'
@@ -18,7 +18,7 @@ export interface IBranchRequest {
     companyId?: TEntityId
 }
 
-export interface IBranchResource {
+export interface IBranchResource extends ITimeStamps {
     id: TEntityId
     name: string
     address?: string
@@ -33,8 +33,6 @@ export interface IBranchResource {
     company?: ICompanyResource
     employees?: IEmployeeResource[]
     members?: IMemberResource[]
-    createdAt?: string
-    updatedAt?: string
 }
 
 export interface IBranchPaginatedResource
