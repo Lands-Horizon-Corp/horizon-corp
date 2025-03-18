@@ -173,7 +173,7 @@ const AccountsComputationTypeTableColumns = (
                 row: {
                     original: { updatedAt },
                 },
-            }) => <div>{toReadableDate(updatedAt)}</div>,
+            }) => <div>{updatedAt ? toReadableDate(updatedAt) : ''}</div>,
             enableMultiSort: true,
             enableSorting: true,
             enableResizing: true,

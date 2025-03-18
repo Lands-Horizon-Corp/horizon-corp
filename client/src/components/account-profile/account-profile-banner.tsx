@@ -50,10 +50,12 @@ const AccountProfileBanner = ({
                         {format(currentUser.createdAt, 'MMM dd yyyy')}
                     </span>
                     <DotMediumIcon className="hidden lg:block" />
-                    <span>
-                        <CalendarCheckIcon className="inline" /> Update at{' '}
-                        {format(currentUser.updatedAt, 'MMM dd yyyy')}
-                    </span>
+                    {currentUser.updatedAt && (
+                        <span>
+                            <CalendarCheckIcon className="inline" /> Update at{' '}
+                            {format(currentUser.updatedAt, 'MMM dd yyyy')}
+                        </span>
+                    )}
                 </div>
             </div>
         </div>
