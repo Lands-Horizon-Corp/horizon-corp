@@ -101,7 +101,7 @@ const MemberEducationalAttainmentCombobox = ({
                                 Loading...
                             </CommandEmpty>
                         ) : (
-                            <CommandList>
+                            <CommandList className="ecoop-scroll">
                                 <CommandEmpty>
                                     No Educational Attainment found.
                                 </CommandEmpty>

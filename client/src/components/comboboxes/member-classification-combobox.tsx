@@ -102,7 +102,7 @@ const MemberClassificationCombobox = ({
                                 Loading...
                             </CommandEmpty>
                         ) : (
-                            <CommandList>
+                            <CommandList className="ecoop-scroll">
                                 <CommandEmpty>
                                     No Member Classification found.
                                 </CommandEmpty>

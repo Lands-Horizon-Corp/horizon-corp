@@ -54,7 +54,7 @@ export const createMemberProfileSchema = z.object({
     memberClassificationId: entityIdSchema.optional(),
     memberEducationalAttainmentId: entityIdSchema.optional(),
 
-    memberAddress: z
+    memberAddresses: z
         .array(memberAddressSchema)
         .min(1, 'Must provide at least 1 address'),
 

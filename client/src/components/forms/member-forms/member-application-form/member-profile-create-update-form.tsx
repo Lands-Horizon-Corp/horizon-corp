@@ -116,7 +116,7 @@ const Steps: Step[] = [
             'occupationId',
             'businessAddress',
             'businessContact',
-            'memberAddress',
+            'memberAddresses',
             'memberContactNumberReferences',
             'memberDescriptions',
         ],
@@ -167,6 +167,8 @@ const MemberProfileCreateUpdateForm = ({
     const { onOpen } = useConfirmModalStore()
     const [step, setStep] = useState(0)
 
+    logger.log(defaultValues)
+
     const form = useForm<TMemberProfileForm>({
         resolver: zodResolver(createMemberProfileSchema),
         reValidateMode: 'onChange',
@@ -200,10 +202,10 @@ const MemberProfileCreateUpdateForm = ({
         name: 'memberDescriptions',
     })
 
-    form.watch('memberAddress')
-    const memberAddress = useFieldArray({
+    form.watch('memberAddresses')
+    const memberAddresses = useFieldArray({
         control: form.control,
-        name: 'memberAddress',
+        name: 'memberAddresses',
     })
 
     const memberContactNumberReferences = useFieldArray({
@@ -677,7 +679,8 @@ const MemberProfileCreateUpdateForm = ({
                                                 )}
                                                 onChange={(mediaUploaded) => {
                                                     field.onChange(
-                                                        mediaUploaded?.id
+                                                        mediaUploaded?.id ??
+                                                            undefined
                                                     )
                                                     form.setValue(
                                                         'signatureMedia',
@@ -800,7 +803,7 @@ const MemberProfileCreateUpdateForm = ({
                                 </div>
                             </div>
                             <FormFieldWrapper
-                                name="memberAddress"
+                                name="memberAddresses"
                                 label="Address"
                                 control={form.control}
                                 hiddenFields={hiddenFields}
@@ -808,14 +811,14 @@ const MemberProfileCreateUpdateForm = ({
                                     <>
                                         <Separator />
                                         <fieldset className="grid gap-4">
-                                            {memberAddress.fields.map(
+                                            {memberAddresses.fields.map(
                                                 (addressField, index) => (
                                                     <div
                                                         key={addressField.id}
                                                         className="flex w-full flex-col gap-4 md:flex-row"
                                                     >
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.label`}
+                                                            name={`memberAddresses.${index}.label`}
                                                             control={
                                                                 form.control
                                                             }
@@ -838,7 +841,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             )}
                                                         />
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.province`}
+                                                            name={`memberAddresses.${index}.province`}
                                                             control={
                                                                 form.control
                                                             }
@@ -861,7 +864,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             )}
                                                         />
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.city`}
+                                                            name={`memberAddresses.${index}.city`}
                                                             control={
                                                                 form.control
                                                             }
@@ -874,12 +877,12 @@ const MemberProfileCreateUpdateForm = ({
                                                             }) => {
                                                                 const isProvinceValid =
                                                                     !!form.watch(
-                                                                        `memberAddress.${index}.province`
+                                                                        `memberAddresses.${index}.province`
                                                                     ) &&
                                                                     !form
                                                                         .formState
                                                                         .errors
-                                                                        .memberAddress?.[
+                                                                        .memberAddresses?.[
                                                                         index
                                                                     ]?.province
 
@@ -891,7 +894,7 @@ const MemberProfileCreateUpdateForm = ({
                                                                                 field.name
                                                                             }
                                                                             province={form.getValues(
-                                                                                `memberAddress.${index}.province`
+                                                                                `memberAddresses.${index}.province`
                                                                             )}
                                                                             disabled={
                                                                                 !isProvinceValid
@@ -903,7 +906,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             }}
                                                         />
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.barangay`}
+                                                            name={`memberAddresses.${index}.barangay`}
                                                             control={
                                                                 form.control
                                                             }
@@ -916,12 +919,12 @@ const MemberProfileCreateUpdateForm = ({
                                                             }) => {
                                                                 const isCityValid =
                                                                     !!form.watch(
-                                                                        `memberAddress.${index}.city`
+                                                                        `memberAddresses.${index}.city`
                                                                     ) &&
                                                                     !form
                                                                         .formState
                                                                         .errors
-                                                                        .memberAddress?.[
+                                                                        .memberAddresses?.[
                                                                         index
                                                                     ]?.province
 
@@ -933,7 +936,7 @@ const MemberProfileCreateUpdateForm = ({
                                                                                 field.name
                                                                             }
                                                                             municipality={form.getValues(
-                                                                                `memberAddress.${index}.city`
+                                                                                `memberAddresses.${index}.city`
                                                                             )}
                                                                             disabled={
                                                                                 !isCityValid
@@ -945,7 +948,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             }}
                                                         />
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.postalCode`}
+                                                            name={`memberAddresses.${index}.postalCode`}
                                                             control={
                                                                 form.control
                                                             }
@@ -972,7 +975,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             type="button"
                                                             variant="secondary"
                                                             onClick={() =>
-                                                                memberAddress.remove(
+                                                                memberAddresses.remove(
                                                                     index
                                                                 )
                                                             }
@@ -989,7 +992,7 @@ const MemberProfileCreateUpdateForm = ({
                                             type="button"
                                             variant="secondary"
                                             onClick={() =>
-                                                memberAddress.append({
+                                                memberAddresses.append({
                                                     label: '',
                                                     barangay: '',
                                                     city: '',
@@ -2031,17 +2034,6 @@ const MemberProfileCreateUpdateForm = ({
                                                                             field.name
                                                                         )}
                                                                     />
-                                                                    {/* <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Select relative account"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    /> */}
                                                                 </FormControl>
                                                             )}
                                                         />
@@ -2455,35 +2447,8 @@ const MemberProfileCreateUpdateForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberRecruits.${index}.membersProfileId`}
-                                                            label="Member's Profile ID"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Member's Profile ID"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
                                                             name={`memberRecruits.${index}.membersProfileRecruitedId`}
-                                                            label="Recruited Member's Prof. ID"
+                                                            label="Recruited Member"
                                                             hiddenFields={
                                                                 hiddenFields
                                                             }
@@ -2491,16 +2456,39 @@ const MemberProfileCreateUpdateForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <Input
+                                                                    <MemberPicker
                                                                         {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Recruited Member's Profile"
+                                                                        onSelect={(
+                                                                            member
+                                                                        ) => {
+                                                                            if (
+                                                                                defaultValues?.id &&
+                                                                                member.memberProfile &&
+                                                                                defaultValues.id ===
+                                                                                    member
+                                                                                        .memberProfile
+                                                                                        .id
+                                                                            ) {
+                                                                                return toast.warning(
+                                                                                    'Cannot pick themselves'
+                                                                                )
+                                                                            }
+                                                                            if (
+                                                                                !member.memberProfile
+                                                                            )
+                                                                                return toast.warning(
+                                                                                    "Can't select a member that has no profile yet."
+                                                                                )
+                                                                            field.onChange(
+                                                                                member
+                                                                                    .memberProfile
+                                                                                    .id
+                                                                            )
+                                                                        }}
+                                                                        placeholder="Select relative member"
                                                                         disabled={isDisabled(
                                                                             field.name
                                                                         )}
-                                                                        className="w-full"
                                                                     />
                                                                 </FormControl>
                                                             )}
