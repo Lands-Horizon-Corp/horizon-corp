@@ -41,6 +41,9 @@ export const createMemberProfileSchema = z.object({
     memberId: entityIdSchema.optional(),
     media: mediaResourceSchema.optional(),
 
+    signatureMediaId: entityIdSchema.optional(),
+    signatureMedia: mediaResourceSchema.optional(),
+
     memberTypeId: z
         .string()
         .min(1, 'Member Type is required')

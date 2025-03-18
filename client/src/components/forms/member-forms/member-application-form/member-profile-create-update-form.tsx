@@ -74,6 +74,7 @@ import { createMemberProfileSchema } from '@/validations/member/member-profile-s
 import { cn } from '@/lib'
 import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
+import logger from '@/helpers/loggers/logger'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -411,11 +412,15 @@ const MemberProfileCreateUpdateForm = ({
                                                     memberClassificationCreateProps={
                                                         memberClassificationCreateProps
                                                     }
-                                                    onChange={(memClass) =>
+                                                    onChange={(memClass) => {
+                                                        logger.log(
+                                                            'Setting to ',
+                                                            memClass.id
+                                                        )
                                                         field.onChange(
                                                             memClass.id
                                                         )
-                                                    }
+                                                    }}
                                                 />
                                             </FormControl>
                                         )}
@@ -658,6 +663,31 @@ const MemberProfileCreateUpdateForm = ({
                                         )}
                                     />
                                     <FormFieldWrapper
+                                        name="signatureMediaId"
+                                        control={form.control}
+                                        label="Signature"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <SignatureUploadField
+                                                placeholder="Upload Signature Photo"
+                                                {...field}
+                                                DisplayIcon={SignatureLightIcon}
+                                                mediaImage={form.getValues(
+                                                    'signatureMedia'
+                                                )}
+                                                onChange={(mediaUploaded) => {
+                                                    field.onChange(
+                                                        mediaUploaded?.id
+                                                    )
+                                                    form.setValue(
+                                                        'signatureMedia',
+                                                        mediaUploaded
+                                                    )
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                    <FormFieldWrapper
                                         name="memberGenderId"
                                         control={form.control}
                                         label="Gender"
@@ -691,6 +721,7 @@ const MemberProfileCreateUpdateForm = ({
                                             />
                                         )}
                                     />
+
                                     <FormFieldWrapper
                                         name="occupationId"
                                         control={form.control}
@@ -2821,7 +2852,7 @@ export const MemberProfileCreateUpdateFormModal = ({
         <Modal
             title={title}
             description={description}
-            className={cn('', className)}
+            className={cn('!max-w-6xl', className)}
             {...props}
         >
             <MemberProfileCreateUpdateForm {...formProps} />
