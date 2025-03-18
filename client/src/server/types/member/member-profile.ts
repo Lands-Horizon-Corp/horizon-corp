@@ -80,7 +80,7 @@ export interface IMemberProfileRequest {
 
     memberIncome?: IMemberIncomeRequest[]
     memberAssets?: IMemberAssetsRequest[]
-    memberAddress: IMemberAddressRequest[]
+    memberAddresses: IMemberAddressRequest[]
     memberRecruits?: IMemberRecruitsRequest[]
     memberExpenses?: IMemberExpensesRequest[]
     memberDescriptions?: IMemberDescriptionRequest[]
@@ -113,7 +113,7 @@ export interface IMemberProfileResource extends ITimeStamps {
     isMicroFinanceMember: boolean
 
     occupationId?: TEntityId
-    occupation: IMemberOccupationResource
+    occupation?: IMemberOccupationResource
 
     mediaId?: TEntityId
     media?: IMediaResource
