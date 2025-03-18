@@ -22,6 +22,7 @@ import {
 } from 'react-icons/io'
 
 import {
+    LuCopy as CopyIcon,
     LuUndo2 as UndoIcon,
     LuRedo2 as RedoIcon,
     LuTrash as TrashIcon,
@@ -223,6 +224,7 @@ export {
     KeyIcon,
     DevIcon,
     EyeIcon,
+    CopyIcon,
     BankIcon,
     PlusIcon,
     UndoIcon,

@@ -1,16 +1,16 @@
 import { toast } from 'sonner'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 
+import { TEntityId } from '@/server'
 import {
     IMemberProfileRequest,
     IMemberProfileResource,
 } from '@/server/types/member/member-profile'
 import { IAPIHook, IQueryProps } from '../types'
 import MemberProfileService from '@/server/api-service/member-services/member-profile-service'
-import { TEntityId } from '@/server'
 
 export const useCreateMemberProfile = ({
     showMessage = true,
@@ -58,6 +58,35 @@ export const useCreateMemberProfile = ({
 
             return newMember
         },
+    })
+}
+
+export const useMemberProfile = ({
+    profileId,
+    preloads = ['Media', 'Owner', 'Owner.Media'],
+    onError,
+    onSuccess,
+    ...opts
+}: { profileId: TEntityId } & IAPIHook<IMemberProfileResource, string> &
+    IQueryProps<IMemberProfileResource>) => {
+    return useQuery<IMemberProfileResource, string>({
+        queryKey: ['member-profile', profileId],
+        queryFn: async () => {
+            const [error, data] = await withCatchAsync(
+                MemberProfileService.getById(profileId, preloads)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            onSuccess?.(data)
+            return data
+        },
+        ...opts,
     })
 }
 

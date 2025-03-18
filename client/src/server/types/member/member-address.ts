@@ -8,7 +8,7 @@ export interface IMemberAddressResource extends ITimeStamps {
     province: string
     city: string
     barangay: string
-    region: string
+    // region: string
     label: string
     membersProfile?: IMemberProfileResource
 }

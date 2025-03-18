@@ -5,15 +5,17 @@ import { IBaseComp } from '@/types/component'
 interface Props extends IBaseComp {
     src: string
     fallback?: string
+    avatarClassname?: string
     fallbackClassName?: string
 }
 
 const UserAvatar = ({
     src,
-    fallback = '-',
-    className,
-    fallbackClassName,
     children,
+    className,
+    fallback = '-',
+    avatarClassname,
+    fallbackClassName,
 }: Props) => {
     if (fallback.length === 0 || fallback.length > 2)
         throw new Error(
@@ -22,7 +24,10 @@ const UserAvatar = ({
 
     return (
         <Avatar className={cn('size-6', className)}>
-            <AvatarImage src={src} />
+            <AvatarImage
+                src={src}
+                className={cn('object-cover', avatarClassname)}
+            />
             <AvatarFallback className={fallbackClassName}>
                 {fallback}
             </AvatarFallback>
