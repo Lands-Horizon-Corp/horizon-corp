@@ -38,6 +38,39 @@ export const branchLoader = (
         retry: 0,
     })
 
+// Get branch by ID
+export const useBranch = ({
+    branchId,
+    showMessage = true,
+    preloads = ['Company', 'Company.Media'],
+    onError,
+    onSuccess,
+    ...other
+}: { branchId: TEntityId } & IAPIHook<IBranchResource, string> &
+    IQueryProps) => {
+    return useQuery({
+        queryKey: ['branch', branchId],
+        queryFn: async () => {
+            const [error, data] = await withCatchAsync(
+                BranchService.getById(branchId, preloads)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                if (showMessage) toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            if (showMessage) toast.success('Branch Created')
+            onSuccess?.(data)
+
+            return data
+        },
+        ...other,
+    })
+}
+
 // Create branch
 export const useCreateBranch = ({
     showMessage = true,
