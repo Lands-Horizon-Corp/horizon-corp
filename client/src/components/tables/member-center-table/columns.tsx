@@ -11,27 +11,27 @@ import HeaderToggleSelect from '@/components/data-table/data-table-row-actions/h
 import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters/data-table-global-search'
 
 import { toReadableDate } from '@/utils'
-import { IMemberClassificationResource } from '@/server/types'
+import { IMemberCenterResource } from '@/server/types'
 
-export const memberClassificationGlobalSearchTargets: IGlobalSearchTargets<IMemberClassificationResource>[] =
+export const memberCenterGlobalSearchTargets: IGlobalSearchTargets<IMemberCenterResource>[] =
     [
         { field: 'name', displayText: 'Name' },
         { field: 'description', displayText: 'Description' },
     ]
 
-export interface IMemberClassificationTableActionComponentProp {
-    row: Row<IMemberClassificationResource>
+export interface IMemberCenterTableActionComponentProp {
+    row: Row<IMemberCenterResource>
 }
 
-export interface IMemberClassificationTableColumnProps {
+export interface IMemberCenterTableColumnProps {
     actionComponent?: (
-        props: IMemberClassificationTableActionComponentProp
+        props: IMemberCenterTableActionComponentProp
     ) => ReactNode
 }
 
-const memberClassificationTableColumns = (
-    opts?: IMemberClassificationTableColumnProps
-): ColumnDef<IMemberClassificationResource>[] => {
+const memberCenterTableColumns = (
+    opts?: IMemberCenterTableColumnProps
+): ColumnDef<IMemberCenterResource>[] => {
     return [
         {
             id: 'select',
@@ -68,7 +68,7 @@ const memberClassificationTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
-                        <TextFilter<IMemberClassificationResource>
+                        <TextFilter<IMemberCenterResource>
                             displayText="Name"
                             field="name"
                         />
@@ -80,12 +80,11 @@ const memberClassificationTableColumns = (
                     original: { name },
                 },
             }) => <div>{name}</div>,
-            enableMultiSort: true,
             enableSorting: true,
             enableResizing: true,
-            enableHiding: false,
-            size: 180,
-            minSize: 180,
+            size: 120,
+            minSize: 120,
+            maxSize: 250,
         },
         {
             id: 'description',
@@ -93,7 +92,7 @@ const memberClassificationTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
-                        <TextFilter<IMemberClassificationResource>
+                        <TextFilter<IMemberCenterResource>
                             displayText="Description"
                             field="description"
                         />
@@ -106,11 +105,10 @@ const memberClassificationTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
-            enableSorting: true,
             enableResizing: true,
-            enableHiding: false,
-            size: 180,
-            minSize: 180,
+            minSize: 200,
+            size: 300,
+            maxSize: 500,
         },
         {
             id: 'createdAt',
@@ -118,7 +116,7 @@ const memberClassificationTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
-                        <DateFilter<IMemberClassificationResource>
+                        <DateFilter<IMemberCenterResource>
                             displayText="Date Created"
                             field="createdAt"
                         />
@@ -131,13 +129,10 @@ const memberClassificationTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
-            enableSorting: true,
             enableResizing: true,
-            enableHiding: false,
-            size: 180,
-            minSize: 180,
+            minSize: 150,
         },
     ]
 }
 
-export default memberClassificationTableColumns
+export default memberCenterTableColumns

@@ -49,10 +49,10 @@ export interface IMemberProfileRequest {
     oldReferenceId?: string
     passbookNumber?: string
 
-    firstName : string,
-    middleName? : string,
-    lastName : string,
-    suffix? : string
+    firstName: string
+    middleName?: string
+    lastName: string
+    suffix?: string
 
     notes: string
     description: string
@@ -100,14 +100,14 @@ export interface IMemberProfileResource extends ITimeStamps {
     oldReferenceId?: string
     passbookNumber?: string
 
-    firstName : string
-    middleName? : string
-    lastName : string
-    suffix? : string
+    firstName: string
+    middleName?: string
+    lastName: string
+    suffix?: string
 
     notes: string
     description: string
-    contactNumber: string 
+    contactNumber: string
     civilStatus: TCivilStatus
     businessAddress?: string
     businessContact?: string

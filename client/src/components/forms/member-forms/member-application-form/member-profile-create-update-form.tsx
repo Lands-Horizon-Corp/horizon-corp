@@ -167,8 +167,6 @@ const MemberProfileCreateUpdateForm = ({
     const { onOpen } = useConfirmModalStore()
     const [step, setStep] = useState(0)
 
-    logger.log(defaultValues)
-
     const form = useForm<TMemberProfileForm>({
         resolver: zodResolver(createMemberProfileSchema),
         reValidateMode: 'onChange',
@@ -593,6 +591,64 @@ const MemberProfileCreateUpdateForm = ({
                                             </FormControl>
                                         )}
                                     />
+                                    <div className="grid gap-x-2 gap-y-4 md:grid-cols-3">
+                                        <FormFieldWrapper
+                                            name="firstName"
+                                            control={form.control}
+                                            label="First Name"
+                                            hiddenFields={hiddenFields}
+                                            render={({ field }) => (
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        id={field.name}
+                                                        autoComplete="given-name"
+                                                        placeholder="First Name"
+                                                        disabled={isDisabled(
+                                                            field.name
+                                                        )}
+                                                    />
+                                                </FormControl>
+                                            )}
+                                        />
+                                        <FormFieldWrapper
+                                            name="middleName"
+                                            control={form.control}
+                                            label="Middle Name"
+                                            hiddenFields={hiddenFields}
+                                            render={({ field }) => (
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        id={field.name}
+                                                        placeholder="Middle Name"
+                                                        disabled={isDisabled(
+                                                            field.name
+                                                        )}
+                                                    />
+                                                </FormControl>
+                                            )}
+                                        />
+                                        <FormFieldWrapper
+                                            name="lastName"
+                                            control={form.control}
+                                            label="Last Name"
+                                            hiddenFields={hiddenFields}
+                                            render={({ field }) => (
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        id={field.name}
+                                                        autoComplete="family-name"
+                                                        placeholder="Last Name"
+                                                        disabled={isDisabled(
+                                                            field.name
+                                                        )}
+                                                    />
+                                                </FormControl>
+                                            )}
+                                        />
+                                    </div>
                                     <FormFieldWrapper
                                         name="contactNumber"
                                         control={form.control}

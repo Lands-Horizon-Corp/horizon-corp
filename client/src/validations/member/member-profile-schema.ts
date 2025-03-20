@@ -17,6 +17,11 @@ export const createMemberProfileSchema = z.object({
     oldReferenceId: z.string().optional(),
     passbookNumber: z.string().optional(),
 
+    middleName: z.string().optional(),
+    lastName: z.string().min(1, 'Lastname is required'),
+    firstName: z.string().min(1, 'Firstname is required'),
+    suffix: z.string().max(15).optional(),
+
     notes: z.string().min(1, 'Notes are required'),
     description: z.string().min(1, 'Description is required'),
     contactNumber: z.string().min(1, 'Contact number is required'),
