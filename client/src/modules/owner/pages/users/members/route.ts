@@ -36,6 +36,12 @@ const ownerMemberTypesRoute = createRoute({
     component: lazyRouteComponent(() => import('./member-types-page')),
 })
 
+const ownerMemberCenterRoute = createRoute({
+    getParentRoute: () => ownerUserMemberRoute,
+    path: 'member-center',
+    component: lazyRouteComponent(() => import('./member-center-page')),
+})
+
 const ownerEducationalAttainmentRoute = createRoute({
     getParentRoute: () => ownerUserMemberRoute,
     path: '/member-educational-attainments',
@@ -64,14 +70,15 @@ export const ownerGenderRoute = createRoute({
 
 const OwnerUserMemberRoute = ownerUserMemberRoute.addChildren([
     ownerGenderRoute,
-    ownerUserMemberIndexRoute,
-    ownerViewMembersRoute,
-    ownerMembersActivityRoute,
-    ownerEducationalAttainmentRoute,
-    ownerMemberClassificationRoute,
-    ownerMemberTypesRoute,
-    ownerMemberOccupationRoute,
     OwnerMemberIdRoute,
+    ownerViewMembersRoute,
+    ownerMemberTypesRoute,
+    ownerMemberCenterRoute,
+    ownerUserMemberIndexRoute,
+    ownerMembersActivityRoute,
+    ownerMemberOccupationRoute,
+    ownerMemberClassificationRoute,
+    ownerEducationalAttainmentRoute,
 ])
 
 export default OwnerUserMemberRoute
