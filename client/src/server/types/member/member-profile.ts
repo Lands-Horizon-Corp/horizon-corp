@@ -49,6 +49,11 @@ export interface IMemberProfileRequest {
     oldReferenceId?: string
     passbookNumber?: string
 
+    firstName: string
+    middleName?: string
+    lastName: string
+    suffix?: string
+
     notes: string
     description: string
     contactNumber: string
@@ -95,18 +100,23 @@ export interface IMemberProfileResource extends ITimeStamps {
     oldReferenceId?: string
     passbookNumber?: string
 
+    firstName: string
+    middleName?: string
+    lastName: string
+    suffix?: string
+
     notes: string
     description: string
     contactNumber: string
-    tinNumber?: string
     civilStatus: TCivilStatus
-    sssNumber?: string
     businessAddress?: string
     businessContact?: string
 
     status: TAccountStatus
     isClosed: boolean
 
+    sssNumber?: string
+    tinNumber?: string
     pagibigNumber?: string
     philhealthNumber?: string
     isMutualFundMember: boolean
@@ -147,7 +157,7 @@ export interface IMemberProfileResource extends ITimeStamps {
 
     memberAssets?: IMemberAssetsResource[]
     memberIncome?: IMemberIncomeResource[]
-    memberWallets?: IMemberWalletResource[]
+    memberWallets?: IMemberWalletResource[] // ano to desu
     memberAddresses?: IMemberAddressResource[]
     memberRecruits?: IMemberRecruitsResource[]
     memberExpenses?: IMemberExpensesResource[]
