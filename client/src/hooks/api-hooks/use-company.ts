@@ -46,6 +46,7 @@ export const useCompany = ({
     showMessage,
     onError,
     onSuccess,
+    ...other
 }: { companyId: TEntityId } & IQueryProps<ICompanyResource> &
     IAPIHook<ICompanyResource, string>) => {
     return useQuery<ICompanyResource, string>({
@@ -57,7 +58,7 @@ export const useCompany = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                if(showMessage) toast.error(errorMessage)
+                if (showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
@@ -65,7 +66,7 @@ export const useCompany = ({
             onSuccess?.(data)
             return data
         },
-        enabled: companyId !== undefined && companyId !== null,
+        ...other,
     })
 }
 
