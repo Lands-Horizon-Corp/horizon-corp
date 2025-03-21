@@ -47,8 +47,8 @@ export const useBranch = ({
     onSuccess,
     ...other
 }: { branchId: TEntityId } & IAPIHook<IBranchResource, string> &
-    IQueryProps) => {
-    return useQuery({
+    IQueryProps<IBranchResource>) => {
+    return useQuery<IBranchResource, string>({
         queryKey: ['branch', branchId],
         queryFn: async () => {
             const [error, data] = await withCatchAsync(
