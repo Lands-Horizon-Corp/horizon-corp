@@ -14,6 +14,7 @@ import {
     IAPIPreloads,
     IOperationCallbacks,
     IFilterPaginatedHookProps,
+    IAPIHook,
 } from './types'
 import {
     TEntityId,
@@ -42,10 +43,11 @@ export const companyLoader = (
 export const useCompany = ({
     companyId,
     preloads = ['Media', 'Owner', 'Owner.Media'],
+    showMessage,
     onError,
     onSuccess,
-}: { companyId: TEntityId } & IAPIPreloads &
-    IOperationCallbacks<ICompanyResource, string>) => {
+}: { companyId: TEntityId } & IQueryProps<ICompanyResource> &
+    IAPIHook<ICompanyResource, string>) => {
     return useQuery<ICompanyResource, string>({
         queryKey: ['company', companyId],
         queryFn: async () => {
@@ -55,7 +57,7 @@ export const useCompany = ({
 
             if (error) {
                 const errorMessage = serverRequestErrExtractor({ error })
-                toast.error(errorMessage)
+                if(showMessage) toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage
             }
