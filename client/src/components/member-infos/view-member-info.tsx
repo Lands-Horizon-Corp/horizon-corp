@@ -3,7 +3,7 @@ import { IconType } from 'react-icons/lib'
 
 import Modal, { IModalProps } from '../modals/modal'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
-import { UserIcon, BankIcon, UserCogIcon } from '../icons'
+import { UserIcon, BankIcon, UserCogIcon, CreditCardIcon } from '../icons'
 import MemberInfoBanner from './banners/member-info-banner'
 import MemberMembershipInfo from './member-general-membership-info'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
@@ -42,22 +42,32 @@ const memberInfoTabs: {
         Component: (props) => <MemberMembershipInfo {...props} />,
     },
     {
-        value: 'member-type-history',
-        title: 'Member Type',
+        value: 'government-benefits',
+        title: 'Government Benefits',
         Icon: UserCogIcon,
         Component: () => (
             <div className="flex min-h-[90%] flex-1 flex-col gap-y-4 rounded-xl bg-background p-4">
-                <p className="text-sm">Member Type history of this member</p>
+                <p className="text-sm">Government Benefits</p>
             </div>
         ),
     },
     {
-        value: 'member-accounts',
-        title: 'Member Accounts',
+        value: 'financial',
+        title: 'Financial',
+        Icon: CreditCardIcon,
+        Component: () => (
+            <div className="flex min-h-[90%] flex-1 flex-col gap-y-4 rounded-xl bg-background p-4">
+                <p className="text-sm">Financial Info</p>
+            </div>
+        ),
+    },
+    {
+        value: 'accounts',
+        title: 'Accounts Info',
         Icon: BankIcon,
         Component: () => (
             <div className="flex min-h-[90%] flex-1 flex-col gap-y-4 rounded-xl bg-background p-4">
-                <p className="text-sm">Member Gender history for this member</p>
+                <p className="text-sm">Accounts</p>
             </div>
         ),
     },
@@ -69,7 +79,7 @@ const MemberOverallInfo = ({ memberProfileId }: MemberOverallInfoProps) => {
     })
 
     return (
-        <div className="min-h-[80vh] min-w-[80vw] space-y-4 p-4">
+        <div className="min-h-[80vh] min-w-[80vw] space-y-4 pt-4">
             {memberProfile && (
                 <>
                     <MemberInfoBanner memberProfile={memberProfile} />

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
-import UserAvatar from '@/components/user-avatar'
 import { Badge } from '@/components/ui/badge'
+import UserAvatar from '@/components/user-avatar'
 import CopyTextButton from '@/components/copy-text-button'
 import { BadgeCheckFillIcon, BadgeQuestionFillIcon } from '@/components/icons'
 import { MemberProfileCreateUpdateFormModal } from '@/components/forms/member-forms/member-application-form/member-profile-create-update-form'
@@ -64,6 +64,7 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
                         {memberProfile.passbookNumber && (
                             <CopyTextButton
                                 className="ml-2"
+                                successText='Passbook Number Copied'
                                 textContent={memberProfile.passbookNumber}
                             />
                         )}
@@ -83,6 +84,7 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
                         <CopyTextButton
                             className="ml-1"
                             textContent={memberProfile.id}
+                            successText='Member profile ID copied'
                         />
                     )}
                 </p>
@@ -92,6 +94,7 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
                     {memberProfile.member?.id && (
                         <CopyTextButton
                             className="ml-1"
+                            successText='Member ID copied'
                             textContent={memberProfile.member?.id}
                         />
                     )}
