@@ -64,7 +64,7 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
                         {memberProfile.passbookNumber && (
                             <CopyTextButton
                                 className="ml-2"
-                                successText='Passbook Number Copied'
+                                successText="Passbook Number Copied"
                                 textContent={memberProfile.passbookNumber}
                             />
                         )}
@@ -84,7 +84,7 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
                         <CopyTextButton
                             className="ml-1"
                             textContent={memberProfile.id}
-                            successText='Member profile ID copied'
+                            successText="Member profile ID copied"
                         />
                     )}
                 </p>
@@ -94,7 +94,7 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
                     {memberProfile.member?.id && (
                         <CopyTextButton
                             className="ml-1"
-                            successText='Member ID copied'
+                            successText="Member ID copied"
                             textContent={memberProfile.member?.id}
                         />
                     )}

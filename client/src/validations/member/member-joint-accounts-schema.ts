@@ -6,7 +6,7 @@ export const memberJointAccountsSchema = z.object({
     description: z.string().min(1, 'Description is required'),
     firstName: z.string().min(1, 'First name is required'),
     lastName: z.string().min(1, 'Last name is required'),
-    suffix : z.string().optional(),
+    suffix: z.string().optional(),
 
     middleName: z.string().optional(),
     familyRelationship: z.string().optional(),

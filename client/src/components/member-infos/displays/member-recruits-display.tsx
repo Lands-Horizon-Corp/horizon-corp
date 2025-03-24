@@ -16,7 +16,6 @@ interface Props {
 }
 
 const MemberRecruitsDisplay = ({ recruits }: Props) => {
-
     return (
         <div className="space-y-4">
             <p>Member Recruits</p>
