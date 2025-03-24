@@ -63,6 +63,7 @@ import {
     PiNewspaper as ReportsIcon,
     PiUsersThree as Users3Icon,
     PiCodeBlock as CodeBlockIcon,
+    PiNotepadDuotone as NoteIcon,
     PiPushPinSlash as PushPinSlashIcon,
     PiHandCoinsDuotone as HandCoinsIcon,
     PiMicrosoftExcelLogoFill as ExcelIcon,
@@ -179,9 +180,14 @@ import {
     FaFileCsv as CsvIcon,
     FaPhoneAlt as PhoneIcon,
     FaMoneyBill as BillIcon,
+    FaCreditCard as CreditCardIcon,
     FaUserClock as UserClockFillIcon,
 } from 'react-icons/fa'
-import { FaVenusMars as GendersIcon } from 'react-icons/fa6'
+
+import {
+    FaVenusMars as GendersIcon,
+    FaChartPie as PieChartIcon,
+} from 'react-icons/fa6'
 
 import {
     RiListCheck3 as TransactionListIcon,
@@ -224,14 +230,18 @@ export {
     KeyIcon,
     DevIcon,
     EyeIcon,
+    NoteIcon,
     CopyIcon,
     BankIcon,
     PlusIcon,
+    BillIcon,
     UndoIcon,
     RedoIcon,
     UserIcon,
     MoonIcon,
     DrawIcon,
+    MoneyIcon,
+    EmptyIcon,
     MinusIcon,
     ErrorIcon,
     FileXIcon,
@@ -258,6 +268,7 @@ export {
     AdjustIcon,
     WalletIcon,
     Image2Icon,
+    ReplaceIcon,
     WarningIcon,
     OptionsIcon,
     UserCogIcon,
@@ -271,6 +282,8 @@ export {
     PushPinIcon,
     EyeNoneIcon,
     UserTagIcon,
+    PieChartIcon,
+    AccountsIcon,
     PaymentsIcon,
     HomeFillIcon,
     FacebookIcon,
@@ -308,6 +321,7 @@ export {
     BadgeCheckIcon,
     EmailCheckIcon,
     CameraFlipIcon,
+    CreditCardIcon,
     UserShieldIcon,
     ArrowUpDownIcon,
     ChevronLeftIcon,
@@ -368,9 +382,4 @@ export {
     Rotate90DegreeRightIcon,
     BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
-    EmptyIcon,
-    BillIcon,
-    ReplaceIcon,
-    MoneyIcon,
-    AccountsIcon,
 }
