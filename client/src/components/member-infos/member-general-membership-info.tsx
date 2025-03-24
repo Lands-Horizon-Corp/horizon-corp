@@ -3,16 +3,18 @@ import { Separator } from '../ui/separator'
 import ImageDisplay from '../image-display'
 import CopyTextButton from '../copy-text-button'
 import { HandCoinsIcon, PieChartIcon } from '../icons'
+import ExpandableDescription from './displays/raw-description'
 import CompanyBranchDisplay from './banners/company-branch-display'
+import JointAccountsDisplay from './displays/joint-accounts-display'
+import MemberRecruitsDisplay from './displays/member-recruits-display'
+import RelativeAccountsDisplay from './displays/relative-accounts-display'
+import MemberDescriptionDisplays from './displays/member-descriptions-display'
 
 import { cn } from '@/lib'
 import { IBaseComp } from '@/types'
 import { useBranch } from '@/hooks/api-hooks/use-branch'
 import { IMemberProfileResource, TEntityId } from '@/server'
-import JointAccountsDisplay from './displays/joint-accounts-display'
-import RelativeAccountsDisplay from './displays/relative-accounts-display'
 import { useMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
-import MemberRecruitsDisplay from './displays/member-recruits-display'
 
 interface Props extends IBaseComp {
     profileId: TEntityId
@@ -30,7 +32,7 @@ const MemberGeneralMembershipInfo = ({
     })
 
     const { data: branch } = useBranch({
-        branchId: data.branchId as TEntityId,
+        branchId: data?.branchId as TEntityId,
         enabled: !!data?.branchId,
     })
 
@@ -47,23 +49,23 @@ const MemberGeneralMembershipInfo = ({
             </div>
             <div className="flex items-center justify-between">
                 <CompanyBranchDisplay
-                    company={branch.company}
+                    company={branch?.company}
                     branch={branch}
                 />
                 <QrCode
                     value={JSON.stringify({
                         type: 'member-id',
-                        data: { id: data.id },
+                        data: { id: data?.id },
                     })}
                     className="size-24 p-2"
                 />
             </div>
             <div className="grid gap-4 md:grid-cols-4">
                 <div className="space-y-2">
-                    <p className="truncate text-sm">{data.id ?? '-'} </p>
+                    <p className="truncate text-sm">{data?.id ?? '-'} </p>
                     <p className="text-xs text-muted-foreground/70">
                         Member Profile ID
-                        {data.id && (
+                        {data?.id && (
                             <CopyTextButton
                                 className="ml-2"
                                 successText="Profile ID coppied"
@@ -74,12 +76,12 @@ const MemberGeneralMembershipInfo = ({
                 </div>
                 <div className="flex items-end gap-x-2">
                     <ImageDisplay
-                        src={data.verifiedByEmployee?.media?.downloadURL}
+                        src={data?.verifiedByEmployee?.media?.downloadURL}
                         className="size-16 rounded-xl"
                         fallbackClassName="rounded-xl"
                     />
                     <div className="max-w-full space-y-2">
-                        {data.verifiedByEmployee ? (
+                        {data?.verifiedByEmployee ? (
                             <>
                                 <p className="truncate text-sm">
                                     {data.verifiedByEmployee.fullName}
@@ -93,7 +95,7 @@ const MemberGeneralMembershipInfo = ({
                         )}
                         <p className="text-xs text-muted-foreground/70">
                             Verified By Employee{' '}
-                            {data.verifiedByEmployee && (
+                            {data?.verifiedByEmployee && (
                                 <CopyTextButton
                                     className="ml-1"
                                     successText="Employee ID coppied"
@@ -129,7 +131,7 @@ const MemberGeneralMembershipInfo = ({
                     </div>
 
                     <div className="space-y-2">
-                        <p>{data.suffix ?? 'N/A'}</p>
+                        <p>{data?.suffix ?? 'N/A'}</p>
                         <p className="text-xs text-muted-foreground/70">
                             Suffix
                         </p>
@@ -145,35 +147,35 @@ const MemberGeneralMembershipInfo = ({
                     </div>
 
                     <div className="space-y-2">
-                        <p>{data.oldReferenceId ?? '-'}</p>
+                        <p>{data?.oldReferenceId ?? '-'}</p>
                         <p className="text-xs text-muted-foreground/70">
                             Old Reference ID
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <p>{data.status ?? '-'}</p>
+                        <p>{data?.status ?? '-'}</p>
                         <p className="text-xs text-muted-foreground/70">
                             Status{' '}
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <p>{data.memberType?.name ?? '-'}</p>
+                        <p>{data?.memberType?.name ?? '-'}</p>
                         <p className="text-xs text-muted-foreground/70">
                             Membership Type
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <p>{data.memberClassification?.name ?? '-'}</p>
+                        <p>{data?.memberClassification?.name ?? '-'}</p>
                         <p className="text-xs text-muted-foreground/70">
                             Membership Classification
                         </p>
                     </div>
 
                     <div className="space-y-2">
-                        <p>{data.memberCenter?.name ?? '-'}</p>
+                        <p>{data?.memberCenter?.name ?? '-'}</p>
                         <p className="text-xs text-muted-foreground/70">
                             Membership Center
                         </p>
@@ -184,7 +186,7 @@ const MemberGeneralMembershipInfo = ({
                     <div
                         className={cn(
                             'flex gap-x-4 rounded-xl border bg-popover/40 p-4 text-muted-foreground/60',
-                            data.isMutualFundMember &&
+                            data?.isMutualFundMember &&
                                 'border-primary/20 bg-gradient-to-br from-transparent to-primary/5 text-foreground'
                         )}
                     >
@@ -202,7 +204,7 @@ const MemberGeneralMembershipInfo = ({
                     <div
                         className={cn(
                             'flex gap-x-4 rounded-xl border bg-popover/40 p-4 text-muted-foreground/60',
-                            data.isMicroFinanceMember &&
+                            data?.isMicroFinanceMember &&
                                 'border-primary/20 bg-gradient-to-bl from-transparent to-primary/5 text-foreground'
                         )}
                     >
@@ -219,15 +221,28 @@ const MemberGeneralMembershipInfo = ({
                 </div>
 
                 <Separator />
+                <div className="space-y-4">
+                    <p>Description</p>
+                    <ExpandableDescription
+                        className="rounded-xl bg-popover p-4"
+                        content={data?.description ?? '-'}
+                    />
+                </div>
+
+                <Separator />
                 <JointAccountsDisplay
-                    jointAccounts={data.memberJointAccounts}
+                    jointAccounts={data?.memberJointAccounts}
                 />
 
                 <RelativeAccountsDisplay
-                    relativeAccounts={data.memberRelativeAccounts}
+                    relativeAccounts={data?.memberRelativeAccounts}
                 />
 
-                <MemberRecruitsDisplay recruits={data.memberRecruits} />
+                <MemberRecruitsDisplay recruits={data?.memberRecruits} />
+
+                <MemberDescriptionDisplays
+                    descriptions={data?.memberDescriptions}
+                />
             </div>
         </div>
     )
