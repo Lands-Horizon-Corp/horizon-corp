@@ -8,6 +8,7 @@ interface Props<TErr = unknown> {
     textContent: string
     copyInterval?: number
     className?: string
+    successText?: string
     successClassName?: string
     onCopySuccess?: () => void
     onCopyError?: (error: TErr) => void
@@ -17,6 +18,7 @@ const CopyTextButton = <TErr = unknown,>({
     className,
     textContent,
     successClassName,
+    successText,
     copyInterval = 2500,
     onCopyError,
     onCopySuccess,
@@ -28,7 +30,7 @@ const CopyTextButton = <TErr = unknown,>({
             .writeText(textContent)
             .then(() => {
                 setCopied(true)
-                toast.success('Coppied')
+                toast.success(successText ?? 'Coppied')
                 onCopySuccess?.()
                 setTimeout(() => setCopied(false), copyInterval)
             })
