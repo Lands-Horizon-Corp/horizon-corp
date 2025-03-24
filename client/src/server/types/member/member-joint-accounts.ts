@@ -8,7 +8,7 @@ export interface IMemberJointAccountsRequest {
     lastName: string
     middleName?: string
     firstName: string
-    suffix? : string
+    suffix?: string
 
     description: string
     familyRelationship?: string
@@ -27,7 +27,7 @@ export interface IMemberJointAccountsResource extends ITimeStamps {
     lastName: string
     middleName?: string
     firstName: string
-    suffix? : string
+    suffix?: string
 
     description: string
     familyRelationship?: string
