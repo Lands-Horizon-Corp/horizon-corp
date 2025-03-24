@@ -2,8 +2,8 @@ import DOMPurify from 'dompurify'
 
 import {
     Accordion,
-    AccordionContent,
     AccordionItem,
+    AccordionContent,
     AccordionTrigger,
 } from '@/components/ui/accordion'
 
