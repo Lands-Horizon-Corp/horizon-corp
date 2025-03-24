@@ -4,10 +4,13 @@ import { IMemberProfileResource } from './member-profile'
 
 export interface IMemberJointAccountsRequest {
     id?: TEntityId
+
     lastName: string
-    firstName: string
-    description: string
     middleName?: string
+    firstName: string
+    suffix? : string
+
+    description: string
     familyRelationship?: string
     membersProfileId?: TEntityId
     membersProfile?: IMemberProfileResource
@@ -20,10 +23,13 @@ export interface IMemberJointAccountsRequest {
 
 export interface IMemberJointAccountsResource extends ITimeStamps {
     id: TEntityId
+
     lastName: string
-    firstName: string
-    description: string
     middleName?: string
+    firstName: string
+    suffix? : string
+
+    description: string
     familyRelationship?: string
     membersProfileId: TEntityId
     membersProfile: IMemberProfileResource
