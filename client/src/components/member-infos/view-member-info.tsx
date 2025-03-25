@@ -1,8 +1,6 @@
 import { ReactNode } from 'react'
 import { IconType } from 'react-icons/lib'
 
-import Modal, { IModalProps } from '../modals/modal'
-import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import {
     UserIcon,
     BankIcon,
@@ -10,6 +8,9 @@ import {
     UserTagIcon,
     CreditCardIcon,
 } from '../icons'
+import Modal, { IModalProps } from '../modals/modal'
+import MemberPersonalInfo from './member-personal-info'
+import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import MemberInfoBanner from './banners/member-info-banner'
 import MemberMembershipInfo from './member-general-membership-info'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
@@ -18,7 +19,6 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IMemberProfileResource, TEntityId } from '@/server'
 import { useMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
-import MemberPersonalInfo from './member-personal-info'
 
 interface MemberOverallInfoProps {
     memberProfileId: TEntityId

@@ -1,15 +1,16 @@
-import { cn } from '@/lib'
-import { IBaseComp } from '@/types'
-import { IMemberProfileResource, TEntityId } from '@/server'
-import { useMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
+import SectionTitle from './section-title'
 import ImageDisplay from '../image-display'
 import { Separator } from '../ui/separator'
-import ContactNumbersDisplay from './displays/contact-numbers-display'
-import AddressesDisplay from './displays/addresses-display'
-import { toReadableDate } from '@/utils'
-import { DetailsIcon, NoteIcon, StoreIcon, UserIcon } from '../icons'
-import SectionTitle from './section-title'
 import RawDescription from './displays/raw-description'
+import AddressesDisplay from './displays/addresses-display'
+import ContactNumbersDisplay from './displays/contact-numbers-display'
+import { DetailsIcon, NoteIcon, StoreIcon, UserIcon } from '../icons'
+
+import { cn } from '@/lib'
+import { IBaseComp } from '@/types'
+import { toReadableDate } from '@/utils'
+import { IMemberProfileResource, TEntityId } from '@/server'
+import { useMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
 
 interface Props extends IBaseComp {
     profileId: TEntityId

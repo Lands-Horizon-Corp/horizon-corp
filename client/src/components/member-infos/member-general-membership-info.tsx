@@ -1,21 +1,21 @@
 import { QrCode } from '../qr-code'
+import SectionTitle from './section-title'
 import { Separator } from '../ui/separator'
 import ImageDisplay from '../image-display'
 import CopyTextButton from '../copy-text-button'
-import { DetailsIcon, HandCoinsIcon, PieChartIcon, UserTagIcon } from '../icons'
 import ExpandableDescription from './displays/raw-description'
 import CompanyBranchDisplay from './banners/company-branch-display'
 import JointAccountsDisplay from './displays/joint-accounts-display'
 import MemberRecruitsDisplay from './displays/member-recruits-display'
 import RelativeAccountsDisplay from './displays/relative-accounts-display'
 import MemberDescriptionDisplays from './displays/member-descriptions-display'
+import { DetailsIcon, HandCoinsIcon, PieChartIcon, UserTagIcon } from '../icons'
 
 import { cn } from '@/lib'
 import { IBaseComp } from '@/types'
 import { useBranch } from '@/hooks/api-hooks/use-branch'
 import { IMemberProfileResource, TEntityId } from '@/server'
 import { useMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
-import SectionTitle from './section-title'
 
 interface Props extends IBaseComp {
     profileId: TEntityId
