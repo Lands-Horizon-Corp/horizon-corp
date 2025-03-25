@@ -3,7 +3,13 @@ import { IconType } from 'react-icons/lib'
 
 import Modal, { IModalProps } from '../modals/modal'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
-import { UserIcon, BankIcon, UserCogIcon, CreditCardIcon } from '../icons'
+import {
+    UserIcon,
+    BankIcon,
+    UserCogIcon,
+    UserTagIcon,
+    CreditCardIcon,
+} from '../icons'
 import MemberInfoBanner from './banners/member-info-banner'
 import MemberMembershipInfo from './member-general-membership-info'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
@@ -12,6 +18,7 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IMemberProfileResource, TEntityId } from '@/server'
 import { useMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
+import MemberPersonalInfo from './member-personal-info'
 
 interface MemberOverallInfoProps {
     memberProfileId: TEntityId
@@ -32,14 +39,14 @@ const memberInfoTabs: {
     {
         value: 'general-infos',
         title: 'General/Membership',
-        Icon: UserIcon,
+        Icon: UserTagIcon,
         Component: (props) => <MemberMembershipInfo {...props} />,
     },
     {
         value: 'personal-infos',
         title: 'Personal Info',
-        Icon: UserCogIcon,
-        Component: (props) => <MemberMembershipInfo {...props} />,
+        Icon: UserIcon,
+        Component: (props) => <MemberPersonalInfo {...props} />,
     },
     {
         value: 'government-benefits',

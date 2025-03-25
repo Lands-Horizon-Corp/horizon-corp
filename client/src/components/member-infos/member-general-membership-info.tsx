@@ -2,7 +2,7 @@ import { QrCode } from '../qr-code'
 import { Separator } from '../ui/separator'
 import ImageDisplay from '../image-display'
 import CopyTextButton from '../copy-text-button'
-import { HandCoinsIcon, PieChartIcon } from '../icons'
+import { DetailsIcon, HandCoinsIcon, PieChartIcon, UserTagIcon } from '../icons'
 import ExpandableDescription from './displays/raw-description'
 import CompanyBranchDisplay from './banners/company-branch-display'
 import JointAccountsDisplay from './displays/joint-accounts-display'
@@ -15,6 +15,7 @@ import { IBaseComp } from '@/types'
 import { useBranch } from '@/hooks/api-hooks/use-branch'
 import { IMemberProfileResource, TEntityId } from '@/server'
 import { useMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
+import SectionTitle from './section-title'
 
 interface Props extends IBaseComp {
     profileId: TEntityId
@@ -43,10 +44,9 @@ const MemberGeneralMembershipInfo = ({
                 className
             )}
         >
-            <div>
-                <p>Membership Information</p>
-                <div className=""></div>
-            </div>
+            <p></p>
+
+            <SectionTitle title="Membership Information" Icon={UserTagIcon} />
             <div className="flex items-center justify-between">
                 <CompanyBranchDisplay
                     company={branch?.company}
@@ -74,19 +74,19 @@ const MemberGeneralMembershipInfo = ({
                         )}
                     </p>
                 </div>
-                <div className="flex items-end gap-x-2">
+                <div className="flex max-w-full items-end gap-x-2">
                     <ImageDisplay
                         src={data?.verifiedByEmployee?.media?.downloadURL}
                         className="size-16 rounded-xl"
                         fallbackClassName="rounded-xl"
                     />
-                    <div className="max-w-full space-y-2">
+                    <div className="flex-1 space-y-2">
                         {data?.verifiedByEmployee ? (
                             <>
                                 <p className="truncate text-sm">
                                     {data.verifiedByEmployee.fullName}
                                 </p>
-                                <p className="truncate text-xs text-muted-foreground/60">
+                                <p className="max-w-full truncate text-xs text-muted-foreground/60">
                                     ID: {data.verifiedByEmployee.id}{' '}
                                 </p>
                             </>
@@ -222,7 +222,11 @@ const MemberGeneralMembershipInfo = ({
 
                 <Separator />
                 <div className="space-y-4">
-                    <p>Description</p>
+                    <SectionTitle
+                        Icon={DetailsIcon}
+                        title="Description"
+                        subTitle="Bio/Short description about member"
+                    />
                     <ExpandableDescription
                         className="rounded-xl bg-popover p-4"
                         content={data?.description ?? '-'}

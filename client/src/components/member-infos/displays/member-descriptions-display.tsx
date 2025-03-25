@@ -4,6 +4,8 @@ import CopyTextButton from '@/components/copy-text-button'
 import { toReadableDate } from '@/utils'
 import { abbreviateUUID } from '@/utils/formatting-utils'
 import { IMemberDescriptionResource } from '@/server'
+import { DetailsIcon } from '@/components/icons'
+import SectionTitle from '../section-title'
 
 interface Props {
     descriptions?: IMemberDescriptionResource[]
@@ -12,10 +14,11 @@ interface Props {
 const MemberDescriptionDisplays = ({ descriptions }: Props) => {
     return (
         <div className="space-y-4">
-            <p>Descriptions</p>
-            <p className="!mt-0 text-sm text-muted-foreground/60">
-                Other descriptions about the member are shown here...
-            </p>
+            <SectionTitle
+                Icon={DetailsIcon}
+                title="Descriptions"
+                subTitle="Other descriptions about the member are shown here..."
+            />
             {(!descriptions || descriptions.length === 0) && (
                 <p className="w-full text-center text-xs text-muted-foreground/70">
                     no other descriptions

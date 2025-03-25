@@ -8,6 +8,8 @@ import {
 } from '@/components/ui/accordion'
 import ImageDisplay from '@/components/image-display'
 import { IMemberJointAccountsResource } from '@/server'
+import SectionTitle from '../section-title'
+import { HandShakeHeartIcon } from '@/components/icons'
 
 interface Props {
     jointAccounts?: IMemberJointAccountsResource[]
@@ -16,11 +18,12 @@ interface Props {
 const JointAccountsDisplay = ({ jointAccounts }: Props) => {
     return (
         <div className="space-y-4">
-            <p>Joint Accounts</p>
-            <p className="!mt-0 text-sm text-muted-foreground/60">
-                Co-owners of this account that have the access and share
-                financial responsibility of this account
-            </p>
+            <SectionTitle
+                title="Joint Accounts"
+                subTitle="Co-owners of this account that have the access and share
+                financial responsibility of this account "
+                Icon={HandShakeHeartIcon}
+            />
             {(!jointAccounts || jointAccounts.length === 0) && (
                 <p className="w-full text-center text-xs text-muted-foreground/70">
                     no joint accounts

@@ -10,6 +10,8 @@ import {
 import { IMemberRelativeAccountsResource } from '@/server'
 import ImageDisplay from '@/components/image-display'
 import CopyTextButton from '@/components/copy-text-button'
+import SectionTitle from '../section-title'
+import { FamilyIcon } from '@/components/icons'
 
 interface Props {
     relativeAccounts?: IMemberRelativeAccountsResource[]
@@ -18,11 +20,11 @@ interface Props {
 const RelativeAccountsDisplay = ({ relativeAccounts }: Props) => {
     return (
         <div className="space-y-4">
-            <p>Relative Accounts</p>
-            <p className="!mt-0 text-sm text-muted-foreground/60">
-                Co-owners of this account that have the access and share
-                financial responsibility of this account
-            </p>
+            <SectionTitle
+                title="Relative Accounts"
+                subTitle="Accounts of your registered relative for reference"
+                Icon={FamilyIcon}
+            />
             {(!relativeAccounts || relativeAccounts.length === 0) && (
                 <p className="w-full text-center text-xs text-muted-foreground/70">
                     no relative accounts
