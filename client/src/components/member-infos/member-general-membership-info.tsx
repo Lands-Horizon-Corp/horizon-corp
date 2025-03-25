@@ -44,8 +44,6 @@ const MemberGeneralMembershipInfo = ({
                 className
             )}
         >
-            <p></p>
-
             <SectionTitle title="Membership Information" Icon={UserTagIcon} />
             <div className="flex items-center justify-between">
                 <CompanyBranchDisplay

@@ -57,18 +57,14 @@ export interface IMemberProfileRequest {
     notes: string
     description: string
     contactNumber: string
-    tinNumber?: string
     civilStatus: TCivilStatus
     occupationId?: TEntityId
-    sssNumber?: string
     businessAddress?: string
     businessContact?: string
 
     status: 'Pending' | 'Verified' | 'Not Allowed'
     isClosed: boolean
 
-    pagibigNumber?: string
-    philhealthNumber?: string
     isMutualFundMember: boolean
     isMicroFinanceMember: boolean
 
@@ -115,10 +111,6 @@ export interface IMemberProfileResource extends ITimeStamps {
     status: TAccountStatus
     isClosed: boolean
 
-    sssNumber?: string
-    tinNumber?: string
-    pagibigNumber?: string
-    philhealthNumber?: string
     isMutualFundMember: boolean
     isMicroFinanceMember: boolean
 

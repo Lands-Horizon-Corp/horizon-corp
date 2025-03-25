@@ -25,20 +25,16 @@ export const createMemberProfileSchema = z.object({
     notes: z.string().min(1, 'Notes are required'),
     description: z.string().min(1, 'Description is required'),
     contactNumber: z.string().min(1, 'Contact number is required'),
-    tinNumber: z.string().optional(),
     civilStatus: z
         .enum(['Married', 'Single', 'Widowed', 'Separated', 'N/A'])
         .default('Single'),
     occupationId: entityIdSchema.optional(),
-    sssNumber: z.string().optional(),
     businessAddress: z.string().optional(),
     businessContact: z.string().optional(),
 
     status: z.enum(['Pending', 'Verified', 'Not Allowed']).default('Pending'),
     isClosed: z.boolean(),
 
-    pagibigNumber: z.string().optional(),
-    philhealthNumber: z.string().optional(),
     isMutualFundMember: z.boolean().default(false),
     isMicroFinanceMember: z.boolean().default(false),
 
