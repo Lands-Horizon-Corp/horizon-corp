@@ -14,6 +14,7 @@ import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import MemberInfoBanner from './banners/member-info-banner'
 import MemberMembershipInfo from './member-general-membership-info'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
+import MemberGovernmentBenefits from './member-government-benefits-info'
 
 import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
@@ -52,11 +53,7 @@ const memberInfoTabs: {
         value: 'government-benefits',
         title: 'Government Benefits',
         Icon: UserCogIcon,
-        Component: () => (
-            <div className="flex min-h-[90%] flex-1 flex-col gap-y-4 rounded-xl bg-background p-4">
-                <p className="text-sm">Government Benefits</p>
-            </div>
-        ),
+        Component: (props) => <MemberGovernmentBenefits {...props} />,
     },
     {
         value: 'financial',
