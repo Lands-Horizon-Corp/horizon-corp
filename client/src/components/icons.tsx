@@ -1,6 +1,7 @@
 import {
     TbMinus as MinusIcon,
     TbSunMoon as SunMoonIcon,
+    TbMoneybag as MoneyBagIcon,
     TbBlockquote as BlockQuoteIcon,
     TbHeartHandshake as HandShakeHeartIcon,
 } from 'react-icons/tb'
@@ -192,6 +193,7 @@ import {
 import {
     FaVenusMars as GendersIcon,
     FaChartPie as PieChartIcon,
+    FaBoxesStacked as BoxesStackedIcon,
     FaAddressCard as AddressCardIcon,
 } from 'react-icons/fa6'
 
@@ -230,6 +232,9 @@ import {
 import { BiErrorCircle as WarningIcon } from 'react-icons/bi'
 
 import { SlOptions as OptionsIcon } from 'react-icons/sl'
+
+import { GrMoney as CoinsStackIcon } from 'react-icons/gr'
+
 // Export section
 export {
     XIcon,
@@ -307,6 +312,7 @@ export {
     DownloadIcon,
     CalendarIcon,
     UsersAddIcon,
+    MoneyBagIcon,
     HandCoinsIcon,
     MapMarkedIcon,
     CodeBlockIcon,
@@ -320,6 +326,7 @@ export {
     DashboardIcon,
     IoIosCodeIcon,
     TelephoneIcon,
+    CoinsStackIcon,
     PencilFillIcon,
     SmallBrushIcon,
     FullscreenIcon,
@@ -346,6 +353,7 @@ export {
     HandDepositIcon,
     ChevronDownIcon,
     BankDuoToneIcon,
+    BoxesStackedIcon,
     NotificationIcon,
     ChevronsLeftIcon,
     PhoneOutlineIcon,
