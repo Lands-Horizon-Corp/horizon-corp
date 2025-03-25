@@ -2,11 +2,13 @@ import DOMPurify from 'dompurify'
 
 import {
     Accordion,
-    AccordionContent,
     AccordionItem,
+    AccordionContent,
     AccordionTrigger,
 } from '@/components/ui/accordion'
 
+import SectionTitle from '../section-title'
+import { UsersAddIcon } from '@/components/icons'
 import { IMemberRecruitsResource } from '@/server'
 import ImageDisplay from '@/components/image-display'
 import CopyTextButton from '@/components/copy-text-button'
@@ -18,10 +20,12 @@ interface Props {
 const MemberRecruitsDisplay = ({ recruits }: Props) => {
     return (
         <div className="space-y-4">
-            <p>Member Recruits</p>
-            <p className="!mt-0 text-sm text-muted-foreground/60">
-                Members recruited under this account
-            </p>
+            <SectionTitle
+                Icon={UsersAddIcon}
+                title="Member Recruits"
+                subTitle="Accounts of your registered relative for reference"
+            />
+
             {(!recruits || recruits.length === 0) && (
                 <p className="w-full text-center text-xs text-muted-foreground/70">
                     No recruits found

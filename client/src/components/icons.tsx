@@ -2,6 +2,7 @@ import {
     TbMinus as MinusIcon,
     TbSunMoon as SunMoonIcon,
     TbBlockquote as BlockQuoteIcon,
+    TbHeartHandshake as HandShakeHeartIcon,
 } from 'react-icons/tb'
 
 import {
@@ -34,6 +35,7 @@ import {
     LuCameraOff as CameraOffIcon,
     LuListOrdered as ListOrderedIcon,
     LuCalendarCheck as CalendarCheckIcon,
+    LuExternalLink as OpenExternalLinkIcon,
     LuChevronsUpDown as ChevronsUpDownIcon,
     LuHardDriveUpload as HardDriveUploadIcon,
     LuReplace as ReplaceIcon,
@@ -119,9 +121,11 @@ import {
 import {
     MdOutlineDraw as DrawIcon,
     MdOutlineEmail as EmailIcon,
+    MdFamilyRestroom as FamilyIcon,
     MdRotateLeft as RotateLeftIcon,
     MdRotateRight as RotateRightIcon,
     MdMarkEmailRead as EmailCheckIcon,
+    MdOutlineGroupAdd as UsersAddIcon,
     MdOutlinePayments as PaymentsIcon,
     MdOutlineAccountBalance as BankIcon,
     MdCameraEnhance as CameraSelectIcon,
@@ -187,6 +191,7 @@ import {
 import {
     FaVenusMars as GendersIcon,
     FaChartPie as PieChartIcon,
+    FaAddressCard as AddressCardIcon,
 } from 'react-icons/fa6'
 
 import {
@@ -207,7 +212,10 @@ import {
     GiTakeMyMoney as MoneyIcon,
 } from 'react-icons/gi'
 
-import { CgFacebook as FacebookIcon } from 'react-icons/cg'
+import {
+    CgFacebook as FacebookIcon,
+    CgDetailsLess as DetailsIcon,
+} from 'react-icons/cg'
 
 import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
 
@@ -255,6 +263,7 @@ export {
     ExcelIcon,
     StoreIcon,
     ResetIcon,
+    FamilyIcon,
     ReloadIcon,
     QrCodeIcon,
     DotBigIcon,
@@ -268,6 +277,7 @@ export {
     AdjustIcon,
     WalletIcon,
     Image2Icon,
+    DetailsIcon,
     ReplaceIcon,
     WarningIcon,
     OptionsIcon,
@@ -295,6 +305,7 @@ export {
     BuildingIcon,
     DownloadIcon,
     CalendarIcon,
+    UsersAddIcon,
     HandCoinsIcon,
     MapMarkedIcon,
     CodeBlockIcon,
@@ -323,6 +334,7 @@ export {
     CameraFlipIcon,
     CreditCardIcon,
     UserShieldIcon,
+    AddressCardIcon,
     ArrowUpDownIcon,
     ChevronLeftIcon,
     SidebarLeftIcon,
@@ -356,6 +368,7 @@ export {
     PencilOutlineIcon,
     UserClockFillIcon,
     SignatureLightIcon,
+    HandShakeHeartIcon,
     FlipHorizontalIcon,
     RotateBoxRightIcon,
     BadgeCheckFillIcon,
@@ -372,6 +385,7 @@ export {
     MixerHorizontalIcon,
     TransactionListIcon,
     DashSquareDottedIcon,
+    OpenExternalLinkIcon,
     FlipVerticalLineIcon,
     BadgeExclamationIcon,
     BadgeQuestionFillIcon,
