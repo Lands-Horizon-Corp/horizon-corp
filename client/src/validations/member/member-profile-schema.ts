@@ -11,6 +11,7 @@ import { memberGovernmentBenefits } from './member-government-benefits'
 import { memberJointAccountsSchema } from './member-joint-accounts-schema'
 import { memberRelativeAccountsSchema } from './member-relative-accounts-schema'
 import { memberContactReferencesSchema } from './member-contact-number-references-schema'
+import { memberCenterSchema } from './member-center-schema'
 
 export const createMemberProfileSchema = z.object({
     id: entityIdSchema.optional(),
@@ -38,6 +39,9 @@ export const createMemberProfileSchema = z.object({
     isMutualFundMember: z.boolean().default(false),
     isMicroFinanceMember: z.boolean().default(false),
 
+    memberCenterId: entityIdSchema.optional(),
+    memberCenter: memberCenterSchema.optional(),
+
     mediaId: entityIdSchema.optional(),
     memberId: entityIdSchema.optional(),
     media: mediaResourceSchema.optional(),
@@ -50,7 +54,6 @@ export const createMemberProfileSchema = z.object({
         .min(1, 'Member Type is required')
         .uuid('Invalid member type'),
     branchId: entityIdSchema.optional(),
-    memberCenterId: entityIdSchema.optional(),
     memberGenderId: entityIdSchema.optional(),
     memberClassificationId: entityIdSchema.optional(),
     memberEducationalAttainmentId: entityIdSchema.optional(),

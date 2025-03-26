@@ -77,7 +77,7 @@ const MemberOccupationCombobox = ({
                     },
                 }}
             />
-            <Popover open={open} onOpenChange={setOpen}>
+            <Popover modal open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"

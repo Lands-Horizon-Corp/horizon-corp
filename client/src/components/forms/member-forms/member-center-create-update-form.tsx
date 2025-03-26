@@ -19,9 +19,9 @@ import {
     useCreateMemberCenter,
     useUpdateMemberCenter,
 } from '@/hooks/api-hooks/member/use-member-center'
-import { createMemberCenterSchema } from '@/validations/member/member-center-schema'
+import { memberCenterSchema } from '@/validations/member/member-center-schema'
 
-type TMemberCenterForm = z.infer<typeof createMemberCenterSchema>
+type TMemberCenterForm = z.infer<typeof memberCenterSchema>
 
 export interface IMemberCenterCreateUpdateFormProps
     extends IBaseCompNoChild,
@@ -40,7 +40,7 @@ const MemberCenterCreateUpdateForm = ({
     const isUpdateMode = Boolean(memberCenterId)
 
     const form = useForm<TMemberCenterForm>({
-        resolver: zodResolver(createMemberCenterSchema),
+        resolver: zodResolver(memberCenterSchema),
         reValidateMode: 'onChange',
         mode: 'onSubmit',
         defaultValues: {
