@@ -1,3 +1,7 @@
+import { IAdminResource } from './admin'
+import { IOwnerResource } from './owner'
+import { IEmployeeResource } from './employee'
+import { IMemberResource } from './member/member'
 import { ITimeStamps, TEntityId } from './common'
 
 export interface IMediaResource extends ITimeStamps {
@@ -9,6 +13,18 @@ export interface IMediaResource extends ITimeStamps {
     url: string
     bucketName: string
     downloadURL: string
+
+    memberId?: TEntityId
+    member?: IMemberResource
+
+    employeeId?: TEntityId
+    employee?: IEmployeeResource
+
+    ownerId?: TEntityId
+    owner?: IOwnerResource
+
+    adminId?: TEntityId
+    admin?: IAdminResource
 }
 
 export interface IMediaRequest {
@@ -20,4 +36,16 @@ export interface IMediaRequest {
     key?: string
     url?: string
     bucketName?: string
+
+    memberId?: TEntityId
+    member?: IMemberResource
+
+    employeeId?: TEntityId
+    employee?: IEmployeeResource
+
+    ownerId?: TEntityId
+    owner?: IOwnerResource
+
+    adminId?: TEntityId
+    admin?: IAdminResource
 }
