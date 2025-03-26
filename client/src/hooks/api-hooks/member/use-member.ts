@@ -13,6 +13,7 @@ import MemberService from '@/server/api-service/member-services/member-service'
 import {
     TEntityId,
     IMemberRequest,
+    IMediaResource,
     IMemberResource,
     IMemberPaginatedResource,
     IMemberRequestNoPassword,
@@ -157,6 +158,36 @@ export const useDeleteMember = ({
             if (showMessage) toast.success('Member deleted')
             onSuccess?.(undefined)
         },
+    })
+}
+
+export const useMemberMedias = ({
+    memberId,
+    onError,
+    onSuccess,
+    showMessage,
+    ...other
+}: { memberId: TEntityId } & IQueryProps<IMediaResource[]> &
+    Omit<IAPIHook<IMediaResource[], string>, 'preloads'>) => {
+    return useQuery<IMediaResource[], string>({
+        queryKey: ['member', memberId, 'medias'],
+        queryFn: async () => {
+            const [error, data] = await withCatchAsync(
+                MemberService.getMedias(memberId)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                if (showMessage) toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            onSuccess?.(data)
+
+            return data
+        },
+        ...other,
     })
 }
 
