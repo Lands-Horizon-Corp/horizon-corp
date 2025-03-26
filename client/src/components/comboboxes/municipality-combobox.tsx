@@ -47,7 +47,7 @@ const MunicipalityCombobox = ({
     }, [province])
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover modal open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button
                     {...other}
