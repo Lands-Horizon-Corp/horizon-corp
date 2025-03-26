@@ -53,6 +53,7 @@ const MembersTableOwnerAction = ({
                             disabledFields: ['companyId'],
                         },
                         memberGenderCreateProps: {},
+                        memberCenterPickerCreateProps: {},
                         memberClassificationCreateProps: {},
                         memberOccupationComboboxCreateProps: {},
                         educationalAttainmentComboboxCreateProps: {},

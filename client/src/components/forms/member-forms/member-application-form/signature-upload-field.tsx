@@ -10,7 +10,6 @@ import { SignaturePickerUploaderModal } from '@/components/signature/signature-p
 import { formatBytes } from '@/helpers'
 import { IMediaResource, TEntityId } from '@/server'
 import { abbreviateUUID } from '@/utils/formatting-utils'
-import logger from '@/helpers/loggers/logger'
 
 export interface SignatureUploadField {
     id?: string
@@ -38,8 +37,6 @@ export const SignatureUploadField = forwardRef<
         ref
     ) => {
         const [uploaderModal, setUploaderModal] = useState(false)
-
-        logger.log(value, '< - VALUE')
 
         return (
             <div>
