@@ -1,3 +1,5 @@
+import axios from 'axios'
+
 export const randomChoose = <T>(data: Array<T>) => {
     return data[~~(Math.random() * data.length)]
 }
@@ -50,9 +52,11 @@ type FileCategory =
     | 'image'
     | 'unknown'
 
-export const getFileType = (file: File): FileCategory => {
-    const fileExtension = file.name.split('.').pop()?.toLowerCase()
-    const mimeType = file.type
+export const getFileCategory = (
+    fileName: string,
+    mimeType: string
+): FileCategory => {
+    const fileExtension = fileName.split('.').pop()?.toLowerCase()
 
     const fileTypes: Partial<Record<FileCategory, string[]>> = {
         audio: ['mp3', 'wav', 'ogg', 'aac', 'flac', 'm4a'],
@@ -64,14 +68,12 @@ export const getFileType = (file: File): FileCategory => {
         image: ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'],
     }
 
-    // Check each category
     for (const [category, extensions] of Object.entries(fileTypes)) {
         if (fileExtension && extensions?.includes(fileExtension)) {
             return category as FileCategory
         }
     }
 
-    // Alternatively, check for some specific MIME types
     if (mimeType.startsWith('audio/')) return 'audio'
     if (mimeType.startsWith('video/')) return 'video'
     if (mimeType === 'application/pdf') return 'pdf'
@@ -79,6 +81,10 @@ export const getFileType = (file: File): FileCategory => {
     if (mimeType.startsWith('image/')) return 'image'
 
     return 'unknown'
+}
+
+export const getFileType = (file: File): FileCategory => {
+    return getFileCategory(file.name, file.type)
 }
 
 export const isDate = (value: unknown): boolean => {
@@ -114,3 +120,66 @@ export const isArray = (value: unknown): boolean => {
 export const isBoolean = (value: unknown): boolean => {
     return typeof value === 'boolean' && value !== null && value !== undefined
 }
+
+export const commaSeparators = (num: number | string): string => {
+    const numStr = num.toString()
+    const numParts = numStr.split('.')
+    numParts[0] = numParts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    return numParts.join('.')
+}
+
+export const removeCommaSeparators = (num: string): number => {
+    return parseInt(num.replace(/,/g, ''))
+}
+
+export const sanitizeNumberInput = (value: string) => {
+    return value.replace(/,/g, '').trim()
+}
+
+export const isValidDecimalInput = (value: string) => {
+    return (
+        /^-?\d*\.?\d{0,2}$/.test(value) &&
+        (value.match(/\./g)?.length ?? 0) <= 1
+    )
+}
+
+export const formatNumberOnBlur = (
+    value: string,
+    onChange: (val: number | undefined) => void
+) => {
+    const sanitized = sanitizeNumberInput(value)
+    if (!sanitized || sanitized === '-') {
+        onChange(undefined)
+        return
+    }
+    let parsedValue = parseFloat(sanitized)
+    if (!isNaN(parsedValue)) {
+        parsedValue = parseFloat(parsedValue.toFixed(2))
+        onChange(parsedValue)
+    }
+}
+
+export const downloadFile = async (url: string, fileName: string) => {
+    try {
+        const response = await axios.get(url, {
+            responseType: 'blob',
+        })
+
+        const blob = new Blob([response.data])
+        const blobUrl = URL.createObjectURL(blob)
+
+        const a = document.createElement('a')
+        a.href = blobUrl
+        a.download = fileName || 'download'
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+
+        URL.revokeObjectURL(blobUrl)
+    } catch (error) {
+        console.error('Download failed:', error)
+    }
+}
+
+export const capitalize = (text: string) =>
+    text && String(text[0]).toUpperCase() + String(text).slice(1)

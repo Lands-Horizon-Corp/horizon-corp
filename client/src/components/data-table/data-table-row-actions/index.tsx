@@ -4,7 +4,7 @@ import {
     TrashIcon,
     EyeNoneIcon,
     DotsVerticalIcon,
-    PencilOutlineIcon,
+    PencilFillIcon,
 } from '@/components/icons'
 import {
     DropdownMenu,
@@ -60,7 +60,7 @@ const RowActionsGroup = ({ onDelete, onView, onEdit, otherActions }: Props) => {
                         disabled={!onEdit.isAllowed}
                         onClick={onEdit.onClick}
                     >
-                        <PencilOutlineIcon className="mr-2" />
+                        <PencilFillIcon className="mr-2" />
                         {onEdit.text}
                     </DropdownMenuItem>
                 )}

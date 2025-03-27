@@ -14,5 +14,5 @@ export interface IMemberEducationalAttainmentResource extends ITimeStamps {
     history?: IMemberEducationalAttainmentHistoryResource[]
 }
 
-export type TMemberEducationalAttainmentPaginatedResource =
-    IPaginatedResult<IMemberEducationalAttainmentResource>
+export interface IMemberEducationalAttainmentPaginatedResource
+    extends IPaginatedResult<IMemberEducationalAttainmentResource> {}

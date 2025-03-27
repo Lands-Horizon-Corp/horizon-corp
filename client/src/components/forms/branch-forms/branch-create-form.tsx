@@ -10,14 +10,7 @@ import {
     VerifiedPatchIcon,
     LoadingSpinnerIcon,
 } from '@/components/icons'
-import {
-    Form,
-    FormItem,
-    FormField,
-    FormLabel,
-    FormControl,
-    FormMessage,
-} from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import MainMapContainer from '@/components/map'
 import { Button } from '@/components/ui/button'
@@ -27,6 +20,7 @@ import { Separator } from '@/components/ui/separator'
 import Modal, { IModalProps } from '@/components/modals/modal'
 import CompanyPicker from '@/components/pickers/company-picker'
 import FormErrorMessage from '@/components/ui/form-error-message'
+import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import { PhoneInput } from '@/components/contact-input/contact-input'
 
 import { cn } from '@/lib'
@@ -38,7 +32,7 @@ import { IBranchResource, ICompanyRequest } from '@/server/types'
 
 type TBranchBasicInfo = Partial<ICompanyRequest>
 
-interface BranchCreateFormProps
+export interface BranchCreateFormProps
     extends IBaseCompNoChild,
         IForm<TBranchBasicInfo, IBranchResource, string> {}
 
@@ -125,75 +119,45 @@ const BranchCreateForm = ({
                 >
                     <fieldset className="space-y-2">
                         <legend className="mb-2">Branch Basic Info</legend>
-                        <FormField
-                            control={form.control}
+                        <FormFieldWrapper
                             name="name"
+                            label="Branch Name"
+                            control={form.control}
                             render={({ field }) => (
-                                <FormItem className="col-span-2 space-y-1 sm:col-span-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="text-right text-sm font-normal text-foreground/60"
-                                    >
-                                        Branch Name
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            placeholder="Branch Name"
-                                            autoComplete="off"
-                                            disabled={isDisabled(field.name)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                                <Input
+                                    {...field}
+                                    id={field.name}
+                                    placeholder="Branch Name"
+                                    autoComplete="off"
+                                    disabled={isDisabled(field.name)}
+                                />
                             )}
                         />
-                        <FormField
-                            control={form.control}
+                        <FormFieldWrapper
                             name="companyId"
+                            label="Company"
+                            control={form.control}
                             render={({ field }) => (
-                                <FormItem className="col-span-2 space-y-1 sm:col-span-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="text-right text-sm font-normal text-foreground/60"
-                                    >
-                                        Company
-                                    </FormLabel>
-                                    <FormControl>
-                                        <CompanyPicker
-                                            value={field.value}
-                                            onSelect={(company) =>
-                                                field.onChange(company.id)
-                                            }
-                                            placeholder="Select company"
-                                            disabled={isDisabled(field.name)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                                <CompanyPicker
+                                    value={field.value}
+                                    onSelect={(company) =>
+                                        field.onChange(company.id)
+                                    }
+                                    placeholder="Select company"
+                                    disabled={isDisabled(field.name)}
+                                />
                             )}
                         />
-                        <FormField
-                            control={form.control}
+                        <FormFieldWrapper
                             name="description"
+                            label="Description"
+                            control={form.control}
                             render={({ field }) => (
-                                <FormItem className="col-span-2 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="text-right text-sm font-normal text-foreground/60"
-                                    >
-                                        Description
-                                    </FormLabel>
-                                    <FormControl>
-                                        <TextEditor
-                                            content={field.value}
-                                            onChange={field.onChange}
-                                            className="!max-w-none"
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                                <TextEditor
+                                    content={field.value}
+                                    onChange={field.onChange}
+                                    className="!max-w-none"
+                                />
                             )}
                         />
                     </fieldset>
@@ -202,137 +166,90 @@ const BranchCreateForm = ({
                         <legend className="mb-2">
                             Branch Contact & Address
                         </legend>
-                        <FormField
+                        <FormFieldWrapper
                             control={form.control}
                             name="email"
+                            label="Email"
                             render={({ field }) => (
-                                <FormItem className="col-span-2 space-y-1 sm:col-span-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="text-right text-sm font-normal text-foreground/60"
-                                    >
-                                        Email
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            type="email"
-                                            autoComplete="off"
-                                            placeholder="Email"
-                                            disabled={isDisabled(field.name)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                                <Input
+                                    {...field}
+                                    id={field.name}
+                                    type="email"
+                                    autoComplete="off"
+                                    placeholder="Email"
+                                    disabled={isDisabled(field.name)}
+                                />
                             )}
                         />
-                        <FormField
+
+                        <FormFieldWrapper
                             control={form.control}
                             name="contactNumber"
+                            label="Contact Number"
                             render={({ field }) => (
-                                <FormItem className="col-span-2 space-y-1 sm:col-span-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="text-right text-sm font-normal text-foreground/60"
-                                    >
-                                        Contact Number
-                                    </FormLabel>
-                                    <FormControl>
-                                        <div className="relative flex w-full flex-1 items-center gap-x-2">
-                                            <PhoneInput
-                                                {...field}
-                                                defaultCountry="PH"
-                                                className="w-full"
-                                                disabled={isDisabled(
-                                                    field.name
-                                                )}
-                                            />
-                                            <VerifiedPatchIcon
-                                                className={cn(
-                                                    'absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out'
-                                                )}
-                                            />
-                                        </div>
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                                <div className="relative flex w-full flex-1 items-center gap-x-2">
+                                    <PhoneInput
+                                        {...field}
+                                        defaultCountry="PH"
+                                        className="w-full"
+                                        disabled={isDisabled(field.name)}
+                                    />
+                                    <VerifiedPatchIcon
+                                        className={cn(
+                                            'absolute right-2 top-1/2 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out'
+                                        )}
+                                    />
+                                </div>
                             )}
                         />
-                        <FormField
+
+                        <FormFieldWrapper
                             control={form.control}
                             name="address"
+                            label="Branch Address"
                             render={({ field }) => (
-                                <FormItem className="col-span-2 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="text-right text-sm font-normal text-foreground/60"
-                                    >
-                                        Branch Address
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Textarea
-                                            {...field}
-                                            id={field.name}
-                                            autoComplete="off"
-                                            placeholder="Address"
-                                            disabled={isDisabled(field.name)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                                <Textarea
+                                    {...field}
+                                    id={field.name}
+                                    autoComplete="off"
+                                    placeholder="Address"
+                                    disabled={isDisabled(field.name)}
+                                />
                             )}
                         />
-                        <FormField
+
+                        <FormFieldWrapper
                             control={form.control}
                             name="latitude"
+                            label="Latitude"
                             render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="text-right text-sm font-normal text-foreground/60"
-                                    >
-                                        Latitude
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            type="number"
-                                            autoComplete="off"
-                                            placeholder="Latitude"
-                                            disabled={isDisabled(field.name)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                                <Input
+                                    {...field}
+                                    id={field.name}
+                                    type="number"
+                                    autoComplete="off"
+                                    placeholder="Latitude"
+                                    disabled={isDisabled(field.name)}
+                                />
                             )}
                         />
-                        <FormField
+
+                        <FormFieldWrapper
                             control={form.control}
                             name="longitude"
+                            label="Longitude"
                             render={({ field }) => (
-                                <FormItem className="col-span-1 space-y-1">
-                                    <FormLabel
-                                        htmlFor={field.name}
-                                        className="text-right text-sm font-normal text-foreground/60"
-                                    >
-                                        Longitude
-                                    </FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            id={field.name}
-                                            type="number"
-                                            autoComplete="off"
-                                            placeholder="Longitude"
-                                            disabled={isDisabled(field.name)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage />
-                                </FormItem>
+                                <Input
+                                    {...field}
+                                    id={field.name}
+                                    type="number"
+                                    autoComplete="off"
+                                    placeholder="Longitude"
+                                    disabled={isDisabled(field.name)}
+                                />
                             )}
                         />
+
                         <div className="">
                             <div className="mt-2 flex items-center gap-x-2">
                                 <p className="text-sm text-foreground/60">
@@ -418,13 +335,17 @@ const BranchCreateForm = ({
     )
 }
 
+export interface BranchCreateFormModalProps extends IModalProps {
+    formProps?: Omit<BranchCreateFormProps, 'className'>
+}
+
 export const BranchCreateFormModal = ({
     title = 'Create Branch',
     description = 'Fill out the form to create a new branch.',
     formProps,
     className,
     ...props
-}: IModalProps & { formProps?: Omit<BranchCreateFormProps, 'className'> }) => {
+}: BranchCreateFormModalProps) => {
     return (
         <Modal
             title={title}

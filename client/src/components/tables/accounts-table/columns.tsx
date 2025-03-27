@@ -12,6 +12,7 @@ import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters
 
 import { toReadableDate } from '@/utils'
 import { IAccountsResource } from '@/server/types/accounts/accounts'
+import HeaderToggleSelect from '@/components/data-table/data-table-row-actions/header-toggle-select'
 
 export const accountsGlobalSearchTargets: IGlobalSearchTargets<IAccountsResource>[] =
     [
@@ -47,14 +48,8 @@ const AccountsTableColumns = (
         {
             id: 'select',
             header: ({ table, column }) => (
-                <div className="flex w-fit items-center gap-x-1 px-2">
-                    <Checkbox
-                        checked={table.getIsAllPageRowsSelected()}
-                        onCheckedChange={(value) =>
-                            table.toggleAllPageRowsSelected(!!value)
-                        }
-                        aria-label="Select all"
-                    />
+                <div className={'flex w-fit items-center gap-x-1 px-2'}>
+                    <HeaderToggleSelect table={table} />
                     {!column.getIsPinned() && (
                         <PushPinSlashIcon
                             onClick={() => column.pin('left')}
@@ -67,25 +62,23 @@ const AccountsTableColumns = (
                 <div className="flex w-fit items-center gap-x-1 px-0">
                     {opts?.actionComponent?.({ row })}
                     <Checkbox
+                        aria-label="Select row"
                         checked={row.getIsSelected()}
                         onCheckedChange={(value) => row.toggleSelected(!!value)}
-                        aria-label="Select row"
                     />
                 </div>
             ),
             enableSorting: false,
+            enableResizing: false,
             enableHiding: false,
-            maxSize: 80,
+            size: 80,
+            minSize: 80,
         },
         {
             id: 'accountCode',
             accessorKey: 'accountCode',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Account Code"
-                >
+                <DataTableColumnHeader {...props} title="Account Code">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="accountCode"
@@ -106,11 +99,7 @@ const AccountsTableColumns = (
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter
                             field="description"
@@ -133,7 +122,6 @@ const AccountsTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader
                     {...props}
-                    isResizable
                     title="Alternative Description"
                 >
                     <ColumnActions {...props}>
@@ -156,11 +144,7 @@ const AccountsTableColumns = (
             id: 'type',
             accessorKey: 'type',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Account Type"
-                >
+                <DataTableColumnHeader {...props} title="Account Type">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -175,11 +159,7 @@ const AccountsTableColumns = (
             id: 'maxAmount',
             accessorKey: 'maxAmount',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Max Amount"
-                >
+                <DataTableColumnHeader {...props} title="Max Amount">
                     <ColumnActions {...props}>
                         <NumberFilter
                             field="maxAmount"
@@ -199,11 +179,7 @@ const AccountsTableColumns = (
             id: 'minAmount',
             accessorKey: 'minAmount',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Min Amount"
-                >
+                <DataTableColumnHeader {...props} title="Min Amount">
                     <ColumnActions {...props}>
                         <NumberFilter
                             field="minAmount"
@@ -223,11 +199,7 @@ const AccountsTableColumns = (
             id: 'computationType',
             accessorKey: 'computationType',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Computation Type"
-                >
+                <DataTableColumnHeader {...props} title="Computation Type">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -244,7 +216,6 @@ const AccountsTableColumns = (
             header: (props) => (
                 <DataTableColumnHeader
                     {...props}
-                    isResizable
                     title="Earned/Unearned Interest"
                 >
                     <ColumnActions {...props} />
@@ -261,11 +232,7 @@ const AccountsTableColumns = (
             id: 'otherInformationOfAnAccount',
             accessorKey: 'otherInformationOfAnAccount',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Other Information"
-                >
+                <DataTableColumnHeader {...props} title="Other Information">
                     <ColumnActions {...props} />
                 </DataTableColumnHeader>
             ),
@@ -280,11 +247,7 @@ const AccountsTableColumns = (
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IAccountsResource>
                             displayText="Date Created"

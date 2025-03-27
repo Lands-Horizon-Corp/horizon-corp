@@ -72,7 +72,7 @@ const MemberOccupationTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IMemberOccupationResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
@@ -113,6 +113,7 @@ const MemberOccupationTable = ({
         enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
+        columnResizeMode: 'onChange',
         getRowId: getRowIdFn,
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
@@ -181,9 +182,9 @@ const MemberOccupationTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    className="mb-2"
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

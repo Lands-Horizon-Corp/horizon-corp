@@ -1,15 +1,14 @@
-import { defineConfig, type PluginOption } from "vite";
 import react from "@vitejs/plugin-react";
+import manifestSRI from 'vite-plugin-manifest-sri'
 import { visualizer } from "rollup-plugin-visualizer";
-// import { TanStackRouterVite } from '@tanstack/router-plugin/vite';
+import { defineConfig, type PluginOption } from "vite";
 
 import tsconfigPaths from "vite-tsconfig-paths";
 
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    // TanStackRouterVite(),
+    manifestSRI(),
     react(),
     tsconfigPaths(),
     visualizer({
@@ -21,7 +20,7 @@ export default defineConfig({
     }) as PluginOption,
   ],
   build: {
-    sourcemap: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {

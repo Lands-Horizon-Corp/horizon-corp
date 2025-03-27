@@ -223,9 +223,6 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
     const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
     const animationFrameId = useRef<number | null>(null)
 
-    // console.log('isDragging', isDragging)
-    //  console.log('previewPosition', previewPosition)
-
     const onMouseDown = (e: React.MouseEvent<HTMLImageElement>) => {
         if (e.button !== 0 || scale <= 1) return
 
@@ -304,21 +301,26 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
     return (
         <div className="relative overflow-hidden rounded-lg">
             <p className="py-1 text-xs">{media.fileName}</p>
-            <img
-                ref={imageRef}
-                onLoad={handleImageLoad}
-                style={{
-                    width: '100vw',
-                    height: 'auto',
-                    transform: `scale(${scale}) translate(${previewPosition.x}px, ${previewPosition.y}px) rotate(${rotateDegree}deg) ${flipScale}`,
-                    transition: 'transform 0.1s ease-in-out',
-                    cursor: isDragging ? 'grabbing' : 'move',
-                }}
-                onMouseDown={onMouseDown}
-                crossOrigin="anonymous"
-                src={media.url}
-                alt="Zoomable"
-            />
+            <div className="flex items-center justify-center">
+                <img
+                    ref={imageRef}
+                    onLoad={handleImageLoad}
+                    style={{
+                        width: '70%',
+                        height: '100%',
+                        maxHeight: '100vh',
+                        transform: `scale(${scale}) translate(${previewPosition.x}px, ${previewPosition.y}px) rotate(${rotateDegree}deg) ${flipScale}`,
+                        transition: 'transform 0.1s ease-in-out',
+                        cursor: isDragging ? 'grabbing' : 'move',
+                        objectFit: 'cover',
+                        backgroundSize: 'cover',
+                    }}
+                    onMouseDown={onMouseDown}
+                    crossOrigin="anonymous"
+                    src={media.url}
+                    alt="Zoomable"
+                />
+            </div>
             <div className="flex w-full justify-between">
                 <Button
                     variant={'link'}
@@ -624,7 +626,6 @@ const ImagePreviewContent = React.forwardRef<
 
         return (
             <div className="h-full w-full">
-                <h1 className="">Hello world</h1>
                 <ImagePreviewPortal>
                     <ImagePreviewOverlay
                         className={cn(
@@ -665,9 +666,9 @@ const ImagePreviewContent = React.forwardRef<
                             <Carousel
                                 opts={options}
                                 setApi={setApi}
-                                className="flex h-fit w-full max-w-4xl bg-transparent"
+                                className="flex h-fit w-full max-w-4xl justify-center bg-transparent"
                             >
-                                <CarouselContent className="">
+                                <CarouselContent>
                                     {Images.map((data, index) => {
                                         return (
                                             <CarouselItem

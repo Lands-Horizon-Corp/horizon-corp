@@ -19,7 +19,7 @@ import {
     useCreateMemberType,
     useUpdateMemberType,
 } from '@/hooks/api-hooks/member/use-member-type'
-import { createMemberTypeSchema } from '@/validations/form-validation/member/member-type-schema'
+import { createMemberTypeSchema } from '@/validations/member/member-type-schema'
 
 type TMemberTypeForm = z.infer<typeof createMemberTypeSchema>
 

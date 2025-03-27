@@ -60,6 +60,25 @@ export default class AccountsService {
             { skipNull: true, skipEmptyString: true }
         )
     }
+
+    public static async getAccounts({
+        sort,
+        filters,
+        preloads,
+        pagination,
+    }: {
+        sort?: string
+        filters?: string
+        preloads?: string[]
+        pagination?: { pageIndex: number; pageSize: number }
+    }) {
+        const url = this.buildUrl(``, { filters, preloads, pagination, sort })
+
+        return this.makeRequest(() =>
+            APIService.get<IAccountsPaginatedResource>(url)
+        )
+    }
+
     /**
      * Creates a new account.
      */
@@ -98,24 +117,6 @@ export default class AccountsService {
                 url,
                 accountData
             )
-        )
-    }
-
-    public static async getAccounts({
-        sort,
-        filters,
-        preloads,
-        pagination,
-    }: {
-        sort?: string
-        filters?: string
-        preloads?: string[]
-        pagination?: { pageIndex: number; pageSize: number }
-    }) {
-        const url = this.buildUrl(``, { filters, preloads, pagination, sort })
-
-        return this.makeRequest(() =>
-            APIService.get<IAccountsPaginatedResource>(url)
         )
     }
 

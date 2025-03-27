@@ -75,7 +75,7 @@ const FootstepTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IFootstepResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
@@ -117,6 +117,7 @@ const FootstepTable = ({
         enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
+        columnResizeMode: 'onChange',
         getRowId: getRowIdFn,
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,

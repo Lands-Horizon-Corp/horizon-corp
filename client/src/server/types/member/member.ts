@@ -3,7 +3,8 @@ import { IRolesResource } from '../role'
 import { IGenderResource } from '../gender'
 import { IFootstepResource } from '../footstep'
 import { IPaginatedResult } from '../paginated-result'
-import { ITimeStamps, IUserBase, TAccountStatus, TEntityId } from '../common'
+import { IMemberProfileResource } from './member-profile'
+import { IUserBase, TAccountStatus, TEntityId } from '../common'
 
 export interface IMemberRequest {
     username: string
@@ -26,23 +27,30 @@ export interface IMemberRequest {
     companyId?: TEntityId
 }
 
-export interface IMemberResource extends IUserBase, ITimeStamps {
+export interface IMemberRequestNoPassword
+    extends Omit<IMemberRequest, 'password' | 'confirmPassword'> {
+    password?: string
+    confirmPassword?: string
+}
+
+export interface IMemberResource extends IUserBase {
     id: TEntityId
     accountType: 'Member'
 
     username: string
-    description?: string
+    fullName: string
     isEmailVerified: boolean
     isContactVerified: boolean
     isSkipVerification: boolean
 
-    role?: IRolesResource // Optional due to `omitempty`
-    gender?: IGenderResource // Optional due to `omitempty`
+    role?: IRolesResource
+    gender?: IGenderResource
 
-    status: TAccountStatus // Assuming `providers.UserStatus` maps to a string; adjust if it's an enum
+    status: TAccountStatus
 
-    footsteps?: IFootstepResource[] // Array of `FootstepResource`
-    // memberProfile?: MemberProfileResource; // Optional due to `omitempty`
+    footsteps?: IFootstepResource[]
+    memberProfile?: IMemberProfileResource
 }
 
-export type IMemberPaginatedResource = IPaginatedResult<IMemberResource>
+export interface IMemberPaginatedResource
+    extends IPaginatedResult<IMemberResource> {}

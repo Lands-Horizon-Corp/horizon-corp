@@ -15,8 +15,9 @@ export interface IAPIPreloads {
     preloads?: string[]
 }
 
-export interface IQueryProps {
+export interface IQueryProps<T = unknown> {
     enabled?: boolean
+    initialData?: T
     showMessage?: boolean
 }
 

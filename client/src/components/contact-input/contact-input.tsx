@@ -65,7 +65,7 @@ const InputComponent = React.forwardRef<HTMLInputElement, InputProps>(
     ({ className, ...props }, ref) => (
         <Input
             className={cn(
-                'rounded-e-lg rounded-s-none bg-white/50 focus:border-none focus-visible:ring-1 focus-visible:ring-primary dark:bg-secondary/70',
+                'rounded-e-lg rounded-s-none bg-background focus:border-none focus-visible:ring-1 focus-visible:ring-primary',
                 className
             )}
             {...props}
@@ -98,7 +98,7 @@ const CountrySelect = ({
     )
 
     return (
-        <Popover>
+        <Popover modal>
             <PopoverTrigger asChild>
                 <Button
                     type="button"

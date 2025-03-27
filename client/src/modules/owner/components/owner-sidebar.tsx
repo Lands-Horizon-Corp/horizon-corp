@@ -1,15 +1,18 @@
+import { useMemo } from 'react'
+import { Link, useRouter } from '@tanstack/react-router'
+
 import {
     BankIcon,
     UserIcon,
+    BillIcon,
     ShieldIcon,
-    Users3Icon,
     UserTagIcon,
     UserCogIcon,
     GendersIcon,
     ReportsIcon,
-    BuildingIcon,
     SettingsIcon,
     UserListIcon,
+    HandCoinsIcon,
     DashboardIcon,
     BriefCaseIcon,
     FootstepsIcon,
@@ -20,153 +23,282 @@ import {
     GraduationCapIcon,
     BuildingBranchIcon,
 } from '@/components/icons'
-import Sidebar from '@/components/sidebar'
+import {
+    Sidebar,
+    SidebarRail,
+    SidebarMenu,
+    SidebarGroup,
+    SidebarHeader,
+    SidebarFooter,
+    SidebarContent,
+    SidebarMenuItem,
+    SidebarMenuButton,
+    SidebarGroupLabel,
+    SidebarGroupContent,
+} from '@/components/ui/sidebar'
+import EcoopLogo from '@/components/ecoop-logo'
+import { INavGroupItem } from '@/components/app-sidebar/types'
+import AppSidebarUser from '@/components/app-sidebar/app-sidebar-user'
+import AppSidebarItem from '@/components/app-sidebar/app-sidebar-item'
+import { flatSidebarGroupItem } from '@/components/app-sidebar/app-sidebar-utils'
+import AppSidebarQruickNavigate from '@/components/app-sidebar/app-sidebar-quick-navigate'
 
 import { IBaseComp } from '@/types/component'
-import type { TSidebarItem } from '@/components/sidebar/sidebar-types'
+import logger from '@/helpers/loggers/logger'
 
-const ownerSidebarItem: TSidebarItem[] = [
+const ownerSidebarGroupItems: INavGroupItem[] = [
     {
-        text: 'Dashboard',
-        url: '/owner/dashboard',
-        Icon: DashboardIcon,
+        title: 'Home',
+        navItems: [
+            {
+                title: 'Dashboard',
+                icon: DashboardIcon,
+                url: '/owner/dashboard',
+                type: 'item',
+            },
+        ],
     },
     {
-        text: 'Users',
-        Icon: Users3Icon,
-        baseUrl: '/owner/users',
-        subItems: [
+        title: 'Transaction',
+        navItems: [
             {
-                text: 'Members',
-                baseUrl: '/owner/users/members',
-                Icon: UserIcon,
-                subItems: [
+                icon: HandCoinsIcon,
+                title: 'Fund Movement',
+                type: 'item',
+                url: '/owner/transaction/fund-movement',
+            },
+            {
+                icon: BillIcon,
+                title: 'Payment Types',
+                type: 'item',
+                url: '/owner/transaction/payment-types',
+            },
+        ],
+    },
+    {
+        title: 'Accounting',
+        navItems: [
+            {
+                title: 'Accounts',
+                type: 'item',
+                url: '/owner/accounting/accounts',
+                icon: BankIcon,
+            },
+            {
+                icon: BankIcon,
+                type: 'item',
+                title: 'Computation Type',
+                url: '/owner/accounting/computation-type',
+            },
+        ],
+    },
+    {
+        title: 'Users',
+        navItems: [
+            {
+                title: 'Members',
+                url: '/owner/users/members',
+                icon: UserIcon,
+                type: 'dropdown',
+                items: [
                     {
-                        text: 'View Members',
+                        title: 'View Members',
                         url: '/view-members',
-                        Icon: UserListIcon,
+                        type: 'item',
+                        icon: UserListIcon,
                     },
                     {
-                        text: 'Members Activity',
-                        url: '/members-activity',
-                        Icon: UserClockIcon,
-                    },
-                    {
-                        text: 'Member Types',
+                        title: 'Member Types',
                         url: '/member-types',
-                        Icon: UserCogIcon,
+                        type: 'item',
+                        icon: UserCogIcon,
                     },
                     {
-                        text: 'Educational Attainments',
+                        title: 'Member Center',
+                        url: '/member-center',
+                        type: 'item',
+                        icon: UserCogIcon,
+                    },
+                    {
+                        title: 'Members Activity',
+                        url: '/members-activity',
+                        type: 'item',
+                        icon: UserClockIcon,
+                    },
+                    {
+                        title: 'Educational Attainments',
                         url: '/member-educational-attainments',
-                        Icon: GraduationCapIcon,
+                        type: 'item',
+                        icon: GraduationCapIcon,
                     },
                     {
-                        text: 'Member Classification',
+                        title: 'Member Classification',
                         url: '/member-classification',
-                        Icon: UserTagIcon,
+                        type: 'item',
+                        icon: UserTagIcon,
                     },
                     {
-                        text: 'Member Occupation',
+                        title: 'Member Occupation',
                         url: '/member-occupation',
-                        Icon: BriefCaseIcon,
+                        type: 'item',
+                        icon: BriefCaseIcon,
                     },
                     {
-                        text: 'Genders',
-                        Icon: GendersIcon,
+                        title: 'Genders',
+                        icon: GendersIcon,
+                        type: 'item',
                         url: '/genders',
                     },
                 ],
             },
             {
-                text: 'Employees',
-                baseUrl: '/owner/users/employees',
-                Icon: UserShieldIcon,
-                subItems: [
+                title: 'Employees',
+                url: '/owner/users/employees',
+                type: 'dropdown',
+                icon: UserShieldIcon,
+                items: [
                     {
-                        text: 'View employees',
+                        title: 'View Employees',
                         url: '/view-employees',
-                        Icon: UserListIcon,
+                        icon: UserListIcon,
+                        type: 'item',
                     },
                     {
-                        text: 'Employee Footsteps',
+                        title: 'Employee Footsteps',
                         url: '/employee-footsteps',
-                        Icon: FootstepsIcon,
+                        icon: FootstepsIcon,
+                        type: 'item',
                     },
                 ],
             },
-        ],
-    },
-    {
-        text: 'Roles Management',
-        Icon: ShieldIcon,
-        url: '/owner/roles-management',
-    },
-    {
-        text: 'Company',
-        baseUrl: '/owner/company',
-        Icon: BuildingIcon,
-        subItems: [
             {
-                text: 'Profile',
-                Icon: BuildingCogIcon,
-                url: '/profile',
-            },
-            {
-                text: 'Branches',
-                Icon: BuildingBranchIcon,
-                url: '/branches',
+                title: 'Roles Management',
+                icon: ShieldIcon,
+                type: 'item',
+                url: '/owner/roles-management',
             },
         ],
     },
     {
-        text: 'Accounting',
-        Icon: BankIcon,
-        baseUrl: '/owner/accounting',
-        subItems: [
-            { text: 'Accounts', url: '/accounts', Icon: BankIcon },
+        title: 'Company',
+        navItems: [
             {
-                Icon: BankIcon,
-                text: 'Computation Type',
-                url: '/computation-type',
+                title: 'Profile',
+                icon: BuildingCogIcon,
+                type: 'item',
+                url: '/owner/company/profile',
+            },
+            {
+                title: 'Branches',
+                type: 'item',
+                icon: BuildingBranchIcon,
+                url: '/owner/company/branches',
             },
         ],
     },
     {
-        text: 'Footstep Tracking',
-        Icon: FootstepsIcon,
-        url: '/owner/footstep-tracking',
-    },
-    {
-        text: 'Reports',
-        Icon: ReportsIcon,
-        url: '/owner/reports',
-    },
-    {
-        Icon: NotificationIcon,
-        text: 'Notifications',
-        url: '/owner/notifications',
-    },
-    {
-        text: 'Profile',
-        Icon: UserIcon,
-        url: '/owner/profile',
-    },
-    {
-        text: 'Settings',
-        Icon: SettingsIcon,
-        url: '/owner/settings',
+        title: 'Others',
+        navItems: [
+            {
+                title: 'Footstep Tracking',
+                icon: FootstepsIcon,
+                type: 'item',
+                url: '/owner/footstep-tracking',
+            },
+            {
+                title: 'Reports',
+                icon: ReportsIcon,
+                type: 'item',
+                url: '/owner/reports',
+            },
+            {
+                icon: NotificationIcon,
+                title: 'Notifications',
+                type: 'item',
+                url: '/owner/notifications',
+            },
+            {
+                title: 'Profile',
+                icon: UserIcon,
+                type: 'item',
+                url: '/owner/profile',
+            },
+            {
+                title: 'Settings',
+                type: 'item',
+                icon: SettingsIcon,
+                url: '/owner/settings',
+            },
+        ],
     },
 ]
 
-const OwnerSidebar = ({ className }: IBaseComp) => {
+const OwnerSidebar = (props: IBaseComp) => {
+    const router = useRouter()
+
+    const item = useMemo(
+        () =>
+            flatSidebarGroupItem(ownerSidebarGroupItems).map((item) => ({
+                ...item,
+                items: item.items.map((itm) => ({
+                    ...itm,
+                    onClick: (self: typeof itm) => {
+                        router.navigate({ to: self.url })
+                    },
+                })),
+            })),
+        [router]
+    )
+
+    logger.log(item)
+
     return (
-        <Sidebar
-            enableCollapse
-            className={className}
-            items={ownerSidebarItem}
-            logoRedirectUrl="/owner"
-        />
+        <Sidebar variant="inset" {...props}>
+            <SidebarHeader>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <SidebarMenuButton size="lg" asChild>
+                            <Link to="/owner">
+                                <EcoopLogo className="size-9" />
+                                <div className="grid flex-1 text-left text-sm leading-tight">
+                                    <span className="truncate font-semibold">
+                                        eCOOP
+                                    </span>
+                                    <span className="truncate text-xs text-muted-foreground/80">
+                                        Admin
+                                    </span>
+                                </div>
+                            </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+                <AppSidebarQruickNavigate groups={item} />
+            </SidebarHeader>
+            <SidebarContent className="ecoop-scroll">
+                {ownerSidebarGroupItems.map((navGroupItem, i) => (
+                    <SidebarGroup key={`${navGroupItem.title}-${i}`}>
+                        <SidebarGroupLabel>
+                            {navGroupItem.title}
+                        </SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {navGroupItem.navItems.map((navItem, index) => (
+                                    <AppSidebarItem
+                                        key={index}
+                                        navItem={{ ...navItem, depth: 1 }}
+                                    />
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
+            </SidebarContent>
+
+            <SidebarFooter>
+                <AppSidebarUser />
+            </SidebarFooter>
+            <SidebarRail />
+        </Sidebar>
     )
 }
 

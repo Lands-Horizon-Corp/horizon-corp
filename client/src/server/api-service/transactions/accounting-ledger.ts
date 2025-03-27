@@ -1,4 +1,3 @@
-// import { TEntityId } from "@/server/types";
 import {
     IAccountingLedgerRequest,
     IAccountingLedgerPaginatedResource,
@@ -6,8 +5,9 @@ import {
 } from '@/server/types/accounts/accounting-ledger'
 import qs from 'query-string'
 import APIService from '../api-service'
+import { TEntityId } from '@/server/types'
 
-export default class IAccountingLedgerService {
+export default class AccountingLedgerService {
     private static readonly BASE_ENDPOINT = '/accounting-ledger'
 
     private static async makeRequest<T>(
@@ -81,19 +81,13 @@ export default class IAccountingLedgerService {
         )
     }
 
-    // public static async delete(id: TEntityId): Promise<void> {
-    //     const url = this.buildUrl(`/${id}`, {});
-    //     return this.makeRequest(() => APIService.delete(url));
-    // }
+    public static async getLedgerByMemberId(memberId: TEntityId) {
+        const url = qs.stringifyUrl({
+            url: `${this.BASE_ENDPOINT}/member/${memberId}`,
+        })
 
-    // public static async update(
-    //     id: TEntityId,
-    //     ledgerData: IAccountingLedgerRequest,
-    //     preloads?: string[]
-    // ): Promise<IAccountingLedgerRequest> {
-    //     const url = this.buildUrl(`/${id}`, { preloads });
-    //     return this.makeRequest(() =>
-    //         APIService.put<IAccountingLedgerRequest, IAccountingLedgerRequest>(url, ledgerData)
-    //     );
-    // }
+        return APIService.get<IAccountingLedgerResource>(url).then(
+            (response) => response.data
+        )
+    }
 }

@@ -21,7 +21,7 @@ import {
     TEntityId,
     IMemberEducationalAttainmentRequest,
     IMemberEducationalAttainmentResource,
-    TMemberEducationalAttainmentPaginatedResource,
+    IMemberEducationalAttainmentPaginatedResource,
 } from '@/server/types'
 
 export const memberEducationalAttainmentLoader = (
@@ -192,10 +192,10 @@ export const useFilteredPaginatedMemberEducationalAttainments = ({
     preloads = [],
     pagination = { pageSize: 10, pageIndex: 1 },
 }: IAPIFilteredPaginatedHook<
-    TMemberEducationalAttainmentPaginatedResource,
+    IMemberEducationalAttainmentPaginatedResource,
     string
 > = {}) => {
-    return useQuery<TMemberEducationalAttainmentPaginatedResource, string>({
+    return useQuery<IMemberEducationalAttainmentPaginatedResource, string>({
         queryKey: [
             'member-educational-attainment',
             'resource-query',

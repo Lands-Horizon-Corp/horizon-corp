@@ -7,7 +7,7 @@ import {
     TEntityId,
     IMemberEducationalAttainmentRequest,
     IMemberEducationalAttainmentResource,
-    TMemberEducationalAttainmentPaginatedResource,
+    IMemberEducationalAttainmentPaginatedResource,
 } from '../../types'
 
 export default class MemberEducationalAttainmentService {
@@ -93,7 +93,7 @@ export default class MemberEducationalAttainmentService {
         filters?: string
         preloads?: string[]
         pagination?: { pageIndex: number; pageSize: number }
-    } = {}): Promise<TMemberEducationalAttainmentPaginatedResource> {
+    } = {}): Promise<IMemberEducationalAttainmentPaginatedResource> {
         const url = qs.stringifyUrl(
             {
                 url: `${MemberEducationalAttainmentService.BASE_ENDPOINT}`,
@@ -109,7 +109,7 @@ export default class MemberEducationalAttainmentService {
         )
 
         const response =
-            await APIService.get<TMemberEducationalAttainmentPaginatedResource>(
+            await APIService.get<IMemberEducationalAttainmentPaginatedResource>(
                 url
             )
         return response.data

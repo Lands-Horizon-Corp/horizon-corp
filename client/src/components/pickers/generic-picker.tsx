@@ -21,6 +21,8 @@ interface GenericPickerProps<T extends { id: TEntityId }> extends IModalProps {
     listHeading?: string
     commandClassName?: string
     searchPlaceHolder?: string
+    customCommands?: React.ReactNode
+    customSearchComponent?: React.ReactNode
     onSelect?: (item: T) => void
     onSearchChange: (val: string) => void
     renderItem: (item: T) => React.ReactNode
@@ -31,10 +33,12 @@ const GenericPicker = <T extends { id: TEntityId }>({
     items,
     children,
     isLoading,
-    listHeading,
     className,
+    listHeading,
+    customCommands,
     commandClassName,
     searchPlaceHolder,
+    customSearchComponent,
     onSelect,
     renderItem,
     onOpenChange,
@@ -64,10 +68,14 @@ const GenericPicker = <T extends { id: TEntityId }>({
                 shouldFilter={false}
                 className={cn('bg-none', commandClassName)}
             >
-                <CommandInput
-                    onValueChange={onSearchChange}
-                    placeholder={searchPlaceHolder ?? 'Search anything...'}
-                />
+                {customSearchComponent ? (
+                    customSearchComponent
+                ) : (
+                    <CommandInput
+                        onValueChange={onSearchChange}
+                        placeholder={searchPlaceHolder ?? 'Search anything...'}
+                    />
+                )}
                 <CommandList className="ecoop-scroll max-h-[300px] min-h-[400px] px-1">
                     <CommandEmpty className="text-sm text-foreground/50">
                         {isLoading ? (
@@ -76,6 +84,7 @@ const GenericPicker = <T extends { id: TEntityId }>({
                             'No Result'
                         )}
                     </CommandEmpty>
+                    {customCommands}
                     {items.length > 0 && (
                         <CommandGroup heading={listHeading}>
                             {items?.map((item) => (

@@ -75,7 +75,7 @@ const GenderTable = ({
         rowSelectionState,
         createHandleRowSelectionChange,
     } = useDataTableState<IGenderResource>({
-        columnOrder: columns.map((c) => c.id!),
+        defaultColumnOrder: columns.map((c) => c.id!),
         onSelectData,
     })
 
@@ -116,6 +116,7 @@ const GenderTable = ({
         enableMultiSort: false,
         manualFiltering: true,
         manualPagination: true,
+        columnResizeMode: 'onChange',
         getRowId: getRowIdFn,
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
@@ -181,9 +182,9 @@ const GenderTable = ({
                     table={table}
                     isStickyHeader
                     isStickyFooter
+                    className="mb-2"
                     isScrollable={isScrollable}
                     setColumnOrder={setColumnOrder}
-                    className="mb-2"
                 />
                 <DataTablePagination table={table} totalSize={totalSize} />
             </div>

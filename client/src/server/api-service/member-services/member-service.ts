@@ -10,11 +10,9 @@ import {
     IMemberRequest,
     IMemberResource,
     IMemberPaginatedResource,
+    IMediaResource,
 } from '../../types'
 
-/**
- * Service class to handle CRUD operations for members.
- */
 export default class MemberService {
     private static readonly BASE_ENDPOINT = '/member'
 
@@ -33,6 +31,13 @@ export default class MemberService {
             },
         })
 
+        return response.data
+    }
+
+    public static async getMedias(id: TEntityId) {
+        const response = await APIService.get<IMediaResource[]>(
+            `${this.BASE_ENDPOINT}/${id}/medias`
+        )
         return response.data
     }
 
@@ -57,7 +62,12 @@ export default class MemberService {
 
     public static async update(
         id: TEntityId,
-        memberData: IMemberRequest,
+        memberData:
+            | IMemberRequest
+            | (Omit<IMemberRequest, 'password' | 'confirmPassword'> & {
+                  password?: string
+                  confirmPassword?: string
+              }),
         preloads?: string[]
     ): Promise<IMemberResource> {
         const url = qs.stringifyUrl({
@@ -65,15 +75,18 @@ export default class MemberService {
             query: { preloads },
         })
 
-        const response = await APIService.put<IMemberRequest, IMemberResource>(
-            url,
-            memberData,
-            {
-                headers: {
-                    Authorization: `Bearer YOUR_TOKEN`, // Replace with actual token if needed
-                },
-            }
-        )
+        const response = await APIService.put<
+            | IMemberRequest
+            | (Omit<IMemberRequest, 'password' | 'confirmPassword'> & {
+                  password?: string
+                  confirmPassword?: string
+              }),
+            IMemberResource
+        >(url, memberData, {
+            headers: {
+                Authorization: `Bearer YOUR_TOKEN`, // Replace with actual token if needed
+            },
+        })
         return response.data
     }
 

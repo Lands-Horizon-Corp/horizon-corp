@@ -30,15 +30,6 @@ export const middleNameSchema = z
     .string()
     .transform((val) => val || undefined)
     .optional()
-    .refine(
-        (val) => {
-            if (!val || val === '') return true
-            return LETTERS_REGEX.test(val)
-        },
-        {
-            message: 'First Name must contain only letters',
-        }
-    )
 
 export const lastNameSchema = z
     .string({ required_error: 'Last Name is required' })
@@ -56,7 +47,7 @@ export const passwordSchema = z
         `Password must atleast ${PASSWORD_MIN_LENGTH} characters`
     )
 
-export const birthDateSchema = z.date().refine(
+export const birthDateSchema = z.coerce.date().refine(
     (date) => {
         const today = new Date()
         today.setHours(0, 0, 0, 0)
@@ -80,3 +71,16 @@ export const accountStatusSchema = z.enum([
 ])
 
 export const entityIdSchema = z.coerce.string().uuid('Invalid Id')
+
+export const mediaResourceSchema = z.object({
+    id: entityIdSchema,
+    fileName: z.string(),
+    fileSize: z.number(),
+    fileType: z.string(),
+    storageKey: z.string(),
+    url: z.string().optional().default(''),
+    bucketName: z.string(),
+    createdAt: z.string(),
+    updatedAt: z.string().optional(),
+    downloadURL: z.string(),
+})

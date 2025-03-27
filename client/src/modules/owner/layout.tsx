@@ -3,20 +3,20 @@ import { Outlet } from '@tanstack/react-router'
 import UserNav from '@/components/nav/navs/user-nav'
 import OwnerSidebar from './components/owner-sidebar'
 import AuthGuard from '@/components/wrappers/auth-guard'
-import { SidebarProvider } from '@/components/sidebar/sidebar-provider'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 const OwnerLayout = () => {
     return (
         <AuthGuard allowedAccountTypes={['Owner']}>
-            <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] md:grid-cols-[auto_1fr]">
-                <SidebarProvider>
-                    <OwnerSidebar />
-                    <main className="ecoop-scroll max-h-screen overflow-y-scroll">
-                        <UserNav />
+            <SidebarProvider>
+                <OwnerSidebar />
+                <SidebarInset className="ecoop-scroll max-h-[98vh] w-full overflow-y-auto">
+                    <UserNav className="sticky top-0 z-50 bg-background" />
+                    <main className="">
                         <Outlet />
                     </main>
-                </SidebarProvider>
-            </div>
+                </SidebarInset>
+            </SidebarProvider>
         </AuthGuard>
     )
 }

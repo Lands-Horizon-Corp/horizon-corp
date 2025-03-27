@@ -11,6 +11,7 @@ import { IGlobalSearchTargets } from '@/components/data-table/data-table-filters
 
 import { toReadableDate } from '@/utils'
 import { IAccountsComputationTypeResource } from '@/server/types/accounts/computation-type'
+import HeaderToggleSelect from '@/components/data-table/data-table-row-actions/header-toggle-select'
 
 export const accountComputationTypeGlobalSearchTargets: IGlobalSearchTargets<IAccountsComputationTypeResource>[] =
     [
@@ -35,14 +36,8 @@ const AccountsComputationTypeTableColumns = (
         {
             id: 'select',
             header: ({ table, column }) => (
-                <div className="flex w-fit items-center gap-x-1 px-2">
-                    <Checkbox
-                        checked={table.getIsAllPageRowsSelected()}
-                        onCheckedChange={(value) =>
-                            table.toggleAllPageRowsSelected(!!value)
-                        }
-                        aria-label="Select all"
-                    />
+                <div className={'flex w-fit items-center gap-x-1 px-2'}>
+                    <HeaderToggleSelect table={table} />
                     {!column.getIsPinned() && (
                         <PushPinSlashIcon
                             onClick={() => column.pin('left')}
@@ -55,21 +50,23 @@ const AccountsComputationTypeTableColumns = (
                 <div className="flex w-fit items-center gap-x-1 px-0">
                     {opts?.actionComponent?.({ row })}
                     <Checkbox
+                        aria-label="Select row"
                         checked={row.getIsSelected()}
                         onCheckedChange={(value) => row.toggleSelected(!!value)}
-                        aria-label="Select row"
                     />
                 </div>
             ),
             enableSorting: false,
+            enableResizing: false,
             enableHiding: false,
-            maxSize: 80,
+            size: 80,
+            minSize: 80,
         },
         {
             id: 'name',
             accessorKey: 'name',
             header: (props) => (
-                <DataTableColumnHeader {...props} isResizable title="Name">
+                <DataTableColumnHeader {...props} title="Name">
                     <ColumnActions {...props}>
                         <TextFilter<IAccountsComputationTypeResource>
                             displayText="Name"
@@ -84,16 +81,17 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: false,
+            size: 180,
+            minSize: 180,
         },
         {
             id: 'description',
             accessorKey: 'description',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Description"
-                >
+                <DataTableColumnHeader {...props} title="Description">
                     <ColumnActions {...props}>
                         <TextFilter<IAccountsComputationTypeResource>
                             displayText="Description"
@@ -108,16 +106,18 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: false,
+            size: 200,
+            minSize: 200,
+            maxSize: 300,
         },
         {
             id: 'createdAt',
             accessorKey: 'createdAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Date Created"
-                >
+                <DataTableColumnHeader {...props} title="Date Created">
                     <ColumnActions {...props}>
                         <DateFilter<IAccountsComputationTypeResource>
                             displayText="Date Created"
@@ -132,16 +132,17 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: false,
+            size: 180,
+            minSize: 180,
         },
         {
             id: 'createdBy',
             accessorKey: 'createdBy',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Created By"
-                />
+                <DataTableColumnHeader {...props} title="Created By" />
             ),
             cell: ({
                 row: {
@@ -149,16 +150,17 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{createdBy}</div>,
             enableMultiSort: true,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: true,
+            size: 180,
+            minSize: 180,
         },
         {
             id: 'updatedAt',
             accessorKey: 'updatedAt',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Last Updated"
-                >
+                <DataTableColumnHeader {...props} title="Last Updated">
                     <ColumnActions {...props}>
                         <DateFilter<IAccountsComputationTypeResource>
                             displayText="Last Updated"
@@ -171,18 +173,19 @@ const AccountsComputationTypeTableColumns = (
                 row: {
                     original: { updatedAt },
                 },
-            }) => <div>{toReadableDate(updatedAt)}</div>,
+            }) => <div>{updatedAt ? toReadableDate(updatedAt) : ''}</div>,
             enableMultiSort: true,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: true,
+            size: 180,
+            minSize: 180,
         },
         {
             id: 'updatedBy',
             accessorKey: 'updatedBy',
             header: (props) => (
-                <DataTableColumnHeader
-                    {...props}
-                    isResizable
-                    title="Updated By"
-                />
+                <DataTableColumnHeader {...props} title="Updated By" />
             ),
             cell: ({
                 row: {
@@ -190,6 +193,11 @@ const AccountsComputationTypeTableColumns = (
                 },
             }) => <div>{updatedBy}</div>,
             enableMultiSort: true,
+            enableSorting: true,
+            enableResizing: true,
+            enableHiding: true,
+            size: 180,
+            minSize: 180,
         },
     ]
 }
