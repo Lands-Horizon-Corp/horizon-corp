@@ -18,10 +18,8 @@ import {
     FootstepsIcon,
     UserClockIcon,
     UserShieldIcon,
-    HandDepositIcon,
     BuildingCogIcon,
     NotificationIcon,
-    HandWithdrawIcon,
     GraduationCapIcon,
     BuildingBranchIcon,
 } from '@/components/icons'
