@@ -23,7 +23,7 @@ const MemberMediasInfo = ({ profileId, className, defaultData }: Props) => {
                 className
             )}
         >
-            <MemberFileMediaDisplay memberId={data.member?.id} />
+            <MemberFileMediaDisplay memberId={data?.member?.id} />
         </div>
     )
 }
