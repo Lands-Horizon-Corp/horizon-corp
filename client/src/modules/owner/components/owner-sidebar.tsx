@@ -4,14 +4,11 @@ import {
     BankIcon,
     UserIcon,
     BillIcon,
-    WalletIcon,
     ShieldIcon,
-    Users3Icon,
     UserTagIcon,
     UserCogIcon,
     GendersIcon,
     ReportsIcon,
-    BuildingIcon,
     SettingsIcon,
     UserListIcon,
     HandCoinsIcon,
@@ -43,9 +40,9 @@ import {
 import EcoopLogo from '@/components/ecoop-logo'
 
 import { IBaseComp } from '@/types/component'
+import { INavGroupItem } from '@/components/app-sidebar/types'
 import AppSidebarUser from '@/components/app-sidebar/app-sidebar-user'
 import AppSidebarItem from '@/components/app-sidebar/app-sidebar-item'
-import { INavGroupItem, INavItem } from '@/components/app-sidebar/types'
 
 const ownerSidebarGroupItems: INavGroupItem[] = [
     {
