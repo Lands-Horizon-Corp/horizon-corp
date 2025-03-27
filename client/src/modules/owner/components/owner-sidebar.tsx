@@ -24,8 +24,6 @@ import {
     WalletIcon,
     BillIcon,
     HandCoinsIcon,
-    HandDepositIcon,
-    HandWithdrawIcon,
 } from '@/components/icons'
 import {
     Sidebar,
@@ -61,23 +59,12 @@ const ownerSidebarItem: INavItem[] = [
         url: '/owner/transaction',
         items: [
             {
-                title: 'Deposit Entry',
-                icon: HandDepositIcon,
-                type: 'item',
-                url: '/deposit-entry',
-            },
-            {
                 icon: HandCoinsIcon,
-                title: 'Payments Entry',
+                title: 'Fund Movement',
                 type: 'item',
-                url: '/payments-entry',
+                url: '/fund-movement',
             },
-            {
-                icon: HandWithdrawIcon,
-                title: 'Withdrawals',
-                type: 'item',
-                url: '/withdrawals',
-            },
+
             {
                 icon: BillIcon,
                 title: 'Payment Types',

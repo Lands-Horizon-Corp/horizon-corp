@@ -11,26 +11,14 @@ export const ownerTransactionIndexRoute = createRoute({
     getParentRoute: () => ownerTransactionRoute,
     path: '/',
     beforeLoad: () => {
-        throw redirect({ to: '/owner/transaction/payments-entry' })
+        throw redirect({ to: '/owner/transaction/fund-movement' })
     },
 })
 
 export const ownerTransactionPaymentsEntry = createRoute({
     getParentRoute: () => ownerTransactionRoute,
-    path: '/payments-entry',
+    path: '/fund-movement',
     component: lazyRouteComponent(() => import('./payments-entry-page')),
-})
-
-export const ownerTransactionDepositEntry = createRoute({
-    getParentRoute: () => ownerTransactionRoute,
-    path: '/deposit-entry',
-    component: lazyRouteComponent(() => import('./deposit-entry-page')),
-})
-
-export const ownerTransactionWithdrawal = createRoute({
-    getParentRoute: () => ownerTransactionRoute,
-    path: '/withdrawals',
-    component: lazyRouteComponent(() => import('./withdrawals-page')),
 })
 
 export const ownerTransactionPaymentType = createRoute({
@@ -44,7 +32,5 @@ export const ownerTransactionPaymentType = createRoute({
 export const OwnerTransactionRoute = ownerTransactionRoute.addChildren([
     ownerTransactionPaymentType,
     ownerTransactionIndexRoute,
-    ownerTransactionWithdrawal,
-    ownerTransactionDepositEntry,
     ownerTransactionPaymentsEntry,
 ])
