@@ -34,3 +34,8 @@ export interface INavItemDropdown<D extends keyof TDepth = 3>
 export type INavItem<D extends keyof TDepth = 2> = D extends 0
     ? never
     : INavItemDropdown<D> | INavItemSingle
+
+export interface INavGroupItem {
+    title: string
+    navItems: INavItem[]
+}
