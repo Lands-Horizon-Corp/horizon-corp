@@ -1,4 +1,5 @@
-import { Link } from '@tanstack/react-router'
+import { useMemo } from 'react'
+import { Link, useRouter } from '@tanstack/react-router'
 
 import {
     BankIcon,
@@ -38,11 +39,14 @@ import {
     SidebarGroupContent,
 } from '@/components/ui/sidebar'
 import EcoopLogo from '@/components/ecoop-logo'
-
-import { IBaseComp } from '@/types/component'
 import { INavGroupItem } from '@/components/app-sidebar/types'
 import AppSidebarUser from '@/components/app-sidebar/app-sidebar-user'
 import AppSidebarItem from '@/components/app-sidebar/app-sidebar-item'
+import { flatSidebarGroupItem } from '@/components/app-sidebar/app-sidebar-utils'
+import AppSidebarQruickNavigate from '@/components/app-sidebar/app-sidebar-quick-navigate'
+
+import { IBaseComp } from '@/types/component'
+import logger from '@/helpers/loggers/logger'
 
 const ownerSidebarGroupItems: INavGroupItem[] = [
     {
@@ -196,13 +200,13 @@ const ownerSidebarGroupItems: INavGroupItem[] = [
                 title: 'Profile',
                 icon: BuildingCogIcon,
                 type: 'item',
-                url: '/owner/profile',
+                url: '/owner/company/profile',
             },
             {
                 title: 'Branches',
                 type: 'item',
                 icon: BuildingBranchIcon,
-                url: '/owner/branches',
+                url: '/owner/company/branches',
             },
         ],
     },
@@ -244,6 +248,24 @@ const ownerSidebarGroupItems: INavGroupItem[] = [
 ]
 
 const OwnerSidebar = (props: IBaseComp) => {
+    const router = useRouter()
+
+    const item = useMemo(
+        () =>
+            flatSidebarGroupItem(ownerSidebarGroupItems).map((item) => ({
+                ...item,
+                items: item.items.map((itm) => ({
+                    ...itm,
+                    onClick: (self: typeof itm) => {
+                        router.navigate({ to: self.url })
+                    },
+                })),
+            })),
+        [router]
+    )
+
+    logger.log(item)
+
     return (
         <Sidebar variant="inset" {...props}>
             <SidebarHeader>
@@ -264,6 +286,7 @@ const OwnerSidebar = (props: IBaseComp) => {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
+                <AppSidebarQruickNavigate groups={item} />
             </SidebarHeader>
             <SidebarContent className="ecoop-scroll">
                 {ownerSidebarGroupItems.map((navGroupItem, i) => (
