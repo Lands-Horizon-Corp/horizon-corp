@@ -19,40 +19,62 @@ const usePaymentsShortcuts = ({
     selectedPayments,
     handleOpenCreateModal,
 }: usePaymentsShortcutsTypes) => {
-    const paymentsEntryShortcuts = useMemo(
-        () => ({
-            d: () => {
-                if (hadSelectedPayments) {
-                    setSelectedMember(null)
-                }
-            },
-            s: () => {
-                handleSubmitPayment(selectedPayments)
-            },
-            f1: () => {
-                handleOpenCreateModal('payment')
-            },
-            f2: () => {
-                handleOpenCreateModal('deposit')
-            },
-            f3: () => {
-                handleOpenCreateModal('withdraw')
-            },
-        }),
-        [
-            hadSelectedPayments,
-            setSelectedMember,
-            handleSubmitPayment,
-            selectedPayments,
-            handleOpenCreateModal,
-        ]
+    const handleD = useMemo(
+        () => () => {
+            if (hadSelectedPayments) {
+                setSelectedMember(null)
+            }
+        },
+        [hadSelectedPayments, setSelectedMember]
     )
 
-    Object.entries(paymentsEntryShortcuts).forEach(([shorcut, callback]) => {
-        useShortcut(shorcut, callback, {
-            disableTextInputs: true,
-            disableActiveButton: true,
-        })
+    const handleS = useMemo(
+        () => () => {
+            handleSubmitPayment(selectedPayments)
+        },
+        [handleSubmitPayment, selectedPayments]
+    )
+
+    const handleF1 = useMemo(
+        () => () => {
+            handleOpenCreateModal('payment')
+        },
+        [handleOpenCreateModal]
+    )
+
+    const handleF2 = useMemo(
+        () => () => {
+            handleOpenCreateModal('deposit')
+        },
+        [handleOpenCreateModal]
+    )
+
+    const handleF3 = useMemo(
+        () => () => {
+            handleOpenCreateModal('withdraw')
+        },
+        [handleOpenCreateModal]
+    )
+
+    useShortcut('d', handleD, {
+        disableTextInputs: true,
+        disableActiveButton: true,
+    })
+    useShortcut('s', handleS, {
+        disableTextInputs: true,
+        disableActiveButton: true,
+    })
+    useShortcut('f1', handleF1, {
+        disableTextInputs: true,
+        disableActiveButton: true,
+    })
+    useShortcut('f2', handleF2, {
+        disableTextInputs: true,
+        disableActiveButton: true,
+    })
+    useShortcut('f3', handleF3, {
+        disableTextInputs: true,
+        disableActiveButton: true,
     })
 }
 
