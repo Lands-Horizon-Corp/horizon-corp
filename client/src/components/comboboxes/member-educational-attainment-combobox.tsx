@@ -74,7 +74,7 @@ const MemberEducationalAttainmentCombobox = ({
                     },
                 }}
             />
-            <Popover open={open} onOpenChange={setOpen}>
+            <Popover modal open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
@@ -101,7 +101,7 @@ const MemberEducationalAttainmentCombobox = ({
                                 Loading...
                             </CommandEmpty>
                         ) : (
-                            <CommandList>
+                            <CommandList className="ecoop-scroll">
                                 <CommandEmpty>
                                     No Educational Attainment found.
                                 </CommandEmpty>

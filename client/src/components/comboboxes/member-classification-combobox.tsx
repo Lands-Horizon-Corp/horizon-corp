@@ -75,7 +75,7 @@ const MemberClassificationCombobox = ({
                     },
                 }}
             />
-            <Popover open={open} onOpenChange={setOpen}>
+            <Popover modal open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
@@ -102,7 +102,7 @@ const MemberClassificationCombobox = ({
                                 Loading...
                             </CommandEmpty>
                         ) : (
-                            <CommandList>
+                            <CommandList className="ecoop-scroll">
                                 <CommandEmpty>
                                     No Member Classification found.
                                 </CommandEmpty>

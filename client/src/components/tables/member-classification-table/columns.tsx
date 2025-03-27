@@ -56,7 +56,6 @@ const memberClassificationTableColumns = (
                     />
                 </div>
             ),
-            maxSize: 30,
             enableSorting: false,
             enableResizing: false,
             enableHiding: false,

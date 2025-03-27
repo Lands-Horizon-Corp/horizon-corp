@@ -166,7 +166,7 @@ const TransactionPaymentTypesTableColumns = (
                 row: {
                     original: { updatedAt },
                 },
-            }) => <div>{toReadableDate(updatedAt)}</div>,
+            }) => <div>{updatedAt ? toReadableDate(updatedAt) : ''}</div>,
             enableMultiSort: true,
         },
     ]

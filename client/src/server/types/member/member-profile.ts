@@ -42,27 +42,29 @@ import { IMemberAssetsRequest, IMemberAssetsResource } from './member-assets'
 import { IMemberAddressRequest, IMemberAddressResource } from './member-address'
 import { ITimeStamps, TAccountStatus, TCivilStatus, TEntityId } from '../common'
 import { IMemberMutualFundsHistoryResource } from './member-mutual-funds-history'
+import { IMemberEducationalAttainmentResource } from './member-educational-attainment'
 
 export interface IMemberProfileRequest {
     id?: TEntityId
     oldReferenceId?: string
     passbookNumber?: string
 
+    firstName: string
+    middleName?: string
+    lastName: string
+    suffix?: string
+
     notes: string
     description: string
     contactNumber: string
-    tinNumber?: string
     civilStatus: TCivilStatus
     occupationId?: TEntityId
-    sssNumber?: string
     businessAddress?: string
     businessContact?: string
 
     status: 'Pending' | 'Verified' | 'Not Allowed'
     isClosed: boolean
 
-    pagibigNumber?: string
-    philhealthNumber?: string
     isMutualFundMember: boolean
     isMicroFinanceMember: boolean
 
@@ -79,7 +81,7 @@ export interface IMemberProfileRequest {
 
     memberIncome?: IMemberIncomeRequest[]
     memberAssets?: IMemberAssetsRequest[]
-    memberAddress: IMemberAddressRequest[]
+    memberAddresses: IMemberAddressRequest[]
     memberRecruits?: IMemberRecruitsRequest[]
     memberExpenses?: IMemberExpensesRequest[]
     memberDescriptions?: IMemberDescriptionRequest[]
@@ -94,25 +96,26 @@ export interface IMemberProfileResource extends ITimeStamps {
     oldReferenceId?: string
     passbookNumber?: string
 
+    firstName: string
+    middleName?: string
+    lastName: string
+    suffix?: string
+
     notes: string
     description: string
     contactNumber: string
-    tinNumber?: string
     civilStatus: TCivilStatus
-    sssNumber?: string
     businessAddress?: string
     businessContact?: string
 
     status: TAccountStatus
     isClosed: boolean
 
-    pagibigNumber?: string
-    philhealthNumber?: string
     isMutualFundMember: boolean
     isMicroFinanceMember: boolean
 
     occupationId?: TEntityId
-    occupation: IMemberOccupationResource
+    occupation?: IMemberOccupationResource
 
     mediaId?: TEntityId
     media?: IMediaResource
@@ -142,10 +145,11 @@ export interface IMemberProfileResource extends ITimeStamps {
     signatureMedia?: IMediaResource
 
     memberEducationalAttainmentId?: TEntityId
+    memberEducationalAttainment?: IMemberEducationalAttainmentResource
 
     memberAssets?: IMemberAssetsResource[]
     memberIncome?: IMemberIncomeResource[]
-    memberWallets?: IMemberWalletResource[]
+    memberWallets?: IMemberWalletResource[] // ano to desu
     memberAddresses?: IMemberAddressResource[]
     memberRecruits?: IMemberRecruitsResource[]
     memberExpenses?: IMemberExpensesResource[]

@@ -43,7 +43,7 @@ const ProvinceCombobox = ({
     const provinces = React.useMemo(() => getProvinces(), [])
 
     return (
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover modal open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <Button
                     {...other}

@@ -8,10 +8,13 @@ import { getPinningStyles } from './data-table-utils'
 const DataTableBody = <TData,>({
     rows,
     colCount,
+    onRowClick,
 }: {
     rows: Row<TData>[]
-    rowClassName?: string
     colCount?: number
+    rowClassName?: string
+
+    onRowClick?: (row: Row<TData>) => void
 }) => {
     return (
         <TableBody>
@@ -19,10 +22,8 @@ const DataTableBody = <TData,>({
                 <TableRow
                     key={row.id}
                     data-row-id={row.id}
-                    onClick={() => {
-                        row.toggleSelected()
-                    }}
                     className="h-14"
+                    onClick={() => onRowClick?.(row)}
                     data-state={row.getIsSelected() && 'selected'}
                 >
                     {row.getVisibleCells().map((cell) => {

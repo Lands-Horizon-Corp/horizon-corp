@@ -4,6 +4,7 @@ import { IDetectedBarcode } from '@yudiel/react-qr-scanner'
 
 import QrScanner from './qr-scanner'
 import Modal, { IModalProps } from '../modals/modal'
+import LoadingSpinner from '../spinners/loading-spinner'
 
 import { cn } from '@/lib'
 import { IQrScanResult } from '@/types'
@@ -26,7 +27,7 @@ const QrCodeScanner = <TData, TErr = string>({
         (results: IDetectedBarcode[]) => {
             if (results.length === 0) return
 
-            if (disableDecode) return onScan(results)
+            if (disableDecode) return onScan?.(results)
 
             try {
                 const parsedQrContent = JSON.parse(
@@ -69,7 +70,14 @@ const QrCodeScanner = <TData, TErr = string>({
             scanDelay={scanDelay}
             paused={paused || pauseOnDecoding ? isPending : undefined}
             {...props}
-        />
+        >
+            {isPending && (
+                <div className="absolute left-0 top-0 flex size-full flex-col items-center justify-center bg-muted/70 text-sm">
+                    <LoadingSpinner />
+                    <p>analyzing qr...</p>
+                </div>
+            )}
+        </QrScanner>
     )
 }
 

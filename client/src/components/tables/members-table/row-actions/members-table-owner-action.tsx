@@ -3,7 +3,7 @@ import { useRouter } from '@tanstack/react-router'
 
 import { IMemberTableActionComponentProp } from '../columns'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
-import { UserClockFillIcon, UserIcon } from '@/components/icons'
+import { EyeIcon, UserClockFillIcon, UserIcon } from '@/components/icons'
 import RowActionsGroup from '@/components/data-table/data-table-row-actions'
 import { MemberCreateUpdateFormModal } from '@/components/forms/member-forms/member-create-update-form'
 import { MemberProfileCreateUpdateFormModal } from '@/components/forms/member-forms/member-application-form/member-profile-create-update-form'
@@ -11,6 +11,7 @@ import { MemberProfileCreateUpdateFormModal } from '@/components/forms/member-fo
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { MemberHistoriesModal } from '@/components/member-histories'
 import { useDeleteMember } from '@/hooks/api-hooks/member/use-member'
+import { MemberOverallInfoModal } from '@/components/member-infos/view-member-info'
 
 interface IMembersTableOwnerActionProps
     extends IMemberTableActionComponentProp {
@@ -25,6 +26,7 @@ const MembersTableOwnerAction = ({
     const member = row.original
     const router = useRouter()
     const [editModal, setEditModal] = useState(false)
+    const [viewOverallInfo, setViewOverallInfo] = useState(false)
     const [viewHistoryModal, setViewHistoryModal] = useState(false)
     const [editAccountModal, setEditAccountModal] = useState(false)
 
@@ -51,6 +53,7 @@ const MembersTableOwnerAction = ({
                             disabledFields: ['companyId'],
                         },
                         memberGenderCreateProps: {},
+                        memberCenterPickerCreateProps: {},
                         memberClassificationCreateProps: {},
                         memberOccupationComboboxCreateProps: {},
                         educationalAttainmentComboboxCreateProps: {},
@@ -70,13 +73,22 @@ const MembersTableOwnerAction = ({
                     }}
                 />
                 {member.memberProfile && (
-                    <MemberHistoriesModal
-                        open={viewHistoryModal}
-                        memberHistoryProps={{
-                            profileId: member.memberProfile?.id,
-                        }}
-                        onOpenChange={setViewHistoryModal}
-                    />
+                    <>
+                        <MemberHistoriesModal
+                            open={viewHistoryModal}
+                            memberHistoryProps={{
+                                profileId: member.memberProfile?.id,
+                            }}
+                            onOpenChange={setViewHistoryModal}
+                        />
+                        <MemberOverallInfoModal
+                            overallInfoProps={{
+                                memberProfileId: member.memberProfile.id,
+                            }}
+                            open={viewOverallInfo}
+                            onOpenChange={setViewOverallInfo}
+                        />
+                    </>
                 )}
             </div>
             <RowActionsGroup
@@ -112,6 +124,15 @@ const MembersTableOwnerAction = ({
                             </DropdownMenuItem>
                         ) : (
                             <>
+                                <DropdownMenuItem
+                                    onClick={() => setViewOverallInfo(true)}
+                                >
+                                    <EyeIcon
+                                        className="mr-2"
+                                        strokeWidth={1.5}
+                                    />
+                                    View Member&apos;s Info
+                                </DropdownMenuItem>
                                 <DropdownMenuItem
                                     onClick={() => setEditModal((val) => !val)}
                                 >

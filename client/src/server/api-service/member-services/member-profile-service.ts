@@ -37,6 +37,18 @@ export default class MemberProfileService {
         ).data
     }
 
+    public static async getById(
+        id: TEntityId,
+        preloads?: string[]
+    ): Promise<IMemberProfileResource> {
+        const url = qs.stringifyUrl({
+            url: `${MemberProfileService.BASE_ENDPOINT}/${id}`,
+            query: { preloads },
+        })
+        const response = await APIService.get<IMemberProfileResource>(url)
+        return response.data
+    }
+
     public static async update(
         id: TEntityId,
         memberData: IMemberProfileRequest,

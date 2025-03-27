@@ -44,7 +44,7 @@ export interface ILongLat {
 export interface ITimeStamps {
     deletedAt?: string | null
     createdAt: string
-    updatedAt: string
+    updatedAt?: string
 }
 
 export type TCivilStatus =

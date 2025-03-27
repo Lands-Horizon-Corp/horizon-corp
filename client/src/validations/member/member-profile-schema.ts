@@ -11,47 +11,54 @@ import { memberGovernmentBenefits } from './member-government-benefits'
 import { memberJointAccountsSchema } from './member-joint-accounts-schema'
 import { memberRelativeAccountsSchema } from './member-relative-accounts-schema'
 import { memberContactReferencesSchema } from './member-contact-number-references-schema'
+import { memberCenterSchema } from './member-center-schema'
 
 export const createMemberProfileSchema = z.object({
     id: entityIdSchema.optional(),
     oldReferenceId: z.string().optional(),
     passbookNumber: z.string().optional(),
 
+    middleName: z.string().optional(),
+    lastName: z.string().min(1, 'Lastname is required'),
+    firstName: z.string().min(1, 'Firstname is required'),
+    suffix: z.string().max(15).optional(),
+
     notes: z.string().min(1, 'Notes are required'),
     description: z.string().min(1, 'Description is required'),
     contactNumber: z.string().min(1, 'Contact number is required'),
-    tinNumber: z.string().optional(),
     civilStatus: z
         .enum(['Married', 'Single', 'Widowed', 'Separated', 'N/A'])
         .default('Single'),
     occupationId: entityIdSchema.optional(),
-    sssNumber: z.string().optional(),
     businessAddress: z.string().optional(),
     businessContact: z.string().optional(),
 
     status: z.enum(['Pending', 'Verified', 'Not Allowed']).default('Pending'),
     isClosed: z.boolean(),
 
-    pagibigNumber: z.string().optional(),
-    philhealthNumber: z.string().optional(),
     isMutualFundMember: z.boolean().default(false),
     isMicroFinanceMember: z.boolean().default(false),
+
+    memberCenterId: entityIdSchema.optional(),
+    memberCenter: memberCenterSchema.optional(),
 
     mediaId: entityIdSchema.optional(),
     memberId: entityIdSchema.optional(),
     media: mediaResourceSchema.optional(),
+
+    signatureMediaId: entityIdSchema.optional(),
+    signatureMedia: mediaResourceSchema.optional(),
 
     memberTypeId: z
         .string()
         .min(1, 'Member Type is required')
         .uuid('Invalid member type'),
     branchId: entityIdSchema.optional(),
-    memberCenterId: entityIdSchema.optional(),
     memberGenderId: entityIdSchema.optional(),
     memberClassificationId: entityIdSchema.optional(),
     memberEducationalAttainmentId: entityIdSchema.optional(),
 
-    memberAddress: z
+    memberAddresses: z
         .array(memberAddressSchema)
         .min(1, 'Must provide at least 1 address'),
 
