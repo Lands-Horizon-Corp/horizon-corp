@@ -180,3 +180,6 @@ export const downloadFile = async (url: string, fileName: string) => {
         console.error('Download failed:', error)
     }
 }
+
+export const capitalize = (text: string) =>
+    text && String(text[0]).toUpperCase() + String(text).slice(1)
