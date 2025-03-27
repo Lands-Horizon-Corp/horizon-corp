@@ -43,59 +43,74 @@ import {
 import EcoopLogo from '@/components/ecoop-logo'
 
 import { IBaseComp } from '@/types/component'
-import { INavItem } from '@/components/app-sidebar/types'
 import AppSidebarUser from '@/components/app-sidebar/app-sidebar-user'
 import AppSidebarItem from '@/components/app-sidebar/app-sidebar-item'
+import { INavGroupItem, INavItem } from '@/components/app-sidebar/types'
 
-const ownerSidebarItem: INavItem[] = [
+const ownerSidebarGroupItems: INavGroupItem[] = [
     {
-        title: 'Dashboard',
-        icon: DashboardIcon,
-        url: '/owner/dashboard',
-        type: 'item',
+        title: 'Home',
+        navItems: [
+            {
+                title: 'Dashboard',
+                icon: DashboardIcon,
+                url: '/owner/dashboard',
+                type: 'item',
+            },
+        ],
     },
     {
-        title: 'Transactions',
-        icon: WalletIcon,
-        type: 'dropdown',
-        url: '/owner/transaction',
-        items: [
+        title: 'Transaction',
+        navItems: [
             {
                 title: 'Deposit Entry',
                 icon: HandDepositIcon,
                 type: 'item',
-                url: '/deposit-entry',
+                url: '/owner/transaction/deposit-entry',
             },
             {
                 icon: HandCoinsIcon,
                 title: 'Payments Entry',
                 type: 'item',
-                url: '/payments-entry',
+                url: '/owner/transaction/payments-entry',
             },
             {
                 icon: HandWithdrawIcon,
                 title: 'Withdrawals',
                 type: 'item',
-                url: '/withdrawals',
+                url: '/owner/transaction/withdrawals',
             },
             {
                 icon: BillIcon,
                 title: 'Payment Types',
                 type: 'item',
-                url: '/payment-types',
+                url: '/owner/transaction/payment-types',
             },
         ],
     },
-
+    {
+        title: 'Accounting',
+        navItems: [
+            {
+                title: 'Accounts',
+                type: 'item',
+                url: '/owner/accounting/accounts',
+                icon: BankIcon,
+            },
+            {
+                icon: BankIcon,
+                type: 'item',
+                title: 'Computation Type',
+                url: '/owner/accounting/computation-type',
+            },
+        ],
+    },
     {
         title: 'Users',
-        icon: Users3Icon,
-        type: 'dropdown',
-        url: '/owner/users',
-        items: [
+        navItems: [
             {
                 title: 'Members',
-                url: '/members',
+                url: '/owner/users/members',
                 icon: UserIcon,
                 type: 'dropdown',
                 items: [
@@ -151,7 +166,7 @@ const ownerSidebarItem: INavItem[] = [
             },
             {
                 title: 'Employees',
-                url: '/employees',
+                url: '/owner/users/employees',
                 type: 'dropdown',
                 icon: UserShieldIcon,
                 items: [
@@ -169,83 +184,65 @@ const ownerSidebarItem: INavItem[] = [
                     },
                 ],
             },
+            {
+                title: 'Roles Management',
+                icon: ShieldIcon,
+                type: 'item',
+                url: '/owner/roles-management',
+            },
         ],
     },
     {
-        title: 'Roles Management',
-        icon: ShieldIcon,
-        type: 'item',
-        url: '/owner/roles-management',
-    },
-    {
         title: 'Company',
-        url: '/owner/company',
-        icon: BuildingIcon,
-        type: 'dropdown',
-        items: [
+        navItems: [
             {
                 title: 'Profile',
                 icon: BuildingCogIcon,
                 type: 'item',
-                url: '/profile',
+                url: '/owner/profile',
             },
             {
                 title: 'Branches',
                 type: 'item',
                 icon: BuildingBranchIcon,
-                url: '/branches',
+                url: '/owner/branches',
             },
         ],
     },
     {
-        title: 'Accounting',
-        icon: BankIcon,
-        url: '/owner/accounting',
-        type: 'dropdown',
-        items: [
+        title: 'Others',
+        navItems: [
             {
-                title: 'Accounts',
+                title: 'Footstep Tracking',
+                icon: FootstepsIcon,
                 type: 'item',
-                url: '/accounts',
-                icon: BankIcon,
+                url: '/owner/footstep-tracking',
             },
             {
-                icon: BankIcon,
+                title: 'Reports',
+                icon: ReportsIcon,
                 type: 'item',
-                title: 'Computation Type',
-                url: '/computation-type',
+                url: '/owner/reports',
+            },
+            {
+                icon: NotificationIcon,
+                title: 'Notifications',
+                type: 'item',
+                url: '/owner/notifications',
+            },
+            {
+                title: 'Profile',
+                icon: UserIcon,
+                type: 'item',
+                url: '/owner/profile',
+            },
+            {
+                title: 'Settings',
+                type: 'item',
+                icon: SettingsIcon,
+                url: '/owner/settings',
             },
         ],
-    },
-    {
-        title: 'Footstep Tracking',
-        icon: FootstepsIcon,
-        type: 'item',
-        url: '/owner/footstep-tracking',
-    },
-    {
-        title: 'Reports',
-        icon: ReportsIcon,
-        type: 'item',
-        url: '/owner/reports',
-    },
-    {
-        icon: NotificationIcon,
-        title: 'Notifications',
-        type: 'item',
-        url: '/owner/notifications',
-    },
-    {
-        title: 'Profile',
-        icon: UserIcon,
-        type: 'item',
-        url: '/owner/profile',
-    },
-    {
-        title: 'Settings',
-        type: 'item',
-        icon: SettingsIcon,
-        url: '/owner/settings',
     },
 ]
 
@@ -272,19 +269,23 @@ const OwnerSidebar = (props: IBaseComp) => {
                 </SidebarMenu>
             </SidebarHeader>
             <SidebarContent className="ecoop-scroll">
-                <SidebarGroup>
-                    <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {ownerSidebarItem.map((navItem, index) => (
-                                <AppSidebarItem
-                                    key={index}
-                                    navItem={{ ...navItem, depth: 1 }}
-                                />
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                {ownerSidebarGroupItems.map((navGroupItem, i) => (
+                    <SidebarGroup key={`${navGroupItem.title}-${i}`}>
+                        <SidebarGroupLabel>
+                            {navGroupItem.title}
+                        </SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {navGroupItem.navItems.map((navItem, index) => (
+                                    <AppSidebarItem
+                                        key={index}
+                                        navItem={{ ...navItem, depth: 1 }}
+                                    />
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
             </SidebarContent>
 
             <SidebarFooter>
