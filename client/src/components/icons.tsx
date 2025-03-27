@@ -4,6 +4,9 @@ import {
     TbMoneybag as MoneyBagIcon,
     TbBlockquote as BlockQuoteIcon,
     TbHeartHandshake as HandShakeHeartIcon,
+    TbSquareF1 as F1Icon,
+    TbSquareF2 as F2Icon,
+    TbSquareF3 as F3Icon,
 } from 'react-icons/tb'
 
 import {
@@ -138,6 +141,7 @@ import {
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
     MdAccountBalance as AccountsIcon,
+    MdOutlineSavings as SavingsIcon,
 } from 'react-icons/md'
 
 import {
@@ -178,6 +182,8 @@ import {
     IoPencilOutline as EditPencilIcon,
     IoLocationSharp as LocationPinIcon,
     IoFootstepsOutline as FootstepsIcon,
+    IoReceiptOutline as ReceiptIcon,
+    IoPrintOutline as PrinterIcon,
 } from 'react-icons/io5'
 
 import {
@@ -426,4 +432,10 @@ export {
     Rotate90DegreeRightIcon,
     BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
+    SavingsIcon,
+    ReceiptIcon,
+    PrinterIcon,
+    F1Icon,
+    F2Icon,
+    F3Icon,
 }

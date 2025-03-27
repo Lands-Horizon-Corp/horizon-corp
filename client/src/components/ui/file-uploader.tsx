@@ -125,6 +125,7 @@ const FileUploader = ({
                 </p>
                 <Button
                     onClick={openFile}
+                    disabled={uploadedFiles.length > 0}
                     variant="outline"
                     className="text-xs"
                     aria-label="Select files"

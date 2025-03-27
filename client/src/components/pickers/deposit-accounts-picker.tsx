@@ -5,38 +5,36 @@ import { PaginationState } from '@tanstack/react-table'
 import GenericPicker from './generic-picker'
 import { Button } from '@/components/ui/button'
 import { BadgeCheckFillIcon, ChevronDownIcon } from '@/components/icons'
-import ImageDisplay from '@/components/image-display'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import MiniPaginationBar from '@/components/pagination-bars/mini-pagination-bar'
+import { TEntityId } from '@/server'
 
 import useFilterState from '@/hooks/use-filter-state'
 import { abbreviateUUID } from '@/utils/formatting-utils'
 import { PAGINATION_INITIAL_INDEX, PICKERS_SELECT_PAGE_SIZE } from '@/constants'
-import { useFilteredPaginatedMembers } from '@/hooks/api-hooks/member/use-member'
-
-import { IMemberResource, TEntityId } from '@/server/types'
-
-import { useMemberPickerStore } from '@/store/use-member-picker-state-store'
-import { useShortcut } from '../use-shorcuts'
+import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
+import { IAccountsResource } from '@/server/types/accounts/accounts'
 
 interface Props {
     value?: TEntityId
     placeholder?: string
     disabled?: boolean
-    onSelect?: (selectedMember: IMemberResource) => void
-    allowShorcutCommand?: boolean
+    onSelect?: (selectedAccount: IAccountsResource) => void
+    pickerState?: boolean
+    setPickerState?: React.Dispatch<React.SetStateAction<boolean>> | undefined
+    disabledButton?: boolean
 }
 
-const MemberPicker = ({
+const DepositAccountPicker = ({
     value,
     disabled,
-    allowShorcutCommand = false,
     placeholder,
     onSelect,
+    pickerState,
+    setPickerState,
+    disabledButton,
 }: Props) => {
     const queryClient = useQueryClient()
-    const { isOpen, setIsOpen, toggle } = useMemberPickerStore()
-
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: PAGINATION_INITIAL_INDEX,
         pageSize: PICKERS_SELECT_PAGE_SIZE,
@@ -52,54 +50,42 @@ const MemberPicker = ({
     })
 
     const { data, isPending, isLoading, isFetching } =
-        useFilteredPaginatedMembers({
+        useFilteredPaginatedAccounts({
             filterPayload: finalFilterPayload,
             pagination,
             enabled: !disabled,
             showMessage: false,
         })
 
-    const selectedMember = data.data.find((member) => member.id === value)
-
-    useShortcut(
-        'Enter',
-        (event) => {
-            event?.preventDefault()
-            if (
-                !selectedMember &&
-                !disabled &&
-                !isPending &&
-                !isLoading &&
-                !isFetching &&
-                allowShorcutCommand
-            ) {
-                toggle()
-            }
-        },
-        { disableTextInputs: true }
-    )
+    const selectedAccount = data.data.find((account) => account.id === value)
 
     return (
         <>
             <GenericPicker
                 items={data.data}
-                open={isOpen}
+                open={pickerState}
                 listHeading={`Matched Results (${data.totalSize})`}
-                searchPlaceHolder="Search name or PB no."
+                searchPlaceHolder="Search deposit account name"
                 isLoading={isPending || isLoading || isFetching}
-                onSelect={(member) => {
-                    queryClient.setQueryData(['member', value], member)
-                    onSelect?.(member)
-                    setIsOpen(false)
+                onSelect={(account) => {
+                    queryClient.setQueryData(
+                        ['deposit-account', value],
+                        account
+                    )
+                    onSelect?.(account)
+                    setPickerState?.(false)
                 }}
-                onOpenChange={setIsOpen}
+                onOpenChange={setPickerState}
                 onSearchChange={(searchValue) => {
                     bulkSetFilter(
                         [
-                            { displayText: 'full name', field: 'fullName' },
                             {
-                                displayText: 'PB',
-                                field: 'memberProfile.passbookNumber',
+                                displayText: 'Type',
+                                field: 'type',
+                            },
+                            {
+                                displayText: 'Type',
+                                field: 'description',
                             },
                         ],
                         {
@@ -110,20 +96,19 @@ const MemberPicker = ({
                         }
                     )
                 }}
-                renderItem={(member) => (
+                renderItem={(account) => (
                     <div className="flex w-full items-center justify-between py-1">
                         <div className="flex items-center gap-x-2">
-                            <ImageDisplay src={member.media?.downloadURL} />
                             <span className="text-ellipsis text-foreground/80">
-                                {member.fullName}{' '}
-                                {member.memberProfile && (
+                                {account.description}{' '}
+                                {account.description && (
                                     <BadgeCheckFillIcon className="ml-2 inline size-2 text-primary" />
                                 )}
                             </span>
                         </div>
 
                         <p className="mr-2 font-mono text-xs italic text-foreground/40">
-                            <span>#{abbreviateUUID(member.id)}</span>
+                            <span>#{abbreviateUUID(account.id)}</span>
                         </p>
                     </div>
                 )}
@@ -144,46 +129,39 @@ const MemberPicker = ({
                     }
                 />
             </GenericPicker>
-            <Button
-                type="button"
-                variant="secondary"
-                disabled={disabled}
-                onClick={toggle}
-                className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
-            >
-                <span className="justify-betweentext-sm inline-flex w-full items-center text-foreground/90">
-                    <span className="inline-flex w-full items-center gap-x-2">
-                        <div>
-                            {isFetching ? (
-                                <LoadingSpinner />
+            {!disabledButton && (
+                <Button
+                    type="button"
+                    variant="secondary"
+                    disabled={disabled}
+                    onClick={() => setPickerState?.(true)}
+                    className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
+                >
+                    <span className="justify-betweentext-sm inline-flex w-full items-center text-foreground/90">
+                        <span className="inline-flex w-full items-center gap-x-2">
+                            <div>{isFetching ? <LoadingSpinner /> : ''}</div>
+                            {!selectedAccount ? (
+                                <span className="text-foreground/70">
+                                    {value ||
+                                        placeholder ||
+                                        'Select deposit account'}
+                                </span>
                             ) : (
-                                <ImageDisplay
-                                    src={selectedMember?.media?.downloadURL}
-                                />
+                                <span>{selectedAccount.description}</span>
                             )}
-                        </div>
-                        {!selectedMember ? (
-                            <span className="text-foreground/70">
-                                {value || placeholder || 'Select member'}
-                            </span>
-                        ) : (
-                            <span>{selectedMember.fullName}</span>
-                        )}
+                        </span>
+                        <span className="mr-1 font-mono text-sm text-foreground/30">
+                            #
+                            {selectedAccount?.id
+                                ? abbreviateUUID(selectedAccount.id)
+                                : '?'}
+                        </span>
                     </span>
-                    {allowShorcutCommand && (
-                        <span className="mr-2 text-sm">⌘ ↵ </span>
-                    )}
-                    <span className="mr-1 font-mono text-sm text-foreground/30">
-                        #
-                        {selectedMember?.id
-                            ? abbreviateUUID(selectedMember.id)
-                            : '?'}
-                    </span>
-                </span>
-                <ChevronDownIcon />
-            </Button>
+                    <ChevronDownIcon />
+                </Button>
+            )}
         </>
     )
 }
 
-export default MemberPicker
+export default DepositAccountPicker

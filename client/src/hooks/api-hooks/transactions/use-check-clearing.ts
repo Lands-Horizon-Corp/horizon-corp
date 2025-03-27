@@ -7,10 +7,14 @@ export const useCreateCheckClearing = ({
     onSuccess,
     onError,
 }: {
-    onSuccess?: (data: ICheckClearingRequest) => void
+    onSuccess?: (data: ICheckClearingRequest[]) => void
     onError?: (error: string) => void
 }) => {
-    return useMutation<ICheckClearingRequest, string, ICheckClearingRequest>({
+    return useMutation<
+        ICheckClearingRequest[],
+        string,
+        ICheckClearingRequest[]
+    >({
         mutationKey: ['check-clearing', 'create'],
         mutationFn: async (paymentData) => {
             try {

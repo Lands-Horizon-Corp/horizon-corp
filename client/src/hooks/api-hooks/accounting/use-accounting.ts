@@ -27,9 +27,7 @@ export const useFilteredPaginatedAccounts = ({
         queryKey: [
             'accounts',
             'resource-query',
-            JSON.stringify(filterPayload),
-            JSON.stringify(pagination),
-            JSON.stringify(sort),
+            { filterPayload, pagination, sort },
         ],
         queryFn: async () => {
             const [error, result] = await withCatchAsync(
