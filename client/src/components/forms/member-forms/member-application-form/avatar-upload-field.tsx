@@ -22,7 +22,7 @@ export interface AvatarUploadFieldProps {
 export const AvatarUploadField = forwardRef<
     HTMLButtonElement,
     AvatarUploadFieldProps
->(({ mediaImage, description, onChange }) => {
+>(({ mediaImage, description, onChange }, ref) => {
     const [uploaderModal, setUploaderModal] = useState(false)
 
     return (
@@ -61,6 +61,7 @@ export const AvatarUploadField = forwardRef<
                     side="right"
                 >
                     <Button
+                        ref={ref}
                         variant="secondary"
                         onClick={() => setUploaderModal((val) => !val)}
                         className="absolute bottom-2 right-2 size-fit rounded-full border border-transparent p-1 hover:border-foreground/20"

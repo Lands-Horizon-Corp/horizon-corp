@@ -14,28 +14,25 @@ export interface INavItemSingle extends INavItemBase {
     type: 'item'
 }
 
-type ExceededDepthError = never
-
-type TDepth = {
-    3: 2
-    2: 1
-    1: 0
-    0: ExceededDepthError
-}
-
-export interface INavItemDropdown<D extends keyof TDepth = 3>
-    extends INavItemBase {
+export interface INavItemDropdown extends INavItemBase {
     type: 'dropdown'
-    items: D extends 1
-        ? INavItemSingle[]
-        : [INavItem<TDepth[D]>, ...INavItem<TDepth[D]>[]]
+    items: INavItem[]
 }
 
-export type INavItem<D extends keyof TDepth = 2> = D extends 0
-    ? never
-    : INavItemDropdown<D> | INavItemSingle
+export type INavItem = INavItemDropdown | INavItemSingle
 
 export interface INavGroupItem {
     title: string
     navItems: INavItem[]
+}
+
+// Beyond this point, this is for sidebar quick navigation
+
+interface IQuickSearchItem extends INavItemBase {
+    onClick?: (self: IQuickSearchItem) => void
+}
+
+export type TQuickSearchGroup = {
+    title: string
+    items: IQuickSearchItem[]
 }
