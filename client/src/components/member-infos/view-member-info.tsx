@@ -7,7 +7,9 @@ import {
     UserCogIcon,
     UserTagIcon,
     CreditCardIcon,
+    FolderFillIcon,
 } from '../icons'
+import MemberMediasInfo from './member-medias-info'
 import Modal, { IModalProps } from '../modals/modal'
 import MemberPersonalInfo from './member-personal-info'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
@@ -55,6 +57,12 @@ const memberInfoTabs: {
         title: 'Government Benefits',
         Icon: UserCogIcon,
         Component: (props) => <MemberGovernmentBenefits {...props} />,
+    },
+    {
+        value: 'medias',
+        title: "Member Media's",
+        Icon: FolderFillIcon,
+        Component: (props) => <MemberMediasInfo {...props} />,
     },
     {
         value: 'financial',

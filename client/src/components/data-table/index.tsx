@@ -11,7 +11,7 @@ import {
 
 import { arrayMove } from '@dnd-kit/sortable'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
-import { Table as TableInstance } from '@tanstack/react-table'
+import { Row, Table as TableInstance } from '@tanstack/react-table'
 
 import { Table } from '../ui/table'
 import DataTableBody from './data-table-body'
@@ -28,6 +28,7 @@ interface ITableProps<TData> extends IBaseCompNoChild {
     isStaticWidth?: boolean
     isStickyHeader?: boolean
     isStickyFooter?: boolean
+    onRowClick?: (row: Row<TData>) => void
     setColumnOrder?: React.Dispatch<React.SetStateAction<string[]>>
 }
 
@@ -39,6 +40,9 @@ const DataTable = <TData,>({
     isStickyFooter,
     isStaticWidth = false,
     setColumnOrder,
+    onRowClick = (row) => {
+        row.toggleSelected()
+    },
 }: ITableProps<TData>) => {
     const handleDragEnd = (event: DragEndEvent) => {
         if (!setColumnOrder) return
@@ -88,8 +92,9 @@ const DataTable = <TData,>({
                     headerGroups={table.getHeaderGroups()}
                 />
                 <DataTableBody
-                    colCount={table.getVisibleLeafColumns().length}
+                    onRowClick={onRowClick}
                     rows={table.getRowModel().rows}
+                    colCount={table.getVisibleLeafColumns().length}
                 />
                 <DataTableFooter
                     table={table}
