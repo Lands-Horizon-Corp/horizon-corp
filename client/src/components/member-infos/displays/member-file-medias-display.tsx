@@ -1,10 +1,10 @@
-import { useMemo } from 'react'
 import {
     ColumnDef,
     useReactTable,
     getCoreRowModel,
     getSortedRowModel,
 } from '@tanstack/react-table'
+import { useMemo } from 'react'
 
 import SectionTitle from '../section-title'
 import DataTable from '@/components/data-table'
@@ -25,7 +25,6 @@ import { usePagination } from '@/hooks/use-pagination'
 import { useMemberMedias } from '@/hooks/api-hooks/member/use-member'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
-import { abbreviateUUID } from '@/utils/formatting-utils'
 
 interface Props extends IBaseCompNoChild {
     memberId?: TEntityId
