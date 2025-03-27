@@ -14,6 +14,8 @@ import useFilterState from '@/hooks/use-filter-state'
 import { TEntityId } from '@/server/types'
 import { IAccountsResource } from '@/server/types/accounts/accounts'
 import { useFilteredPaginatedAccounts } from '@/hooks/api-hooks/accounting/use-accounting'
+import useIsFocused from '../ui/use-isFocused'
+import { useShortcut } from '../use-shorcuts'
 
 interface Props {
     value?: TEntityId
@@ -38,6 +40,8 @@ const AccountsPicker = ({
         pageSize: PAGINATION_INITIAL_PAGE_SIZE,
     })
 
+    const { isFocused, ref } = useIsFocused()
+
     const { finalFilterPayload, setFilter } = useFilterState({
         onFilterChange: () =>
             setPagination((prev) => ({
@@ -53,6 +57,14 @@ const AccountsPicker = ({
             enabled: !disabled,
             showMessage: false,
         })
+
+    useShortcut('Enter', async (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        if (isFocused && !isLoading && !isFetching && !isPending) {
+            setPickerState((val) => !val)
+        }
+    })
 
     return (
         <>
@@ -105,6 +117,7 @@ const AccountsPicker = ({
                 type="button"
                 variant="secondary"
                 disabled={disabled}
+                ref={ref}
                 onClick={() => setPickerState((val) => !val)}
                 className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
             >

@@ -1,4 +1,4 @@
-import PaymentsEntryService from '@/server/api-service/transactions/payments-entry'
+import PaymentsEntryService from '@/server/api-service/transactions/payments-entry-service'
 import { IPaymentsEntryRequest } from '@/server/types/transactions/payments-entry'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -7,10 +7,14 @@ export const useCreatePaymentEntry = ({
     onSuccess,
     onError,
 }: {
-    onSuccess?: (data: IPaymentsEntryRequest) => void
+    onSuccess?: (data: IPaymentsEntryRequest[]) => void
     onError?: (error: string) => void
 }) => {
-    return useMutation<IPaymentsEntryRequest, string, IPaymentsEntryRequest>({
+    return useMutation<
+        IPaymentsEntryRequest[],
+        string,
+        IPaymentsEntryRequest[]
+    >({
         mutationKey: ['payments-entry', 'create'],
         mutationFn: async (paymentData) => {
             try {

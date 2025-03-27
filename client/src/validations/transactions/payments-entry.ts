@@ -4,7 +4,6 @@ import { z } from 'zod'
 export const DEFAULT_TRANSACTION_TYPE = 'trans-pay-001'
 
 export const paymentsEntrySchema = z.object({
-    ORNumber: z.string().min(1, 'OR Number is required'),
     amount: z.preprocess(
         (val) => {
             if (typeof val === 'string') {

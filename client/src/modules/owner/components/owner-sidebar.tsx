@@ -64,22 +64,10 @@ const ownerSidebarGroupItems: INavGroupItem[] = [
         title: 'Transaction',
         navItems: [
             {
-                title: 'Deposit Entry',
-                icon: HandDepositIcon,
-                type: 'item',
-                url: '/owner/transaction/deposit-entry',
-            },
-            {
                 icon: HandCoinsIcon,
-                title: 'Payments Entry',
+                title: 'Fund Movement',
                 type: 'item',
-                url: '/owner/transaction/payments-entry',
-            },
-            {
-                icon: HandWithdrawIcon,
-                title: 'Withdrawals',
-                type: 'item',
-                url: '/owner/transaction/withdrawals',
+                url: '/owner/transaction/fund-movement',
             },
             {
                 icon: BillIcon,
