@@ -11,7 +11,7 @@ const OwnerLayout = () => {
             <SidebarProvider>
                 <OwnerSidebar />
                 <SidebarInset className="ecoop-scroll max-h-[98vh] w-full overflow-y-auto">
-                    <UserNav className="sticky top-0 bg-background z-50" />
+                    <UserNav className="sticky top-0 z-50 bg-background" />
                     <main className="">
                         <Outlet />
                     </main>
