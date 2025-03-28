@@ -12,7 +12,7 @@ const AdminLayout = () => {
                 <AdminSidebar />
                 <SidebarInset className="ecoop-scroll max-h-[98vh] w-full overflow-y-auto">
                     <UserNav className="sticky top-0 bg-background" />
-                    <main className="">
+                    <main className="relative">
                         <Outlet />
                     </main>
                 </SidebarInset>

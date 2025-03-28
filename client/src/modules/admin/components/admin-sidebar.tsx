@@ -1,8 +1,8 @@
-import { Link } from '@tanstack/react-router'
+import { useMemo } from 'react'
+import { Link, useRouter } from '@tanstack/react-router'
 
 import {
     UserIcon,
-    Users3Icon,
     SettingsIcon,
     FeedbackIcon,
     DashboardIcon,
@@ -24,80 +24,102 @@ import {
     SidebarGroupContent,
 } from '@/components/ui/sidebar'
 import EcoopLogo from '@/components/ecoop-logo'
+import { INavGroupItem } from '@/components/app-sidebar/types'
 import AppSidebarItem from '@/components/app-sidebar/app-sidebar-item'
+import AppSidebarUser from '@/components/app-sidebar/app-sidebar-user'
+import { flatSidebarGroupItem } from '@/components/app-sidebar/app-sidebar-utils'
+import AppSidebarQruickNavigate from '@/components/app-sidebar/app-sidebar-quick-navigate'
 
 import { IBaseComp } from '@/types/component'
-import { INavItem } from '@/components/app-sidebar/types'
-import AppSidebarUser from '@/components/app-sidebar/app-sidebar-user'
 
-export const adminSidebarItems: INavItem[] = [
+export const adminSidebarGroupItems: INavGroupItem[] = [
     {
-        title: 'Dashboard',
-        icon: DashboardIcon,
-        url: '/admin/dashboard',
-        type: 'item',
+        title: 'home',
+        navItems: [
+            {
+                title: 'Dashboard',
+                icon: DashboardIcon,
+                url: '/admin/dashboard',
+                type: 'item',
+            },
+        ],
     },
     {
-        title: 'Members Management',
-        icon: Users3Icon,
-        type: 'dropdown',
-        url: '/admin/members-management',
-        items: [
+        title: 'Users',
+        navItems: [
             {
                 title: 'View Members',
-                url: '/view-members',
+                url: '/admin/members-management/view-members',
                 icon: UserIcon,
                 type: 'item',
             },
         ],
     },
     {
-        title: 'Companies Management',
-        icon: BuildingBranchIcon,
-        type: 'dropdown',
-        url: '/admin/companies-management',
-        items: [
+        title: 'Company Management',
+        navItems: [
             {
                 title: 'View Companies',
-                url: '/view-companies',
+                url: '/admin/companies-management/view-companies',
                 icon: BuildingBranchIcon,
                 type: 'item',
             },
         ],
     },
     {
-        title: 'Footstep Tracking',
-        icon: FootstepsIcon,
-        type: 'item',
-        url: '/admin/footstep-tracking',
-    },
-    {
-        title: 'Profile',
-        icon: UserIcon,
-        type: 'item',
-        url: '/admin/profile',
-    },
-    {
-        title: 'Notifications',
-        icon: NotificationIcon,
-        type: 'item',
-        url: '/admin/notifications',
-    },
-    {
-        title: 'Feedbacks',
-        icon: FeedbackIcon,
-        type: 'item',
-        url: '/admin/feedbacks',
-    },
-    {
-        title: 'Settings',
-        icon: SettingsIcon,
-        type: 'item',
-        url: '/admin/settings',
+        title: 'Management',
+        navItems: [
+            {
+                title: 'Footstep Tracking',
+                icon: FootstepsIcon,
+                type: 'item',
+                url: '/admin/footstep-tracking',
+            },
+            {
+                title: 'Profile',
+                icon: UserIcon,
+                type: 'item',
+                url: '/admin/profile',
+            },
+            {
+                title: 'Notifications',
+                icon: NotificationIcon,
+                type: 'item',
+                url: '/admin/notifications',
+            },
+            {
+                title: 'Feedbacks',
+                icon: FeedbackIcon,
+                type: 'item',
+                url: '/admin/feedbacks',
+            },
+            {
+                title: 'Settings',
+                icon: SettingsIcon,
+                type: 'item',
+                url: '/admin/settings',
+            },
+        ],
     },
 ]
 
 const AdminSidebar = (props: IBaseComp) => {
+    const router = useRouter()
+
+    const item = useMemo(
+        () =>
+            flatSidebarGroupItem(adminSidebarGroupItems).map((item) => ({
+                ...item,
+                items: item.items.map((itm) => ({
+                    ...itm,
+                    onClick: (self: typeof itm) => {
+                        router.navigate({ to: self.url })
+                    },
+                })),
+            })),
+        [router]
+    )
+
     return (
         <Sidebar variant="inset" {...props}>
             <SidebarHeader>
@@ -118,21 +140,26 @@ const AdminSidebar = (props: IBaseComp) => {
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
+                <AppSidebarQruickNavigate groups={item} />
             </SidebarHeader>
             <SidebarContent className="ecoop-scroll">
-                <SidebarGroup>
-                    <SidebarGroupLabel>Navigation</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            {adminSidebarItems.map((navItem, index) => (
-                                <AppSidebarItem
-                                    key={index}
-                                    navItem={{ ...navItem, depth: 1 }}
-                                />
-                            ))}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                {adminSidebarGroupItems.map((navGroupItem, i) => (
+                    <SidebarGroup key={`${navGroupItem.title}-${i}`}>
+                        <SidebarGroupLabel>
+                            {navGroupItem.title}
+                        </SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {navGroupItem.navItems.map((navItem, index) => (
+                                    <AppSidebarItem
+                                        key={index}
+                                        navItem={{ ...navItem, depth: 1 }}
+                                    />
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                ))}
             </SidebarContent>
             <SidebarFooter>
                 <AppSidebarUser />
