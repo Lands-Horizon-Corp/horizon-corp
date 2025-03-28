@@ -6,6 +6,7 @@ import { useImagePreview } from '@/store/image-preview-store'
 import { useCallback } from 'react'
 import { Image2Icon } from '../icons'
 import { IMemberResource } from '@/server'
+import CopyTextButton from '@/components/copy-text-button'
 
 type PaymentsEntryProfileProps = {
     profile: IMemberResource | null
@@ -34,7 +35,7 @@ const PaymentsEntryProfile = ({ profile }: PaymentsEntryProfileProps) => {
     const { id, memberProfile, fullName, permanentAddress, media } = profile
 
     return (
-        <Card className="flex items-center gap-6 rounded-2xl p-6 shadow-md">
+        <Card className="flex items-center gap-6 rounded-2xl p-5 shadow-md">
             <div className="relative h-32 w-32 overflow-hidden rounded-2xl">
                 {media?.url ? (
                     <img
@@ -63,7 +64,15 @@ const PaymentsEntryProfile = ({ profile }: PaymentsEntryProfileProps) => {
                         {fullName}
                     </h2>
                     <p className="text-sm text-gray-500">
-                        Passbook No: {memberProfile?.passbookNumber}
+                        <span className="text-xs font-light">
+                            {' '}
+                            Passbook No:
+                        </span>{' '}
+                        {memberProfile?.passbookNumber}
+                        <CopyTextButton
+                            className="ml-2"
+                            textContent={memberProfile?.passbookNumber ?? ''}
+                        />
                     </p>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                         <Link

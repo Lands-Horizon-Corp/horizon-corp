@@ -17,6 +17,8 @@ import { useFilteredPaginatedTransactionPaymentTypes } from '@/hooks/api-hooks/t
 import { ITransactionPaymentTypesResource } from '@/server/types/transactions/transaction-payment-types'
 import React from 'react'
 import { DEFAULT_TRANSACTION_TYPE } from '@/validations/transactions/payments-entry'
+import useIsFocused from '../ui/use-isFocused'
+import { useShortcut } from '../use-shorcuts'
 
 interface Props {
     value?: TEntityId
@@ -34,11 +36,13 @@ const TransactionPaymentTypesPicker = ({
     disabled,
     onSelect,
     leftIcon,
-    defaultValue,
 }: Props) => {
     const [pickerState, setPickerState] = useState(false)
     const [selectedTransactionType, setSelectedTransactionType] =
         useState<ITransactionPaymentTypesResource>()
+
+    const { isFocused, ref } = useIsFocused()
+
     const [pagination, setPagination] = useState<PaginationState>({
         pageIndex: PAGINATION_INITIAL_INDEX,
         pageSize: PAGINATION_INITIAL_PAGE_SIZE,
@@ -63,6 +67,14 @@ const TransactionPaymentTypesPicker = ({
     const defaultSelected = data.data.find(
         (item) => item.id === DEFAULT_TRANSACTION_TYPE
     )?.name
+
+    useShortcut('Enter', async (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        if (isFocused && !isPending && !isFetching && !isLoading) {
+            setPickerState((val) => !val)
+        }
+    })
 
     return (
         <>
@@ -118,9 +130,11 @@ const TransactionPaymentTypesPicker = ({
                 />
             </GenericPicker>
             <Button
+                ref={ref}
                 type="button"
                 variant="secondary"
                 disabled={disabled}
+                id="transaction-type-picker"
                 onClick={() => setPickerState((val) => !val)}
                 className="w-full items-center justify-between rounded-md border bg-background p-0 px-2"
             >
@@ -129,15 +143,13 @@ const TransactionPaymentTypesPicker = ({
                         <span className="mr-2 flex-shrink-0">{leftIcon}</span>
                     )}
                     <span className="flex w-full items-center gap-x-2 overflow-hidden">
-                        {!value ? (
+                        {value === DEFAULT_TRANSACTION_TYPE ? (
                             <span className="truncate text-sm text-foreground">
                                 {defaultSelected}
                             </span>
                         ) : (
                             <span className="truncate font-mono text-sm text-foreground">
-                                {defaultValue && !selectedTransactionType
-                                    ? defaultSelected
-                                    : selectedTransactionType?.name}
+                                {selectedTransactionType?.name}
                             </span>
                         )}
                     </span>

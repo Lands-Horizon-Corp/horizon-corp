@@ -1,11 +1,6 @@
-import * as React from 'react'
 import { Check } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover'
 import {
     Command,
     CommandItem,
@@ -14,11 +9,20 @@ import {
     CommandGroup,
     CommandInput,
 } from '@/components/ui/command'
-import { cn } from '@/lib/utils'
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover'
 import { ChevronDownIcon } from '../icons'
 import { Button } from '@/components/ui/button'
 
-import { getBarangaysByMunicipality } from '@/helpers/address'
+import { cn } from '@/lib/utils'
+
+type TGovernmentBenefitItem = {
+    text: string
+    value: string
+}
 
 interface Props {
     id?: string
@@ -27,24 +31,25 @@ interface Props {
     disabled?: boolean
     className?: string
     placeholder?: string
-    municipality?: string
+    governmentBenefitsList: TGovernmentBenefitItem[]
     onChange?: (selected: string) => void
 }
 
-const BarangayCombobox = ({
+const GovernmentBenefitsCombobox = ({
     value,
     className,
-    municipality,
     disabled = false,
-    placeholder = 'Select Barangay...',
+    governmentBenefitsList,
+    placeholder = 'Select Government Id...',
     onChange,
     ...other
 }: Props) => {
-    const [open, setOpen] = React.useState(false)
+    const [open, setOpen] = useState(false)
 
-    const barangays = React.useMemo(() => {
-        return municipality ? getBarangaysByMunicipality(municipality) : []
-    }, [municipality])
+    const selectedItem = useMemo(
+        () => governmentBenefitsList.find((govBen) => govBen.value === value),
+        [value, governmentBenefitsList]
+    )
 
     return (
         <Popover modal open={open} onOpenChange={setOpen}>
@@ -59,7 +64,7 @@ const BarangayCombobox = ({
                     className={cn('w-full justify-between px-3', className)}
                 >
                     <span className="capitalize">
-                        {value?.toLowerCase() || placeholder}
+                        {selectedItem?.text || placeholder}
                     </span>
                     <ChevronDownIcon className="opacity-50" />
                 </Button>
@@ -73,22 +78,22 @@ const BarangayCombobox = ({
                     <CommandList className="ecoop-scroll">
                         <CommandEmpty>No Barangay found.</CommandEmpty>
                         <CommandGroup>
-                            {barangays.map((barangay) => (
+                            {governmentBenefitsList.map((govBenefits) => (
                                 <CommandItem
-                                    key={barangay}
-                                    value={barangay}
+                                    key={govBenefits.value}
+                                    value={govBenefits.value}
                                     onSelect={() => {
                                         setOpen(false)
-                                        onChange?.(barangay)
+                                        onChange?.(govBenefits.value)
                                     }}
                                 >
                                     <span className="capitalize">
-                                        {barangay}
+                                        {govBenefits.text}
                                     </span>
                                     <Check
                                         className={cn(
                                             'ml-auto',
-                                            value === barangay
+                                            value === govBenefits.value
                                                 ? 'opacity-100'
                                                 : 'opacity-0'
                                         )}
@@ -103,7 +108,7 @@ const BarangayCombobox = ({
     )
 }
 
-export default BarangayCombobox
+export default GovernmentBenefitsCombobox
 
 // NOTE: THE CODE BELLOW COMPOSE OF INPUT & COMBOBOX BARANGAY
 // This enables the user to input barangay if not in choices

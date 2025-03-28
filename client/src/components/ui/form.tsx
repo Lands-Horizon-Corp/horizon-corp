@@ -152,7 +152,7 @@ const FormMessage = React.forwardRef<
 
     if (Array.isArray(error)) {
         const errs = error as FieldError[]
-        body = errs[0].message
+        body = errs[error.length - 1].message ?? ''
     } else {
         body = error ? String(error?.message) : children
     }

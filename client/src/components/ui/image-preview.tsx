@@ -223,9 +223,6 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
     const [startPosition, setStartPosition] = useState({ x: 0, y: 0 })
     const animationFrameId = useRef<number | null>(null)
 
-    // console.log('isDragging', isDragging)
-    //  console.log('previewPosition', previewPosition)
-
     const onMouseDown = (e: React.MouseEvent<HTMLImageElement>) => {
         if (e.button !== 0 || scale <= 1) return
 
@@ -310,10 +307,13 @@ const ImageContainer: React.FC<ImageContainerProps> = ({
                     onLoad={handleImageLoad}
                     style={{
                         width: '70%',
-                        height: 'auto',
+                        height: '100%',
+                        maxHeight: '100vh',
                         transform: `scale(${scale}) translate(${previewPosition.x}px, ${previewPosition.y}px) rotate(${rotateDegree}deg) ${flipScale}`,
                         transition: 'transform 0.1s ease-in-out',
                         cursor: isDragging ? 'grabbing' : 'move',
+                        objectFit: 'cover',
+                        backgroundSize: 'cover',
                     }}
                     onMouseDown={onMouseDown}
                     crossOrigin="anonymous"
@@ -666,9 +666,9 @@ const ImagePreviewContent = React.forwardRef<
                             <Carousel
                                 opts={options}
                                 setApi={setApi}
-                                className="flex h-fit w-full max-w-4xl bg-transparent"
+                                className="flex h-fit w-full max-w-4xl justify-center bg-transparent"
                             >
-                                <CarouselContent className="">
+                                <CarouselContent>
                                     {Images.map((data, index) => {
                                         return (
                                             <CarouselItem

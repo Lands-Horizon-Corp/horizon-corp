@@ -76,29 +76,27 @@ const ContactNumbersDisplay = ({ className, contactNumbers }: Props) => {
                                         Date Edited
                                     </p>
                                 </div>
-                                <div className="col-span-4 space-y-2">
-                                    <Accordion
-                                        type="single"
-                                        collapsible
-                                        className="w-full"
+                                <Accordion
+                                    type="single"
+                                    collapsible
+                                    className="col-span-4 w-full"
+                                >
+                                    <AccordionItem
+                                        value="item-1"
+                                        className="border-b-0"
                                     >
-                                        <AccordionItem
-                                            value="item-1"
-                                            className="border-b-0"
-                                        >
-                                            <AccordionTrigger className="text-sm text-muted-foreground/60">
-                                                Description..
-                                            </AccordionTrigger>
-                                            <AccordionContent className="space-y-4 rounded-xl bg-popover p-4">
-                                                <RawDescription
-                                                    content={
-                                                        contactNumberReference.description
-                                                    }
-                                                />
-                                            </AccordionContent>
-                                        </AccordionItem>
-                                    </Accordion>
-                                </div>
+                                        <AccordionTrigger className="text-sm text-muted-foreground/60">
+                                            Description..
+                                        </AccordionTrigger>
+                                        <AccordionContent className="space-y-4 rounded-xl bg-popover p-4">
+                                            <RawDescription
+                                                content={
+                                                    contactNumberReference.description
+                                                }
+                                            />
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                </Accordion>
                             </div>
                         </div>
                     ))}

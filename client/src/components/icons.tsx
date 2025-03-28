@@ -1,8 +1,12 @@
 import {
     TbMinus as MinusIcon,
     TbSunMoon as SunMoonIcon,
+    TbMoneybag as MoneyBagIcon,
     TbBlockquote as BlockQuoteIcon,
     TbHeartHandshake as HandShakeHeartIcon,
+    TbSquareF1 as F1Icon,
+    TbSquareF2 as F2Icon,
+    TbSquareF3 as F3Icon,
 } from 'react-icons/tb'
 
 import {
@@ -84,6 +88,7 @@ import {
 import {
     HiOutlineSun as SunIcon,
     HiOutlineMoon as MoonIcon,
+    HiFolder as FolderFillIcon,
     HiPencil as PencilFillIcon,
     HiOutlineCog as SettingsIcon,
     HiOutlineCodeBracket as DevIcon,
@@ -136,6 +141,7 @@ import {
     MdOutlineRotate90DegreesCw as Rotate90DegreeRightIcon,
     MdOutlineRotate90DegreesCcw as Rotate90DegreeLeftIcon,
     MdAccountBalance as AccountsIcon,
+    MdOutlineSavings as SavingsIcon,
 } from 'react-icons/md'
 
 import {
@@ -144,7 +150,16 @@ import {
     BsZoomOut as ZoomOutIcon,
     BsCameraFill as CameraFillIcon,
     BsPatchCheck as VerifiedPatchIcon,
+    BsFileEarmarkFill as FileFillIcon,
     BsPatchQuestion as BadgeQuestionIcon,
+    BsFileEarmarkPdfFill as PDFFileFillIcon,
+    BsFileEarmarkTextFill as TextFileFillIcon,
+    BsFileEarmarkPlayFill as VideoFileFillIcon,
+    BsFileEarmarkMusicFill as MusicFileFillIcon,
+    BsFileEarmarkImageFill as ImageFileFillIcon,
+    BsFileEarmarkExcelFill as ExcelFileFillIcon,
+    BsFileEarmarkWordFill as DocumentFileFillIcon,
+    BsFileEarmarkSpreadsheetFill as SpreadSheetFileIcon,
     BsPatchQuestionFill as BadgeQuestionFillIcon,
     BsPatchMinusFill as BadgeMinusIcon,
     BsFillPatchMinusFill as BadgeMinusFillIcon,
@@ -167,6 +182,8 @@ import {
     IoPencilOutline as EditPencilIcon,
     IoLocationSharp as LocationPinIcon,
     IoFootstepsOutline as FootstepsIcon,
+    IoReceiptOutline as ReceiptIcon,
+    IoPrintOutline as PrinterIcon,
 } from 'react-icons/io5'
 
 import {
@@ -192,6 +209,7 @@ import {
 import {
     FaVenusMars as GendersIcon,
     FaChartPie as PieChartIcon,
+    FaBoxesStacked as BoxesStackedIcon,
     FaAddressCard as AddressCardIcon,
 } from 'react-icons/fa6'
 
@@ -230,6 +248,9 @@ import {
 import { BiErrorCircle as WarningIcon } from 'react-icons/bi'
 
 import { SlOptions as OptionsIcon } from 'react-icons/sl'
+
+import { GrMoney as CoinsStackIcon } from 'react-icons/gr'
+
 // Export section
 export {
     XIcon,
@@ -306,7 +327,9 @@ export {
     BuildingIcon,
     DownloadIcon,
     CalendarIcon,
+    FileFillIcon,
     UsersAddIcon,
+    MoneyBagIcon,
     HandCoinsIcon,
     MapMarkedIcon,
     CodeBlockIcon,
@@ -320,6 +343,8 @@ export {
     DashboardIcon,
     IoIosCodeIcon,
     TelephoneIcon,
+    FolderFillIcon,
+    CoinsStackIcon,
     PencilFillIcon,
     SmallBrushIcon,
     FullscreenIcon,
@@ -345,9 +370,12 @@ export {
     LocationPinIcon,
     HandDepositIcon,
     ChevronDownIcon,
+    PDFFileFillIcon,
     BankDuoToneIcon,
+    BoxesStackedIcon,
     NotificationIcon,
     ChevronsLeftIcon,
+    TextFileFillIcon,
     PhoneOutlineIcon,
     FlipVerticalIcon,
     FunnelFilledIcon,
@@ -358,6 +386,10 @@ export {
     SidebarRightIcon,
     HandWithdrawIcon,
     BadgeQuestionIcon,
+    VideoFileFillIcon,
+    MusicFileFillIcon,
+    ImageFileFillIcon,
+    ExcelFileFillIcon,
     GraduationCapIcon,
     RotateBoxLeftIcon,
     ToolbarItalicIcon,
@@ -382,6 +414,7 @@ export {
     FullscreenExitIcon,
     MessageOutlineIcon,
     MagnifyingGlassIcon,
+    SpreadSheetFileIcon,
     HardDriveUploadIcon,
     ListBulletsBoldIcon,
     MixerHorizontalIcon,
@@ -390,6 +423,7 @@ export {
     OpenExternalLinkIcon,
     FlipVerticalLineIcon,
     BadgeExclamationIcon,
+    DocumentFileFillIcon,
     BadgeQuestionFillIcon,
     LocationPinOutlineIcon,
     QuestionCircleFillIcon,
@@ -398,4 +432,10 @@ export {
     Rotate90DegreeRightIcon,
     BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
+    SavingsIcon,
+    ReceiptIcon,
+    PrinterIcon,
+    F1Icon,
+    F2Icon,
+    F3Icon,
 }

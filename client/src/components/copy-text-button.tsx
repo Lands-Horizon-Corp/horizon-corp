@@ -1,5 +1,5 @@
 import { toast } from 'sonner'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { CheckIcon, CopyIcon } from './icons'
 
 import { cn } from '@/lib'
@@ -17,15 +17,15 @@ interface Props<TErr = unknown> {
 const CopyTextButton = <TErr = unknown,>({
     className,
     textContent,
-    successClassName,
     successText,
+    successClassName,
     copyInterval = 2500,
     onCopyError,
     onCopySuccess,
 }: Props<TErr>) => {
     const [copied, setCopied] = useState(false)
 
-    const handleCopy = () => {
+    const handleCopy = useCallback(() => {
         navigator.clipboard
             .writeText(textContent)
             .then(() => {
@@ -38,7 +38,7 @@ const CopyTextButton = <TErr = unknown,>({
                 onCopyError?.(err)
                 toast.error('Sorry, Failed to copy')
             })
-    }
+    }, [copyInterval, onCopyError, onCopySuccess, successText, textContent])
 
     if (copied)
         return (
@@ -52,13 +52,16 @@ const CopyTextButton = <TErr = unknown,>({
         )
 
     return (
-        <CopyIcon
-            onClick={() => handleCopy()}
-            className={cn(
-                'inline cursor-pointer duration-150 ease-in-out hover:text-foreground',
-                className
-            )}
-        />
+        <>
+            <CopyIcon
+                onClick={() => handleCopy()}
+                className={cn(
+                    'inline cursor-pointer text-foreground/40 duration-150 ease-in-out hover:text-foreground',
+                    copied && 'pointer-events-none',
+                    className
+                )}
+            />
+        </>
     )
 }
 

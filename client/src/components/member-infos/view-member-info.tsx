@@ -7,10 +7,13 @@ import {
     UserCogIcon,
     UserTagIcon,
     CreditCardIcon,
+    FolderFillIcon,
 } from '../icons'
+import MemberMediasInfo from './member-medias-info'
 import Modal, { IModalProps } from '../modals/modal'
 import MemberPersonalInfo from './member-personal-info'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
+import MemberFinancialInfo from './member-financial-info'
 import MemberInfoBanner from './banners/member-info-banner'
 import MemberMembershipInfo from './member-general-membership-info'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs'
@@ -56,14 +59,16 @@ const memberInfoTabs: {
         Component: (props) => <MemberGovernmentBenefits {...props} />,
     },
     {
+        value: 'medias',
+        title: "Member Media's",
+        Icon: FolderFillIcon,
+        Component: (props) => <MemberMediasInfo {...props} />,
+    },
+    {
         value: 'financial',
         title: 'Financial',
         Icon: CreditCardIcon,
-        Component: () => (
-            <div className="flex min-h-[90%] flex-1 flex-col gap-y-4 rounded-xl bg-background p-4">
-                <p className="text-sm">Financial Info</p>
-            </div>
-        ),
+        Component: (props) => <MemberFinancialInfo {...props} />,
     },
     {
         value: 'accounts',

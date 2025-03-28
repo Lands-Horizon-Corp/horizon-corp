@@ -75,6 +75,12 @@ import { cn } from '@/lib'
 import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
 import logger from '@/helpers/loggers/logger'
+import GovernmentBenefitsCombobox from '@/components/comboboxes/government-benefits-combobox'
+import { philippinesCards } from '@/constants'
+import { CountryCombobox } from '@/components/comboboxes/country-combobox'
+import MemberCenterPicker, {
+    IMemberCenterPickerCreateProps,
+} from '@/components/pickers/member-center-picker'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -87,6 +93,7 @@ interface IMemberProfileCreateUpdateFormProps
     // Since this form uses pickers and other stuff, they might have create capabilities
     branchPickerCreateProps?: IBranchPickerCreateProps
     memberGenderCreateProps?: IGenderSelectCreateProps
+    memberCenterPickerCreateProps?: IMemberCenterPickerCreateProps
     memberClassificationCreateProps?: IMemberClassificationComboboxCreateProps
     memberOccupationComboboxCreateProps?: IMemberOccupationComboboxCreateProps
     educationalAttainmentComboboxCreateProps?: IMemberEducationalAttainmentComboboxCreateProps
@@ -152,6 +159,7 @@ const MemberProfileCreateUpdateForm = ({
     branchPickerCreateProps,
     memberTypeOptionsFilter,
     memberGenderCreateProps,
+    memberCenterPickerCreateProps,
     memberClassificationCreateProps,
     memberOccupationComboboxCreateProps,
     educationalAttainmentComboboxCreateProps,
@@ -420,6 +428,30 @@ const MemberProfileCreateUpdateForm = ({
                                         )}
                                     />
                                     <FormFieldWrapper
+                                        name="memberCenterId"
+                                        control={form.control}
+                                        label="Member Center"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <MemberCenterPicker
+                                                    {...field}
+                                                    onSelect={(selected) => {
+                                                        field.onChange(
+                                                            selected.id
+                                                        )
+                                                    }}
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
+                                                    createProps={
+                                                        memberCenterPickerCreateProps
+                                                    }
+                                                />
+                                            </FormControl>
+                                        )}
+                                    />
+                                    <FormFieldWrapper
                                         name="memberId"
                                         control={form.control}
                                         label="Member Account ID"
@@ -487,7 +519,6 @@ const MemberProfileCreateUpdateForm = ({
                                                         disabled={isDisabled(
                                                             field.name
                                                         )}
-                                                        // checked={field.value}
                                                         onCheckedChange={(
                                                             checked
                                                         ) =>
@@ -643,77 +674,81 @@ const MemberProfileCreateUpdateForm = ({
                                             )}
                                         />
                                     </div>
-                                    <FormFieldWrapper
-                                        name="contactNumber"
-                                        control={form.control}
-                                        label="Contact Number *"
-                                        hiddenFields={hiddenFields}
-                                        render={({
-                                            field,
-                                            fieldState: { invalid, error },
-                                        }) => (
-                                            <FormControl>
-                                                <div className="relative flex flex-1 items-center gap-x-2">
-                                                    <VerifiedPatchIcon
-                                                        className={cn(
-                                                            'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
-                                                            (invalid ||
-                                                                error) &&
-                                                                'text-destructive'
-                                                        )}
-                                                    />
-                                                    <PhoneInput
-                                                        {...field}
-                                                        className="w-full"
-                                                        defaultCountry="PH"
-                                                    />
-                                                </div>
-                                            </FormControl>
-                                        )}
-                                    />
-                                    <FormFieldWrapper
-                                        name="civilStatus"
-                                        control={form.control}
-                                        label="Civil Status"
-                                        hiddenFields={hiddenFields}
-                                        render={({ field }) => (
-                                            <Select
-                                                onValueChange={field.onChange}
-                                                defaultValue={field.value}
-                                            >
+                                    <div className="grid grid-cols-2 gap-x-2">
+                                        <FormFieldWrapper
+                                            name="contactNumber"
+                                            control={form.control}
+                                            label="Contact Number *"
+                                            hiddenFields={hiddenFields}
+                                            render={({
+                                                field,
+                                                fieldState: { invalid, error },
+                                            }) => (
                                                 <FormControl>
-                                                    <SelectTrigger
-                                                        disabled={isDisabled(
-                                                            field.name
-                                                        )}
-                                                    >
-                                                        <SelectValue
-                                                            {...field}
-                                                            id={field.name}
-                                                            placeholder="Select Civil Status"
+                                                    <div className="relative flex flex-1 items-center gap-x-2">
+                                                        <VerifiedPatchIcon
+                                                            className={cn(
+                                                                'absolute right-2 top-1/2 z-20 size-4 -translate-y-1/2 text-primary delay-300 duration-300 ease-in-out',
+                                                                (invalid ||
+                                                                    error) &&
+                                                                    'text-destructive'
+                                                            )}
                                                         />
-                                                    </SelectTrigger>
+                                                        <PhoneInput
+                                                            {...field}
+                                                            className="w-full"
+                                                            defaultCountry="PH"
+                                                        />
+                                                    </div>
                                                 </FormControl>
-                                                <SelectContent>
-                                                    <SelectItem value="Married">
-                                                        Married
-                                                    </SelectItem>
-                                                    <SelectItem value="Single">
-                                                        Single
-                                                    </SelectItem>
-                                                    <SelectItem value="Widowed">
-                                                        Widowed
-                                                    </SelectItem>
-                                                    <SelectItem value="Separated">
-                                                        Separated
-                                                    </SelectItem>
-                                                    <SelectItem value="N/A">
-                                                        N/A
-                                                    </SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                        )}
-                                    />
+                                            )}
+                                        />
+                                        <FormFieldWrapper
+                                            name="civilStatus"
+                                            control={form.control}
+                                            label="Civil Status"
+                                            hiddenFields={hiddenFields}
+                                            render={({ field }) => (
+                                                <Select
+                                                    onValueChange={
+                                                        field.onChange
+                                                    }
+                                                    defaultValue={field.value}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger
+                                                            disabled={isDisabled(
+                                                                field.name
+                                                            )}
+                                                        >
+                                                            <SelectValue
+                                                                {...field}
+                                                                id={field.name}
+                                                                placeholder="Select Civil Status"
+                                                            />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        <SelectItem value="Married">
+                                                            Married
+                                                        </SelectItem>
+                                                        <SelectItem value="Single">
+                                                            Single
+                                                        </SelectItem>
+                                                        <SelectItem value="Widowed">
+                                                            Widowed
+                                                        </SelectItem>
+                                                        <SelectItem value="Separated">
+                                                            Separated
+                                                        </SelectItem>
+                                                        <SelectItem value="N/A">
+                                                            N/A
+                                                        </SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                            )}
+                                        />
+                                    </div>
                                     <FormFieldWrapper
                                         name="signatureMediaId"
                                         control={form.control}
@@ -865,7 +900,7 @@ const MemberProfileCreateUpdateForm = ({
                                                 (addressField, index) => (
                                                     <div
                                                         key={addressField.id}
-                                                        className="flex w-full flex-col gap-4 md:flex-row"
+                                                        className="relative flex w-full flex-col gap-4 md:flex-row"
                                                     >
                                                         <FormFieldWrapper
                                                             name={`memberAddresses.${index}.label`}
@@ -1029,7 +1064,7 @@ const MemberProfileCreateUpdateForm = ({
                                                                     index
                                                                 )
                                                             }
-                                                            className="self-center rounded-full p-2"
+                                                            className="absolute right-0 top-0 size-fit self-center rounded-full p-1"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
@@ -1041,6 +1076,7 @@ const MemberProfileCreateUpdateForm = ({
                                             size="sm"
                                             type="button"
                                             variant="secondary"
+                                            className="!mt-2"
                                             onClick={() =>
                                                 memberAddresses.append({
                                                     label: '',
@@ -1058,9 +1094,9 @@ const MemberProfileCreateUpdateForm = ({
                                 )}
                             />
                             <FormFieldWrapper
-                                name="memberContactNumberReferences"
                                 control={form.control}
                                 hiddenFields={hiddenFields}
+                                name="memberContactNumberReferences"
                                 label="Member Contact Number References"
                                 render={() => (
                                     <FormItem className="col-span-1 space-y-2">
@@ -1070,7 +1106,7 @@ const MemberProfileCreateUpdateForm = ({
                                                 (contactField, index) => (
                                                     <div
                                                         key={contactField.id}
-                                                        className="flex w-full flex-col gap-4 md:flex-row"
+                                                        className="relative flex w-full flex-col gap-4 md:flex-row"
                                                     >
                                                         <FormFieldWrapper
                                                             control={
@@ -1171,7 +1207,7 @@ const MemberProfileCreateUpdateForm = ({
                                                                     index
                                                                 )
                                                             }
-                                                            className="self-center rounded-full p-2"
+                                                            className="absolute right-0 top-0 size-fit self-center rounded-full p-1"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
@@ -1204,8 +1240,6 @@ const MemberProfileCreateUpdateForm = ({
 
                     {step === 1 && (
                         <div className="space-y-4">
-                            <legend>Government Related Info</legend>
-                            <Separator />
                             <FormFieldWrapper
                                 name="memberGovernmentBenefits"
                                 control={form.control}
@@ -1239,17 +1273,18 @@ const MemberProfileCreateUpdateForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <Input
+                                                                    <CountryCombobox
                                                                         {...field}
-                                                                        id={
-                                                                            field.name
+                                                                        defaultValue={
+                                                                            field.value
                                                                         }
-                                                                        placeholder="Country"
-                                                                        autoComplete="country"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
+                                                                        onChange={(
+                                                                            country
+                                                                        ) =>
+                                                                            field.onChange(
+                                                                                country.name
+                                                                            )
+                                                                        }
                                                                     />
                                                                 </FormControl>
                                                             )}
@@ -1267,16 +1302,14 @@ const MemberProfileCreateUpdateForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <Input
+                                                                    <GovernmentBenefitsCombobox
                                                                         {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Name"
                                                                         disabled={isDisabled(
                                                                             field.name
                                                                         )}
-                                                                        className="w-full"
+                                                                        governmentBenefitsList={
+                                                                            philippinesCards
+                                                                        }
                                                                     />
                                                                 </FormControl>
                                                             )}
@@ -1286,10 +1319,11 @@ const MemberProfileCreateUpdateForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            label="ID"
+                                                            label="Value/ID Number"
                                                             hiddenFields={
                                                                 hiddenFields
                                                             }
+                                                            className="col-span-2"
                                                             render={({
                                                                 field,
                                                             }) => (
@@ -1304,34 +1338,6 @@ const MemberProfileCreateUpdateForm = ({
                                                                             field.name
                                                                         )}
                                                                         className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            name={`memberGovernmentBenefits.${index}.description`}
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            label="Description"
-                                                            className="col-span-4"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Textarea
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Description"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="min-h-0"
                                                                     />
                                                                 </FormControl>
                                                             )}
@@ -1410,6 +1416,34 @@ const MemberProfileCreateUpdateForm = ({
                                                                 </FormControl>
                                                             )}
                                                         />
+                                                        <FormFieldWrapper
+                                                            name={`memberGovernmentBenefits.${index}.description`}
+                                                            control={
+                                                                form.control
+                                                            }
+                                                            label="Description"
+                                                            className="col-span-4"
+                                                            hiddenFields={
+                                                                hiddenFields
+                                                            }
+                                                            render={({
+                                                                field,
+                                                            }) => (
+                                                                <FormControl>
+                                                                    <Textarea
+                                                                        {...field}
+                                                                        id={
+                                                                            field.name
+                                                                        }
+                                                                        placeholder="Description"
+                                                                        disabled={isDisabled(
+                                                                            field.name
+                                                                        )}
+                                                                        className="min-h-0"
+                                                                    />
+                                                                </FormControl>
+                                                            )}
+                                                        />
                                                         <Button
                                                             size="icon"
                                                             variant="secondary"
@@ -1422,7 +1456,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             disabled={isDisabled(
                                                                 'memberGovernmentBenefits'
                                                             )}
-                                                            className="absolute right-5 top-5 self-center rounded-full p-2"
+                                                            className="absolute right-2 top-2 size-fit self-center rounded-full p-1"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
@@ -1477,7 +1511,7 @@ const MemberProfileCreateUpdateForm = ({
                                                 (incomeField, index) => (
                                                     <div
                                                         key={incomeField.id}
-                                                        className="flex w-full flex-col gap-4 md:flex-row"
+                                                        className="relative flex w-full flex-col gap-4 md:flex-row"
                                                     >
                                                         <FormFieldWrapper
                                                             control={
@@ -1601,7 +1635,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             disabled={isDisabled(
                                                                 'memberIncome'
                                                             )}
-                                                            className="self-center rounded-full p-2"
+                                                            className="absolute right-0 top-0 size-fit self-center rounded-full p-1"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
@@ -1649,7 +1683,7 @@ const MemberProfileCreateUpdateForm = ({
                                                 (assetField, index) => (
                                                     <div
                                                         key={assetField.id}
-                                                        className="flex w-full flex-col gap-4 md:flex-row"
+                                                        className="relative flex w-full flex-col gap-4 md:flex-row"
                                                     >
                                                         <FormFieldWrapper
                                                             control={
@@ -1744,7 +1778,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             disabled={isDisabled(
                                                                 'memberAssets'
                                                             )}
-                                                            className="self-center rounded-full p-2"
+                                                            className="absolute right-0 top-0 size-fit self-center rounded-full p-1"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
@@ -1791,7 +1825,7 @@ const MemberProfileCreateUpdateForm = ({
                                                 (expenseField, index) => (
                                                     <div
                                                         key={expenseField.id}
-                                                        className="flex w-full flex-col gap-4 md:flex-row"
+                                                        className="relative flex w-full flex-col gap-4 md:flex-row"
                                                     >
                                                         <FormFieldWrapper
                                                             control={
@@ -1915,7 +1949,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             disabled={isDisabled(
                                                                 'memberExpenses'
                                                             )}
-                                                            className="self-center rounded-full p-2"
+                                                            className="absolute right-0 top-0 size-fit self-center rounded-full p-1"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
@@ -1971,7 +2005,7 @@ const MemberProfileCreateUpdateForm = ({
                                                 (relField, index) => (
                                                     <div
                                                         key={relField.id}
-                                                        className="flex w-full flex-col gap-4 md:flex-row"
+                                                        className="relative flex w-full flex-col gap-4 md:flex-row"
                                                     >
                                                         <FormFieldWrapper
                                                             control={
@@ -2077,7 +2111,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             disabled={isDisabled(
                                                                 'memberRelativeAccounts'
                                                             )}
-                                                            className="self-center rounded-full p-2"
+                                                            className="absolute right-0 top-0 size-fit self-center rounded-full p-1"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
@@ -2124,7 +2158,7 @@ const MemberProfileCreateUpdateForm = ({
                                                 (jointField, index) => (
                                                     <div
                                                         key={jointField.id}
-                                                        className="flex w-full flex-col items-start gap-4 border-b pb-2 md:flex-row"
+                                                        className="relative flex w-full flex-col items-start gap-4 border-b pb-2 md:flex-row"
                                                     >
                                                         <div className="grid grow gap-x-4 gap-y-2 sm:grid-cols-2">
                                                             <div className="col-span-2 grid gap-4 sm:grid-cols-4">
@@ -2366,7 +2400,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             disabled={isDisabled(
                                                                 'memberJointAccounts'
                                                             )}
-                                                            className="hidden size-fit rounded-full p-2 sm:block"
+                                                            className="absolute right-0 top-0 hidden size-fit self-center rounded-full p-1 sm:block"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
@@ -2560,7 +2594,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             disabled={isDisabled(
                                                                 'memberRecruits'
                                                             )}
-                                                            className="self-center rounded-full p-2"
+                                                            className="size-fit self-center rounded-full p-1"
                                                         >
                                                             <XIcon className="size-4" />
                                                         </Button>
