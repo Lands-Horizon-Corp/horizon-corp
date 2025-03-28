@@ -14,7 +14,6 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 import { BellIcon } from 'lucide-react'
-import { Role } from '@/types'
 // import { useNotifications } from '@/hooks/api-hooks/use-notifications'
 
 enum NotificationGroup {
@@ -99,7 +98,6 @@ const NotificationsPopover = ({
 
 interface NotificationProps {
     userId: number
-    role: Role
     // fetchNotifications: (userId: number, role: Role) => Promise<INotificationResource[]>;
 }
 
