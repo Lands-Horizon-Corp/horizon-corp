@@ -81,6 +81,6 @@ export const mediaResourceSchema = z.object({
     url: z.string().optional().default(''),
     bucketName: z.string(),
     createdAt: z.string(),
-    updatedAt: z.string(),
+    updatedAt: z.string().optional(),
     downloadURL: z.string(),
 })

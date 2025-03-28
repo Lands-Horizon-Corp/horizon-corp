@@ -74,6 +74,7 @@ import { createMemberProfileSchema } from '@/validations/member/member-profile-s
 import { cn } from '@/lib'
 import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
+import logger from '@/helpers/loggers/logger'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -115,20 +116,14 @@ const Steps: Step[] = [
             'occupationId',
             'businessAddress',
             'businessContact',
-            'memberAddress',
+            'memberAddresses',
             'memberContactNumberReferences',
             'memberDescriptions',
         ],
     },
     {
         title: 'Government Related Information',
-        fields: [
-            'tinNumber',
-            'sssNumber',
-            'pagibigNumber',
-            'philhealthNumber',
-            'memberGovernmentBenefits',
-        ],
+        fields: ['memberGovernmentBenefits'],
     },
     {
         title: 'Financial Details',
@@ -199,10 +194,10 @@ const MemberProfileCreateUpdateForm = ({
         name: 'memberDescriptions',
     })
 
-    form.watch('memberAddress')
-    const memberAddress = useFieldArray({
+    form.watch('memberAddresses')
+    const memberAddresses = useFieldArray({
         control: form.control,
-        name: 'memberAddress',
+        name: 'memberAddresses',
     })
 
     const memberContactNumberReferences = useFieldArray({
@@ -411,11 +406,15 @@ const MemberProfileCreateUpdateForm = ({
                                                     memberClassificationCreateProps={
                                                         memberClassificationCreateProps
                                                     }
-                                                    onChange={(memClass) =>
+                                                    onChange={(memClass) => {
+                                                        logger.log(
+                                                            'Setting to ',
+                                                            memClass.id
+                                                        )
                                                         field.onChange(
                                                             memClass.id
                                                         )
-                                                    }
+                                                    }}
                                                 />
                                             </FormControl>
                                         )}
@@ -586,6 +585,64 @@ const MemberProfileCreateUpdateForm = ({
                                             </FormControl>
                                         )}
                                     />
+                                    <div className="grid gap-x-2 gap-y-4 md:grid-cols-3">
+                                        <FormFieldWrapper
+                                            name="firstName"
+                                            control={form.control}
+                                            label="First Name"
+                                            hiddenFields={hiddenFields}
+                                            render={({ field }) => (
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        id={field.name}
+                                                        autoComplete="given-name"
+                                                        placeholder="First Name"
+                                                        disabled={isDisabled(
+                                                            field.name
+                                                        )}
+                                                    />
+                                                </FormControl>
+                                            )}
+                                        />
+                                        <FormFieldWrapper
+                                            name="middleName"
+                                            control={form.control}
+                                            label="Middle Name"
+                                            hiddenFields={hiddenFields}
+                                            render={({ field }) => (
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        id={field.name}
+                                                        placeholder="Middle Name"
+                                                        disabled={isDisabled(
+                                                            field.name
+                                                        )}
+                                                    />
+                                                </FormControl>
+                                            )}
+                                        />
+                                        <FormFieldWrapper
+                                            name="lastName"
+                                            control={form.control}
+                                            label="Last Name"
+                                            hiddenFields={hiddenFields}
+                                            render={({ field }) => (
+                                                <FormControl>
+                                                    <Input
+                                                        {...field}
+                                                        id={field.name}
+                                                        autoComplete="family-name"
+                                                        placeholder="Last Name"
+                                                        disabled={isDisabled(
+                                                            field.name
+                                                        )}
+                                                    />
+                                                </FormControl>
+                                            )}
+                                        />
+                                    </div>
                                     <FormFieldWrapper
                                         name="contactNumber"
                                         control={form.control}
@@ -658,6 +715,32 @@ const MemberProfileCreateUpdateForm = ({
                                         )}
                                     />
                                     <FormFieldWrapper
+                                        name="signatureMediaId"
+                                        control={form.control}
+                                        label="Signature"
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <SignatureUploadField
+                                                placeholder="Upload Signature Photo"
+                                                {...field}
+                                                DisplayIcon={SignatureLightIcon}
+                                                mediaImage={form.getValues(
+                                                    'signatureMedia'
+                                                )}
+                                                onChange={(mediaUploaded) => {
+                                                    field.onChange(
+                                                        mediaUploaded?.id ??
+                                                            undefined
+                                                    )
+                                                    form.setValue(
+                                                        'signatureMedia',
+                                                        mediaUploaded
+                                                    )
+                                                }}
+                                            />
+                                        )}
+                                    />
+                                    <FormFieldWrapper
                                         name="memberGenderId"
                                         control={form.control}
                                         label="Gender"
@@ -691,6 +774,7 @@ const MemberProfileCreateUpdateForm = ({
                                             />
                                         )}
                                     />
+
                                     <FormFieldWrapper
                                         name="occupationId"
                                         control={form.control}
@@ -769,7 +853,7 @@ const MemberProfileCreateUpdateForm = ({
                                 </div>
                             </div>
                             <FormFieldWrapper
-                                name="memberAddress"
+                                name="memberAddresses"
                                 label="Address"
                                 control={form.control}
                                 hiddenFields={hiddenFields}
@@ -777,14 +861,14 @@ const MemberProfileCreateUpdateForm = ({
                                     <>
                                         <Separator />
                                         <fieldset className="grid gap-4">
-                                            {memberAddress.fields.map(
+                                            {memberAddresses.fields.map(
                                                 (addressField, index) => (
                                                     <div
                                                         key={addressField.id}
                                                         className="flex w-full flex-col gap-4 md:flex-row"
                                                     >
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.label`}
+                                                            name={`memberAddresses.${index}.label`}
                                                             control={
                                                                 form.control
                                                             }
@@ -807,7 +891,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             )}
                                                         />
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.province`}
+                                                            name={`memberAddresses.${index}.province`}
                                                             control={
                                                                 form.control
                                                             }
@@ -830,7 +914,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             )}
                                                         />
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.city`}
+                                                            name={`memberAddresses.${index}.city`}
                                                             control={
                                                                 form.control
                                                             }
@@ -843,12 +927,12 @@ const MemberProfileCreateUpdateForm = ({
                                                             }) => {
                                                                 const isProvinceValid =
                                                                     !!form.watch(
-                                                                        `memberAddress.${index}.province`
+                                                                        `memberAddresses.${index}.province`
                                                                     ) &&
                                                                     !form
                                                                         .formState
                                                                         .errors
-                                                                        .memberAddress?.[
+                                                                        .memberAddresses?.[
                                                                         index
                                                                     ]?.province
 
@@ -860,7 +944,7 @@ const MemberProfileCreateUpdateForm = ({
                                                                                 field.name
                                                                             }
                                                                             province={form.getValues(
-                                                                                `memberAddress.${index}.province`
+                                                                                `memberAddresses.${index}.province`
                                                                             )}
                                                                             disabled={
                                                                                 !isProvinceValid
@@ -872,7 +956,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             }}
                                                         />
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.barangay`}
+                                                            name={`memberAddresses.${index}.barangay`}
                                                             control={
                                                                 form.control
                                                             }
@@ -885,12 +969,12 @@ const MemberProfileCreateUpdateForm = ({
                                                             }) => {
                                                                 const isCityValid =
                                                                     !!form.watch(
-                                                                        `memberAddress.${index}.city`
+                                                                        `memberAddresses.${index}.city`
                                                                     ) &&
                                                                     !form
                                                                         .formState
                                                                         .errors
-                                                                        .memberAddress?.[
+                                                                        .memberAddresses?.[
                                                                         index
                                                                     ]?.province
 
@@ -902,7 +986,7 @@ const MemberProfileCreateUpdateForm = ({
                                                                                 field.name
                                                                             }
                                                                             municipality={form.getValues(
-                                                                                `memberAddress.${index}.city`
+                                                                                `memberAddresses.${index}.city`
                                                                             )}
                                                                             disabled={
                                                                                 !isCityValid
@@ -914,7 +998,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             }}
                                                         />
                                                         <FormFieldWrapper
-                                                            name={`memberAddress.${index}.postalCode`}
+                                                            name={`memberAddresses.${index}.postalCode`}
                                                             control={
                                                                 form.control
                                                             }
@@ -941,7 +1025,7 @@ const MemberProfileCreateUpdateForm = ({
                                                             type="button"
                                                             variant="secondary"
                                                             onClick={() =>
-                                                                memberAddress.remove(
+                                                                memberAddresses.remove(
                                                                     index
                                                                 )
                                                             }
@@ -958,7 +1042,7 @@ const MemberProfileCreateUpdateForm = ({
                                             type="button"
                                             variant="secondary"
                                             onClick={() =>
-                                                memberAddress.append({
+                                                memberAddresses.append({
                                                     label: '',
                                                     barangay: '',
                                                     city: '',
@@ -1120,84 +1204,8 @@ const MemberProfileCreateUpdateForm = ({
 
                     {step === 1 && (
                         <div className="space-y-4">
-                            <div className="space-y-4">
-                                <legend>Government Related Info</legend>
-                                <Separator />
-                                <div className="grid gap-4 sm:grid-cols-2">
-                                    <FormFieldWrapper
-                                        name="tinNumber"
-                                        control={form.control}
-                                        label="TIN Number"
-                                        hiddenFields={hiddenFields}
-                                        render={({ field }) => (
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    placeholder="Enter TIN Number"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
-                                                />
-                                            </FormControl>
-                                        )}
-                                    />
-                                    <FormFieldWrapper
-                                        name="sssNumber"
-                                        control={form.control}
-                                        label="SSS Number"
-                                        hiddenFields={hiddenFields}
-                                        render={({ field }) => (
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    placeholder="Enter SSS Number"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
-                                                />
-                                            </FormControl>
-                                        )}
-                                    />
-                                    <FormFieldWrapper
-                                        name="pagibigNumber"
-                                        control={form.control}
-                                        label="PAGIBIG Number"
-                                        hiddenFields={hiddenFields}
-                                        render={({ field }) => (
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    placeholder="Enter PAGIBIG Number"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
-                                                />
-                                            </FormControl>
-                                        )}
-                                    />
-                                    <FormFieldWrapper
-                                        name="philhealthNumber"
-                                        control={form.control}
-                                        label="PhilHealth Number"
-                                        hiddenFields={hiddenFields}
-                                        render={({ field }) => (
-                                            <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    id={field.name}
-                                                    placeholder="Enter PhilHealth Number"
-                                                    disabled={isDisabled(
-                                                        field.name
-                                                    )}
-                                                />
-                                            </FormControl>
-                                        )}
-                                    />
-                                </div>
-                            </div>
+                            <legend>Government Related Info</legend>
+                            <Separator />
                             <FormFieldWrapper
                                 name="memberGovernmentBenefits"
                                 control={form.control}
@@ -2000,17 +2008,6 @@ const MemberProfileCreateUpdateForm = ({
                                                                             field.name
                                                                         )}
                                                                     />
-                                                                    {/* <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Select relative account"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    /> */}
                                                                 </FormControl>
                                                             )}
                                                         />
@@ -2424,35 +2421,8 @@ const MemberProfileCreateUpdateForm = ({
                                                             control={
                                                                 form.control
                                                             }
-                                                            name={`memberRecruits.${index}.membersProfileId`}
-                                                            label="Member's Profile ID"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Member's Profile ID"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
                                                             name={`memberRecruits.${index}.membersProfileRecruitedId`}
-                                                            label="Recruited Member's Prof. ID"
+                                                            label="Recruited Member"
                                                             hiddenFields={
                                                                 hiddenFields
                                                             }
@@ -2460,16 +2430,39 @@ const MemberProfileCreateUpdateForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <Input
+                                                                    <MemberPicker
                                                                         {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Recruited Member's Profile"
+                                                                        onSelect={(
+                                                                            member
+                                                                        ) => {
+                                                                            if (
+                                                                                defaultValues?.id &&
+                                                                                member.memberProfile &&
+                                                                                defaultValues.id ===
+                                                                                    member
+                                                                                        .memberProfile
+                                                                                        .id
+                                                                            ) {
+                                                                                return toast.warning(
+                                                                                    'Cannot pick themselves'
+                                                                                )
+                                                                            }
+                                                                            if (
+                                                                                !member.memberProfile
+                                                                            )
+                                                                                return toast.warning(
+                                                                                    "Can't select a member that has no profile yet."
+                                                                                )
+                                                                            field.onChange(
+                                                                                member
+                                                                                    .memberProfile
+                                                                                    .id
+                                                                            )
+                                                                        }}
+                                                                        placeholder="Select relative member"
                                                                         disabled={isDisabled(
                                                                             field.name
                                                                         )}
-                                                                        className="w-full"
                                                                     />
                                                                 </FormControl>
                                                             )}
@@ -2821,7 +2814,7 @@ export const MemberProfileCreateUpdateFormModal = ({
         <Modal
             title={title}
             description={description}
-            className={cn('', className)}
+            className={cn('!max-w-6xl', className)}
             {...props}
         >
             <MemberProfileCreateUpdateForm {...formProps} />

@@ -10,9 +10,9 @@ interface Props extends IBaseCompNoChild {
 }
 
 const StepIndicator = ({
-    currentStep,
-    totalSteps,
     className,
+    totalSteps,
+    currentStep,
     indicatorClassName,
 }: Props) => {
     if (currentStep > totalSteps)

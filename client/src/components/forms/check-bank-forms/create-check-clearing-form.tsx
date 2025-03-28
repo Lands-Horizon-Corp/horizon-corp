@@ -74,6 +74,9 @@ const CheckBankForm = ({
                         render={({ field }) => (
                             <Input
                                 {...field}
+                                onChange={(e) => {
+                                    field.onChange(e.target.value.toUpperCase())
+                                }}
                                 id={field.name}
                                 placeholder="Enter the check number"
                                 autoComplete="off"

@@ -3,7 +3,7 @@ import { IMemberProfileResource } from './member-profile'
 
 export interface IMemberRecruitsRequest {
     id?: TEntityId
-    membersProfileId: TEntityId
+    membersProfileId?: TEntityId
     membersProfileRecruitedId: TEntityId
     dateRecruited: string
     description: string

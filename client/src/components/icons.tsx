@@ -2,6 +2,7 @@ import {
     TbMinus as MinusIcon,
     TbSunMoon as SunMoonIcon,
     TbBlockquote as BlockQuoteIcon,
+    TbHeartHandshake as HandShakeHeartIcon,
 } from 'react-icons/tb'
 
 import {
@@ -22,6 +23,7 @@ import {
 } from 'react-icons/io'
 
 import {
+    LuCopy as CopyIcon,
     LuUndo2 as UndoIcon,
     LuRedo2 as RedoIcon,
     LuTrash as TrashIcon,
@@ -33,6 +35,7 @@ import {
     LuCameraOff as CameraOffIcon,
     LuListOrdered as ListOrderedIcon,
     LuCalendarCheck as CalendarCheckIcon,
+    LuExternalLink as OpenExternalLinkIcon,
     LuChevronsUpDown as ChevronsUpDownIcon,
     LuHardDriveUpload as HardDriveUploadIcon,
     LuReplace as ReplaceIcon,
@@ -62,6 +65,8 @@ import {
     PiNewspaper as ReportsIcon,
     PiUsersThree as Users3Icon,
     PiCodeBlock as CodeBlockIcon,
+    PiNotepadDuotone as NoteIcon,
+    PiBankDuotone as BankDuoToneIcon,
     PiPushPinSlash as PushPinSlashIcon,
     PiHandCoinsDuotone as HandCoinsIcon,
     PiMicrosoftExcelLogoFill as ExcelIcon,
@@ -117,9 +122,11 @@ import {
 import {
     MdOutlineDraw as DrawIcon,
     MdOutlineEmail as EmailIcon,
+    MdFamilyRestroom as FamilyIcon,
     MdRotateLeft as RotateLeftIcon,
     MdRotateRight as RotateRightIcon,
     MdMarkEmailRead as EmailCheckIcon,
+    MdOutlineGroupAdd as UsersAddIcon,
     MdOutlinePayments as PaymentsIcon,
     MdOutlineAccountBalance as BankIcon,
     MdCameraEnhance as CameraSelectIcon,
@@ -178,9 +185,15 @@ import {
     FaFileCsv as CsvIcon,
     FaPhoneAlt as PhoneIcon,
     FaMoneyBill as BillIcon,
+    FaCreditCard as CreditCardIcon,
     FaUserClock as UserClockFillIcon,
 } from 'react-icons/fa'
-import { FaVenusMars as GendersIcon } from 'react-icons/fa6'
+
+import {
+    FaVenusMars as GendersIcon,
+    FaChartPie as PieChartIcon,
+    FaAddressCard as AddressCardIcon,
+} from 'react-icons/fa6'
 
 import {
     RiListCheck3 as TransactionListIcon,
@@ -200,7 +213,10 @@ import {
     GiTakeMyMoney as MoneyIcon,
 } from 'react-icons/gi'
 
-import { CgFacebook as FacebookIcon } from 'react-icons/cg'
+import {
+    CgFacebook as FacebookIcon,
+    CgDetailsLess as DetailsIcon,
+} from 'react-icons/cg'
 
 import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
 
@@ -223,13 +239,18 @@ export {
     KeyIcon,
     DevIcon,
     EyeIcon,
+    NoteIcon,
+    CopyIcon,
     BankIcon,
     PlusIcon,
+    BillIcon,
     UndoIcon,
     RedoIcon,
     UserIcon,
     MoonIcon,
     DrawIcon,
+    MoneyIcon,
+    EmptyIcon,
     MinusIcon,
     ErrorIcon,
     FileXIcon,
@@ -243,6 +264,7 @@ export {
     ExcelIcon,
     StoreIcon,
     ResetIcon,
+    FamilyIcon,
     ReloadIcon,
     QrCodeIcon,
     DotBigIcon,
@@ -256,6 +278,8 @@ export {
     AdjustIcon,
     WalletIcon,
     Image2Icon,
+    DetailsIcon,
+    ReplaceIcon,
     WarningIcon,
     OptionsIcon,
     UserCogIcon,
@@ -269,6 +293,8 @@ export {
     PushPinIcon,
     EyeNoneIcon,
     UserTagIcon,
+    PieChartIcon,
+    AccountsIcon,
     PaymentsIcon,
     HomeFillIcon,
     FacebookIcon,
@@ -280,6 +306,7 @@ export {
     BuildingIcon,
     DownloadIcon,
     CalendarIcon,
+    UsersAddIcon,
     HandCoinsIcon,
     MapMarkedIcon,
     CodeBlockIcon,
@@ -306,7 +333,9 @@ export {
     BadgeCheckIcon,
     EmailCheckIcon,
     CameraFlipIcon,
+    CreditCardIcon,
     UserShieldIcon,
+    AddressCardIcon,
     ArrowUpDownIcon,
     ChevronLeftIcon,
     SidebarLeftIcon,
@@ -316,6 +345,7 @@ export {
     LocationPinIcon,
     HandDepositIcon,
     ChevronDownIcon,
+    BankDuoToneIcon,
     NotificationIcon,
     ChevronsLeftIcon,
     PhoneOutlineIcon,
@@ -340,6 +370,7 @@ export {
     PencilOutlineIcon,
     UserClockFillIcon,
     SignatureLightIcon,
+    HandShakeHeartIcon,
     FlipHorizontalIcon,
     RotateBoxRightIcon,
     BadgeCheckFillIcon,
@@ -356,6 +387,7 @@ export {
     MixerHorizontalIcon,
     TransactionListIcon,
     DashSquareDottedIcon,
+    OpenExternalLinkIcon,
     FlipVerticalLineIcon,
     BadgeExclamationIcon,
     BadgeQuestionFillIcon,
@@ -366,9 +398,4 @@ export {
     Rotate90DegreeRightIcon,
     BadgeExclamationFillIcon,
     TextStrikethroughLightIcon,
-    EmptyIcon,
-    BillIcon,
-    ReplaceIcon,
-    MoneyIcon,
-    AccountsIcon,
 }

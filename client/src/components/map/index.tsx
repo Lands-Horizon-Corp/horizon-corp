@@ -13,7 +13,7 @@ import debounce from 'lodash-es/debounce'
 import L, { LatLngExpression, latLng } from 'leaflet'
 
 import { Input } from '../ui/input'
-import LayerControl from './LayerControl'
+import LayerControl from './layer-control'
 
 import {
     TCustomSearchProps,
