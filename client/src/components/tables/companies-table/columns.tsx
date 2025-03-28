@@ -105,6 +105,8 @@ const companiesTableColumns = (
                 </div>
             ),
             enableMultiSort: true,
+            minSize: 200,
+            maxSize: 500,
         },
         {
             id: 'Logo',
@@ -124,6 +126,8 @@ const companiesTableColumns = (
                 </div>
             ),
             enableSorting: false,
+            enableResizing: false,
+            minSize: 100,
         },
         {
             id: 'address',
@@ -143,8 +147,14 @@ const companiesTableColumns = (
                 row: {
                     original: { address },
                 },
-            }) => <div>{address}</div>,
+            }) => (
+                <div>
+                    <p className="!whitespace-normal">{address} </p>
+                </div>
+            ),
             enableMultiSort: true,
+            minSize: 200,
+            maxSize: 500,
         },
         {
             id: 'branches',
@@ -213,6 +223,8 @@ const companiesTableColumns = (
                     original: { contactNumber },
                 },
             }) => <div>{contactNumber}</div>,
+            maxSize: 300,
+            minSize: 200,
             enableMultiSort: true,
         },
         {
@@ -283,6 +295,7 @@ const companiesTableColumns = (
                     original: { createdAt },
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
+            minSize: 200,
             enableMultiSort: true,
         },
     ]

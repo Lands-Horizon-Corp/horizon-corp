@@ -26,7 +26,7 @@ const AccountProfileBanner = ({
                 <UserProfilePicture
                     userData={currentUser}
                     onUploadSuccess={updateUserData}
-                    className="absolute -top-28 left-4 z-20 size-32"
+                    className="absolute -top-28 left-4 z-0 size-32"
                 />
                 <p className="text-2xl font-medium">{currentUser.username}</p>
                 <AccountQr
