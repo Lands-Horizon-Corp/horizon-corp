@@ -1,8 +1,8 @@
 import * as React from 'react'
 import {
-    DialogDescription,
     DialogTitle,
     type DialogProps,
+    DialogDescription,
 } from '@radix-ui/react-dialog'
 import { Command as CommandPrimitive } from 'cmdk'
 import { Search } from 'lucide-react'
@@ -44,9 +44,9 @@ const CommandDialog = ({
             <DialogContent
                 className={cn(
                     'overflow-hidden !rounded-2xl p-0 shadow-lg',
-                    contentClassName,
-                    overlayClassName
+                    contentClassName
                 )}
+                overlayClassName={overlayClassName}
             >
                 <DialogTitle className="hidden" />
                 <DialogDescription className="hidden" />
