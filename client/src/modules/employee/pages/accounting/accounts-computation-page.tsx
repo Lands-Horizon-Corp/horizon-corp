@@ -1,8 +1,9 @@
-import PageContainer from '@/components/containers/page-container'
-import { ComputationTypeCreateFormModal } from '@/components/forms/computation-type-forms/computation-type-create-update-form'
-import AccountsComputationTypeTable from '@/components/tables/computation-type-table'
-import ComputationTypeTableOwnerAction from '@/components/tables/computation-type-table/row-actions/computation-type-owner-actions'
 import { useState } from 'react'
+
+import PageContainer from '@/components/containers/page-container'
+import AccountsComputationTypeTable from '@/components/tables/computation-type-table'
+import { ComputationTypeCreateFormModal } from '@/components/forms/computation-type-forms/computation-type-create-update-form'
+import ComputationTypeTableEmployeeAction from '@/components/tables/computation-type-table/row-actions/computation-type-employee-actions'
 
 const AccountsComputationPage = () => {
     const [createModal, setCreateModal] = useState(false)
@@ -14,7 +15,6 @@ const AccountsComputationPage = () => {
                 onOpenChange={setCreateModal}
                 className="w-[30rem]"
             />
-
             <AccountsComputationTypeTable
                 toolbarProps={{
                     createActionProps: {
@@ -23,7 +23,7 @@ const AccountsComputationPage = () => {
                 }}
                 className="min-h-[90vh] w-full"
                 actionComponent={(props) => (
-                    <ComputationTypeTableOwnerAction {...props} />
+                    <ComputationTypeTableEmployeeAction {...props} />
                 )}
             />
         </PageContainer>
