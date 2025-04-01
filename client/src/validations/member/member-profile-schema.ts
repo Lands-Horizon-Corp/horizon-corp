@@ -12,6 +12,7 @@ import { memberJointAccountsSchema } from './member-joint-accounts-schema'
 import { memberRelativeAccountsSchema } from './member-relative-accounts-schema'
 import { memberContactReferencesSchema } from './member-contact-number-references-schema'
 import { memberCenterSchema } from './member-center-schema'
+import { memberCloseRemarkSchema } from './member-close-remark-schema'
 
 export const createMemberProfileSchema = z.object({
     id: entityIdSchema.optional(),
@@ -70,6 +71,7 @@ export const createMemberProfileSchema = z.object({
     memberAssets: z.array(memberAssetsSchema).optional(),
     memberExpenses: z.array(memberExpensesSchema).optional(),
     memberRecruits: z.array(memberRecruitsSchema).optional(),
+    memberCloseRemarks: z.array(memberCloseRemarkSchema).optional(),
     memberDescriptions: z.array(memberDescriptionSchema).optional(),
     memberJointAccounts: z.array(memberJointAccountsSchema).optional(),
     memberGovernmentBenefits: z.array(memberGovernmentBenefits).optional(),

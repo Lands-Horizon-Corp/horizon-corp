@@ -52,6 +52,7 @@ const AppSidebarQruickNavigate = ({ groups }: Props) => {
                 open={open}
                 onOpenChange={setOpen}
                 contentClassName="rounded-2xl"
+                overlayClassName="backdrop-blur-sm text-gray-400"
             >
                 <CommandInput placeholder="Search or navigate to..." />
                 <CommandList className="ecoop-scroll">

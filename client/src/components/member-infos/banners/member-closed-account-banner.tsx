@@ -10,7 +10,7 @@ import RawDescription from '../displays/raw-description'
 import { cn } from '@/lib'
 import { toReadableDate } from '@/utils'
 import { IBaseCompNoChild } from '@/types'
-import { IMemberCloseRemarksResource } from '@/server'
+import { IMemberCloseRemarkResource } from '@/server'
 import { abbreviateUUID } from '@/utils/formatting-utils'
 
 const MemberCloseAccountBanner = ({
@@ -18,7 +18,7 @@ const MemberCloseAccountBanner = ({
     closeRemarks,
     showRemarksList = false,
 }: IBaseCompNoChild & {
-    closeRemarks?: Partial<IMemberCloseRemarksResource>[]
+    closeRemarks?: Partial<IMemberCloseRemarkResource>[]
     showRemarksList?: boolean
 }) => {
     return (

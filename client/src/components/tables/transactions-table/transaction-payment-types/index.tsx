@@ -97,6 +97,9 @@ const TransactionPaymentTypesTable = ({
     const table = useReactTable({
         columns,
         data: data,
+        initialState: {
+            columnPinning: { left: ['select'] },
+        },
         state: {
             sorting: tableSorting,
             pagination,
@@ -107,10 +110,11 @@ const TransactionPaymentTypesTable = ({
         rowCount: pageSize,
         manualSorting: true,
         pageCount: totalPage,
-        enableMultiSort: false,
-        manualFiltering: true,
-        manualPagination: true,
         getRowId: getRowIdFn,
+        manualFiltering: true,
+        enableMultiSort: false,
+        manualPagination: true,
+        columnResizeMode: 'onChange',
         onSortingChange: setTableSorting,
         onPaginationChange: setPagination,
         getCoreRowModel: getCoreRowModel(),

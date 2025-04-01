@@ -88,6 +88,9 @@ const TransactionPaymentTypesTableColumns = (
                 },
             }) => <div>{name}</div>,
             enableMultiSort: true,
+            size: 150,
+            maxSize: 500,
+            minSize: 100,
         },
         {
             id: 'description',
@@ -108,6 +111,9 @@ const TransactionPaymentTypesTableColumns = (
                 },
             }) => <div>{description}</div>,
             enableMultiSort: true,
+            size: 150,
+            maxSize: 500,
+            minSize: 100,
         },
         {
             id: 'chequeId',
@@ -128,6 +134,9 @@ const TransactionPaymentTypesTableColumns = (
                 },
             }) => <div>{chequeId}</div>,
             enableMultiSort: true,
+            size: 150,
+            maxSize: 500,
+            minSize: 100,
         },
         {
             id: 'createdAt',
@@ -148,6 +157,9 @@ const TransactionPaymentTypesTableColumns = (
                 },
             }) => <div>{toReadableDate(createdAt)}</div>,
             enableMultiSort: true,
+            size: 150,
+            maxSize: 500,
+            minSize: 100,
         },
         {
             id: 'updatedAt',
@@ -168,6 +180,9 @@ const TransactionPaymentTypesTableColumns = (
                 },
             }) => <div>{updatedAt ? toReadableDate(updatedAt) : ''}</div>,
             enableMultiSort: true,
+            size: 150,
+            maxSize: 500,
+            minSize: 100,
         },
     ]
 }
