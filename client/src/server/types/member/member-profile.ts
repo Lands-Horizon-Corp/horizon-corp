@@ -35,7 +35,10 @@ import { IMemberWalletResource } from './member-wallet'
 import { IMemberGenderResource } from './member-gender'
 import { IMemberCenterResource } from './member-center'
 import { IMemberOccupationResource } from './member-occupation'
-import { IMemberCloseRemarksResource } from './member-close-remarks'
+import {
+    IMemberCloseRemarksRequest,
+    IMemberCloseRemarksResource,
+} from './member-close-remarks'
 import { IMemberClassificationResource } from './member-classification'
 import { IMemberIncomeRequest, IMemberIncomeResource } from './member-income'
 import { IMemberAssetsRequest, IMemberAssetsResource } from './member-assets'
@@ -85,6 +88,7 @@ export interface IMemberProfileRequest {
     memberRecruits?: IMemberRecruitsRequest[]
     memberExpenses?: IMemberExpensesRequest[]
     memberDescriptions?: IMemberDescriptionRequest[]
+    memberCloseRemarks?: IMemberCloseRemarksRequest[]
     memberJointAccounts?: IMemberJointAccountsRequest[]
     memberRelativeAccounts?: IMemberRelativeAccountsRequest[]
     memberGovernmentBenefits?: IMemberGovernmentBenefitsRequest[]
