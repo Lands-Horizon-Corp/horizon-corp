@@ -62,6 +62,12 @@ import MemberClassificationCombobox, {
 import MemberEducationalAttainmentPicker, {
     IMemberEducationalAttainmentComboboxCreateProps,
 } from '@/components/comboboxes/member-educational-attainment-combobox'
+import { CountryCombobox } from '@/components/comboboxes/country-combobox'
+import GovernmentBenefitsCombobox from '@/components/comboboxes/government-benefits-combobox'
+import MemberCenterPicker, {
+    IMemberCenterPickerCreateProps,
+} from '@/components/pickers/member-center-picker'
+import MemberCloseAccountBanner from '@/components/member-infos/banners/member-closed-account-banner'
 
 import {
     useCreateMemberProfile,
@@ -75,12 +81,7 @@ import { cn } from '@/lib'
 import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
 import logger from '@/helpers/loggers/logger'
-import GovernmentBenefitsCombobox from '@/components/comboboxes/government-benefits-combobox'
 import { philippinesCards } from '@/constants'
-import { CountryCombobox } from '@/components/comboboxes/country-combobox'
-import MemberCenterPicker, {
-    IMemberCenterPickerCreateProps,
-} from '@/components/pickers/member-center-picker'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -187,7 +188,10 @@ const MemberProfileCreateUpdateForm = ({
     })
 
     const isDisabled = (field: Path<TMemberProfileForm>) =>
-        readOnly || disabledFields?.includes(field) || false
+        readOnly ||
+        disabledFields?.includes(field) ||
+        defaultValues?.isClosed ||
+        false
 
     const onNext = async () => {
         const triggerValidation = await form.trigger(Steps[step].fields, {
@@ -314,9 +318,15 @@ const MemberProfileCreateUpdateForm = ({
                     </div>
                 </div>
 
+                {defaultValues?.isClosed && (
+                    <MemberCloseAccountBanner
+                        closeRemarks={defaultValues?.memberCloseRemarks}
+                    />
+                )}
+
                 <fieldset
                     className="min-h-[60vh] gap-x-4 gap-y-4 space-y-5"
-                    disabled={isLoading || readOnly}
+                    disabled={isLoading || readOnly || defaultValues?.isClosed}
                 >
                     {step === 0 && (
                         <>
@@ -333,6 +343,9 @@ const MemberProfileCreateUpdateForm = ({
                                             <FormControl>
                                                 <MemberTypeSelect
                                                     {...field}
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
                                                     filter={
                                                         memberTypeOptionsFilter
                                                     }
@@ -1982,9 +1995,6 @@ const MemberProfileCreateUpdateForm = ({
                         </>
                     )}
 
-                    {/*
-                     */}
-
                     {step === 3 && (
                         <>
                             <FormFieldWrapper
@@ -2628,6 +2638,7 @@ const MemberProfileCreateUpdateForm = ({
                             />
                         </>
                     )}
+
                     {step === 4 && (
                         <>
                             <div className="col-span-1 space-y-4">
@@ -2782,6 +2793,7 @@ const MemberProfileCreateUpdateForm = ({
                         <Button
                             type="button"
                             variant="ghost"
+                            disabled={readOnly || form.formState.isDirty}
                             onClick={() => {
                                 onOpen({
                                     title: 'Reset Form',
