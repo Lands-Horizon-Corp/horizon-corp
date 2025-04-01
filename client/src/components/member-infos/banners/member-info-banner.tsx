@@ -3,7 +3,11 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import UserAvatar from '@/components/user-avatar'
 import CopyTextButton from '@/components/copy-text-button'
-import { BadgeCheckFillIcon, BadgeQuestionFillIcon } from '@/components/icons'
+import {
+    BadgeCheckFillIcon,
+    BadgeQuestionFillIcon,
+    WarningFillIcon,
+} from '@/components/icons'
 import { MemberProfileCreateUpdateFormModal } from '@/components/forms/member-forms/member-application-form/member-profile-create-update-form'
 
 import { cn } from '@/lib'
@@ -73,10 +77,16 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
             </div>
             <div className="flex flex-col items-end space-y-1.5">
                 <span>
-                    <Badge variant="secondary" className="gap-1.5">
+                    <Badge variant="default" className="gap-1.5">
                         {memberProfile.memberType?.name}
                     </Badge>
                 </span>
+                {memberProfile.isClosed && (
+                    <Badge variant="destructive" className="bg-rose-500">
+                        <WarningFillIcon className="mr-1 inline text-rose-200" />
+                        Closed Account
+                    </Badge>
+                )}
                 <p className="!mt-4 truncate whitespace-nowrap text-xs text-muted-foreground/60">
                     <span>Profile ID: </span>
                     {`${memberProfile.id ?? 'no id'}`}
