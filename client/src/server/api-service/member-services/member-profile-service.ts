@@ -3,10 +3,12 @@ import qs from 'query-string'
 import APIService from '../api-service'
 
 import {
+    IMemberProfileCloseRequest,
     IMemberProfileRequest,
     IMemberProfileResource,
 } from '../../types/member/member-profile'
 import { TEntityId } from '../../types/common'
+import { IMemberCloseRemarkRequest } from '@/server/types'
 
 export interface IMemberProfilePickerParams {
     sort?: string
@@ -63,6 +65,27 @@ export default class MemberProfileService {
             IMemberProfileRequest,
             IMemberProfileResource
         >(url, memberData, {
+            headers: {
+                Authorization: `Bearer YOUR_TOKEN`, // Replace with actual token if needed
+            },
+        })
+        return response.data
+    }
+
+    public static async closeAccount(
+        id: TEntityId,
+        closeRemark: IMemberCloseRemarkRequest[],
+        preloads?: string[]
+    ) {
+        const url = qs.stringifyUrl({
+            url: `${MemberProfileService.BASE_ENDPOINT}/${id}/close-account`,
+            query: { preloads },
+        })
+
+        const response = await APIService.put<
+            IMemberProfileCloseRequest,
+            IMemberProfileResource
+        >(url, closeRemark, {
             headers: {
                 Authorization: `Bearer YOUR_TOKEN`, // Replace with actual token if needed
             },

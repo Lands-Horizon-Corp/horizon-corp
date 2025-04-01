@@ -4,12 +4,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { withCatchAsync } from '@/utils'
 import { serverRequestErrExtractor } from '@/helpers'
 
-import { TEntityId } from '@/server'
+import { IMemberCloseRemarkRequest, TEntityId } from '@/server'
 import {
     IMemberProfileRequest,
     IMemberProfileResource,
 } from '@/server/types/member/member-profile'
-import { IAPIHook, IQueryProps } from '../types'
+import { IAPIHook, IMutationProps, IQueryProps } from '../types'
 import MemberProfileService from '@/server/api-service/member-services/member-profile-service'
 
 export const useCreateMemberProfile = ({
@@ -97,7 +97,7 @@ export const useUpdateMemberProfile = ({
     onError,
 }:
     | undefined
-    | (IAPIHook<IMemberProfileResource, string> & IQueryProps) = {}) => {
+    | (IAPIHook<IMemberProfileResource, string> & IMutationProps) = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<
@@ -139,5 +139,58 @@ export const useUpdateMemberProfile = ({
 
             return updatedMember
         },
+    })
+}
+
+export const useCloseMemberProfile = ({
+    showMessage = true,
+    preloads = ['Media'],
+    onSuccess,
+    onError,
+    ...other
+}: IAPIHook<IMemberProfileResource, string> & IMutationProps) => {
+    const queryClient = useQueryClient()
+
+    return useMutation<
+        IMemberProfileResource,
+        string,
+        { profileId: TEntityId; data: IMemberCloseRemarkRequest[] }
+    >({
+        mutationKey: ['member-profile', 'close-account'],
+        mutationFn: async ({ profileId, data }) => {
+            const [error, closedMember] = await withCatchAsync(
+                MemberProfileService.closeAccount(profileId, data, preloads)
+            )
+
+            if (error) {
+                const errorMessage = serverRequestErrExtractor({ error })
+                if (showMessage) toast.error(errorMessage)
+                onError?.(errorMessage)
+                throw errorMessage
+            }
+
+            queryClient.invalidateQueries({
+                queryKey: ['member', 'resource-query'],
+            })
+
+            queryClient.setQueryData<IMemberProfileResource>(
+                ['member-profile', closedMember.id],
+                closedMember
+            )
+
+            queryClient.invalidateQueries({
+                queryKey: ['member', closedMember.id],
+            })
+
+            queryClient.removeQueries({
+                queryKey: ['member', 'loader', closedMember.id],
+            })
+
+            if (showMessage) toast.success('Member Profile Updated')
+            onSuccess?.(closedMember)
+
+            return closedMember
+        },
+        ...other,
     })
 }
