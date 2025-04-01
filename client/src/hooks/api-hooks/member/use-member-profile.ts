@@ -148,7 +148,7 @@ export const useCloseMemberProfile = ({
     onSuccess,
     onError,
     ...other
-}: IAPIHook<IMemberProfileResource, string> & IMutationProps) => {
+}: IAPIHook<IMemberProfileResource, string> & IMutationProps = {}) => {
     const queryClient = useQueryClient()
 
     return useMutation<
