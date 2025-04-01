@@ -35,7 +35,10 @@ import { IMemberWalletResource } from './member-wallet'
 import { IMemberGenderResource } from './member-gender'
 import { IMemberCenterResource } from './member-center'
 import { IMemberOccupationResource } from './member-occupation'
-import { IMemberCloseRemarksResource } from './member-close-remarks'
+import {
+    IMemberCloseRemarkRequest,
+    IMemberCloseRemarkResource,
+} from './member-close-remark'
 import { IMemberClassificationResource } from './member-classification'
 import { IMemberIncomeRequest, IMemberIncomeResource } from './member-income'
 import { IMemberAssetsRequest, IMemberAssetsResource } from './member-assets'
@@ -85,6 +88,7 @@ export interface IMemberProfileRequest {
     memberRecruits?: IMemberRecruitsRequest[]
     memberExpenses?: IMemberExpensesRequest[]
     memberDescriptions?: IMemberDescriptionRequest[]
+    memberCloseRemarks?: IMemberCloseRemarkRequest[]
     memberJointAccounts?: IMemberJointAccountsRequest[]
     memberRelativeAccounts?: IMemberRelativeAccountsRequest[]
     memberGovernmentBenefits?: IMemberGovernmentBenefitsRequest[]
@@ -154,7 +158,7 @@ export interface IMemberProfileResource extends ITimeStamps {
     memberRecruits?: IMemberRecruitsResource[]
     memberExpenses?: IMemberExpensesResource[]
     memberDescriptions?: IMemberDescriptionResource[]
-    memberCloseRemarks?: IMemberCloseRemarksResource[]
+    memberCloseRemarks?: IMemberCloseRemarkResource[]
     memberJointAccounts?: IMemberJointAccountsResource[]
     memberRelativeAccounts?: IMemberRelativeAccountsResource[]
     memberGovernmentBenefits?: IMemberGovernmentBenefitsResource[]
