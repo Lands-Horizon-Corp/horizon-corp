@@ -1,14 +1,14 @@
 import { ITimeStamps, TEntityId } from '../common'
 import { IMemberProfileResource } from './member-profile'
 
-export interface IMemberCloseRemarksRequest {
+export interface IMemberCloseRemarkRequest {
     id?: TEntityId
     membersProfileId: TEntityId
     description: string
     membersProfile?: IMemberProfileResource
 }
 
-export interface IMemberCloseRemarksResource extends ITimeStamps {
+export interface IMemberCloseRemarkResource extends ITimeStamps {
     id: TEntityId
     membersProfileId: TEntityId
     description: string
