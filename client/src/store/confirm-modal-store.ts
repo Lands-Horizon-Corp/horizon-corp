@@ -11,8 +11,8 @@ interface ISharedConfirmModalProperty {
 }
 
 interface IConfirmModalOnOpenData extends Partial<ISharedConfirmModalProperty> {
-    title: string
-    description?: string
+    title: string | ReactNode
+    description?: string | ReactNode
     content?: ReactNode
 
     confirmString?: string

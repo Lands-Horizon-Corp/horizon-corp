@@ -63,6 +63,7 @@ import {
 
 import {
     PiPlus as PlusIcon,
+    PiEmpty as EmptyIcon,
     PiPushPin as PushPinIcon,
     PiUserList as UserListIcon,
     PiBuilding as BuildingIcon,
@@ -75,6 +76,7 @@ import {
     PiPushPinSlash as PushPinSlashIcon,
     PiHandCoinsDuotone as HandCoinsIcon,
     PiMicrosoftExcelLogoFill as ExcelIcon,
+    PiHeartBreakFill as HeartBreakFillIcon,
     PiSignatureLight as SignatureLightIcon,
     PiBuildingOffice as BuildingBranchIcon,
     PiHandDepositDuotone as HandDepositIcon,
@@ -83,7 +85,6 @@ import {
     PiWarningCircleFill as WarningCircleIcon,
     PiHandWithdrawDuotone as HandWithdrawIcon,
     PiTextStrikethroughLight as TextStrikethroughLightIcon,
-    PiEmpty as EmptyIcon,
 } from 'react-icons/pi'
 
 import {
@@ -242,8 +243,9 @@ import { RxDotFilled as DotMediumIcon } from 'react-icons/rx'
 import { GrPowerReset as PowerResetIcon } from 'react-icons/gr'
 
 import {
-    VscLocation as LocationPinOutlineIcon,
     VscError as ErrorIcon,
+    VscCommentDraft as CommentDashedIcon,
+    VscLocation as LocationPinOutlineIcon,
 } from 'react-icons/vsc'
 
 import { BiErrorCircle as WarningIcon } from 'react-icons/bi'
@@ -403,6 +405,7 @@ export {
     LoadingCircleIcon,
     PencilOutlineIcon,
     UserClockFillIcon,
+    CommentDashedIcon,
     SignatureLightIcon,
     HandShakeHeartIcon,
     FlipHorizontalIcon,
@@ -415,6 +418,7 @@ export {
     AccountSettingIcon,
     FullscreenExitIcon,
     MessageOutlineIcon,
+    HeartBreakFillIcon,
     MagnifyingGlassIcon,
     SpreadSheetFileIcon,
     HardDriveUploadIcon,
