@@ -3,7 +3,6 @@ import qs from 'query-string'
 import APIService from '../api-service'
 
 import {
-    IMemberProfileCloseRequest,
     IMemberProfileRequest,
     IMemberProfileResource,
 } from '../../types/member/member-profile'
@@ -83,7 +82,7 @@ export default class MemberProfileService {
         })
 
         const response = await APIService.put<
-            IMemberProfileCloseRequest,
+            IMemberCloseRemarkRequest[],
             IMemberProfileResource
         >(url, closeRemark, {
             headers: {

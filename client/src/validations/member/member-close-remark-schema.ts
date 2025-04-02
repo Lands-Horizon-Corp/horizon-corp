@@ -4,9 +4,10 @@ import { AccountClosureReasonTypes } from '@/server'
 
 export const memberCloseRemarkSchema = z.object({
     id: entityIdSchema.optional(),
+    createdAt: z.string(),
     membersProfileId: entityIdSchema,
     description: z.string().min(1, 'Description/Reason is required'),
-    createdAt: z.string(),
+    category: z.enum(AccountClosureReasonTypes).default('Inactive Membership'),
 })
 
 export const memberCreateCloseRemarkSchema = z.object({
