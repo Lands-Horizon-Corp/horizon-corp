@@ -1,5 +1,6 @@
 import z from 'zod'
 import { entityIdSchema } from '../common'
+import { AccountClosureReasonTypes } from '@/server'
 
 export const memberCloseRemarkSchema = z.object({
     id: entityIdSchema.optional(),
@@ -11,6 +12,7 @@ export const memberCloseRemarkSchema = z.object({
 export const memberCreateCloseRemarkSchema = z.object({
     membersProfileId: entityIdSchema,
     description: z.string().min(1, 'Description/Reason is required'),
+    category: z.enum(AccountClosureReasonTypes).default('Inactive Membership'),
 })
 
 export const memberCreateCloseRemarksSchema = z.object({
