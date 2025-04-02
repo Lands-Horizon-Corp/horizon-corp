@@ -55,7 +55,10 @@ const TextEditor = ({
         editorProps: {
             attributes: {
                 spellcheck: spellCheck ? 'true' : 'false',
-                class: cn('w-full ecoop-scroll toolbar-custom', textEditorClassName),
+                class: cn(
+                    'w-full ecoop-scroll toolbar-custom',
+                    textEditorClassName
+                ),
             },
         },
         onUpdate({ editor }) {
