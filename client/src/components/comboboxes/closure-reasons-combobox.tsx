@@ -2,11 +2,6 @@ import * as React from 'react'
 import { Check } from 'lucide-react'
 
 import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from '@/components/ui/popover'
-import {
     Command,
     CommandItem,
     CommandList,
@@ -14,9 +9,15 @@ import {
     CommandGroup,
     CommandInput,
 } from '@/components/ui/command'
-import { cn } from '@/lib/utils'
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover'
 import { ChevronDownIcon } from '../icons'
 import { Button } from '@/components/ui/button'
+
+import { cn } from '@/lib/utils'
 import { AccountClosureReasonType, AccountClosureReasonTypes } from '@/server'
 
 interface Props {
