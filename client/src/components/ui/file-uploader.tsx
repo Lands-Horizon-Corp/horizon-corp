@@ -33,9 +33,10 @@ const FileUploader = ({
     const [uploadedFiles, setUploadedFiles] = useState<readonly FileWithPath[]>(
         []
     )
-    const handleFilesChange = (newFiles: FileWithPath[]) => {
+    const handleFilesChange = useCallback((newFiles: FileWithPath[]) => {
         setUploadedFiles((prevFiles) => [...prevFiles, ...newFiles])
-    }
+    }, [])
+
     const onDrop = useCallback(
         (acceptedFiles: File[], fileRejections: FileRejection[]) => {
             if (fileRejections.length > 0) {
