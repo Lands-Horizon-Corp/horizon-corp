@@ -19,11 +19,8 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IMemberProfileResource } from '@/server'
 import useConfirmModalStore from '@/store/confirm-modal-store'
-import {
-    ImagePreview,
-    ImagePreviewContent,
-} from '@/components/ui/image-preview'
 import ImageDisplay from '@/components/image-display'
+import { useImagePreview } from '@/store/image-preview-store'
 
 interface Props extends IBaseCompNoChild {
     memberProfile: IMemberProfileResource
@@ -31,7 +28,7 @@ interface Props extends IBaseCompNoChild {
 
 const MemberInfoBanner = ({ className, memberProfile }: Props) => {
     const { onOpen } = useConfirmModalStore()
-    const [openPreview, setOpenPreview] = useState(false)
+    const { onOpen: onOpenImage } = useImagePreview()
     const [editProfile, setEditProfile] = useState(false)
     const [closeMemberAccount, setCloseMemberAccount] = useState(false)
 
@@ -59,16 +56,13 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
                 <ImageDisplay
                     className="size-32 !rounded-xl"
                     fallbackClassName="!rounded-xl"
-                    onClick={() => setOpenPreview(true)}
+                    onClick={() =>
+                        memberProfile.media &&
+                        onOpenImage({ Images: [memberProfile.media] })
+                    }
                     src={memberProfile.media?.downloadURL ?? ''}
                 />
-                <ImagePreview open={openPreview} onOpenChange={setOpenPreview}>
-                    <ImagePreviewContent
-                        Images={
-                            memberProfile?.media ? [memberProfile.media] : []
-                        }
-                    />
-                </ImagePreview>
+
                 <div className="w-fit space-y-1">
                     <p className="text-xl">{`${memberProfile.member?.fullName ?? 'no name'}`}</p>
                     <p className="text-sm text-muted-foreground/80">
