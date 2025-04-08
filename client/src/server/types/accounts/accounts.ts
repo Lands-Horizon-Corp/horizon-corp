@@ -28,6 +28,13 @@ export type TOtherAccountInformation =
     | 'CIB/CIK Acct.'
     | 'COH Acct.'
 
+export type TAccountingDefault =
+    | 'Loan'
+    | 'Savings'
+    | 'Withdraw'
+    | 'None'
+    | 'Time'
+
 export interface IAccountsRequest {
     id?: TEntityId
     companyId: TEntityId
@@ -58,6 +65,7 @@ export interface IAccountsRequest {
     finesGpMaturity?: number
     earnedUnearnedInterest?: TEarnedUnearnedInterest
     otherInformationOfAnAccount?: TOtherAccountInformation
+    accountingDefault?: TAccountingDefault
 }
 
 export interface IAccountsResource extends ITimeStamps {
@@ -90,6 +98,7 @@ export interface IAccountsResource extends ITimeStamps {
     finesGpMaturity?: number
     earnedUnearnedInterest?: TEarnedUnearnedInterest
     otherInformationOfAnAccount?: TOtherAccountInformation
+    default: TAccountingDefault
 }
 
 export interface IAccountsPaginatedResource
