@@ -10,4 +10,7 @@ export const paymentsEntrySchema = z.object({
     isPrinted: z.boolean().optional(),
     notes: z.string().optional(),
     transactionType: z.string().default(DEFAULT_TRANSACTION_TYPE),
+    defaultAccounting: z
+        .enum(['loan', 'savings', 'withdraw', 'none', 'time'])
+        .default('none'),
 })

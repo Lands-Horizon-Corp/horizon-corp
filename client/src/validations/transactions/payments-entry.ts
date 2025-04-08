@@ -30,5 +30,6 @@ export const paymentsEntrySchema = z.object({
     accountsId: z.string().min(1, 'Accounts is required'),
     isPrinted: z.boolean().optional(),
     notes: z.string().optional(),
-    transactionType: z.string().default(DEFAULT_TRANSACTION_TYPE),
+    paymentType: z.string().default(DEFAULT_TRANSACTION_TYPE),
+    transactionType: z.string().min(1, 'transactionType is Required'),
 })
