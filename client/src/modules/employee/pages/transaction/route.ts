@@ -22,7 +22,9 @@ export const employeeTransactionIndexRoute = createRoute({
 export const employeeTransactionPaymentsEntry = createRoute({
     path: '/fund-movement',
     getParentRoute: () => employeeTransactionRoute,
-    component: lazyRouteComponent(() => import('./payments-entry-page')),
+    component: lazyRouteComponent(
+        () => import('./transaction-payments-entry-page')
+    ),
 })
 
 export const employeeTransactionPaymentType = createRoute({
