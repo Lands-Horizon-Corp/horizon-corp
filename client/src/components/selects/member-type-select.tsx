@@ -63,7 +63,10 @@ const MemberTypeSelect = ({
             }}
             disabled={disabled || isLoading}
         >
-            <SelectTrigger className={cn('', className)}>
+            <SelectTrigger
+                disabled={isLoading || disabled}
+                className={cn('', className)}
+            >
                 <SelectValue
                     placeholder={placeholder || 'Select Member Type'}
                 />

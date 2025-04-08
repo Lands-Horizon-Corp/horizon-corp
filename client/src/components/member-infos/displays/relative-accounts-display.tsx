@@ -12,6 +12,7 @@ import ImageDisplay from '@/components/image-display'
 import CopyTextButton from '@/components/copy-text-button'
 import SectionTitle from '../section-title'
 import { FamilyIcon } from '@/components/icons'
+import { toReadableDate } from '@/utils'
 
 interface Props {
     relativeAccounts?: IMemberRelativeAccountsResource[]
@@ -81,6 +82,22 @@ const RelativeAccountsDisplay = ({ relativeAccounts }: Props) => {
                                 </p>
                                 <p className="text-xs text-muted-foreground/70">
                                     Member Type
+                                </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <p className="truncate">
+                                    {relativeAcc.relativeProfileMemberProfile
+                                        ?.passbookNumber ?? '-'}
+                                </p>
+                                <p className="text-xs text-muted-foreground/70">
+                                    Passbook Number
+                                </p>
+                            </div>
+                            <div className="space-y-2">
+                                <p>{toReadableDate(relativeAcc.createdAt)}</p>
+                                <p className="text-xs text-muted-foreground/70">
+                                    Date Recruited
                                 </p>
                             </div>
                         </div>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { useForm, UseFormReturn } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -39,10 +39,11 @@ import { TEntityId } from '@/server'
 import {
     IPaymentsEntry,
     IPaymentsEntryRequest,
+    TRANSACTION_TYPE,
 } from '@/server/types/transactions/payments-entry'
 import { IBaseCompNoChild } from '@/types'
 import { Separator } from '@/components/ui/separator'
-import { AccountsIcon, MoneyIcon, SavingsIcon } from '@/components/icons'
+import { AccountsIcon, MoneyIcon } from '@/components/icons'
 import useConfirmModalStore from '@/store/confirm-modal-store'
 import { useShortcut } from '@/components/use-shorcuts'
 import { useMemberPickerStore } from '@/store/use-member-picker-state-store'
@@ -54,35 +55,30 @@ import {
     usePaymentsModalStore,
 } from '@/store/transaction/payments-entry-store'
 import { toast } from 'sonner'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import DepositAccountPicker from '@/components/pickers/deposit-accounts-picker'
 import { useCreatePaymentEntry } from '@/hooks/api-hooks/transactions/use-payments-entry'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import LoadingSpinner from '@/components/spinners/loading-spinner'
+import { IGenerateORNumberResource } from '@/server/types/transactions/generate-or-number'
+import { RefetchOptions, QueryObserverResult } from '@tanstack/react-query'
 
 const CHECK_BANK_LIST = ['trans-pay-002', 'trans-pay-003']
 
-export enum TRANSACTION_TYPE {
-    deposit = 'deposit',
-    withdraw = 'withdraw',
-    payment = 'payment',
-}
 export type TPaymentFormValues = z.infer<typeof paymentsEntrySchema>
 
 export interface IPaymentFormProps
     extends IBaseCompNoChild,
-        IForm<Partial<IPaymentsEntryRequest>, unknown, string> {
-    open: boolean
-    onOpenChange: (open: boolean) => void
+        IForm<TPaymentFormValues> {
     selectedMemberId: TEntityId
-    resetSelectedMember?: () => void
-    form: UseFormReturn<{
-        amount: number
-        accountsId: string
-        transactionType: string
-        isPrinted?: boolean | undefined
-        notes?: string | undefined
-    }>
-    resetForm: () => void
     error?: string
+    ORNumber?: number
+    hadSelectedPayments?: boolean
+    resetForm: () => void
+    resetMemberSelectionAndForm?: () => void
+    handlePrintTransactionEntry?: (payments: IPaymentsEntryRequest[]) => void
+    form: UseFormReturn<TPaymentFormValues>
+    refetchGenerateOrNumber?: (
+        options?: RefetchOptions
+    ) => Promise<QueryObserverResult<IGenerateORNumberResource, Error>>
 }
 
 const PaymentsEntryFormModal = ({
@@ -90,101 +86,152 @@ const PaymentsEntryFormModal = ({
     form,
     resetForm,
     error,
+    ORNumber,
+    hadSelectedPayments,
+    refetchGenerateOrNumber,
+    resetMemberSelectionAndForm,
+    handlePrintTransactionEntry,
+    disabledFields,
 }: Omit<IPaymentFormProps, 'open' | 'onOpenChange'>) => {
-    const [latestFormValues, setLatestFormValues] =
-        useState<TPaymentFormValues>()
     const {
         openCheckClearingFormModal,
         setOpenCheckClearingFormModal,
         setOpenPaymentsEntryModal,
+        setTransactionType,
         transactionType,
     } = usePaymentsModalStore()
 
     const {
         selectedPayments,
         setSelectedPayments,
-        ORNumber,
         selectedMember,
         setSelectedAccounts,
         selectedAccounts,
+        focusTypePayment,
+        setFocusTypePayment,
     } = usePaymentsDataStore()
 
     const { isOpen } = useMemberPickerStore()
     const { isOpen: isOpenConfirm } = useConfirmModalStore()
-    const [pickerState, setPickerState] = useState(false)
+
+    const paymentOptions = [
+        {
+            value: 'payment',
+            label: 'payment',
+            disabled: false,
+        },
+        {
+            value: 'deposit',
+            label: 'deposit',
+            disabled: !hadSelectedPayments,
+        },
+        {
+            value: 'withdraw',
+            label: 'withdraw',
+            disabled: !hadSelectedPayments,
+        },
+    ]
+
     const {
         mutate: createPayment,
         isPending: isPendingCreatePayments,
-        error: depositAndWithdrawError,
+        error: createPaymentError,
     } = useCreatePaymentEntry({
-        onSuccess: () => {},
+        onSuccess: (data) => {
+            resetForm()
+            setOpenPaymentsEntryModal(false)
+            setSelectedAccounts(null)
+            resetMemberSelectionAndForm && resetMemberSelectionAndForm()
+            refetchGenerateOrNumber && refetchGenerateOrNumber()
+            toast.success(
+                `${data.length} ${transactionType} is successfully added`
+            )
+            handlePrintTransactionEntry && handlePrintTransactionEntry(data)
+        },
         onError: (error) => {
             toast.error(error)
         },
     })
 
-    const errorMessage = depositAndWithdrawError || error
+    const isNotPayment = transactionType !== TRANSACTION_TYPE.payment
 
     const handleSubmit = useCallback(
         async (values: TPaymentFormValues) => {
-            if (CHECK_BANK_LIST.includes(values.transactionType)) {
-                setOpenCheckClearingFormModal(true)
-                return
-            }
+            try {
+                if (!transactionType) {
+                    console.error('Transaction type is missing')
+                    return
+                }
 
-            if (!selectedMember?.id) {
-                toast.error('Please select a member')
-                return
-            }
+                if (CHECK_BANK_LIST.includes(values.paymentType)) {
+                    setOpenCheckClearingFormModal(true)
+                    return
+                }
 
-            if (!selectedAccounts) {
-                toast.error('Please select an account')
-                return
-            }
+                if (!selectedMember?.id) {
+                    toast.error('Please select a member')
+                    return
+                }
 
-            const depositEntry: IPaymentsEntryRequest = {
-                ...values,
-                accountsId: values.accountsId ?? '',
-                memberId: selectedMemberId,
-                ORNumber: ORNumber,
-                isPrinted: values.isPrinted ?? false,
-            }
+                if (!selectedAccounts) {
+                    toast.error('Please select an account')
+                    return
+                }
 
-            const paymentEntry: IPaymentsEntry = {
-                ...values,
-                ORNumber,
-                memberId: selectedMemberId,
-                account: selectedAccounts,
-                isPrinted: values.isPrinted ?? false,
-            }
+                if (!values.accountsId) {
+                    toast.error('Account ID is required')
+                    return
+                }
+                if (!ORNumber) {
+                    toast.error('ORNumber is Required')
+                    return
+                }
 
-            if (transactionType === TRANSACTION_TYPE.payment) {
-                setSelectedPayments([...selectedPayments, paymentEntry])
-            }
+                const paymentEntry: IPaymentsEntry = {
+                    accountsId: values.accountsId,
+                    memberId: selectedMemberId,
+                    ORNumber,
+                    isPrinted: values.isPrinted ?? false,
+                    amount: values.amount,
+                    paymentType: values.paymentType,
+                    account: selectedAccounts,
+                    type: TRANSACTION_TYPE.payment,
+                }
 
-            createPayment([depositEntry])
-            toast.success('Added payments entry')
-            resetForm()
-            setOpenPaymentsEntryModal(false)
+                if (isNotPayment) {
+                    const depositAndWithdraw: IPaymentsEntryRequest = {
+                        ...paymentEntry,
+                        type:
+                            transactionType === TRANSACTION_TYPE.deposit
+                                ? TRANSACTION_TYPE.deposit
+                                : TRANSACTION_TYPE.withdraw,
+                    }
+                    createPayment([depositAndWithdraw])
+                } else {
+                    setSelectedPayments([...selectedPayments, paymentEntry])
+                    setOpenPaymentsEntryModal(false)
+                    toast.success('1 payment added')
+                    resetForm()
+                }
+            } catch (error) {
+                console.error('Submission error:', error)
+            }
         },
         [
             selectedMember?.id,
             selectedAccounts,
             ORNumber,
             selectedMemberId,
+            transactionType,
+            createPayment,
             setSelectedPayments,
             resetForm,
             setOpenCheckClearingFormModal,
             setOpenPaymentsEntryModal,
+            selectedPayments,
+            isNotPayment,
         ]
     )
-
-    useEffect(() => {
-        if (openCheckClearingFormModal) {
-            const currentValues = form.getValues()
-            setLatestFormValues(currentValues)
-        }
-    }, [openCheckClearingFormModal, form])
 
     useShortcut('Enter', async (event) => {
         event.preventDefault()
@@ -201,44 +248,110 @@ const PaymentsEntryFormModal = ({
         }
     })
 
-    const depositOptions = [
-        {
-            value: 'Others',
-            label: 'Others',
-            disabled: false,
-        },
-        {
-            value: 'Savings',
-            label: 'Savings',
-            disabled: false,
-        },
-        {
-            value: 'Time',
-            label: 'Time',
-            disabled: true,
-        },
-    ]
+    const errorMessage = `Payment: ${createPaymentError} FormError: ${error}`
 
     return (
         <>
             <CheckClearingFormModal
                 formProps={{
                     resetPaymentsForm: resetForm,
-                    values: latestFormValues,
+                    paymentFormsValue: form.getValues(),
                     amount: form.getValues('amount'),
+                    ORNumber: ORNumber,
                 }}
                 open={openCheckClearingFormModal}
                 onOpenChange={setOpenCheckClearingFormModal}
             />
-
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(handleSubmit)}>
                     <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                        <div className="md:col-span-2">
+                            <FormFieldWrapper
+                                className="md:col-span-2"
+                                control={form.control}
+                                name="transactionType"
+                                label="transaction Type"
+                                disabled={disabledFields?.includes(
+                                    'transactionType'
+                                )}
+                                render={({ field }) => {
+                                    return (
+                                        <div className="flex w-full gap-x-2">
+                                            {paymentOptions.map(
+                                                (
+                                                    { value, label, disabled },
+                                                    idx
+                                                ) => (
+                                                    <RadioGroup
+                                                        defaultValue={
+                                                            field.value
+                                                        }
+                                                        className="flex grow items-center"
+                                                        onValueChange={(
+                                                            value
+                                                        ) => {
+                                                            setTransactionType(
+                                                                value
+                                                            )
+                                                            field.onChange(
+                                                                value
+                                                            )
+                                                        }}
+                                                        onFocus={(item) => {
+                                                            setFocusTypePayment(
+                                                                `${item.target.id}`
+                                                            )
+                                                        }}
+                                                        defaultChecked={true}
+                                                        id={field.name}
+                                                        value={field.value}
+                                                    >
+                                                        <Label
+                                                            key={value}
+                                                            tabIndex={idx}
+                                                            className={cn(
+                                                                'relative flex w-full cursor-pointer items-start gap-3 rounded-lg border border-input p-4 shadow-sm shadow-black/5 duration-300 ease-in-out hover:bg-secondary/60 has-[[data-state=checked]]:border-ring has-[[data-state=checked]]:bg-secondary/80',
+                                                                focusTypePayment ===
+                                                                    value
+                                                                    ? 'border-primary/80 bg-secondary/80'
+                                                                    : '',
+                                                                disabled
+                                                                    ? 'cursor-not-allowed hover:bg-transparent'
+                                                                    : ''
+                                                            )}
+                                                        >
+                                                            <RadioGroupItem
+                                                                value={value}
+                                                                id={value}
+                                                                aria-describedby={
+                                                                    value
+                                                                }
+                                                                disabled={
+                                                                    disabled
+                                                                }
+                                                                className="order-1 border"
+                                                            />
+                                                            <div className="grow">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-lg"></span>
+                                                                    {label}
+                                                                </div>
+                                                            </div>
+                                                        </Label>
+                                                    </RadioGroup>
+                                                )
+                                            )}
+                                        </div>
+                                    )
+                                }}
+                            />
+                        </div>
                         <FormFieldWrapper
                             className="md:col-span-2"
                             control={form.control}
                             name="amount"
                             label="Payment Amount"
+                            disabled={disabledFields?.includes('amount')}
                             render={({ field }) => (
                                 <div className="relative w-full">
                                     <Input
@@ -279,84 +392,18 @@ const PaymentsEntryFormModal = ({
                                 </div>
                             )}
                         />
-                        {transactionType === TRANSACTION_TYPE.deposit && (
-                            <FormFieldWrapper
-                                className="md:col-span-2"
-                                control={form.control}
-                                name="accountsId"
-                                label=""
-                                render={({ field }) => {
-                                    return (
-                                        <>
-                                            <DepositAccountPicker
-                                                value={field.value}
-                                                onSelect={(account) => {
-                                                    field.onChange(account.id)
-                                                }}
-                                                disabledButton
-                                                setPickerState={setPickerState}
-                                                pickerState={pickerState}
-                                                placeholder="Deposit Account Name"
-                                            />
-                                            <RadioGroup
-                                                onValueChange={(value) => {
-                                                    if (value === 'Others') {
-                                                        setPickerState(true)
-                                                    }
-                                                }}
-                                                defaultValue={'Savings'}
-                                                className="flex"
-                                            >
-                                                {depositOptions.map(
-                                                    ({
-                                                        value,
-                                                        label,
-                                                        disabled,
-                                                    }) => (
-                                                        <Label
-                                                            key={value}
-                                                            htmlFor={`deposit-type-${value}`}
-                                                            className={`relative flex w-full cursor-pointer items-start gap-3 rounded-lg border border-input p-4 shadow-sm shadow-black/5 duration-300 ease-in-out hover:bg-secondary/60 has-[[data-state=checked]]:border-ring has-[[data-state=checked]]:bg-secondary/80 ${
-                                                                disabled
-                                                                    ? 'cursor-not-allowed opacity-50'
-                                                                    : ''
-                                                            }`}
-                                                        >
-                                                            <RadioGroupItem
-                                                                value={value}
-                                                                id={`deposit-type-${value}`}
-                                                                aria-describedby={`deposit-type-${value}-description`}
-                                                                className="order-1"
-                                                                disabled={
-                                                                    disabled
-                                                                }
-                                                            />
-                                                            <div className="grow">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="text-lg">
-                                                                        <SavingsIcon />
-                                                                    </span>
-                                                                    {label}
-                                                                </div>
-                                                            </div>
-                                                        </Label>
-                                                    )
-                                                )}
-                                            </RadioGroup>
-                                        </>
-                                    )
-                                }}
-                            />
-                        )}
 
                         <FormFieldWrapper
                             control={form.control}
-                            name="transactionType"
+                            name="paymentType"
                             label="Payment Method"
                             render={({ field }) => (
                                 <div className="relative w-full">
                                     <TransactionPaymentTypesPicker
                                         value={field.value}
+                                        disabled={disabledFields?.includes(
+                                            'paymentType'
+                                        )}
                                         onSelect={(type) =>
                                             field.onChange(type.id)
                                         }
@@ -377,6 +424,9 @@ const PaymentsEntryFormModal = ({
                             render={({ field }) => (
                                 <AccountsPicker
                                     value={field.value}
+                                    disabled={disabledFields?.includes(
+                                        'accountsId'
+                                    )}
                                     onSelect={(account) => {
                                         field.onChange(account.id)
                                         setSelectedAccounts({
@@ -398,6 +448,7 @@ const PaymentsEntryFormModal = ({
                             control={form.control}
                             name="notes"
                             label="Additional Notes"
+                            disabled={disabledFields?.includes('notes')}
                             render={({ field }) => (
                                 <Textarea
                                     {...field}
@@ -410,6 +461,9 @@ const PaymentsEntryFormModal = ({
                             <div className="md:col-span-2">
                                 <FormField
                                     name="isPrinted"
+                                    disabled={disabledFields?.includes(
+                                        'isPrinted'
+                                    )}
                                     control={form.control}
                                     render={({ field }) => {
                                         const id = 'allowPrinting'
@@ -457,13 +511,16 @@ const PaymentsEntryFormModal = ({
                             </div>
                         )}
                     </div>
-                    <FormErrorMessage errorMessage={errorMessage} />
+                    {createPaymentError && error && (
+                        <FormErrorMessage errorMessage={errorMessage} />
+                    )}
                     <div className="col-span-2">
                         <Separator className="my-2 sm:my-4" />
                         <div className="flex items-center justify-end gap-x-2">
                             <Button
                                 type="button"
                                 variant="ghost"
+                                disabled={isPendingCreatePayments}
                                 onClick={() => resetForm()}
                                 className="w-full self-end px-8 sm:w-fit"
                             >
@@ -475,7 +532,11 @@ const PaymentsEntryFormModal = ({
                                 id="create-payment"
                                 className="w-full self-end px-8 sm:w-fit"
                             >
-                                create
+                                {isPendingCreatePayments ? (
+                                    <LoadingSpinner />
+                                ) : (
+                                    'create'
+                                )}
                             </Button>
                         </div>
                     </div>
@@ -502,20 +563,22 @@ export const TransactionPaymentEntryFormModal = ({
         mode: 'onSubmit',
         defaultValues: {
             amount: 0,
-            transactionType: DEFAULT_TRANSACTION_TYPE,
+            transactionType: 'payment',
             accountsId: '',
             notes: '',
             isPrinted: false,
+            paymentType: DEFAULT_TRANSACTION_TYPE,
         },
     })
 
     const resetForm = () => {
         form.reset({
             amount: 0,
-            transactionType: DEFAULT_TRANSACTION_TYPE,
+            transactionType: 'payment',
             accountsId: '',
             notes: '',
             isPrinted: false,
+            paymentType: DEFAULT_TRANSACTION_TYPE,
         })
     }
 
@@ -544,7 +607,7 @@ export const TransactionPaymentEntryFormModal = ({
         <Modal
             title={`Create ${capitalize(transactionType ?? '')}`}
             description={description}
-            className={cn('w-[44rem]', className)}
+            className={cn('w-[44rem] p-10', className)}
             onOpenChange={onPaymentsEntryModalClose}
             {...props}
         >

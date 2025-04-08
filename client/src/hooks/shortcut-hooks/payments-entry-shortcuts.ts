@@ -10,6 +10,8 @@ type usePaymentsShortcutsTypes = Pick<
     hadSelectedPayments: boolean
     handleSubmitPayment: (payments: IPaymentsEntry[]) => void
     handleOpenCreateModal: (type: 'payment' | 'deposit' | 'withdraw') => void
+    isPendingCreatePayments: boolean
+    isPendingCheckClearing: boolean
 }
 
 const usePaymentsShortcuts = ({
@@ -18,6 +20,7 @@ const usePaymentsShortcuts = ({
     handleSubmitPayment,
     selectedPayments,
     handleOpenCreateModal,
+    isPendingCheckClearing,
 }: usePaymentsShortcutsTypes) => {
     const handleD = useMemo(
         () => () => {
@@ -30,28 +33,25 @@ const usePaymentsShortcuts = ({
 
     const handleS = useMemo(
         () => () => {
+            if (
+                hadSelectedPayments ||
+                hadSelectedPayments ||
+                isPendingCheckClearing
+            )
+                return
             handleSubmitPayment(selectedPayments)
         },
-        [handleSubmitPayment, selectedPayments]
+        [
+            handleSubmitPayment,
+            selectedPayments,
+            hadSelectedPayments,
+            isPendingCheckClearing,
+        ]
     )
 
     const handleF1 = useMemo(
         () => () => {
             handleOpenCreateModal('payment')
-        },
-        [handleOpenCreateModal]
-    )
-
-    const handleF2 = useMemo(
-        () => () => {
-            handleOpenCreateModal('deposit')
-        },
-        [handleOpenCreateModal]
-    )
-
-    const handleF3 = useMemo(
-        () => () => {
-            handleOpenCreateModal('withdraw')
         },
         [handleOpenCreateModal]
     )
@@ -65,14 +65,6 @@ const usePaymentsShortcuts = ({
         disableActiveButton: true,
     })
     useShortcut('f1', handleF1, {
-        disableTextInputs: true,
-        disableActiveButton: true,
-    })
-    useShortcut('f2', handleF2, {
-        disableTextInputs: true,
-        disableActiveButton: true,
-    })
-    useShortcut('f3', handleF3, {
         disableTextInputs: true,
         disableActiveButton: true,
     })

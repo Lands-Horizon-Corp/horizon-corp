@@ -16,7 +16,6 @@ import { TCheckClearingSchema } from '@/validations/check-bank/check-clearing-sc
 import BankPicker from '@/components/pickers/bank-picker'
 import InputDatePicker from '@/components/date-time-pickers/input-date-picker'
 import { useCreateCheckClearing } from '@/hooks/api-hooks/transactions/use-check-clearing'
-import { ICheckClearingRequest } from '@/server/types/transactions/check-clearing'
 import FileUploader from '@/components/ui/file-uploader'
 import FormFieldWrapper from '@/components/ui/form-field-wrapper'
 import { useShortcut } from '@/components/use-shorcuts'
@@ -27,8 +26,12 @@ import {
     usePaymentsModalStore,
 } from '@/store/transaction/payments-entry-store'
 
-import { IPaymentsEntry } from '@/server/types/transactions/payments-entry'
-import { TPaymentFormValues, TRANSACTION_TYPE } from './payments-entry-form'
+import {
+    IPaymentsEntry,
+    IPaymentsEntryRequest,
+    TRANSACTION_TYPE,
+} from '@/server/types/transactions/payments-entry'
+import { TPaymentFormValues } from './payments-entry-form'
 
 import {
     Table,
@@ -40,7 +43,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useSinglePictureUpload } from '@/hooks/api-hooks/use-media-resource'
 import { IBankResponse } from '@/server/types/bank'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -55,51 +58,45 @@ import {
 import { TrashIcon } from '@/components/icons'
 import { Progress } from '@/components/ui/progress'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
-import { TEntityId } from '@/server'
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import FileTypeIcon from '@/components/ui/file-type'
+import { useCreatePaymentEntry } from '@/hooks/api-hooks/transactions/use-payments-entry'
+import { IForm } from '@/types/component/form'
+import { IBaseCompNoChild } from '@/types'
 
-type TBankFormValues = z.infer<typeof TCheckClearingSchema>
+type TCheckClearingFormValues = z.infer<typeof TCheckClearingSchema>
 
-type DepositCheckClearingListType = Omit<TBankFormValues, 'bankId'> & {
+type DepositCheckClearingListType = Omit<TCheckClearingFormValues, 'bankId'> & {
     bank?: IBankResponse
 }
 
-interface IClearingFormProps {
-    readOnly?: boolean
-    disabledFields?: (keyof TBankFormValues)[]
-    onSuccess?: (data: ICheckClearingRequest[]) => void
-    onError?: (error: string) => void
+export interface IClearingFormProps
+    extends IBaseCompNoChild,
+        IForm<TPaymentFormValues> {
     resetPaymentsForm?: () => void
-    values?: TPaymentFormValues
+    paymentFormsValue?: TPaymentFormValues
+    ORNumber?: number
     amount?: number
-    form: UseFormReturn<{
-        checkNo: string
-        bankId: TEntityId
-        checkDate: Date
-        picture?: string
-        amount?: number
-    }>
+    form: UseFormReturn<TCheckClearingFormValues>
 }
 
-const CheckBankForm = ({
-    onSuccess,
+const CheckClearingForm = ({
     resetPaymentsForm,
-    values,
+    paymentFormsValue,
     amount,
+    ORNumber,
 }: IClearingFormProps) => {
-    const { isOpen } = useMemberPickerStore()
+    const [selectedBank, setSelectedBank] = useState<IBankResponse>()
+    const [newAmount, setNewAmount] = useState(amount)
+    const [uploadMediaProgress, setUploadCheckMediaProgress] =
+        useState<number>(0)
     const [depositCheckClearingList, setDepositCheckClearingList] = useState<
         DepositCheckClearingListType[]
     >([])
-    const [newAmount, setnewAmount] = useState<number>(amount ?? 0)
-    const [selectedBank, setSelectedBank] = useState<IBankResponse>()
-    const [uploadMediaProgress, setUploadCheckMediaProgress] =
-        useState<number>(0)
 
     const {
         selectedPayments,
         setSelectedPayments,
-        ORNumber,
         selectedMember,
         selectedAccounts,
     } = usePaymentsDataStore()
@@ -108,20 +105,12 @@ const CheckBankForm = ({
         setOpenPaymentsEntryModal,
         transactionType,
         setOpenCheckClearingFormModal,
+        setTransactionType,
     } = usePaymentsModalStore()
 
-    const isDeposit = transactionType === TRANSACTION_TYPE.deposit
+    const { isOpen } = useMemberPickerStore()
 
-    const {
-        data: uploadedPhoto,
-        isPending: isUploadingPhoto,
-        mutateAsync: uploadPhoto,
-    } = useSinglePictureUpload({
-        onUploadProgressChange: (progress) =>
-            setUploadCheckMediaProgress(progress),
-    })
-
-    const form = useForm<TBankFormValues>({
+    const form = useForm<TCheckClearingFormValues>({
         resolver: zodResolver(TCheckClearingSchema),
         defaultValues: {
             checkNo: '',
@@ -132,110 +121,192 @@ const CheckBankForm = ({
         },
     })
 
-    const { mutateAsync, error, isPending } = useCreateCheckClearing({
-        onSuccess,
+    const resetForms = useCallback(() => {
+        resetPaymentsForm?.()
+        form.reset()
+        setOpenCheckClearingFormModal(false)
+        setOpenPaymentsEntryModal(false)
+        setTransactionType('payment')
+    }, [
+        form,
+        resetPaymentsForm,
+        setOpenCheckClearingFormModal,
+        setOpenPaymentsEntryModal,
+        setTransactionType,
+    ])
+
+    const {
+        data: uploadedPhoto,
+        isPending: isUploadingPhoto,
+        mutateAsync: uploadPhoto,
+    } = useSinglePictureUpload({
+        onUploadProgressChange: (progress) =>
+            setUploadCheckMediaProgress(progress),
     })
 
-    const handleSubmit = form.handleSubmit(async (data) => {
-        try {
-            if (
-                !values ||
-                !values.amount ||
-                !values.transactionType ||
-                !selectedMember?.id ||
-                !selectedAccounts
-            ) {
-                toast.warning('Incomplete payment data. Skipping submit.')
-                return
+    const { mutateAsync, error, isPending } = useCreateCheckClearing({
+        onSuccess: (data) => {
+            toast.success(`${data.length} clearing check is successfully added`)
+        },
+    })
+
+    const { mutate: createPayment, isPending: isPendingCreatePayments } =
+        useCreatePaymentEntry({
+            onSuccess: (data) => {
+                toast.success(
+                    `${data.length} ${transactionType} is successfully added`
+                )
+            },
+            onError: (error) => {
+                toast.error(error)
+            },
+        })
+
+    const handleUploadPhoto = useCallback(
+        async (picture: string) => {
+            const photoFile = base64ImagetoFile(picture, 'logo.jpg') as File
+            if (photoFile) {
+                await uploadPhoto(photoFile)
+                form.setValue('picture', '')
             }
+        },
+        [uploadPhoto, form]
+    )
 
-            const newEntry: IPaymentsEntry = {
-                ...values,
-                ORNumber,
-                memberId: selectedMember.id,
-                account: selectedAccounts,
-                isPrinted: values.isPrinted ?? false,
-            }
+    const isNotPayment = transactionType !== TRANSACTION_TYPE.payment
 
-            //deposit thing
-            if (isDeposit && data.amount) {
-                const formattedData = {
-                    ...data,
-                    checkDate: data.checkDate.toISOString(),
-                }
-
-                if (data.amount > newAmount) {
-                    toast.error(
-                        'Invalid Input: The input amount must be less than the deposited amount!'
-                    )
+    const handleSubmit = useCallback(
+        async (data: TCheckClearingFormValues) => {
+            try {
+                if (
+                    !paymentFormsValue ||
+                    !paymentFormsValue.amount ||
+                    !paymentFormsValue.transactionType ||
+                    !selectedMember?.id ||
+                    !selectedAccounts ||
+                    !transactionType ||
+                    !amount ||
+                    !newAmount ||
+                    !data.amount ||
+                    !ORNumber
+                ) {
+                    toast.warning('Incomplete payment data. Skipping submit.')
                     return
                 }
-                const updatedDepositList = [
-                    ...depositCheckClearingList,
-                    {
-                        ...formattedData,
-                        checkDate: new Date(formattedData.checkDate),
-                        bank: selectedBank,
-                    },
-                ]
 
-                setDepositCheckClearingList(updatedDepositList)
-
-                const remainingAmount = Math.max(0, newAmount - data.amount)
-
-                const sanitizedAmount =
-                    parseFloat(
-                        sanitizeNumberInput(remainingAmount.toString())
-                    ) || 0
-
-                setnewAmount(sanitizedAmount)
-
-                form.setValue('amount', parseFloat(sanitizedAmount.toFixed(2)))
-
-                if (sanitizedAmount === 0) {
-                    const photoFile = base64ImagetoFile(
-                        data.picture ?? '',
-                        'logo.jpg'
-                    ) as File
-
-                    await uploadPhoto(photoFile)
-
-                    const requestData = {
-                        ...formattedData,
-                        picture: uploadedPhoto?.id ?? '',
+                //deposit and withdraw
+                if (isNotPayment) {
+                    if (data.amount > newAmount) {
+                        toast.error(
+                            'Invalid Input: The input amount must be less than the deposited amount!'
+                        )
+                        return
                     }
 
-                    await mutateAsync([requestData])
-                    setOpenCheckClearingFormModal(false)
-                    form.reset()
+                    const updatedDepositList = [
+                        {
+                            ...data,
+                            checkDate: new Date(data.checkDate),
+                            bank: selectedBank,
+                            picture: uploadedPhoto?.id ?? '',
+                        },
+                        ...depositCheckClearingList,
+                    ]
+
+                    const sanitizedAmount: number = parseFloat(
+                        Math.max(0, newAmount - data.amount)
+                            .toFixed(2)
+                            .toString()
+                    )
+
+                    form.setValue('amount', sanitizedAmount)
+                    setDepositCheckClearingList(updatedDepositList)
+                    setNewAmount(sanitizedAmount)
+
+                    await handleUploadPhoto(data.picture ?? '')
+
+                    if (sanitizedAmount === 0) {
+                        await mutateAsync(
+                            updatedDepositList.map((item) => ({
+                                ...item,
+                                bankId: item.bank?.id ?? '',
+                                checkDate: item.checkDate.toISOString(),
+                            }))
+                        )
+
+                        const paymentPayload: IPaymentsEntryRequest[] = [
+                            {
+                                ...paymentFormsValue,
+                                ORNumber,
+                                memberId: selectedMember.id,
+                                type: transactionType as TRANSACTION_TYPE,
+                                isPrinted: paymentFormsValue.isPrinted ?? false,
+                            },
+                        ]
+
+                        createPayment(paymentPayload)
+                        resetForms()
+                    }
+                } else {
+                    const newEntry: IPaymentsEntry = {
+                        ...paymentFormsValue,
+                        ORNumber,
+                        memberId: selectedMember.id,
+                        account: selectedAccounts,
+                        isPrinted: paymentFormsValue.isPrinted ?? false,
+                        type: transactionType as TRANSACTION_TYPE,
+                        checkClearing: [
+                            {
+                                ...data,
+                                checkDate: data.checkDate.toISOString(),
+                            },
+                        ],
+                    }
+                    setSelectedPayments([newEntry, ...selectedPayments])
+                    toast.success('Added payments entry')
+                    resetForms()
                 }
-            } else {
-                setSelectedPayments([...selectedPayments, newEntry])
-                toast.success('Added payments entry')
-
-                await mutateAsync([
-                    {
-                        ...data,
-                        checkDate: data.checkDate.toISOString(),
-                    },
-                ])
-
-                resetPaymentsForm?.()
-                form.reset()
-                setOpenPaymentsEntryModal(false)
+            } catch (err) {
+                console.error('Error submitting check clearing:', err)
             }
-        } catch (err) {
-            console.error('Error submitting check clearing:', err)
-        }
-    })
+        },
+        [
+            form,
+            selectedAccounts,
+            selectedMember?.id,
+            transactionType,
+            depositCheckClearingList,
+            setDepositCheckClearingList,
+            selectedBank,
+            amount,
+            setNewAmount,
+            newAmount,
+            paymentFormsValue,
+            uploadedPhoto,
+            resetForms,
+            mutateAsync,
+            createPayment,
+            setSelectedPayments,
+            isNotPayment,
+            ORNumber,
+            handleUploadPhoto,
+            selectedPayments,
+        ]
+    )
 
-    const handleDeleteCheckItem = (amount: number, itemToDelete: number) => {
+    const handleDeleteCheckItem = (
+        amount: number,
+        itemToDelete: number,
+        oldValue: number
+    ) => {
         setDepositCheckClearingList((prev) =>
             prev.filter((_, index) => index !== itemToDelete)
         )
-        const newAmountValue = form.getValues('amount') ?? 0 + amount
+        if ((form.watch('amount') ?? 0) > amount) return
+
+        const newAmountValue = oldValue + amount
         form.setValue('amount', newAmountValue)
-        setnewAmount(newAmountValue)
+        setNewAmount(newAmountValue)
     }
 
     const totalAmount = depositCheckClearingList.reduce(
@@ -243,20 +314,29 @@ const CheckBankForm = ({
         0
     )
 
+    const handleClearAll = (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    ) => {
+        e.preventDefault()
+        setDepositCheckClearingList([])
+        setNewAmount(amount ?? 0)
+        form.setValue(
+            'amount',
+            amount !== undefined ? parseFloat(amount.toFixed(2)) : undefined
+        )
+    }
+
     useShortcut('Enter', async (event) => {
         event.preventDefault()
         const activeElement = document.activeElement as HTMLElement
-        console.log()
         if (
             activeElement.tagName === 'INPUT' ||
             activeElement.tagName === 'TEXTAREA'
-        ) {
+        )
             return
-        }
-
         const isValid = await form.trigger()
         if (isValid && !isOpen) {
-            await handleSubmit()
+            await handleSubmit(form.getValues() as TCheckClearingFormValues)
             resetPaymentsForm?.()
         }
     })
@@ -265,9 +345,12 @@ const CheckBankForm = ({
 
     return (
         <Form {...form}>
-            <form onSubmit={handleSubmit} className="w-full space-y-4">
+            <form
+                onSubmit={form.handleSubmit(handleSubmit)}
+                className="w-full space-y-4"
+            >
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-4">
-                    {isDeposit && (
+                    {isNotPayment && (
                         <FormFieldWrapper
                             className=""
                             control={form.control}
@@ -358,7 +441,6 @@ const CheckBankForm = ({
                                 onChange={field.onChange}
                                 captionLayout="dropdown-buttons"
                                 className="bg-background/70"
-                                disabled={(date) => date > new Date()}
                             />
                         )}
                     />
@@ -369,7 +451,7 @@ const CheckBankForm = ({
                         label="Upload Check Image"
                         render={({ field }) => (
                             <FileUploader
-                                defaultPhotos={field.value ?? ''}
+                                defaultPhotos={field.value}
                                 className="max-h-42 min-h-10 w-full"
                                 maxFiles={1}
                                 accept={{
@@ -395,30 +477,22 @@ const CheckBankForm = ({
                         </div>
                     )}
                 </div>
-                {transactionType === TRANSACTION_TYPE.deposit && (
-                    <ScrollArea className="max-h-[400px] rounded-md border md:col-span-4">
+                <div className="flex w-full justify-end">
+                    {isNotPayment && hasDepositClearingList && (
+                        <Button
+                            disabled={hasDepositClearingList}
+                            onClick={handleClearAll}
+                            variant={'ghost'}
+                            className={cn('hover:bg-background/20')}
+                        >
+                            clear all
+                        </Button>
+                    )}
+                </div>
+                {isNotPayment && (
+                    <ScrollArea className="max-h-[30vh] overflow-auto rounded-md border md:col-span-4">
                         {!hasDepositClearingList && (
-                            <div className="flex w-full justify-end">
-                                <Button
-                                    disabled={hasDepositClearingList}
-                                    onClick={(e) => {
-                                        e.preventDefault()
-                                        setDepositCheckClearingList([])
-                                        const sanitizedAmount =
-                                            parseFloat(
-                                                sanitizeNumberInput(
-                                                    amount?.toString() ?? '0'
-                                                )
-                                            ) || 0
-                                        form.setValue('amount', sanitizedAmount)
-                                        setnewAmount(sanitizedAmount)
-                                    }}
-                                    variant={'ghost'}
-                                    className={cn('hover:bg-background/20')}
-                                >
-                                    clear all
-                                </Button>
-                            </div>
+                            <div className="flex w-full justify-end"></div>
                         )}
                         <Table className="overflow">
                             <TableCaption>
@@ -427,6 +501,7 @@ const CheckBankForm = ({
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>Check No.</TableHead>
+                                    <TableHead>Image</TableHead>
                                     <TableHead>Bank</TableHead>
                                     <TableHead>Deposit Date</TableHead>
                                     <TableHead></TableHead>
@@ -436,47 +511,74 @@ const CheckBankForm = ({
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {depositCheckClearingList.map((item, idx) => (
-                                    <TableRow key={item.checkNo}>
-                                        <TableCell className="font-medium">
-                                            {item.checkNo}
-                                        </TableCell>
-                                        <TableCell>{item.bank?.name}</TableCell>
-                                        <TableCell>
-                                            {item.checkDate.toLocaleDateString(
-                                                undefined,
-                                                {
-                                                    year: 'numeric',
-                                                    month: 'short',
-                                                    day: 'numeric',
-                                                }
-                                            )}
-                                        </TableCell>
-                                        <TableCell>
-                                            <TrashIcon
-                                                onClick={() => {
-                                                    handleDeleteCheckItem(
-                                                        item.amount ?? 0,
-                                                        idx
+                                {depositCheckClearingList.map((item, idx) => {
+                                    const photoFile = base64ImagetoFile(
+                                        item.picture ?? '',
+                                        'logo.jpg'
+                                    ) as File
+
+                                    return (
+                                        <TableRow key={item.checkNo}>
+                                            <TableCell className="font-medium">
+                                                {item.checkNo}
+                                            </TableCell>
+                                            <TableCell>
+                                                {photoFile && (
+                                                    <>
+                                                        {isUploadingPhoto ? (
+                                                            <LoadingSpinner />
+                                                        ) : (
+                                                            <FileTypeIcon
+                                                                file={photoFile}
+                                                            />
+                                                        )}
+                                                    </>
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                {item.bank?.name}
+                                            </TableCell>
+                                            <TableCell>
+                                                {item.checkDate.toLocaleDateString(
+                                                    undefined,
+                                                    {
+                                                        year: 'numeric',
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                    }
+                                                )}
+                                            </TableCell>
+                                            <TableCell>
+                                                <TrashIcon
+                                                    onClick={() => {
+                                                        handleDeleteCheckItem(
+                                                            item.amount ?? 0,
+                                                            idx,
+                                                            form.getValues(
+                                                                'amount'
+                                                            ) ?? 0
+                                                        )
+                                                    }}
+                                                    size={18}
+                                                    className="text-red-500"
+                                                />
+                                            </TableCell>
+                                            <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
+                                                ₱{' '}
+                                                {commaSeparators(
+                                                    (item.amount ?? 0).toFixed(
+                                                        2
                                                     )
-                                                }}
-                                                size={18}
-                                                className="text-red-500"
-                                            />
-                                        </TableCell>
-                                        <TableCell className="text-right font-bold text-green-600 dark:text-green-400">
-                                            ₱{' '}
-                                            {commaSeparators(
-                                                (item.amount ?? 0).toFixed(2)
-                                            )}
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    )
+                                })}
                             </TableBody>
                             <TableFooter>
                                 <TableRow>
                                     <TableCell
-                                        colSpan={4}
+                                        colSpan={5}
                                         className="font-bold"
                                     >
                                         Total
@@ -499,21 +601,36 @@ const CheckBankForm = ({
                         <Button
                             type="button"
                             variant="ghost"
-                            disabled={isPending}
+                            disabled={
+                                isPending ||
+                                isUploadingPhoto ||
+                                isPendingCreatePayments
+                            }
                             onClick={() => {
                                 form.reset()
                                 setDepositCheckClearingList([])
+                                form.setValue('amount', amount)
+                                setNewAmount(amount ?? 0)
+                                setOpenCheckClearingFormModal(false)
                             }}
                             className="w-full sm:w-fit"
                         >
-                            Reset
+                            Cancel
                         </Button>
                         <Button
                             type="submit"
-                            disabled={isPending}
+                            disabled={
+                                isPending ||
+                                isUploadingPhoto ||
+                                isPendingCreatePayments
+                            }
                             className="w-full sm:w-fit"
                         >
-                            {isPending ? 'Processing...' : 'Save'}
+                            {isPending ||
+                            isUploadingPhoto ||
+                            isPendingCreatePayments
+                                ? 'Processing...'
+                                : 'Save'}
                         </Button>
                     </div>
                 </div>
@@ -535,7 +652,7 @@ export const TransactionCheckClearingFormModal = ({
     const { onOpen } = useConfirmModalStore()
     const { transactionType } = usePaymentsModalStore()
 
-    const form = useForm<TBankFormValues>({
+    const form = useForm<TCheckClearingFormValues>({
         resolver: zodResolver(TCheckClearingSchema),
         defaultValues: {
             checkNo: '',
@@ -582,10 +699,10 @@ export const TransactionCheckClearingFormModal = ({
             title={title}
             description={description}
             onOpenChange={onPaymentsEntryModalClose}
-            className={cn('max-w-[64rem]', className)}
+            className={cn('max-w-[64rem] p-10', className)}
             {...props}
         >
-            <CheckBankForm
+            <CheckClearingForm
                 amount={formProps?.amount}
                 form={form}
                 {...formProps}

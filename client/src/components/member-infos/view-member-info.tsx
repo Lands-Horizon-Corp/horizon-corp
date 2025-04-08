@@ -23,6 +23,7 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IMemberProfileResource, TEntityId } from '@/server'
 import { useMemberProfile } from '@/hooks/api-hooks/member/use-member-profile'
+import MemberCloseAccountBanner from './banners/member-closed-account-banner'
 
 interface MemberOverallInfoProps {
     memberProfileId: TEntityId
@@ -92,6 +93,12 @@ const MemberOverallInfo = ({ memberProfileId }: MemberOverallInfoProps) => {
             {memberProfile && (
                 <>
                     <MemberInfoBanner memberProfile={memberProfile} />
+                    {memberProfile.isClosed && (
+                        <MemberCloseAccountBanner
+                            showRemarksList
+                            closeRemarks={memberProfile.memberCloseRemarks}
+                        />
+                    )}
                 </>
             )}
             <Tabs defaultValue="general-infos" className="flex-1 flex-col">
