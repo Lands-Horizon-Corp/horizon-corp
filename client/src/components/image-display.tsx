@@ -9,6 +9,7 @@ interface Props extends IBaseComp {
     fallback?: string
     imageClassName?: string
     fallbackClassName?: string
+    onClick?: () => void
 }
 
 const ImageDisplay = ({
@@ -18,9 +19,11 @@ const ImageDisplay = ({
     className,
     imageClassName,
     fallbackClassName,
+    onClick,
 }: Props) => {
     return (
         <Avatar
+            onClick={onClick}
             className={cn('size-6 bg-secondary dark:bg-popover', className)}
         >
             <AvatarImage

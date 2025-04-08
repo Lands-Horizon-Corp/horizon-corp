@@ -93,10 +93,12 @@ const MemberOverallInfo = ({ memberProfileId }: MemberOverallInfoProps) => {
             {memberProfile && (
                 <>
                     <MemberInfoBanner memberProfile={memberProfile} />
-                    <MemberCloseAccountBanner
-                        showRemarksList
-                        closeRemarks={memberProfile.memberCloseRemarks}
-                    />
+                    {memberProfile.isClosed && (
+                        <MemberCloseAccountBanner
+                            showRemarksList
+                            closeRemarks={memberProfile.memberCloseRemarks}
+                        />
+                    )}
                 </>
             )}
             <Tabs defaultValue="general-infos" className="flex-1 flex-col">

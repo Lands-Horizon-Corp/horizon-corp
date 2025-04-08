@@ -18,25 +18,25 @@ import { ChevronDownIcon } from '../icons'
 import { Button } from '@/components/ui/button'
 
 import { cn } from '@/lib/utils'
-import { AccountClosureReasonType, AccountClosureReasonTypes } from '@/server'
+import { FAMILY_RELATIONSHIP, TRelationship } from '@/server' // Assuming this is where your type and const are
 
 interface Props {
     id?: string
     name?: string
-    value?: AccountClosureReasonType
+    value?: TRelationship
     disabled?: boolean
     className?: string
     placeholder?: string
-    closureReasons?: string[]
-    onChange?: (selected: AccountClosureReasonType) => void
+    relationships?: TRelationship[]
+    onChange?: (selected: TRelationship) => void
 }
 
-const AccountClosureReasonCombobox = ({
+const RelationshipCombobox = ({
     value,
     className,
     disabled = false,
-    placeholder = 'Select Closure Reason...',
-    closureReasons = AccountClosureReasonTypes as unknown as AccountClosureReasonType[],
+    placeholder = 'Select Relationship...',
+    relationships = FAMILY_RELATIONSHIP as unknown as TRelationship[],
     onChange,
     ...other
 }: Props) => {
@@ -61,28 +61,28 @@ const AccountClosureReasonCombobox = ({
             <PopoverContent className="max-h-[--radix-popover-content-available-height] w-[--radix-popover-trigger-width] p-0">
                 <Command>
                     <CommandInput
-                        placeholder="Search Closure Reason..."
+                        placeholder="Search Relationship..."
                         className="h-9"
                     />
                     <CommandList className="ecoop-scroll">
-                        <CommandEmpty>No reason found.</CommandEmpty>
+                        <CommandEmpty>No relationship found.</CommandEmpty>
                         <CommandGroup>
-                            {closureReasons.map((reason) => (
+                            {relationships.map((relationship) => (
                                 <CommandItem
-                                    key={reason}
-                                    value={reason}
+                                    key={relationship}
+                                    value={relationship}
                                     onSelect={() => {
                                         setOpen(false)
-                                        onChange?.(
-                                            reason as unknown as AccountClosureReasonType
-                                        )
+                                        onChange?.(relationship)
                                     }}
                                 >
-                                    <span className="capitalize">{reason}</span>
+                                    <span className="capitalize">
+                                        {relationship}
+                                    </span>
                                     <Check
                                         className={cn(
                                             'ml-auto',
-                                            value === reason
+                                            value === relationship
                                                 ? 'opacity-100'
                                                 : 'opacity-0'
                                         )}
@@ -97,4 +97,4 @@ const AccountClosureReasonCombobox = ({
     )
 }
 
-export default AccountClosureReasonCombobox
+export default RelationshipCombobox

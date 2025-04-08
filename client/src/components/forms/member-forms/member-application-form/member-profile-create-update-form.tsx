@@ -67,6 +67,7 @@ import GovernmentBenefitsCombobox from '@/components/comboboxes/government-benef
 import MemberCenterPicker, {
     IMemberCenterPickerCreateProps,
 } from '@/components/pickers/member-center-picker'
+import RelationshipCombobox from '@/components/comboboxes/relationship-combobox'
 import MemberCloseAccountBanner from '@/components/member-infos/banners/member-closed-account-banner'
 
 import {
@@ -78,10 +79,10 @@ import useConfirmModalStore from '@/store/confirm-modal-store'
 import { createMemberProfileSchema } from '@/validations/member/member-profile-schema'
 
 import { cn } from '@/lib'
-import { TEntityId } from '@/server'
 import { IBaseCompNoChild } from '@/types'
 import logger from '@/helpers/loggers/logger'
 import { philippinesCards } from '@/constants'
+import { TEntityId, TRelationship } from '@/server'
 
 type TMemberProfileForm = z.infer<typeof createMemberProfileSchema>
 
@@ -139,11 +140,7 @@ const Steps: Step[] = [
     },
     {
         title: 'Family & Relationships',
-        fields: [
-            'memberRelativeAccounts',
-            'memberJointAccounts',
-            'memberRecruits',
-        ],
+        fields: ['memberRelativeAccounts', 'memberJointAccounts'],
     },
     {
         title: 'Other',
@@ -260,15 +257,6 @@ const MemberProfileCreateUpdateForm = ({
     } = useFieldArray({
         control: form.control,
         name: 'memberJointAccounts',
-    })
-
-    const {
-        fields: recruitFields,
-        append: addRecruit,
-        remove: removeRecruit,
-    } = useFieldArray({
-        control: form.control,
-        name: 'memberRecruits',
     })
 
     const {
@@ -518,6 +506,37 @@ const MemberProfileCreateUpdateForm = ({
                                                     </SelectItem>
                                                 </SelectContent>
                                             </Select>
+                                        )}
+                                    />
+
+                                    <FormFieldWrapper
+                                        control={form.control}
+                                        name="recruitedByMemberProfileId"
+                                        label="Recruited By"
+                                        description="Select the member that recruited this member."
+                                        hiddenFields={hiddenFields}
+                                        render={({ field }) => (
+                                            <FormControl>
+                                                <MemberPicker
+                                                    {...field}
+                                                    onSelect={(member) => {
+                                                        if (
+                                                            !member.memberProfile
+                                                        )
+                                                            return toast.warning(
+                                                                "Can't select a member that has no profile yet."
+                                                            )
+                                                        field.onChange(
+                                                            member.memberProfile
+                                                                .id
+                                                        )
+                                                    }}
+                                                    placeholder="Select rectuiter"
+                                                    disabled={isDisabled(
+                                                        field.name
+                                                    )}
+                                                />
+                                            </FormControl>
                                         )}
                                     />
                                     <FormFieldWrapper
@@ -2068,10 +2087,13 @@ const MemberProfileCreateUpdateForm = ({
                                                                 field,
                                                             }) => (
                                                                 <FormControl>
-                                                                    <Input
+                                                                    <RelationshipCombobox
                                                                         {...field}
                                                                         id={
                                                                             field.name
+                                                                        }
+                                                                        value={
+                                                                            field.value as unknown as TRelationship
                                                                         }
                                                                         placeholder="e.g. Spouse, Sibling"
                                                                         disabled={isDisabled(
@@ -2266,10 +2288,13 @@ const MemberProfileCreateUpdateForm = ({
                                                                         field,
                                                                     }) => (
                                                                         <FormControl>
-                                                                            <Input
+                                                                            <RelationshipCombobox
                                                                                 {...field}
                                                                                 id={
                                                                                     field.name
+                                                                                }
+                                                                                value={
+                                                                                    field.value as unknown as TRelationship
                                                                                 }
                                                                                 placeholder="e.g. Cousin, Spouse"
                                                                                 disabled={isDisabled(
@@ -2441,201 +2466,6 @@ const MemberProfileCreateUpdateForm = ({
                                     </FormItem>
                                 )}
                             />
-                            <FormFieldWrapper
-                                name="memberRecruits"
-                                control={form.control}
-                                label="Member Recruits"
-                                hiddenFields={hiddenFields}
-                                render={() => (
-                                    <FormItem className="col-span-1 space-y-2">
-                                        <Separator />
-                                        <fieldset
-                                            disabled={isDisabled(
-                                                'memberRecruits'
-                                            )}
-                                            className="grid gap-4"
-                                        >
-                                            {recruitFields.map(
-                                                (recruitField, index) => (
-                                                    <div
-                                                        key={recruitField.id}
-                                                        className="flex w-full flex-col gap-4 md:flex-row"
-                                                    >
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberRecruits.${index}.membersProfileRecruitedId`}
-                                                            label="Recruited Member"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <MemberPicker
-                                                                        {...field}
-                                                                        onSelect={(
-                                                                            member
-                                                                        ) => {
-                                                                            if (
-                                                                                defaultValues?.id &&
-                                                                                member.memberProfile &&
-                                                                                defaultValues.id ===
-                                                                                    member
-                                                                                        .memberProfile
-                                                                                        .id
-                                                                            ) {
-                                                                                return toast.warning(
-                                                                                    'Cannot pick themselves'
-                                                                                )
-                                                                            }
-                                                                            if (
-                                                                                !member.memberProfile
-                                                                            )
-                                                                                return toast.warning(
-                                                                                    "Can't select a member that has no profile yet."
-                                                                                )
-                                                                            field.onChange(
-                                                                                member
-                                                                                    .memberProfile
-                                                                                    .id
-                                                                            )
-                                                                        }}
-                                                                        placeholder="Select relative member"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberRecruits.${index}.dateRecruited`}
-                                                            label="Date Recruited"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        type="date"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberRecruits.${index}.description`}
-                                                            label="Description"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Textarea
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Description"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="min-h-0"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <FormFieldWrapper
-                                                            control={
-                                                                form.control
-                                                            }
-                                                            name={`memberRecruits.${index}.name`}
-                                                            label="Name"
-                                                            hiddenFields={
-                                                                hiddenFields
-                                                            }
-                                                            render={({
-                                                                field,
-                                                            }) => (
-                                                                <FormControl>
-                                                                    <Input
-                                                                        {...field}
-                                                                        id={
-                                                                            field.name
-                                                                        }
-                                                                        placeholder="Name"
-                                                                        disabled={isDisabled(
-                                                                            field.name
-                                                                        )}
-                                                                        className="w-full"
-                                                                    />
-                                                                </FormControl>
-                                                            )}
-                                                        />
-                                                        <Button
-                                                            size="icon"
-                                                            variant="secondary"
-                                                            type="button"
-                                                            onClick={() =>
-                                                                removeRecruit(
-                                                                    index
-                                                                )
-                                                            }
-                                                            disabled={isDisabled(
-                                                                'memberRecruits'
-                                                            )}
-                                                            className="size-fit self-center rounded-full p-1"
-                                                        >
-                                                            <XIcon className="size-4" />
-                                                        </Button>
-                                                    </div>
-                                                )
-                                            )}
-                                        </fieldset>
-                                        <Button
-                                            size="sm"
-                                            variant="secondary"
-                                            type="button"
-                                            onClick={() =>
-                                                addRecruit({
-                                                    membersProfileId: '',
-                                                    membersProfileRecruitedId:
-                                                        '',
-                                                    dateRecruited: '',
-                                                    description: '',
-                                                    name: '',
-                                                })
-                                            }
-                                            disabled={isDisabled(
-                                                'memberRecruits'
-                                            )}
-                                        >
-                                            <PlusIcon className="mr-2" />
-                                            Add Recruit
-                                        </Button>
-                                    </FormItem>
-                                )}
-                            />
                         </>
                     )}
 
@@ -2793,7 +2623,7 @@ const MemberProfileCreateUpdateForm = ({
                         <Button
                             type="button"
                             variant="ghost"
-                            disabled={readOnly || form.formState.isDirty}
+                            disabled={readOnly}
                             onClick={() => {
                                 onOpen({
                                     title: 'Reset Form',

@@ -44,15 +44,10 @@ import {
     ImagePreviewActionProps,
     ImagePreviewButtonActionProps,
     ImagePreviewPanelProps,
-    ImagePreviewProps,
 } from '@/types/component/image-preview'
-
-const ImagePreview = ImagePreviewPrimitive.Root
-
-const ImagePreviewPortal = ImagePreviewPrimitive.Portal
+import { Dialog, DialogContent, DialogTitle } from './dialog'
 
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
-
 type CarouselOptions = UseCarouselParameters[0]
 
 export const DownloadButton = React.forwardRef<
@@ -134,23 +129,6 @@ export const DownloadButton = React.forwardRef<
     )
 })
 
-DownloadButton.displayName = 'DownloadButton'
-
-const ImagePreviewOverlay = React.forwardRef<
-    React.ElementRef<typeof ImagePreviewPrimitive.Overlay>,
-    React.ComponentPropsWithoutRef<typeof ImagePreviewPrimitive.Overlay>
->(({ className, ...props }, ref) => (
-    <ImagePreviewPrimitive.Overlay
-        ref={ref}
-        className={cn(
-            'fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
-            className
-        )}
-        {...props}
-    />
-))
-ImagePreviewOverlay.displayName = ImagePreviewPrimitive.Overlay.displayName
-
 const ImagePreviewPrevious = React.forwardRef<
     HTMLButtonElement,
     React.ComponentProps<typeof Button>
@@ -178,7 +156,6 @@ const ImagePreviewPrevious = React.forwardRef<
         </Button>
     )
 })
-ImagePreviewPrevious.displayName = 'ImagePreviewPrevious'
 
 const ImagePreviewNext = React.forwardRef<
     HTMLButtonElement,
@@ -208,15 +185,13 @@ const ImagePreviewNext = React.forwardRef<
     )
 })
 
-ImagePreviewNext.displayName = 'ImagePreviewNext'
-
-const ImageContainer: React.FC<ImageContainerProps> = ({
+export const ImageContainer = ({
     media,
     scale,
     rotateDegree,
     flipScale,
     imageRef,
-}) => {
+}: ImageContainerProps) => {
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
     const [isDragging, setIsDragging] = useState(false)
     const [previewPosition, setPreviewPosition] = useState({ x: 0, y: 0 })
@@ -376,8 +351,6 @@ const ImagePreviewButtonAction = React.forwardRef<
     )
 })
 
-ImagePreviewButtonAction.displayName = 'ImagePreviewButtonAction'
-
 const ImagePreviewActions = React.forwardRef<
     HTMLDivElement,
     ImagePreviewActionProps
@@ -477,7 +450,7 @@ const ImagePreviewPanel = ({
     }
 
     return (
-        <div className="flex h-fit w-full max-w-full items-center space-x-2 overflow-x-auto overflow-y-hidden border-r-[.5px] border-background/20 bg-transparent p-5 backdrop-blur duration-100 ease-in-out dark:border-slate-400/20 lg:h-full lg:w-[10rem] lg:max-w-[10rem] lg:flex-col lg:space-x-0 lg:space-y-2 lg:overflow-y-auto lg:py-5">
+        <div className="fit flex w-full max-w-full items-center space-x-2 overflow-x-auto overflow-y-hidden border-r-[.5px] border-background/20 bg-green-500 bg-transparent p-5 backdrop-blur duration-100 ease-in-out dark:border-slate-400/20 lg:h-full lg:w-[10rem] lg:max-w-[10rem] lg:flex-col lg:space-x-0 lg:space-y-2 lg:overflow-y-auto lg:py-5">
             {Images.map((data, index) => (
                 <Card
                     onClick={() => scrollToIndex(index)}
@@ -498,149 +471,132 @@ const ImagePreviewPanel = ({
     )
 }
 
-const ImagePreviewContent = React.forwardRef<
-    React.ElementRef<typeof ImagePreviewPrimitive.Content>,
-    ImagePreviewProps
->(
-    (
-        {
-            className,
-            hideCloseButton = false,
-            closeButtonClassName,
-            overlayClassName,
-            Images,
-            scaleInterval = 0.5,
-            ...props
-        },
-        ref
-    ) => {
-        const [api, setApi] = useState<CarouselApi | undefined>()
-        const [scale, setScale] = useState(1)
-        const [rotateDegree, setRotateDegree] = useState(0)
-        const [flipScale, setFlipScale] = useState('')
-        const imageRef = useRef<HTMLImageElement | null>(null)
+const ImagePreviewModal = () => {
+    const [api, setApi] = useState<CarouselApi | undefined>()
+    const [scale, setScale] = useState(1)
+    const [rotateDegree, setRotateDegree] = useState(0)
+    const [flipScale, setFlipScale] = useState('')
+    const imageRef = useRef<HTMLImageElement | null>(null)
 
-        const [downloadImage, setDownloadImage] = useState<DownloadProps>({
-            fileName: Images[0]?.fileName || '',
-            fileUrl: Images[0]?.url || '',
-            fileType: Images[0]?.fileType || '',
-        })
+    const { onClose, isOpen, ImagePreviewData, focusIndex, setFocusIndex } =
+        useImagePreview()
 
-        const options: CarouselOptions = {
-            align: 'center',
-            watchDrag: false,
-            dragFree: false,
-        }
+    const {
+        hideCloseButton,
+        closeButtonClassName,
+        className,
+        Images,
+        scaleInterval = 1,
+    } = ImagePreviewData
 
-        const { onClose, focusIndex, setFocusIndex } = useImagePreview()
+    const [downloadImage, setDownloadImage] = useState<DownloadProps>({
+        fileName: Images?.[0]?.fileName ?? '',
+        fileUrl: Images?.[0]?.url ?? '',
+        fileType: Images?.[0]?.fileType ?? '',
+    })
 
-        useEffect(() => {
-            if (api && focusIndex !== undefined && !Images.length) {
-                api.scrollTo(focusIndex)
-                const ImageToDownload = Images[focusIndex]
-                setDownloadImage({
-                    fileName: ImageToDownload.fileName,
-                    fileUrl: ImageToDownload.url,
-                    fileType: ImageToDownload.fileType,
-                })
-                if (imageRef.current) {
-                    imageRef.current.src = ImageToDownload.url
-                }
-            }
-        }, [api, focusIndex, Images])
+    const options: CarouselOptions = {
+        align: 'center',
+        watchDrag: false,
+        dragFree: false,
+    }
 
-        const handleSelect = useCallback(() => {
-            if (api) {
-                const selectedIndex = api.selectedScrollSnap()
-                setFocusIndex(selectedIndex)
-            }
-        }, [api, setFocusIndex])
+    const handleZoomIn = () => {
+        if (!scaleInterval) return
+        if (scale < 4) setScale((prevScale) => prevScale + scaleInterval)
+    }
 
-        useEffect(() => {
-            if (!api) {
-                return
-            }
-            api.on('select', handleSelect)
-        }, [api, handleSelect])
+    const handleZoomOut = () => {
+        if (!scaleInterval) return
+        setScale((prevScale) => Math.max(prevScale - scaleInterval, 1))
+    }
 
-        const scrollToIndex = useCallback(
-            (index: number) => {
-                if (api) {
-                    api.scrollTo(index)
-                }
-            },
-            [api]
+    const handleRotateLeft = () => {
+        setRotateDegree((prev) => prev + 10)
+    }
+
+    const handleRotateRight = () => {
+        setRotateDegree((prev) => prev - 10)
+    }
+
+    const handleFlipHorizontal = () => {
+        setFlipScale((prev) =>
+            prev === 'scaleX(-1)' ? 'scaleX(1)' : 'scaleX(-1)'
         )
+    }
 
-        const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-            if ((e.target as HTMLDivElement).id === 'overlay') onClose()
+    const handleFlipVertical = () => {
+        setFlipScale((prev) =>
+            prev === 'scaleY(-1)' ? 'scaleY(1)' : 'scaleY(-1)'
+        )
+    }
+
+    const handleResetActionState = () => {
+        setRotateDegree(0)
+        setScale(1)
+        setFlipScale('')
+    }
+
+    const handleSelect = useCallback(() => {
+        if (api) {
+            const selectedIndex = api.selectedScrollSnap()
+            setFocusIndex(selectedIndex)
         }
+    }, [api, setFocusIndex])
 
-        const handleZoomIn = () => {
-            if (scale < 4) setScale((prevScale) => prevScale + scaleInterval)
+    const scrollToIndex = useCallback(
+        (index: number) => {
+            if (api) {
+                api.scrollTo(index)
+            }
+        },
+        [api]
+    )
+
+    useEffect(() => {
+        if (api && focusIndex !== undefined && Images) {
+            api.scrollTo(focusIndex)
+            const ImageToDownload = Images[focusIndex]
+            if (!ImageToDownload) return
+            setDownloadImage({
+                fileName: ImageToDownload.fileName || '',
+                fileUrl: ImageToDownload.url || '',
+                fileType: ImageToDownload.fileType || '',
+            })
+            if (imageRef.current) {
+                imageRef.current.src = ImageToDownload.url
+            }
         }
+    }, [api, focusIndex, Images])
 
-        const handleZoomOut = () => {
-            setScale((prevScale) => Math.max(prevScale - scaleInterval, 1))
+    useEffect(() => {
+        if (!api) {
+            return
         }
+        api.on('select', handleSelect)
+    }, [api, handleSelect])
 
-        const handleRotateLeft = () => {
-            setRotateDegree((prev) => prev + 10)
-        }
+    const isMultipleImage = (Images?.length ?? 0) > 1
 
-        const handleRotateRight = () => {
-            setRotateDegree((prev) => prev - 10)
-        }
+    if (!Images) return
 
-        const handleFlipHorizontal = () => {
-            setFlipScale((prev) =>
-                prev === 'scaleX(-1)' ? 'scaleX(1)' : 'scaleX(-1)'
-            )
-        }
-
-        const handleFlipVertical = () => {
-            setFlipScale((prev) =>
-                prev === 'scaleY(-1)' ? 'scaleY(1)' : 'scaleY(-1)'
-            )
-        }
-
-        const handleResetActionState = () => {
-            setRotateDegree(0)
-            setScale(1)
-            setFlipScale('')
-        }
-
-        useEffect(() => {
-            const handleKeyDown = (event: KeyboardEvent) => {
-                if (event.key === 'Escape') {
+    return (
+        <>
+            <Dialog
+                open={isOpen}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) handleResetActionState()
                     onClose()
-                }
-            }
-            window.addEventListener('keydown', handleKeyDown)
-            return () => {
-                window.removeEventListener('keydown', handleKeyDown)
-            }
-        }, [onClose])
-
-        const isMultipleImage = Images.length > 1
-
-        return (
-            <div className="h-full w-full">
-                <ImagePreviewPortal>
-                    <ImagePreviewOverlay
-                        className={cn(
-                            'bg-black/30 dark:bg-background/70',
-                            overlayClassName
-                        )}
-                    />
+                }}
+            >
+                <DialogContent className="!h-max-[100vh] h-full w-full max-w-[100vw] border-0 bg-transparent">
+                    <DialogTitle />
                     <div
-                        ref={ref}
+                        id="overlay"
                         className={cn(
                             'fixed left-[50%] top-[50%] z-50 flex h-full w-full translate-x-[-50%] translate-y-[-50%] flex-col-reverse border shadow-lg backdrop-blur duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] lg:flex-row',
                             className
                         )}
-                        onClick={handleOverlayClick}
-                        {...props}
                     >
                         <ImagePreviewActions
                             className="w-full lg:w-fit"
@@ -654,22 +610,21 @@ const ImagePreviewContent = React.forwardRef<
                             handleFlipHorizontal={handleFlipHorizontal}
                             handleFlipVertical={handleFlipVertical}
                         />
-                        <ImagePreviewPanel
-                            focusIndex={focusIndex}
-                            Images={Images}
-                            scrollToIndex={scrollToIndex}
-                        />
-                        <div
-                            id="overlay"
-                            className="flex h-full w-full items-center justify-center px-10 lg:px-0"
-                        >
+                        {Images && (
+                            <ImagePreviewPanel
+                                focusIndex={focusIndex}
+                                Images={Images}
+                                scrollToIndex={scrollToIndex}
+                            />
+                        )}
+                        <div className="flex w-full items-center justify-center">
                             <Carousel
                                 opts={options}
                                 setApi={setApi}
                                 className="flex h-fit w-full max-w-4xl justify-center bg-transparent"
                             >
-                                <CarouselContent>
-                                    {Images.map((data, index) => {
+                                <CarouselContent className="">
+                                    {Images?.map((data, index) => {
                                         return (
                                             <CarouselItem
                                                 className="flex items-center justify-center"
@@ -691,25 +646,24 @@ const ImagePreviewContent = React.forwardRef<
                                     className={`${isMultipleImage ? '' : 'hidden'} border-0`}
                                 />
                             </Carousel>
+                            {!hideCloseButton && (
+                                <ImagePreviewPrimitive.Close
+                                    onClick={handleResetActionState}
+                                    className={cn(
+                                        'absolute right-5 top-5 size-8 cursor-pointer rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground',
+                                        closeButtonClassName
+                                    )}
+                                >
+                                    <X className="size-full" />
+                                    <span className="sr-only">Close</span>
+                                </ImagePreviewPrimitive.Close>
+                            )}
                         </div>
-                        {!hideCloseButton && (
-                            <ImagePreviewPrimitive.Close
-                                onClick={handleResetActionState}
-                                className={cn(
-                                    'absolute right-5 top-5 size-8 cursor-pointer rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground',
-                                    closeButtonClassName
-                                )}
-                            >
-                                <X className="size-full" />
-                                <span className="sr-only">Close</span>
-                            </ImagePreviewPrimitive.Close>
-                        )}
                     </div>
-                </ImagePreviewPortal>
-            </div>
-        )
-    }
-)
-ImagePreviewContent.displayName = ImagePreviewPrimitive.Content.displayName
+                </DialogContent>
+            </Dialog>
+        </>
+    )
+}
 
-export { ImagePreview, ImagePreviewContent }
+export default ImagePreviewModal

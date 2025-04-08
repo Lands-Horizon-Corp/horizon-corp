@@ -3,13 +3,23 @@ import { IMediaResource } from '@/server/types'
 
 interface ImagePreviewState {
     isOpen: boolean
-    Images?: IMediaResource[]
     focusIndex: number
+    ImagePreviewData: ImagePreviewData
+}
+
+export interface ImagePreviewData {
+    hideCloseButton?: boolean
+    closeButtonClassName?: string
+    overlayClassName?: string
+    scaleInterval?: number
+    className?: string
+    Images?: IMediaResource[]
 }
 
 interface ImagePreviewActions {
     setIsOpen: (isOpen: boolean) => void
     setFocusIndex: (index: number) => void
+    onOpen: (image: ImagePreviewData) => void
     onClose: () => void
 }
 
@@ -18,6 +28,7 @@ interface ImagePreviewProps extends ImagePreviewState, ImagePreviewActions {}
 export const useImagePreview = create<ImagePreviewProps>()((set) => ({
     focusIndex: 0,
     isOpen: false,
+    ImagePreviewData: {},
     setFocusIndex: (index) =>
         set((state) => ({
             ...state,
@@ -28,6 +39,11 @@ export const useImagePreview = create<ImagePreviewProps>()((set) => ({
             ...state,
             isOpen: false,
         })),
+    onOpen: (ImagePreviewData) =>
+        set({
+            ImagePreviewData: ImagePreviewData,
+            isOpen: true,
+        }),
     setIsOpen: (isOpen) =>
         set((state) => ({
             ...state,

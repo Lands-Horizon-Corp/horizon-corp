@@ -83,6 +83,7 @@ const AccountsCreateForm = ({
             finesGpMaturity: 0,
             earnedUnearnedInterest: 'None',
             otherInformationOfAnAccount: 'None',
+            accountingDefault: 'None',
         },
     })
 

@@ -1,15 +1,14 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { ArrowUpRight, UserX } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
-import { ImagePreview, ImagePreviewContent } from '../ui/image-preview'
-import { useImagePreview } from '@/store/image-preview-store'
-import { useCallback } from 'react'
-import { Image2Icon } from '../icons'
+import { BadgeCheckFillIcon, Image2Icon } from '../icons'
 import { IMemberResource } from '@/server'
 import CopyTextButton from '@/components/copy-text-button'
+import { ImagePreviewData } from '@/store/image-preview-store'
 
 type PaymentsEntryProfileProps = {
     profile: IMemberResource | null
+    onOpen: (image: ImagePreviewData) => void
 }
 
 const NoMemberSelected = () => (
@@ -24,12 +23,10 @@ const NoMemberSelected = () => (
     </Card>
 )
 
-const PaymentsEntryProfile = ({ profile }: PaymentsEntryProfileProps) => {
-    const { isOpen, setIsOpen } = useImagePreview()
-
-    const handleImageClick = useCallback(() => setIsOpen(true), [setIsOpen])
-    const handlePreviewClose = useCallback(() => setIsOpen(false), [setIsOpen])
-
+const PaymentsEntryProfile = ({
+    profile,
+    onOpen,
+}: PaymentsEntryProfileProps) => {
     if (!profile) return <NoMemberSelected />
 
     const { id, memberProfile, fullName, permanentAddress, media } = profile
@@ -39,7 +36,9 @@ const PaymentsEntryProfile = ({ profile }: PaymentsEntryProfileProps) => {
             <div className="relative h-32 w-32 overflow-hidden rounded-2xl">
                 {media?.url ? (
                     <img
-                        onClick={handleImageClick}
+                        onClick={() => {
+                            onOpen({ Images: [media] })
+                        }}
                         className="h-full w-full cursor-pointer object-cover"
                         src={media?.url ?? 'https://via.placeholder.com/150'}
                         alt={fullName ?? 'Member Image'}
@@ -52,39 +51,35 @@ const PaymentsEntryProfile = ({ profile }: PaymentsEntryProfileProps) => {
                         />
                     </div>
                 )}
-                <ImagePreview open={isOpen} onOpenChange={handlePreviewClose}>
-                    <ImagePreviewContent Images={media ? [media] : []} />
-                </ImagePreview>
             </div>
 
-            <CardContent className="flex flex-col justify-between gap-4 p-0">
-                <div>
-                    <p className="text-lg font-semibold text-primary">#{id}</p>
-                    <h2 className="text-2xl font-bold text-accent-foreground">
-                        {fullName}
-                    </h2>
-                    <p className="text-sm text-gray-500">
-                        <span className="text-xs font-light">
-                            {' '}
-                            Passbook No:
-                        </span>{' '}
+            <CardContent className="flex flex-col justify-between gap-2 p-0">
+                <h2 className="text-2xl font-bold text-accent-foreground">
+                    {fullName}
+                    <BadgeCheckFillIcon className="ml-2 inline size-5 text-primary" />
+                </h2>
+                <p className="text-sm text-gray-500">
+                    <span className="text-sm font-light"> Passbook No:</span>{' '}
+                    <span className="text-sidebar-accent-foreground">
                         {memberProfile?.passbookNumber}
-                        <CopyTextButton
-                            className="ml-2"
-                            textContent={memberProfile?.passbookNumber ?? ''}
-                        />
-                    </p>
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Link
-                            href={`/members/${id}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-black hover:underline dark:text-primary-foreground"
-                        >
-                            profile <ArrowUpRight size={14} />
-                        </Link>
-                        <span>• {permanentAddress}</span>
-                    </div>
+                    </span>
+                    <CopyTextButton
+                        className="ml-2"
+                        textContent={memberProfile?.passbookNumber ?? ''}
+                    />
+                </p>
+                <div className="flex gap-2 text-sm text-gray-600">
+                    <Link
+                        href={`/members/${id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-black hover:underline dark:text-primary-foreground"
+                    >
+                        profile <ArrowUpRight size={14} />
+                    </Link>
+                    <span className="text-sidebar-accent-foreground">
+                        • {permanentAddress}
+                    </span>
                 </div>
             </CardContent>
         </Card>

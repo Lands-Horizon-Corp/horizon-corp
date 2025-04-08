@@ -7,16 +7,7 @@ import {
 
 import { Button } from '@/components/ui/button'
 
-import {
-    F1Icon,
-    F2Icon,
-    F3Icon,
-    HandDepositIcon,
-    HandWithdrawIcon,
-    PaymentsIcon,
-    ReceiptIcon,
-    XIcon,
-} from '@/components/icons'
+import { F1Icon, PaymentsIcon, ReceiptIcon, XIcon } from '@/components/icons'
 
 import { useDataTableSorting } from '@/hooks/data-table-hooks/use-datatable-sorting'
 import useDataTableState from '@/hooks/data-table-hooks/use-datatable-state'
@@ -47,6 +38,7 @@ import { useCreatePaymentEntry } from '@/hooks/api-hooks/transactions/use-paymen
 import {
     IPaymentsEntry,
     IPaymentsEntryRequest,
+    TRANSACTION_TYPE,
 } from '@/server/types/transactions/payments-entry'
 import LoadingSpinner from '@/components/spinners/loading-spinner'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -56,6 +48,23 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from '@/components/ui/resizable'
+import { useCreateCheckClearing } from '@/hooks/api-hooks/transactions/use-check-clearing'
+import { ICheckClearingRequest } from '@/server/types/transactions/check-clearing'
+import { useGenerateOfficialReceipt } from '@/hooks/api-hooks/transactions/use-generate-official-receipt'
+import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Form } from '@/components/ui/form'
+import FormFieldWrapper from '@/components/ui/form-field-wrapper'
+import { useImagePreview } from '@/store/image-preview-store'
+
+const paymentsMembersEntrySchema = z.object({
+    memberId: z.string().min(1, 'Member is Required'),
+    ORNumber: z.coerce.number().min(1, 'Member is Required'),
+})
+export type TPaymentMemberFormValues = z.infer<
+    typeof paymentsMembersEntrySchema
+>
 
 export const PaymentsEntry = () => {
     const {
@@ -63,7 +72,6 @@ export const PaymentsEntry = () => {
         ORNumber,
         selectedPayments,
         setSelectedMember,
-        setORNumber,
         setSelectedPayments,
     } = usePaymentsDataStore()
 
@@ -71,7 +79,16 @@ export const PaymentsEntry = () => {
         setOpenPaymentsEntryModal,
         openPaymentsEntryModal,
         setTransactionType,
+        transactionType,
     } = usePaymentsModalStore()
+
+    const form = useForm<TPaymentMemberFormValues>({
+        resolver: zodResolver(paymentsMembersEntrySchema),
+        mode: 'onSubmit',
+        defaultValues: {
+            memberId: '',
+        },
+    })
 
     const { pagination, setPagination } = usePagination()
     const { sortingState, tableSorting, setTableSorting } =
@@ -144,10 +161,6 @@ export const PaymentsEntry = () => {
         onRowSelectionChange: handleRowSelectionChange,
     })
 
-    const resetSelectedMember = () => {
-        setSelectedMember(null)
-    }
-
     const handleOpenCreateModal = (paymentType: string) => {
         if (isAllowedToCreatePayment) {
             setTransactionType(paymentType)
@@ -164,38 +177,74 @@ export const PaymentsEntry = () => {
         )
     }, [selectedPayments])
 
-    const {
-        mutate: createPayment,
-        isPending: isPendingCreatePayments,
-        error,
-    } = useCreatePaymentEntry({
-        onSuccess: () => {
-            setSelectedMember(null)
-            setSelectedPayments([])
-            setORNumber('')
-        },
-        onError: (error) => {
-            toast.error(error)
-        },
-    })
+    const { data: generatedORNumber, refetch: refetchGenerateOrNumber } =
+        useGenerateOfficialReceipt({
+            onSuccess: () => {},
+        })
+
+    const resetMemberSelectionAndForm = () => {
+        form.reset({
+            ORNumber: undefined,
+            memberId: '',
+        })
+        setSelectedMember(null)
+    }
+
+    const resetSelectedPayments = () => {
+        setSelectedPayments([])
+    }
+
+    const { mutate: createPayment, isPending: isPendingCreatePayments } =
+        useCreatePaymentEntry({
+            onSuccess: (data) => {
+                const isNotPayment =
+                    transactionType !== TRANSACTION_TYPE.payment
+                toast.success(
+                    `${data.length} ${transactionType} is successfully ${isNotPayment ? 'added' : ''}`
+                )
+                resetMemberSelectionAndForm()
+                refetchGenerateOrNumber()
+                resetSelectedPayments()
+            },
+            onError: (error) => {
+                toast.error(error)
+            },
+        })
+
+    const { mutateAsync, isPending: isPendingCheckClearing } =
+        useCreateCheckClearing({
+            onSuccess: (data) => {
+                if (data.length > 1) {
+                    toast.success(
+                        `${data.length} clearing check is successfully added`
+                    )
+                }
+            },
+        })
+
+    const handlePrintTransactionEntry = (payments: IPaymentsEntryRequest[]) => {
+        const toPrintCount = payments.filter((item) => item.isPrinted)
+        toast.info(`${toPrintCount.length} item transaction is printing now!`)
+    }
 
     const handleSubmitPayment = (payments: IPaymentsEntry[]) => {
-        const payload: IPaymentsEntryRequest[] = payments.map((payment) => ({
-            ...payment,
-            accountsId: payment.account.id || '',
-        }))
+        const payload: IPaymentsEntryRequest[] = payments
+            .filter((payment) => payment.account.id !== undefined)
+            .map((payment) => {
+                return {
+                    ...payment,
+                    accountsId: payment.account.id as string,
+                }
+            })
 
-        const toPrintCount = payload.filter((item) => item.isPrinted)
-        // To do:
-        // call printFunction()
-        toast.loading(
-            `${toPrintCount.length} item transaction is printing now!`
-        )
-        // tentative will depend of print function loading
-        setTimeout(() => {
-            toast.dismiss()
-        }, 2000 * toPrintCount.length)
+        const checkClearingPayload: ICheckClearingRequest[] = payments
+            .flatMap((item) => item.checkClearing ?? [])
+            .map((checkClearingItem) => ({ ...checkClearingItem }))
 
+        if (checkClearingPayload.length === 0 && payload.length === 0) return
+
+        handlePrintTransactionEntry(payload)
+        mutateAsync(checkClearingPayload)
         createPayment(payload)
     }
 
@@ -208,169 +257,204 @@ export const PaymentsEntry = () => {
         setSelectedMember,
         handleSubmitPayment,
         handleOpenCreateModal,
+        isPendingCreatePayments,
+        isPendingCheckClearing,
     })
 
+    const { onOpen: onOpenImagePreview } = useImagePreview()
     return (
         <>
             <TransactionPaymentEntryFormModal
                 formProps={{
-                    resetSelectedMember: resetSelectedMember,
-                    open: openPaymentsEntryModal,
-                    onOpenChange: setOpenPaymentsEntryModal,
-                    selectedMemberId: selectedMember?.id ?? '',
-                    error: error ?? '',
+                    ORNumber: form.getValues('ORNumber'),
+                    selectedMemberId: form.getValues('memberId'),
+                    hadSelectedPayments,
+                    refetchGenerateOrNumber,
+                    resetMemberSelectionAndForm,
+                    handlePrintTransactionEntry,
                 }}
                 open={openPaymentsEntryModal}
                 onOpenChange={setOpenPaymentsEntryModal}
             />
-            <div className="flex w-full flex-col gap-y-4 space-y-2 p-4 pt-0 lg:space-y-0">
-                <legend className="text-lg font-semibold text-secondary-foreground">
+
+            <div className="flex w-full max-w-full flex-col gap-y-4 space-y-2 p-4 lg:space-y-0">
+                <legend className="pl-2 text-lg font-semibold text-secondary-foreground">
                     Payment Transactions
                 </legend>
                 <ResizablePanelGroup
                     direction="horizontal"
-                    className="h-[100vh] min-h-[100vh] w-full"
+                    className="h-[100vh] min-h-[100vh] w-full !max-w-full"
                 >
-                    <ResizablePanel className="" defaultSize={40}>
+                    <ResizablePanel className="" defaultSize={30}>
                         <ResizablePanelGroup
                             className="min-h-[20vh]"
                             direction="vertical"
                         >
                             <ResizablePanel defaultSize={30} className="p-2">
-                                <div className="flex w-full min-w-[30vw] flex-col gap-y-2">
-                                    <div className="flex space-x-2">
-                                        <Button
-                                            size="icon"
-                                            className="min-w-10"
-                                            variant="secondary"
-                                            disabled={!selectedMember}
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                resetSelectedMember()
-                                            }}
-                                        >
-                                            <XIcon />
-                                        </Button>
-                                        <MemberPicker
-                                            disabled={!hadSelectedPayments}
-                                            allowShorcutCommand
-                                            value={selectedMember?.id}
-                                            onSelect={(member) => {
-                                                if (!member.memberProfile)
-                                                    return toast.warning(
-                                                        'Sorry, this member profile is not yet completed'
-                                                    )
-                                                setSelectedMember(member)
-                                                refetchSelectedMemberLedger()
-                                            }}
-                                            placeholder="Select Members"
-                                        />
-                                        <div className="relative w-full">
-                                            <Input
-                                                value={ORNumber}
-                                                onChange={(e) =>
-                                                    setORNumber(e.target.value)
-                                                }
-                                                className={cn(
-                                                    'pr-9 text-lg font-semibold placeholder:text-sm placeholder:font-normal placeholder:text-foreground/40'
-                                                )}
-                                                id="OR number"
-                                                placeholder="Enter the OR Number"
-                                                autoComplete="off"
-                                            />
-                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg font-bold text-secondary">
-                                                <ReceiptIcon />
-                                            </span>
-                                        </div>
-                                    </div>
+                                <div className="">
+                                    <Form {...form}>
+                                        <form className="bg flex w-full min-w-[30vw] flex-col gap-y-2">
+                                            <div className="flex gap-x-2">
+                                                <Button
+                                                    size="icon"
+                                                    className="min-w-10"
+                                                    variant="secondary"
+                                                    disabled={!selectedMember}
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        resetMemberSelectionAndForm()
+                                                    }}
+                                                >
+                                                    <XIcon />
+                                                </Button>
+                                                <FormFieldWrapper
+                                                    control={form.control}
+                                                    name="memberId"
+                                                    className="grow"
+                                                    render={({ field }) => (
+                                                        <div className="relative w-full">
+                                                            <MemberPicker
+                                                                disabled={
+                                                                    !hadSelectedPayments
+                                                                }
+                                                                allowShorcutCommand
+                                                                value={
+                                                                    field.value
+                                                                }
+                                                                onSelect={(
+                                                                    member
+                                                                ) => {
+                                                                    if (
+                                                                        !member.memberProfile
+                                                                    ) {
+                                                                        return toast.warning(
+                                                                            'Sorry, this member profile is not yet completed'
+                                                                        )
+                                                                    }
+                                                                    field.onChange(
+                                                                        member.id
+                                                                    )
+                                                                    setSelectedMember(
+                                                                        member
+                                                                    )
+                                                                    if (
+                                                                        member
+                                                                    ) {
+                                                                        form.setValue(
+                                                                            'ORNumber',
+                                                                            generatedORNumber?.OR ??
+                                                                                0
+                                                                        )
+                                                                    }
+                                                                    refetchSelectedMemberLedger()
+                                                                }}
+                                                                placeholder="Select Members"
+                                                            />
+                                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-bold text-primary"></span>
+                                                        </div>
+                                                    )}
+                                                />
+                                                <FormFieldWrapper
+                                                    control={form.control}
+                                                    name="ORNumber"
+                                                    render={({ field }) => (
+                                                        <div className="relative w-full">
+                                                            <Input
+                                                                value={
+                                                                    field.value
+                                                                }
+                                                                defaultValue={
+                                                                    field.value
+                                                                }
+                                                                disabled={
+                                                                    !selectedMember ||
+                                                                    isPendingCreatePayments
+                                                                }
+                                                                onChange={
+                                                                    field.onChange
+                                                                }
+                                                                className={cn(
+                                                                    'pr-9 text-lg font-semibold placeholder:text-sm placeholder:font-normal placeholder:text-foreground/40'
+                                                                )}
+                                                                placeholder="Official Receipt Number"
+                                                                id="OR number"
+                                                            />
+                                                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-lg font-bold text-secondary">
+                                                                <ReceiptIcon />
+                                                            </span>
+                                                        </div>
+                                                    )}
+                                                ></FormFieldWrapper>
+                                            </div>
 
-                                    <PaymentsEntryProfile
-                                        profile={selectedMember}
-                                    />
-                                    <div className="flex space-x-2">
-                                        <Button
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                handleOpenCreateModal('payment')
-                                            }}
-                                            className={cn(
-                                                'flex grow justify-between hover:bg-primary'
-                                            )}
-                                            disabled={!isAllowedToCreatePayment}
-                                            variant={
-                                                isAllowedToCreatePayment
-                                                    ? 'outline'
-                                                    : 'secondary'
-                                            }
-                                        >
-                                            <PaymentsIcon className="mr-2" />
-                                            Pay
-                                            <span className="ml-1 flex items-center justify-center gap-x-1">
-                                                ⌘
-                                                <F1Icon
-                                                    className="text-muted-foreground"
-                                                    size={23}
-                                                />
-                                            </span>
-                                        </Button>
-                                        <Button
-                                            className={cn(
-                                                'flex grow justify-between hover:bg-primary'
-                                            )}
-                                            disabled={!isAllowedToCreatePayment}
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                handleOpenCreateModal('deposit')
-                                            }}
-                                            variant={
-                                                isAllowedToCreatePayment
-                                                    ? 'outline'
-                                                    : 'secondary'
-                                            }
-                                        >
-                                            <HandDepositIcon className="mr-2" />
-                                            Deposit
-                                            <span className="ml-1 flex items-center justify-center gap-x-1">
-                                                ⌘
-                                                <F2Icon
-                                                    className="text-muted-foreground"
-                                                    size={23}
-                                                />
-                                            </span>
-                                        </Button>
-                                        <Button
-                                            className={cn(
-                                                'flex grow justify-between hover:bg-primary'
-                                            )}
-                                            disabled={!isAllowedToCreatePayment}
-                                            variant={
-                                                isAllowedToCreatePayment
-                                                    ? 'outline'
-                                                    : 'secondary'
-                                            }
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                handleOpenCreateModal(
-                                                    'withdraw'
-                                                )
-                                            }}
-                                        >
-                                            <HandWithdrawIcon className="mr-2" />
-                                            widthdraw
-                                            <span className="ml-1 flex items-center justify-center gap-x-1">
-                                                ⌘
-                                                <F3Icon
-                                                    className="text-muted-foreground"
-                                                    size={23}
-                                                />
-                                            </span>
-                                        </Button>
-                                    </div>
+                                            <PaymentsEntryProfile
+                                                profile={selectedMember}
+                                                onOpen={onOpenImagePreview}
+                                            />
+                                            <div className="flex w-full gap-x-2">
+                                                <Button
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        handleOpenCreateModal(
+                                                            'payment'
+                                                        )
+                                                    }}
+                                                    className={cn(
+                                                        'flex w-1/2 justify-between hover:bg-primary'
+                                                    )}
+                                                    disabled={
+                                                        !isAllowedToCreatePayment ||
+                                                        isPendingCreatePayments
+                                                    }
+                                                    variant={
+                                                        isAllowedToCreatePayment
+                                                            ? 'outline'
+                                                            : 'secondary'
+                                                    }
+                                                >
+                                                    <PaymentsIcon className="mr-2" />
+                                                    {isPendingCreatePayments ? (
+                                                        <LoadingSpinner />
+                                                    ) : (
+                                                        'Pay'
+                                                    )}
+                                                    <span className="ml-1 flex items-center justify-center gap-x-1">
+                                                        ⌘
+                                                        <F1Icon
+                                                            className="text-muted-foreground"
+                                                            size={23}
+                                                        />
+                                                    </span>
+                                                </Button>
+                                                <Button
+                                                    size="icon"
+                                                    className={cn('w-1/2 grow')}
+                                                    variant={
+                                                        !selectedMember &&
+                                                        !ORNumber
+                                                            ? 'secondary'
+                                                            : 'outline'
+                                                    }
+                                                    disabled={
+                                                        (!selectedMember &&
+                                                            !ORNumber) ||
+                                                        isPendingCreatePayments
+                                                    }
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        resetMemberSelectionAndForm()
+                                                    }}
+                                                >
+                                                    Reset
+                                                </Button>
+                                            </div>
+                                        </form>
+                                    </Form>
                                 </div>
                             </ResizablePanel>
                             <ResizableHandle />
                             <ResizablePanel defaultSize={70} className="p-2">
-                                <div className="w-full p-2">
+                                <div className="h-full w-full p-2">
                                     <AccountsLedgerTable
                                         table={table}
                                         isScrollable={isScrollable}
@@ -416,10 +500,12 @@ export const PaymentsEntry = () => {
                                     }
                                     disabled={
                                         isPendingCreatePayments ||
-                                        hadSelectedPayments
+                                        hadSelectedPayments ||
+                                        isPendingCheckClearing
                                     }
                                 >
-                                    {isPendingCreatePayments ? (
+                                    {isPendingCreatePayments ||
+                                    isPendingCheckClearing ? (
                                         <span className="flex gap-x-2">
                                             Saving <LoadingSpinner />
                                         </span>

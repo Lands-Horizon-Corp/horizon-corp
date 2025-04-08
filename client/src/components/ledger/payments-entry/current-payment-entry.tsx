@@ -43,6 +43,7 @@ type PaymentsEntryItemProps = {
     className?: string
     badge?: itemgBadgeTypeProps
     copyText?: string
+    valueClassName?: string
 }
 
 const NoCurrentPayment = () => {
@@ -78,30 +79,39 @@ const PaymentsEntryItem = ({
     className,
     badge,
     copyText,
+    valueClassName,
 }: PaymentsEntryItemProps) => {
     return (
         <>
             <div className={cn('my-1 flex w-full flex-grow', className)}>
-                <div className="flex gap-x-2">
+                <div className="flex grow items-center gap-x-2">
                     <span className="text-muted-foreground">{icon}</span>
-                    <p className="text-sm text-muted-foreground">{label}</p>
+                    <p className="text-sm text-sidebar-foreground dark:text-muted-foreground">
+                        {label}
+                    </p>
                 </div>
-                <div className="grow gap-x-2 text-end text-sm text-accent-foreground">
-                    {value}
-                    {badge && (
-                        <Badge
-                            className={cn('', badge.className)}
-                            variant={badge.type || 'default'}
-                        >
-                            {badge.text}
-                        </Badge>
+                <div
+                    className={cn(
+                        'flex items-center gap-x-2 text-end text-sm text-accent-foreground'
                     )}
-                    {copyText && (
-                        <CopyTextButton
-                            className="ml-2"
-                            textContent={value ?? ''}
-                        />
-                    )}
+                >
+                    <div className={cn('grow', valueClassName)}>{value}</div>
+                    <div className="">
+                        {badge && (
+                            <Badge
+                                className={cn('', badge.className)}
+                                variant={badge.type || 'default'}
+                            >
+                                {badge.text}
+                            </Badge>
+                        )}
+                        {copyText && (
+                            <CopyTextButton
+                                className=""
+                                textContent={value ?? ''}
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
         </>
@@ -123,9 +133,13 @@ const CurrentPaymentsEntryList = ({ data }: CurrentPaymentsEntryListProps) => {
                 data.map((payment, idx) => (
                     <Card
                         key={`${payment.ORNumber}-${idx}`}
-                        className="!bg-background/90 p-2"
+                        className="!bg-background/90"
                     >
-                        <CardContent className={cn('w-full p-0 pr-1')}>
+                        <CardContent
+                            className={cn(
+                                'w-full p-2 px-4 pr-1 hover:bg-secondary/50'
+                            )}
+                        >
                             <div className="flex w-full items-center gap-x-2">
                                 <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
                                     <ReceiptTextIcon className="size-5" />
@@ -180,12 +194,13 @@ const CurrentPaymentsEntryList = ({ data }: CurrentPaymentsEntryListProps) => {
                                             <AccordionContent className="py-2">
                                                 <PaymentsEntryItem
                                                     label="OR number"
-                                                    copyText={payment.ORNumber}
+                                                    copyText={payment.ORNumber.toString()}
+                                                    valueClassName="rounded-lg px-2 text-lg font-semibold tracking-wide bg-secondary/30"
                                                     icon={<ReceiptIcon />}
-                                                    value={payment.ORNumber}
+                                                    value={payment.ORNumber.toString()}
                                                 />
                                                 <PaymentsEntryItem
-                                                    label="Accounts value"
+                                                    label="Accounts Name"
                                                     icon={
                                                         <FileTextIcon className="size-4 text-muted-foreground" />
                                                     }
@@ -195,13 +210,11 @@ const CurrentPaymentsEntryList = ({ data }: CurrentPaymentsEntryListProps) => {
                                                     }
                                                 />
                                                 <PaymentsEntryItem
-                                                    label="Payment type"
+                                                    label="Payment Type"
                                                     icon={
                                                         <FileTextIcon className="size-4 text-muted-foreground" />
                                                     }
-                                                    value={
-                                                        payment.transactionType
-                                                    }
+                                                    value={payment.paymentType}
                                                 />
                                                 {payment.isPrinted && (
                                                     <PaymentsEntryItem
@@ -217,16 +230,6 @@ const CurrentPaymentsEntryList = ({ data }: CurrentPaymentsEntryListProps) => {
                                                         }}
                                                     />
                                                 )}
-                                                {/* {payment.notes && (
-                                                    <PaymentsEntryItem
-                                                        label="Notes"
-                                                        icon={
-                                                            <StickyNoteIcon className="size-4 text-muted-foreground" />
-                                                        }
-                                                        value={payment.notes}
-                                                        className="italic"
-                                                    />
-                                                )} */}
                                             </AccordionContent>
                                         </AccordionItem>
                                     </Accordion>

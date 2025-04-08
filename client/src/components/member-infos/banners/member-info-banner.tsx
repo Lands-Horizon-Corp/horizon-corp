@@ -10,7 +10,6 @@ import {
 } from '@/components/icons'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import UserAvatar from '@/components/user-avatar'
 import CopyTextButton from '@/components/copy-text-button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { MemberProfileCloseFormModal } from '@/components/forms/member-forms/member-profile-close-form'
@@ -20,6 +19,8 @@ import { cn } from '@/lib'
 import { IBaseCompNoChild } from '@/types'
 import { IMemberProfileResource } from '@/server'
 import useConfirmModalStore from '@/store/confirm-modal-store'
+import ImageDisplay from '@/components/image-display'
+import { useImagePreview } from '@/store/image-preview-store'
 
 interface Props extends IBaseCompNoChild {
     memberProfile: IMemberProfileResource
@@ -27,6 +28,7 @@ interface Props extends IBaseCompNoChild {
 
 const MemberInfoBanner = ({ className, memberProfile }: Props) => {
     const { onOpen } = useConfirmModalStore()
+    const { onOpen: onOpenImage } = useImagePreview()
     const [editProfile, setEditProfile] = useState(false)
     const [closeMemberAccount, setCloseMemberAccount] = useState(false)
 
@@ -51,11 +53,16 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
                 }}
             />
             <div className="flex gap-x-6">
-                <UserAvatar
-                    src={memberProfile.media?.downloadURL ?? ''}
+                <ImageDisplay
                     className="size-32 !rounded-xl"
                     fallbackClassName="!rounded-xl"
+                    onClick={() =>
+                        memberProfile.media &&
+                        onOpenImage({ Images: [memberProfile.media] })
+                    }
+                    src={memberProfile.media?.downloadURL ?? ''}
                 />
+
                 <div className="w-fit space-y-1">
                     <p className="text-xl">{`${memberProfile.member?.fullName ?? 'no name'}`}</p>
                     <p className="text-sm text-muted-foreground/80">
@@ -107,6 +114,7 @@ const MemberInfoBanner = ({ className, memberProfile }: Props) => {
                             size="sm"
                             variant="outline"
                             hoverVariant="destructive"
+                            disabled={memberProfile.isClosed}
                             className="group rounded-none shadow-none first:rounded-s-lg last:rounded-e-lg focus-visible:z-10"
                             onClick={() =>
                                 onOpen({

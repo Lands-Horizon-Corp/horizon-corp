@@ -30,6 +30,14 @@ export const TOtherAccountInformationEnum = z.enum([
     'COH Acct.',
 ])
 
+export const TAccountingDefaultEnum = z.enum([
+    'Loan',
+    'Savings',
+    'Withdraw',
+    'None',
+    'Time',
+])
+
 export const AccountRequestSchema = z.object({
     id: z.string(),
     companyId: z.string(),
@@ -60,6 +68,7 @@ export const AccountRequestSchema = z.object({
     finesGpMaturity: z.coerce.number().optional(),
     earnedUnearnedInterest: TEarnedUnearnedInterestEnum.optional(),
     otherInformationOfAnAccount: TOtherAccountInformationEnum.optional(),
+    accountingDefault: TAccountingDefaultEnum.optional(),
 })
 
 export const AccountResourceSchema = AccountRequestSchema.extend({

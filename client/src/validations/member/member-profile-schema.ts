@@ -1,18 +1,17 @@
 import z from 'zod'
 
+import { memberCenterSchema } from './member-center-schema'
 import { memberAssetsSchema } from './member-assets-schema'
 import { memberIncomeSchema } from './member-income-schema'
 import { memberAddressSchema } from './member-address-schema'
 import { memberExpensesSchema } from './member-expenses-schema'
-import { memberRecruitsSchema } from './member-recruits-schema'
 import { entityIdSchema, mediaResourceSchema } from '../common'
 import { memberDescriptionSchema } from './member-description-schema'
+import { memberCloseRemarkSchema } from './member-close-remark-schema'
 import { memberGovernmentBenefits } from './member-government-benefits'
 import { memberJointAccountsSchema } from './member-joint-accounts-schema'
 import { memberRelativeAccountsSchema } from './member-relative-accounts-schema'
 import { memberContactReferencesSchema } from './member-contact-number-references-schema'
-import { memberCenterSchema } from './member-center-schema'
-import { memberCloseRemarkSchema } from './member-close-remark-schema'
 
 export const createMemberProfileSchema = z.object({
     id: entityIdSchema.optional(),
@@ -36,6 +35,9 @@ export const createMemberProfileSchema = z.object({
 
     status: z.enum(['Pending', 'Verified', 'Not Allowed']).default('Pending'),
     isClosed: z.boolean(),
+
+    recruitedByMemberProfileId: entityIdSchema.optional(),
+    recruitedByMemberProfile: z.any().optional(),
 
     isMutualFundMember: z.boolean().default(false),
     isMicroFinanceMember: z.boolean().default(false),
@@ -70,7 +72,6 @@ export const createMemberProfileSchema = z.object({
     memberIncome: z.array(memberIncomeSchema).optional(),
     memberAssets: z.array(memberAssetsSchema).optional(),
     memberExpenses: z.array(memberExpensesSchema).optional(),
-    memberRecruits: z.array(memberRecruitsSchema).optional(),
     memberCloseRemarks: z.array(memberCloseRemarkSchema).optional(),
     memberDescriptions: z.array(memberDescriptionSchema).optional(),
     memberJointAccounts: z.array(memberJointAccountsSchema).optional(),
