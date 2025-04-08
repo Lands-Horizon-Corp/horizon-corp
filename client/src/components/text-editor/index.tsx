@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import StarterKit from '@tiptap/starter-kit'
+import Placeholder from '@tiptap/extension-placeholder'
 import { useEditor, EditorContent } from '@tiptap/react'
 
 import Toolbar from './toolbar'
@@ -15,6 +16,7 @@ interface Props extends IBaseComp {
     showToolbar?: boolean
     isHeadingDisabled?: boolean
     textEditorClassName?: string
+    placeholderClassName?: string
     onChange: (content: string) => void
 }
 
@@ -22,12 +24,14 @@ export type THeadingLevel = 1 | 2 | 3 | 4
 
 const TextEditor = ({
     className,
-    content = '',
     disabled,
+    content = '',
     spellCheck = true,
     showToolbar = true,
     textEditorClassName,
+    placeholderClassName,
     isHeadingDisabled = true,
+    placeholder = 'Write something …',
     onChange,
 }: Props) => {
     const [activeHeading, setActiveHeading] = useState<THeadingLevel | null>(
@@ -42,13 +46,19 @@ const TextEditor = ({
                     keepAttributes: false,
                 },
             }),
+            Placeholder.configure({
+                placeholder,
+                emptyNodeClass: placeholderClassName,
+            }),
         ],
         content: content,
         editorProps: {
             attributes: {
                 spellcheck: spellCheck ? 'true' : 'false',
-                class: `toolbar-custom`,
-                className: cn('w-full', textEditorClassName),
+                class: cn(
+                    'w-full ecoop-scroll toolbar-custom',
+                    textEditorClassName
+                ),
             },
         },
         onUpdate({ editor }) {

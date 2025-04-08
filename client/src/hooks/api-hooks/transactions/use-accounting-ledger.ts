@@ -14,8 +14,8 @@ import {
     IOperationCallbacks,
     IQueryProps,
 } from '../types'
-import AccountingLedgerService from '@/server/api-service/transactions/accounting-ledger'
 import { TEntityId } from '@/server'
+import AccountingLedgerService from '@/server/api-service/transactions/accounting-ledger-service'
 
 export const useCreateAccountingLedger = ({
     preloads = [],

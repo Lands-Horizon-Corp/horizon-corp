@@ -135,7 +135,7 @@ const MembersTable = ({
         <FilterContext.Provider value={filterState}>
             <div
                 className={cn(
-                    'relative flex h-full flex-col gap-y-2 py-4',
+                    'flex h-full flex-col gap-y-2',
                     className,
                     !isScrollable && 'h-fit !max-h-none'
                 )}
