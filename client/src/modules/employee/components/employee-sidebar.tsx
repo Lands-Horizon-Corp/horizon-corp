@@ -73,10 +73,37 @@ const employeeSidebarGroupItems: INavGroupItem[] = [
                 url: '/employee/transaction/payment-types',
             },
             {
-                type: 'item',
                 icon: MaintenanceIcon,
                 title: 'Maintenance',
                 url: '/employee/transaction/maintenance',
+                type: 'dropdown',
+                items: [
+                    {
+                        title: 'Cash Count',
+                        url: '/cash-count',
+                        type: 'item',
+                        icon: HandCoinsIcon,
+                    },
+                    {
+                        title: 'Disbursement',
+                        url: '/disbursement',
+                        type: 'item',
+                        icon: HandCoinsIcon,
+                    },
+                    {
+                        title: 'Financial Statement',
+                        url: '/financial-statement',
+                        type: 'item',
+                        icon: BillIcon,
+                    },
+
+                    {
+                        title: 'General Ledger',
+                        url: '/general-ledger',
+                        type: 'item',
+                        icon: BillIcon,
+                    },
+                ],
             },
         ],
     },

@@ -4,6 +4,7 @@ import { rootRoute } from '@/root-route'
 import OwnerUserRoute from './pages/users/route'
 import EmployeeTransactionRoute from './pages/transaction/route'
 import EmployeeBranchRoute from './pages/branch/route'
+import EmployeeMaintenanceRoute from './pages/transaction/maintenance/route'
 
 export const employeeRoute = createRoute({
     path: 'employee',
@@ -64,6 +65,7 @@ const EmployeeRoute = employeeRoute.addChildren([
     employeeFootstepsRoute,
     EmployeeTransactionRoute,
     employeeNotificationsRoute,
+    EmployeeMaintenanceRoute,
 ])
 
 export default EmployeeRoute
