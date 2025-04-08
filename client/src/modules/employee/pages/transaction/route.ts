@@ -15,7 +15,7 @@ export const employeeTransactionIndexRoute = createRoute({
     path: '/',
     getParentRoute: () => employeeTransactionRoute,
     beforeLoad: () => {
-        throw redirect({ to: '/owner/transaction/fund-movement' })
+        throw redirect({ to: '/employee/transaction/fund-movement' })
     },
 })
 
@@ -33,10 +33,19 @@ export const employeeTransactionPaymentType = createRoute({
     ),
 })
 
+export const employeeTransactionMaintenance = createRoute({
+    getParentRoute: () => employeeTransactionRoute,
+    path: '/maintenance',
+    component: lazyRouteComponent(
+        () => import('./transaction-maintenance-page')
+    ),
+})
+
 const EmployeeTransactionRoute = employeeTransactionRoute.addChildren([
     employeeTransactionIndexRoute,
     employeeTransactionPaymentType,
     employeeTransactionPaymentsEntry,
+    employeeTransactionMaintenance,
 ])
 
 export default EmployeeTransactionRoute

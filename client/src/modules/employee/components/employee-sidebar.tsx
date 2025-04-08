@@ -20,6 +20,7 @@ import {
     BuildingBranchIcon,
     HandCoinsIcon,
     BillIcon,
+    MaintenanceIcon,
 } from '@/components/icons'
 import {
     Sidebar,
@@ -70,6 +71,12 @@ const employeeSidebarGroupItems: INavGroupItem[] = [
                 icon: BillIcon,
                 title: 'Payment Types',
                 url: '/employee/transaction/payment-types',
+            },
+            {
+                type: 'item',
+                icon: MaintenanceIcon,
+                title: 'Maintenance',
+                url: '/employee/transaction/maintenance',
             },
         ],
     },
