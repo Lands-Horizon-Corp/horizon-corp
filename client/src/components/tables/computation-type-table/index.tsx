@@ -102,7 +102,7 @@ const AccountsComputationTypeTable = ({
 
     const table = useReactTable({
         columns,
-        data: dummyAccountComputationTypeData,
+        data: data,
         initialState: {
             columnPinning: { left: ['select'] },
         },
