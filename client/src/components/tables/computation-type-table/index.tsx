@@ -25,10 +25,7 @@ import AccountsComputationTypeTableColumns, {
     IAccountsComputationTypeTableColumnProps,
 } from './column'
 
-import {
-    dummyAccountComputationTypeData,
-    IAccountsComputationTypeResource,
-} from '@/server/types/accounts/computation-type'
+import { IAccountsComputationTypeResource } from '@/server/types/accounts/computation-type'
 import { useFilteredPaginatedComputationTypes } from '@/hooks/api-hooks/accounting/use-computation-type'
 import ComputationTypeService from '@/server/api-service/accounting-services/computation-type-service'
 
