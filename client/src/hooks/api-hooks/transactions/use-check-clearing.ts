@@ -1,4 +1,4 @@
-import CheckClearingService from '@/server/api-service/transactions/check-clearing'
+import CheckClearingService from '@/server/api-service/transactions/check-clearing-service'
 import { ICheckClearingRequest } from '@/server/types/transactions/check-clearing'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -22,12 +22,11 @@ export const useCreateCheckClearing = ({
                     '⏳ Sending request to CheckClearingService.create...'
                 )
                 const response = await CheckClearingService.create(paymentData)
-                toast.success('Check clearing successfully created')
                 onSuccess?.(response)
                 return response
             } catch (error) {
                 const errorMessage = 'Failed to process check clearing'
-                console.error(errorMessage, error)
+                console.log(error)
                 toast.error(errorMessage)
                 onError?.(errorMessage)
                 throw errorMessage

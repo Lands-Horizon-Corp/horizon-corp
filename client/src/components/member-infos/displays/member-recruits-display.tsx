@@ -12,6 +12,7 @@ import { UsersAddIcon } from '@/components/icons'
 import { IMemberRecruitsResource } from '@/server'
 import ImageDisplay from '@/components/image-display'
 import CopyTextButton from '@/components/copy-text-button'
+import { toReadableDate } from '@/utils'
 
 interface Props {
     recruits?: IMemberRecruitsResource[]
@@ -85,7 +86,17 @@ const MemberRecruitsDisplay = ({ recruits }: Props) => {
                             </div>
 
                             <div className="space-y-2">
-                                <p>{recruit.dateRecruited}</p>
+                                <p className="truncate">
+                                    {recruit?.membersProfileRecruited
+                                        ?.passbookNumber ?? '-'}
+                                </p>
+                                <p className="text-xs text-muted-foreground/70">
+                                    Passbook Number
+                                </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <p>{toReadableDate(recruit.dateRecruited)}</p>
                                 <p className="text-xs text-muted-foreground/70">
                                     Date Recruited
                                 </p>

@@ -1,11 +1,35 @@
 import { IMediaResource } from './media'
 import { IGenderResource } from './gender'
+import { AccountClosureReasonTypes, FAMILY_RELATIONSHIP } from '../constants'
+
+export type TEntityId = string
 
 export type TAccountType = 'Member' | 'Employee' | 'Admin' | 'Owner'
 
 export type TAccountStatus = 'Pending' | 'Verified' | 'Not Allowed'
 
-export type TEntityId = string
+export type TRelationship = (typeof FAMILY_RELATIONSHIP)[number]
+
+export interface ILongLat {
+    longitude?: number // `float64` maps to `number` in TypeScript
+    latitude?: number // `float64` maps to `number` in TypeScript
+}
+
+export interface ITimeStamps {
+    deletedAt?: string | null
+    createdAt: string
+    updatedAt?: string
+}
+
+export type TCivilStatus =
+    | 'Married'
+    | 'Single'
+    | 'Widowed'
+    | 'Separated'
+    | 'N/A'
+
+export type AccountClosureReasonType =
+    (typeof AccountClosureReasonTypes)[number]
 
 export interface IUserBase extends ITimeStamps, ILongLat {
     id: TEntityId
@@ -35,21 +59,3 @@ export interface IUserBase extends ITimeStamps, ILongLat {
     isContactVerified: boolean
     isSkipVerification: boolean
 }
-
-export interface ILongLat {
-    longitude?: number // `float64` maps to `number` in TypeScript
-    latitude?: number // `float64` maps to `number` in TypeScript
-}
-
-export interface ITimeStamps {
-    deletedAt?: string | null
-    createdAt: string
-    updatedAt?: string
-}
-
-export type TCivilStatus =
-    | 'Married'
-    | 'Single'
-    | 'Widowed'
-    | 'Separated'
-    | 'N/A'

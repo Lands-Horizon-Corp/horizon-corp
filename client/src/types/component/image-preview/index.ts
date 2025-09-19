@@ -1,12 +1,7 @@
 import { MutableRefObject } from 'react'
-import * as ImagePreviewPrimitive from '@radix-ui/react-dialog'
-
 import { IMediaResource } from '@/server/types'
 
-export interface ImagePreviewProps
-    extends React.ComponentPropsWithoutRef<
-        typeof ImagePreviewPrimitive.Content
-    > {
+export interface ImagePreviewProps {
     hideCloseButton?: boolean
     closeButtonClassName?: string
     overlayClassName?: string

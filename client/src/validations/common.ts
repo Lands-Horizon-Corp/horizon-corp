@@ -70,6 +70,14 @@ export const accountStatusSchema = z.enum([
     'Not Allowed',
 ])
 
+export const civilStatusSchema = z.enum([
+    'Married',
+    'Single',
+    'Widowed',
+    'Separated',
+    'N/A',
+])
+
 export const entityIdSchema = z.coerce.string().uuid('Invalid Id')
 
 export const mediaResourceSchema = z.object({

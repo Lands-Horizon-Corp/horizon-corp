@@ -46,7 +46,7 @@ const OwnerViewMembersPage = () => {
                             isStaticFilter: true,
                         },
                     }}
-                    className="max-h-[90vh] min-h-[90vh] w-full py-4"
+                    className="max-h-[90vh] min-h-[90vh] w-full"
                 />
             </EnsureOwnerCompany>
         </PageContainer>
