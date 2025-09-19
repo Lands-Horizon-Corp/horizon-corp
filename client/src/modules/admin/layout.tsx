@@ -1,13 +1,22 @@
 import { Outlet } from '@tanstack/react-router'
 
+import UserNav from '@/components/nav/navs/user-nav'
+import AdminSidebar from './components/admin-sidebar'
 import AuthGuard from '@/components/wrappers/auth-guard'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
 const AdminLayout = () => {
     return (
         <AuthGuard allowedAccountTypes={['Admin']}>
-            <div className="grid min-h-[100dvh] w-full grid-cols-[1fr] md:grid-cols-[auto_1fr]">
-                <Outlet />
-            </div>
+            <SidebarProvider>
+                <AdminSidebar />
+                <SidebarInset className="ecoop-scroll max-h-[98vh] w-full overflow-y-auto">
+                    <UserNav className="sticky top-0 bg-background" />
+                    <main className="relative">
+                        <Outlet />
+                    </main>
+                </SidebarInset>
+            </SidebarProvider>
         </AuthGuard>
     )
 }
